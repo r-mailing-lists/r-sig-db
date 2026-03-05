@@ -1,0 +1,55 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2012-08",
+  "messages": [
+    {
+      "id": "msg-d43feb14fc86",
+      "message_id": "<CAEJJ_3RHOpF6BA+cvkz=FCvKBjeCoQ9EcYMOX7aiNRmLwhTvSg@mail.gmail.com>",
+      "from_name": "Kate Dresh",
+      "from_email_hash": "79e6dc0d9d6ca13d6aafd9cd599bbdae9ba00dc092d2c5e07a756fe79cf4acd4",
+      "date": "2012-08-24T18:10:28-05:00",
+      "subject": "[R-sig-DB] data frame remove column",
+      "subject_clean": "data frame remove column",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "*Hi all,*\n\n\n\nI'm trying to filter a file through the columns. This file below is a\nexample of my data frame. My true data frame has seven hundred thousand\ncolumns and 500 hundred lines. I need to identify and to remove all columns\nthat all elements equal a number 1. In this my case, columns were deleted\nare number 1,5 and 10.\n\n\n\n\n\nfile <-read.table(text=\"\n\n1  0  2  2  1  1  5  1  1  1\n\n1  0  2  2  1  1  5  1  1  1\n\n1  0  2  2  1  2  5  2  2  1\n\n1  0  2  2  1 1  5  1  1  1\n\n1  0 2  2   1  0  5  0  2  1\n\n1  0  2 2   1  1  5  1  0  1\n\n\",sep=\"\",header=FALSE)\n\n\n\nthe result after the filter will be\n\n\n\n0  2  2  1  5  1  1\n\n 0  2  2  1  5  1  1\n\n 0  2  2  2  5  2  2\n\n 0  2  2  1  5  1  1\n\n 0  2  2  0  5  0  2\n\n 0  2  2  1  5  1  0\n\n\n\n I used this commands idlength<-sapply(file,function(x) length(unique(x))\n),\n\nbut came an error message:\n\n\n\ncaught segfault ***\n\naddress 0x4, cause 'memory not mapped'\n\n\n\n*My question: is it possible to remove the all columns from above file\nto *achieve* the desired result?*\n\n* *\n\n* *\n\n*Thank you for help*\n\n\n\n Kate\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "*Hi all,*\n\n\n\nI'm trying to filter a file through the columns. This file below is a\nexample of my data frame. My true data frame has seven hundred thousand\ncolumns and 500 hundred lines. I need to iden",
+      "thread_id": "thread-d43feb14fc86",
+      "thread_depth": 0,
+      "month": "2012-08"
+    },
+    {
+      "id": "msg-267a42c232d3",
+      "message_id": "<50386D5C.3000107@stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2012-08-25T07:14:52+01:00",
+      "subject": "[R-sig-DB] data frame remove column",
+      "subject_clean": "data frame remove column",
+      "in_reply_to": "<CAEJJ_3RHOpF6BA+cvkz=FCvKBjeCoQ9EcYMOX7aiNRmLwhTvSg@mail.gmail.com>",
+      "references": [
+        "<CAEJJ_3RHOpF6BA+cvkz=FCvKBjeCoQ9EcYMOX7aiNRmLwhTvSg@mail.gmail.com>"
+      ],
+      "body_plain": "This is off-topic for this list.  Please use R-help.\n\nThe list moderator.\n\nOn 25/08/2012 00:10, Kate Dresh wrote:\n> *Hi all,*\n>\n>\n>\n> I'm trying to filter a file through the columns. This file below is a\n> example of my data frame. My true data frame has seven hundred thousand\n> columns and 500 hundred lines. I need to identify and to remove all columns\n> that all elements equal a number 1. In this my case, columns were deleted\n> are number 1,5 and 10.\n>\n>\n>\n>\n>\n> file <-read.table(text=\"\n>\n> 1  0  2  2  1  1  5  1  1  1\n>\n> 1  0  2  2  1  1  5  1  1  1\n>\n> 1  0  2  2  1  2  5  2  2  1\n>\n> 1  0  2  2  1 1  5  1  1  1\n>\n> 1  0 2  2   1  0  5  0  2  1\n>\n> 1  0  2 2   1  1  5  1  0  1\n>\n> \",sep=\"\",header=FALSE)\n>\n>\n>\n> the result after the filter will be\n>\n>\n>\n> 0  2  2  1  5  1  1\n>\n>   0  2  2  1  5  1  1\n>\n>   0  2  2  2  5  2  2\n>\n>   0  2  2  1  5  1  1\n>\n>   0  2  2  0  5  0  2\n>\n>   0  2  2  1  5  1  0\n>\n>\n>\n>   I used this commands idlength<-sapply(file,function(x) length(unique(x))\n> ),\n>\n> but came an error message:\n>\n>\n>\n> caught segfault ***\n>\n> address 0x4, cause 'memory not mapped'\n>\n>\n>\n> *My question: is it possible to remove the all columns from above file\n> to *achieve* the desired result?*\n>\n> * *\n>\n> * *\n>\n> *Thank you for help*\n>\n>\n>\n>   Kate\n>\n> \t[[alternative HTML version deleted]]\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "This is off-topic for this list.  Please use R-help.\n\nThe list moderator.\n\nOn 25/08/2012 00:10, Kate Dresh wrote:\n> *Hi all,*\n>\n>\n>\n> I'm trying to filter a file through the columns. This file below i",
+      "thread_id": "thread-d43feb14fc86",
+      "thread_depth": 1,
+      "month": "2012-08"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-d43feb14fc86",
+      "subject": "data frame remove column",
+      "message_count": 2,
+      "participants": [
+        "Kate Dresh",
+        "Prof Brian Ripley"
+      ],
+      "started": "2012-08-24T18:10:28-05:00",
+      "last_reply": "2012-08-25T07:14:52+01:00",
+      "root_message_id": "msg-d43feb14fc86"
+    }
+  ]
+}

@@ -1,0 +1,382 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2009-09",
+  "messages": [
+    {
+      "id": "msg-ab931830e0c5",
+      "message_id": "<af1d291c0909090839v26f68705tdc30720bb405aa70@mail.gmail.com>",
+      "from_name": "Arun Eamani",
+      "from_email_hash": "140ab03c0fd481dfbc77d3dab0757da1a8119cc69f6b3cf4932c2060a3bc67a3",
+      "date": "2009-09-09T10:39:59-05:00",
+      "subject": "[R-sig-DB] ROracle ubuntu64 issue",
+      "subject_clean": "ROracle ubuntu64 issue",
+      "in_reply_to": "<af1d291c0909081755r71cce616oc46a51baf8329540@mail.gmail.com>",
+      "references": [
+        "<af1d291c0909081755r71cce616oc46a51baf8329540@mail.gmail.com>"
+      ],
+      "body_plain": ">\n> Hi,\n> i have R on ubuntu64\n>\n> i got ROracle database connection issues as seen below\n>\n> at a loss do to what next\n>\n> > library(ROracle)\n> Loading required package: DBI\n> > m <- dbDriver(\"Oracle\")\n> > con <- dbConnect(m, username=\"myname\", password=\"mwpwd\",\n> dbname=\"10.1.16.40\")\n> Error in oraNewConnection(drv, ...) :\n>   unused argument(s) (address = \"10.1.16.40\")\n> > con <- dbConnect(m, username=\"myname\", password=\"mwpwd\",\n> dbname=\"10.1.16.40\")\n>\n>\n>  *** caught segfault ***\n> address (nil), cause 'memory not mapped'\n>\n> Traceback:\n>  1: .Call(\"RS_Ora_newConnection\", drvId, con.params, max.results,\n> PACKAGE = .OraPkgName)\n>  2: oraNewConnection(drv, ...)\n>  3: is(object, Cl)\n>  4: is(object, Cl)\n>  5: .valueClassTest(standardGeneric(\"dbConnect\"), \"DBIConnection\",\n> \"dbConnect\")\n>  6: dbConnect(m,......\n>\n>\n>\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": ">\n> Hi,\n> i have R on ubuntu64\n>\n> i got ROracle database connection issues as seen below\n>\n> at a loss do to what next\n>\n> > library(ROracle)\n> Loading required package: DBI\n> > m <- dbDriver(\"Oracle",
+      "thread_id": "thread-ab931830e0c5",
+      "thread_depth": 0,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-fd572419be7c",
+      "message_id": "<Pine.LNX.4.64.0909211444580.31606@tajo.ucsd.edu>",
+      "from_name": "Charles C. Berry",
+      "from_email_hash": "040f58714a1a23cffd8d86129cec6e24102a1cbee3dbb4a52a86c71eeac41f26",
+      "date": "2009-09-21T15:09:01-07:00",
+      "subject": "[R-sig-DB] RMySQL dbConnect( default.file=\"mysql.config\" ) fails",
+      "subject_clean": "RMySQL dbConnect( default.file=\"mysql.config\" ) fails",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I can connect to a database using\n\n \tdbConnect(m, dbname=\"intSites\",user=\"3y996DKX7i\",password=\"pass\")\n\nbut when I try using\n\n \tdbConnect(m, default.file=\"mysql.config\")\n\nand similar calls I get an error: RS-DBI driver: (Failed to connect to \ndatabase ...\n\nDetails follow. Please forgive a few line wraps. Help appreciated.\n\nChuck\n\n---\n> # here is 'mysql.config' in getwd()\n> readLines(\"mysql.config\")\n  [1] \"# config for intsite queries\" \"\"\n  [3] \"[client]\"                     \"user = 3y996DKX7i\"\n  [5] \"password = pass \"             \"host = localhost\"\n  [7] \"\"                             \"[rs-dbi]\"\n  [9] \"database = intSites\"          \"\"\n>\n\n> library( RMySQL )\nLoading required package: DBI\n> m <- MySQL()\n> summary(m)\n<MySQLDriver:(82181)>\n   Driver name:  MySQL\n   Max  connections: 16\n   Conn. processed: 0\n   Default records per fetch: 500\n   Open connections: 0\n>\n> # connecting with dbname,user,password WORKS OK\n> con <- dbConnect(m, dbname=\"intSites\",user=\"3y996DKX7i\",password=\"pass\")\n> summary(con)\n<MySQLConnection:(82181,0)>\n   User: 3y996DKX7i\n   Host: localhost\n   Dbname: intSites\n   Connection type: Localhost via UNIX socket\n   No resultSet available\n>\n> # but using default.file seems to fail\n> con2 <- dbConnect(m, default.file=\"mysql.config\")\nError in mysqlNewConnection(drv, ...) :\n   RS-DBI driver: (Failed to connect to database: Error: Can't connect to \nlocal MySQL server through socket '/tm\\\np/mysql.sock' (2)\n)\n> # try again, but specify group\n> con2 <- dbConnect(m, group=\"client\", default.file=\"mysql.config\")\nError in mysqlNewConnection(drv, ...) :\n   RS-DBI driver: (Failed to connect to database: Error: Can't connect to \nlocal MySQL server through socket '/tm\\\np/mysql.sock' (2)\n)\n> con2 <- dbConnect(m, group=\"rs-dbi\", default.file=\"mysql.config\")\nError in mysqlNewConnection(drv, ...) :\n   RS-DBI driver: (Failed to connect to database: Error: Can't connect to \nlocal MySQL server through socket '/tm\\\np/mysql.sock' (2)\n)\n> sessionInfo()\nR version 2.9.0 (2009-04-17)\ni386-apple-darwin8.11.1\n\nlocale:\nC\n\n\nattached base packages:\n[1] stats     graphics  grDevices utils     datasets  methods   base\n\nother attached packages:\n[1] RMySQL_0.7-4 DBI_0.2-4\n>\n\n\nCharles C. Berry                            (858) 534-2098\n                                             Dept of Family/Preventive Medicine\nE mailto:cberry at tajo.ucsd.edu\t            UC San Diego\nhttp://famprevmed.ucsd.edu/faculty/cberry/  La Jolla, San Diego 92093-0901",
+      "body_snippet": "I can connect to a database using\n\n \tdbConnect(m, dbname=\"intSites\",user=\"3y996DKX7i\",password=\"pass\")\n\nbut when I try using\n\n \tdbConnect(m, default.file=\"mysql.config\")\n\nand similar calls I get an er",
+      "thread_id": "thread-fd572419be7c",
+      "thread_depth": 0,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-352b28ba9154",
+      "message_id": "<Pine.LNX.4.64.0909212035470.32277@tajo.ucsd.edu>",
+      "from_name": "Charles C. Berry",
+      "from_email_hash": "040f58714a1a23cffd8d86129cec6e24102a1cbee3dbb4a52a86c71eeac41f26",
+      "date": "2009-09-21T20:54:16-07:00",
+      "subject": "[R-sig-DB] RMySQL dbConnect( default.file=\"mysql.config\" ) fails",
+      "subject_clean": "RMySQL dbConnect( default.file=\"mysql.config\" ) fails",
+      "in_reply_to": "<Pine.LNX.4.64.0909211444580.31606@tajo.ucsd.edu>",
+      "references": [
+        "<Pine.LNX.4.64.0909211444580.31606@tajo.ucsd.edu>"
+      ],
+      "body_plain": "It seems that the config file needs to specify the location of the socket \nelse an incorrect location is given. Also the config file needs to be \nnamed according to its full path designation.\n\nPerhaps, these requirements are bugs in dbConnect().\n\n===\n\nPutting\n\nsocket = /private/var/mysql/mysql.sock\n\nin the [client] section works with\n\ncon3 <- dbConnect(m,  default.file=\"/<full-path>/mysql.config\")\n\n(note that the full path given in the line above is required)\n\nChuck\n\nOn Mon, 21 Sep 2009, Charles C. Berry wrote:\n\n>\n>\n> I can connect to a database using\n>\n> \tdbConnect(m, dbname=\"intSites\",user=\"3y996DKX7i\",password=\"pass\")\n>\n> but when I try using\n>\n> \tdbConnect(m, default.file=\"mysql.config\")\n>\n> and similar calls I get an error: RS-DBI driver: (Failed to connect to \n> database ...\n>\n> Details follow. Please forgive a few line wraps. Help appreciated.\n>\n> Chuck\n>\n> ---\n>>  # here is 'mysql.config' in getwd()\n>>  readLines(\"mysql.config\")\n>  [1] \"# config for intsite queries\" \"\"\n>  [3] \"[client]\"                     \"user = 3y996DKX7i\"\n>  [5] \"password = pass \"             \"host = localhost\"\n>  [7] \"\"                             \"[rs-dbi]\"\n>  [9] \"database = intSites\"          \"\"\n>> \n>\n>>  library( RMySQL )\n> Loading required package: DBI\n>>  m <- MySQL()\n>>  summary(m)\n> <MySQLDriver:(82181)>\n>   Driver name:  MySQL\n>   Max  connections: 16\n>   Conn. processed: 0\n>   Default records per fetch: 500\n>   Open connections: 0\n>>\n>>  # connecting with dbname,user,password WORKS OK\n>>  con <- dbConnect(m, dbname=\"intSites\",user=\"3y996DKX7i\",password=\"pass\")\n>>  summary(con)\n> <MySQLConnection:(82181,0)>\n>   User: 3y996DKX7i\n>   Host: localhost\n>   Dbname: intSites\n>   Connection type: Localhost via UNIX socket\n>   No resultSet available\n>>\n>>  # but using default.file seems to fail\n>>  con2 <- dbConnect(m, default.file=\"mysql.config\")\n> Error in mysqlNewConnection(drv, ...) :\n>  RS-DBI driver: (Failed to connect to database: Error: Can't connect to \n> local MySQL server through socket '/tm\\\n> p/mysql.sock' (2)\n> )\n>>  # try again, but specify group\n>>  con2 <- dbConnect(m, group=\"client\", default.file=\"mysql.config\")\n> Error in mysqlNewConnection(drv, ...) :\n>  RS-DBI driver: (Failed to connect to database: Error: Can't connect to \n> local MySQL server through socket '/tm\\\n> p/mysql.sock' (2)\n> )\n>>  con2 <- dbConnect(m, group=\"rs-dbi\", default.file=\"mysql.config\")\n> Error in mysqlNewConnection(drv, ...) :\n>  RS-DBI driver: (Failed to connect to database: Error: Can't connect to \n> local MySQL server through socket '/tm\\\n> p/mysql.sock' (2)\n> )\n>>  sessionInfo()\n> R version 2.9.0 (2009-04-17)\n> i386-apple-darwin8.11.1\n>\n> locale:\n> C\n>\n>\n> attached base packages:\n> [1] stats     graphics  grDevices utils     datasets  methods   base\n>\n> other attached packages:\n> [1] RMySQL_0.7-4 DBI_0.2-4\n>> \n>\n>\n> Charles C. Berry                            (858) 534-2098\n>                                            Dept of Family/Preventive \n> Medicine\n> E mailto:cberry at tajo.ucsd.edu\t            UC San Diego\n> http://famprevmed.ucsd.edu/faculty/cberry/  La Jolla, San Diego 92093-0901\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\nCharles C. Berry                            (858) 534-2098\n                                             Dept of Family/Preventive Medicine\nE mailto:cberry at tajo.ucsd.edu\t            UC San Diego\nhttp://famprevmed.ucsd.edu/faculty/cberry/  La Jolla, San Diego 92093-0901",
+      "body_snippet": "It seems that the config file needs to specify the location of the socket \nelse an incorrect location is given. Also the config file needs to be \nnamed according to its full path designation.\n\nPerhaps",
+      "thread_id": "thread-fd572419be7c",
+      "thread_depth": 1,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-70a5fbe98a3a",
+      "message_id": "<h9ssj5$eej$1@ger.gmane.org>",
+      "from_name": "Thomas Liebig",
+      "from_email_hash": "b767a2d390096564db9b04d9c120ebeec8935ab6543da78ce48667e2a2a43e56",
+      "date": "2009-09-29T13:54:46+02:00",
+      "subject": "[R-sig-DB] In odbcDriverConnect   ODBC connection failed",
+      "subject_clean": "In odbcDriverConnect   ODBC connection failed",
+      "in_reply_to": "<4A843E930200008700000D18@mail.elektron.fo>",
+      "references": [
+        "<4A843E930200008700000D18@mail.elektron.fo>"
+      ],
+      "body_plain": "Hi Luis,\n\nI also use RODBC to connect an ORACLE DB.\nThis is implemented using the following statements\n\nrequire(RODBC)\ncon<-odbcConnect(DB$name,DB$user,DB$pass,case=\"tolower\",believeNRows=FALSE)\nres<-sqlQuery(con,\"select 'test' from dual\")\nodbcClose(con)\n\nTo test your unixodbc installation you should ask google, there are some \nlinux tools to test your configuration.\n\nregards,\nThomas\n\n\nLuis Ridao Cruz schrieb:\n> R-sig-DB help,\n> \n> I have installed an ODBC Driver for Linux.\n> \n> I want to connect to our database through R via:\n> \n>> library(RODBC)\n>> con <- odbcDriverConnect(\"SERVER=IP_address:PORT;DRIVER=ORACLE;DATABASE=MAGNUS\")\n> Warning message:\n> In odbcDriverConnect(\"SERVER=IP_address:PORT;DRIVER=ORACLE;DATABASE=MAGNUS\") :\n>   ODBC connection failed\n> \n> I don't really know whether this is the right syntax. I copy-paste files \"odbc.ini\" and \"odbcinst.ini\":\n> \n> ## file odbc.ini\n> [ORACLE]\n> Driver        = ORACLE\n> Database        = //IP_address:PORT/MAGNUS\n> User        = my_username\n> Password        = my_password\n> METADATA_ID        = 0\n> ENABLE_USER_CATALOG        = 1\n> ENABLE_SYNONYMS        = 1\n> \n> ## file odbcinst.ini\n> [ORACLE]\n> Description        = Easysoft ODBC Oracle Driver\n> Driver        = /usr/local/easysoft/oracle/libesoracle.so\n> Setup        = /usr/local/easysoft/oracle/libesoraclesetup.so\n> DontDLClose        = 1\n> FileUsage        = 1\n> UsageCount        = 1\n> \n> \n> Thanks in advance\n\n-- \nThomas Liebig\nFraunhofer-Institut f?r Intelligente Analyse- und\nInformationssysteme (IAIS)\n\nSchloss Birlinghoven, D-53754 Sankt Augustin, Germany\nEmail:  thomas.liebig at iais.fraunhofer.de\nPhone:  +49 2241 142050\nFax:    +49 2241 142072",
+      "body_snippet": "Hi Luis,\n\nI also use RODBC to connect an ORACLE DB.\nThis is implemented using the following statements\n\nrequire(RODBC)\ncon<-odbcConnect(DB$name,DB$user,DB$pass,case=\"tolower\",believeNRows=FALSE)\nres<-",
+      "thread_id": "thread-70a5fbe98a3a",
+      "thread_depth": 0,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-e2cf7f7d7fd9",
+      "message_id": "<4AC2850F.8000302@fhcrc.org>",
+      "from_name": "Hervé Pagès",
+      "from_email_hash": "fd1d1d7a6264909f0236d26dfae51520f3d3455c869422fce43a45549d197dbf",
+      "date": "2009-09-29T15:07:11-07:00",
+      "subject": "[R-sig-DB] dbWriteTable() is renaming the 'end' column",
+      "subject_clean": "dbWriteTable() is renaming the 'end' column",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\nConsider the following data:\n\n   mydata <- data.frame(start=1:5, end=11:15)\n\nThen storing and retrieving the data shows that the 'end'\ncolumn was renamed:\n\n   drv <- dbDriver(\"SQLite\")\n   con <- dbConnect(drv, dbname=\":memory:\")\n\n   > dbWriteTable(con, \"mydata\", mydata)\n   [1] TRUE\n   > dbReadTable(con, \"mydata\")\n     start end__1\n   1     1     11\n   2     2     12\n   3     3     13\n   4     4     14\n   5     5     15\n\nThe culprit doesn't seem to be dbReadTable():\n\n   > dbGetQuery(con, \"SELECT * FROM mydata\")\n     row_names start end__1\n   1         1     1     11\n   2         2     2     12\n   3         3     3     13\n   4         4     4     14\n   5         5     5     15\n\nand using the sqlite3 client from outside R confirms this.\n\nLooks like a bug in dbWriteTable().\n\nCheers,\nH.\n\n-- \nHerv? Pag?s\n\nProgram in Computational Biology\nDivision of Public Health Sciences\nFred Hutchinson Cancer Research Center\n1100 Fairview Ave. N, M2-B876\nP.O. Box 19024\nSeattle, WA 98109-1024\n\nE-mail: hpages at fhcrc.org\nPhone:  (206) 667-5791\nFax:    (206) 667-1319",
+      "body_snippet": "Hi,\n\nConsider the following data:\n\n   mydata <- data.frame(start=1:5, end=11:15)\n\nThen storing and retrieving the data shows that the 'end'\ncolumn was renamed:\n\n   drv <- dbDriver(\"SQLite\")\n   con <- ",
+      "thread_id": "thread-e2cf7f7d7fd9",
+      "thread_depth": 0,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-58d04c3803ab",
+      "message_id": "<971536df0909291533k280fecc9tca8baf5ee678a9e2@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2009-09-29T18:33:20-04:00",
+      "subject": "[R-sig-DB] dbWriteTable() is renaming the 'end' column",
+      "subject_clean": "dbWriteTable() is renaming the 'end' column",
+      "in_reply_to": "<4AC2850F.8000302@fhcrc.org>",
+      "references": [
+        "<4AC2850F.8000302@fhcrc.org>"
+      ],
+      "body_plain": "end is a reserved SQL keyword.\n\n2009/9/29 Herv? Pag?s <hpages at fhcrc.org>:\n> Hi,\n>\n> Consider the following data:\n>\n> ?mydata <- data.frame(start=1:5, end=11:15)\n>\n> Then storing and retrieving the data shows that the 'end'\n> column was renamed:\n>\n> ?drv <- dbDriver(\"SQLite\")\n> ?con <- dbConnect(drv, dbname=\":memory:\")\n>\n> ?> dbWriteTable(con, \"mydata\", mydata)\n> ?[1] TRUE\n> ?> dbReadTable(con, \"mydata\")\n> ? ?start end__1\n> ?1 ? ? 1 ? ? 11\n> ?2 ? ? 2 ? ? 12\n> ?3 ? ? 3 ? ? 13\n> ?4 ? ? 4 ? ? 14\n> ?5 ? ? 5 ? ? 15\n>\n> The culprit doesn't seem to be dbReadTable():\n>\n> ?> dbGetQuery(con, \"SELECT * FROM mydata\")\n> ? ?row_names start end__1\n> ?1 ? ? ? ? 1 ? ? 1 ? ? 11\n> ?2 ? ? ? ? 2 ? ? 2 ? ? 12\n> ?3 ? ? ? ? 3 ? ? 3 ? ? 13\n> ?4 ? ? ? ? 4 ? ? 4 ? ? 14\n> ?5 ? ? ? ? 5 ? ? 5 ? ? 15\n>\n> and using the sqlite3 client from outside R confirms this.\n>\n> Looks like a bug in dbWriteTable().\n>\n> Cheers,\n> H.\n>\n> --\n> Herv? Pag?s\n>\n> Program in Computational Biology\n> Division of Public Health Sciences\n> Fred Hutchinson Cancer Research Center\n> 1100 Fairview Ave. N, M2-B876\n> P.O. Box 19024\n> Seattle, WA 98109-1024\n>\n> E-mail: hpages at fhcrc.org\n> Phone: ?(206) 667-5791\n> Fax: ? ?(206) 667-1319\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "end is a reserved SQL keyword.\n\n2009/9/29 Herv? Pag?s <hpages at fhcrc.org>:\n> Hi,\n>\n> Consider the following data:\n>\n> ?mydata <- data.frame(start=1:5, end=11:15)\n>\n> Then storing and retrieving the ",
+      "thread_id": "thread-e2cf7f7d7fd9",
+      "thread_depth": 1,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-db29bcd6807f",
+      "message_id": "<4AC29468.7090800@fhcrc.org>",
+      "from_name": "Hervé Pagès",
+      "from_email_hash": "fd1d1d7a6264909f0236d26dfae51520f3d3455c869422fce43a45549d197dbf",
+      "date": "2009-09-29T16:12:40-07:00",
+      "subject": "[R-sig-DB] dbWriteTable() is renaming the 'end' column",
+      "subject_clean": "dbWriteTable() is renaming the 'end' column",
+      "in_reply_to": "<971536df0909291533k280fecc9tca8baf5ee678a9e2@mail.gmail.com>",
+      "references": [
+        "<4AC2850F.8000302@fhcrc.org>",
+        "<971536df0909291533k280fecc9tca8baf5ee678a9e2@mail.gmail.com>"
+      ],
+      "body_plain": "Gabor Grothendieck wrote:\n> end is a reserved SQL keyword.\n\nOk, maybe so what?\n\nThis works:\n\n   dbSendQuery(con, \"CREATE TABLE mydata (start INTEGER, end INTEGER)\")\n\nand if it didn't, I should get an error (or at least a warning).\nThen I could try again with:\n\n   dbSendQuery(con, \"CREATE TABLE mydata (`start` INTEGER, `end` INTEGER)\")\n\nUsing backquotes allows me to use whatever name I want for my columns, \neven SQL keywords. This is ANSI SQL.\n\nIMO, it would be much better if dbWriteTable() was:\n   - not trying to be too smart and just send the CREATE statement,\n     leaving the DB backend decide whether it's valid or not, and\n     eventually return an error,\n   - if dbWriteTable() really wants to be smart, then it could try\n     a little bit harder to create the table I want with the column\n     names I want by using backquotes.\n\nJust my 2 c.\n\nCheers,\nH.\n\n> \n> 2009/9/29 Herv? Pag?s <hpages at fhcrc.org>:\n>> Hi,\n>>\n>> Consider the following data:\n>>\n>>  mydata <- data.frame(start=1:5, end=11:15)\n>>\n>> Then storing and retrieving the data shows that the 'end'\n>> column was renamed:\n>>\n>>  drv <- dbDriver(\"SQLite\")\n>>  con <- dbConnect(drv, dbname=\":memory:\")\n>>\n>>  > dbWriteTable(con, \"mydata\", mydata)\n>>  [1] TRUE\n>>  > dbReadTable(con, \"mydata\")\n>>    start end__1\n>>  1     1     11\n>>  2     2     12\n>>  3     3     13\n>>  4     4     14\n>>  5     5     15\n>>\n>> The culprit doesn't seem to be dbReadTable():\n>>\n>>  > dbGetQuery(con, \"SELECT * FROM mydata\")\n>>    row_names start end__1\n>>  1         1     1     11\n>>  2         2     2     12\n>>  3         3     3     13\n>>  4         4     4     14\n>>  5         5     5     15\n>>\n>> and using the sqlite3 client from outside R confirms this.\n>>\n>> Looks like a bug in dbWriteTable().\n>>\n>> Cheers,\n>> H.\n>>\n>> --\n>> Herv? Pag?s\n>>\n>> Program in Computational Biology\n>> Division of Public Health Sciences\n>> Fred Hutchinson Cancer Research Center\n>> 1100 Fairview Ave. N, M2-B876\n>> P.O. Box 19024\n>> Seattle, WA 98109-1024\n>>\n>> E-mail: hpages at fhcrc.org\n>> Phone:  (206) 667-5791\n>> Fax:    (206) 667-1319\n>>\n>> _______________________________________________\n>> R-sig-DB mailing list -- R Special Interest Group\n>> R-sig-DB at stat.math.ethz.ch\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>>\n\n-- \nHerv? Pag?s\n\nProgram in Computational Biology\nDivision of Public Health Sciences\nFred Hutchinson Cancer Research Center\n1100 Fairview Ave. N, M2-B876\nP.O. Box 19024\nSeattle, WA 98109-1024\n\nE-mail: hpages at fhcrc.org\nPhone:  (206) 667-5791\nFax:    (206) 667-1319",
+      "body_snippet": "Gabor Grothendieck wrote:\n> end is a reserved SQL keyword.\n\nOk, maybe so what?\n\nThis works:\n\n   dbSendQuery(con, \"CREATE TABLE mydata (start INTEGER, end INTEGER)\")\n\nand if it didn't, I should get an ",
+      "thread_id": "thread-e2cf7f7d7fd9",
+      "thread_depth": 2,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-8e9a5336a94f",
+      "message_id": "<alpine.LFD.2.00.0909300441370.32082@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2009-09-30T06:06:31+01:00",
+      "subject": "[R-sig-DB] dbWriteTable() is renaming the 'end' column",
+      "subject_clean": "dbWriteTable() is renaming the 'end' column",
+      "in_reply_to": "<4AC29468.7090800@fhcrc.org>",
+      "references": [
+        "<4AC2850F.8000302@fhcrc.org>",
+        "<971536df0909291533k280fecc9tca8baf5ee678a9e2@mail.gmail.com>",
+        "<4AC29468.7090800@fhcrc.org>"
+      ],
+      "body_plain": "I presume this is about dbWriteTable in package DBI, and also RSQLite, \nbut neither are mentioned and the 'example' fails to run as written.\n\nOn Tue, 29 Sep 2009, Herv? Pag?s wrote:\n\n> Gabor Grothendieck wrote:\n>> end is a reserved SQL keyword.\n>\n> Ok, maybe so what?\n>\n> This works:\n>\n>  dbSendQuery(con, \"CREATE TABLE mydata (start INTEGER, end INTEGER)\")\n>\n> and if it didn't, I should get an error (or at least a warning).\n> Then I could try again with:\n>\n>  dbSendQuery(con, \"CREATE TABLE mydata (`start` INTEGER, `end` INTEGER)\")\n>\n> Using backquotes allows me to use whatever name I want for my columns, even \n> SQL keywords. This is ANSI SQL.\n\nWithout telling us *which* ANSI SQL standard this is unclear, but I \nbelieve that it is a false claim.  It seems so do the authors of \nMySQL, who have an ANSI_QUOTE mode using \" to quote identifiers.  As I \nknow from RODBC, this is one of those areas of differences between \nactual SQL engines, and one which ODBC does not attempt to paper over.\n\nSee also \nhttp://www.mail-archive.com/sqlite-users at sqlite.org/msg09583.html\n-- so it looks like backquotes were added to SQLite in 2005, long \nafter the design of DBI/RSQLite, and as a non-ANSI extension.\n\nRODBC successfully uses double quotes for identifiers with SQLite, and \nthe RODBC version of your example works as you expected.\n\n> IMO, it would be much better if dbWriteTable() was:\n>  - not trying to be too smart and just send the CREATE statement,\n>    leaving the DB backend decide whether it's valid or not, and\n>    eventually return an error,\n>  - if dbWriteTable() really wants to be smart, then it could try\n>    a little bit harder to create the table I want with the column\n>    names I want by using backquotes.\n\nBut DBI::dbWriteTable() does neither of these: it calls the method \nin the backend, which in the case of RSQLite is sqliteWriteTable(). \nThat calls RSQLite::dbBuildTableDefinition() to make the CREATE TABLE \nquery, and that calls DBI::make.db.names(), which is a generic with a \nmethod in RSQLite.\n\nSo the correct subject of your scorn would seem to be \nRSQLite::dbBuildTableDefinition() and its lack of documentation. As I \nhave argued earlier, I think that the solution has to be specific to \nthe backend.\n\n> Just my 2 c.\n\n\n> Cheers,\n> H.\n>\n>> \n>> 2009/9/29 Herv? Pag?s <hpages at fhcrc.org>:\n>>> Hi,\n>>> \n>>> Consider the following data:\n>>>\n>>>  mydata <- data.frame(start=1:5, end=11:15)\n>>> \n>>> Then storing and retrieving the data shows that the 'end'\n>>> column was renamed:\n>>>\n>>>  drv <- dbDriver(\"SQLite\")\n>>>  con <- dbConnect(drv, dbname=\":memory:\")\n>>>\n>>>  > dbWriteTable(con, \"mydata\", mydata)\n>>>  [1] TRUE\n>>>  > dbReadTable(con, \"mydata\")\n>>>    start end__1\n>>>  1     1     11\n>>>  2     2     12\n>>>  3     3     13\n>>>  4     4     14\n>>>  5     5     15\n>>> \n>>> The culprit doesn't seem to be dbReadTable():\n>>>\n>>>  > dbGetQuery(con, \"SELECT * FROM mydata\")\n>>>    row_names start end__1\n>>>  1         1     1     11\n>>>  2         2     2     12\n>>>  3         3     3     13\n>>>  4         4     4     14\n>>>  5         5     5     15\n>>> \n>>> and using the sqlite3 client from outside R confirms this.\n>>> \n>>> Looks like a bug in dbWriteTable().\n>>> \n>>> Cheers,\n>>> H.\n>>> \n>>> --\n>>> Herv? Pag?s\n>>> \n>>> Program in Computational Biology\n>>> Division of Public Health Sciences\n>>> Fred Hutchinson Cancer Research Center\n>>> 1100 Fairview Ave. N, M2-B876\n>>> P.O. Box 19024\n>>> Seattle, WA 98109-1024\n>>> \n>>> E-mail: hpages at fhcrc.org\n>>> Phone:  (206) 667-5791\n>>> Fax:    (206) 667-1319\n>>> \n>>> _______________________________________________\n>>> R-sig-DB mailing list -- R Special Interest Group\n>>> R-sig-DB at stat.math.ethz.ch\n>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>>> \n>\n> -- \n> Herv? Pag?s\n>\n> Program in Computational Biology\n> Division of Public Health Sciences\n> Fred Hutchinson Cancer Research Center\n> 1100 Fairview Ave. N, M2-B876\n> P.O. Box 19024\n> Seattle, WA 98109-1024\n>\n> E-mail: hpages at fhcrc.org\n> Phone:  (206) 667-5791\n> Fax:    (206) 667-1319\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "I presume this is about dbWriteTable in package DBI, and also RSQLite, \nbut neither are mentioned and the 'example' fails to run as written.\n\nOn Tue, 29 Sep 2009, Herv? Pag?s wrote:\n\n> Gabor Grothendi",
+      "thread_id": "thread-e2cf7f7d7fd9",
+      "thread_depth": 3,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-243765286b5a",
+      "message_id": "<4AC2FD17.9050108@fhcrc.org>",
+      "from_name": "Hervé Pagès",
+      "from_email_hash": "fd1d1d7a6264909f0236d26dfae51520f3d3455c869422fce43a45549d197dbf",
+      "date": "2009-09-29T23:39:19-07:00",
+      "subject": "[R-sig-DB] dbWriteTable() is renaming the 'end' column",
+      "subject_clean": "dbWriteTable() is renaming the 'end' column",
+      "in_reply_to": "<alpine.LFD.2.00.0909300441370.32082@gannet.stats.ox.ac.uk>",
+      "references": [
+        "<4AC2850F.8000302@fhcrc.org>",
+        "<971536df0909291533k280fecc9tca8baf5ee678a9e2@mail.gmail.com>",
+        "<4AC29468.7090800@fhcrc.org>",
+        "<alpine.LFD.2.00.0909300441370.32082@gannet.stats.ox.ac.uk>"
+      ],
+      "body_plain": "Prof Brian Ripley wrote:\n> I presume this is about dbWriteTable in package DBI, and also RSQLite, \n> but neither are mentioned and the 'example' fails to run as written.\n> \n> On Tue, 29 Sep 2009, Herv? Pag?s wrote:\n> \n>> Gabor Grothendieck wrote:\n>>> end is a reserved SQL keyword.\n>>\n>> Ok, maybe so what?\n>>\n>> This works:\n>>\n>>  dbSendQuery(con, \"CREATE TABLE mydata (start INTEGER, end INTEGER)\")\n>>\n>> and if it didn't, I should get an error (or at least a warning).\n>> Then I could try again with:\n>>\n>>  dbSendQuery(con, \"CREATE TABLE mydata (`start` INTEGER, `end` INTEGER)\")\n>>\n>> Using backquotes allows me to use whatever name I want for my columns, \n>> even SQL keywords. This is ANSI SQL.\n> \n> Without telling us *which* ANSI SQL standard this is unclear, but I \n> believe that it is a false claim.  It seems so do the authors of MySQL, \n> who have an ANSI_QUOTE mode using \" to quote identifiers.  As I know \n> from RODBC, this is one of those areas of differences between actual SQL \n> engines, and one which ODBC does not attempt to paper over.\n\nYou are right that in the ANSI SQL standard, an SQL delimited identifier\nis delimited by double quotes, not backquotes, sorry.\nAnyway my point is that, among other possibilities, dbWriteTable() could\nsend a CREATE statement with delimited identifiers, so SQL keywords are\nnot an issue anymore. This is only one possibility. There are others,\nlike just returning an error if the column name is a keyword, or\nallowing the user disable the mangling, etc. Anything\nsounds better than silently mangling the column names.\n\n> \n> See also http://www.mail-archive.com/sqlite-users at sqlite.org/msg09583.html\n> -- so it looks like backquotes were added to SQLite in 2005, long after \n> the design of DBI/RSQLite, and as a non-ANSI extension.\n\nAccording to\n\n   SQLKeywords(dbDriver(\"SQLite\"))\n\n\"end\" doesn't seem to be an SQLite keyword. Besides, sending the\nCREATE statement\n\n   CREATE TABLE mydata (start INTEGER, end INTEGER)\n\nwith dbSendQuery() just works. And finally:\n\n   dbWriteTable(con, \"end\", mydata)\n\ndoesn't bother to mangle the name of the \"end\" *table*.\nSo it's really hard to understand why it bothers to mangle the\nname of the \"end\" *column*.\n\n> \n> RODBC successfully uses double quotes for identifiers with SQLite, and \n> the RODBC version of your example works as you expected.\n\nAlways good to know, thanks!\n\n> \n>> IMO, it would be much better if dbWriteTable() was:\n>>  - not trying to be too smart and just send the CREATE statement,\n>>    leaving the DB backend decide whether it's valid or not, and\n>>    eventually return an error,\n>>  - if dbWriteTable() really wants to be smart, then it could try\n>>    a little bit harder to create the table I want with the column\n>>    names I want by using backquotes.\n> \n> But DBI::dbWriteTable() does neither of these: it calls the method in \n> the backend, which in the case of RSQLite is sqliteWriteTable(). That \n> calls RSQLite::dbBuildTableDefinition() to make the CREATE TABLE query, \n> and that calls DBI::make.db.names(), which is a generic with a method in \n> RSQLite.\n> \n> So the correct subject of your scorn would seem to be \n> RSQLite::dbBuildTableDefinition() and its lack of documentation. As I \n> have argued earlier, I think that the solution has to be specific to the \n> backend.\n\nThanks for all the details. Knowing the details of the call stack is\ninteresting... but does it really matter here? The end user\ncalls dbWriteTable() in order to write a table to the DB, not\nsqliteWriteTable(), or RSQLite::dbBuildTableDefinition(), or\nDBI::make.db.names().\n\nCheers,\nH.\n\n > sessionInfo()\nR version 2.10.0 Under development (unstable) (2009-09-24 r49817)\nx86_64-unknown-linux-gnu\n\nlocale:\n  [1] LC_CTYPE=en_CA.UTF-8       LC_NUMERIC=C\n  [3] LC_TIME=en_CA.UTF-8        LC_COLLATE=en_CA.UTF-8\n  [5] LC_MONETARY=C              LC_MESSAGES=en_CA.UTF-8\n  [7] LC_PAPER=en_CA.UTF-8       LC_NAME=C\n  [9] LC_ADDRESS=C               LC_TELEPHONE=C\n[11] LC_MEASUREMENT=en_CA.UTF-8 LC_IDENTIFICATION=C\n\nattached base packages:\n[1] stats     graphics  grDevices utils     datasets  methods   base\n\nother attached packages:\n[1] RSQLite_0.7-2 DBI_0.2-4\n\nloaded via a namespace (and not attached):\n[1] tools_2.10.0\n\n> \n>> Just my 2 c.\n> \n> \n>> Cheers,\n>> H.\n>>\n>>>\n>>> 2009/9/29 Herv? Pag?s <hpages at fhcrc.org>:\n>>>> Hi,\n>>>>\n>>>> Consider the following data:\n>>>>\n>>>>  mydata <- data.frame(start=1:5, end=11:15)\n>>>>\n>>>> Then storing and retrieving the data shows that the 'end'\n>>>> column was renamed:\n>>>>\n>>>>  drv <- dbDriver(\"SQLite\")\n>>>>  con <- dbConnect(drv, dbname=\":memory:\")\n>>>>\n>>>>  > dbWriteTable(con, \"mydata\", mydata)\n>>>>  [1] TRUE\n>>>>  > dbReadTable(con, \"mydata\")\n>>>>    start end__1\n>>>>  1     1     11\n>>>>  2     2     12\n>>>>  3     3     13\n>>>>  4     4     14\n>>>>  5     5     15\n>>>>\n>>>> The culprit doesn't seem to be dbReadTable():\n>>>>\n>>>>  > dbGetQuery(con, \"SELECT * FROM mydata\")\n>>>>    row_names start end__1\n>>>>  1         1     1     11\n>>>>  2         2     2     12\n>>>>  3         3     3     13\n>>>>  4         4     4     14\n>>>>  5         5     5     15\n>>>>\n>>>> and using the sqlite3 client from outside R confirms this.\n>>>>\n>>>> Looks like a bug in dbWriteTable().\n>>>>\n>>>> Cheers,\n>>>> H.\n>>>>\n>>>> -- \n>>>> Herv? Pag?s\n>>>>\n>>>> Program in Computational Biology\n>>>> Division of Public Health Sciences\n>>>> Fred Hutchinson Cancer Research Center\n>>>> 1100 Fairview Ave. N, M2-B876\n>>>> P.O. Box 19024\n>>>> Seattle, WA 98109-1024\n>>>>\n>>>> E-mail: hpages at fhcrc.org\n>>>> Phone:  (206) 667-5791\n>>>> Fax:    (206) 667-1319\n>>>>\n>>>> _______________________________________________\n>>>> R-sig-DB mailing list -- R Special Interest Group\n>>>> R-sig-DB at stat.math.ethz.ch\n>>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>>>>\n>>\n>> -- \n>> Herv? Pag?s\n>>\n>> Program in Computational Biology\n>> Division of Public Health Sciences\n>> Fred Hutchinson Cancer Research Center\n>> 1100 Fairview Ave. N, M2-B876\n>> P.O. Box 19024\n>> Seattle, WA 98109-1024\n>>\n>> E-mail: hpages at fhcrc.org\n>> Phone:  (206) 667-5791\n>> Fax:    (206) 667-1319\n>>\n>> _______________________________________________\n>> R-sig-DB mailing list -- R Special Interest Group\n>> R-sig-DB at stat.math.ethz.ch\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>>\n> \n\n-- \nHerv? Pag?s\n\nProgram in Computational Biology\nDivision of Public Health Sciences\nFred Hutchinson Cancer Research Center\n1100 Fairview Ave. N, M2-B876\nP.O. Box 19024\nSeattle, WA 98109-1024\n\nE-mail: hpages at fhcrc.org\nPhone:  (206) 667-5791\nFax:    (206) 667-1319",
+      "body_snippet": "Prof Brian Ripley wrote:\n> I presume this is about dbWriteTable in package DBI, and also RSQLite, \n> but neither are mentioned and the 'example' fails to run as written.\n> \n> On Tue, 29 Sep 2009, Herv",
+      "thread_id": "thread-e2cf7f7d7fd9",
+      "thread_depth": 4,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-efb314d644d3",
+      "message_id": "<971536df0909300551g7a32ff65qcf444880b87d98b4@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2009-09-30T08:51:13-04:00",
+      "subject": "[R-sig-DB] dbWriteTable() is renaming the 'end' column",
+      "subject_clean": "dbWriteTable() is renaming the 'end' column",
+      "in_reply_to": "<4AC2FD17.9050108@fhcrc.org>",
+      "references": [
+        "<4AC2850F.8000302@fhcrc.org>",
+        "<971536df0909291533k280fecc9tca8baf5ee678a9e2@mail.gmail.com>",
+        "<4AC29468.7090800@fhcrc.org>",
+        "<alpine.LFD.2.00.0909300441370.32082@gannet.stats.ox.ac.uk>",
+        "<4AC2FD17.9050108@fhcrc.org>"
+      ],
+      "body_plain": "2009/9/30 Herv? Pag?s <hpages at fhcrc.org>:\n>\n> According to\n>\n> ?SQLKeywords(dbDriver(\"SQLite\"))\n\n\nTry\n\n> library(RSQLite)\n> grep(\"^END$\", .SQL92Keywords, value = TRUE)\n[1] \"END\"",
+      "body_snippet": "2009/9/30 Herv? Pag?s <hpages at fhcrc.org>:\n>\n> According to\n>\n> ?SQLKeywords(dbDriver(\"SQLite\"))\n\n\nTry\n\n> library(RSQLite)\n> grep(\"^END$\", .SQL92Keywords, value = TRUE)\n[1] \"END\"",
+      "thread_id": "thread-e2cf7f7d7fd9",
+      "thread_depth": 5,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-aa1ec7ac1524",
+      "message_id": "<4AC36EC9.3000509@fhcrc.org>",
+      "from_name": "Hervé Pagès",
+      "from_email_hash": "fd1d1d7a6264909f0236d26dfae51520f3d3455c869422fce43a45549d197dbf",
+      "date": "2009-09-30T07:44:25-07:00",
+      "subject": "[R-sig-DB] dbWriteTable() is renaming the 'end' column",
+      "subject_clean": "dbWriteTable() is renaming the 'end' column",
+      "in_reply_to": "<971536df0909300551g7a32ff65qcf444880b87d98b4@mail.gmail.com>",
+      "references": [
+        "<4AC2850F.8000302@fhcrc.org>",
+        "<971536df0909291533k280fecc9tca8baf5ee678a9e2@mail.gmail.com>",
+        "<4AC29468.7090800@fhcrc.org>",
+        "<alpine.LFD.2.00.0909300441370.32082@gannet.stats.ox.ac.uk>",
+        "<4AC2FD17.9050108@fhcrc.org>",
+        "<971536df0909300551g7a32ff65qcf444880b87d98b4@mail.gmail.com>"
+      ],
+      "body_plain": "Gabor Grothendieck wrote:\n> 2009/9/30 Herv? Pag?s <hpages at fhcrc.org>:\n>> According to\n>>\n>>  SQLKeywords(dbDriver(\"SQLite\"))\n> \n> \n> Try\n> \n>> library(RSQLite)\n>> grep(\"^END$\", .SQL92Keywords, value = TRUE)\n> [1] \"END\"\n\nIndeed. Sorry for the confusion.\n\nH.",
+      "body_snippet": "Gabor Grothendieck wrote:\n> 2009/9/30 Herv? Pag?s <hpages at fhcrc.org>:\n>> According to\n>>\n>>  SQLKeywords(dbDriver(\"SQLite\"))\n> \n> \n> Try\n> \n>> library(RSQLite)\n>> grep(\"^END$\", .SQL92Keywords, valu",
+      "thread_id": "thread-e2cf7f7d7fd9",
+      "thread_depth": 6,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-52cc8279af17",
+      "message_id": "<486f230c0909300902x445607ah6976a6e7e90bfda7@mail.gmail.com>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2009-09-30T09:02:11-07:00",
+      "subject": "[R-sig-DB] dbWriteTable() is renaming the 'end' column",
+      "subject_clean": "dbWriteTable() is renaming the 'end' column",
+      "in_reply_to": "<4AC2FD17.9050108@fhcrc.org>",
+      "references": [
+        "<4AC2850F.8000302@fhcrc.org>",
+        "<971536df0909291533k280fecc9tca8baf5ee678a9e2@mail.gmail.com>",
+        "<4AC29468.7090800@fhcrc.org>",
+        "<alpine.LFD.2.00.0909300441370.32082@gannet.stats.ox.ac.uk>",
+        "<4AC2FD17.9050108@fhcrc.org>"
+      ],
+      "body_plain": "Hi Herv?,\n\n2009/9/29 Herv? Pag?s <hpages at fhcrc.org>:\n> You are right that in the ANSI SQL standard, an SQL delimited identifier\n> is delimited by double quotes, not backquotes, sorry.\n> Anyway my point is that, among other possibilities, dbWriteTable() could\n> send a CREATE statement with delimited identifiers, so SQL keywords are\n> not an issue anymore. This is only one possibility. There are others,\n> like just returning an error if the column name is a keyword, or\n> allowing the user disable the mangling, etc. Anything\n> sounds better than silently mangling the column names.\n\nI agree that the silent name mangling is not so helpful, nor is the\ninconsistency in behavior when SQL keywords are used in different\nRSQLite functions.\n\nThe question to decide is what change should be made?  Such requests\ncould become errors with a message telling the user how to quote\nproblem strings.  Or the mangling could be changed to use the quoted\nform and a warning issued.\n\nI would be interested to hear any opinions from users of RSQLite.\n\n+ seth\n\n\n-- \nSeth Falcon | @sfalcon | http://userprimary.net/user",
+      "body_snippet": "Hi Herv?,\n\n2009/9/29 Herv? Pag?s <hpages at fhcrc.org>:\n> You are right that in the ANSI SQL standard, an SQL delimited identifier\n> is delimited by double quotes, not backquotes, sorry.\n> Anyway my p",
+      "thread_id": "thread-e2cf7f7d7fd9",
+      "thread_depth": 5,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-f29c2fbe6eec",
+      "message_id": "<264855a00909300919v5062ee85ibb69a784d63a0dad@mail.gmail.com>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2009-09-30T12:19:33-04:00",
+      "subject": "[R-sig-DB] dbWriteTable() is renaming the 'end' column",
+      "subject_clean": "dbWriteTable() is renaming the 'end' column",
+      "in_reply_to": "<486f230c0909300902x445607ah6976a6e7e90bfda7@mail.gmail.com>",
+      "references": [
+        "<4AC2850F.8000302@fhcrc.org>",
+        "<971536df0909291533k280fecc9tca8baf5ee678a9e2@mail.gmail.com>",
+        "<4AC29468.7090800@fhcrc.org>",
+        "<alpine.LFD.2.00.0909300441370.32082@gannet.stats.ox.ac.uk>",
+        "<4AC2FD17.9050108@fhcrc.org>",
+        "<486f230c0909300902x445607ah6976a6e7e90bfda7@mail.gmail.com>"
+      ],
+      "body_plain": "2009/9/30 Seth Falcon <seth at userprimary.net>:\n> Hi Herv?,\n>\n> 2009/9/29 Herv? Pag?s <hpages at fhcrc.org>:\n>> You are right that in the ANSI SQL standard, an SQL delimited identifier\n>> is delimited by double quotes, not backquotes, sorry.\n>> Anyway my point is that, among other possibilities, dbWriteTable() could\n>> send a CREATE statement with delimited identifiers, so SQL keywords are\n>> not an issue anymore. This is only one possibility. There are others,\n>> like just returning an error if the column name is a keyword, or\n>> allowing the user disable the mangling, etc. Anything\n>> sounds better than silently mangling the column names.\n>\n> I agree that the silent name mangling is not so helpful, nor is the\n> inconsistency in behavior when SQL keywords are used in different\n> RSQLite functions.\n>\n> The question to decide is what change should be made? ?Such requests\n> could become errors with a message telling the user how to quote\n> problem strings. ?Or the mangling could be changed to use the quoted\n> form and a warning issued.\n>\n> I would be interested to hear any opinions from users of RSQLite.\n\nI, personally, don't like name mangling as an option.  Is there room\nfor an option() like \"RSQLite.quoteSQL\" =TRUE to quote all table names\nand column names in generated SQL and =FALSE to generate an error when\na keyword is used?  (Obviously, sql queries generated by the user\nwould not be subject to the quoting).  The reason to use an option()\nto control quoting is that quoting anywhere in SQL generally means\nthat it is best to quote everywhere, so if there is a known default\n(that can be changed), users can choose to stick with quoting\neverywhere or nowhere (and deal with the occasional error due to\ntrying to use a SQL keyword).\n\nSean",
+      "body_snippet": "2009/9/30 Seth Falcon <seth at userprimary.net>:\n> Hi Herv?,\n>\n> 2009/9/29 Herv? Pag?s <hpages at fhcrc.org>:\n>> You are right that in the ANSI SQL standard, an SQL delimited identifier\n>> is delimite",
+      "thread_id": "thread-e2cf7f7d7fd9",
+      "thread_depth": 6,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-50884b6cb13c",
+      "message_id": "<971536df0909300936t7f728735v8496b11a7a204d35@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2009-09-30T12:36:43-04:00",
+      "subject": "[R-sig-DB] dbWriteTable() is renaming the 'end' column",
+      "subject_clean": "dbWriteTable() is renaming the 'end' column",
+      "in_reply_to": "<264855a00909300919v5062ee85ibb69a784d63a0dad@mail.gmail.com>",
+      "references": [
+        "<4AC2850F.8000302@fhcrc.org>",
+        "<971536df0909291533k280fecc9tca8baf5ee678a9e2@mail.gmail.com>",
+        "<4AC29468.7090800@fhcrc.org>",
+        "<alpine.LFD.2.00.0909300441370.32082@gannet.stats.ox.ac.uk>",
+        "<4AC2FD17.9050108@fhcrc.org>",
+        "<486f230c0909300902x445607ah6976a6e7e90bfda7@mail.gmail.com>",
+        "<264855a00909300919v5062ee85ibb69a784d63a0dad@mail.gmail.com>"
+      ],
+      "body_plain": "On Wed, Sep 30, 2009 at 12:19 PM, Sean Davis <sdavis2 at mail.nih.gov> wrote:\n> 2009/9/30 Seth Falcon <seth at userprimary.net>:\n>> Hi Herv?,\n>>\n>> 2009/9/29 Herv? Pag?s <hpages at fhcrc.org>:\n>>> You are right that in the ANSI SQL standard, an SQL delimited identifier\n>>> is delimited by double quotes, not backquotes, sorry.\n>>> Anyway my point is that, among other possibilities, dbWriteTable() could\n>>> send a CREATE statement with delimited identifiers, so SQL keywords are\n>>> not an issue anymore. This is only one possibility. There are others,\n>>> like just returning an error if the column name is a keyword, or\n>>> allowing the user disable the mangling, etc. Anything\n>>> sounds better than silently mangling the column names.\n>>\n>> I agree that the silent name mangling is not so helpful, nor is the\n>> inconsistency in behavior when SQL keywords are used in different\n>> RSQLite functions.\n>>\n>> The question to decide is what change should be made? ?Such requests\n>> could become errors with a message telling the user how to quote\n>> problem strings. ?Or the mangling could be changed to use the quoted\n>> form and a warning issued.\n>>\n>> I would be interested to hear any opinions from users of RSQLite.\n>\n> I, personally, don't like name mangling as an option. ?Is there room\n> for an option() like \"RSQLite.quoteSQL\" =TRUE to quote all table names\n> and column names in generated SQL and =FALSE to generate an error when\n> a keyword is used? ?(Obviously, sql queries generated by the user\n> would not be subject to the quoting). ?The reason to use an option()\n> to control quoting is that quoting anywhere in SQL generally means\n> that it is best to quote everywhere, so if there is a known default\n> (that can be changed), users can choose to stick with quoting\n> everywhere or nowhere (and deal with the occasional error due to\n> trying to use a SQL keyword).\n\nWhat would be nice would be\n\n- a raw option which sends the sql string to the database unchanged and\n- for any preprocessing options an ability to get the final string\nthat will be sent to the database prior to sending it",
+      "body_snippet": "On Wed, Sep 30, 2009 at 12:19 PM, Sean Davis <sdavis2 at mail.nih.gov> wrote:\n> 2009/9/30 Seth Falcon <seth at userprimary.net>:\n>> Hi Herv?,\n>>\n>> 2009/9/29 Herv? Pag?s <hpages at fhcrc.org>:\n>>> You",
+      "thread_id": "thread-e2cf7f7d7fd9",
+      "thread_depth": 7,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-942920bd3a5f",
+      "message_id": "<D611103AA7EE3B4DAE7F7D49C72B291A01D6B876@EXMAIL2.bocad.bank-banque-canada.ca>",
+      "from_name": "Paul Gilbert",
+      "from_email_hash": "f15a30c5ab39154b581a2ce01b7fb2604afed67b285aae590682e87400af9680",
+      "date": "2009-09-30T13:35:11-04:00",
+      "subject": "[R-sig-DB] dbWriteTable() is renaming the 'end' column",
+      "subject_clean": "dbWriteTable() is renaming the 'end' column",
+      "in_reply_to": "<486f230c0909300902x445607ah6976a6e7e90bfda7@mail.gmail.com>",
+      "references": [
+        "<4AC2850F.8000302@fhcrc.org>",
+        "<971536df0909291533k280fecc9tca8baf5ee678a9e2@mail.gmail.com>",
+        "<4AC29468.7090800@fhcrc.org>",
+        "<alpine.LFD.2.00.0909300441370.32082@gannet.stats.ox.ac.uk>",
+        "<4AC2FD17.9050108@fhcrc.org>",
+        "<486f230c0909300902x445607ah6976a6e7e90bfda7@mail.gmail.com>"
+      ],
+      "body_plain": "> -----Original Message-----\n> From: r-sig-db-bounces at stat.math.ethz.ch [mailto:r-sig-db-\n> bounces at stat.math.ethz.ch] On Behalf Of Seth Falcon\n> Sent: September 30, 2009 12:02 PM\n> To: Herv? Pag?s\n> Cc: r-sig-db at stat.math.ethz.ch\n> Subject: Re: [R-sig-DB] dbWriteTable() is renaming the 'end' column\n> \n> Hi Herv?,\n> \n> 2009/9/29 Herv? Pag?s <hpages at fhcrc.org>:\n> > You are right that in the ANSI SQL standard, an SQL delimited\n> identifier\n> > is delimited by double quotes, not backquotes, sorry.\n> > Anyway my point is that, among other possibilities, dbWriteTable()\n> could\n> > send a CREATE statement with delimited identifiers, so SQL keywords\n> are\n> > not an issue anymore. This is only one possibility. There are others,\n> > like just returning an error if the column name is a keyword, or\n> > allowing the user disable the mangling, etc. Anything\n> > sounds better than silently mangling the column names.\n> \n> I agree that the silent name mangling is not so helpful, nor is the\n> inconsistency in behavior when SQL keywords are used in different\n> RSQLite functions.\n> \n> The question to decide is what change should be made?  Such requests\n> could become errors with a message telling the user how to quote\n> problem strings.  Or the mangling could be changed to use the quoted\n> form and a warning issued.\n> \n> I would be interested to hear any opinions from users of RSQLite.\n\nI think the quoting problem is an SQL standard, so it might be nice to push it up to DBI rather than each of the implementations below trying to deal with it. (I have not thought through this, there may be problems.)\n\nPaul\n> \n> + seth\n> \n> \n> --\n> Seth Falcon | @sfalcon | http://userprimary.net/user\n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n====================================================================================\n\nLa version fran?aise suit le texte anglais.\n\n------------------------------------------------------------------------------------\n\nThis email may contain privileged and/or confidential information, and the Bank of\nCanada does not waive any related rights. Any distribution, use, or copying of this\nemail or the information it contains by other than the intended recipient is\nunauthorized. If you received this email in error please delete it immediately from\nyour system and notify the sender promptly by email that you have done so. \n\n------------------------------------------------------------------------------------\n\nLe pr?sent courriel peut contenir de l'information privil?gi?e ou confidentielle.\nLa Banque du Canada ne renonce pas aux droits qui s'y rapportent. Toute diffusion,\nutilisation ou copie de ce courriel ou des renseignements qu'il contient par une\npersonne autre que le ou les destinataires d?sign?s est interdite. Si vous recevez\nce courriel par erreur, veuillez le supprimer imm?diatement et envoyer sans d?lai ?\nl'exp?diteur un message ?lectronique pour l'aviser que vous avez ?limin? de votre\nordinateur toute copie du courriel re?u.",
+      "body_snippet": "> -----Original Message-----\n> From: r-sig-db-bounces at stat.math.ethz.ch [mailto:r-sig-db-\n> bounces at stat.math.ethz.ch] On Behalf Of Seth Falcon\n> Sent: September 30, 2009 12:02 PM\n> To: Herv? Pa",
+      "thread_id": "thread-e2cf7f7d7fd9",
+      "thread_depth": 6,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-7f61b3574dc1",
+      "message_id": "<alpine.LFD.2.00.0909301844430.6605@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2009-09-30T18:46:49+01:00",
+      "subject": "[R-sig-DB] dbWriteTable() is renaming the 'end' column",
+      "subject_clean": "dbWriteTable() is renaming the 'end' column",
+      "in_reply_to": "<486f230c0909300902x445607ah6976a6e7e90bfda7@mail.gmail.com>",
+      "references": [
+        "<4AC2850F.8000302@fhcrc.org>",
+        "<971536df0909291533k280fecc9tca8baf5ee678a9e2@mail.gmail.com>",
+        "<4AC29468.7090800@fhcrc.org>",
+        "<alpine.LFD.2.00.0909300441370.32082@gannet.stats.ox.ac.uk>",
+        "<4AC2FD17.9050108@fhcrc.org>",
+        "<486f230c0909300902x445607ah6976a6e7e90bfda7@mail.gmail.com>"
+      ],
+      "body_plain": "Why not simply use quoting?: RODBC manages to make it work cross-DBMS, \nso it cannot be too hard for just one.  (As I wrote, it would be \nharder to do in DBI without the support ODBC gives.)\n\nOn Wed, 30 Sep 2009, Seth Falcon wrote:\n\n> Hi Herv?,\n>\n> 2009/9/29 Herv? Pag?s <hpages at fhcrc.org>:\n>> You are right that in the ANSI SQL standard, an SQL delimited identifier\n>> is delimited by double quotes, not backquotes, sorry.\n>> Anyway my point is that, among other possibilities, dbWriteTable() could\n>> send a CREATE statement with delimited identifiers, so SQL keywords are\n>> not an issue anymore. This is only one possibility. There are others,\n>> like just returning an error if the column name is a keyword, or\n>> allowing the user disable the mangling, etc. Anything\n>> sounds better than silently mangling the column names.\n>\n> I agree that the silent name mangling is not so helpful, nor is the\n> inconsistency in behavior when SQL keywords are used in different\n> RSQLite functions.\n>\n> The question to decide is what change should be made?  Such requests\n> could become errors with a message telling the user how to quote\n> problem strings.  Or the mangling could be changed to use the quoted\n> form and a warning issued.\n>\n> I would be interested to hear any opinions from users of RSQLite.\n>\n> + seth\n>\n>\n> -- \n> Seth Falcon | @sfalcon | http://userprimary.net/user\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "Why not simply use quoting?: RODBC manages to make it work cross-DBMS, \nso it cannot be too hard for just one.  (As I wrote, it would be \nharder to do in DBI without the support ODBC gives.)\n\nOn Wed, ",
+      "thread_id": "thread-e2cf7f7d7fd9",
+      "thread_depth": 6,
+      "month": "2009-09"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-ab931830e0c5",
+      "subject": "ROracle ubuntu64 issue",
+      "message_count": 1,
+      "participants": [
+        "Arun Eamani"
+      ],
+      "started": "2009-09-09T10:39:59-05:00",
+      "last_reply": "2009-09-09T10:39:59-05:00",
+      "root_message_id": "msg-ab931830e0c5"
+    },
+    {
+      "id": "thread-fd572419be7c",
+      "subject": "RMySQL dbConnect( default.file=\"mysql.config\" ) fails",
+      "message_count": 2,
+      "participants": [
+        "Charles C. Berry"
+      ],
+      "started": "2009-09-21T15:09:01-07:00",
+      "last_reply": "2009-09-21T20:54:16-07:00",
+      "root_message_id": "msg-fd572419be7c"
+    },
+    {
+      "id": "thread-70a5fbe98a3a",
+      "subject": "In odbcDriverConnect   ODBC connection failed",
+      "message_count": 1,
+      "participants": [
+        "Thomas Liebig"
+      ],
+      "started": "2009-09-29T13:54:46+02:00",
+      "last_reply": "2009-09-29T13:54:46+02:00",
+      "root_message_id": "msg-70a5fbe98a3a"
+    },
+    {
+      "id": "thread-e2cf7f7d7fd9",
+      "subject": "dbWriteTable() is renaming the 'end' column",
+      "message_count": 12,
+      "participants": [
+        "Gabor Grothendieck",
+        "Hervé Pagès",
+        "Paul Gilbert",
+        "Prof Brian Ripley",
+        "Sean Davis",
+        "Seth Falcon"
+      ],
+      "started": "2009-09-29T15:07:11-07:00",
+      "last_reply": "2009-09-30T18:46:49+01:00",
+      "root_message_id": "msg-e2cf7f7d7fd9"
+    }
+  ]
+}

@@ -1,0 +1,1497 @@
+From @|ucey @end|ng |rom mercury@wh@who|@edu  Tue Jul  1 17:07:52 2008
+From: @|ucey @end|ng |rom mercury@wh@who|@edu (Sean M. Lucey)
+Date: Tue, 01 Jul 2008 11:07:52 -0400
+Subject: [R-sig-DB] Connection to Oracle
+Message-ID: <486A4848.10502@mercury.wh.whoi.edu>
+
+Hi,
+
+I am trying to connect to our oracle database via RGui.  I downloaded 
+RODBC package, but it doesn't seem to like the DNS of our server.  Can 
+someone please let me know how to find the right drivers or other 
+software to make this work.
+
+Thanks,
+Sean
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: slucey.vcf
+Type: text/x-vcard
+Size: 331 bytes
+Desc: not available
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20080701/ae461802/attachment.vcf>
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Tue Jul  1 17:22:37 2008
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Tue, 1 Jul 2008 11:22:37 -0400
+Subject: [R-sig-DB] Connection to Oracle
+In-Reply-To: <486A4848.10502@mercury.wh.whoi.edu>
+References: <486A4848.10502@mercury.wh.whoi.edu>
+Message-ID: <264855a00807010822u648a2310uefb243b750804f22@mail.gmail.com>
+
+2008/7/1 Sean M. Lucey <slucey at mercury.wh.whoi.edu>:
+> Hi,
+>
+> I am trying to connect to our oracle database via RGui.  I downloaded RODBC
+> package, but it doesn't seem to like the DNS of our server.  Can someone
+> please let me know how to find the right drivers or other software to make
+> this work.
+
+You'll probably want to specify a bit more detail.  Do you have an
+Oracle ODBC driver installed and correctly configured?  You'll need
+that first.
+
+Sean
+
+
+
+From bryce @end|ng |rom m@rketout@|der@com  Tue Jul  1 21:34:34 2008
+From: bryce @end|ng |rom m@rketout@|der@com (Bryce Baril)
+Date: Tue, 1 Jul 2008 12:34:34 -0700
+Subject: [R-sig-DB] R and Postgres
+Message-ID: <df139fd10807011234x265a6342wc11c563d3f567733@mail.gmail.com>
+
+Hello all,
+
+I'm fairly new to R, and would like to connect to Postgres.
+
+I spent some time trying to figure out how to best do this today, and mostly
+found dead-ends and old information.
+
+Could someone please either point me to an active project, perhaps with a
+good example on how to do this?
+
+I'm hoping to use a DBI (or DBI-like) interface, but if all else fails I'm
+sure I can figure out ODBC.
+
+Thanks,
+-Bryce
+
+-- 
+Bryce B. Baril
+MarketOutsider.com
+
+	[[alternative HTML version deleted]]
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Tue Jul  1 21:45:52 2008
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Tue, 1 Jul 2008 15:45:52 -0400
+Subject: [R-sig-DB] R and Postgres
+In-Reply-To: <df139fd10807011234x265a6342wc11c563d3f567733@mail.gmail.com>
+References: <df139fd10807011234x265a6342wc11c563d3f567733@mail.gmail.com>
+Message-ID: <264855a00807011245j2ca3fe7en54a02634a0fbba7b@mail.gmail.com>
+
+On Tue, Jul 1, 2008 at 3:34 PM, Bryce Baril <bryce at marketoutsider.com> wrote:
+> Hello all,
+>
+> I'm fairly new to R, and would like to connect to Postgres.
+>
+> I spent some time trying to figure out how to best do this today, and mostly
+> found dead-ends and old information.
+>
+> Could someone please either point me to an active project, perhaps with a
+> good example on how to do this?
+>
+> I'm hoping to use a DBI (or DBI-like) interface, but if all else fails I'm
+> sure I can figure out ODBC.
+
+Hi, Bryce.  Try:
+
+http://bioconductor.org/packages/2.2/bioc/html/RdbiPgSQL.html
+
+Sean
+
+
+
+From @p|uque @end|ng |rom gm@||@com  Tue Jul  1 21:52:16 2008
+From: @p|uque @end|ng |rom gm@||@com (Sebastian P. Luque)
+Date: Tue, 01 Jul 2008 14:52:16 -0500
+Subject: [R-sig-DB] R and Postgres
+References: <df139fd10807011234x265a6342wc11c563d3f567733@mail.gmail.com>
+Message-ID: <871w2d4c27.fsf@patagonia.sebmags.homelinux.org>
+
+On Tue, 1 Jul 2008 12:34:34 -0700,
+"Bryce Baril" <bryce at marketoutsider.com> wrote:
+
+> Hello all, I'm fairly new to R, and would like to connect to Postgres.
+
+> I spent some time trying to figure out how to best do this today, and
+> mostly found dead-ends and old information.
+
+> Could someone please either point me to an active project, perhaps
+> with a good example on how to do this?
+
+> I'm hoping to use a DBI (or DBI-like) interface, but if all else fails
+> I'm sure I can figure out ODBC.
+
+The RODBC package comes with good documentation showing this through
+ODBC.  Starting with its README helps a lot, and then ?odbcConnect and
+the other ?odbc* functions will give you the rest.  I don't know about a
+non-ODBC interface between R and PostgreSQL.
+
+
+-- 
+Seb
+
+
+
+From @teve@hen@h@w @end|ng |rom gm@||@com  Tue Jul  1 22:29:17 2008
+From: @teve@hen@h@w @end|ng |rom gm@||@com (Steve Henshaw)
+Date: Tue, 01 Jul 2008 21:29:17 +0100
+Subject: [R-sig-DB] R and Postgres
+In-Reply-To: <871w2d4c27.fsf@patagonia.sebmags.homelinux.org>
+References: <df139fd10807011234x265a6342wc11c563d3f567733@mail.gmail.com>
+	<871w2d4c27.fsf@patagonia.sebmags.homelinux.org>
+Message-ID: <486A939D.3010602@gmail.com>
+
+Hi
+
+I run postgre 8.3 on linux and can access it, ive put a generic example 
+of how I got it to work below, ive only used it for a database on a 
+local machine.
+
+Hope it gives you a start :)
+
+#########
+
+library(Rdbi)
+library(RdbiPgSQL)
+
+#establish connection
+conn <- dbConnect(PgSQL(),host='host',dbname='mydatabasename',user='me')
+
+#send query
+query <- dbSendQuery(conn,"select * from my table")
+
+#get results
+results <- dbGetResult(query)
+
+#close connection
+dbDisconnect(conn)
+
+################
+
+Sebastian P. Luque wrote:
+> On Tue, 1 Jul 2008 12:34:34 -0700,
+> "Bryce Baril" <bryce at marketoutsider.com> wrote:
+>
+>   
+>> Hello all, I'm fairly new to R, and would like to connect to Postgres.
+>>     
+>
+>   
+>> I spent some time trying to figure out how to best do this today, and
+>> mostly found dead-ends and old information.
+>>     
+>
+>   
+>> Could someone please either point me to an active project, perhaps
+>> with a good example on how to do this?
+>>     
+>
+>   
+>> I'm hoping to use a DBI (or DBI-like) interface, but if all else fails
+>> I'm sure I can figure out ODBC.
+>>     
+>
+> The RODBC package comes with good documentation showing this through
+> ODBC.  Starting with its README helps a lot, and then ?odbcConnect and
+> the other ?odbc* functions will give you the rest.  I don't know about a
+> non-ODBC interface between R and PostgreSQL.
+>
+>
+>
+
+
+
+From bryce @end|ng |rom m@rketout@|der@com  Tue Jul  1 23:25:18 2008
+From: bryce @end|ng |rom m@rketout@|der@com (Bryce Baril)
+Date: Tue, 1 Jul 2008 14:25:18 -0700
+Subject: [R-sig-DB] R and Postgres
+In-Reply-To: <486A939D.3010602@gmail.com>
+References: <df139fd10807011234x265a6342wc11c563d3f567733@mail.gmail.com>
+	<871w2d4c27.fsf@patagonia.sebmags.homelinux.org>
+	<486A939D.3010602@gmail.com>
+Message-ID: <df139fd10807011425nc303702n492c7c692c70384@mail.gmail.com>
+
+Excellent, thank you to everyone who helped!
+
+This is what I did to install the packages:
+
+install.packages(c('Rdbi','RdbiPgSQL'), repos="
+http://bioconductor.org/packages/1.9/bioc/", dependencies=TRUE)
+
+And then I followed Steve Henshaw's generic example:
+
+On Tue, Jul 1, 2008 at 1:29 PM, Steve Henshaw <steve.henshaw at gmail.com>
+wrote:
+
+> Hi
+>
+> I run postgre 8.3 on linux and can access it, ive put a generic example of
+> how I got it to work below, ive only used it for a database on a local
+> machine.
+>
+> Hope it gives you a start :)
+>
+> #########
+>
+> library(Rdbi)
+> library(RdbiPgSQL)
+>
+> #establish connection
+> conn <- dbConnect(PgSQL(),host='host',dbname='mydatabasename',user='me')
+>
+> #send query
+> query <- dbSendQuery(conn,"select * from my table")
+>
+> #get results
+> results <- dbGetResult(query)
+>
+> #close connection
+> dbDisconnect(conn)
+>
+> ################
+>
+
+-- 
+Bryce B. Baril
+MarketOutsider.com
+
+	[[alternative HTML version deleted]]
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Wed Jul  2 00:09:44 2008
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Tue, 1 Jul 2008 18:09:44 -0400
+Subject: [R-sig-DB] R and Postgres
+In-Reply-To: <df139fd10807011425nc303702n492c7c692c70384@mail.gmail.com>
+References: <df139fd10807011234x265a6342wc11c563d3f567733@mail.gmail.com>
+	<871w2d4c27.fsf@patagonia.sebmags.homelinux.org>
+	<486A939D.3010602@gmail.com>
+	<df139fd10807011425nc303702n492c7c692c70384@mail.gmail.com>
+Message-ID: <264855a00807011509m7bec4b0ct63c74fb814846f72@mail.gmail.com>
+
+On Tue, Jul 1, 2008 at 5:25 PM, Bryce Baril <bryce at marketoutsider.com> wrote:
+> Excellent, thank you to everyone who helped!
+>
+> This is what I did to install the packages:
+>
+> install.packages(c('Rdbi','RdbiPgSQL'), repos="
+> http://bioconductor.org/packages/1.9/bioc/", dependencies=TRUE)
+
+This version is a year+ old.  Your best bet is to do:
+
+source('http://bioconductor.org/biocLite.R')
+biocLite('RdbiPgSQL')
+
+This will get you a version that matches your version of R.
+
+Sean
+
+
+> And then I followed Steve Henshaw's generic example:
+>
+> On Tue, Jul 1, 2008 at 1:29 PM, Steve Henshaw <steve.henshaw at gmail.com>
+> wrote:
+>
+>> Hi
+>>
+>> I run postgre 8.3 on linux and can access it, ive put a generic example of
+>> how I got it to work below, ive only used it for a database on a local
+>> machine.
+>>
+>> Hope it gives you a start :)
+>>
+>> #########
+>>
+>> library(Rdbi)
+>> library(RdbiPgSQL)
+>>
+>> #establish connection
+>> conn <- dbConnect(PgSQL(),host='host',dbname='mydatabasename',user='me')
+>>
+>> #send query
+>> query <- dbSendQuery(conn,"select * from my table")
+>>
+>> #get results
+>> results <- dbGetResult(query)
+>>
+>> #close connection
+>> dbDisconnect(conn)
+>>
+>> ################
+>>
+>
+> --
+> Bryce B. Baril
+> MarketOutsider.com
+>
+>        [[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From bryce @end|ng |rom m@rketout@|der@com  Wed Jul  2 00:21:53 2008
+From: bryce @end|ng |rom m@rketout@|der@com (Bryce Baril)
+Date: Tue, 1 Jul 2008 15:21:53 -0700
+Subject: [R-sig-DB] R and Postgres
+In-Reply-To: <264855a00807011509m7bec4b0ct63c74fb814846f72@mail.gmail.com>
+References: <df139fd10807011234x265a6342wc11c563d3f567733@mail.gmail.com>
+	<871w2d4c27.fsf@patagonia.sebmags.homelinux.org>
+	<486A939D.3010602@gmail.com>
+	<df139fd10807011425nc303702n492c7c692c70384@mail.gmail.com>
+	<264855a00807011509m7bec4b0ct63c74fb814846f72@mail.gmail.com>
+Message-ID: <df139fd10807011521v3d9eb2b3m9c9c0bca6f6506bb@mail.gmail.com>
+
+On Tue, Jul 1, 2008 at 3:09 PM, Sean Davis <sdavis2 at mail.nih.gov> wrote:
+
+> This version is a year+ old.  Your best bet is to do:
+>
+> source('http://bioconductor.org/biocLite.R')
+> biocLite('RdbiPgSQL')
+>
+> This will get you a version that matches your version of R.
+>
+> Sean
+>
+>
+Great, thank you.
+
+I had avoided this earlier because (perhaps due to my R newness) I hadn't
+seen this syntax before and didn't understand what it was doing as compared
+to install.packages().
+
+Thanks,
+-Bryce
+
+-- 
+Bryce B. Baril
+MarketOutsider.com
+
+	[[alternative HTML version deleted]]
+
+
+
+From rep|y-5470 @end|ng |rom up0@net  Mon Aug  4 07:34:20 2008
+From: rep|y-5470 @end|ng |rom up0@net (Editor)
+Date: Sun, 03 Aug 2008 22:34:20 -0700
+Subject: [R-sig-DB] Would a stock be more attractive at 30 cents or 4 dollars
+Message-ID: <20080804053477.897A15D63C54@up0.net>
+
+Fellow Investor
+
+I have been covering the small cap stock market for the last ten years and during this time I have made many stock picks. I pride myself on the fact that the majority of my picks have given my subscribers the opportunity to trade for at least a 100% profit, while many even exceeded that by 5 or 10 times.  
+
+The reason I have one of the better track records, if not the best, is the same reason that I started this letter by addressing you as a ?Fellow Investor.? You see, most of the companies I feature are companies that I personally make a significant investment in, both Time and Money. 
+
+I typically work with these companies and I know the key players involved in these projects. My goal is to make sure they are well funded and that they have an attractive Public Relations/Investor Relations program, so the company can continually add value for all of its shareholders. After all, what good is it if they?re ready to change the world, but nobody knows about them?
+
+Most promoters pick all kinds of garbage; they are just getting paid and have no skin in the game. They just don?t care and that?s terrible, because 95% of the companies in this arena are going to fail. To say your chances of picking winners from this group are slim is an understatement and if the company is not properly structured, or lacking adequate funding, the investors in their deals usually end up holding worthless stock.
+
+What makes us different, and better, is that I really get involved with the companies I call Super Picks. I usually spend millions of dollars on these companies and typically take a position in restricted stock, which means I am often with these companies for a year before I earn any profits in the companies I am profiling. I allow the company to meet its needs and I focus on creating as much shareholder value as possible, the entire time I am involved.
+
+You now know why I am so committed to identifying the best stocks on the OTC market and why these companies must meet my select criteria before I am willing to publish word one.  
+
+The OTC can be the most profitable market, but only when it?s done right, and I know you?ll want to make all the right moves, so I?d like to arrange for you to be among the very first to find out about my next Super Pick. 
+
+Come grow with me! Due to the significant resources I devote to these companies, I can only pick around 6 companies a year that I feel meet the criteria of a Super Pick. I will have other trades for you to earn quick profits, as well as options, earnings plays, and offer many other trading strategies that could make you a lot of money, not to mention put a huge smile on your faces!!
+
+
+I picked AMZN to go from $38.00 to $100.00, it DID
+I picked SPWR at $60.00 to go to $150.00, it didn?t. It went to $165.00
+
+And many more.
+
+Don?t wait, my next stock pick will be coming out soon and while I can?t guarantee where it?s going, I think this one could go up 1500% and it will not cost you a fortune to establish a large position. After all, my service is all about helping investors get in on the ground floor of the best opportunities and build a valuable position ahead of the big money crowd. A $2,000 dollar investment in my next pick, could earn you a minimum of $6,000 dollars in profits.
+
+Join now and I hope you get in on the fun, but if you don?t buy my pick, at least watch it, so you can see that I am the real deal. Plus, I am currently writing a book on the OTC market, for Investors, and, upon completion, I will provide complimentary copies to my subscribers. Good luck and let?s TRADE to Win!
+
+OUR NEW SUPER PICK IS UP AND READ -  http://www.up0.net/ct.html?rtr=on&s=eahm,46i7,47y,fqoy,kfgw,c2ht,875o&MLM_MID=195055&MLM_UNIQUEID=897a15d63c
+
+
+The Warrior Alert Team
+
+P.S. I do not give out, rent or sell my subscriber lists, for any reason, ever.Investor Development Group (IDG)
+Three Riverway Suite 210
+Houston, TX 77056
+
+To unsubscribe, send an email to: unsubscribe-5470 at up0.net with the address: r-sig-db at stat.math.ethz.ch in the subject line.
+
+
+
+From h@b@e @end|ng |rom |gcz@ethz@ch  Tue Aug 12 15:18:44 2008
+From: h@b@e @end|ng |rom |gcz@ethz@ch (Hansruedi Baetschmann)
+Date: Tue, 12 Aug 2008 15:18:44 +0200
+Subject: [R-sig-DB] Unwanted carriage returns storing dataframes with
+	dbWriteTable
+Message-ID: <48A18DB4.8080203@fgcz.ethz.ch>
+
+Hi
+
+If I save a dataframe with a character-typed last column to a relational 
+database with dbWriteTable, the  values in the last column of the 
+resulting table in the database will have a '\r' (carriage return) 
+appended. If I read back the dataframe with dbReadTable the last column 
+in the resulting dataframe has also '\r' appended (see protocol below). 
+Setting or unsetting sql-mode (in the SQL-Server Version 5.0) to or from 
+'NO_BACKSLASH_ESCAPE' has no effect on this behavour. How can I avoid 
+these unwanted '\r'-tail without a workaround-wrapper, which adds an extra
+dummy column before writing and removes it after reading back ? 
+
+I use R.2.7.1 and package RMySQL
+
+Hansruedi
+
+
+> version
+               _                           
+platform       i386-pc-mingw32             
+arch           i386                        
+os             mingw32                     
+system         i386, mingw32               
+status                                     
+major          2                           
+minor          7.1                         
+year           2008                        
+month          06                          
+day            23                          
+svn rev        45970                       
+language       R                           
+version.string R version 2.7.1 (2008-06-23)
+
+> library("RMySQL")
+> con=dbConnect("MySQL",dbname="rTables",user="root", password="xxxxx",host="localhost")
+> dbGetInfo(con)
+
+...
+$conType
+[1] "localhost via TCP/IP"
+
+$serverVersion
+[1] "5.0.24-community-nt-log"
+
+$protocolVersion
+[1] 10
+
+$threadId
+[1] 46
+
+$rsId
+list()
+
+> dfin=data.frame(
++   a=c(1,2,3,4),
++   b=c("a","b","c","d"),
++   c=c("x","y","z","t"),
++   row.names=2)
+> dfin
+  a c
+a 1 x
+b 2 y
+c 3 z
+d 4 t
+> dbGetQuery(con, "DROP TABLE IF EXISTS df")
+NULL
+> dbWriteTable(con,"df",dfin,row.names=FALSE)
+[1] TRUE
+> dfout=dbReadTable(con,"df")
+> dfout
+  a   c
+1 1 x\r
+2 2 y\r
+3 3 z\r
+4 4 t\r
+> dbDisconnect(con)
+[1] TRUE
+> 
+
+-- 
+Hansruedi Baetschmann
+dipl.math.ETH et lic.oec.HSG
+Functional Genomics Center Zurich
+Winterthurerstrasse 190 / Y32H66
+CH-8057 Z?rich
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Tue Aug 12 15:45:03 2008
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Tue, 12 Aug 2008 14:45:03 +0100 (BST)
+Subject: [R-sig-DB] Unwanted carriage returns storing dataframes with
+ dbWriteTable
+In-Reply-To: <48A18DB4.8080203@fgcz.ethz.ch>
+References: <48A18DB4.8080203@fgcz.ethz.ch>
+Message-ID: <alpine.LFD.1.10.0808121433430.5056@gannet.stats.ox.ac.uk>
+
+I suspect this is related to the similar problem seen in RSQLite by the 
+same author, Cc:ed here :
+
+https://stat.ethz.ch/pipermail/r-help/2007-January/122998.html
+https://stat.ethz.ch/pipermail/r-sig-db/2007q1/000248.html
+
+There is a function RMySQL:::mysqlWriteTable that has
+
+    sql4 <- paste("LOAD DATA LOCAL INFILE '", fn, "'",
+                   " INTO TABLE ", name,
+                   " LINES TERMINATED BY '\n' ", sep="")
+
+I believe that \n needs to be \r\n on Windows. See 
+http://dev.mysql.com/doc/refman/5.0/en/load-data.html .  The alternative 
+is to alter RMySQL:::safe.write to work with a binary file.
+
+
+On Tue, 12 Aug 2008, Hansruedi Baetschmann wrote:
+
+> Hi
+>
+> If I save a dataframe with a character-typed last column to a relational 
+> database with dbWriteTable, the  values in the last column of the resulting 
+> table in the database will have a '\r' (carriage return) appended. If I read 
+> back the dataframe with dbReadTable the last column in the resulting 
+> dataframe has also '\r' appended (see protocol below). Setting or unsetting 
+> sql-mode (in the SQL-Server Version 5.0) to or from 'NO_BACKSLASH_ESCAPE' has 
+> no effect on this behavour. How can I avoid these unwanted '\r'-tail without 
+> a workaround-wrapper, which adds an extra
+> dummy column before writing and removes it after reading back ? 
+> I use R.2.7.1 and package RMySQL
+>
+> Hansruedi
+>
+>
+>> version
+>              _                           platform       i386-pc-mingw32 
+> arch           i386                        os             mingw32 
+> system         i386, mingw32               status 
+> major          2                           minor          7.1 
+> year           2008                        month          06 
+> day            23                          svn rev        45970 
+> language       R                           version.string R version 2.7.1 
+> (2008-06-23)
+>
+>> library("RMySQL")
+>> con=dbConnect("MySQL",dbname="rTables",user="root", 
+>> password="xxxxx",host="localhost")
+>> dbGetInfo(con)
+>
+> ...
+> $conType
+> [1] "localhost via TCP/IP"
+>
+> $serverVersion
+> [1] "5.0.24-community-nt-log"
+>
+> $protocolVersion
+> [1] 10
+>
+> $threadId
+> [1] 46
+>
+> $rsId
+> list()
+>
+>> dfin=data.frame(
+> +   a=c(1,2,3,4),
+> +   b=c("a","b","c","d"),
+> +   c=c("x","y","z","t"),
+> +   row.names=2)
+>> dfin
+> a c
+> a 1 x
+> b 2 y
+> c 3 z
+> d 4 t
+>> dbGetQuery(con, "DROP TABLE IF EXISTS df")
+> NULL
+>> dbWriteTable(con,"df",dfin,row.names=FALSE)
+> [1] TRUE
+>> dfout=dbReadTable(con,"df")
+>> dfout
+> a   c
+> 1 1 x\r
+> 2 2 y\r
+> 3 3 z\r
+> 4 4 t\r
+>> dbDisconnect(con)
+> [1] TRUE
+>> 
+>
+> -- 
+> Hansruedi Baetschmann
+> dipl.math.ETH et lic.oec.HSG
+> Functional Genomics Center Zurich
+> Winterthurerstrasse 190 / Y32H66
+> CH-8057 Z?rich
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+From ret@o|@j @end|ng |rom gm@||@com  Fri Aug 22 04:03:07 2008
+From: ret@o|@j @end|ng |rom gm@||@com (Jason Foster)
+Date: Thu, 21 Aug 2008 22:03:07 -0400
+Subject: [R-sig-DB] RdbiPgSQL, OS X, and the location of libpq.5.dylib
+Message-ID: <34AD3A12-105C-4EFA-AE80-0D0A2C203F0C@gmail.com>
+
+I'm using a prebuilt Postgres binary which puts things in ...
+
+/Library/PostgreSQL8/lib/libpq.5.0.dylib
+/Library/PostgreSQL8/lib/libpq.5.1.dylib
+/Library/PostgreSQL8/lib/libpq.5.dylib
+/Library/PostgreSQL8/lib/libpq.a
+/Library/PostgreSQL8/lib/libpq.dylib
+
+... so when I execute ...
+
+library(RdbiPgSQL)
+
+... I get back some quite sensible errors:
+
+Error in dyn.load(file, DLLpath = DLLpath, ...) :
+   unable to load shared library '/Library/Frameworks/R.framework/ 
+Resources/library/RdbiPgSQL/libs/i386/RdbiPgSQL.so':
+   dlopen(/Library/Frameworks/R.framework/Resources/library/RdbiPgSQL/ 
+libs/i386/RdbiPgSQL.so, 6): Library not loaded: /usr/local/pgsql/lib/ 
+libpq.5.dylib
+   Referenced from: /Library/Frameworks/R.framework/Resources/library/ 
+RdbiPgSQL/libs/i386/RdbiPgSQL.so
+   Reason: image not found
+Error: package/namespace load failed for 'RdbiPgSQL'
+
+I can add some soft links to my system, but I was wondering if there  
+was a better way to get things working?
+
+Thanks!
+
+Jason
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Fri Aug 22 07:42:58 2008
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Fri, 22 Aug 2008 06:42:58 +0100 (BST)
+Subject: [R-sig-DB] RdbiPgSQL, OS X, and the location of libpq.5.dylib
+In-Reply-To: <34AD3A12-105C-4EFA-AE80-0D0A2C203F0C@gmail.com>
+References: <34AD3A12-105C-4EFA-AE80-0D0A2C203F0C@gmail.com>
+Message-ID: <alpine.LFD.1.10.0808220638220.30857@gannet.stats.ox.ac.uk>
+
+This is really a PostgreSQL-on-MacOS question.  On a modern Unix-alike you 
+tell ld.so about such paths via entries in /etc/ld.so.conf.d, but then on 
+all my systems libpq has been installed in standard places.
+
+I think you need to ask on a MacOS list (e.g. r-sig-mac) if no MacOS guru 
+answers here.
+
+On Thu, 21 Aug 2008, Jason Foster wrote:
+
+> I'm using a prebuilt Postgres binary which puts things in ...
+>
+> /Library/PostgreSQL8/lib/libpq.5.0.dylib
+> /Library/PostgreSQL8/lib/libpq.5.1.dylib
+> /Library/PostgreSQL8/lib/libpq.5.dylib
+> /Library/PostgreSQL8/lib/libpq.a
+> /Library/PostgreSQL8/lib/libpq.dylib
+>
+> ... so when I execute ...
+>
+> library(RdbiPgSQL)
+>
+> ... I get back some quite sensible errors:
+>
+> Error in dyn.load(file, DLLpath = DLLpath, ...) :
+> unable to load shared library 
+> '/Library/Frameworks/R.framework/Resources/library/RdbiPgSQL/libs/i386/RdbiPgSQL.so':
+> dlopen(/Library/Frameworks/R.framework/Resources/library/RdbiPgSQL/libs/i386/RdbiPgSQL.so, 
+> 6): Library not loaded: /usr/local/pgsql/lib/libpq.5.dylib
+> Referenced from: 
+> /Library/Frameworks/R.framework/Resources/library/RdbiPgSQL/libs/i386/RdbiPgSQL.so
+> Reason: image not found
+> Error: package/namespace load failed for 'RdbiPgSQL'
+>
+> I can add some soft links to my system, but I was wondering if there was a 
+> better way to get things working?
+>
+> Thanks!
+>
+> Jason
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From kh@n@en @end|ng |rom @t@t@berke|ey@edu  Fri Aug 22 08:54:11 2008
+From: kh@n@en @end|ng |rom @t@t@berke|ey@edu (Kasper Daniel Hansen)
+Date: Thu, 21 Aug 2008 23:54:11 -0700
+Subject: [R-sig-DB] RdbiPgSQL, OS X, and the location of libpq.5.dylib
+In-Reply-To: <34AD3A12-105C-4EFA-AE80-0D0A2C203F0C@gmail.com>
+References: <34AD3A12-105C-4EFA-AE80-0D0A2C203F0C@gmail.com>
+Message-ID: <5C99C450-8F8B-4D21-AE75-A7FA92C49884@stat.berkeley.edu>
+
+Are you compiling the R package from source, and if yes, there might  
+be an install option to tell where the Postgres library is. But I am  
+not familiar with that database.
+
+Kasper
+
+On Aug 21, 2008, at 7:03 PM, Jason Foster wrote:
+
+> I'm using a prebuilt Postgres binary which puts things in ...
+>
+> /Library/PostgreSQL8/lib/libpq.5.0.dylib
+> /Library/PostgreSQL8/lib/libpq.5.1.dylib
+> /Library/PostgreSQL8/lib/libpq.5.dylib
+> /Library/PostgreSQL8/lib/libpq.a
+> /Library/PostgreSQL8/lib/libpq.dylib
+>
+> ... so when I execute ...
+>
+> library(RdbiPgSQL)
+>
+> ... I get back some quite sensible errors:
+>
+> Error in dyn.load(file, DLLpath = DLLpath, ...) :
+>  unable to load shared library '/Library/Frameworks/R.framework/ 
+> Resources/library/RdbiPgSQL/libs/i386/RdbiPgSQL.so':
+>  dlopen(/Library/Frameworks/R.framework/Resources/library/RdbiPgSQL/ 
+> libs/i386/RdbiPgSQL.so, 6): Library not loaded: /usr/local/pgsql/lib/ 
+> libpq.5.dylib
+>  Referenced from: /Library/Frameworks/R.framework/Resources/library/ 
+> RdbiPgSQL/libs/i386/RdbiPgSQL.so
+>  Reason: image not found
+> Error: package/namespace load failed for 'RdbiPgSQL'
+>
+> I can add some soft links to my system, but I was wondering if there  
+> was a better way to get things working?
+>
+> Thanks!
+>
+> Jason
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Fri Aug 22 09:01:45 2008
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Fri, 22 Aug 2008 08:01:45 +0100 (BST)
+Subject: [R-sig-DB] RdbiPgSQL, OS X, and the location of libpq.5.dylib
+In-Reply-To: <5C99C450-8F8B-4D21-AE75-A7FA92C49884@stat.berkeley.edu>
+References: <34AD3A12-105C-4EFA-AE80-0D0A2C203F0C@gmail.com>
+	<5C99C450-8F8B-4D21-AE75-A7FA92C49884@stat.berkeley.edu>
+Message-ID: <alpine.LFD.1.10.0808220758060.28099@gannet.stats.ox.ac.uk>
+
+On Thu, 21 Aug 2008, Kasper Daniel Hansen wrote:
+
+> Are you compiling the R package from source, and if yes, there might be an 
+> install option to tell where the Postgres library is. But I am not familiar 
+> with that database.
+
+This is a run-time not compile-time issue.  Even where there options to 
+set run-time paths (-rpath, -R), they are generally not recommended. 
+Looks like Darwin supports -rpath.
+
+>
+> Kasper
+>
+> On Aug 21, 2008, at 7:03 PM, Jason Foster wrote:
+>
+>> I'm using a prebuilt Postgres binary which puts things in ...
+>> 
+>> /Library/PostgreSQL8/lib/libpq.5.0.dylib
+>> /Library/PostgreSQL8/lib/libpq.5.1.dylib
+>> /Library/PostgreSQL8/lib/libpq.5.dylib
+>> /Library/PostgreSQL8/lib/libpq.a
+>> /Library/PostgreSQL8/lib/libpq.dylib
+>> 
+>> ... so when I execute ...
+>> 
+>> library(RdbiPgSQL)
+>> 
+>> ... I get back some quite sensible errors:
+>> 
+>> Error in dyn.load(file, DLLpath = DLLpath, ...) :
+>> unable to load shared library 
+>> '/Library/Frameworks/R.framework/Resources/library/RdbiPgSQL/libs/i386/RdbiPgSQL.so':
+>> dlopen(/Library/Frameworks/R.framework/Resources/library/RdbiPgSQL/libs/i386/RdbiPgSQL.so, 
+>> 6): Library not loaded: /usr/local/pgsql/lib/libpq.5.dylib
+>> Referenced from: 
+>> /Library/Frameworks/R.framework/Resources/library/RdbiPgSQL/libs/i386/RdbiPgSQL.so
+>> Reason: image not found
+>> Error: package/namespace load failed for 'RdbiPgSQL'
+>> 
+>> I can add some soft links to my system, but I was wondering if there was a 
+>> better way to get things working?
+>> 
+>> Thanks!
+>> 
+>> Jason
+>> 
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at stat.math.ethz.ch
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From c0rr35p0nd3nc3 @end|ng |rom gm@||@com  Fri Aug 22 14:43:24 2008
+From: c0rr35p0nd3nc3 @end|ng |rom gm@||@com (Jason Foster)
+Date: Fri, 22 Aug 2008 08:43:24 -0400
+Subject: [R-sig-DB] RdbiPgSQL, OS X, and the location of libpq.5.dylib
+In-Reply-To: <alpine.LFD.1.10.0808220638220.30857@gannet.stats.ox.ac.uk>
+References: <34AD3A12-105C-4EFA-AE80-0D0A2C203F0C@gmail.com>
+	<alpine.LFD.1.10.0808220638220.30857@gannet.stats.ox.ac.uk>
+Message-ID: <543FB6B6-9884-482E-91FC-9AF19DD4C823@gmail.com>
+
+> This is really a PostgreSQL-on-MacOS question.  On a modern Unix- 
+> alike you tell ld.so about such paths via entries in /etc/ 
+> ld.so.conf.d, but then on all my systems libpq has been installed in  
+> standard places.
+>
+> I think you need to ask on a MacOS list (e.g. r-sig-mac) if no MacOS  
+> guru answers here.
+
+That's my next step, but the one thing that I'd like to check  
+beforehand relates to:
+
+>> dlopen(/Library/Frameworks/R.framework/Resources/library/RdbiPgSQL/ 
+>> libs/i386/RdbiPgSQL.so, 6): Library not loaded: /usr/local/pgsql/ 
+>> lib/libpq.5.dylib
+
+Has RdbiPgSQL hardcoded the path to libpq such that the library must  
+be in that location?
+
+My understanding of Unix-alike dynamic loading isn't the best, but  
+looking at the error my impression is that even if I do add a new  
+location to DYLD_LIBRARY_PATH that the hardcoded path will be the only  
+one searched.  This might again be a MacOS question, but I'm wondering  
+if anyone has been able to use a prebuilt RdbiPgSQL binary with  
+Postgres in a non-standard location?
+
+Thanks!
+
+Jason
+
+P.S.  The symnlink solution is working, but doesn't feel as elegant as  
+I'd like... but I am able to get things done.  Big thanks to the  
+RdbiPgSQL developers for allowing me to avoid using ODBC!
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Sun Aug 24 22:30:51 2008
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Sun, 24 Aug 2008 13:30:51 -0700
+Subject: [R-sig-DB] new version of RSQLite 0.7-0 on CRAN
+Message-ID: <20080824203051.GE9914@ziti.local>
+
+Hello all,
+
+RSQLite 0.7-0 has been uploaded to CRAN.  The primary change in this
+version is that the included SQLite has been upgraded to SQLite 3.6.0.
+The new SQLite has a new feature, R-Trees, that can be used to
+optimize range queries.  The included SQLite has the R-Tree feature
+turned on (it is a compile time flag).  For details, see
+http://www.sqlite.org/rtree.html.
+
+As SQLite 3.6.1 was released a few weeks ago, I plan to incorporate
+this minor update in the next week or so.
+
++ seth
+
+-- 
+Seth Falcon | http://userprimary.net/user/
+
+
+
+From de||ver@b|e @end|ng |rom gm@||@com  Sat Aug 30 07:09:00 2008
+From: de||ver@b|e @end|ng |rom gm@||@com (Alexy Khrabrov)
+Date: Sat, 30 Aug 2008 01:09:00 -0400
+Subject: [R-sig-DB] RMySQL still treats timestamp as character?
+Message-ID: <16138588-D629-4155-A40E-073A5F66363D@gmail.com>
+
+Greetings -- downloaded RMySQL 0.6.0, and on a table with timestamps  
+it gets them over as character.  Found an email in this group from  
+2006, about switching to RODBC, did that, got lovely floats...  Any  
+progress on that for RMySQL proper?
+
+Cheers,
+Alexy
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Sun Aug 31 16:54:21 2008
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Sun, 31 Aug 2008 15:54:21 +0100 (BST)
+Subject: [R-sig-DB] RMySQL still treats timestamp as character?
+In-Reply-To: <16138588-D629-4155-A40E-073A5F66363D@gmail.com>
+References: <16138588-D629-4155-A40E-073A5F66363D@gmail.com>
+Message-ID: <alpine.LFD.1.10.0808311550500.2427@gannet.stats.ox.ac.uk>
+
+On Sat, 30 Aug 2008, Alexy Khrabrov wrote:
+
+> Greetings -- downloaded RMySQL 0.6.0, and on a table with timestamps it gets 
+> them over as character.  Found an email in this group from 2006, about 
+> switching to RODBC, did that, got lovely floats...  Any progress on that for 
+> RMySQL proper?
+
+You need to ask the maintainer (see the posting guide).  But my 
+understanding is that RMySQL is not actively maintained (and has not be 
+changed for 15 months).
+
+What is the difficulty in converting the character vector you get to a
+POSIXct or Date class?
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From je||@horner @end|ng |rom v@nderb||t@edu  Tue Sep  2 17:59:29 2008
+From: je||@horner @end|ng |rom v@nderb||t@edu (Jeffrey Horner)
+Date: Tue, 02 Sep 2008 10:59:29 -0500
+Subject: [R-sig-DB] RMySQL still treats timestamp as character?
+In-Reply-To: <alpine.LFD.1.10.0808311550500.2427@gannet.stats.ox.ac.uk>
+References: <16138588-D629-4155-A40E-073A5F66363D@gmail.com>
+	<alpine.LFD.1.10.0808311550500.2427@gannet.stats.ox.ac.uk>
+Message-ID: <48BD62E1.701@vanderbilt.edu>
+
+Prof Brian Ripley wrote on 08/31/2008 09:54 AM:
+> On Sat, 30 Aug 2008, Alexy Khrabrov wrote:
+> 
+>> Greetings -- downloaded RMySQL 0.6.0, and on a table with timestamps 
+>> it gets them over as character.  Found an email in this group from 
+>> 2006, about switching to RODBC, did that, got lovely floats...  Any 
+>> progress on that for RMySQL proper?
+> 
+> You need to ask the maintainer (see the posting guide).  But my 
+> understanding is that RMySQL is not actively maintained (and has not be 
+> changed for 15 months).
+
+Yes, and I have patches still laying around to fix memory leaks.
+
+David, would you like me to take over as maintainer maintainer?
+
+Jeff
+
+> 
+> What is the difficulty in converting the character vector you get to a
+> POSIXct or Date class?
+> 
+
+
+-- 
+http://biostat.mc.vanderbilt.edu/JeffreyHorner
+
+
+
+From d@j025 @end|ng |rom gm@||@com  Tue Sep  2 21:30:44 2008
+From: d@j025 @end|ng |rom gm@||@com (David James)
+Date: Tue, 2 Sep 2008 15:30:44 -0400
+Subject: [R-sig-DB] RMySQL still treats timestamp as character?
+In-Reply-To: <16138588-D629-4155-A40E-073A5F66363D@gmail.com>
+References: <16138588-D629-4155-A40E-073A5F66363D@gmail.com>
+Message-ID: <74c69e370809021230g36a4e4e4kcab5f4455f995c97@mail.gmail.com>
+
+Hi Alexy,
+
+Dates in MySQL (and other databases) may span outside the range of
+currently supported
+POSIX implementations (ie., under 32-bits), thus the character
+representation is known
+to work regardless of the dates themselves, e.g., before the Unix epoch.
+
+Regards,
+
+--
+David,
+
+On Sat, Aug 30, 2008 at 1:09 AM, Alexy Khrabrov <deliverable at gmail.com> wrote:
+> Greetings -- downloaded RMySQL 0.6.0, and on a table with timestamps it gets
+> them over as character.  Found an email in this group from 2006, about
+> switching to RODBC, did that, got lovely floats...  Any progress on that for
+> RMySQL proper?
+>
+> Cheers,
+> Alexy
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Wed Sep  3 09:09:00 2008
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Wed, 3 Sep 2008 08:09:00 +0100 (BST)
+Subject: [R-sig-DB] RMySQL still treats timestamp as character?
+In-Reply-To: <74c69e370809021230g36a4e4e4kcab5f4455f995c97@mail.gmail.com>
+References: <16138588-D629-4155-A40E-073A5F66363D@gmail.com>
+	<74c69e370809021230g36a4e4e4kcab5f4455f995c97@mail.gmail.com>
+Message-ID: <alpine.LFD.1.10.0809030804400.4144@gannet.stats.ox.ac.uk>
+
+On Tue, 2 Sep 2008, David James wrote:
+
+> Hi Alexy,
+>
+> Dates in MySQL (and other databases) may span outside the range of
+> currently supported
+> POSIX implementations (ie., under 32-bits), thus the character
+> representation is known
+> to work regardless of the dates themselves, e.g., before the Unix epoch.
+
+Possibly, but R uses doubles for datetimes, unlike POSIX, and also has a 
+classs for dates.  (Datetimes prior to 1850 are very dubious anyway, as 
+there were no timezones.)  In other words, R's date and datetime classes 
+are known to work as accurately as character representations.
+
+>
+> Regards,
+>
+> --
+> David,
+>
+> On Sat, Aug 30, 2008 at 1:09 AM, Alexy Khrabrov <deliverable at gmail.com> wrote:
+>> Greetings -- downloaded RMySQL 0.6.0, and on a table with timestamps it gets
+>> them over as character.  Found an email in this group from 2006, about
+>> switching to RODBC, did that, got lovely floats...  Any progress on that for
+>> RMySQL proper?
+>>
+>> Cheers,
+>> Alexy
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at stat.math.ethz.ch
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From hebbertt@@o@re@ @end|ng |rom ro@@@o|||ce@com  Fri Sep  5 16:13:19 2008
+From: hebbertt@@o@re@ @end|ng |rom ro@@@o|||ce@com (Hebbertt de Farias Soares)
+Date: Fri, 5 Sep 2008 11:13:19 -0300
+Subject: [R-sig-DB] Data manipulation: transforming SQL query in an
+ appropriate dataframe
+Message-ID: <1399F1772C396448B3A9C851C2358CB809018F78EC@RosasJG01.Rosas.local>
+
+Dear list,
+
+I am a beginner with R and I have  a question which may sound stupid: How can I transform my SQL query into an appropriate dataframe?
+
+I've looking around, and haven't found any solution.
+
+My return data is stored in a SQL database. When I query it, it  gives me the following output:
+Id            Fund                     Return                 Period
+1             Fund01                0,5                         may/08
+2             Fund01                0,4                         june/08
+3             Fund 02               -0,3                        may/08
+4             Fund02                -0,4                        june/2008
+
+However this data is not suitable for analysis. I would like to transform it to a format like:
+
+Period                  Fund01                Fund02
+May/08                0,5                         0,4
+June/08               -0,3                        -0,4
+
+Is it possible to do this with R? Could you please recommend me references or packages which are useful for handling this kind of data?
+
+Thank you very much for your time.
+
+Regards,
+
+Hebbertt
+
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Fri Sep  5 16:39:37 2008
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Fri, 5 Sep 2008 10:39:37 -0400
+Subject: [R-sig-DB] Data manipulation: transforming SQL query in an
+	appropriate dataframe
+In-Reply-To: <1399F1772C396448B3A9C851C2358CB809018F78EC@RosasJG01.Rosas.local>
+References: <1399F1772C396448B3A9C851C2358CB809018F78EC@RosasJG01.Rosas.local>
+Message-ID: <971536df0809050739l74394b65h224e5675883657a8@mail.gmail.com>
+
+Correcting the inconsistencies in the data, try this
+(and also see ?reshape and the reshape package for
+other approaches):
+
+DF <- structure(list(Id = 1:4, Fund = structure(c(1L, 1L, 2L, 2L),
+.Label = c("Fund01",
+"Fund02"), class = "factor"), Return = c(0.5, 0.4, -0.3, -0.4
+), Period = structure(c(2L, 1L, 2L, 1L), .Label = c("june/08",
+"may/08"), class = "factor")), .Names = c("Id", "Fund", "Return",
+"Period"), class = "data.frame", row.names = c(NA, -4L))
+DF
+
+tapply(DF$Return, DF[c(2, 4)], c)
+
+
+On Fri, Sep 5, 2008 at 10:13 AM, Hebbertt de Farias Soares
+<hebbertt.soares at rosasoffice.com> wrote:
+> Dear list,
+>
+> I am a beginner with R and I have  a question which may sound stupid: How can I transform my SQL query into an appropriate dataframe?
+>
+> I've looking around, and haven't found any solution.
+>
+> My return data is stored in a SQL database. When I query it, it  gives me the following output:
+> Id            Fund                     Return                 Period
+> 1             Fund01                0,5                         may/08
+> 2             Fund01                0,4                         june/08
+> 3             Fund 02               -0,3                        may/08
+> 4             Fund02                -0,4                        june/2008
+>
+> However this data is not suitable for analysis. I would like to transform it to a format like:
+>
+> Period                  Fund01                Fund02
+> May/08                0,5                         0,4
+> June/08               -0,3                        -0,4
+>
+> Is it possible to do this with R? Could you please recommend me references or packages which are useful for handling this kind of data?
+>
+> Thank you very much for your time.
+>
+> Regards,
+>
+> Hebbertt
+>
+>
+>
+>        [[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From M@rk_Otto m@iii@g oii iws@gov  Fri Sep  5 18:26:06 2008
+From: M@rk_Otto m@iii@g oii iws@gov (M@rk_Otto m@iii@g oii iws@gov)
+Date: Fri, 5 Sep 2008 12:26:06 -0400
+Subject: [R-sig-DB] Data manipulation: transforming SQL query in
+ an	appropriate dataframe
+In-Reply-To: <971536df0809050739l74394b65h224e5675883657a8@mail.gmail.com>
+Message-ID: <OF648A29F7.8B8E519D-ON852574BB.00531798-852574BB.005A4685@fws.gov>
+
+Here are three ways of handling the problem of taking values of a variable 
+and making them columns of another table.  Let the original data be 
+OldTable.  Note I had to clean up your example a little bit.
+
+fh<-textConnection("Id            Fund                  Return  Period
+1             Fund01                0,5                         may/08
+2             Fund01                0,4                         june/08
+3             Fund02               -0,3                        may/08
+4             Fund02                -0,4                        june/08
+")
+
+OldTable<-read.table(fh,header=T,dec=",",sep="",row.names="Id")
+
+
+1. Use reshape in R.  This is used with longitudinal data, so you have to 
+look closely at the manual page to get what you need out of it.
+
+ 
+NewTable<-reshape(OldTable,idvar="Period",v.names='Return',timevar='Fund',direction="wide")
+
+2. I you can to the data rearranging in your database.  SQL is not great 
+at converting values of variables to columns.  It is great at doing lots 
+of manipulations on large amounts of data better than R and without the 
+memory worries.  For this reshaping, you can use pivot tables to do this 
+in a straight forward way in Excel or MS Access. 
+
+Here we let OldTable be a table in the database too. So, make a view in 
+the database:
+
+  create view WhatIWantMyRTableToBeView as 
+  select Period,Fund01,Fund02
+   from (
+    select Period,Return as Fund01
+     from OldTable
+     where Fund='Fund01'
+   ) as f1 inner join (
+    select Period,Return as Fund02
+     from OldTable
+     where Fund=in('Fund02','Fund 02')
+   ) as f1 on(f1.Period=f2=Period)
+   order by Period;
+ 
+Then, you can then read in the data to R using the RODBC or other database 
+package such as RSQLite
+
+  library(RODBC)
+  dbh<-odbcConnect("<path>/<database name>")
+  NewTable<-sqlFetch(dbh,"WhatIWantMyRTableToBeView")
+
+or with an SQL query in R. 
+
+ NewTable<-sqlQuery(dbh,"
+  select Period,Fund01,Fund02
+   from (
+    select Period,Return as Fund01
+     from OldTable
+     where Fund='Fund01'
+   ) as f1 inner join (
+    select Period,Return as Fund02
+     from OldTable
+     where Fund=in('Fund02','Fund 02')
+   ) as f1 on(f1.Period=f2=Period)
+   order by Period;
+ ")
+
+3. These could be done all in R with a merge:
+
+ fund1<-OldTable[OldTable$Fund=="Fund01",]
+ fund1<-dataframe(Period=fund1$Period,Fund01=fund1$Fund)
+ fund2<-OldTable[OldTable$Fund%in%c("Fund02","Fund 02"),]
+ fund2<-dataframe(Period=fund2$Period,Fund02=fund2$Fund)
+ NewTable<-merge(fund1,fund2)  # merge keys on the variables common to 
+both datasets.
+
+I haven't run the last two parts, so you may need to tweak the code. 
+Others on this list are more knowledgeable on these matters. 
+
+Mark
+ 
+
+
+Mark Otto, Biometrician 
+U. S. Fish and Wildlife Service 
+Patuxent Wildlife Research Center
+11510 American Holly Dr
+Laurel MD  20708-4002
+
+
+
+
+"Gabor Grothendieck" <ggrothendieck at gmail.com> 
+Sent by: r-sig-db-bounces at stat.math.ethz.ch
+09/05/2008 10:39 AM
+
+To
+"Hebbertt de Farias Soares" <hebbertt.soares at rosasoffice.com>
+cc
+"r-sig-db at stat.math.ethz.ch" <r-sig-db at stat.math.ethz.ch>
+Subject
+Re: [R-sig-DB] Data manipulation: transforming SQL query in an appropriate 
+dataframe
+
+
+
+
+
+
+Correcting the inconsistencies in the data, try this
+(and also see ?reshape and the reshape package for
+other approaches):
+
+DF <- structure(list(Id = 1:4, Fund = structure(c(1L, 1L, 2L, 2L),
+.Label = c("Fund01",
+"Fund02"), class = "factor"), Return = c(0.5, 0.4, -0.3, -0.4
+), Period = structure(c(2L, 1L, 2L, 1L), .Label = c("june/08",
+"may/08"), class = "factor")), .Names = c("Id", "Fund", "Return",
+"Period"), class = "data.frame", row.names = c(NA, -4L))
+DF
+
+tapply(DF$Return, DF[c(2, 4)], c)
+
+
+On Fri, Sep 5, 2008 at 10:13 AM, Hebbertt de Farias Soares
+<hebbertt.soares at rosasoffice.com> wrote:
+> Dear list,
+>
+> I am a beginner with R and I have  a question which may sound stupid: 
+How can I transform my SQL query into an appropriate dataframe?
+>
+> I've looking around, and haven't found any solution.
+>
+> My return data is stored in a SQL database. When I query it, it  gives 
+me the following output:
+> Id            Fund                     Return                 Period
+> 1             Fund01                0,5                         may/08
+> 2             Fund01                0,4                         june/08
+> 3             Fund 02               -0,3                        may/08
+> 4             Fund02                -0,4 june/2008
+>
+> However this data is not suitable for analysis. I would like to 
+transform it to a format like:
+
+> Period                  Fund01                Fund02
+> May/08                0,5                         0,4
+> June/08               -0,3                        -0,4
+>
+> Is it possible to do this with R? Could you please recommend me 
+references or packages which are useful for handling this kind of data?
+>
+> Thank you very much for your time.
+>
+> Regards,
+>
+> Hebbertt
+>
+>
+>
+>        [[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+_______________________________________________
+R-sig-DB mailing list -- R Special Interest Group
+R-sig-DB at stat.math.ethz.ch
+https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From de||ver@b|e @end|ng |rom gm@||@com  Wed Sep 17 03:44:16 2008
+From: de||ver@b|e @end|ng |rom gm@||@com (Alexy Khrabrov)
+Date: Tue, 16 Sep 2008 21:44:16 -0400
+Subject: [R-sig-DB] RJDBC and JDBC-ODBC bridge read remote Excel!
+Message-ID: <1F4F3D28-5A0D-43F9-AF77-119DEC78B103@gmail.com>
+
+Greetings -- just wanted to report that this combination really works  
+to access Windows ODBC sources from a remote Mac; in particular, from  
+a Mac inside whose VMWare Fusion a Windows runs!
+
+I've got a JDBC-ODBC bridge from Easysoft.com, it's a commercial  
+version with free trial (I just wanted a proof of concept, am not  
+affiliated with it).  Created an ODBC source out of an Excel  
+workbook.  Easysoft starts a web server to configure the bridge on  
+Windows, and even serve the EJOB.jar to the clients.  Got that from  
+the enclosing Mac, and connected with RJDBC!
+
+ > jdrv <- JDBC("easysoft.sql.jobDriver","/path/to/EJOB.jar")
+ > jcon <- dbConnect(jdrv,"jdbc:easysoft://192.168.1.101:8831/ 
+odbcsourcename")
+ > dbListTables(jcon)
+[1] "stok#summary$"
+ > dbListFields(jcon,"stok#summary$")
+[1] "files" "lines" "words" "chars" "name"
+
+I'm pondering various ways to use Excel alongside with R to visualize  
+and grasp the data.  Alas, ODBC usage locks the Excel file from  
+editing.  Another way is going through a mediating SQL database.  It  
+would be useful to see a view of a data frame in Excel with its grid  
+and scrolling.
+
+In any case, here's another solution to read Excel spreadsheets from  
+Mac or another Unix/Linux.
+
+Cheers,
+Alexy
+
+
+
+From dut@ngc @end|ng |rom gm@||@com  Wed Sep 17 18:34:09 2008
+From: dut@ngc @end|ng |rom gm@||@com (christophe dutang)
+Date: Wed, 17 Sep 2008 18:34:09 +0200
+Subject: [R-sig-DB] how to deal with big database in R
+Message-ID: <c8e8cd3d0809170934k716996a3r5037a7410c98d89c@mail.gmail.com>
+
+Hi,
+
+For the first time, I really face the problem of large data sets in R and I
+need some help/advice on this subject.
+
+I have large datasets on an Oracle server (at least one million records) and
+I have the following questions:
+- is the package DBI very efficient when dealing with Oracle? Does the
+efficiency of the system depends only on oracle and not on R?
+- is it easy to deal with multiple tables from R? and to cross tabulate
+those big tables into few ones that can be then used in R ? (typically for a
+GLM analysis)
+- is it possible to have concurrent access to a database from different R
+sessions? does it rely on entirely on Oracle functionnalities?
+- when a SQL request is made in R, is there something else than the request
+himself and the result allocating in R ? I mean, is all the data treatment
+the job of the Oracle server?
+how to solve the issue if after cross tabulate (and the size decrease of
+datasets), the result is still too big to work with R? Do we need to use the
+'biglm' package?
+
+Some questions will probably be obvious for this mailing list, but I would
+like to have a clear point of view.
+
+Thanks in advance
+
+Kind regards
+
+Christophe Dutang
+
+	[[alternative HTML version deleted]]
+
+
+

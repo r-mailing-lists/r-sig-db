@@ -1,0 +1,102 @@
+From e@ @end|ng |rom enr|co@chum@nn@net  Tue Jul 31 10:28:07 2018
+From: e@ @end|ng |rom enr|co@chum@nn@net (Enrico Schumann)
+Date: Tue, 31 Jul 2018 10:28:07 +0200
+Subject: [R-sig-DB] [R] dbGetQuery() returns wrong value
+In-Reply-To: <CA+dpOJkAvUxA1pyvAo4iF1qFLaHp6Fj83WwNhNR6aaW8yjz8xw@mail.gmail.com>
+References: <CA+dpOJ=O-aB-Ns-YUO2bd68zr1roxVNEBCHN=HAg82fS2uz80g@mail.gmail.com>
+ <CA+dpOJkazs8wQ7D6hQHYGCUChMsC+8FVKYnUPvtnyT1dPZ3iVA@mail.gmail.com>
+ <CAGgJW74pu76tb3wzcO+dHZmE3fnbQSXsabnZ2GpRF8-5hGYo+g@mail.gmail.com>
+ <CA+dpOJkAvUxA1pyvAo4iF1qFLaHp6Fj83WwNhNR6aaW8yjz8xw@mail.gmail.com>
+Message-ID: <20180731102807.Horde.iMVRHzTAmrtI4QNEuPpEoVT@webmail.your-server.de>
+
+
+Quoting Christofer Bogaso <bogaso.christofer at gmail.com>:
+
+> The data type is defined as bigint
+
+Your query does not specify a number, but a string
+(you single-quote the digits). Databases may do type conversion;
+for instance, see the MySQL manual:  
+https://dev.mysql.com/doc/refman/8.0/en/type-conversion.html
+
+Since you send the query as a string anyway, there may be no need
+for a "'string' within a string".
+
+Please note that I have Cc'ed <r-sig-db at r-project.org>. Any follow-up
+should probably go to that mailing list.
+
+
+>
+> On Mon, Jul 30, 2018 at 4:45 PM Eric Berger <ericjberger at gmail.com> wrote:
+>
+>> The ID matches in the first 16 characters.
+>> How is your table XXXX declared?
+>>
+>>
+>> On Mon, Jul 30, 2018 at 2:00 PM, Christofer Bogaso <
+>> bogaso.christofer at gmail.com> wrote:
+>>
+>>> Session Information for above error:
+>>>
+>>> > sessionInfo()
+>>> R version 3.5.0 (2018-04-23)
+>>> Platform: x86_64-w64-mingw32/x64 (64-bit)
+>>> Running under: Windows 10 x64 (build 16299)
+>>>
+>>> Matrix products: default
+>>>
+>>> locale:
+>>> [1] LC_COLLATE=English_United States.1252  LC_CTYPE=English_United
+>>> States.1252    LC_MONETARY=English_United States.1252 LC_NUMERIC=C
+>>>                  LC_TIME=English_United States.1252
+>>>
+>>> attached base packages:
+>>> [1] stats     graphics  grDevices utils     datasets  methods   base
+>>>
+>>> other attached packages:
+>>> [1] csvread_1.2   bit64_0.9-7   bit_1.1-14    RJDBC_0.2-7.1 rJava_0.9-10
+>>> DBI_1.0.0
+>>>
+>>> loaded via a namespace (and not attached):
+>>> [1] compiler_3.5.0 tools_3.5.0
+>>>
+>>> On Mon, Jul 30, 2018 at 2:27 PM Christofer Bogaso <
+>>> bogaso.christofer at gmail.com> wrote:
+>>>
+>>> > Hi,
+>>> >
+>>> > I used following SQL query to fetch information from DB
+>>> >
+>>> > > dbGetQuery(Conn, "select ID from XXXX where date = '2018-07-18' and
+>>> ID =
+>>> > '72075186224672770' limit 10")
+>>> >          ID
+>>> > 1 72075186224672768
+>>> >
+>>> > As you see, it is returning a different result from what actual query
+>>> > string contains.
+>>> >
+>>> > However when I used the same query in some other SQL client, I get the
+>>> > expected result as:
+>>> >
+>>> > 72075186224672770
+>>> >
+>>> > Any idea on what went wrong in R supplied query would be highly
+>>> > appreciated.
+>>> >
+>
+> ______________________________________________
+> R-help at r-project.org mailing list -- To UNSUBSCRIBE and more, see
+> https://stat.ethz.ch/mailman/listinfo/r-help
+> PLEASE do read the posting guide http://www.R-project.org/posting-guide.html
+> and provide commented, minimal, self-contained, reproducible code.
+
+
+
+-- 
+Enrico Schumann
+Lucerne, Switzerland
+http://enricoschumann.net
+
+
+

@@ -1,0 +1,1084 @@
+From @cott@r@nd@||@33 @end|ng |rom gm@||@com  Wed Jan 25 23:20:20 2012
+From: @cott@r@nd@||@33 @end|ng |rom gm@||@com (Scott Randall)
+Date: Wed, 25 Jan 2012 17:20:20 -0500
+Subject: [R-sig-DB] Informix Databases
+Message-ID: <CABuuMteq5MwGwOYJo379vD0z1wn8jCSGD-eyj5FjXAg4UcmzXA@mail.gmail.com>
+
+Hi,
+I am curious as how to connect to an informix database.
+I believe this to be possible from what I found but have absolutely no idea
+how to. If somebody could point me in the right direction please let me
+know.
+I posted this on the nabble forum and got no response.
+Thank you,
+Scott
+
+	[[alternative HTML version deleted]]
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Thu Jan 26 07:45:51 2012
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Thu, 26 Jan 2012 06:45:51 +0000
+Subject: [R-sig-DB] Informix Databases
+In-Reply-To: <CABuuMteq5MwGwOYJo379vD0z1wn8jCSGD-eyj5FjXAg4UcmzXA@mail.gmail.com>
+References: <CABuuMteq5MwGwOYJo379vD0z1wn8jCSGD-eyj5FjXAg4UcmzXA@mail.gmail.com>
+Message-ID: <4F20F69F.2080401@stats.ox.ac.uk>
+
+You have not told us your OS.  ODBC and JDBC are the only obvious 
+routes, so look at RODBC and RJDBC (I know RODBC has been used in the 
+past on some OS.)
+
+On 25/01/2012 22:20, Scott Randall wrote:
+> Hi,
+> I am curious as how to connect to an informix database.
+> I believe this to be possible from what I found but have absolutely no idea
+> how to. If somebody could point me in the right direction please let me
+> know.
+> I posted this on the nabble forum and got no response.
+> Thank you,
+> Scott
+>
+> 	[[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From henr|Mone @end|ng |rom gm@||@com  Wed Feb  8 19:24:38 2012
+From: henr|Mone @end|ng |rom gm@||@com (Henri Mone)
+Date: Wed, 8 Feb 2012 19:24:38 +0100
+Subject: [R-sig-DB] MySQL R Encoding Utf8
+Message-ID: <CAFxiOZVRQjR5-E3_PZ4fTV10tiAQAETFq2HXvB9yBzX57xTG5w@mail.gmail.com>
+
+Dear R Users and Experts,
+
+I got a MySQL table with German special characters (umlaute like ?,?,?
+etc.) . The MySQL database table is in the UTF8 format, and if I
+submit a query over the MySql client the umlaute are displayed
+correctly. If I submit the same query via R the umlaute are displayed
+wrong. That is a little confusing for me, R as well as the MySQL
+support UTF8.
+Is there any option which I should use to get the umlaute in R correct?
+
+Thanks,
+Henri
+
+
+> t.m <-dbDriver("MySQL")
+> t.con <- try(dbConnect(t.m))
+> t.rs <- try(dbSendQuery(t.con, t.sql))
+> t.data <- fetch(t.rs,-1)
+> t.data  # correct would be "?sterreichische Schilling"
+  \xd6sterreichische Schilling
+  ...
+
+
+
+From tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp  Thu Feb  9 01:20:38 2012
+From: tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp (Tomoaki NISHIYAMA)
+Date: Thu, 9 Feb 2012 09:20:38 +0900
+Subject: [R-sig-DB] MySQL R Encoding Utf8
+In-Reply-To: <CAFxiOZVRQjR5-E3_PZ4fTV10tiAQAETFq2HXvB9yBzX57xTG5w@mail.gmail.com>
+References: <CAFxiOZVRQjR5-E3_PZ4fTV10tiAQAETFq2HXvB9yBzX57xTG5w@mail.gmail.com>
+Message-ID: <1B0584E1-A254-46E8-80E6-206E095E5957@kenroku.kanazawa-u.ac.jp>
+
+Hi,
+
+dbGetQuery(t.con, "SET NAMES 'utf8'")
+before dbSendQuery(t.con, t.sql)
+and fetch()
+might work.
+http://dev.mysql.com/doc/refman/5.6/en/charset-connection.html
+
+You might alternatively change the default values for these 
+character_set_* variables in MySQL database.
+
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi, 
+Kanazawa, 920-0934, Japan
+
+On 2012/02/09, at 3:24, Henri Mone wrote:
+
+> Dear R Users and Experts,
+> 
+> I got a MySQL table with German special characters (umlaute like ??,??,??
+> etc.) . The MySQL database table is in the UTF8 format, and if I
+> submit a query over the MySql client the umlaute are displayed
+> correctly. If I submit the same query via R the umlaute are displayed
+> wrong. That is a little confusing for me, R as well as the MySQL
+> support UTF8.
+> Is there any option which I should use to get the umlaute in R correct?
+> 
+> Thanks,
+> Henri
+> 
+> 
+>> t.m <-dbDriver("MySQL")
+>> t.con <- try(dbConnect(t.m))
+>> t.rs <- try(dbSendQuery(t.con, t.sql))
+>> t.data <- fetch(t.rs,-1)
+>> t.data  # correct would be "??sterreichische Schilling"
+> \xd6sterreichische Schilling
+> ...
+> 
+
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From henr|Mone @end|ng |rom gm@||@com  Thu Feb  9 11:10:59 2012
+From: henr|Mone @end|ng |rom gm@||@com (Henri Mone)
+Date: Thu, 9 Feb 2012 11:10:59 +0100
+Subject: [R-sig-DB] MySQL R Encoding Utf8
+In-Reply-To: <BBF1F8B9-A3E0-430D-8196-AB90BFD2F806@staff.kanazawa-u.ac.jp>
+References: <CAFxiOZVRQjR5-E3_PZ4fTV10tiAQAETFq2HXvB9yBzX57xTG5w@mail.gmail.com>
+	<BBF1F8B9-A3E0-430D-8196-AB90BFD2F806@staff.kanazawa-u.ac.jp>
+Message-ID: <CAFxiOZXgVCteMDm6H++revEo-02NFZ0mUG90FyFS0ueZEUim8w@mail.gmail.com>
+
+Dear Nishiyama,
+
+Thank you very much for your fast help. I worked out of the the box
+like a charm :) .
+
+Thanks,
+Henri
+
+On Thu, Feb 9, 2012 at 1:17 AM, NISHIYAMA Tomoaki
+<tomoakin at staff.kanazawa-u.ac.jp> wrote:
+> Hi,
+>
+> dbGetQuery(t.con, "SET NAMES 'utf8'")
+> before dbSendQuery(t.con, t.sql)
+> and fetch()
+> might work.
+> http://dev.mysql.com/doc/refman/5.6/en/charset-connection.html
+>
+> You might alternatively change the default values for these
+> character_set_* variables in MySQL database.
+>
+> On 2012/02/09, at 3:24, Henri Mone wrote:
+>
+>> Dear R Users and Experts,
+>>
+>> I got a MySQL table with German special characters (umlaute like ?,?,?
+>> etc.) . The MySQL database table is in the UTF8 format, and if I
+>> submit a query over the MySql client the umlaute are displayed
+>> correctly. If I submit the same query via R the umlaute are displayed
+>> wrong. That is a little confusing for me, R as well as the MySQL
+>> support UTF8.
+>> Is there any option which I should use to get the umlaute in R correct?
+>>
+>> Thanks,
+>> Henri
+>>
+>>
+>>> t.m <-dbDriver("MySQL")
+>>> t.con <- try(dbConnect(t.m))
+>>> t.rs <- try(dbSendQuery(t.con, t.sql))
+>>> t.data <- fetch(t.rs,-1)
+>>> t.data ?# correct would be "?sterreichische Schilling"
+>> ?\xd6sterreichische Schilling
+>> ?...
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at r-project.org
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+>
+
+
+
+From n||z@b@rro@ @end|ng |rom gm@||@com  Sun Feb 12 01:49:07 2012
+From: n||z@b@rro@ @end|ng |rom gm@||@com (Nilza BARROS)
+Date: Sat, 11 Feb 2012 22:49:07 -0200
+Subject: [R-sig-DB] Reading data from a worksheet on the Internet
+Message-ID: <CAE=vM6NFBS4VvZxs-8u9S+DiUBwb2Sm8imajO=88RFf+r671Ww@mail.gmail.com>
+
+Dear R-users,
+
+I have to read data from a worksheet that is available on the Internet. I
+have been doing this by copying the worksheet from the browser.
+But I would like to be able to copy the data automatically using the url
+command.
+
+But when using  "url" command the result is the source code, I mean, a html
+code.
+I see that the data I need is in the source code but before thinking about
+reading the data from the html code I wonder if there is a package or
+anoher way to extract these data since reading  from the code will demand
+many work and it can be not so accurate.
+
+Below one can see the from where I am trying to export the data:
+
+dados<-url("
+http://www.mar.mil.br/dhn/chm/meteo/prev/dados/pnboia/sc1201_arquivos/sheet002.htm","r
+")
+I am looking forward  any help.
+
+Thanks in advance ,
+
+Nilza Barros
+
+	[[alternative HTML version deleted]]
+
+
+
+From r @end|ng |rom grende|@no  Thu Feb 23 23:02:11 2012
+From: r @end|ng |rom grende|@no (=?ISO-8859-1?Q?Rolf_Marvin_B=F8e_Lindgren?=)
+Date: Thu, 23 Feb 2012 23:02:11 +0100
+Subject: [R-sig-DB] Problem with ODBC from FileMaker - can read labels but
+	not data
+Message-ID: <CAM0SUu8eg4z8TdYVtMjy_WZCZi8Oh=b50c1FTYBbMT8vWyXsOw@mail.gmail.com>
+
+Hi,
+
+I've encountered a snag when trying to create a dataframe from FileMaker
+data. For what it's woth, I'm uising FileMaker Pro 11, FileMaker's ODBC
+driver, and ODBC Administrator on MacOS Lion. I am able to sucessfully make
+the connection. Thus,
+
+> library(RODBC)
+> myconn <- odbcConnect ("AGA_1","Admin","********")
+> D <- sqlFetch (myconn,"DATA_AGANorway")
+
+executes and gives no error messages. However,
+
+> D
+
+gives a list of all of the label names of the table (53 in all), but
+without the variables.
+
+> fix(D)
+
+confirms this: The editor labels the columns correctly, but the cells are
+empty.
+
+Is this expected behavior, or a bug? Have I overlooked something?
+
+Any and all help appreciated!
+
+Thank you,
+
+-- 
+Rolf Marvin B?e Lindgren
+Grendel evidenbasert psykologi
++47 400 61 755
+
+	[[alternative HTML version deleted]]
+
+
+
+From c@n@d@@reche @end|ng |rom gm@||@com  Tue Mar  6 22:27:22 2012
+From: c@n@d@@reche @end|ng |rom gm@||@com (=?ISO-8859-1?Q?jose_luis_ca=F1adas?=)
+Date: Tue, 06 Mar 2012 22:27:22 +0100
+Subject: [R-sig-DB] roracle in linux
+Message-ID: <4F56813A.8090702@gmail.com>
+
+Hello.
+This is a copy of my email to r-sig-deb
+
+I'm trying install roracle in my debian 64 bit system. I've read the
+http://cran.r-project.org/web/packages/ROracle/INSTALL and I've
+installed Oracel Instant Client by rpm package (using alien to deb convert).
+
+When I try to install I write
+
+  export LD_LIBRARY_PATH=/usr/lib/oracle/11.2/client64/lib:$LD_LIBRARY_PATH
+
+
+in terminal and then I download ROracle_1.1-1.tar.gz from cran and I
+type sudo R CMD INSTALL ROracle_1.1-1.tar.gz where I've downloaded the
+tar.gz file.
+
+I always get the same error
+jose at jose-laptop:~/Descargas$ sudo R CMD INSTALL ROracle_1.1-1.tar.gz
+* installing to library '/usr/local/lib/R/site-library'
+* installing *source* package 'ROracle' ...
+** package 'ROracle' successfully unpacked and MD5 sums checked
+configure: error: OCI libraries not found
+ERROR: configuration failed for package 'ROracle'
+* removing '/usr/local/lib/R/site-library/ROracle'
+
+and I don't understand why. any idea?
+
+Thanks.
+
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Wed Mar  7 01:56:19 2012
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Wed, 07 Mar 2012 00:56:19 +0000
+Subject: [R-sig-DB] roracle in linux
+In-Reply-To: <4F56813A.8090702@gmail.com>
+References: <4F56813A.8090702@gmail.com>
+Message-ID: <4F56B233.4010404@stats.ox.ac.uk>
+
+On 06/03/2012 21:27, jose luis ca?adas wrote:
+> Hello.
+> This is a copy of my email to r-sig-deb
+
+Please do not post to multiple lists.
+
+Following the R posting guide, what did the package maintainer say?
+
+> I'm trying install roracle in my debian 64 bit system. I've read the
+> http://cran.r-project.org/web/packages/ROracle/INSTALL and I've
+> installed Oracel Instant Client by rpm package (using alien to deb convert).
+>
+> When I try to install I write
+>
+>    export LD_LIBRARY_PATH=/usr/lib/oracle/11.2/client64/lib:$LD_LIBRARY_PATH
+>
+>
+> in terminal and then I download ROracle_1.1-1.tar.gz from cran and I
+> type sudo R CMD INSTALL ROracle_1.1-1.tar.gz where I've downloaded the
+> tar.gz file.
+>
+> I always get the same error
+> jose at jose-laptop:~/Descargas$ sudo R CMD INSTALL ROracle_1.1-1.tar.gz
+> * installing to library '/usr/local/lib/R/site-library'
+> * installing *source* package 'ROracle' ...
+> ** package 'ROracle' successfully unpacked and MD5 sums checked
+> configure: error: OCI libraries not found
+> ERROR: configuration failed for package 'ROracle'
+> * removing '/usr/local/lib/R/site-library/ROracle'
+>
+> and I don't understand why. any idea?
+>
+> Thanks.
+>
+>
+>
+> 	[[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From SMun|kunt|@ @end|ng |rom recomd@t@@com  Thu Mar 15 16:31:35 2012
+From: SMun|kunt|@ @end|ng |rom recomd@t@@com (Sai Munikuntla)
+Date: Thu, 15 Mar 2012 11:31:35 -0400
+Subject: [R-sig-DB] RStudio Server ROracle internal error
+Message-ID: <9636D59602BA4A4B82D4102A29A59F1106ADE647C4@RDSBS.recombinant.local>
+
+I've setup RStudio server and pointed it to use an existing R (2.13) installation. ROracle works fine when accessed from R, but the same does not work from RStudio web-interface.
+
+>library(ROracle)
+
+Loading required package: DBI
+>Oracle()
+
+Error in .oci.Driver() : ROracle internal error [rociDrvInit, 1, -1]
+
+"/etc/rstudio/rserver.conf" has rsession-which-r=/usr/local/R/bin/R
+rsession-ld-library-path=/u01/app/oracle/product/11.1.0/db_1/lib:/u01/app/oracle/product/11.1.0/db_1
+
+There is an existing path environment variable defined
+$ env |grep LD_LIB* =/u01/app/oracle/product/11.1.0/db_1/lib:/u01/app/oracle/product/11.1.0/db_1
+
+RStudio web-interface was giving me the above mentioned issue. I added the path in rserver.conf and restarted the RStudio server but the problem still exists.
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From den|@@x@mukh|n @end|ng |rom or@c|e@com  Thu Mar 15 16:45:32 2012
+From: den|@@x@mukh|n @end|ng |rom or@c|e@com (Denis Mukhin)
+Date: Thu, 15 Mar 2012 08:45:32 -0700 (PDT)
+Subject: [R-sig-DB] RStudio Server ROracle internal error
+In-Reply-To: <9636D59602BA4A4B82D4102A29A59F1106ADE647C4@RDSBS.recombinant.local>
+References: <9636D59602BA4A4B82D4102A29A59F1106ADE647C4@RDSBS.recombinant.local>
+Message-ID: <12cabb69-821c-4ccf-a037-2ea29e268eaf@default>
+
+Sai,
+
+You are probably missing ORACLE_HOME and OREACLE_SID in the RStudio environment. Try creating ~/.Renviron and put the following in it:
+ORACLE_HOME=/u01/app/oracle/product/11.1.0/db_1
+ORACLE_SID=<your sid (the default is usually orcl)>
+export ORACLE_HOME ORACLE_SID
+
+Denis
+
+-----Original Message-----
+From: Sai Munikuntla [mailto:SMunikuntla at recomdata.com] 
+Sent: Thursday, March 15, 2012 11:32 AM
+To: r-sig-db at r-project.org
+Subject: [R-sig-DB] RStudio Server ROracle internal error
+
+I've setup RStudio server and pointed it to use an existing R (2.13) installation. ROracle works fine when accessed from R, but the same does not work from RStudio web-interface.
+
+>library(ROracle)
+
+Loading required package: DBI
+>Oracle()
+
+Error in .oci.Driver() : ROracle internal error [rociDrvInit, 1, -1]
+
+"/etc/rstudio/rserver.conf" has rsession-which-r=/usr/local/R/bin/R
+rsession-ld-library-path=/u01/app/oracle/product/11.1.0/db_1/lib:/u01/app/oracle/product/11.1.0/db_1
+
+There is an existing path environment variable defined $ env |grep LD_LIB* =/u01/app/oracle/product/11.1.0/db_1/lib:/u01/app/oracle/product/11.1.0/db_1
+
+RStudio web-interface was giving me the above mentioned issue. I added the path in rserver.conf and restarted the RStudio server but the problem still exists.
+
+
+	[[alternative HTML version deleted]]
+
+_______________________________________________
+R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From |@|e@c@| @end|ng |rom uc|@@c@uk  Tue Mar 20 13:28:28 2012
+From: |@|e@c@| @end|ng |rom uc|@@c@uk (Lescai, Francesco)
+Date: Tue, 20 Mar 2012 12:28:28 +0000
+Subject: [R-sig-DB] SQLite - inserting a row conditional on its existence
+Message-ID: <981C0B9F-29A9-4C87-8A05-797C75AA5295@ucl.ac.uk>
+
+Hi there,
+I'm pretty new to the use of R with a newly created schema SQLite database.
+
+I've been looking to the vignettes and to some examples, but I couldn't find a pretty basic task: i.e. inserting a row in a table only if it doesn't exist.
+if it does, I would either update or do nothing.
+
+this is a simple table in my database
+> res <- dbSendQuery(db, "SELECT * from variation")
+> fetch(res)
+  variation_id  name reference_allele validation_status
+1            1 rs123                A     not_validated
+2            2 rs234                C         validated
+3            3 rs345                T     not_validated
+
+and this the small test dataframe I'd like to insert data from
+variants=data.frame(variation_id=c(1,2,3),name=c("rsNN","rsXX", "rs123"), reference_allele=c("A","C","T"), validation_status=c("not_validated","validated","not_validated"))
+
+
+based on SQL commands I was tempted to write something like
+
+dbBeginTransaction(db)
+query <- paste('IF NOT EXISTS (SELECT * FROM variation WHERE name = :name)',
+               'INSERT INTO "variation"',
+               "VALUES(NULL, :name, :reference_allele, :validation_status);")
+dbGetPreparedQuery(db, query, bind.data=variants)
+
+but I got the error
+Error in sqliteExecStatement(con, statement, bind.data) :
+  RS-DBI driver: (error in statement: near "IF": syntax error)
+
+Anyone who could point me on the right direction?
+
+thanks very much,
+Francesco
+
+
+> sessionInfo()
+R Under development (unstable) (2012-01-20 r58146)
+Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
+
+locale:
+[1] C/en_US.UTF-8/C/C/C/C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] RSQLite_0.11.1 DBI_0.2-5
+
+loaded via a namespace (and not attached):
+[1] tools_2.15.0
+
+---------------------------------------------------------------------------------
+Francesco Lescai, PhD, EDBT
+Senior Research Associate in Genome Analysis
+University College London
+Faculty of Population Health Sciences
+Dept. Genes, Development & Disease
+ICH - Molecular Medicine Unit, GOSgene team
+30 Guilford Street
+WC1N 1EH London UK
+
+email: f.lescai at ucl.ac.uk<mailto:f.lescai at ucl.ac.uk>
+phone: +44.(0)207.905.2274
+[ext: 2274]
+--------------------------------------------------------------------------------
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Tue Mar 20 13:51:48 2012
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Tue, 20 Mar 2012 08:51:48 -0400
+Subject: [R-sig-DB] SQLite - inserting a row conditional on its existence
+In-Reply-To: <981C0B9F-29A9-4C87-8A05-797C75AA5295@ucl.ac.uk>
+References: <981C0B9F-29A9-4C87-8A05-797C75AA5295@ucl.ac.uk>
+Message-ID: <CANeAVBnZojqWxeAEfqAyekr34pkneZ0C3rBoOYGN3i3q+W=0TA@mail.gmail.com>
+
+On Tue, Mar 20, 2012 at 8:28 AM, Lescai, Francesco <f.lescai at ucl.ac.uk>wrote:
+
+> Hi there,
+> I'm pretty new to the use of R with a newly created schema SQLite database.
+>
+> I've been looking to the vignettes and to some examples, but I couldn't
+> find a pretty basic task: i.e. inserting a row in a table only if it
+> doesn't exist.
+> if it does, I would either update or do nothing.
+>
+> this is a simple table in my database
+> > res <- dbSendQuery(db, "SELECT * from variation")
+> > fetch(res)
+>  variation_id  name reference_allele validation_status
+> 1            1 rs123                A     not_validated
+> 2            2 rs234                C         validated
+> 3            3 rs345                T     not_validated
+>
+> and this the small test dataframe I'd like to insert data from
+> variants=data.frame(variation_id=c(1,2,3),name=c("rsNN","rsXX", "rs123"),
+> reference_allele=c("A","C","T"),
+> validation_status=c("not_validated","validated","not_validated"))
+>
+>
+> based on SQL commands I was tempted to write something like
+>
+> dbBeginTransaction(db)
+> query <- paste('IF NOT EXISTS (SELECT * FROM variation WHERE name =
+> :name)',
+>               'INSERT INTO "variation"',
+>               "VALUES(NULL, :name, :reference_allele,
+> :validation_status);")
+> dbGetPreparedQuery(db, query, bind.data=variants)
+>
+
+but I got the error
+> Error in sqliteExecStatement(con, statement, bind.data) :
+>  RS-DBI driver: (error in statement: near "IF": syntax error)
+>
+> Anyone who could point me on the right direction?
+>
+>
+Hi, Francesco.
+
+Not all SQL implementations are the same.  Check this link:
+
+http://stackoverflow.com/questions/531035/how-to-do-if-not-exists-in-sqlite
+
+Sean
+
+
+> thanks very much,
+> Francesco
+>
+>
+> > sessionInfo()
+> R Under development (unstable) (2012-01-20 r58146)
+> Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
+>
+> locale:
+> [1] C/en_US.UTF-8/C/C/C/C
+>
+> attached base packages:
+> [1] stats     graphics  grDevices utils     datasets  methods   base
+>
+> other attached packages:
+> [1] RSQLite_0.11.1 DBI_0.2-5
+>
+> loaded via a namespace (and not attached):
+> [1] tools_2.15.0
+>
+>
+> ---------------------------------------------------------------------------------
+> Francesco Lescai, PhD, EDBT
+> Senior Research Associate in Genome Analysis
+> University College London
+> Faculty of Population Health Sciences
+> Dept. Genes, Development & Disease
+> ICH - Molecular Medicine Unit, GOSgene team
+> 30 Guilford Street
+> WC1N 1EH London UK
+>
+> email: f.lescai at ucl.ac.uk<mailto:f.lescai at ucl.ac.uk>
+> phone: +44.(0)207.905.2274
+> [ext: 2274]
+>
+> --------------------------------------------------------------------------------
+>
+>
+>        [[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From |@|e@c@| @end|ng |rom uc|@@c@uk  Tue Mar 20 14:00:06 2012
+From: |@|e@c@| @end|ng |rom uc|@@c@uk (Lescai, Francesco)
+Date: Tue, 20 Mar 2012 13:00:06 +0000
+Subject: [R-sig-DB] SQLite - inserting a row conditional on its existence
+In-Reply-To: <CANeAVBnZojqWxeAEfqAyekr34pkneZ0C3rBoOYGN3i3q+W=0TA@mail.gmail.com>
+References: <981C0B9F-29A9-4C87-8A05-797C75AA5295@ucl.ac.uk>
+	<CANeAVBnZojqWxeAEfqAyekr34pkneZ0C3rBoOYGN3i3q+W=0TA@mail.gmail.com>
+Message-ID: <3AC7D7A6-0AED-4587-A85D-3585B8B19BE9@ucl.ac.uk>
+
+Thanks Sean,
+I tried that one as well (popped out on a google search among the first) but
+
+> dbBeginTransaction(db)
+[1] TRUE
+> query <- paste('INSERT INTO "variation"',
++                'VALUES(NULL, :name, :reference_allele, :validation_status)',
++                'WHERE NOT EXISTS (SELECT * FROM variation WHERE name = :name);')
+> dbGetPreparedQuery(db, query, bind.data=variants)
+Error in sqliteExecStatement(con, statement, bind.data) :
+  RS-DBI driver: (error in statement: near "WHERE": syntax error)
+
+it seems to be a syntax error in both cases.
+not sure if it is an SQLite syntax error, or a DBI/RSQLite syntax error.
+
+cheers,
+Francesco
+
+
+On 20 Mar 2012, at 12:51, Sean Davis wrote:
+
+
+
+On Tue, Mar 20, 2012 at 8:28 AM, Lescai, Francesco <f.lescai at ucl.ac.uk<mailto:f.lescai at ucl.ac.uk>> wrote:
+Hi there,
+I'm pretty new to the use of R with a newly created schema SQLite database.
+
+I've been looking to the vignettes and to some examples, but I couldn't find a pretty basic task: i.e. inserting a row in a table only if it doesn't exist.
+if it does, I would either update or do nothing.
+
+this is a simple table in my database
+> res <- dbSendQuery(db, "SELECT * from variation")
+> fetch(res)
+ variation_id  name reference_allele validation_status
+1            1 rs123                A     not_validated
+2            2 rs234                C         validated
+3            3 rs345                T     not_validated
+
+and this the small test dataframe I'd like to insert data from
+variants=data.frame(variation_id=c(1,2,3),name=c("rsNN","rsXX", "rs123"), reference_allele=c("A","C","T"), validation_status=c("not_validated","validated","not_validated"))
+
+
+based on SQL commands I was tempted to write something like
+
+dbBeginTransaction(db)
+query <- paste('IF NOT EXISTS (SELECT * FROM variation WHERE name = :name)',
+              'INSERT INTO "variation"',
+              "VALUES(NULL, :name, :reference_allele, :validation_status);")
+dbGetPreparedQuery(db, query, bind.data=variants)
+
+but I got the error
+Error in sqliteExecStatement(con, statement, bind.data) :
+ RS-DBI driver: (error in statement: near "IF": syntax error)
+
+Anyone who could point me on the right direction?
+
+
+Hi, Francesco.
+
+Not all SQL implementations are the same.  Check this link:
+
+http://stackoverflow.com/questions/531035/how-to-do-if-not-exists-in-sqlite
+
+Sean
+
+thanks very much,
+Francesco
+
+
+> sessionInfo()
+R Under development (unstable) (2012-01-20 r58146)
+Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
+
+locale:
+[1] C/en_US.UTF-8/C/C/C/C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] RSQLite_0.11.1 DBI_0.2-5
+
+loaded via a namespace (and not attached):
+[1] tools_2.15.0
+
+---------------------------------------------------------------------------------
+Francesco Lescai, PhD, EDBT
+Senior Research Associate in Genome Analysis
+University College London
+Faculty of Population Health Sciences
+Dept. Genes, Development & Disease
+ICH - Molecular Medicine Unit, GOSgene team
+30 Guilford Street
+WC1N 1EH London UK
+
+email: f.lescai at ucl.ac.uk<mailto:f.lescai at ucl.ac.uk><mailto:f.lescai at ucl.ac.uk<mailto:f.lescai at ucl.ac.uk>>
+phone: +44.(0)207.905.2274<tel:%2B44.%280%29207.905.2274>
+[ext: 2274]
+--------------------------------------------------------------------------------
+
+
+       [[alternative HTML version deleted]]
+
+_______________________________________________
+R-sig-DB mailing list -- R Special Interest Group
+R-sig-DB at r-project.org<mailto:R-sig-DB at r-project.org>
+https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+---------------------------------------------------------------------------------
+Francesco Lescai, PhD, EDBT
+Senior Research Associate in Genome Analysis
+University College London
+Faculty of Population Health Sciences
+Dept. Genes, Development & Disease
+ICH - Molecular Medicine Unit, GOSgene team
+30 Guilford Street
+WC1N 1EH London UK
+
+email: f.lescai at ucl.ac.uk<mailto:f.lescai at ucl.ac.uk>
+phone: +44.(0)207.905.2274
+[ext: 2274]
+--------------------------------------------------------------------------------
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Tue Mar 20 14:16:35 2012
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Tue, 20 Mar 2012 09:16:35 -0400
+Subject: [R-sig-DB] SQLite - inserting a row conditional on its existence
+In-Reply-To: <3AC7D7A6-0AED-4587-A85D-3585B8B19BE9@ucl.ac.uk>
+References: <981C0B9F-29A9-4C87-8A05-797C75AA5295@ucl.ac.uk>
+	<CANeAVBnZojqWxeAEfqAyekr34pkneZ0C3rBoOYGN3i3q+W=0TA@mail.gmail.com>
+	<3AC7D7A6-0AED-4587-A85D-3585B8B19BE9@ucl.ac.uk>
+Message-ID: <CANeAVBk_tgf_ia6pp=OJJKi4eNd8Xe_n0mOCiqCL1GaxQvNn7w@mail.gmail.com>
+
+On Tue, Mar 20, 2012 at 9:00 AM, Lescai, Francesco <f.lescai at ucl.ac.uk>wrote:
+
+> Thanks Sean,
+> I tried that one as well (popped out on a google search among the first)
+> but
+>
+> > dbBeginTransaction(db)
+> [1] TRUE
+> > query <- paste('INSERT INTO "variation"',
+> +                'VALUES(NULL, :name, :reference_allele,
+> :validation_status)',
+> +                'WHERE NOT EXISTS (SELECT * FROM variation WHERE name =
+> :name);')
+> > dbGetPreparedQuery(db, query, bind.data=variants)
+> Error in sqliteExecStatement(con, statement, bind.data) :
+>  RS-DBI driver: (error in statement: near "WHERE": syntax error)
+>
+> it seems to be a syntax error in both cases.
+> not sure if it is an SQLite syntax error, or a DBI/RSQLite syntax error.
+>
+>
+This is a SQLite syntax error.  An insert query cannot include a where
+clause, I don't think.  You might try (untested):
+
+INSERT OR IGNORE INTO "variation" VALUES(NULL, :name, :reference_allele,
+:validation_status).
+
+You'll need to have a unique constraint in place for this to work as
+expected.  See here:
+
+http://www.sqlite.org/lang_insert.html
+
+and here:
+
+http://www.sqlite.org/lang_conflict.html
+
+
+Sean
+
+
+
+> cheers,
+> Francesco
+>
+>
+> On 20 Mar 2012, at 12:51, Sean Davis wrote:
+>
+>
+>
+> On Tue, Mar 20, 2012 at 8:28 AM, Lescai, Francesco <f.lescai at ucl.ac.uk
+> <mailto:f.lescai at ucl.ac.uk>> wrote:
+> Hi there,
+> I'm pretty new to the use of R with a newly created schema SQLite database.
+>
+> I've been looking to the vignettes and to some examples, but I couldn't
+> find a pretty basic task: i.e. inserting a row in a table only if it
+> doesn't exist.
+> if it does, I would either update or do nothing.
+>
+> this is a simple table in my database
+> > res <- dbSendQuery(db, "SELECT * from variation")
+> > fetch(res)
+>  variation_id  name reference_allele validation_status
+> 1            1 rs123                A     not_validated
+> 2            2 rs234                C         validated
+> 3            3 rs345                T     not_validated
+>
+> and this the small test dataframe I'd like to insert data from
+> variants=data.frame(variation_id=c(1,2,3),name=c("rsNN","rsXX", "rs123"),
+> reference_allele=c("A","C","T"),
+> validation_status=c("not_validated","validated","not_validated"))
+>
+>
+> based on SQL commands I was tempted to write something like
+>
+> dbBeginTransaction(db)
+> query <- paste('IF NOT EXISTS (SELECT * FROM variation WHERE name =
+> :name)',
+>              'INSERT INTO "variation"',
+>              "VALUES(NULL, :name, :reference_allele, :validation_status);")
+> dbGetPreparedQuery(db, query, bind.data=variants)
+>
+> but I got the error
+> Error in sqliteExecStatement(con, statement, bind.data) :
+>  RS-DBI driver: (error in statement: near "IF": syntax error)
+>
+> Anyone who could point me on the right direction?
+>
+>
+> Hi, Francesco.
+>
+> Not all SQL implementations are the same.  Check this link:
+>
+> http://stackoverflow.com/questions/531035/how-to-do-if-not-exists-in-sqlite
+>
+> Sean
+>
+> thanks very much,
+> Francesco
+>
+>
+> > sessionInfo()
+> R Under development (unstable) (2012-01-20 r58146)
+> Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
+>
+> locale:
+> [1] C/en_US.UTF-8/C/C/C/C
+>
+> attached base packages:
+> [1] stats     graphics  grDevices utils     datasets  methods   base
+>
+> other attached packages:
+> [1] RSQLite_0.11.1 DBI_0.2-5
+>
+> loaded via a namespace (and not attached):
+> [1] tools_2.15.0
+>
+>
+> ---------------------------------------------------------------------------------
+> Francesco Lescai, PhD, EDBT
+> Senior Research Associate in Genome Analysis
+> University College London
+> Faculty of Population Health Sciences
+> Dept. Genes, Development & Disease
+> ICH - Molecular Medicine Unit, GOSgene team
+> 30 Guilford Street
+> WC1N 1EH London UK
+>
+> email: f.lescai at ucl.ac.uk<mailto:f.lescai at ucl.ac.uk><mailto:
+> f.lescai at ucl.ac.uk<mailto:f.lescai at ucl.ac.uk>>
+> phone: +44.(0)207.905.2274<tel:%2B44.%280%29207.905.2274>
+> [ext: 2274]
+>
+> --------------------------------------------------------------------------------
+>
+>
+>       [[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org<mailto:R-sig-DB at r-project.org>
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+>
+>
+> ---------------------------------------------------------------------------------
+> Francesco Lescai, PhD, EDBT
+> Senior Research Associate in Genome Analysis
+> University College London
+> Faculty of Population Health Sciences
+> Dept. Genes, Development & Disease
+> ICH - Molecular Medicine Unit, GOSgene team
+> 30 Guilford Street
+> WC1N 1EH London UK
+>
+> email: f.lescai at ucl.ac.uk<mailto:f.lescai at ucl.ac.uk>
+> phone: +44.(0)207.905.2274
+> [ext: 2274]
+>
+> --------------------------------------------------------------------------------
+>
+>
+>        [[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From @|d@@run91 @end|ng |rom gm@||@com  Tue Mar 27 01:22:37 2012
+From: @|d@@run91 @end|ng |rom gm@||@com (siddharth arun)
+Date: Tue, 27 Mar 2012 04:52:37 +0530
+Subject: [R-sig-DB] How to forecast using GARCH function
+Message-ID: <CADym=9XvTVOMoUdsprBbiVy78_thjdUV56DxAyBT7sfyeuk7BQ@mail.gmail.com>
+
+I want to forecast using GARCH function.
+Can any one help how to do it?
+
+-- 
+Siddharth Arun,
+4th Year Undergraduate student
+Industrial Engineering and Management,
+IIT Kharagpur
+Contact No. - +91 9475432678
+
+	[[alternative HTML version deleted]]
+
+
+
+From @|d@@run91 @end|ng |rom gm@||@com  Tue Mar 27 01:25:45 2012
+From: @|d@@run91 @end|ng |rom gm@||@com (siddharth arun)
+Date: Tue, 27 Mar 2012 04:55:45 +0530
+Subject: [R-sig-DB] Return on CRSP
+Message-ID: <CADym=9WQnfLUeD3BigZ8H=iXYz4euD1mJwaJHuXq_XWifApayw@mail.gmail.com>
+
+Can any one tell how can I find return on the CRSP equally-weighted
+protfolio from a given set of data from CRSP?
+
+-- 
+Siddharth Arun,
+4th Year Undergraduate student
+Industrial Engineering and Management,
+IIT Kharagpur
+Contact No. - +91 9475432678
+
+	[[alternative HTML version deleted]]
+
+
+
+From edd @end|ng |rom deb|@n@org  Tue Mar 27 01:31:36 2012
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Mon, 26 Mar 2012 18:31:36 -0500
+Subject: [R-sig-DB] How to forecast using GARCH function
+In-Reply-To: <CADym=9XvTVOMoUdsprBbiVy78_thjdUV56DxAyBT7sfyeuk7BQ@mail.gmail.com>
+References: <CADym=9XvTVOMoUdsprBbiVy78_thjdUV56DxAyBT7sfyeuk7BQ@mail.gmail.com>
+Message-ID: <20336.64600.200753.661296@max.nulle.part>
+
+
+On 27 March 2012 at 04:52, siddharth arun wrote:
+| I want to forecast using GARCH function.
+| Can any one help how to do it?
+
+Wrong mailing list, this one is for DB -- as in Databases.  
+
+Try r-sig-finance, or better still, read the help pages for the garch
+functions available, inter alia, in packages tseries and rugarch.
+
+Dirk
+
+
+-- 
+"Outside of a dog, a book is a man's best friend. Inside of a dog, it is too
+dark to read." -- Groucho Marx
+
+
+
+From @||@chb@ch @end|ng |rom u@g@@gov  Tue Mar 27 20:50:12 2012
+From: @||@chb@ch @end|ng |rom u@g@@gov (Anthony S Fischbach)
+Date: Tue, 27 Mar 2012 10:50:12 -0800
+Subject: [R-sig-DB] Reading date time fields from MS Access
+Message-ID: <OF0B9902CF.B61E3417-ON892579CE.00652466-892579CE.006778E3@usgs.gov>
+
+I understand that reading date time fields through ODBC can be 
+problematic.
+
+When reading a table containing several MS Access date time fields, some 
+are correctly read, others are not.
+
+In the snippet below, both DateTimeFld1 and DateTimeFld2 are formatted 
+identically within 
+MS Access.  When read in through RODBC date times in the first field are 
+truncated to dates, 
+but the second field imports correctly.
+
+I have tried this from both MS Access .mdb and .accdb files, and tried 
+both the
+odbcConnect and odbcConnectAccess2007 functions with the same results.
+When using odbcConnect, I have specified a dsn created by 
+C:\Windows\SysWOW64\odbcad32.exe driver?
+
+Please advise if there may be a solution to reliably handle date time 
+fields from MS Access.
+
+
+Snippet:
+> myMSAccessCnx<-"D:/TEMP/TEST.accdb"
+> data.ch<-odbcConnectAccess2007(myMSAccessCnx, uid="afischbach")
+> data.ch
+> Test_tbl<-sqlFetch(data.ch, "Test_tbl")
+> Test_tbl[1,]
+     PK   DateTimeFld1    DateTimeFld2 
+1 41910   2004-04-26      2004-04-27 02:00:00
+
+
+	[[alternative HTML version deleted]]
+
+
+

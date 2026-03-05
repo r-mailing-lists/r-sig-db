@@ -1,0 +1,957 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2007-07",
+  "messages": [
+    {
+      "id": "msg-4b7070dd98db",
+      "message_id": "<63A5458C5D02D14D9B152DEDD82A824002A4AB@kalyptomail.dnsalias.com>",
+      "from_name": "Ashish Kulkarni",
+      "from_email_hash": "8dcdca1ca2742e40a1b7516dc78a7d1c8c26f842205807c5921f62ca22c6209c",
+      "date": "2007-07-06T12:04:43+05:30",
+      "subject": "[R-sig-DB] [PATCH] segfault in RSQLite 0.5-4",
+      "subject_clean": "[PATCH] segfault in RSQLite 0.5-4",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello,\n\nI encountered a segfault in RSQLite 0.5-4, it was a null pointer dereference which was introduced in r246. Apparently, under certain conditions sqlite3_column_decltype() returns NULL, which wasn't checked for at all and caused SQLite_decltype_to_type() to segfault. I've attached the patch against 0.5-4.\n\nRegards,\nashish\n\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: RSQLite_0.5-4_segfault.patch\nType: application/octet-stream\nSize: 839 bytes\nDesc: RSQLite_0.5-4_segfault.patch\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20070706/04cf4069/attachment.obj>",
+      "body_snippet": "Hello,\n\nI encountered a segfault in RSQLite 0.5-4, it was a null pointer dereference which was introduced in r246. Apparently, under certain conditions sqlite3_column_decltype() returns NULL, which wa",
+      "thread_id": "thread-4b7070dd98db",
+      "thread_depth": 0,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-804e307583e0",
+      "message_id": "<Pine.LNX.4.64.0707060804020.9697@auk.stats>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2007-07-06T08:05:31+01:00",
+      "subject": "[R-sig-DB] [PATCH] segfault in RSQLite 0.5-4",
+      "subject_clean": "[PATCH] segfault in RSQLite 0.5-4",
+      "in_reply_to": "<63A5458C5D02D14D9B152DEDD82A824002A4AB@kalyptomail.dnsalias.com>",
+      "references": [
+        "<63A5458C5D02D14D9B152DEDD82A824002A4AB@kalyptomail.dnsalias.com>"
+      ],
+      "body_plain": "Please send a patch to the maintainer, not a discussion list.\n\nThe latest version is in fact 0.6-0 in the 2.6.0/Other area of CRAN.\n\n\nOn Fri, 6 Jul 2007, Ashish Kulkarni wrote:\n\n> Hello,\n>\n> I encountered a segfault in RSQLite 0.5-4, it was a null pointer dereference which was introduced in r246. Apparently, under certain conditions sqlite3_column_decltype() returns NULL, which wasn't checked for at all and caused SQLite_decltype_to_type() to segfault. I've attached the patch against 0.5-4.\n>\n> Regards,\n> ashish\n>\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "Please send a patch to the maintainer, not a discussion list.\n\nThe latest version is in fact 0.6-0 in the 2.6.0/Other area of CRAN.\n\n\nOn Fri, 6 Jul 2007, Ashish Kulkarni wrote:\n\n> Hello,\n>\n> I encount",
+      "thread_id": "thread-4b7070dd98db",
+      "thread_depth": 1,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-200270a7be3f",
+      "message_id": "<m2vecsv0sl.fsf@ziti.fhcrc.org>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2007-07-10T06:35:54-07:00",
+      "subject": "[R-sig-DB] [PATCH] segfault in RSQLite 0.5-4",
+      "subject_clean": "[PATCH] segfault in RSQLite 0.5-4",
+      "in_reply_to": "<63A5458C5D02D14D9B152DEDD82A824002A4AB@kalyptomail.dnsalias.com> (Ashish Kulkarni's message of \"Fri, 6 Jul 2007 12:04:43 +0530\")",
+      "references": [
+        "<63A5458C5D02D14D9B152DEDD82A824002A4AB@kalyptomail.dnsalias.com>"
+      ],
+      "body_plain": "Hi Ashish,\n\n\"Ashish Kulkarni\" <ashish.kulkarni at kalyptorisk.com> writes:\n> I encountered a segfault in RSQLite 0.5-4, it was a null pointer\n> dereference which was introduced in r246. Apparently, under certain\n> conditions sqlite3_column_decltype() returns NULL, which wasn't\n> checked for at all and caused SQLite_decltype_to_type() to\n> segfault. I've attached the patch against 0.5-4.\n\nThanks for the report.  I just returned from vacation which is why I\nwas not able to respond more quickly.  I can reproduce the crash and\nwill have a fix available by the end of the week.\n\nAs for you patch:\n\ndiff -ur RSQLite/src/RS-SQLite.c RSQLite/src/RS-SQLite.c\n--- RSQLite/src/RS-SQLite.c\t2007-04-25 22:13:13.000000000 +0530\n+++ RSQLite/src/RS-SQLite.c\t2007-07-05 19:00:20.444167700 +0530\n@@ -903,8 +903,13 @@\n     col_type = sqlite3_column_type(db_statement, j);\n     if (col_type == SQLITE_NULL) {\n         /* try to get type from origin column */\n-        col_decltype = sqlite3_column_decltype(db_statement, j);\n-        col_type = SQLite_decltype_to_type(col_decltype);\n+        col_decltype = sqlite3_column_decltype(db_statement, j);\n\nNot sure if it will come through in your MUA, but you've used DOS\nstyle line endings which makes it hard for me to apply.\n\n+        \n+        /* if SQLite doesn't give the information, assume it is an integer */\n\nI'm a bit surprised by this choice.  Can you explain why integer is\nthe desired default?  I was expecting to see SQLITE_TEXT here -- if\nyou don't know what a column in a result set is, you can always put it\ninto a character vector in R, you cannot always convert it to\ninteger.  Or am I missing something?\n\nDoes the following patch fix the crash for you?\n\ndiff --git a/SQLite/RSQLite/src/RS-SQLite.c b/SQLite/RSQLite/src/RS-SQLite.c\nindex 0545211..27e5b47 100644\n--- a/SQLite/RSQLite/src/RS-SQLite.c\n+++ b/SQLite/RSQLite/src/RS-SQLite.c\n@@ -349,6 +349,8 @@ RS_SQLite_closeConnection(Con_Handle *conHandle)\n int SQLite_decltype_to_type(const char* decltype)\n {\n     unsigned int h = 0;\n+    if (!decltype)\n+        return SQLITE_TEXT;\n     int len = strlen(decltype);\n     const unsigned char *zIn = (unsigned char*)decltype;\n     const unsigned char *zEnd = (unsigned char*)&(decltype[len]);\n\nThe problem is that whenever a result set has a column with a NULL in\nthe first row, the type will be forced to text.  I can think of ways\nof fixing this, but the solutions add complexity and will likely hurt\nperformance.  I wonder if anyone has a suggestion here?  One idea is\nto provide a mechanism for users to specify the desired types of the\ncolumns in a resultset.\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "Hi Ashish,\n\n\"Ashish Kulkarni\" <ashish.kulkarni at kalyptorisk.com> writes:\n> I encountered a segfault in RSQLite 0.5-4, it was a null pointer\n> dereference which was introduced in r246. Apparently, un",
+      "thread_id": "thread-4b7070dd98db",
+      "thread_depth": 1,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-0bcfedb76ae7",
+      "message_id": "<m2ps30uzqr.fsf@ziti.fhcrc.org>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2007-07-10T06:58:36-07:00",
+      "subject": "[R-sig-DB] [PATCH] segfault in RSQLite 0.5-4",
+      "subject_clean": "[PATCH] segfault in RSQLite 0.5-4",
+      "in_reply_to": "<Pine.LNX.4.64.0707060804020.9697@auk.stats> (Brian Ripley's message of \"Fri, 6 Jul 2007 08:05:31 +0100 (BST)\")",
+      "references": [
+        "<63A5458C5D02D14D9B152DEDD82A824002A4AB@kalyptomail.dnsalias.com>",
+        "<Pine.LNX.4.64.0707060804020.9697@auk.stats>"
+      ],
+      "body_plain": "Prof Brian Ripley <ripley at stats.ox.ac.uk> writes:\n\n> Please send a patch to the maintainer, not a discussion list.\n\nI disagree with this request.  I think there is considerable value in\nsending patches to a discussion list.  There are others besides the\nofficial maintainer who can apply, test, and comment on a patch.\n\nAnd there are cases where the maintainer is, for example, on vacation\nand unable to quickly respond.  A patch sent to a public mailing list\nallows another user to see that a problem has been reported and try a\npossible fix.\n\nIf the volumn of such patch-related mails becomes a problem, then\nperhaps a more focused list would be appropriate, but I doubt that is\ngoing to be a significant problem anytime soon.\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "Prof Brian Ripley <ripley at stats.ox.ac.uk> writes:\n\n> Please send a patch to the maintainer, not a discussion list.\n\nI disagree with this request.  I think there is considerable value in\nsending pat",
+      "thread_id": "thread-4b7070dd98db",
+      "thread_depth": 2,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-f8f7ddac4cdd",
+      "message_id": "<a1bf48f10707151342m41485bccybbbee0b9819a38e0@mail.gmail.com>",
+      "from_name": "Paul Dlug",
+      "from_email_hash": "e8b7f558a94d2ed35ec16b74371e6b9649002afd06ce4eb80d67e4d3d519718a",
+      "date": "2007-07-15T16:42:34-04:00",
+      "subject": "[R-sig-DB] Opening multiple result sets",
+      "subject_clean": "Opening multiple result sets",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I'm rather new to using R DBI so please excuse me if this is beyond\nbasic. I don't seem to be able to open more than one resultset at\ntime, I'm trying the following:\n\ndrv <- dbDriver(\"MySQL\")\ncon <- dbConnect(drv, ...)\n\nrs1 <- dbSendQuery(con, \"SELECT ...\")\n\nwhile (!dbHasCompleted(rs1)) {\n  data1 <- fetch(rs1, n=1)\n\n  rs2 <- dbSendQuery(con, past(\"SELECT ... WHERE id =\", data1$id))\n  data2 <- fetch(rs2, n=1)\n\n  dbClearResult(rs2)\n}\ndbClearResult(rs1)\ndbDisconnect(con)\n\n\nWhen I try to execute it I get the error:\nError in mysqlExecStatement(conn, statement, ...) :\n\tRS-DBI driver: (connection with pending rows, close resultSet before\ncontinuing)\n\nWhat I'm trying to accomplish is operating on the results of the first\nquery one row at a time and using the returned values to perform\nanother query and analyze the results. The first query is going to\nreturn a large amount of data so I don't really want to fetch all rows\ninto memory up front, close the result set and proceed.\n\nAny help/suggestions would be greatly appreciated.\n\n\n\nThanks,\nPaul",
+      "body_snippet": "I'm rather new to using R DBI so please excuse me if this is beyond\nbasic. I don't seem to be able to open more than one resultset at\ntime, I'm trying the following:\n\ndrv <- dbDriver(\"MySQL\")\ncon <- d",
+      "thread_id": "thread-f8f7ddac4cdd",
+      "thread_depth": 0,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-1a16fc51bf6e",
+      "message_id": "<m23azpqqix.fsf@ziti.fhcrc.org>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2007-07-15T14:57:10-07:00",
+      "subject": "[R-sig-DB] Opening multiple result sets",
+      "subject_clean": "Opening multiple result sets",
+      "in_reply_to": "<a1bf48f10707151342m41485bccybbbee0b9819a38e0@mail.gmail.com> (Paul Dlug's message of \"Sun, 15 Jul 2007 16:42:34 -0400\")",
+      "references": [
+        "<a1bf48f10707151342m41485bccybbbee0b9819a38e0@mail.gmail.com>"
+      ],
+      "body_plain": "\"Paul Dlug\" <paul.dlug at gmail.com> writes:\n\n> I'm rather new to using R DBI so please excuse me if this is beyond\n> basic. I don't seem to be able to open more than one resultset at\n> time, I'm trying the following:\n\nThe RMySQL sources contain the following comment:\n\n   /* Do we have a pending resultSet in the current connection?  \n    * MySQL only allows  one resultSet per connection.\n    */\n\nSo I don't think you can do that.  You could try:\n\n - opening more than one connection\n\n - using a subselect.  I'm not certain that MySQL supports this, but\n   you can try: SELECT ... from (SELECT ... from ...) WHERE ...\n\n> When I try to execute it I get the error:\n> Error in mysqlExecStatement(conn, statement, ...) :\n> \tRS-DBI driver: (connection with pending rows, close resultSet before\n> continuing)\n>\n> What I'm trying to accomplish is operating on the results of the first\n> query one row at a time and using the returned values to perform\n> another query and analyze the results. The first query is going to\n> return a large amount of data so I don't really want to fetch all rows\n> into memory up front, close the result set and proceed.\n>\n> Any help/suggestions would be greatly appreciated.\n\nPerhaps another workaround might be LIMIT and OFFSET?\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "\"Paul Dlug\" <paul.dlug at gmail.com> writes:\n\n> I'm rather new to using R DBI so please excuse me if this is beyond\n> basic. I don't seem to be able to open more than one resultset at\n> time, I'm tryi",
+      "thread_id": "thread-f8f7ddac4cdd",
+      "thread_depth": 1,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-e41ad68d5b4e",
+      "message_id": "<63A5458C5D02D14D9B152DEDD82A824002A76B@kalyptomail.dnsalias.com>",
+      "from_name": "Ashish Kulkarni",
+      "from_email_hash": "8dcdca1ca2742e40a1b7516dc78a7d1c8c26f842205807c5921f62ca22c6209c",
+      "date": "2007-07-16T15:51:19+05:30",
+      "subject": "[R-sig-DB] [PATCH] segfault in RSQLite 0.5-4",
+      "subject_clean": "[PATCH] segfault in RSQLite 0.5-4",
+      "in_reply_to": "<m2vecsv0sl.fsf@ziti.fhcrc.org>",
+      "references": [],
+      "body_plain": "Seth Falcon wrote:\n\n> I'm a bit surprised by this choice.  Can you explain why integer is\n> the desired default?  I was expecting to see SQLITE_TEXT here -- if\n> you don't know what a column in a result set is, you can always put it\n> into a character vector in R, you cannot always convert it to\n> integer.  Or am I missing something?\n> \n\nYep, you're right -- my scenario involved an integer, but I agree that\nSQLITE_TEXT is the more generic option :-)\n\n> The problem is that whenever a result set has a column with a NULL in\n> the first row, the type will be forced to text.  I can think of ways\n> of fixing this, but the solutions add complexity and will likely hurt\n> performance.  I wonder if anyone has a suggestion here?  One idea is\n> to provide a mechanism for users to specify the desired types of the\n> columns in a resultset.\n\nThe patch fixes my problem. Also, what you describe is very much of an \nedge case, so I think we can leave it unaddressed at the moment.\n\nBTW, the version of SQLite we bundle (3.3.8) is rather old, 3.4.0 being\nthe new version. Also, considering that this version introduces a simple\nway of embedding SQLite in any other application, we should look into \nthat approach: see http://www.sqlite.org/cvstrac/wiki?p=TheAmalgamation\n\nIt would reduce the source package size, increase the speed a bit and \nstandardize the build process across *nix and Windows.\n\nRegards,\nAshish",
+      "body_snippet": "Seth Falcon wrote:\n\n> I'm a bit surprised by this choice.  Can you explain why integer is\n> the desired default?  I was expecting to see SQLITE_TEXT here -- if\n> you don't know what a column in a resu",
+      "thread_id": "thread-4b7070dd98db",
+      "thread_depth": 2,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-02cf75fab3d2",
+      "message_id": "<1296.1184595399@net2000.ch>",
+      "from_name": "eric m@iii@g oii @et2000@ch",
+      "from_email_hash": "fa20af42a2414f256988183aae17bb74cde099ad120b63c356c75cbb0b4889d0",
+      "date": "2007-07-16T16:16:39+02:00",
+      "subject": "[R-sig-DB] RODBC on Oracle DB",
+      "subject_clean": "RODBC on Oracle DB",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "> essai <- odbcConnect(\"ORESTE_prod\",  uid=\"****\",  pwd=\"******\" )\n> odbcGetInfo(essai)\n       DBMS_Name         DBMS_Ver  Driver_ODBC_Ver \n        \"Oracle\"     \"09.00.0121\"          \"03.51\" \nData_Source_Name      Driver_Name       Driver_Ver \n   \"ORESTE_prod\"    \"SQORA32.DLL\"     \"09.00.0101\" \n        ODBC_Ver      Server_Name \n    \"03.52.0000\"           \"weba\" \n\n\n> sqlTables(essai)  \n\nThe result of this function is a liste of tables, one of them is called:\nS_TYP_COLLEGES.\n\n\n> sqlFetch(essai,\"S_TYP_COLLEGES\")\n[1] \"[RODBC] ERROR: Could not SQLExecDirect\"                            \n[2] \"42S02 942 [Oracle][ODBC][Ora]ORA-00942: Table ou vue inexistante\\n\"\n\n> sqlFetch(essai, \"S_TYP_COLLEGES\", colnames=TRUE, rownames=FALSE)\n[1] \"[RODBC] ERROR: Could not SQLExecDirect\"                            \n[2] \"42S02 942 [Oracle][ODBC][Ora]ORA-00942: Table ou vue inexistante\\n\"\n\n\nWhat could be the problem here ? \nAny help is welcome\nEric R?thlisberger, Neuch?tel",
+      "body_snippet": "> essai <- odbcConnect(\"ORESTE_prod\",  uid=\"****\",  pwd=\"******\" )\n> odbcGetInfo(essai)\n       DBMS_Name         DBMS_Ver  Driver_ODBC_Ver \n        \"Oracle\"     \"09.00.0121\"          \"03.51\" \nData_Sou",
+      "thread_id": "thread-02cf75fab3d2",
+      "thread_depth": 0,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-b94470a5cdff",
+      "message_id": "<Pine.LNX.4.64.0707161530120.7166@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2007-07-16T15:32:34+01:00",
+      "subject": "[R-sig-DB] RODBC on Oracle DB",
+      "subject_clean": "RODBC on Oracle DB",
+      "in_reply_to": "<1296.1184595399@net2000.ch>",
+      "references": [
+        "<1296.1184595399@net2000.ch>"
+      ],
+      "body_plain": "The problem could be quoting, if Oracle is not standards-compliant.\nSee the options in ?odbcConnect.\n\nIf sqlQuery(essai, \"select * from S_TYP_COLLEGES\") works, this is likely \nto be the problem.\n\nOn Mon, 16 Jul 2007, eric at net2000.ch wrote:\n\n>\n>\n>> essai <- odbcConnect(\"ORESTE_prod\",  uid=\"****\",  pwd=\"******\" )\n>> odbcGetInfo(essai)\n>       DBMS_Name         DBMS_Ver  Driver_ODBC_Ver\n>        \"Oracle\"     \"09.00.0121\"          \"03.51\"\n> Data_Source_Name      Driver_Name       Driver_Ver\n>   \"ORESTE_prod\"    \"SQORA32.DLL\"     \"09.00.0101\"\n>        ODBC_Ver      Server_Name\n>    \"03.52.0000\"           \"weba\"\n>\n>\n>> sqlTables(essai)\n>\n> The result of this function is a liste of tables, one of them is called:\n> S_TYP_COLLEGES.\n>\n>\n>> sqlFetch(essai,\"S_TYP_COLLEGES\")\n> [1] \"[RODBC] ERROR: Could not SQLExecDirect\"\n> [2] \"42S02 942 [Oracle][ODBC][Ora]ORA-00942: Table ou vue inexistante\\n\"\n>\n>> sqlFetch(essai, \"S_TYP_COLLEGES\", colnames=TRUE, rownames=FALSE)\n> [1] \"[RODBC] ERROR: Could not SQLExecDirect\"\n> [2] \"42S02 942 [Oracle][ODBC][Ora]ORA-00942: Table ou vue inexistante\\n\"\n>\n>\n> What could be the problem here ?\n> Any help is welcome\n> Eric R?thlisberger, Neuch?tel\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "The problem could be quoting, if Oracle is not standards-compliant.\nSee the options in ?odbcConnect.\n\nIf sqlQuery(essai, \"select * from S_TYP_COLLEGES\") works, this is likely \nto be the problem.\n\nOn M",
+      "thread_id": "thread-02cf75fab3d2",
+      "thread_depth": 1,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-e28f0dac98c3",
+      "message_id": "<m2ejj8maz0.fsf@ziti.fhcrc.org>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2007-07-16T11:58:59-07:00",
+      "subject": "[R-sig-DB] [PATCH] segfault in RSQLite 0.5-4",
+      "subject_clean": "[PATCH] segfault in RSQLite 0.5-4",
+      "in_reply_to": "<63A5458C5D02D14D9B152DEDD82A824002A76B@kalyptomail.dnsalias.com> (Ashish Kulkarni's message of \"Mon, 16 Jul 2007 15:51:19 +0530\")",
+      "references": [
+        "<63A5458C5D02D14D9B152DEDD82A824002A76B@kalyptomail.dnsalias.com>"
+      ],
+      "body_plain": "\"Ashish Kulkarni\" <ashish.kulkarni at kalyptorisk.com> writes:\n\n> Seth Falcon wrote:\n>\n>> I'm a bit surprised by this choice.  Can you explain why integer is\n>> the desired default?  I was expecting to see SQLITE_TEXT here -- if\n>> you don't know what a column in a result set is, you can always put it\n>> into a character vector in R, you cannot always convert it to\n>> integer.  Or am I missing something?\n>> \n>\n> Yep, you're right -- my scenario involved an integer, but I agree that\n> SQLITE_TEXT is the more generic option :-)\n\nok, glad we are on the same page.\n\n>> The problem is that whenever a result set has a column with a NULL in\n>> the first row, the type will be forced to text.  I can think of ways\n>> of fixing this, but the solutions add complexity and will likely hurt\n>> performance.  I wonder if anyone has a suggestion here?  One idea is\n>> to provide a mechanism for users to specify the desired types of the\n>> columns in a resultset.\n>\n> The patch fixes my problem. Also, what you describe is very much of an \n> edge case, so I think we can leave it unaddressed at the moment.\n\nThanks for testing and getting back to me.  I plan to send out an\nupdate to CRAN later today or early tomorrow.\n>\n> BTW, the version of SQLite we bundle (3.3.8) is rather old, 3.4.0 being\n> the new version. Also, considering that this version introduces a simple\n> way of embedding SQLite in any other application, we should look into \n> that approach: see http://www.sqlite.org/cvstrac/wiki?p=TheAmalgamation\n>\n> It would reduce the source package size, increase the speed a bit and \n> standardize the build process across *nix and Windows.\n\nI've seen that and had the same thought.  I plan to include the new\nversion in the update ASAP because of a bug in SQLite reported by\nGabor.  I will see about using the \"Amalgamation\" since, as you say,\nshould simplify the build on Windows.\n\nBest,\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "\"Ashish Kulkarni\" <ashish.kulkarni at kalyptorisk.com> writes:\n\n> Seth Falcon wrote:\n>\n>> I'm a bit surprised by this choice.  Can you explain why integer is\n>> the desired default?  I was expecting t",
+      "thread_id": "thread-4b7070dd98db",
+      "thread_depth": 3,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-4b5e250861a2",
+      "message_id": "<m2sl7nkjkt.fsf@ziti.fhcrc.org>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2007-07-16T16:36:02-07:00",
+      "subject": "[R-sig-DB] RSQLite updated: notes for 0.5-5",
+      "subject_clean": "RSQLite updated: notes for 0.5-5",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello all,\n\nI've just sent RSQLite_0.5-5 to CRAN (it will take a few days to get\non the master and propagate).  If you would like to give this a try,\nyou can find packages here:\n\n    http://bioconductor.fhcrc.org/packages/misc/\n\nThe new version contains these changes:\n\n    Update to SQLite 3.4.0, use SQLite amalgamation\n    \n        This patch updates the bundled SQLite version to 3.4.0 and\n        introduces a new mechanism of including the bundled SQLite\n        code.  Instead of building a separate SQLite lib and linking\n        to it, we now use SQLite's amalgamation file which puts all of\n        SQLite into a single C file.  This has an added benefit of\n        simplifying the build process on Windows.\n\n\n    Fix crash when resultset contains a NULL in first row\n    \n        This patch resolved the issue reported here:\n        https://stat.ethz.ch/pipermail/r-sig-db/2007-July/000332.html\n\nNote that this version should *not* be used with R-devel.  Instead,\nlook for 0.6-1 in the R-2.6.0/Other subdir.\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "Hello all,\n\nI've just sent RSQLite_0.5-5 to CRAN (it will take a few days to get\non the master and propagate).  If you would like to give this a try,\nyou can find packages here:\n\n    http://bioconduct",
+      "thread_id": "thread-4b5e250861a2",
+      "thread_depth": 0,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-8a0f0f48a2d1",
+      "message_id": "<63A5458C5D02D14D9B152DEDD82A824002A7AB@kalyptomail.dnsalias.com>",
+      "from_name": "Ashish Kulkarni",
+      "from_email_hash": "8dcdca1ca2742e40a1b7516dc78a7d1c8c26f842205807c5921f62ca22c6209c",
+      "date": "2007-07-17T15:29:12+05:30",
+      "subject": "[R-sig-DB] [PATCH] segfault in RSQLite 0.5-4",
+      "subject_clean": "[PATCH] segfault in RSQLite 0.5-4",
+      "in_reply_to": "<m2ejj8maz0.fsf@ziti.fhcrc.org>",
+      "references": [],
+      "body_plain": "Now that you've upgraded to 3.4.0, I have some patches which \nuse the sqlite3_prepare_v2 API, which is recommended now: see \n\nhttp://www.sqlite.org/capi3ref.html#sqlite3_prepare_v2\n\nSQLITE_SCHEMA handling is done internally in that case, and\nthe legacy behavior that made corrected_sqlite3_step() necessary\nis no longer needed.\n\nI've attached patches against both the trunk and the 2.5 branch.\n\nRegards,\nAshish\n\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: r25_sqlite_prepare_v2.patch\nType: application/octet-stream\nSize: 9438 bytes\nDesc: r25_sqlite_prepare_v2.patch\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20070717/1f9da266/attachment.obj>\n\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: trunk_sqlite_prepare_v2.patch\nType: application/octet-stream\nSize: 11526 bytes\nDesc: trunk_sqlite_prepare_v2.patch\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20070717/1f9da266/attachment-0001.obj>",
+      "body_snippet": "Now that you've upgraded to 3.4.0, I have some patches which \nuse the sqlite3_prepare_v2 API, which is recommended now: see \n\nhttp://www.sqlite.org/capi3ref.html#sqlite3_prepare_v2\n\nSQLITE_SCHEMA hand",
+      "thread_id": "thread-4b7070dd98db",
+      "thread_depth": 4,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-6488a9f53ea2",
+      "message_id": "<m2wswyel3u.fsf@ziti.fhcrc.org>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2007-07-17T15:11:49-07:00",
+      "subject": "[R-sig-DB] [PATCH] segfault in RSQLite 0.5-4",
+      "subject_clean": "[PATCH] segfault in RSQLite 0.5-4",
+      "in_reply_to": "<63A5458C5D02D14D9B152DEDD82A824002A7AB@kalyptomail.dnsalias.com> (Ashish Kulkarni's message of \"Tue, 17 Jul 2007 15:29:12 +0530\")",
+      "references": [
+        "<63A5458C5D02D14D9B152DEDD82A824002A7AB@kalyptomail.dnsalias.com>"
+      ],
+      "body_plain": "\"Ashish Kulkarni\" <ashish.kulkarni at kalyptorisk.com> writes:\n\n> Now that you've upgraded to 3.4.0, I have some patches which \n> use the sqlite3_prepare_v2 API, which is recommended now: see \n>\n> http://www.sqlite.org/capi3ref.html#sqlite3_prepare_v2\n>\n> SQLITE_SCHEMA handling is done internally in that case, and\n> the legacy behavior that made corrected_sqlite3_step() necessary\n> is no longer needed.\n>\n> I've attached patches against both the trunk and the 2.5 branch.\n\nThanks, I will take a look later this week.\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "\"Ashish Kulkarni\" <ashish.kulkarni at kalyptorisk.com> writes:\n\n> Now that you've upgraded to 3.4.0, I have some patches which \n> use the sqlite3_prepare_v2 API, which is recommended now: see \n>\n> htt",
+      "thread_id": "thread-4b7070dd98db",
+      "thread_depth": 5,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-0099ab668316",
+      "message_id": "<m2sl7mekcp.fsf@ziti.fhcrc.org>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2007-07-17T15:28:06-07:00",
+      "subject": "[R-sig-DB] [PATCH] segfault in RSQLite 0.5-4",
+      "subject_clean": "[PATCH] segfault in RSQLite 0.5-4",
+      "in_reply_to": "<m2wswyel3u.fsf@ziti.fhcrc.org> (Seth Falcon's message of \"Tue, 17 Jul 2007 15:11:49 -0700\")",
+      "references": [
+        "<63A5458C5D02D14D9B152DEDD82A824002A7AB@kalyptomail.dnsalias.com>",
+        "<m2wswyel3u.fsf@ziti.fhcrc.org>"
+      ],
+      "body_plain": "Seth Falcon <sfalcon at fhcrc.org> writes:\n\n> \"Ashish Kulkarni\" <ashish.kulkarni at kalyptorisk.com> writes:\n>\n>> Now that you've upgraded to 3.4.0, I have some patches which \n>> use the sqlite3_prepare_v2 API, which is recommended now: see \n>>\n>> http://www.sqlite.org/capi3ref.html#sqlite3_prepare_v2\n>>\n>> SQLITE_SCHEMA handling is done internally in that case, and\n>> the legacy behavior that made corrected_sqlite3_step() necessary\n>> is no longer needed.\n>>\n>> I've attached patches against both the trunk and the 2.5 branch.\n>\n> Thanks, I will take a look later this week.\n\nHad a quick look and I have few comments:\n\n1. Your patch has weird line endings.  I get:\n\n    file trunk_sqlite_prepare_v2.patch \n    trunk_sqlite_prepare_v2.patch: ASCII C program text, with CRLF, LF line terminators\n\n   Please use unix line endings only.\n\n2. There is a unit test suite.  To run it, first install the RUnit\n   package, install patched RSQLite and then:\n\n   cd RSQLite/inst/UnitTest\n   R --slave < runalltests.R\n\n   ## on unix-alike you can just do:\n   make test\n\n   Your patch causes one of the tests to fail.  I haven't looked into\n   the failure yet, but perhaps you can?\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "Seth Falcon <sfalcon at fhcrc.org> writes:\n\n> \"Ashish Kulkarni\" <ashish.kulkarni at kalyptorisk.com> writes:\n>\n>> Now that you've upgraded to 3.4.0, I have some patches which \n>> use the sqlite3_prepa",
+      "thread_id": "thread-4b7070dd98db",
+      "thread_depth": 6,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-017065cf46f9",
+      "message_id": "<63A5458C5D02D14D9B152DEDD82A824002A7CD@kalyptomail.dnsalias.com>",
+      "from_name": "Ashish Kulkarni",
+      "from_email_hash": "8dcdca1ca2742e40a1b7516dc78a7d1c8c26f842205807c5921f62ca22c6209c",
+      "date": "2007-07-18T12:36:05+05:30",
+      "subject": "[R-sig-DB] [PATCH] segfault in RSQLite 0.5-4",
+      "subject_clean": "[PATCH] segfault in RSQLite 0.5-4",
+      "in_reply_to": "<m2sl7mekcp.fsf@ziti.fhcrc.org>",
+      "references": [],
+      "body_plain": ">    Please use unix line endings only.\n> \n\nWill do so in future.\n\n>    Your patch causes one of the tests to fail.  I haven't looked into\n>    the failure yet, but perhaps you can?\n\nThe failing test is testSimultaneousSelects2, in which a table is created\nin one connection and a SELECT for that is done from another connection.\nIt looks like sqlite3_prepare_v2() does not reload the schema before\nreporting \"table not found\". This may be a bug upstream, I will try to\ninvestigate it further.\n\nThanks,\nAshish",
+      "body_snippet": ">    Please use unix line endings only.\n> \n\nWill do so in future.\n\n>    Your patch causes one of the tests to fail.  I haven't looked into\n>    the failure yet, but perhaps you can?\n\nThe failing test ",
+      "thread_id": "thread-4b7070dd98db",
+      "thread_depth": 7,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-6fe8962db032",
+      "message_id": "<m2fy3lae0a.fsf@ziti.fhcrc.org>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2007-07-18T09:11:01-07:00",
+      "subject": "[R-sig-DB] [PATCH] segfault in RSQLite 0.5-4",
+      "subject_clean": "[PATCH] segfault in RSQLite 0.5-4",
+      "in_reply_to": "<63A5458C5D02D14D9B152DEDD82A824002A7CD@kalyptomail.dnsalias.com> (Ashish Kulkarni's message of \"Wed, 18 Jul 2007 12:36:05 +0530\")",
+      "references": [
+        "<63A5458C5D02D14D9B152DEDD82A824002A7CD@kalyptomail.dnsalias.com>"
+      ],
+      "body_plain": "\"Ashish Kulkarni\" <ashish.kulkarni at kalyptorisk.com> writes:\n\n>>    Please use unix line endings only.\n>> \n>\n> Will do so in future.\n\nThanks.\n\n> The failing test is testSimultaneousSelects2, in which a table is created\n> in one connection and a SELECT for that is done from another connection.\n> It looks like sqlite3_prepare_v2() does not reload the schema before\n> reporting \"table not found\". This may be a bug upstream, I will try to\n> investigate it further.\n\nKeep us posted.  The test is an artificial attempt to trigger the need\nfor schema reload/reprepare when multiple connections to a DB are\npresent.  The use case is real, not sure how good the test is.  Thanks\nagain for looking into it.\n\nAlso, the updates are going to be delayed because the changes seem to\ncause a build problem on some platforms (although they work for me on\nintel OS X, Linux x86_64, and Windows).  So if any of you are in\nurgent need, give the URL I posted a try.\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "\"Ashish Kulkarni\" <ashish.kulkarni at kalyptorisk.com> writes:\n\n>>    Please use unix line endings only.\n>> \n>\n> Will do so in future.\n\nThanks.\n\n> The failing test is testSimultaneousSelects2, in whic",
+      "thread_id": "thread-4b7070dd98db",
+      "thread_depth": 8,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-18efce6f666c",
+      "message_id": "<971536df0707180913m4130909cm8d664eeb3ebdd10a@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2007-07-18T12:13:24-04:00",
+      "subject": "[R-sig-DB] default driver and connection",
+      "subject_clean": "default driver and connection",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Is there a way of finding out if the driver is loaded and if there\nare any open connections in RSQLite or other database and what\nthey are?  Even better would be if the code below could work regardless\nof whether an SQLite or MySQL connection was open.  I have written pseudocode\nin the places where I don't know how to access the functionality.\nIf all this exists is there an example?  Thanks.\n\n# returns first three rows of iris\n# loading any driver and opening any connection if need be\nf <- function(m, con, dbname = \":memory:\") {\n       if (missing(m) {\n               m <- if (no.data.base.drivers.loaded)\n                       dbDriver(\"SQLite\")\n               else loaded.driver\n       }\n       if (missing(con)) {\n               con <- if (no.connections.open)\n                       dbConnect(m, dbname)\n               active.connection\n       }\n       dbWriteTable(con, \"iris\", iris)\n       dbGetQuery(con, \"select * from iris limit 3\")\n}\n\n# test\nf()",
+      "body_snippet": "Is there a way of finding out if the driver is loaded and if there\nare any open connections in RSQLite or other database and what\nthey are?  Even better would be if the code below could work regardles",
+      "thread_id": "thread-18efce6f666c",
+      "thread_depth": 0,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-a0ba14fc359d",
+      "message_id": "<m2r6n58rz2.fsf@ziti.fhcrc.org>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2007-07-18T11:52:17-07:00",
+      "subject": "[R-sig-DB] default driver and connection",
+      "subject_clean": "default driver and connection",
+      "in_reply_to": "<971536df0707180913m4130909cm8d664eeb3ebdd10a@mail.gmail.com> (Gabor Grothendieck's message of \"Wed, 18 Jul 2007 12:13:24 -0400\")",
+      "references": [
+        "<971536df0707180913m4130909cm8d664eeb3ebdd10a@mail.gmail.com>"
+      ],
+      "body_plain": "Hi,\n\n[The following comments hold for RSQLite.  I'm pretty sure they hold\nfor all DBI, but haven't gone and looked to verify the code.]\n\n\"Gabor Grothendieck\" <ggrothendieck at gmail.com> writes:\n> Is there a way of finding out if the driver is loaded and if there\n> are any open connections in RSQLite or other database and what\n> they are?\n\nThe driver is implemented as a singleton so there is no need to worry\nabout multiple calls to dbDriver(\"SQLite\") or more simply SQLite().\nThe driver gets loaded on first invocation of SQLite() and subsequent\ncalls simply return the existing instance.\n\n> Even better would be if the code below could work regardless\n> of whether an SQLite or MySQL connection was open.  I have written pseudocode\n> in the places where I don't know how to access the functionality.\n> If all this exists is there an example?  Thanks.\n>\n> # returns first three rows of iris\n> # loading any driver and opening any connection if need be\n> f <- function(m, con, dbname = \":memory:\") {\n>        if (missing(m) {\n>                m <- if (no.data.base.drivers.loaded)\n>                        dbDriver(\"SQLite\")\n>                else loaded.driver\n>        }\n>        if (missing(con)) {\n>                con <- if (no.connections.open)\n>                        dbConnect(m, dbname)\n>                active.connection\n>        }\n>        dbWriteTable(con, \"iris\", iris)\n>        dbGetQuery(con, \"select * from iris limit 3\")\n> }\n\ndbListConnections(SQLite()) will tell you about open connections to\nthe SQLite driver.\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "Hi,\n\n[The following comments hold for RSQLite.  I'm pretty sure they hold\nfor all DBI, but haven't gone and looked to verify the code.]\n\n\"Gabor Grothendieck\" <ggrothendieck at gmail.com> writes:\n> Is ",
+      "thread_id": "thread-18efce6f666c",
+      "thread_depth": 1,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-86efc4695333",
+      "message_id": "<971536df0707181235l2f7a88dbh1024579af257554a@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2007-07-18T15:35:34-04:00",
+      "subject": "[R-sig-DB] default driver and connection",
+      "subject_clean": "default driver and connection",
+      "in_reply_to": "<m2r6n58rz2.fsf@ziti.fhcrc.org>",
+      "references": [
+        "<971536df0707180913m4130909cm8d664eeb3ebdd10a@mail.gmail.com>",
+        "<m2r6n58rz2.fsf@ziti.fhcrc.org>"
+      ],
+      "body_plain": "Thanks.  Is there any way to discover whether SQLite or MySQL\nwas loaded so that I can do something like this:\n\nOn 7/18/07, Seth Falcon <sfalcon at fhcrc.org> wrote:\n> Hi,\n>\n> [The following comments hold for RSQLite.  I'm pretty sure they hold\n> for all DBI, but haven't gone and looked to verify the code.]\n>\n> \"Gabor Grothendieck\" <ggrothendieck at gmail.com> writes:\n> > Is there a way of finding out if the driver is loaded and if there\n> > are any open connections in RSQLite or other database and what\n> > they are?\n>\n> The driver is implemented as a singleton so there is no need to worry\n> about multiple calls to dbDriver(\"SQLite\") or more simply SQLite().\n> The driver gets loaded on first invocation of SQLite() and subsequent\n> calls simply return the existing instance.\n>\n> > Even better would be if the code below could work regardless\n> > of whether an SQLite or MySQL connection was open.  I have written pseudocode\n> > in the places where I don't know how to access the functionality.\n> > If all this exists is there an example?  Thanks.\n> >\n> > # returns first three rows of iris\n> > # loading any driver and opening any connection if need be\n> > f <- function(m, con, dbname = \":memory:\") {\n> >        if (missing(m) {\n> >                m <- if (no.data.base.drivers.loaded)\n> >                        dbDriver(\"SQLite\")\n> >                else loaded.driver\n> >        }\n> >        if (missing(con)) {\n> >                con <- if (no.connections.open)\n> >                        dbConnect(m, dbname)\n> >                active.connection\n> >        }\n> >        dbWriteTable(con, \"iris\", iris)\n> >        dbGetQuery(con, \"select * from iris limit 3\")\n> > }\n>\n> dbListConnections(SQLite()) will tell you about open connections to\n> the SQLite driver.\n\nThanks.  Is there also a way to discover whether SQLite or MySQL or\nneither has been loaded.  Note that they could be loaded but not have\nan open connection.\n\nThus, I would like to do this or similar processing:\n\nIf only one of MySQL or SQLite is loaded then use that one.\nIf neither is loaded use SQLite.\n\nThanks.",
+      "body_snippet": "Thanks.  Is there any way to discover whether SQLite or MySQL\nwas loaded so that I can do something like this:\n\nOn 7/18/07, Seth Falcon <sfalcon at fhcrc.org> wrote:\n> Hi,\n>\n> [The following comments ",
+      "thread_id": "thread-18efce6f666c",
+      "thread_depth": 2,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-0c36ff434978",
+      "message_id": "<m23azl8lh3.fsf@ziti.fhcrc.org>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2007-07-18T14:12:40-07:00",
+      "subject": "[R-sig-DB] default driver and connection",
+      "subject_clean": "default driver and connection",
+      "in_reply_to": "<971536df0707181235l2f7a88dbh1024579af257554a@mail.gmail.com> (Gabor Grothendieck's message of \"Wed, 18 Jul 2007 15:35:34 -0400\")",
+      "references": [
+        "<971536df0707180913m4130909cm8d664eeb3ebdd10a@mail.gmail.com>",
+        "<m2r6n58rz2.fsf@ziti.fhcrc.org>",
+        "<971536df0707181235l2f7a88dbh1024579af257554a@mail.gmail.com>"
+      ],
+      "body_plain": "\"Gabor Grothendieck\" <ggrothendieck at gmail.com> writes:\n> Thanks.  Is there also a way to discover whether SQLite or MySQL or\n> neither has been loaded.  Note that they could be loaded but not have\n> an open connection.\n>\n> Thus, I would like to do this or similar processing:\n>\n> If only one of MySQL or SQLite is loaded then use that one.\n> If neither is loaded use SQLite.\n\nWhat if both are loaded?\n\nI don't think there is a way currently to determine if SQLite() has\nyet been called.  However, if RSQLite is not loaded, it certainly has\nnot been called ;-)  So perhaps you can get by with checking whether\nthe package is loaded?\n\nSuch a feature could be added, but I'm not convinced it would actually\nbe useful for anything.\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "\"Gabor Grothendieck\" <ggrothendieck at gmail.com> writes:\n> Thanks.  Is there also a way to discover whether SQLite or MySQL or\n> neither has been loaded.  Note that they could be loaded but not have\n",
+      "thread_id": "thread-18efce6f666c",
+      "thread_depth": 3,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-3b4f5b7e6a97",
+      "message_id": "<971536df0707181542v6774b0d4wb9a58811b406f5fe@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2007-07-18T18:42:15-04:00",
+      "subject": "[R-sig-DB] default driver and connection",
+      "subject_clean": "default driver and connection",
+      "in_reply_to": "<m23azl8lh3.fsf@ziti.fhcrc.org>",
+      "references": [
+        "<971536df0707180913m4130909cm8d664eeb3ebdd10a@mail.gmail.com>",
+        "<m2r6n58rz2.fsf@ziti.fhcrc.org>",
+        "<971536df0707181235l2f7a88dbh1024579af257554a@mail.gmail.com>",
+        "<m23azl8lh3.fsf@ziti.fhcrc.org>"
+      ],
+      "body_plain": "On 7/18/07, Seth Falcon <sfalcon at fhcrc.org> wrote:\n> \"Gabor Grothendieck\" <ggrothendieck at gmail.com> writes:\n> > Thanks.  Is there also a way to discover whether SQLite or MySQL or\n> > neither has been loaded.  Note that they could be loaded but not have\n> > an open connection.\n> >\n> > Thus, I would like to do this or similar processing:\n> >\n> > If only one of MySQL or SQLite is loaded then use that one.\n> > If neither is loaded use SQLite.\n>\n> What if both are loaded?\n>\n> I don't think there is a way currently to determine if SQLite() has\n> yet been called.  However, if RSQLite is not loaded, it certainly has\n> not been called ;-)  So perhaps you can get by with checking whether\n> the package is loaded?\n>\n> Such a feature could be added, but I'm not convinced it would actually\n> be useful for anything.\n>\n\nAlthough the best situation would be if I could discover whether\nthe driver had been loaded, I agree that the next best thing\nis to just check whether the package has been loaded and will\ndo it that way for now.\n\nOne other thing.  dbListConnections(SQLite()) lists SQLite\nconnections and dbListConnections(MySQL()) lists MySQL\nconnections but it would be nice if one could issue\ndbListConnections() and a combined list of both.  If one were\nopen to using either then this would, for example, be a quick\nway to know if there were just one open connection and\ndetermine which of the two database systems it was associated\nwith.   Both are DBIConnection objects so one is really just\nasking for a list of the DBIConnection objects.",
+      "body_snippet": "On 7/18/07, Seth Falcon <sfalcon at fhcrc.org> wrote:\n> \"Gabor Grothendieck\" <ggrothendieck at gmail.com> writes:\n> > Thanks.  Is there also a way to discover whether SQLite or MySQL or\n> > neither ha",
+      "thread_id": "thread-18efce6f666c",
+      "thread_depth": 4,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-0a1de0cf3339",
+      "message_id": "<m2d4yp5kka.fsf@ziti.fhcrc.org>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2007-07-18T17:00:37-07:00",
+      "subject": "[R-sig-DB] default driver and connection",
+      "subject_clean": "default driver and connection",
+      "in_reply_to": "<971536df0707181542v6774b0d4wb9a58811b406f5fe@mail.gmail.com> (Gabor Grothendieck's message of \"Wed, 18 Jul 2007 18:42:15 -0400\")",
+      "references": [
+        "<971536df0707180913m4130909cm8d664eeb3ebdd10a@mail.gmail.com>",
+        "<m2r6n58rz2.fsf@ziti.fhcrc.org>",
+        "<971536df0707181235l2f7a88dbh1024579af257554a@mail.gmail.com>",
+        "<m23azl8lh3.fsf@ziti.fhcrc.org>",
+        "<971536df0707181542v6774b0d4wb9a58811b406f5fe@mail.gmail.com>"
+      ],
+      "body_plain": "\"Gabor Grothendieck\" <ggrothendieck at gmail.com> writes:\n> Although the best situation would be if I could discover whether\n> the driver had been loaded, I agree that the next best thing\n> is to just check whether the package has been loaded and will\n> do it that way for now.\n\nI'm not understanding why knowing whether or not one of the drivers\nhas been initialized via a call to SQLite() or MySQL() is useful.\n\nI can see how finding open connections is useful, and you can do that\nusing dbListConnections.\n>\n> One other thing.  dbListConnections(SQLite()) lists SQLite\n> connections and dbListConnections(MySQL()) lists MySQL\n> connections but it would be nice if one could issue\n> dbListConnections() and a combined list of both.  If one were\n> open to using either then this would, for example, be a quick\n> way to know if there were just one open connection and\n> determine which of the two database systems it was associated\n> with.   Both are DBIConnection objects so one is really just\n> asking for a list of the DBIConnection objects.\n\ndbListAllCons = function() {\n    drivers = list(SQLite(), MySQL())\n    unlist(lapply(drivers, dbListConnections))\n}\n\n\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "\"Gabor Grothendieck\" <ggrothendieck at gmail.com> writes:\n> Although the best situation would be if I could discover whether\n> the driver had been loaded, I agree that the next best thing\n> is to just",
+      "thread_id": "thread-18efce6f666c",
+      "thread_depth": 5,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-396d43774648",
+      "message_id": "<971536df0707181858s525547d7s8b7c7d3d78904b76@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2007-07-18T21:58:56-04:00",
+      "subject": "[R-sig-DB] default driver and connection",
+      "subject_clean": "default driver and connection",
+      "in_reply_to": "<m2d4yp5kka.fsf@ziti.fhcrc.org>",
+      "references": [
+        "<971536df0707180913m4130909cm8d664eeb3ebdd10a@mail.gmail.com>",
+        "<m2r6n58rz2.fsf@ziti.fhcrc.org>",
+        "<971536df0707181235l2f7a88dbh1024579af257554a@mail.gmail.com>",
+        "<m23azl8lh3.fsf@ziti.fhcrc.org>",
+        "<971536df0707181542v6774b0d4wb9a58811b406f5fe@mail.gmail.com>",
+        "<m2d4yp5kka.fsf@ziti.fhcrc.org>"
+      ],
+      "body_plain": "On 7/18/07, Seth Falcon <sfalcon at fhcrc.org> wrote:\n> \"Gabor Grothendieck\" <ggrothendieck at gmail.com> writes:\n> > Although the best situation would be if I could discover whether\n> > the driver had been loaded, I agree that the next best thing\n> > is to just check whether the package has been loaded and will\n> > do it that way for now.\n>\n> I'm not understanding why knowing whether or not one of the drivers\n> has been initialized via a call to SQLite() or MySQL() is useful.\n\nConsider this:\n\n> f2 <- function(s, DF) {\n+    on.exit(dbDisconnect(con))\n+    if (\"package:RMySQL\" %in% search()) {\n+       m <- dbDriver(\"MySQL\")\n+       con <- dbConnect(m)\n+    } else {\n+       m <- dbDriver(\"SQLite\")\n+       con <- dbConnect(m, dbname = \":memory:\")\n+    }\n+    dbWriteTable(con, deparse(substitute(DF)), DF)\n+    dbGetQuery(con, s)\n+ }\n>\n> library(RSQLite)\n> f2(\"select * from iris limit 3\", iris)\n  row_names Sepal_Length Sepal_Width Petal_Length Petal_Width Species\n1         1          5.1         3.5          1.4         0.2  setosa\n2         2          4.9         3.0          1.4         0.2  setosa\n3         3          4.7         3.2          1.3         0.2  setosa\n\nor we could tell it to use MySQL like this:\n\nlibrary(RMySQL)\nf2(\"select * from iris limit 3\", iris)\n\nprovided we had set up a MySQL config file with the necessary username, etc.\nThe select statement given works with either but in some cases we might\nwant to use the extra power of MySQL to give it certain select statements\nnot accepted by SQLite or we might want to use some other database with\nother features in the select statements not covered by either MySQL or\nSQLite such as the PIVOT keyword.\n\nNow perhaps its enough to check for specific load packages and it is\nconvenient. On the other hand it would be even more convincing that the\nuser wanted to use a particular database it they had actually loaded the\ndriver for it regardless of which library calls had been made -- although\nadmittedly the user would then have to issue another statement, the\ndbDriver statement, so its slightly less convenient than what we have above.\n\nThe next level is that we suppose we want to handle any database\nincluding SQLite, MySQL and other databases in the future that have\nnot even been implemented with R drivers yet so its not possible to\nlist them all.\n\n>\n> I can see how finding open connections is useful, and you can do that\n> using dbListConnections.\n> >\n> > One other thing.  dbListConnections(SQLite()) lists SQLite\n> > connections and dbListConnections(MySQL()) lists MySQL\n> > connections but it would be nice if one could issue\n> > dbListConnections() and a combined list of both.  If one were\n> > open to using either then this would, for example, be a quick\n> > way to know if there were just one open connection and\n> > determine which of the two database systems it was associated\n> > with.   Both are DBIConnection objects so one is really just\n> > asking for a list of the DBIConnection objects.\n>\n> dbListAllCons = function() {\n>    drivers = list(SQLite(), MySQL())\n>    unlist(lapply(drivers, dbListConnections))\n> }\n>\n\nThat would work although there could be other types of databases too\nincluding drivers not yet written or contemplated and the above requires\nthat we know ahead of time what they all could be.",
+      "body_snippet": "On 7/18/07, Seth Falcon <sfalcon at fhcrc.org> wrote:\n> \"Gabor Grothendieck\" <ggrothendieck at gmail.com> writes:\n> > Although the best situation would be if I could discover whether\n> > the driver ha",
+      "thread_id": "thread-18efce6f666c",
+      "thread_depth": 6,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-d1bd82f90db0",
+      "message_id": "<971536df0707182049u176a4d2au87808bc22d3ef050@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2007-07-18T23:49:17-04:00",
+      "subject": "[R-sig-DB] default driver and connection",
+      "subject_clean": "default driver and connection",
+      "in_reply_to": "<971536df0707181858s525547d7s8b7c7d3d78904b76@mail.gmail.com>",
+      "references": [
+        "<971536df0707180913m4130909cm8d664eeb3ebdd10a@mail.gmail.com>",
+        "<m2r6n58rz2.fsf@ziti.fhcrc.org>",
+        "<971536df0707181235l2f7a88dbh1024579af257554a@mail.gmail.com>",
+        "<m23azl8lh3.fsf@ziti.fhcrc.org>",
+        "<971536df0707181542v6774b0d4wb9a58811b406f5fe@mail.gmail.com>",
+        "<m2d4yp5kka.fsf@ziti.fhcrc.org>",
+        "<971536df0707181858s525547d7s8b7c7d3d78904b76@mail.gmail.com>"
+      ],
+      "body_plain": "On 7/18/07, Gabor Grothendieck <ggrothendieck at gmail.com> wrote:\n> On 7/18/07, Seth Falcon <sfalcon at fhcrc.org> wrote:\n> > \"Gabor Grothendieck\" <ggrothendieck at gmail.com> writes:\n> > > Although the best situation would be if I could discover whether\n> > > the driver had been loaded, I agree that the next best thing\n> > > is to just check whether the package has been loaded and will\n> > > do it that way for now.\n> >\n> > I'm not understanding why knowing whether or not one of the drivers\n> > has been initialized via a call to SQLite() or MySQL() is useful.\n>\n> Consider this:\n>\n> > f2 <- function(s, DF) {\n> +    on.exit(dbDisconnect(con))\n> +    if (\"package:RMySQL\" %in% search()) {\n> +       m <- dbDriver(\"MySQL\")\n> +       con <- dbConnect(m)\n> +    } else {\n> +       m <- dbDriver(\"SQLite\")\n> +       con <- dbConnect(m, dbname = \":memory:\")\n> +    }\n> +    dbWriteTable(con, deparse(substitute(DF)), DF)\n> +    dbGetQuery(con, s)\n> + }\n> >\n> > library(RSQLite)\n> > f2(\"select * from iris limit 3\", iris)\n>  row_names Sepal_Length Sepal_Width Petal_Length Petal_Width Species\n> 1         1          5.1         3.5          1.4         0.2  setosa\n> 2         2          4.9         3.0          1.4         0.2  setosa\n> 3         3          4.7         3.2          1.3         0.2  setosa\n>\n> or we could tell it to use MySQL like this:\n>\n> library(RMySQL)\n> f2(\"select * from iris limit 3\", iris)\n>\n> provided we had set up a MySQL config file with the necessary username, etc.\n> The select statement given works with either but in some cases we might\n> want to use the extra power of MySQL to give it certain select statements\n> not accepted by SQLite or we might want to use some other database with\n> other features in the select statements not covered by either MySQL or\n> SQLite such as the PIVOT keyword.\n>\n> Now perhaps its enough to check for specific load packages and it is\n> convenient. On the other hand it would be even more convincing that the\n> user wanted to use a particular database it they had actually loaded the\n> driver for it regardless of which library calls had been made -- although\n> admittedly the user would then have to issue another statement, the\n> dbDriver statement, so its slightly less convenient than what we have above.\n>\n> The next level is that we suppose we want to handle any database\n> including SQLite, MySQL and other databases in the future that have\n> not even been implemented with R drivers yet so its not possible to\n> list them all.\n>\n> >\n> > I can see how finding open connections is useful, and you can do that\n> > using dbListConnections.\n> > >\n> > > One other thing.  dbListConnections(SQLite()) lists SQLite\n> > > connections and dbListConnections(MySQL()) lists MySQL\n> > > connections but it would be nice if one could issue\n> > > dbListConnections() and a combined list of both.  If one were\n> > > open to using either then this would, for example, be a quick\n> > > way to know if there were just one open connection and\n> > > determine which of the two database systems it was associated\n> > > with.   Both are DBIConnection objects so one is really just\n> > > asking for a list of the DBIConnection objects.\n> >\n> > dbListAllCons = function() {\n> >    drivers = list(SQLite(), MySQL())\n> >    unlist(lapply(drivers, dbListConnections))\n> > }\n> >\n>\n> That would work although there could be other types of databases too\n> including drivers not yet written or contemplated and the above requires\n> that we know ahead of time what they all could be.\n>\n\nJust one more comment.  For my current package I am currently thinking\nof just having an argument drv which equals \"MySQL\" or \"SQLite\".  If its missing\nthen \"SQLite\" will be used unless the RMySQL package is loaded (as per\nyour idea) in which case RMySQL will be used.  RSQLite will be listed in\nthe Depends: line of the DESCRIPTION file so it will always be loaded\nbut RMySQL will not be listed in the Depends: line so it may or may not.\n\nThus I don't need any features currently but I it might be worthwhile to think\nabout this line of extending the database packages for the future.",
+      "body_snippet": "On 7/18/07, Gabor Grothendieck <ggrothendieck at gmail.com> wrote:\n> On 7/18/07, Seth Falcon <sfalcon at fhcrc.org> wrote:\n> > \"Gabor Grothendieck\" <ggrothendieck at gmail.com> writes:\n> > > Although ",
+      "thread_id": "thread-18efce6f666c",
+      "thread_depth": 7,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-5d2b83d6cb46",
+      "message_id": "<m2tzs0z4dk.fsf@ziti.fhcrc.org>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2007-07-19T10:32:07-07:00",
+      "subject": "[R-sig-DB] default driver and connection",
+      "subject_clean": "default driver and connection",
+      "in_reply_to": "<971536df0707181858s525547d7s8b7c7d3d78904b76@mail.gmail.com> (Gabor Grothendieck's message of \"Wed, 18 Jul 2007 21:58:56 -0400\")",
+      "references": [
+        "<971536df0707180913m4130909cm8d664eeb3ebdd10a@mail.gmail.com>",
+        "<m2r6n58rz2.fsf@ziti.fhcrc.org>",
+        "<971536df0707181235l2f7a88dbh1024579af257554a@mail.gmail.com>",
+        "<m23azl8lh3.fsf@ziti.fhcrc.org>",
+        "<971536df0707181542v6774b0d4wb9a58811b406f5fe@mail.gmail.com>",
+        "<m2d4yp5kka.fsf@ziti.fhcrc.org>",
+        "<971536df0707181858s525547d7s8b7c7d3d78904b76@mail.gmail.com>"
+      ],
+      "body_plain": "\"Gabor Grothendieck\" <ggrothendieck at gmail.com> writes:\n> Now perhaps its enough to check for specific load packages and it is\n> convenient. On the other hand it would be even more convincing that the\n> user wanted to use a particular database it they had actually loaded the\n> driver for it regardless of which library calls had been made -- although\n> admittedly the user would then have to issue another statement, the\n> dbDriver statement, so its slightly less convenient than what we\n> have above.\n\nHow about a function in your package that sets the default db driver:\n\n   setDefaultDb(\"MySQL\")\n\nThis function could set a value in an environment object in your\npackage's namespace.  Users could load your package and call this\nfunction in their .Rprofile for added convenience.  IMO relying on\npackages being loaded (or not) is fragile.\n\n> The next level is that we suppose we want to handle any database\n> including SQLite, MySQL and other databases in the future that have\n> not even been implemented with R drivers yet so its not possible to\n> list them all.\n\nsetDefaultDb seems to solve this.\n\n>> dbListAllCons = function() {\n>>    drivers = list(SQLite(), MySQL())\n>>    unlist(lapply(drivers, dbListConnections))\n>> }\n>>\n>\n> That would work although there could be other types of databases too\n> including drivers not yet written or contemplated and the above requires\n> that we know ahead of time what they all could be.\n\nI'm with you as far as desiring well factored code, but honestly it\nisn't like new DB drivers are popping up all over the place (when was\nthe last time a new driver was introduced?).  So listing them out\nisn't going to be so bad in practice.\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "\"Gabor Grothendieck\" <ggrothendieck at gmail.com> writes:\n> Now perhaps its enough to check for specific load packages and it is\n> convenient. On the other hand it would be even more convincing that t",
+      "thread_id": "thread-18efce6f666c",
+      "thread_depth": 7,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-cbc0a5197522",
+      "message_id": "<971536df0707191051k2098cce7x2d98075f42103456@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2007-07-19T13:51:54-04:00",
+      "subject": "[R-sig-DB] default driver and connection",
+      "subject_clean": "default driver and connection",
+      "in_reply_to": "<m2tzs0z4dk.fsf@ziti.fhcrc.org>",
+      "references": [
+        "<971536df0707180913m4130909cm8d664eeb3ebdd10a@mail.gmail.com>",
+        "<m2r6n58rz2.fsf@ziti.fhcrc.org>",
+        "<971536df0707181235l2f7a88dbh1024579af257554a@mail.gmail.com>",
+        "<m23azl8lh3.fsf@ziti.fhcrc.org>",
+        "<971536df0707181542v6774b0d4wb9a58811b406f5fe@mail.gmail.com>",
+        "<m2d4yp5kka.fsf@ziti.fhcrc.org>",
+        "<971536df0707181858s525547d7s8b7c7d3d78904b76@mail.gmail.com>",
+        "<m2tzs0z4dk.fsf@ziti.fhcrc.org>"
+      ],
+      "body_plain": "On 7/19/07, Seth Falcon <sfalcon at fhcrc.org> wrote:\n> \"Gabor Grothendieck\" <ggrothendieck at gmail.com> writes:\n> > Now perhaps its enough to check for specific load packages and it is\n> > convenient. On the other hand it would be even more convincing that the\n> > user wanted to use a particular database it they had actually loaded the\n> > driver for it regardless of which library calls had been made -- although\n> > admittedly the user would then have to issue another statement, the\n> > dbDriver statement, so its slightly less convenient than what we\n> > have above.\n>\n> How about a function in your package that sets the default db driver:\n>\n>   setDefaultDb(\"MySQL\")\n>\n> This function could set a value in an environment object in your\n> package's namespace.  Users could load your package and call this\n> function in their .Rprofile for added convenience.  IMO relying on\n> packages being loaded (or not) is fragile.\n\nI agree that querying packages for being loaded is fragile. That is\nwhy I originally had the question of how to query whether the database\ndriver was loaded.  I thought that would be more reliable than relying\non package loading since one is not likely to load a database\ndriver they don't intend to use.\n\nThe problem with setDefaultDb is that it adds duplicate infrastructure.\nIts just something else to learn, document, use, etc. whereas the\ndbDriver infrastructure already exists and I think it would be better to\nbe able to leverage off that.\n\nI guess one possibility would be to have a dbDriver option and my\nprogram could use getOptions to retrieve it, defaulting to\nSQLite if the option were missing; however, even that\nadds a new option that was not there before and is, in principle,\nunnecessary if one could discover what drivers were loaded.",
+      "body_snippet": "On 7/19/07, Seth Falcon <sfalcon at fhcrc.org> wrote:\n> \"Gabor Grothendieck\" <ggrothendieck at gmail.com> writes:\n> > Now perhaps its enough to check for specific load packages and it is\n> > convenien",
+      "thread_id": "thread-18efce6f666c",
+      "thread_depth": 8,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-2dcca8edf93f",
+      "message_id": "<63A5458C5D02D14D9B152DEDD82A824002A84A@kalyptomail.dnsalias.com>",
+      "from_name": "Ashish Kulkarni",
+      "from_email_hash": "8dcdca1ca2742e40a1b7516dc78a7d1c8c26f842205807c5921f62ca22c6209c",
+      "date": "2007-07-20T18:33:46+05:30",
+      "subject": "[R-sig-DB] [PATCH] segfault in RSQLite 0.5-4",
+      "subject_clean": "[PATCH] segfault in RSQLite 0.5-4",
+      "in_reply_to": "<m2fy3lae0a.fsf@ziti.fhcrc.org>",
+      "references": [],
+      "body_plain": "> Keep us posted.  The test is an artificial attempt to trigger the need\n> for schema reload/reprepare when multiple connections to a DB are\n> present.  The use case is real, not sure how good the test is.  Thanks\n> again for looking into it.\n\nUpon further investigation, I think that this test falls in a grey area.\nThe error returned by SQLite is actually \"table not found\". \nThe use case for schema reload is already in testSchemaChangeDuringQuery() \nand the patched code successfully passes it. In fact, I experimented with\nadding a column to the same table against which the query was prepared,\nand it worked. \n\nThe test checks for something else: whether a table added in one connection\nis immediately visible in another connection. Leaving aside the fact that\nthis would be a very rare scenario, I think that SQLite should reload\nthe schema information before reporting \"table not found\", which it is\nnot doing so for sqlite3_prepare_v2. I will try to follow it up upstream,\nbut may not be able to do so soon as I will out for 2 weeks.\n\nEither way, what we are testing for is not a very common scenario: the \nnormal scenario of schema reload/recompilation *is* handled properly.\nI've removed the test in the updated patches, we should make a call\nwhether to re-include it with renaming to \ntestTableAddedVisibleInOtherConnection()\n\nRegards,\nashish\n\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: r25_sqlite_prepare_v2.patch\nType: application/octet-stream\nSize: 10862 bytes\nDesc: r25_sqlite_prepare_v2.patch\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20070720/de6cb885/attachment.obj>\n\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: trunk_sqlite_prepare_v2.patch\nType: application/octet-stream\nSize: 12949 bytes\nDesc: trunk_sqlite_prepare_v2.patch\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20070720/de6cb885/attachment-0001.obj>",
+      "body_snippet": "> Keep us posted.  The test is an artificial attempt to trigger the need\n> for schema reload/reprepare when multiple connections to a DB are\n> present.  The use case is real, not sure how good the tes",
+      "thread_id": "thread-4b7070dd98db",
+      "thread_depth": 9,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-50c4a4d02cb7",
+      "message_id": "<JLHH2O$88CC2603E224E10528C7862E0B558298@laposte.net>",
+      "from_name": "b.vialle",
+      "from_email_hash": "26dc5884a6b528f0881012ede8624bb75d6d0c79ba9c5ea14ad086a9a455aa6c",
+      "date": "2007-07-20T17:16:00+02:00",
+      "subject": "[R-sig-DB] RMySQL problem",
+      "subject_clean": "RMySQL problem",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello.\n\nI have the same problem with RMySQL and I want to know if you managed to find a solution for this problem.\nThanks in advance.\n\nBertrand VIALLE.\n\nCr?ez votre adresse ?lectronique prenom.nom at laposte.net \n1 Go d'espace de stockage, anti-spam et anti-virus int?gr?s.",
+      "body_snippet": "Hello.\n\nI have the same problem with RMySQL and I want to know if you managed to find a solution for this problem.\nThanks in advance.\n\nBertrand VIALLE.\n\nCr?ez votre adresse ?lectronique prenom.nom at ",
+      "thread_id": "thread-50c4a4d02cb7",
+      "thread_depth": 0,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-403cf281834d",
+      "message_id": "<Pine.LNX.4.64.0707201735540.4759@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2007-07-20T17:39:20+01:00",
+      "subject": "[R-sig-DB] RMySQL problem",
+      "subject_clean": "RMySQL problem",
+      "in_reply_to": "<JLHH2O$88CC2603E224E10528C7862E0B558298@laposte.net>",
+      "references": [
+        "<JLHH2O$88CC2603E224E10528C7862E0B558298@laposte.net>"
+      ],
+      "body_plain": "On Fri, 20 Jul 2007, b.vialle wrote:\n\n> Hello.\n>\n> I have the same problem with RMySQL and I want to know if you managed to \n> find a solution for this problem.\n\nThe same problem as who, and what was it?\n\nPlease give a URL to the posting you are referring to, and give us the \ndetails the posting guide requests about your own problem, including at a \nminimum the output of sessionInfo().\n\n\n> Thanks in advance.\n>\n> Bertrand VIALLE.\n\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "On Fri, 20 Jul 2007, b.vialle wrote:\n\n> Hello.\n>\n> I have the same problem with RMySQL and I want to know if you managed to \n> find a solution for this problem.\n\nThe same problem as who, and what was ",
+      "thread_id": "thread-50c4a4d02cb7",
+      "thread_depth": 1,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-b88e59781853",
+      "message_id": "<m2fy3jufe8.fsf@ziti.fhcrc.org>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2007-07-20T10:57:35-07:00",
+      "subject": "[R-sig-DB] [PATCH] segfault in RSQLite 0.5-4",
+      "subject_clean": "[PATCH] segfault in RSQLite 0.5-4",
+      "in_reply_to": "<63A5458C5D02D14D9B152DEDD82A824002A84A@kalyptomail.dnsalias.com> (Ashish Kulkarni's message of \"Fri, 20 Jul 2007 18:33:46 +0530\")",
+      "references": [
+        "<63A5458C5D02D14D9B152DEDD82A824002A84A@kalyptomail.dnsalias.com>"
+      ],
+      "body_plain": "\"Ashish Kulkarni\" <ashish.kulkarni at kalyptorisk.com> writes:\n> Upon further investigation, I think that this test falls in a grey area.\n> The error returned by SQLite is actually \"table not found\". \n> The use case for schema reload is already in testSchemaChangeDuringQuery() \n> and the patched code successfully passes it. In fact, I experimented with\n> adding a column to the same table against which the query was prepared,\n> and it worked. \n\nAdding such an experiment to the test cases would be most helpful. :-)\n\n> The test checks for something else: whether a table added in one connection\n> is immediately visible in another connection. Leaving aside the fact that\n> this would be a very rare scenario, I think that SQLite should reload\n> the schema information before reporting \"table not found\", which it is\n> not doing so for sqlite3_prepare_v2. I will try to follow it up upstream,\n> but may not be able to do so soon as I will out for 2 weeks.\n>\n> Either way, what we are testing for is not a very common scenario: the \n> normal scenario of schema reload/recompilation *is* handled properly.\n> I've removed the test in the updated patches, we should make a call\n> whether to re-include it with renaming to \n> testTableAddedVisibleInOtherConnection()\n\nHow about renaming the test and using RUnit's DEACTIVATED().  This\nway, the tests will run, but we'll be reminded to follow up on this.\n\nWould you be willing to redo/add to your patch by adding the \"add\ncolumn\" test and the above rename/DEACTIVATE?\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "\"Ashish Kulkarni\" <ashish.kulkarni at kalyptorisk.com> writes:\n> Upon further investigation, I think that this test falls in a grey area.\n> The error returned by SQLite is actually \"table not found\". ",
+      "thread_id": "thread-4b7070dd98db",
+      "thread_depth": 10,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-9738998d8169",
+      "message_id": "<971536df0707211801w7fb845benfa72a2dc26eed102@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2007-07-21T21:01:21-04:00",
+      "subject": "[R-sig-DB] DBI column names",
+      "subject_clean": "DBI column names",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "It seems that the DBI package changes column names that have\ndots in them replacing the dots with underscores.  Is this really\nnecessary?  I understand that dot is an SQL operator; nevertheless,\nSQLite can handle column names with dots and I suspect other\ndatabases can too:\n\nC:\\tmp2>sqlite3\nSQLite version 3.4.0\nEnter \".help\" for instructions\nsqlite> create table mytable (`my.field` integer);\nsqlite> insert into mytable(`my.field`) values (1);\nsqlite> select `my.field` from mytable;\n1",
+      "body_snippet": "It seems that the DBI package changes column names that have\ndots in them replacing the dots with underscores.  Is this really\nnecessary?  I understand that dot is an SQL operator; nevertheless,\nSQLit",
+      "thread_id": "thread-9738998d8169",
+      "thread_depth": 0,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-37901cb9e420",
+      "message_id": "<46A2C4CA.1050102@mail.nih.gov>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2007-07-21T22:45:30-04:00",
+      "subject": "[R-sig-DB] DBI column names",
+      "subject_clean": "DBI column names",
+      "in_reply_to": "<971536df0707211801w7fb845benfa72a2dc26eed102@mail.gmail.com>",
+      "references": [
+        "<971536df0707211801w7fb845benfa72a2dc26eed102@mail.gmail.com>"
+      ],
+      "body_plain": "Gabor Grothendieck wrote:\n> It seems that the DBI package changes column names that have\n> dots in them replacing the dots with underscores.  Is this really\n> necessary?  I understand that dot is an SQL operator; nevertheless,\n> SQLite can handle column names with dots and I suspect other\n> databases can too:\n> \n> C:\\tmp2>sqlite3\n> SQLite version 3.4.0\n> Enter \".help\" for instructions\n> sqlite> create table mytable (`my.field` integer);\n> sqlite> insert into mytable(`my.field`) values (1);\n> sqlite> select `my.field` from mytable;\n> 1\n\nJust fyi....\n\nPostgres (works):\n\ntest5=# create temp table mytable (\"my.field\" integer);\nLOG:  statement: create temp table mytable (\"my.field\" integer);\nCREATE TABLE\ntest5=# insert into mytable (\"my.field\") values (1);\nINSERT 0 1\ntest5=# select \"my.field\" from mytable;\n my.field\n----------\n        1\n(1 row)\n\nAnd mysql (works, also):\n\nmysql> create temporary table mytable (`my.field` integer);\nQuery OK, 0 rows affected (0.04 sec)\n\nmysql> insert into mytable(`my.field`) values(1);\nQuery OK, 1 row affected (0.00 sec)\n\nmysql> select `my.field` from mytable;\n+----------+\n| my.field |\n+----------+\n\nSean\n\n|        1 |\n+----------+\n1 row in set (0.00 sec)",
+      "body_snippet": "Gabor Grothendieck wrote:\n> It seems that the DBI package changes column names that have\n> dots in them replacing the dots with underscores.  Is this really\n> necessary?  I understand that dot is an S",
+      "thread_id": "thread-9738998d8169",
+      "thread_depth": 1,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-b48658517e5a",
+      "message_id": "<6262c54c0707221209n6bc8255dse785db1da72d7bb6@mail.gmail.com>",
+      "from_name": "Tim Keitt",
+      "from_email_hash": "f5c83b97d0534dc9ef4b4a06e2eb9c284a7ee63a34355c23eb5266ee5d98c592",
+      "date": "2007-07-22T14:09:10-05:00",
+      "subject": "[R-sig-DB] DBI column names",
+      "subject_clean": "DBI column names",
+      "in_reply_to": "<46A2C4CA.1050102@mail.nih.gov>",
+      "references": [
+        "<971536df0707211801w7fb845benfa72a2dc26eed102@mail.gmail.com>",
+        "<46A2C4CA.1050102@mail.nih.gov>"
+      ],
+      "body_plain": "This may be a bit of a hang-over from some of my early work on rpgsql,\net al. I had never used SQL (nor really programmed in R) prior to\nwriting the packages and wasn't too savy about quoting options. I\nremember writing code to swap dots and underscores. The swapping\ncertainly could be relaxed as properly quoted, these characters should\nnot cause problems in R or SQL.\n\nTHK\n\nOn 7/21/07, Sean Davis <sdavis2 at mail.nih.gov> wrote:\n> Gabor Grothendieck wrote:\n> > It seems that the DBI package changes column names that have\n> > dots in them replacing the dots with underscores.  Is this really\n> > necessary?  I understand that dot is an SQL operator; nevertheless,\n> > SQLite can handle column names with dots and I suspect other\n> > databases can too:\n> >\n> > C:\\tmp2>sqlite3\n> > SQLite version 3.4.0\n> > Enter \".help\" for instructions\n> > sqlite> create table mytable (`my.field` integer);\n> > sqlite> insert into mytable(`my.field`) values (1);\n> > sqlite> select `my.field` from mytable;\n> > 1\n>\n> Just fyi....\n>\n> Postgres (works):\n>\n> test5=# create temp table mytable (\"my.field\" integer);\n> LOG:  statement: create temp table mytable (\"my.field\" integer);\n> CREATE TABLE\n> test5=# insert into mytable (\"my.field\") values (1);\n> INSERT 0 1\n> test5=# select \"my.field\" from mytable;\n>  my.field\n> ----------\n>         1\n> (1 row)\n>\n> And mysql (works, also):\n>\n> mysql> create temporary table mytable (`my.field` integer);\n> Query OK, 0 rows affected (0.04 sec)\n>\n> mysql> insert into mytable(`my.field`) values(1);\n> Query OK, 1 row affected (0.00 sec)\n>\n> mysql> select `my.field` from mytable;\n> +----------+\n> | my.field |\n> +----------+\n>\n> Sean\n>\n> |        1 |\n> +----------+\n> 1 row in set (0.00 sec)\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n\n-- \nTimothy H. Keitt, University of Texas at Austin\nContact info and schedule at http://www.keittlab.org/tkeitt/\nReprints at http://www.keittlab.org/tkeitt/papers/\nODF attachment? See http://www.openoffice.org/",
+      "body_snippet": "This may be a bit of a hang-over from some of my early work on rpgsql,\net al. I had never used SQL (nor really programmed in R) prior to\nwriting the packages and wasn't too savy about quoting options.",
+      "thread_id": "thread-9738998d8169",
+      "thread_depth": 2,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-b7bb77e152b0",
+      "message_id": "<21add9100707222017x4de97dbcn10a0cf29d316f0a4@mail.gmail.com>",
+      "from_name": "along zeng",
+      "from_email_hash": "185c28891182e1116e74da738049321f65ccd6a293044cbbabe731285ef294f1",
+      "date": "2007-07-23T11:17:06+08:00",
+      "subject": "[R-sig-DB] RMySQL package on windows 2k",
+      "subject_clean": "RMySQL package on windows 2k",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi all,\n     I want to visit MySQL databse in R using pacakge RMySQL on\nplateform Windows 2k,but I visited some CRAN,such as Berkeley,UCLA\n,UCDavis in US,crycit of Argentina ,unfortunately,only package of\nRMySQL on MacOS could find! Could somebody tell me where and how can I\nget it?\n  Thanks a lot.\n   along",
+      "body_snippet": "Hi all,\n     I want to visit MySQL databse in R using pacakge RMySQL on\nplateform Windows 2k,but I visited some CRAN,such as Berkeley,UCLA\n,UCDavis in US,crycit of Argentina ,unfortunately,only packag",
+      "thread_id": "thread-b7bb77e152b0",
+      "thread_depth": 0,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-1a4aed300413",
+      "message_id": "<63A5458C5D02D14D9B152DEDD82A82404A05@kalyptomail.dnsalias.com>",
+      "from_name": "Ashish Kulkarni",
+      "from_email_hash": "8dcdca1ca2742e40a1b7516dc78a7d1c8c26f842205807c5921f62ca22c6209c",
+      "date": "2007-07-23T09:59:18+05:30",
+      "subject": "[R-sig-DB] [PATCH] segfault in RSQLite 0.5-4",
+      "subject_clean": "[PATCH] segfault in RSQLite 0.5-4",
+      "in_reply_to": null,
+      "references": [
+        "<63A5458C5D02D14D9B152DEDD82A824002A84A@kalyptomail.dnsalias.com>",
+        "<m2fy3jufe8.fsf@ziti.fhcrc.org>"
+      ],
+      "body_plain": "> Adding such an experiment to the test cases would be most helpful. :-)\n> \n> [snip]\n> \n> How about renaming the test and using RUnit's DEACTIVATED().  This\n> way, the tests will run, but we'll be reminded to follow up on this.\n> \n> Would you be willing to redo/add to your patch by adding the \"add\n> column\" test and the above rename/DEACTIVATE?\n\ndone, attached updated patches. I've not been able to test them as I'm not\nat my regular workstation.\n\nRegards,\nAshish\n\n-------------- next part --------------\nAn HTML attachment was scrubbed...\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20070723/9ba50b46/attachment.html>\n\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: r25_sqlite_prepare_v2.patch\nType: text/x-patch\nSize: 10648 bytes\nDesc: r25_sqlite_prepare_v2.patch\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20070723/9ba50b46/attachment.bin>\n\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: trunk_sqlite_prepare_v2.patch\nType: text/x-patch\nSize: 12735 bytes\nDesc: trunk_sqlite_prepare_v2.patch\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20070723/9ba50b46/attachment-0001.bin>",
+      "body_snippet": "> Adding such an experiment to the test cases would be most helpful. :-)\n> \n> [snip]\n> \n> How about renaming the test and using RUnit's DEACTIVATED().  This\n> way, the tests will run, but we'll be rem",
+      "thread_id": "thread-4b7070dd98db",
+      "thread_depth": 11,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-740f862de069",
+      "message_id": "<Pine.LNX.4.64.0707230636440.15393@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2007-07-23T06:42:21+01:00",
+      "subject": "[R-sig-DB] RMySQL package on windows 2k",
+      "subject_clean": "RMySQL package on windows 2k",
+      "in_reply_to": "<21add9100707222017x4de97dbcn10a0cf29d316f0a4@mail.gmail.com>",
+      "references": [
+        "<21add9100707222017x4de97dbcn10a0cf29d316f0a4@mail.gmail.com>"
+      ],
+      "body_plain": "Please read the @ReadMe there!  It says\n\nThe packages\n   gsl, ncdf, rgdal, RMySQL, RNetCDF, udunits, and xgobi\ndo not build out of the box. Nevertheless these are available at\n   http://www.stats.ox.ac.uk/pub/RWin/bin/windows/contrib/2.5/\nkindly provided by Professor Brian D. Ripley.\n\nwhich is the CRANextras repository which is selected by default, so \ninstall.packages(\"RMySQL\") should work.  But note that\nhttp://www.stats.ox.ac.uk/pub/RWin/ReadMe says\n\n   The build of RMySQL_0.6-0 is known to work with MySQL 5.0.21, and known\n   not to work with 5.0.41.\n\nwhereas RODBC works with 5.0.41.\n\nOn Mon, 23 Jul 2007, along zeng wrote:\n\n> Hi all,\n>     I want to visit MySQL databse in R using pacakge RMySQL on\n> plateform Windows 2k,but I visited some CRAN,such as Berkeley,UCLA\n> ,UCDavis in US,crycit of Argentina ,unfortunately,only package of\n> RMySQL on MacOS could find! Could somebody tell me where and how can I\n> get it?\n>  Thanks a lot.\n>   along\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "Please read the @ReadMe there!  It says\n\nThe packages\n   gsl, ncdf, rgdal, RMySQL, RNetCDF, udunits, and xgobi\ndo not build out of the box. Nevertheless these are available at\n   http://www.stats.ox.a",
+      "thread_id": "thread-b7bb77e152b0",
+      "thread_depth": 1,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-8f68be54efca",
+      "message_id": "<Pine.LNX.4.64.0707230953170.23441@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2007-07-23T09:54:54+01:00",
+      "subject": "[R-sig-DB] RMySQL package on windows 2k",
+      "subject_clean": "RMySQL package on windows 2k",
+      "in_reply_to": "<Pine.LNX.4.64.0707230636440.15393@gannet.stats.ox.ac.uk>",
+      "references": [
+        "<21add9100707222017x4de97dbcn10a0cf29d316f0a4@mail.gmail.com>",
+        "<Pine.LNX.4.64.0707230636440.15393@gannet.stats.ox.ac.uk>"
+      ],
+      "body_plain": "On Mon, 23 Jul 2007, Prof Brian Ripley wrote:\n\n> Please read the @ReadMe there!  It says\n>\n> The packages\n>  gsl, ncdf, rgdal, RMySQL, RNetCDF, udunits, and xgobi\n> do not build out of the box. Nevertheless these are available at\n>  http://www.stats.ox.ac.uk/pub/RWin/bin/windows/contrib/2.5/\n> kindly provided by Professor Brian D. Ripley.\n>\n> which is the CRANextras repository which is selected by default, so \n> install.packages(\"RMySQL\") should work.  But note that\n> http://www.stats.ox.ac.uk/pub/RWin/ReadMe says\n>\n>  The build of RMySQL_0.6-0 is known to work with MySQL 5.0.21, and known\n>  not to work with 5.0.41.\n>\n> whereas RODBC works with 5.0.41.\n\nThe better news is that RMySQL works again with the current 5.0.45.\n\n>\n> On Mon, 23 Jul 2007, along zeng wrote:\n>\n>> Hi all,\n>>     I want to visit MySQL databse in R using pacakge RMySQL on\n>> plateform Windows 2k,but I visited some CRAN,such as Berkeley,UCLA\n>> ,UCDavis in US,crycit of Argentina ,unfortunately,only package of\n>> RMySQL on MacOS could find! Could somebody tell me where and how can I\n>> get it?\n>>  Thanks a lot.\n>>   along\n>> \n>> _______________________________________________\n>> R-sig-DB mailing list -- R Special Interest Group\n>> R-sig-DB at stat.math.ethz.ch\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>> \n>\n>\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "On Mon, 23 Jul 2007, Prof Brian Ripley wrote:\n\n> Please read the @ReadMe there!  It says\n>\n> The packages\n>  gsl, ncdf, rgdal, RMySQL, RNetCDF, udunits, and xgobi\n> do not build out of the box. Nevert",
+      "thread_id": "thread-b7bb77e152b0",
+      "thread_depth": 2,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-c34bfc951445",
+      "message_id": "<971536df0707230556o3140d33aieafc7c77846dd92e@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2007-07-23T08:56:48-04:00",
+      "subject": "[R-sig-DB] RMySQL package on windows 2k",
+      "subject_clean": "RMySQL package on windows 2k",
+      "in_reply_to": "<Pine.LNX.4.64.0707230636440.15393@gannet.stats.ox.ac.uk>",
+      "references": [
+        "<21add9100707222017x4de97dbcn10a0cf29d316f0a4@mail.gmail.com>",
+        "<Pine.LNX.4.64.0707230636440.15393@gannet.stats.ox.ac.uk>"
+      ],
+      "body_plain": "On 7/23/07, Prof Brian Ripley <ripley at stats.ox.ac.uk> wrote:\n> On Mon, 23 Jul 2007, along zeng wrote:\n> >     I want to visit MySQL databse in R using pacakge RMySQL on\n> > plateform Windows 2k,but I visited some CRAN,such as Berkeley,UCLA\n> > ,UCDavis in US,crycit of Argentina ,unfortunately,only package of\n> > RMySQL on MacOS could find! Could somebody tell me where and how can I\n> > get it?\n> >  Thanks a lot.\n> >   along\n> >\n> Please read the @ReadMe there!  It says\n>\n> The packages\n>   gsl, ncdf, rgdal, RMySQL, RNetCDF, udunits, and xgobi\n> do not build out of the box. Nevertheless these are available at\n>   http://www.stats.ox.ac.uk/pub/RWin/bin/windows/contrib/2.5/\n> kindly provided by Professor Brian D. Ripley.\n>\n> which is the CRANextras repository which is selected by default, so\n> install.packages(\"RMySQL\") should work.  But note that\n> http://www.stats.ox.ac.uk/pub/RWin/ReadMe says\n>\n>   The build of RMySQL_0.6-0 is known to work with MySQL 5.0.21, and known\n>   not to work with 5.0.41.\n>\n> whereas RODBC works with 5.0.41.\n\nI have been using the RMySQL 0.6-0 build by Paulino Perez Rodriguez (not\nthe one on CRAN Extras) with MySQL 5.4.1 and have not noticed any\nproblems to date.\n\nWhat is the problem that you encountered?",
+      "body_snippet": "On 7/23/07, Prof Brian Ripley <ripley at stats.ox.ac.uk> wrote:\n> On Mon, 23 Jul 2007, along zeng wrote:\n> >     I want to visit MySQL databse in R using pacakge RMySQL on\n> > plateform Windows 2k,but",
+      "thread_id": "thread-b7bb77e152b0",
+      "thread_depth": 2,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-9236465c4e7e",
+      "message_id": "<m2ir8a8z8y.fsf@ziti.local>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2007-07-23T16:41:01-07:00",
+      "subject": "[R-sig-DB] [PATCH] segfault in RSQLite 0.5-4",
+      "subject_clean": "[PATCH] segfault in RSQLite 0.5-4",
+      "in_reply_to": "<63A5458C5D02D14D9B152DEDD82A82404A05@kalyptomail.dnsalias.com> (Ashish Kulkarni's message of \"Mon, 23 Jul 2007 09:59:18 +0530\")",
+      "references": [
+        "<63A5458C5D02D14D9B152DEDD82A824002A84A@kalyptomail.dnsalias.com>",
+        "<m2fy3jufe8.fsf@ziti.fhcrc.org>",
+        "<63A5458C5D02D14D9B152DEDD82A82404A05@kalyptomail.dnsalias.com>"
+      ],
+      "body_plain": "\"Ashish Kulkarni\" <ashish.kulkarni at kalyptorisk.com> writes:\n\n>> Adding such an experiment to the test cases would be most helpful. :-)\n>> \n>> [snip]\n>> \n>> How about renaming the test and using RUnit's DEACTIVATED().  This\n>> way, the tests will run, but we'll be reminded to follow up on this.\n>> \n>> Would you be willing to redo/add to your patch by adding the \"add\n>> column\" test and the above rename/DEACTIVATE?\n>\n> done, attached updated patches. I've not been able to test them as I'm not\n> at my regular workstation.\n\nThanks.  Getting closer.  I just tested against trunk (which includes\nan update to SQLite 3.4.1) and I get:\n\nRSQLite Test Suite - 21 test functions, 1 error, 0 failures\nERROR in testSchemaChangeDuringQuery2: Error in sqliteExecStatement(con, statement, bind.data) : \n  RS-DBI driver: (error in statement: no such table: t1)\n\nThis is surprising -- even if this is going to error out, the error\nmessage doesn't make any sense to me.\n\nAshish: I really appreciate that you are sending patches and I would\nlike to update the code to the recent SQLite API changes, but I think\nthis one is not quite cooked yet.  It isn't clear to me whether these\nare SQLite issues or an issue related to the patch, but it seems that\napplying it results in a regression in robustness in the case of\nmultiple connections to the same SQLite DB.\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "\"Ashish Kulkarni\" <ashish.kulkarni at kalyptorisk.com> writes:\n\n>> Adding such an experiment to the test cases would be most helpful. :-)\n>> \n>> [snip]\n>> \n>> How about renaming the test and using RUn",
+      "thread_id": "thread-4b7070dd98db",
+      "thread_depth": 12,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-a218c3c79489",
+      "message_id": "<m2y7h67jzw.fsf@ziti.local>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2007-07-23T16:55:47-07:00",
+      "subject": "[R-sig-DB] DBI column names",
+      "subject_clean": "DBI column names",
+      "in_reply_to": "<6262c54c0707221209n6bc8255dse785db1da72d7bb6@mail.gmail.com> (Tim Keitt's message of \"Sun, 22 Jul 2007 14:09:10 -0500\")",
+      "references": [
+        "<971536df0707211801w7fb845benfa72a2dc26eed102@mail.gmail.com>",
+        "<46A2C4CA.1050102@mail.nih.gov>",
+        "<6262c54c0707221209n6bc8255dse785db1da72d7bb6@mail.gmail.com>"
+      ],
+      "body_plain": ">> Gabor Grothendieck wrote:\n>> > It seems that the DBI package changes column names that have\n>> > dots in them replacing the dots with underscores.  Is this really\n>> > necessary?\n\nThe DBI package provides a generic make.db.names and a deafult\nmethod.  In RSQLite, I believe this is only called when tables are\ncreated using dbWriteTable.  So it isn't as if DBI (or RSQLite) is\npreventing you from using (strange) column names in your DBs. -- Just\nmaking it a bit difficult ;-)\n\nThe problem with changing this function is that anyone relying on\n(coding around) this feature is going to get bitten.  Maybe we want an\nadditional argument to the dbWriteTable method?\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": ">> Gabor Grothendieck wrote:\n>> > It seems that the DBI package changes column names that have\n>> > dots in them replacing the dots with underscores.  Is this really\n>> > necessary?\n\nThe DBI package p",
+      "thread_id": "thread-9738998d8169",
+      "thread_depth": 3,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-9a8f220e5d02",
+      "message_id": "<971536df0707231724v1e453f09xb11e6248ddd925d3@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2007-07-23T20:24:37-04:00",
+      "subject": "[R-sig-DB] DBI column names",
+      "subject_clean": "DBI column names",
+      "in_reply_to": "<m2y7h67jzw.fsf@ziti.local>",
+      "references": [
+        "<971536df0707211801w7fb845benfa72a2dc26eed102@mail.gmail.com>",
+        "<46A2C4CA.1050102@mail.nih.gov>",
+        "<6262c54c0707221209n6bc8255dse785db1da72d7bb6@mail.gmail.com>",
+        "<m2y7h67jzw.fsf@ziti.local>"
+      ],
+      "body_plain": "Yes.  One idea for the name for the argument might be\ncheck.names= . This is the same argument name used\nin read.table.  The value could be TRUE, FALSE or a custom\nfunction.  TRUE would use make.db.names and FALSE would\nuse the identity function.  The default would be TRUE for\ncompatibility with the existing function.\n\nAnother possibility is associating the value with the driver\nor the connection; however, that may seem inconsistent to\nusers if dbWriteTable uses it and other functions do not.\n\nOn 7/23/07, Seth Falcon <sfalcon at fhcrc.org> wrote:\n> >> Gabor Grothendieck wrote:\n> >> > It seems that the DBI package changes column names that have\n> >> > dots in them replacing the dots with underscores.  Is this really\n> >> > necessary?\n>\n> The DBI package provides a generic make.db.names and a deafult\n> method.  In RSQLite, I believe this is only called when tables are\n> created using dbWriteTable.  So it isn't as if DBI (or RSQLite) is\n> preventing you from using (strange) column names in your DBs. -- Just\n> making it a bit difficult ;-)\n>\n> The problem with changing this function is that anyone relying on\n> (coding around) this feature is going to get bitten.  Maybe we want an\n> additional argument to the dbWriteTable method?\n>\n> + seth\n>\n> --\n> Seth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\n> http://bioconductor.org\n>",
+      "body_snippet": "Yes.  One idea for the name for the argument might be\ncheck.names= . This is the same argument name used\nin read.table.  The value could be TRUE, FALSE or a custom\nfunction.  TRUE would use make.db.na",
+      "thread_id": "thread-9738998d8169",
+      "thread_depth": 4,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-4be9cde7c6d8",
+      "message_id": "<63A5458C5D02D14D9B152DEDD82A82404A06@kalyptomail.dnsalias.com>",
+      "from_name": "Ashish Kulkarni",
+      "from_email_hash": "8dcdca1ca2742e40a1b7516dc78a7d1c8c26f842205807c5921f62ca22c6209c",
+      "date": "2007-07-24T17:10:34+05:30",
+      "subject": "[R-sig-DB] [PATCH] segfault in RSQLite 0.5-4",
+      "subject_clean": "[PATCH] segfault in RSQLite 0.5-4",
+      "in_reply_to": null,
+      "references": [
+        "<63A5458C5D02D14D9B152DEDD82A824002A84A@kalyptomail.dnsalias.com>",
+        "<m2fy3jufe8.fsf@ziti.fhcrc.org>",
+        "<63A5458C5D02D14D9B152DEDD82A82404A05@kalyptomail.dnsalias.com>",
+        "<m2ir8a8z8y.fsf@ziti.local>"
+      ],
+      "body_plain": "> Ashish: I really appreciate that you are sending patches and I would\n> like to update the code to the recent SQLite API changes, but I think\n> this one is not quite cooked yet.  It isn't clear to me whether these\n> are SQLite issues or an issue related to the patch, but it seems that\n> applying it results in a regression in robustness in the case of\n> multiple connections to the same SQLite DB.\n\nI agree, I really need to devote time to see what the problem is and\nask upstream if necessary. I will follow up when I get back in around\n2 weeks.\n\nThanks,\nAshish\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "> Ashish: I really appreciate that you are sending patches and I would\n> like to update the code to the recent SQLite API changes, but I think\n> this one is not quite cooked yet.  It isn't clear to me",
+      "thread_id": "thread-4b7070dd98db",
+      "thread_depth": 13,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-37360385b864",
+      "message_id": "<m2ejix50mm.fsf@ziti.local>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2007-07-24T07:37:05-07:00",
+      "subject": "[R-sig-DB] [PATCH] segfault in RSQLite 0.5-4",
+      "subject_clean": "[PATCH] segfault in RSQLite 0.5-4",
+      "in_reply_to": "<63A5458C5D02D14D9B152DEDD82A82404A06@kalyptomail.dnsalias.com> (Ashish Kulkarni's message of \"Tue, 24 Jul 2007 17:10:34 +0530\")",
+      "references": [
+        "<63A5458C5D02D14D9B152DEDD82A824002A84A@kalyptomail.dnsalias.com>",
+        "<m2fy3jufe8.fsf@ziti.fhcrc.org>",
+        "<63A5458C5D02D14D9B152DEDD82A82404A05@kalyptomail.dnsalias.com>",
+        "<m2ir8a8z8y.fsf@ziti.local>",
+        "<63A5458C5D02D14D9B152DEDD82A82404A06@kalyptomail.dnsalias.com>"
+      ],
+      "body_plain": "\"Ashish Kulkarni\" <ashish.kulkarni at kalyptorisk.com> writes:\n> I agree, I really need to devote time to see what the problem is and\n> ask upstream if necessary. I will follow up when I get back in around\n> 2 weeks.\n\nok, glad we are on the same page.  Have a good reset of your trip.\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "\"Ashish Kulkarni\" <ashish.kulkarni at kalyptorisk.com> writes:\n> I agree, I really need to devote time to see what the problem is and\n> ask upstream if necessary. I will follow up when I get back in a",
+      "thread_id": "thread-4b7070dd98db",
+      "thread_depth": 14,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-a662ec54d3bc",
+      "message_id": "<m2zm1l3it4.fsf@ziti.local>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2007-07-24T08:47:19-07:00",
+      "subject": "[R-sig-DB] DBI column names",
+      "subject_clean": "DBI column names",
+      "in_reply_to": "<971536df0707231724v1e453f09xb11e6248ddd925d3@mail.gmail.com> (Gabor Grothendieck's message of \"Mon, 23 Jul 2007 20:24:37 -0400\")",
+      "references": [
+        "<971536df0707211801w7fb845benfa72a2dc26eed102@mail.gmail.com>",
+        "<46A2C4CA.1050102@mail.nih.gov>",
+        "<6262c54c0707221209n6bc8255dse785db1da72d7bb6@mail.gmail.com>",
+        "<m2y7h67jzw.fsf@ziti.local>",
+        "<971536df0707231724v1e453f09xb11e6248ddd925d3@mail.gmail.com>"
+      ],
+      "body_plain": "\"Gabor Grothendieck\" <ggrothendieck at gmail.com> writes:\n\n> Yes.  One idea for the name for the argument might be\n> check.names= . This is the same argument name used\n> in read.table.  The value could be TRUE, FALSE or a custom\n> function.  TRUE would use make.db.names and FALSE would\n> use the identity function.  The default would be TRUE for\n> compatibility with the existing function.\n\nI'm not opposed to this suggestion, but would like to hear from other\nusers that this is something that is desired.  If this is important to\nyou (any of you), then a patch with test cases added to the unit tests\nwould make it happen much more quickly.\n\n> Another possibility is associating the value with the driver\n> or the connection; however, that may seem inconsistent to\n> users if dbWriteTable uses it and other functions do not.\n\nI don't think that is a good idea.\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "\"Gabor Grothendieck\" <ggrothendieck at gmail.com> writes:\n\n> Yes.  One idea for the name for the argument might be\n> check.names= . This is the same argument name used\n> in read.table.  The value coul",
+      "thread_id": "thread-9738998d8169",
+      "thread_depth": 5,
+      "month": "2007-07"
+    },
+    {
+      "id": "msg-ea3ca89ef31f",
+      "message_id": "<971536df0707240852v4366e444m1d675579cb657@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2007-07-24T11:52:34-04:00",
+      "subject": "[R-sig-DB] DBI column names",
+      "subject_clean": "DBI column names",
+      "in_reply_to": "<m2zm1l3it4.fsf@ziti.local>",
+      "references": [
+        "<971536df0707211801w7fb845benfa72a2dc26eed102@mail.gmail.com>",
+        "<46A2C4CA.1050102@mail.nih.gov>",
+        "<6262c54c0707221209n6bc8255dse785db1da72d7bb6@mail.gmail.com>",
+        "<m2y7h67jzw.fsf@ziti.local>",
+        "<971536df0707231724v1e453f09xb11e6248ddd925d3@mail.gmail.com>",
+        "<m2zm1l3it4.fsf@ziti.local>"
+      ],
+      "body_plain": "On 7/24/07, Seth Falcon <sfalcon at fhcrc.org> wrote:\n> \"Gabor Grothendieck\" <ggrothendieck at gmail.com> writes:\n>\n> > Yes.  One idea for the name for the argument might be\n> > check.names= . This is the same argument name used\n> > in read.table.  The value could be TRUE, FALSE or a custom\n> > function.  TRUE would use make.db.names and FALSE would\n> > use the identity function.  The default would be TRUE for\n> > compatibility with the existing function.\n>\n> I'm not opposed to this suggestion, but would like to hear from other\n> users that this is something that is desired.  If this is important to\n> you (any of you), then a patch with test cases added to the unit tests\n> would make it happen much more quickly.\n>\n> > Another possibility is associating the value with the driver\n> > or the connection; however, that may seem inconsistent to\n> > users if dbWriteTable uses it and other functions do not.\n>\n> I don't think that is a good idea.\n>\n> + seth\n>\n> --\n> Seth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\n> http://bioconductor.org\n>\n\nIts probably not hugely important so feel free to ignore this if you want\nbut it is noticeable when performing SQL statements on the canonical\nexample, iris.\n\nSee the examples here to see what I mean and note how we had to\nrefer to Sepal_Length rather than Sepal.Length:\n\nhttp://code.google.com/p/sqldf/",
+      "body_snippet": "On 7/24/07, Seth Falcon <sfalcon at fhcrc.org> wrote:\n> \"Gabor Grothendieck\" <ggrothendieck at gmail.com> writes:\n>\n> > Yes.  One idea for the name for the argument might be\n> > check.names= . This is",
+      "thread_id": "thread-9738998d8169",
+      "thread_depth": 6,
+      "month": "2007-07"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-4b7070dd98db",
+      "subject": "[PATCH] segfault in RSQLite 0.5-4",
+      "message_count": 17,
+      "participants": [
+        "Ashish Kulkarni",
+        "Prof Brian Ripley",
+        "Seth Falcon"
+      ],
+      "started": "2007-07-06T12:04:43+05:30",
+      "last_reply": "2007-07-24T07:37:05-07:00",
+      "root_message_id": "msg-4b7070dd98db"
+    },
+    {
+      "id": "thread-f8f7ddac4cdd",
+      "subject": "Opening multiple result sets",
+      "message_count": 2,
+      "participants": [
+        "Paul Dlug",
+        "Seth Falcon"
+      ],
+      "started": "2007-07-15T16:42:34-04:00",
+      "last_reply": "2007-07-15T14:57:10-07:00",
+      "root_message_id": "msg-f8f7ddac4cdd"
+    },
+    {
+      "id": "thread-02cf75fab3d2",
+      "subject": "RODBC on Oracle DB",
+      "message_count": 2,
+      "participants": [
+        "Prof Brian Ripley",
+        "eric m@iii@g oii @et2000@ch"
+      ],
+      "started": "2007-07-16T16:16:39+02:00",
+      "last_reply": "2007-07-16T15:32:34+01:00",
+      "root_message_id": "msg-02cf75fab3d2"
+    },
+    {
+      "id": "thread-4b5e250861a2",
+      "subject": "RSQLite updated: notes for 0.5-5",
+      "message_count": 1,
+      "participants": [
+        "Seth Falcon"
+      ],
+      "started": "2007-07-16T16:36:02-07:00",
+      "last_reply": "2007-07-16T16:36:02-07:00",
+      "root_message_id": "msg-4b5e250861a2"
+    },
+    {
+      "id": "thread-18efce6f666c",
+      "subject": "default driver and connection",
+      "message_count": 10,
+      "participants": [
+        "Gabor Grothendieck",
+        "Seth Falcon"
+      ],
+      "started": "2007-07-18T12:13:24-04:00",
+      "last_reply": "2007-07-19T13:51:54-04:00",
+      "root_message_id": "msg-18efce6f666c"
+    },
+    {
+      "id": "thread-50c4a4d02cb7",
+      "subject": "RMySQL problem",
+      "message_count": 2,
+      "participants": [
+        "Prof Brian Ripley",
+        "b.vialle"
+      ],
+      "started": "2007-07-20T17:16:00+02:00",
+      "last_reply": "2007-07-20T17:39:20+01:00",
+      "root_message_id": "msg-50c4a4d02cb7"
+    },
+    {
+      "id": "thread-9738998d8169",
+      "subject": "DBI column names",
+      "message_count": 7,
+      "participants": [
+        "Gabor Grothendieck",
+        "Sean Davis",
+        "Seth Falcon",
+        "Tim Keitt"
+      ],
+      "started": "2007-07-21T21:01:21-04:00",
+      "last_reply": "2007-07-24T11:52:34-04:00",
+      "root_message_id": "msg-9738998d8169"
+    },
+    {
+      "id": "thread-b7bb77e152b0",
+      "subject": "RMySQL package on windows 2k",
+      "message_count": 4,
+      "participants": [
+        "Gabor Grothendieck",
+        "Prof Brian Ripley",
+        "along zeng"
+      ],
+      "started": "2007-07-23T11:17:06+08:00",
+      "last_reply": "2007-07-23T08:56:48-04:00",
+      "root_message_id": "msg-b7bb77e152b0"
+    }
+  ]
+}

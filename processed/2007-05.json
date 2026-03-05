@@ -1,0 +1,161 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2007-05",
+  "messages": [
+    {
+      "id": "msg-fdb7254f19c4",
+      "message_id": "<46451BD4.7030709@gmail.com>",
+      "from_name": "Mark W Kimpel",
+      "from_email_hash": "b0252c885f3d41e489ff756657b936a6f30a1c42a49cf3d569b80f0dc995d46d",
+      "date": "2007-05-11T21:43:48-04:00",
+      "subject": "[R-sig-DB] help on deciding which open-source database to use with R",
+      "subject_clean": "help on deciding which open-source database to use with R",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I need to store and access increasingly large numbers of microarray \ndatasets, which I analyze with R and BioC packages, and have decided to \ndelve into the world of relational databases. For those of you \nunfamiliar with microarray datasets, they consist of unique indentifiers \nwith associated raw and summary data. The unique identifiers map to \nestablished gene annotations that are updated regularly, a key reason I \nwould like to use a relational database.\n\nIn addition to just storing results, I would also like the database to \nperform SQL queries as well as use R within the database itself, so \nthat, for example, an FDR calculation could be done on a geneset that \nwas selected using various criteria from a web front-end without \nexplicitly invoking R (I think postgreSQL can do that). Finally, I would \nlike the database to be open-source and run on Linux.\n\nHere is what I have gathered from perusing reviews of databases and the \nR mailing lists and the cran and BioC repositories:\n1. my top 3 choices would be MySQL, postgreSQL, and SQLite\n2. postgreSQL is probably the most powerful and ideologically \"pure\"\n3. MySQL has the largest user community and the most available books\n4. SQLite is the easiest to set up and R from within R\n5. there are several R packages for SQLite that assist with very routine \nthings like storing dataframes\n6. DBI and RMySQL seem to offer the most combined active development and \npower from cran and RdbiPgSQL and postgreSQL would be an analogous \noffering from BioC\n7. RODBC would allow me to use just about any of the databases as well \nas Excel\n\nFor all that \"understanding\", there is so much I can't figure out just \nfrom reading disparate sources. In particular, in am concerned about: 1. \nlevel of documentation so that I can learn, 2. likelihood of continued \nsupport and development, 3. ability to satisfy my present (as outlined \nin the first para) and unanticipated future needs, and 4. ease of use.\n\nWould someone who is familiar with these databases and how they \"relate\" \n(pun intended) to the R and BioC communities compare and contrast them \nfor me?\n\nThanks,\n\nMark\n\n---\n\nMark W. Kimpel MD  ** Neuroinformatics ** Dept. of Psychiatry\nIndiana University School of Medicine\n\n15032 Hunter Court, Westfield, IN  46074\n\n(317) 490-5129 Work, & Mobile & VoiceMail\n(317) 663-0513 Home (no voice mail please)",
+      "body_snippet": "I need to store and access increasingly large numbers of microarray \ndatasets, which I analyze with R and BioC packages, and have decided to \ndelve into the world of relational databases. For those of",
+      "thread_id": "thread-fdb7254f19c4",
+      "thread_depth": 0,
+      "month": "2007-05"
+    },
+    {
+      "id": "msg-3eae33374385",
+      "message_id": "<Pine.LNX.4.64.0705121228240.27426@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2007-05-16T07:18:03+01:00",
+      "subject": "[R-sig-DB] help on deciding which open-source database to use with R",
+      "subject_clean": "help on deciding which open-source database to use with R",
+      "in_reply_to": "<46451BD4.7030709@gmail.com>",
+      "references": [
+        "<46451BD4.7030709@gmail.com>"
+      ],
+      "body_plain": "I've not seen any response, so here are some thoughts.\n\nOn Fri, 11 May 2007, Mark W Kimpel wrote:\n\n> I need to store and access increasingly large numbers of microarray\n> datasets, which I analyze with R and BioC packages, and have decided to\n> delve into the world of relational databases. For those of you\n> unfamiliar with microarray datasets, they consist of unique indentifiers\n> with associated raw and summary data. The unique identifiers map to\n> established gene annotations that are updated regularly, a key reason I\n> would like to use a relational database.\n>\n> In addition to just storing results, I would also like the database to\n> perform SQL queries as well as use R within the database itself, so\n> that, for example, an FDR calculation could be done on a geneset that\n> was selected using various criteria from a web front-end without\n> explicitly invoking R (I think postgreSQL can do that). Finally, I would\n> like the database to be open-source and run on Linux.\n\nI think you are ruling out SQLite: its internal scripting capabilities are \nmuch less.  Our experience is that PostgreSQL is a more powerful DBMS, but \nharder to manage than MySQL.  If SQLite were in play, it can be very slow \ncompared to the other two.\n\n> Here is what I have gathered from perusing reviews of databases and the\n> R mailing lists and the cran and BioC repositories:\n> 1. my top 3 choices would be MySQL, postgreSQL, and SQLite\n> 2. postgreSQL is probably the most powerful and ideologically \"pure\"\n> 3. MySQL has the largest user community and the most available books\n> 4. SQLite is the easiest to set up and R from within R\n> 5. there are several R packages for SQLite that assist with very routine\n> things like storing dataframes\n> 6. DBI and RMySQL seem to offer the most combined active development and\n> power from cran and RdbiPgSQL and postgreSQL would be an analogous\n> offering from BioC\n\nWhere do you get that from?  For example, RMySQL still does not work out \nof the box on standard 64-bit systems (despite detailed reports and \npromises to incorporate them), and it and DBI are two of a handful of CRAN \npackages still using the deprecated SaveImage (and were the last two to \nmake use of install.R).  That's not 'active development' in my book.\n\nRODBC has more access to advanced features (e.g. bulk updates, fast \ntransfers to the database) and several people have reported it to be much \nfaster than RMySQL (and that is also my experience).\n\n> 7. RODBC would allow me to use just about any of the databases as well\n> as Excel\n\nExcel only on Windows.\n\n> For all that \"understanding\", there is so much I can't figure out just\n> from reading disparate sources. In particular, in am concerned about: 1.\n> level of documentation so that I can learn, 2. likelihood of continued\n> support and development, 3. ability to satisfy my present (as outlined\n> in the first para) and unanticipated future needs, and 4. ease of use.\n>\n> Would someone who is familiar with these databases and how they \"relate\"\n> (pun intended) to the R and BioC communities compare and contrast them\n> for me?\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "I've not seen any response, so here are some thoughts.\n\nOn Fri, 11 May 2007, Mark W Kimpel wrote:\n\n> I need to store and access increasingly large numbers of microarray\n> datasets, which I analyze wit",
+      "thread_id": "thread-fdb7254f19c4",
+      "thread_depth": 1,
+      "month": "2007-05"
+    },
+    {
+      "id": "msg-99878b806376",
+      "message_id": "<60101.24.224.156.112.1179323479.squirrel@mail.mathstat.dal.ca>",
+      "from_name": "ric@rdd m@iii@g oii m@thst@t@d@i@c@",
+      "from_email_hash": "2865223e154c09b81e43eabeaa34ce9646ec97a3487a9bff5b6dcea6a0d863ac",
+      "date": "2007-05-16T10:51:19-03:00",
+      "subject": "[R-sig-DB] help on deciding which open-source database to use with R",
+      "subject_clean": "help on deciding which open-source database to use with R",
+      "in_reply_to": "<Pine.LNX.4.64.0705121228240.27426@gannet.stats.ox.ac.uk>",
+      "references": [
+        "<46451BD4.7030709@gmail.com>",
+        "<Pine.LNX.4.64.0705121228240.27426@gannet.stats.ox.ac.uk>"
+      ],
+      "body_plain": "Hello,\nI have been using postgreSQL with the postGIS extension for a few years\nnow and I'm really happy with its performance and features. I still use\nmySQL for other applications but what really determined my choice was the\nfact that the OGC simple spatial features were fully implemented in\npostGIS whereas mySQL only had limited support of spatial features.\n\nAs far as connecting from R goes, I have been using RODBC successfully and\nfound it to be in more active development than other R packages. The other\nadvantage of using RODBC is that you will setup ODBC connectivity to your\ndatabase, hence making it accessible to other software that provide ODBC\nbindings. In my case, I connect to the same database server from R, SAS,\nPerl, Matlab, Python and PHP through ODBC.\n\nI run all this on a Linux box and it's been a great learning experience.\nBoth postgreSQL and postGIS are now available as packages and are easily\ninstalled in Ubuntu. That's quite different from a few years ago where one\nneeded to built from source, a task that can be intimidating if you don't\nhave access to a good sysadmin/DBadmin person.\n\nAll the best.\n\nDaniel Ricard\nDalhousie University, Halifax, NS, Canada\n\n\n> I've not seen any response, so here are some thoughts.\n>\n> On Fri, 11 May 2007, Mark W Kimpel wrote:\n>\n>> I need to store and access increasingly large numbers of microarray\n>> datasets, which I analyze with R and BioC packages, and have decided to\n>> delve into the world of relational databases. For those of you\n>> unfamiliar with microarray datasets, they consist of unique indentifiers\n>> with associated raw and summary data. The unique identifiers map to\n>> established gene annotations that are updated regularly, a key reason I\n>> would like to use a relational database.\n>>\n>> In addition to just storing results, I would also like the database to\n>> perform SQL queries as well as use R within the database itself, so\n>> that, for example, an FDR calculation could be done on a geneset that\n>> was selected using various criteria from a web front-end without\n>> explicitly invoking R (I think postgreSQL can do that). Finally, I would\n>> like the database to be open-source and run on Linux.\n>\n> I think you are ruling out SQLite: its internal scripting capabilities are\n> much less.  Our experience is that PostgreSQL is a more powerful DBMS, but\n> harder to manage than MySQL.  If SQLite were in play, it can be very slow\n> compared to the other two.\n>\n>> Here is what I have gathered from perusing reviews of databases and the\n>> R mailing lists and the cran and BioC repositories:\n>> 1. my top 3 choices would be MySQL, postgreSQL, and SQLite\n>> 2. postgreSQL is probably the most powerful and ideologically \"pure\"\n>> 3. MySQL has the largest user community and the most available books\n>> 4. SQLite is the easiest to set up and R from within R\n>> 5. there are several R packages for SQLite that assist with very routine\n>> things like storing dataframes\n>> 6. DBI and RMySQL seem to offer the most combined active development and\n>> power from cran and RdbiPgSQL and postgreSQL would be an analogous\n>> offering from BioC\n>\n> Where do you get that from?  For example, RMySQL still does not work out\n> of the box on standard 64-bit systems (despite detailed reports and\n> promises to incorporate them), and it and DBI are two of a handful of CRAN\n> packages still using the deprecated SaveImage (and were the last two to\n> make use of install.R).  That's not 'active development' in my book.\n>\n> RODBC has more access to advanced features (e.g. bulk updates, fast\n> transfers to the database) and several people have reported it to be much\n> faster than RMySQL (and that is also my experience).\n>\n>> 7. RODBC would allow me to use just about any of the databases as well\n>> as Excel\n>\n> Excel only on Windows.\n>\n>> For all that \"understanding\", there is so much I can't figure out just\n>> from reading disparate sources. In particular, in am concerned about: 1.\n>> level of documentation so that I can learn, 2. likelihood of continued\n>> support and development, 3. ability to satisfy my present (as outlined\n>> in the first para) and unanticipated future needs, and 4. ease of use.\n>>\n>> Would someone who is familiar with these databases and how they \"relate\"\n>> (pun intended) to the R and BioC communities compare and contrast them\n>> for me?\n>\n> --\n> Brian D. Ripley,                  ripley at stats.ox.ac.uk\n> Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\n> University of Oxford,             Tel:  +44 1865 272861 (self)\n> 1 South Parks Road,                     +44 1865 272866 (PA)\n> Oxford OX1 3TG, UK                Fax:  +44 1865 272595\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "Hello,\nI have been using postgreSQL with the postGIS extension for a few years\nnow and I'm really happy with its performance and features. I still use\nmySQL for other applications but what really dete",
+      "thread_id": "thread-fdb7254f19c4",
+      "thread_depth": 2,
+      "month": "2007-05"
+    },
+    {
+      "id": "msg-8ab47bad62cf",
+      "message_id": "<971536df0705170757lb439704y248b8c478ed0774e@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2007-05-17T10:57:40-04:00",
+      "subject": "[R-sig-DB] RSQLite and Date",
+      "subject_clean": "RSQLite and Date",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Below dbDataType reports that \"Date\" class is represented as TEXT in the\ndata base.  When I write and read back a data frame it does come back\nas \"character\" but as the character representation of the number of days\nsince the Epoch.  Is that how its supposed to work?\n\nAre there any facilities that the user can control to specify how\ngiven classes are converted back and forth?\n\n> m <- dbDriver(\"SQLite\")\n> dbDataType(m, Sys.Date())\n[1] \"TEXT\"\n> con <- dbConnect(m, dbname=\":memory:\")\n> DF <- data.frame(Date = Sys.Date() + 0:3, Value = 10:13)\n> dbWriteTable(con, \"DF\", DF)\n[1] TRUE\n> str(dbReadTable(con, \"DF\"))\n'data.frame':   4 obs. of  2 variables:\n $ Date__1 : chr  \"13650.0\" \"13651.0\" \"13652.0\" \"13653.0\"\n $ Value__1: int  10 11 12 13",
+      "body_snippet": "Below dbDataType reports that \"Date\" class is represented as TEXT in the\ndata base.  When I write and read back a data frame it does come back\nas \"character\" but as the character representation of the",
+      "thread_id": "thread-8ab47bad62cf",
+      "thread_depth": 0,
+      "month": "2007-05"
+    },
+    {
+      "id": "msg-38b405a35f11",
+      "message_id": "<17996.30772.977457.700366@basebud.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2007-05-17T10:43:48-05:00",
+      "subject": "[R-sig-DB] RSQLite and Date",
+      "subject_clean": "RSQLite and Date",
+      "in_reply_to": "<971536df0705170757lb439704y248b8c478ed0774e@mail.gmail.com>",
+      "references": [
+        "<971536df0705170757lb439704y248b8c478ed0774e@mail.gmail.com>"
+      ],
+      "body_plain": "On 17 May 2007 at 10:57, Gabor Grothendieck wrote:\n| Below dbDataType reports that \"Date\" class is represented as TEXT in the\n| data base.  When I write and read back a data frame it does come back\n| as \"character\" but as the character representation of the number of days\n| since the Epoch.  Is that how its supposed to work?\n| \n| Are there any facilities that the user can control to specify how\n| given classes are converted back and forth?\n| \n| > m <- dbDriver(\"SQLite\")\n| > dbDataType(m, Sys.Date())\n| [1] \"TEXT\"\n| > con <- dbConnect(m, dbname=\":memory:\")\n| > DF <- data.frame(Date = Sys.Date() + 0:3, Value = 10:13)\n| > dbWriteTable(con, \"DF\", DF)\n| [1] TRUE\n| > str(dbReadTable(con, \"DF\"))\n| 'data.frame':   4 obs. of  2 variables:\n|  $ Date__1 : chr  \"13650.0\" \"13651.0\" \"13652.0\" \"13653.0\"\n|  $ Value__1: int  10 11 12 13\n\nGreat topic.  \n\nI once had a similar issue with RdbiPgSQL and found (from looking at\ndbiPgSQL/R/types.R as well as the Postgres docs) that all I needed was to add\n\n       rpgsql.cast.values.1114 <- function(x) { \n\t\tas.POSIXct(strptime(x, \"%a %b %d %H:%M:%OS %Y\")) }; \n\nand I'd get POSIXct's mapped.  \n\nIt would be nice if we get the maximum number of types mapped for the maximum\nnumber of db backends...  And it would of course also be nice if one day we\nget a volunteer to bring RdbiPgSQL into the proper DBI world.  Maybe next\nyear's Google SoC.\n\nDirk\n\n-- \nHell, there are no rules here - we're trying to accomplish something. \n                                                  -- Thomas A. Edison",
+      "body_snippet": "On 17 May 2007 at 10:57, Gabor Grothendieck wrote:\n| Below dbDataType reports that \"Date\" class is represented as TEXT in the\n| data base.  When I write and read back a data frame it does come back\n| ",
+      "thread_id": "thread-8ab47bad62cf",
+      "thread_depth": 1,
+      "month": "2007-05"
+    },
+    {
+      "id": "msg-a3a407ca6c7a",
+      "message_id": "<m2abw3h1bf.fsf@ziti.fhcrc.org>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2007-05-17T09:17:24-07:00",
+      "subject": "[R-sig-DB] RSQLite and Date",
+      "subject_clean": "RSQLite and Date",
+      "in_reply_to": "<17996.30772.977457.700366@basebud.nulle.part> (Dirk Eddelbuettel's message of \"Thu, 17 May 2007 10:43:48 -0500\")",
+      "references": [
+        "<971536df0705170757lb439704y248b8c478ed0774e@mail.gmail.com>",
+        "<17996.30772.977457.700366@basebud.nulle.part>"
+      ],
+      "body_plain": "Dirk Eddelbuettel <edd at debian.org> writes:\n\n> On 17 May 2007 at 10:57, Gabor Grothendieck wrote:\n> | Below dbDataType reports that \"Date\" class is represented as TEXT in the\n> | data base.  When I write and read back a data frame it does come back\n> | as \"character\" but as the character representation of the number of days\n> | since the Epoch.  Is that how its supposed to work?\n> | \n> | Are there any facilities that the user can control to specify how\n> | given classes are converted back and forth?\n> | \n> | > m <- dbDriver(\"SQLite\")\n> | > dbDataType(m, Sys.Date())\n> | [1] \"TEXT\"\n> | > con <- dbConnect(m, dbname=\":memory:\")\n> | > DF <- data.frame(Date = Sys.Date() + 0:3, Value = 10:13)\n> | > dbWriteTable(con, \"DF\", DF)\n> | [1] TRUE\n> | > str(dbReadTable(con, \"DF\"))\n> | 'data.frame':   4 obs. of  2 variables:\n> |  $ Date__1 : chr  \"13650.0\" \"13651.0\" \"13652.0\" \"13653.0\"\n> |  $ Value__1: int  10 11 12 13\n>\n> Great topic.  \n>\n> I once had a similar issue with RdbiPgSQL and found (from looking at\n> dbiPgSQL/R/types.R as well as the Postgres docs) that all I needed was to add\n>\n>        rpgsql.cast.values.1114 <- function(x) { \n> \t\tas.POSIXct(strptime(x, \"%a %b %d %H:%M:%OS %Y\")) }; \n>\n> and I'd get POSIXct's mapped.  \n>\n> It would be nice if we get the maximum number of types mapped for the maximum\n> number of db backends...  And it would of course also be nice if one day we\n> get a volunteer to bring RdbiPgSQL into the proper DBI world.  Maybe next\n> year's Google SoC.\n\nPatches welcome.  But the date problem is quite possibly trickier with\nSQLite since there is no date type.  So I don't know where that\ninformation should get stored/specified.\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "Dirk Eddelbuettel <edd at debian.org> writes:\n\n> On 17 May 2007 at 10:57, Gabor Grothendieck wrote:\n> | Below dbDataType reports that \"Date\" class is represented as TEXT in the\n> | data base.  When I ",
+      "thread_id": "thread-8ab47bad62cf",
+      "thread_depth": 2,
+      "month": "2007-05"
+    },
+    {
+      "id": "msg-5fb5140e4b99",
+      "message_id": "<971536df0705171033m3ed447c2wf128cbfdf9ea1931@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2007-05-17T13:33:01-04:00",
+      "subject": "[R-sig-DB] RSQLite and Date",
+      "subject_clean": "RSQLite and Date",
+      "in_reply_to": "<m2abw3h1bf.fsf@ziti.fhcrc.org>",
+      "references": [
+        "<971536df0705170757lb439704y248b8c478ed0774e@mail.gmail.com>",
+        "<17996.30772.977457.700366@basebud.nulle.part>",
+        "<m2abw3h1bf.fsf@ziti.fhcrc.org>"
+      ],
+      "body_plain": "On 5/17/07, Seth Falcon <sfalcon at fhcrc.org> wrote:\n> Dirk Eddelbuettel <edd at debian.org> writes:\n>\n> > On 17 May 2007 at 10:57, Gabor Grothendieck wrote:\n> > | Below dbDataType reports that \"Date\" class is represented as TEXT in the\n> > | data base.  When I write and read back a data frame it does come back\n> > | as \"character\" but as the character representation of the number of days\n> > | since the Epoch.  Is that how its supposed to work?\n> > |\n> > | Are there any facilities that the user can control to specify how\n> > | given classes are converted back and forth?\n> > |\n> > | > m <- dbDriver(\"SQLite\")\n> > | > dbDataType(m, Sys.Date())\n> > | [1] \"TEXT\"\n> > | > con <- dbConnect(m, dbname=\":memory:\")\n> > | > DF <- data.frame(Date = Sys.Date() + 0:3, Value = 10:13)\n> > | > dbWriteTable(con, \"DF\", DF)\n> > | [1] TRUE\n> > | > str(dbReadTable(con, \"DF\"))\n> > | 'data.frame':   4 obs. of  2 variables:\n> > |  $ Date__1 : chr  \"13650.0\" \"13651.0\" \"13652.0\" \"13653.0\"\n> > |  $ Value__1: int  10 11 12 13\n> >\n> > Great topic.\n> >\n> > I once had a similar issue with RdbiPgSQL and found (from looking at\n> > dbiPgSQL/R/types.R as well as the Postgres docs) that all I needed was to add\n> >\n> >        rpgsql.cast.values.1114 <- function(x) {\n> >               as.POSIXct(strptime(x, \"%a %b %d %H:%M:%OS %Y\")) };\n> >\n> > and I'd get POSIXct's mapped.\n> >\n> > It would be nice if we get the maximum number of types mapped for the maximum\n> > number of db backends...  And it would of course also be nice if one day we\n> > get a volunteer to bring RdbiPgSQL into the proper DBI world.  Maybe next\n> > year's Google SoC.\n>\n> Patches welcome.  But the date problem is quite possibly trickier with\n> SQLite since there is no date type.  So I don't know where that\n> information should get stored/specified.\n\nThere is no 100% clean solution I can think of but one idea would be\nto translate\nthe R class into an SQLite class + an SQL constraint.  So \"Date\" class\nmight be translated into TEXT  plus a constraint that the contents of the column\nbe of the form yyyy-mm-dd.  In translating back it would have a table of\nconstraints so that it could translate back properly.",
+      "body_snippet": "On 5/17/07, Seth Falcon <sfalcon at fhcrc.org> wrote:\n> Dirk Eddelbuettel <edd at debian.org> writes:\n>\n> > On 17 May 2007 at 10:57, Gabor Grothendieck wrote:\n> > | Below dbDataType reports that \"Date",
+      "thread_id": "thread-8ab47bad62cf",
+      "thread_depth": 3,
+      "month": "2007-05"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-fdb7254f19c4",
+      "subject": "help on deciding which open-source database to use with R",
+      "message_count": 3,
+      "participants": [
+        "Mark W Kimpel",
+        "Prof Brian Ripley",
+        "ric@rdd m@iii@g oii m@thst@t@d@i@c@"
+      ],
+      "started": "2007-05-11T21:43:48-04:00",
+      "last_reply": "2007-05-16T10:51:19-03:00",
+      "root_message_id": "msg-fdb7254f19c4"
+    },
+    {
+      "id": "thread-8ab47bad62cf",
+      "subject": "RSQLite and Date",
+      "message_count": 4,
+      "participants": [
+        "Dirk Eddelbuettel",
+        "Gabor Grothendieck",
+        "Seth Falcon"
+      ],
+      "started": "2007-05-17T10:57:40-04:00",
+      "last_reply": "2007-05-17T13:33:01-04:00",
+      "root_message_id": "msg-8ab47bad62cf"
+    }
+  ]
+}

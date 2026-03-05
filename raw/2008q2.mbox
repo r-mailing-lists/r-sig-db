@@ -1,0 +1,1911 @@
+From edd @end|ng |rom deb|@n@org  Sat Apr  5 20:30:28 2008
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Sat, 5 Apr 2008 13:30:28 -0500
+Subject: [R-sig-DB] RdbiPgSQL
+Message-ID: <18423.50500.173306.187975@ron.nulle.part>
+
+
+I have offered to help with the Google Summer of Code projects for building a
+DBI / PostgreSQL interface.  Given the template of Rdbi/RdbiPgSQL we know
+that this will easily work on Linux et al, but has anybody tried this under
+Windows?   
+
+According to the PostgreSQL website, building on Windows using MinGW should
+'just work'.  Can anybody here with a R-bent give any additional colour: did
+it or didn't it work ?  
+
+Thanks in advance for any pointers,  Dirk
+
+-- 
+Three out of two people have difficulties with fractions.
+
+
+
+From m@|| @end|ng |rom joeconw@y@com  Sun Apr  6 00:33:40 2008
+From: m@|| @end|ng |rom joeconw@y@com (Joe Conway)
+Date: Sat, 05 Apr 2008 15:33:40 -0700
+Subject: [R-sig-DB] RdbiPgSQL
+In-Reply-To: <18423.50500.173306.187975@ron.nulle.part>
+References: <18423.50500.173306.187975@ron.nulle.part>
+Message-ID: <47F7FE44.1060008@joeconway.com>
+
+Dirk Eddelbuettel wrote:
+> I have offered to help with the Google Summer of Code projects for building a
+> DBI / PostgreSQL interface.  Given the template of Rdbi/RdbiPgSQL we know
+> that this will easily work on Linux et al, but has anybody tried this under
+> Windows?   
+> 
+> According to the PostgreSQL website, building on Windows using MinGW should
+> 'just work'.  Can anybody here with a R-bent give any additional colour: did
+> it or didn't it work ?  
+
+It's been a while, but I have built both Postgres and PL/R successfully 
+under MinGW on WinXP. I don't have much spare time these days (can 
+barley keep PL/R updated), but if you run into problems I'll try to help.
+
+Joe
+
+
+
+From edd @end|ng |rom deb|@n@org  Sun Apr  6 00:54:09 2008
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Sat, 5 Apr 2008 17:54:09 -0500
+Subject: [R-sig-DB] RdbiPgSQL
+In-Reply-To: <47F7FE44.1060008@joeconway.com>
+References: <18423.50500.173306.187975@ron.nulle.part>
+	<47F7FE44.1060008@joeconway.com>
+Message-ID: <18424.785.151520.244391@ron.nulle.part>
+
+
+Joe,
+
+Thanks for the feedback!
+
+On 5 April 2008 at 15:33, Joe Conway wrote:
+| Dirk Eddelbuettel wrote:
+| > I have offered to help with the Google Summer of Code projects for building a
+| > DBI / PostgreSQL interface.  Given the template of Rdbi/RdbiPgSQL we know
+| > that this will easily work on Linux et al, but has anybody tried this under
+| > Windows?   
+| > 
+| > According to the PostgreSQL website, building on Windows using MinGW should
+| > 'just work'.  Can anybody here with a R-bent give any additional colour: did
+| > it or didn't it work ?  
+| 
+| It's been a while, but I have built both Postgres and PL/R successfully 
+| under MinGW on WinXP. I don't have much spare time these days (can 
+| barley keep PL/R updated), but if you run into problems I'll try to help.
+
+It so happens that I just heard from one of the SoC students, and he now
+succeeded to after installing MSys and rebuilding Pg.  RdbiPgSQL then built
+fine against the locally-built libpq.
+
+Thanks for the offer for help.  We may take you up on it!
+
+Cheers, Dirk
+
+-- 
+Three out of two people have difficulties with fractions.
+
+
+
+From bu||@rd @end|ng |rom berke|ey@edu  Wed Apr 16 02:31:45 2008
+From: bu||@rd @end|ng |rom berke|ey@edu (James Bullard)
+Date: Tue, 15 Apr 2008 17:31:45 -0700
+Subject: [R-sig-DB] dbSendPreparedQuery in RSQLite
+Message-ID: <F1929BAE-218E-4A7C-9EBF-EA04CAD13448@berkeley.edu>
+
+How do we send prepared queries in RSQLite. We are interested in  
+something along the lines of
+
+ps = dbSendPreparedQuery(conn, "SELECT * FROM table1 WHERE chr = ?",  
+data.frame("integer"))
+for( i in 1:2)
+   rs = dbGetPreparedQuery(ps, i)
+
+In C it would look something along the lines of
+http://www.mail-archive.com/sqlite-users at sqlite.org/msg31854.html
+
+Thanks
+Jim
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Wed Apr 16 04:21:33 2008
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Tue, 15 Apr 2008 22:21:33 -0400
+Subject: [R-sig-DB] dbSendPreparedQuery in RSQLite
+In-Reply-To: <F1929BAE-218E-4A7C-9EBF-EA04CAD13448@berkeley.edu>
+References: <F1929BAE-218E-4A7C-9EBF-EA04CAD13448@berkeley.edu>
+Message-ID: <264855a00804151921r571d3a55i1170450f43a1bc91@mail.gmail.com>
+
+On Tue, Apr 15, 2008 at 8:31 PM, James Bullard <bullard at berkeley.edu> wrote:
+> How do we send prepared queries in RSQLite. We are interested in
+>  something along the lines of
+>
+>  ps = dbSendPreparedQuery(conn, "SELECT * FROM table1 WHERE chr = ?",
+>  data.frame("integer"))
+>  for( i in 1:2)
+>    rs = dbGetPreparedQuery(ps, i)
+>
+>  In C it would look something along the lines of
+>  http://www.mail-archive.com/sqlite-users at sqlite.org/msg31854.html
+
+It looks like this is not supported for select statements, though I
+could easily be wrong.  In this particular case, you could rewrite
+your select as:
+
+"SELECT * from table1 where chr in (1,2)"
+
+Sean
+
+
+
+From bu||@rd @end|ng |rom berke|ey@edu  Wed Apr 16 05:45:42 2008
+From: bu||@rd @end|ng |rom berke|ey@edu (James Bullard)
+Date: Tue, 15 Apr 2008 20:45:42 -0700
+Subject: [R-sig-DB] dbSendPreparedQuery in RSQLite
+In-Reply-To: <264855a00804151921r571d3a55i1170450f43a1bc91@mail.gmail.com>
+References: <F1929BAE-218E-4A7C-9EBF-EA04CAD13448@berkeley.edu>
+	<264855a00804151921r571d3a55i1170450f43a1bc91@mail.gmail.com>
+Message-ID: <19CEF653-CA92-49BB-B557-519EC954BF3C@berkeley.edu>
+
+Yes, in this example that would certainly work. However, I have a  
+large number of queries in a tight loop and it would be nice to avoid  
+the overhead of the query parsing and compiling on each call through  
+the loop. I believe it is not supported on select statements as well  
+and wonder if this would be a hard addition, also, I wonder if this is  
+the correct syntax below. From other settings it seems a little off  
+(see the link in the original email).
+
+thanks again, jim
+
+
+On Apr 15, 2008, at 7:21 PM, Sean Davis wrote:
+> On Tue, Apr 15, 2008 at 8:31 PM, James Bullard  
+> <bullard at berkeley.edu> wrote:
+>> How do we send prepared queries in RSQLite. We are interested in
+>> something along the lines of
+>>
+>> ps = dbSendPreparedQuery(conn, "SELECT * FROM table1 WHERE chr = ?",
+>> data.frame("integer"))
+>> for( i in 1:2)
+>>   rs = dbGetPreparedQuery(ps, i)
+>>
+>> In C it would look something along the lines of
+>> http://www.mail-archive.com/sqlite-users at sqlite.org/msg31854.html
+>
+> It looks like this is not supported for select statements, though I
+> could easily be wrong.  In this particular case, you could rewrite
+> your select as:
+>
+> "SELECT * from table1 where chr in (1,2)"
+>
+> Sean
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Wed Apr 16 17:24:18 2008
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Wed, 16 Apr 2008 08:24:18 -0700
+Subject: [R-sig-DB] dbSendPreparedQuery in RSQLite
+In-Reply-To: <19CEF653-CA92-49BB-B557-519EC954BF3C@berkeley.edu>
+References: <F1929BAE-218E-4A7C-9EBF-EA04CAD13448@berkeley.edu>
+	<264855a00804151921r571d3a55i1170450f43a1bc91@mail.gmail.com>
+	<19CEF653-CA92-49BB-B557-519EC954BF3C@berkeley.edu>
+Message-ID: <20080416152418.GH17474@ziti.local>
+
+* On 2008-04-15 at 20:45 -0700 James Bullard wrote:
+> Yes, in this example that would certainly work. However, I have a  
+> large number of queries in a tight loop and it would be nice to avoid  
+> the overhead of the query parsing and compiling on each call through  
+> the loop. I believe it is not supported on select statements as well  
+> and wonder if this would be a hard addition,
+
+You are correct, currently prepared queries are not supported for
+SELECT (I have no memory of why this is the case).  I think that
+supporting prepared queries for SELECT should be possible, though not
+trivial.
+
+Are you sure you can't avoid your loop by sending a large query and
+batching through it using fetch on the result set returned?
+
+> also, I wonder if this is the correct syntax below. From other
+> settings it seems a little off (see the link in the original email).
+
+By below I think you mean:
+
+> >> ps = dbSendPreparedQuery(conn, "SELECT * FROM table1 WHERE chr = ?",
+> >> data.frame("integer"))
+> >> for( i in 1:2)
+> >>   rs = dbGetPreparedQuery(ps, i)
+
+Almost.  As above, this is only supported with non-SELECT, so you
+might do (untested):
+
+    df = data.frame(x=1:10, y=letters[1:10])
+    sql = "INSERT INTO foo (a, b) VALUES (?, ?)"
+    rs = dbSendPreparedQuery(db, sql, df)
+
+So you pass a data.frame and the loop is internal.
+You can also name the parameters so you could have:
+
+    sql = "INSERT INTO foo (a, b) VALUES (:y, :x)"
+    rs = dbSendPreparedQuery(db, sql, df)
+
+And y, x are matched based on names(df).
+
++ seth
+
+-- 
+Seth Falcon | http://userprimary.net/user/
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Wed Apr 16 17:47:07 2008
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Wed, 16 Apr 2008 11:47:07 -0400
+Subject: [R-sig-DB] dbSendPreparedQuery in RSQLite
+In-Reply-To: <19CEF653-CA92-49BB-B557-519EC954BF3C@berkeley.edu>
+References: <F1929BAE-218E-4A7C-9EBF-EA04CAD13448@berkeley.edu>
+	<264855a00804151921r571d3a55i1170450f43a1bc91@mail.gmail.com>
+	<19CEF653-CA92-49BB-B557-519EC954BF3C@berkeley.edu>
+Message-ID: <264855a00804160847s3cbf9182ibfabff0baf57779d@mail.gmail.com>
+
+On Tue, Apr 15, 2008 at 11:45 PM, James Bullard <bullard at berkeley.edu> wrote:
+> Yes, in this example that would certainly work. However, I have a large
+> number of queries in a tight loop and it would be nice to avoid the overhead
+> of the query parsing and compiling on each call through the loop.
+
+A couple of typical tricks for avoidance of loops is to either:
+
+1) Use an "in" query
+2) Use a temporary table (CREATE TEMPORARY TABLE .... or
+dbWriteTable()) and then do a join
+
+If you have hundreds or thousands of queries, it is quite possible
+that #2 could be much faster.  Benchmarking would be useful here, but
+it is definitely worth a try if you are too slow with looping.
+
+Sean
+
+>  thanks again, jim
+>
+>
+>
+>
+>  On Apr 15, 2008, at 7:21 PM, Sean Davis wrote:
+>
+> > On Tue, Apr 15, 2008 at 8:31 PM, James Bullard <bullard at berkeley.edu>
+> wrote:
+> >
+> > > How do we send prepared queries in RSQLite. We are interested in
+> > > something along the lines of
+> > >
+> > > ps = dbSendPreparedQuery(conn, "SELECT * FROM table1 WHERE chr = ?",
+> > > data.frame("integer"))
+> > > for( i in 1:2)
+> > >  rs = dbGetPreparedQuery(ps, i)
+> > >
+> > > In C it would look something along the lines of
+> > > http://www.mail-archive.com/sqlite-users at sqlite.org/msg31854.html
+> > >
+> >
+> > It looks like this is not supported for select statements, though I
+> > could easily be wrong.  In this particular case, you could rewrite
+> > your select as:
+> >
+> > "SELECT * from table1 where chr in (1,2)"
+> >
+> > Sean
+> >
+>
+>
+
+
+
+From bu||@rd @end|ng |rom berke|ey@edu  Wed Apr 16 19:35:02 2008
+From: bu||@rd @end|ng |rom berke|ey@edu (James Bullard)
+Date: Wed, 16 Apr 2008 10:35:02 -0700
+Subject: [R-sig-DB] dbSendPreparedQuery in RSQLite
+In-Reply-To: <264855a00804160847s3cbf9182ibfabff0baf57779d@mail.gmail.com>
+References: <F1929BAE-218E-4A7C-9EBF-EA04CAD13448@berkeley.edu>
+	<264855a00804151921r571d3a55i1170450f43a1bc91@mail.gmail.com>
+	<19CEF653-CA92-49BB-B557-519EC954BF3C@berkeley.edu>
+	<264855a00804160847s3cbf9182ibfabff0baf57779d@mail.gmail.com>
+Message-ID: <17AA0A27-6B54-4465-8142-ECC5937813E6@berkeley.edu>
+
+Okay, well I thought that what I was doing was not easily done with  
+one query but since I am wrong more often than not I'll ask and see if  
+anyone can think of a way to combine it into one query.
+
+I have a set of regions:
+
+regions <- cbind(chr = c(1,2,3), start = c(1,230,4950), end = c(293,  
+320, 19200))
+
+In the db I have the following table:
+
+CREATE TABLE count_table (chr, location, count);
+
+chr location count
+1	10		1
+1	290		10
+2	245		3
+3	10		2
+
+The query that I am using is:
+
+apply(regions, 1, function(region) {
+	paste("SELECT * FROM count_table WHERE chr =", region[1], "AND  
+location >=", region[2],  "AND location <=", region[3], ";")
+})
+
+Which gives me back the following (which is exactly what I want):
+[[1]]
+   chr location count__1
+1   1       10        1
+2   1      290       10
+
+[[2]]
+   chr location count__1
+1   2      245        3
+
+[[3]]
+NULL data frame with 0 rows
+
+
+So I don't see any obvious way to pass in multiple ranges, but maybe I  
+missing something with using the IN operator, thanks in advance, sorry  
+for the long email.
+
+
+Jim
+
+
+
+On Apr 16, 2008, at 8:47 AM, Sean Davis wrote:
+> On Tue, Apr 15, 2008 at 11:45 PM, James Bullard  
+> <bullard at berkeley.edu> wrote:
+>> Yes, in this example that would certainly work. However, I have a  
+>> large
+>> number of queries in a tight loop and it would be nice to avoid the  
+>> overhead
+>> of the query parsing and compiling on each call through the loop.
+>
+> A couple of typical tricks for avoidance of loops is to either:
+>
+> 1) Use an "in" query
+> 2) Use a temporary table (CREATE TEMPORARY TABLE .... or
+> dbWriteTable()) and then do a join
+>
+> If you have hundreds or thousands of queries, it is quite possible
+> that #2 could be much faster.  Benchmarking would be useful here, but
+> it is definitely worth a try if you are too slow with looping.
+>
+> Sean
+>
+>> thanks again, jim
+>>
+>>
+>>
+>>
+>> On Apr 15, 2008, at 7:21 PM, Sean Davis wrote:
+>>
+>>> On Tue, Apr 15, 2008 at 8:31 PM, James Bullard  
+>>> <bullard at berkeley.edu>
+>> wrote:
+>>>
+>>>> How do we send prepared queries in RSQLite. We are interested in
+>>>> something along the lines of
+>>>>
+>>>> ps = dbSendPreparedQuery(conn, "SELECT * FROM table1 WHERE chr  
+>>>> = ?",
+>>>> data.frame("integer"))
+>>>> for( i in 1:2)
+>>>> rs = dbGetPreparedQuery(ps, i)
+>>>>
+>>>> In C it would look something along the lines of
+>>>> http://www.mail-archive.com/sqlite-users at sqlite.org/msg31854.html
+>>>>
+>>>
+>>> It looks like this is not supported for select statements, though I
+>>> could easily be wrong.  In this particular case, you could rewrite
+>>> your select as:
+>>>
+>>> "SELECT * from table1 where chr in (1,2)"
+>>>
+>>> Sean
+>>>
+>>
+>>
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Wed Apr 16 21:21:43 2008
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Wed, 16 Apr 2008 15:21:43 -0400
+Subject: [R-sig-DB] dbSendPreparedQuery in RSQLite
+In-Reply-To: <17AA0A27-6B54-4465-8142-ECC5937813E6@berkeley.edu>
+References: <F1929BAE-218E-4A7C-9EBF-EA04CAD13448@berkeley.edu>
+	<264855a00804151921r571d3a55i1170450f43a1bc91@mail.gmail.com>
+	<19CEF653-CA92-49BB-B557-519EC954BF3C@berkeley.edu>
+	<264855a00804160847s3cbf9182ibfabff0baf57779d@mail.gmail.com>
+	<17AA0A27-6B54-4465-8142-ECC5937813E6@berkeley.edu>
+Message-ID: <264855a00804161221g4664d743rcf7c1e1de3eee850@mail.gmail.com>
+
+On Wed, Apr 16, 2008 at 1:35 PM, James Bullard <bullard at berkeley.edu> wrote:
+> Okay, well I thought that what I was doing was not easily done with one
+> query but since I am wrong more often than not I'll ask and see if anyone
+> can think of a way to combine it into one query.
+>
+>  I have a set of regions:
+>
+>  regions <- cbind(chr = c(1,2,3), start = c(1,230,4950), end = c(293, 320,
+> 19200))
+>
+>  In the db I have the following table:
+>
+>  CREATE TABLE count_table (chr, location, count);
+>
+>  chr location count
+>  1       10              1
+>  1       290             10
+>  2       245             3
+>  3       10              2
+>
+>  The query that I am using is:
+>
+>  apply(regions, 1, function(region) {
+>         paste("SELECT * FROM count_table WHERE chr =", region[1], "AND
+> location >=", region[2],  "AND location <=", region[3], ";")
+>  })
+>
+>  Which gives me back the following (which is exactly what I want):
+>  [[1]]
+>   chr location count__1
+>  1   1       10        1
+>  2   1      290       10
+>
+>  [[2]]
+>   chr location count__1
+>  1   2      245        3
+>
+>  [[3]]
+>  NULL data frame with 0 rows
+>
+>
+>  So I don't see any obvious way to pass in multiple ranges, but maybe I
+> missing something with using the IN operator, thanks in advance, sorry for
+> the long email.
+
+> counts <- data.frame(chr=c(1,1,2,3),location=c(10,290,245,10),count=c(1,10,3,2))
+> dbWriteTable(con,'count_table',counts,row.names=FALSE,overwrite=TRUE)
+> dbGetQuery(con,'select * from count_table')
+  chr location count__1
+1   1       10        1
+2   1      290       10
+3   2      245        3
+4   3       10        2
+
+> regions <- data.frame(chr = c(1,2,3), start = c(1,230,4950), end = c(293, 320, 19200))
+> dbWriteTable(con,'regions',regions,row.names=FALSE,overwrite=TRUE)
+> dbGetQuery(con,'select * from regions')
+  chr start end__1
+1   1     1    293
+2   2   230    320
+3   3  4950  19200
+
+
+> dbGetQuery(con,'select count_table.* from count_table join regions on regions.chr=count_table.chr and count_table.location between regions.start and regions.end__1')
+  chr location count__1
+1   1       10        1
+2   1      290       10
+3   2      245        3
+
+So, the principle of a temp table works.  Let's try some benchmarking.
+ Create a random count table of length 100k rows, write it to a
+database and create some indexes to speed querying.
+
+
+> counts <- data.frame(chr=sample(1:22,100000,replace=TRUE),location=sample(1:100000000,100000,replace=TRUE),count=sample(1:10,100000,replace=TRUE))
+> counts[1:5,]
+  chr location count
+1  14 91737974     5
+2   5 61059218     2
+3   2 23944824     4
+4   3 82907389     9
+5  22 94658940     1
+> dbWriteTable(con,'count_table',counts,row.names=FALSE,overwrite=TRUE)
+[1] TRUE
+> dbGetQuery(con,'create index ct_chr on count_table(chr)')
+NULL
+> dbGetQuery(con,'create index ct_location on count_table(location)')
+NULL
+
+So, to try a benchmark, I wrote a little function that creates random
+regions (n of them, see function below).  In the tmp table approach,
+the data.frame is written to a table in the database and a join is
+used.  In the second, the apply() approach is used.  The function
+below returns the system.time for each approach.  In my quick
+benchmarking, the temp table approach is about 5 times faster
+(including writing the temp table) with a count_table of length 100k
+rows.  I would expect that it might be a very much larger difference
+as the size of the count_table increases, as the indexes on
+count_table must be scanned for each of the apply queries and only
+once for the temp table/join approach.
+
+benchRegions <- function(n) {
+   # n is the number of regions.
+   # returns a list with 2 sets of system times, one for
+   #  the temp table approach, and one for the apply approach
+   res <- list()
+   starts=sample(1:100000000,n,replace=TRUE)
+   ends=starts+sample(1:1000,n,replace=TRUE)
+   regions <- data.frame(chr=sample(1:22,n,replace=TRUE),
+                         start=starts,
+                         end=ends)
+   res[['tmptab']] <-
+system.time({dbWriteTable(con,'regions',regions,row.names=FALSE,overwrite=TRUE);
+dbGetQuery(con,'select count_table.* from count_table join regions on
+regions.chr=count_table.chr and count_table.location between
+regions.start and regions.end__1')})
+   res[['apply']] <- system.time(apply(regions, 1, function(region)
+{dbGetQuery(con,paste("SELECT * FROM count_table WHERE chr =",
+region[1], "AND location >=", region[2],  "AND location <=",
+region[3], ";"))
+}))
+   return(res)
+}
+
+Hope that helps.
+
+Sean
+
+
+>  On Apr 16, 2008, at 8:47 AM, Sean Davis wrote:
+>
+> > On Tue, Apr 15, 2008 at 11:45 PM, James Bullard <bullard at berkeley.edu>
+> wrote:
+> >
+> > > Yes, in this example that would certainly work. However, I have a large
+> > > number of queries in a tight loop and it would be nice to avoid the
+> overhead
+> > > of the query parsing and compiling on each call through the loop.
+> > >
+> >
+> > A couple of typical tricks for avoidance of loops is to either:
+> >
+> > 1) Use an "in" query
+> > 2) Use a temporary table (CREATE TEMPORARY TABLE .... or
+> > dbWriteTable()) and then do a join
+> >
+> > If you have hundreds or thousands of queries, it is quite possible
+> > that #2 could be much faster.  Benchmarking would be useful here, but
+> > it is definitely worth a try if you are too slow with looping.
+> >
+> > Sean
+> >
+> >
+> > > thanks again, jim
+> > >
+> > >
+> > >
+> > >
+> > > On Apr 15, 2008, at 7:21 PM, Sean Davis wrote:
+> > >
+> > >
+> > > > On Tue, Apr 15, 2008 at 8:31 PM, James Bullard <bullard at berkeley.edu>
+> > > >
+> > > wrote:
+> > >
+> > > >
+> > > >
+> > > > > How do we send prepared queries in RSQLite. We are interested in
+> > > > > something along the lines of
+> > > > >
+> > > > > ps = dbSendPreparedQuery(conn, "SELECT * FROM table1 WHERE chr = ?",
+> > > > > data.frame("integer"))
+> > > > > for( i in 1:2)
+> > > > > rs = dbGetPreparedQuery(ps, i)
+> > > > >
+> > > > > In C it would look something along the lines of
+> > > > > http://www.mail-archive.com/sqlite-users at sqlite.org/msg31854.html
+> > > > >
+> > > > >
+> > > >
+> > > > It looks like this is not supported for select statements, though I
+> > > > could easily be wrong.  In this particular case, you could rewrite
+> > > > your select as:
+> > > >
+> > > > "SELECT * from table1 where chr in (1,2)"
+> > > >
+> > > > Sean
+> > > >
+> > > >
+> > >
+> > >
+> > >
+> >
+>
+>
+
+
+
+From bu||@rd @end|ng |rom berke|ey@edu  Thu Apr 17 20:04:43 2008
+From: bu||@rd @end|ng |rom berke|ey@edu (James Bullard)
+Date: Thu, 17 Apr 2008 11:04:43 -0700
+Subject: [R-sig-DB] dbSendPreparedQuery in RSQLite
+In-Reply-To: <264855a00804161221g4664d743rcf7c1e1de3eee850@mail.gmail.com>
+References: <F1929BAE-218E-4A7C-9EBF-EA04CAD13448@berkeley.edu>
+	<264855a00804151921r571d3a55i1170450f43a1bc91@mail.gmail.com>
+	<19CEF653-CA92-49BB-B557-519EC954BF3C@berkeley.edu>
+	<264855a00804160847s3cbf9182ibfabff0baf57779d@mail.gmail.com>
+	<17AA0A27-6B54-4465-8142-ECC5937813E6@berkeley.edu>
+	<264855a00804161221g4664d743rcf7c1e1de3eee850@mail.gmail.com>
+Message-ID: <CA13E75C-82F3-4038-8974-C42E5D1DB9CB@berkeley.edu>
+
+Thank you Sean, this worked great. Now the cost of going to the  
+database pales in comparison to the split that I need to do in the end  
+to properly divide up the returned data.frame into a list where each  
+member is a region. It is unfortunate because the data.frame returned  
+to R is sorted in region order.
+
+res <-
+>> chr location count	region
+>> 1       10              1		1
+>> 1       290            10	1
+>> 2       245            3		2
+>> 3       10              2		3
+
+
+
+So then in order to return the object in the appropriate list fashion  
+I do:
+
+split(res, res$region)
+
+This splitting dominates the cost of the entire function.  
+Unfortunately, the splitting doesn't use the fact that it is sorted  
+according to the factor. This I think I will handle by going to the  
+database and getting the number of rows in a region and then using  
+that vector to partition up the data (unless of course anyone has any  
+smarter ideas)
+
+Thanks again, I really appreciate the detailed example it helped  
+tremendously in sorting out the indexing.
+
+jim
+
+On Apr 16, 2008, at 12:21 PM, Sean Davis wrote:
+> On Wed, Apr 16, 2008 at 1:35 PM, James Bullard  
+> <bullard at berkeley.edu> wrote:
+>> Okay, well I thought that what I was doing was not easily done with  
+>> one
+>> query but since I am wrong more often than not I'll ask and see if  
+>> anyone
+>> can think of a way to combine it into one query.
+>>
+>> I have a set of regions:
+>>
+>> regions <- cbind(chr = c(1,2,3), start = c(1,230,4950), end =  
+>> c(293, 320,
+>> 19200))
+>>
+>> In the db I have the following table:
+>>
+>> CREATE TABLE count_table (chr, location, count);
+>>
+>> chr location count
+>> 1       10              1
+>> 1       290             10
+>> 2       245             3
+>> 3       10              2
+>>
+>> The query that I am using is:
+>>
+>> apply(regions, 1, function(region) {
+>>        paste("SELECT * FROM count_table WHERE chr =", region[1], "AND
+>> location >=", region[2],  "AND location <=", region[3], ";")
+>> })
+>>
+>> Which gives me back the following (which is exactly what I want):
+>> [[1]]
+>>  chr location count__1
+>> 1   1       10        1
+>> 2   1      290       10
+>>
+>> [[2]]
+>>  chr location count__1
+>> 1   2      245        3
+>>
+>> [[3]]
+>> NULL data frame with 0 rows
+>>
+>>
+>> So I don't see any obvious way to pass in multiple ranges, but  
+>> maybe I
+>> missing something with using the IN operator, thanks in advance,  
+>> sorry for
+>> the long email.
+>
+>> counts <-  
+>> data 
+>> .frame(chr=c(1,1,2,3),location=c(10,290,245,10),count=c(1,10,3,2))
+>> dbWriteTable(con,'count_table',counts,row.names=FALSE,overwrite=TRUE)
+>> dbGetQuery(con,'select * from count_table')
+>  chr location count__1
+> 1   1       10        1
+> 2   1      290       10
+> 3   2      245        3
+> 4   3       10        2
+>
+>> regions <- data.frame(chr = c(1,2,3), start = c(1,230,4950), end =  
+>> c(293, 320, 19200))
+>> dbWriteTable(con,'regions',regions,row.names=FALSE,overwrite=TRUE)
+>> dbGetQuery(con,'select * from regions')
+>  chr start end__1
+> 1   1     1    293
+> 2   2   230    320
+> 3   3  4950  19200
+>
+>
+>> dbGetQuery(con,'select count_table.* from count_table join regions  
+>> on regions.chr=count_table.chr and count_table.location between  
+>> regions.start and regions.end__1')
+>  chr location count__1
+> 1   1       10        1
+> 2   1      290       10
+> 3   2      245        3
+>
+> So, the principle of a temp table works.  Let's try some benchmarking.
+> Create a random count table of length 100k rows, write it to a
+> database and create some indexes to speed querying.
+>
+>
+>> counts <-  
+>> data 
+>> .frame 
+>> (chr 
+>> = 
+>> sample 
+>> (1 
+>> : 
+>> 22,100000 
+>> ,replace 
+>> = 
+>> TRUE 
+>> ),location 
+>> = 
+>> sample 
+>> (1 
+>> : 
+>> 100000000,100000 
+>> ,replace=TRUE),count=sample(1:10,100000,replace=TRUE))
+>> counts[1:5,]
+>  chr location count
+> 1  14 91737974     5
+> 2   5 61059218     2
+> 3   2 23944824     4
+> 4   3 82907389     9
+> 5  22 94658940     1
+>> dbWriteTable(con,'count_table',counts,row.names=FALSE,overwrite=TRUE)
+> [1] TRUE
+>> dbGetQuery(con,'create index ct_chr on count_table(chr)')
+> NULL
+>> dbGetQuery(con,'create index ct_location on count_table(location)')
+> NULL
+>
+> So, to try a benchmark, I wrote a little function that creates random
+> regions (n of them, see function below).  In the tmp table approach,
+> the data.frame is written to a table in the database and a join is
+> used.  In the second, the apply() approach is used.  The function
+> below returns the system.time for each approach.  In my quick
+> benchmarking, the temp table approach is about 5 times faster
+> (including writing the temp table) with a count_table of length 100k
+> rows.  I would expect that it might be a very much larger difference
+> as the size of the count_table increases, as the indexes on
+> count_table must be scanned for each of the apply queries and only
+> once for the temp table/join approach.
+>
+> benchRegions <- function(n) {
+>   # n is the number of regions.
+>   # returns a list with 2 sets of system times, one for
+>   #  the temp table approach, and one for the apply approach
+>   res <- list()
+>   starts=sample(1:100000000,n,replace=TRUE)
+>   ends=starts+sample(1:1000,n,replace=TRUE)
+>   regions <- data.frame(chr=sample(1:22,n,replace=TRUE),
+>                         start=starts,
+>                         end=ends)
+>   res[['tmptab']] <-
+> system 
+> .time 
+> ({dbWriteTable(con,'regions',regions,row.names=FALSE,overwrite=TRUE);
+> dbGetQuery(con,'select count_table.* from count_table join regions on
+> regions.chr=count_table.chr and count_table.location between
+> regions.start and regions.end__1')})
+>   res[['apply']] <- system.time(apply(regions, 1, function(region)
+> {dbGetQuery(con,paste("SELECT * FROM count_table WHERE chr =",
+> region[1], "AND location >=", region[2],  "AND location <=",
+> region[3], ";"))
+> }))
+>   return(res)
+> }
+>
+> Hope that helps.
+>
+> Sean
+>
+>
+>> On Apr 16, 2008, at 8:47 AM, Sean Davis wrote:
+>>
+>>> On Tue, Apr 15, 2008 at 11:45 PM, James Bullard <bullard at berkeley.edu 
+>>> >
+>> wrote:
+>>>
+>>>> Yes, in this example that would certainly work. However, I have a  
+>>>> large
+>>>> number of queries in a tight loop and it would be nice to avoid the
+>> overhead
+>>>> of the query parsing and compiling on each call through the loop.
+>>>>
+>>>
+>>> A couple of typical tricks for avoidance of loops is to either:
+>>>
+>>> 1) Use an "in" query
+>>> 2) Use a temporary table (CREATE TEMPORARY TABLE .... or
+>>> dbWriteTable()) and then do a join
+>>>
+>>> If you have hundreds or thousands of queries, it is quite possible
+>>> that #2 could be much faster.  Benchmarking would be useful here,  
+>>> but
+>>> it is definitely worth a try if you are too slow with looping.
+>>>
+>>> Sean
+>>>
+>>>
+>>>> thanks again, jim
+>>>>
+>>>>
+>>>>
+>>>>
+>>>> On Apr 15, 2008, at 7:21 PM, Sean Davis wrote:
+>>>>
+>>>>
+>>>>> On Tue, Apr 15, 2008 at 8:31 PM, James Bullard <bullard at berkeley.edu 
+>>>>> >
+>>>>>
+>>>> wrote:
+>>>>
+>>>>>
+>>>>>
+>>>>>> How do we send prepared queries in RSQLite. We are interested in
+>>>>>> something along the lines of
+>>>>>>
+>>>>>> ps = dbSendPreparedQuery(conn, "SELECT * FROM table1 WHERE chr  
+>>>>>> = ?",
+>>>>>> data.frame("integer"))
+>>>>>> for( i in 1:2)
+>>>>>> rs = dbGetPreparedQuery(ps, i)
+>>>>>>
+>>>>>> In C it would look something along the lines of
+>>>>>> http://www.mail-archive.com/sqlite-users at sqlite.org/msg31854.html
+>>>>>>
+>>>>>>
+>>>>>
+>>>>> It looks like this is not supported for select statements,  
+>>>>> though I
+>>>>> could easily be wrong.  In this particular case, you could rewrite
+>>>>> your select as:
+>>>>>
+>>>>> "SELECT * from table1 where chr in (1,2)"
+>>>>>
+>>>>> Sean
+>>>>>
+>>>>>
+>>>>
+>>>>
+>>>>
+>>>
+>>
+>>
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Fri Apr 18 01:19:02 2008
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Thu, 17 Apr 2008 19:19:02 -0400
+Subject: [R-sig-DB] dbSendPreparedQuery in RSQLite
+In-Reply-To: <CA13E75C-82F3-4038-8974-C42E5D1DB9CB@berkeley.edu>
+References: <F1929BAE-218E-4A7C-9EBF-EA04CAD13448@berkeley.edu>
+	<264855a00804151921r571d3a55i1170450f43a1bc91@mail.gmail.com>
+	<19CEF653-CA92-49BB-B557-519EC954BF3C@berkeley.edu>
+	<264855a00804160847s3cbf9182ibfabff0baf57779d@mail.gmail.com>
+	<17AA0A27-6B54-4465-8142-ECC5937813E6@berkeley.edu>
+	<264855a00804161221g4664d743rcf7c1e1de3eee850@mail.gmail.com>
+	<CA13E75C-82F3-4038-8974-C42E5D1DB9CB@berkeley.edu>
+Message-ID: <264855a00804171619u2d7ab354l99ba05542b44399@mail.gmail.com>
+
+On Thu, Apr 17, 2008 at 2:04 PM, James Bullard <bullard at berkeley.edu> wrote:
+> Thank you Sean, this worked great. Now the cost of going to the database
+> pales in comparison to the split that I need to do in the end to properly
+> divide up the returned data.frame into a list where each member is a region.
+> It is unfortunate because the data.frame returned to R is sorted in region
+> order.
+>
+>  res <-
+>
+> >
+> > > chr location count      region
+> > > 1       10              1               1
+> > > 1       290            10       1
+> > > 2       245            3                2
+> > > 3       10              2               3
+> > >
+> >
+>
+>
+>
+>  So then in order to return the object in the appropriate list fashion I do:
+>
+>  split(res, res$region)
+>
+>  This splitting dominates the cost of the entire function. Unfortunately,
+> the splitting doesn't use the fact that it is sorted according to the
+> factor. This I think I will handle by going to the database and getting the
+> number of rows in a region and then using that vector to partition up the
+> data (unless of course anyone has any smarter ideas)
+
+What is the final information that you want to have?  Do you actually
+need the detail of the counts per region, or are you doing some
+aggregate of the data in the end?  In other words, what do you do with
+the data after the split?
+
+>  Thanks again, I really appreciate the detailed example it helped
+> tremendously in sorting out the indexing.
+
+Great.  That is what email lists are all about--we all learn from them!
+
+>
+>  On Apr 16, 2008, at 12:21 PM, Sean Davis wrote:
+>
+> > On Wed, Apr 16, 2008 at 1:35 PM, James Bullard <bullard at berkeley.edu>
+> wrote:
+> >
+> > > Okay, well I thought that what I was doing was not easily done with one
+> > > query but since I am wrong more often than not I'll ask and see if
+> anyone
+> > > can think of a way to combine it into one query.
+> > >
+> > > I have a set of regions:
+> > >
+> > > regions <- cbind(chr = c(1,2,3), start = c(1,230,4950), end = c(293,
+> 320,
+> > > 19200))
+> > >
+> > > In the db I have the following table:
+> > >
+> > > CREATE TABLE count_table (chr, location, count);
+> > >
+> > > chr location count
+> > > 1       10              1
+> > > 1       290             10
+> > > 2       245             3
+> > > 3       10              2
+> > >
+> > > The query that I am using is:
+> > >
+> > > apply(regions, 1, function(region) {
+> > >       paste("SELECT * FROM count_table WHERE chr =", region[1], "AND
+> > > location >=", region[2],  "AND location <=", region[3], ";")
+> > > })
+> > >
+> > > Which gives me back the following (which is exactly what I want):
+> > > [[1]]
+> > >  chr location count__1
+> > > 1   1       10        1
+> > > 2   1      290       10
+> > >
+> > > [[2]]
+> > >  chr location count__1
+> > > 1   2      245        3
+> > >
+> > > [[3]]
+> > > NULL data frame with 0 rows
+> > >
+> > >
+> > > So I don't see any obvious way to pass in multiple ranges, but maybe I
+> > > missing something with using the IN operator, thanks in advance, sorry
+> for
+> > > the long email.
+> > >
+> >
+> >
+> > > counts <-
+> data.frame(chr=c(1,1,2,3),location=c(10,290,245,10),count=c(1,10,3,2))
+> > > dbWriteTable(con,'count_table',counts,row.names=FALSE,overwrite=TRUE)
+> > > dbGetQuery(con,'select * from count_table')
+> > >
+> >  chr location count__1
+> > 1   1       10        1
+> > 2   1      290       10
+> > 3   2      245        3
+> > 4   3       10        2
+> >
+> >
+> > > regions <- data.frame(chr = c(1,2,3), start = c(1,230,4950), end =
+> c(293, 320, 19200))
+> > > dbWriteTable(con,'regions',regions,row.names=FALSE,overwrite=TRUE)
+> > > dbGetQuery(con,'select * from regions')
+> > >
+> >  chr start end__1
+> > 1   1     1    293
+> > 2   2   230    320
+> > 3   3  4950  19200
+> >
+> >
+> >
+> > > dbGetQuery(con,'select count_table.* from count_table join regions on
+> regions.chr=count_table.chr and count_table.location between regions.start
+> and regions.end__1')
+> > >
+> >  chr location count__1
+> > 1   1       10        1
+> > 2   1      290       10
+> > 3   2      245        3
+> >
+> > So, the principle of a temp table works.  Let's try some benchmarking.
+> > Create a random count table of length 100k rows, write it to a
+> > database and create some indexes to speed querying.
+> >
+> >
+> >
+> > > counts <-
+> data.frame(chr=sample(1:22,100000,replace=TRUE),location=sample(1:100000000,100000,replace=TRUE),count=sample(1:10,100000,replace=TRUE))
+> > > counts[1:5,]
+> > >
+> >  chr location count
+> > 1  14 91737974     5
+> > 2   5 61059218     2
+> > 3   2 23944824     4
+> > 4   3 82907389     9
+> > 5  22 94658940     1
+> >
+> > > dbWriteTable(con,'count_table',counts,row.names=FALSE,overwrite=TRUE)
+> > >
+> > [1] TRUE
+> >
+> > > dbGetQuery(con,'create index ct_chr on count_table(chr)')
+> > >
+> > NULL
+> >
+> > > dbGetQuery(con,'create index ct_location on count_table(location)')
+> > >
+> > NULL
+> >
+> > So, to try a benchmark, I wrote a little function that creates random
+> > regions (n of them, see function below).  In the tmp table approach,
+> > the data.frame is written to a table in the database and a join is
+> > used.  In the second, the apply() approach is used.  The function
+> > below returns the system.time for each approach.  In my quick
+> > benchmarking, the temp table approach is about 5 times faster
+> > (including writing the temp table) with a count_table of length 100k
+> > rows.  I would expect that it might be a very much larger difference
+> > as the size of the count_table increases, as the indexes on
+> > count_table must be scanned for each of the apply queries and only
+> > once for the temp table/join approach.
+> >
+> > benchRegions <- function(n) {
+> >  # n is the number of regions.
+> >  # returns a list with 2 sets of system times, one for
+> >  #  the temp table approach, and one for the apply approach
+> >  res <- list()
+> >  starts=sample(1:100000000,n,replace=TRUE)
+> >  ends=starts+sample(1:1000,n,replace=TRUE)
+> >  regions <- data.frame(chr=sample(1:22,n,replace=TRUE),
+> >                        start=starts,
+> >                        end=ends)
+> >  res[['tmptab']] <-
+> >
+> system.time({dbWriteTable(con,'regions',regions,row.names=FALSE,overwrite=TRUE);
+> > dbGetQuery(con,'select count_table.* from count_table join regions on
+> > regions.chr=count_table.chr and count_table.location between
+> > regions.start and regions.end__1')})
+> >  res[['apply']] <- system.time(apply(regions, 1, function(region)
+> > {dbGetQuery(con,paste("SELECT * FROM count_table WHERE chr =",
+> > region[1], "AND location >=", region[2],  "AND location <=",
+> > region[3], ";"))
+> > }))
+> >  return(res)
+> > }
+> >
+> > Hope that helps.
+> >
+> > Sean
+> >
+> >
+> >
+> > > On Apr 16, 2008, at 8:47 AM, Sean Davis wrote:
+> > >
+> > >
+> > > > On Tue, Apr 15, 2008 at 11:45 PM, James Bullard <bullard at berkeley.edu>
+> > > >
+> > > wrote:
+> > >
+> > > >
+> > > >
+> > > > > Yes, in this example that would certainly work. However, I have a
+> large
+> > > > > number of queries in a tight loop and it would be nice to avoid the
+> > > > >
+> > > >
+> > > overhead
+> > >
+> > > >
+> > > > > of the query parsing and compiling on each call through the loop.
+> > > > >
+> > > > >
+> > > >
+> > > > A couple of typical tricks for avoidance of loops is to either:
+> > > >
+> > > > 1) Use an "in" query
+> > > > 2) Use a temporary table (CREATE TEMPORARY TABLE .... or
+> > > > dbWriteTable()) and then do a join
+> > > >
+> > > > If you have hundreds or thousands of queries, it is quite possible
+> > > > that #2 could be much faster.  Benchmarking would be useful here, but
+> > > > it is definitely worth a try if you are too slow with looping.
+> > > >
+> > > > Sean
+> > > >
+> > > >
+> > > >
+> > > > > thanks again, jim
+> > > > >
+> > > > >
+> > > > >
+> > > > >
+> > > > > On Apr 15, 2008, at 7:21 PM, Sean Davis wrote:
+> > > > >
+> > > > >
+> > > > >
+> > > > > > On Tue, Apr 15, 2008 at 8:31 PM, James Bullard
+> <bullard at berkeley.edu>
+> > > > > >
+> > > > > >
+> > > > > wrote:
+> > > > >
+> > > > >
+> > > > > >
+> > > > > >
+> > > > > >
+> > > > > > > How do we send prepared queries in RSQLite. We are interested in
+> > > > > > > something along the lines of
+> > > > > > >
+> > > > > > > ps = dbSendPreparedQuery(conn, "SELECT * FROM table1 WHERE chr =
+> ?",
+> > > > > > > data.frame("integer"))
+> > > > > > > for( i in 1:2)
+> > > > > > > rs = dbGetPreparedQuery(ps, i)
+> > > > > > >
+> > > > > > > In C it would look something along the lines of
+> > > > > > >
+> http://www.mail-archive.com/sqlite-users at sqlite.org/msg31854.html
+> > > > > > >
+> > > > > > >
+> > > > > > >
+> > > > > >
+> > > > > > It looks like this is not supported for select statements, though
+> I
+> > > > > > could easily be wrong.  In this particular case, you could rewrite
+> > > > > > your select as:
+> > > > > >
+> > > > > > "SELECT * from table1 where chr in (1,2)"
+> > > > > >
+> > > > > > Sean
+> > > > > >
+> > > > > >
+> > > > > >
+> > > > >
+> > > > >
+> > > > >
+> > > > >
+> > > >
+> > > >
+> > >
+> > >
+> > >
+> >
+>
+>
+
+
+
+From bu||@rd @end|ng |rom berke|ey@edu  Fri Apr 18 17:43:21 2008
+From: bu||@rd @end|ng |rom berke|ey@edu (James Bullard)
+Date: Fri, 18 Apr 2008 08:43:21 -0700
+Subject: [R-sig-DB] dbSendPreparedQuery in RSQLite
+In-Reply-To: <264855a00804171619u2d7ab354l99ba05542b44399@mail.gmail.com>
+References: <F1929BAE-218E-4A7C-9EBF-EA04CAD13448@berkeley.edu>
+	<264855a00804151921r571d3a55i1170450f43a1bc91@mail.gmail.com>
+	<19CEF653-CA92-49BB-B557-519EC954BF3C@berkeley.edu>
+	<264855a00804160847s3cbf9182ibfabff0baf57779d@mail.gmail.com>
+	<17AA0A27-6B54-4465-8142-ECC5937813E6@berkeley.edu>
+	<264855a00804161221g4664d743rcf7c1e1de3eee850@mail.gmail.com>
+	<CA13E75C-82F3-4038-8974-C42E5D1DB9CB@berkeley.edu>
+	<264855a00804171619u2d7ab354l99ba05542b44399@mail.gmail.com>
+Message-ID: <E7A1E9E8-BEC3-4094-A822-0A83A48D301D@berkeley.edu>
+
+
+On Apr 17, 2008, at 4:19 PM, Sean Davis wrote:
+> On Thu, Apr 17, 2008 at 2:04 PM, James Bullard  
+> <bullard at berkeley.edu> wrote:
+>> Thank you Sean, this worked great. Now the cost of going to the  
+>> database
+>> pales in comparison to the split that I need to do in the end to  
+>> properly
+>> divide up the returned data.frame into a list where each member is  
+>> a region.
+>> It is unfortunate because the data.frame returned to R is sorted in  
+>> region
+>> order.
+>>
+>> res <-
+>>
+>>>
+>>>> chr location count      region
+>>>> 1       10              1               1
+>>>> 1       290            10       1
+>>>> 2       245            3                2
+>>>> 3       10              2               3
+>>>>
+>>>
+>>
+>>
+>>
+>> So then in order to return the object in the appropriate list  
+>> fashion I do:
+>>
+>> split(res, res$region)
+>>
+>> This splitting dominates the cost of the entire function.  
+>> Unfortunately,
+>> the splitting doesn't use the fact that it is sorted according to the
+>> factor. This I think I will handle by going to the database and  
+>> getting the
+>> number of rows in a region and then using that vector to partition  
+>> up the
+>> data (unless of course anyone has any smarter ideas)
+>
+> What is the final information that you want to have?  Do you actually
+> need the detail of the counts per region, or are you doing some
+> aggregate of the data in the end?  In other words, what do you do with
+> the data after the split?
+
+Certainly the downstream analysis usually corresponds to some summary  
+measure of a region. I am not too familiar with sqlite, but it does  
+appear that I have the normal sum, max, min, avg functions which will  
+be nice to use when applicable, however there is clearly a desire for  
+access to the data within each region when these functions won't  
+suffice (fitting models, calculating variances, and quantiles). That  
+being said, your point is well taken, often the data.frame  
+representation is more of what you want and now I provide both  
+interfaces.
+
+As an aside I implemented the method where I split using the bounds of  
+each region determined via an SQL query (i.e. I got the number of rows  
+corresponding to each region in the resulting data.frame). I then used  
+an apply to partition these regions into the resulting list (where  
+each element is a data.frame). This was to determine whether or not I  
+was paying a cost for the the fact that split assumes that my data is  
+unsorted according to the factor -- the results were not encouraging:  
+the time spent in sorting during the split seems to pale in comparison  
+to the construction of all the region data.frames. In any case, for  
+now the running time is more or less acceptable.
+
+thanks again, jim
+
+
+
+>
+>
+>> Thanks again, I really appreciate the detailed example it helped
+>> tremendously in sorting out the indexing.
+>
+> Great.  That is what email lists are all about--we all learn from  
+> them!
+>
+>>
+>> On Apr 16, 2008, at 12:21 PM, Sean Davis wrote:
+>>
+>>> On Wed, Apr 16, 2008 at 1:35 PM, James Bullard  
+>>> <bullard at berkeley.edu>
+>> wrote:
+>>>
+>>>> Okay, well I thought that what I was doing was not easily done  
+>>>> with one
+>>>> query but since I am wrong more often than not I'll ask and see if
+>> anyone
+>>>> can think of a way to combine it into one query.
+>>>>
+>>>> I have a set of regions:
+>>>>
+>>>> regions <- cbind(chr = c(1,2,3), start = c(1,230,4950), end =  
+>>>> c(293,
+>> 320,
+>>>> 19200))
+>>>>
+>>>> In the db I have the following table:
+>>>>
+>>>> CREATE TABLE count_table (chr, location, count);
+>>>>
+>>>> chr location count
+>>>> 1       10              1
+>>>> 1       290             10
+>>>> 2       245             3
+>>>> 3       10              2
+>>>>
+>>>> The query that I am using is:
+>>>>
+>>>> apply(regions, 1, function(region) {
+>>>>      paste("SELECT * FROM count_table WHERE chr =", region[1], "AND
+>>>> location >=", region[2],  "AND location <=", region[3], ";")
+>>>> })
+>>>>
+>>>> Which gives me back the following (which is exactly what I want):
+>>>> [[1]]
+>>>> chr location count__1
+>>>> 1   1       10        1
+>>>> 2   1      290       10
+>>>>
+>>>> [[2]]
+>>>> chr location count__1
+>>>> 1   2      245        3
+>>>>
+>>>> [[3]]
+>>>> NULL data frame with 0 rows
+>>>>
+>>>>
+>>>> So I don't see any obvious way to pass in multiple ranges, but  
+>>>> maybe I
+>>>> missing something with using the IN operator, thanks in advance,  
+>>>> sorry
+>> for
+>>>> the long email.
+>>>>
+>>>
+>>>
+>>>> counts <-
+>> data 
+>> .frame(chr=c(1,1,2,3),location=c(10,290,245,10),count=c(1,10,3,2))
+>>>> dbWriteTable 
+>>>> (con,'count_table',counts,row.names=FALSE,overwrite=TRUE)
+>>>> dbGetQuery(con,'select * from count_table')
+>>>>
+>>> chr location count__1
+>>> 1   1       10        1
+>>> 2   1      290       10
+>>> 3   2      245        3
+>>> 4   3       10        2
+>>>
+>>>
+>>>> regions <- data.frame(chr = c(1,2,3), start = c(1,230,4950), end =
+>> c(293, 320, 19200))
+>>>> dbWriteTable(con,'regions',regions,row.names=FALSE,overwrite=TRUE)
+>>>> dbGetQuery(con,'select * from regions')
+>>>>
+>>> chr start end__1
+>>> 1   1     1    293
+>>> 2   2   230    320
+>>> 3   3  4950  19200
+>>>
+>>>
+>>>
+>>>> dbGetQuery(con,'select count_table.* from count_table join  
+>>>> regions on
+>> regions.chr=count_table.chr and count_table.location between  
+>> regions.start
+>> and regions.end__1')
+>>>>
+>>> chr location count__1
+>>> 1   1       10        1
+>>> 2   1      290       10
+>>> 3   2      245        3
+>>>
+>>> So, the principle of a temp table works.  Let's try some  
+>>> benchmarking.
+>>> Create a random count table of length 100k rows, write it to a
+>>> database and create some indexes to speed querying.
+>>>
+>>>
+>>>
+>>>> counts <-
+>> data 
+>> .frame 
+>> (chr 
+>> = 
+>> sample 
+>> (1 
+>> : 
+>> 22,100000 
+>> ,replace 
+>> = 
+>> TRUE 
+>> ),location 
+>> = 
+>> sample 
+>> (1 
+>> : 
+>> 100000000,100000 
+>> ,replace=TRUE),count=sample(1:10,100000,replace=TRUE))
+>>>> counts[1:5,]
+>>>>
+>>> chr location count
+>>> 1  14 91737974     5
+>>> 2   5 61059218     2
+>>> 3   2 23944824     4
+>>> 4   3 82907389     9
+>>> 5  22 94658940     1
+>>>
+>>>> dbWriteTable 
+>>>> (con,'count_table',counts,row.names=FALSE,overwrite=TRUE)
+>>>>
+>>> [1] TRUE
+>>>
+>>>> dbGetQuery(con,'create index ct_chr on count_table(chr)')
+>>>>
+>>> NULL
+>>>
+>>>> dbGetQuery(con,'create index ct_location on count_table(location)')
+>>>>
+>>> NULL
+>>>
+>>> So, to try a benchmark, I wrote a little function that creates  
+>>> random
+>>> regions (n of them, see function below).  In the tmp table approach,
+>>> the data.frame is written to a table in the database and a join is
+>>> used.  In the second, the apply() approach is used.  The function
+>>> below returns the system.time for each approach.  In my quick
+>>> benchmarking, the temp table approach is about 5 times faster
+>>> (including writing the temp table) with a count_table of length 100k
+>>> rows.  I would expect that it might be a very much larger difference
+>>> as the size of the count_table increases, as the indexes on
+>>> count_table must be scanned for each of the apply queries and only
+>>> once for the temp table/join approach.
+>>>
+>>> benchRegions <- function(n) {
+>>> # n is the number of regions.
+>>> # returns a list with 2 sets of system times, one for
+>>> #  the temp table approach, and one for the apply approach
+>>> res <- list()
+>>> starts=sample(1:100000000,n,replace=TRUE)
+>>> ends=starts+sample(1:1000,n,replace=TRUE)
+>>> regions <- data.frame(chr=sample(1:22,n,replace=TRUE),
+>>>                       start=starts,
+>>>                       end=ends)
+>>> res[['tmptab']] <-
+>>>
+>> system 
+>> .time 
+>> ({dbWriteTable(con,'regions',regions,row.names=FALSE,overwrite=TRUE);
+>>> dbGetQuery(con,'select count_table.* from count_table join regions  
+>>> on
+>>> regions.chr=count_table.chr and count_table.location between
+>>> regions.start and regions.end__1')})
+>>> res[['apply']] <- system.time(apply(regions, 1, function(region)
+>>> {dbGetQuery(con,paste("SELECT * FROM count_table WHERE chr =",
+>>> region[1], "AND location >=", region[2],  "AND location <=",
+>>> region[3], ";"))
+>>> }))
+>>> return(res)
+>>> }
+>>>
+>>> Hope that helps.
+>>>
+>>> Sean
+>>>
+>>>
+>>>
+>>>> On Apr 16, 2008, at 8:47 AM, Sean Davis wrote:
+>>>>
+>>>>
+>>>>> On Tue, Apr 15, 2008 at 11:45 PM, James Bullard <bullard at berkeley.edu 
+>>>>> >
+>>>>>
+>>>> wrote:
+>>>>
+>>>>>
+>>>>>
+>>>>>> Yes, in this example that would certainly work. However, I have a
+>> large
+>>>>>> number of queries in a tight loop and it would be nice to avoid  
+>>>>>> the
+>>>>>>
+>>>>>
+>>>> overhead
+>>>>
+>>>>>
+>>>>>> of the query parsing and compiling on each call through the loop.
+>>>>>>
+>>>>>>
+>>>>>
+>>>>> A couple of typical tricks for avoidance of loops is to either:
+>>>>>
+>>>>> 1) Use an "in" query
+>>>>> 2) Use a temporary table (CREATE TEMPORARY TABLE .... or
+>>>>> dbWriteTable()) and then do a join
+>>>>>
+>>>>> If you have hundreds or thousands of queries, it is quite possible
+>>>>> that #2 could be much faster.  Benchmarking would be useful  
+>>>>> here, but
+>>>>> it is definitely worth a try if you are too slow with looping.
+>>>>>
+>>>>> Sean
+>>>>>
+>>>>>
+>>>>>
+>>>>>> thanks again, jim
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> On Apr 15, 2008, at 7:21 PM, Sean Davis wrote:
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>> On Tue, Apr 15, 2008 at 8:31 PM, James Bullard
+>> <bullard at berkeley.edu>
+>>>>>>>
+>>>>>>>
+>>>>>> wrote:
+>>>>>>
+>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>> How do we send prepared queries in RSQLite. We are interested  
+>>>>>>>> in
+>>>>>>>> something along the lines of
+>>>>>>>>
+>>>>>>>> ps = dbSendPreparedQuery(conn, "SELECT * FROM table1 WHERE  
+>>>>>>>> chr =
+>> ?",
+>>>>>>>> data.frame("integer"))
+>>>>>>>> for( i in 1:2)
+>>>>>>>> rs = dbGetPreparedQuery(ps, i)
+>>>>>>>>
+>>>>>>>> In C it would look something along the lines of
+>>>>>>>>
+>> http://www.mail-archive.com/sqlite-users at sqlite.org/msg31854.html
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>
+>>>>>>> It looks like this is not supported for select statements,  
+>>>>>>> though
+>> I
+>>>>>>> could easily be wrong.  In this particular case, you could  
+>>>>>>> rewrite
+>>>>>>> your select as:
+>>>>>>>
+>>>>>>> "SELECT * from table1 where chr in (1,2)"
+>>>>>>>
+>>>>>>> Sean
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>
+>>>>>
+>>>>
+>>>>
+>>>>
+>>>
+>>
+>>
+
+
+
+From wkmor1 @end|ng |rom gm@||@com  Mon May 12 05:15:16 2008
+From: wkmor1 @end|ng |rom gm@||@com (William Morris)
+Date: Mon, 12 May 2008 13:15:16 +1000
+Subject: [R-sig-DB] query result precision
+Message-ID: <F0D4FE30-90DA-4647-8223-3525FB59B924@gmail.com>
+
+In R, using RSQLite, I get a maximum of 4 digits after the decimal  
+point for every value returned from a query, whereas the same select  
+statement executed with 'sqlite3' (at the command line) gives each  
+value without rounding. How can I get R to give the same output?
+
+Cheers in advance,
+
+Will.
+
+in R
+
+ > m <- dbDriver("SQLite")
+ > con <- dbConnect(m,"database.sqlite")
+ > rs <- dbSendQuery(con,"select col1 from table1 limit 10")
+ > fetch(rs,n=-1)
+    col1
+1   145.0836
+2   145.0836
+3   145.0836
+4   145.0836
+5   145.0836
+6   145.0836
+7   144.0681
+8   144.0681
+9   144.0681
+10  144.0681
+
+in sqlite3
+
+sqlite> select col1 from table1 limit 10;
+145.08361
+145.08361
+145.08361
+145.08361
+145.08361
+145.08361
+144.06806
+144.06806
+144.06806
+144.06806
+
+R session info
+
+sessionInfo()
+R version 2.7.0 Patched (2008-05-10 r45665)
+i386-apple-darwin8.10.1
+
+locale:
+en_AU.UTF-8/en_AU.UTF-8/C/C/en_AU.UTF-8/en_AU.UTF-8
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] RSQLite_0.6-8 DBI_0.2-4
+
+loaded via a namespace (and not attached):
+[1] tools_2.7.0
+
+
+
+From kh@n@en @end|ng |rom @t@t@Berke|ey@EDU  Mon May 12 05:28:06 2008
+From: kh@n@en @end|ng |rom @t@t@Berke|ey@EDU (Kasper Daniel Hansen)
+Date: Sun, 11 May 2008 20:28:06 -0700
+Subject: [R-sig-DB] query result precision
+In-Reply-To: <F0D4FE30-90DA-4647-8223-3525FB59B924@gmail.com>
+References: <F0D4FE30-90DA-4647-8223-3525FB59B924@gmail.com>
+Message-ID: <AFDE43C2-19C2-4F6C-B4EE-04CA7341BB60@stat.berkeley.edu>
+
+Are you sure that you do not get all the digits? Try
+   print(fetch(rs, n = -1), digits = 15)
+
+The default option of "digits" is 7 and it might hit you here.
+
+Kasper
+
+On May 11, 2008, at 8:15 PM, William Morris wrote:
+
+> In R, using RSQLite, I get a maximum of 4 digits after the decimal  
+> point for every value returned from a query, whereas the same select  
+> statement executed with 'sqlite3' (at the command line) gives each  
+> value without rounding. How can I get R to give the same output?
+>
+> Cheers in advance,
+>
+> Will.
+>
+> in R
+>
+> > m <- dbDriver("SQLite")
+> > con <- dbConnect(m,"database.sqlite")
+> > rs <- dbSendQuery(con,"select col1 from table1 limit 10")
+> > fetch(rs,n=-1)
+>   col1
+> 1   145.0836
+> 2   145.0836
+> 3   145.0836
+> 4   145.0836
+> 5   145.0836
+> 6   145.0836
+> 7   144.0681
+> 8   144.0681
+> 9   144.0681
+> 10  144.0681
+>
+> in sqlite3
+>
+> sqlite> select col1 from table1 limit 10;
+> 145.08361
+> 145.08361
+> 145.08361
+> 145.08361
+> 145.08361
+> 145.08361
+> 144.06806
+> 144.06806
+> 144.06806
+> 144.06806
+>
+> R session info
+>
+> sessionInfo()
+> R version 2.7.0 Patched (2008-05-10 r45665)
+> i386-apple-darwin8.10.1
+>
+> locale:
+> en_AU.UTF-8/en_AU.UTF-8/C/C/en_AU.UTF-8/en_AU.UTF-8
+>
+> attached base packages:
+> [1] stats     graphics  grDevices utils     datasets  methods   base
+>
+> other attached packages:
+> [1] RSQLite_0.6-8 DBI_0.2-4
+>
+> loaded via a namespace (and not attached):
+> [1] tools_2.7.0
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From Robert@McGehee @end|ng |rom geodec@p|t@|@com  Tue Jun 10 02:04:12 2008
+From: Robert@McGehee @end|ng |rom geodec@p|t@|@com (McGehee, Robert)
+Date: Mon, 9 Jun 2008 20:04:12 -0400
+Subject: [R-sig-DB] Incorrect Error Status RODBC 1.2-3
+Message-ID: <EEBC169715EB8C438D3C9283AF0F201C023E474E@MSGBOSCLM2WIN.DMN1.FMR.COM>
+
+Hello all,
+I'm in the process of upgrading from RODBC 1.1-9 to 1.2-3 and have
+discovered a problem in which RODBC will correctly run queries
+containing CREATE and DROP but will incorrectly report an error status
+of -1 resulting in an error in R (despite no actual error occurring). I
+wanted to see if anyone has come across this before. Note that when I
+run this script using RODBC 1.1-9 the queries run successfully without
+returning a -1 error code.
+
+> sqlQuery(.conn, "CREATE TABLE dbo.aaa (fun VARCHAR(255))", 
+	     errors = FALSE)
+[1] -1
+> odbcGetErrMsg(.conn)
+[1] "[RODBC] ERROR: Could not SQLExecDirect"
+
+However, the table is created!
+
+> sqlQuery(.conn, "INSERT INTO dbo.aaa SELECT 1")
+character(0)
+
+> sqlQuery(.conn, "SELECT * FROM dbo.aaa")
+  fun
+1   1
+
+> sqlQuery(.conn, "DROP TABLE dbo.aaa", errors=FALSE)
+[1] -1
+odbcGetErrMsg(.conn)
+[1] "[RODBC] ERROR: Could not SQLExecDirect"
+
+Yet, the table has, in fact, been dropped!
+
+Setup:
+My database is Microsoft SQL Server 8.0 (SQL Server 2000). I'm running
+RODBC on a Linux cluster tested on both 32-bit and 64-bit computers
+running R 2.7.0. I'm using unixODBC 2.2.12 and FreeTDS 0.64 to interface
+with the SQL server.
+
+Any thoughts are appreciated!
+Cheers, 
+Robert
+
+Robert McGehee, CFA
+Geode Capital Management, LLC
+One Post Office Square, 28th Floor | Boston, MA | 02109
+Tel: 617/392-8396    Fax:617/476-6389
+mailto:robert.mcgehee at geodecapital.com
+
+
+
+This e-mail, and any attachments hereto, are intended fo...{{dropped:12}}
+
+
+
+From @p|uque @end|ng |rom gm@||@com  Tue Jun 10 03:10:59 2008
+From: @p|uque @end|ng |rom gm@||@com (Sebastian P. Luque)
+Date: Mon, 09 Jun 2008 20:10:59 -0500
+Subject: [R-sig-DB] Incorrect Error Status RODBC 1.2-3
+References: <EEBC169715EB8C438D3C9283AF0F201C023E474E@MSGBOSCLM2WIN.DMN1.FMR.COM>
+Message-ID: <87prqqaycc.fsf@patagonia.sebmags.homelinux.org>
+
+On Mon, 9 Jun 2008 20:04:12 -0400,
+"McGehee, Robert" <Robert.McGehee at geodecapital.com> wrote:
+
+[...]
+
+>> sqlQuery(.conn, "CREATE TABLE dbo.aaa (fun VARCHAR(255))",
+> 	     errors = FALSE) [1] -1
+>> odbcGetErrMsg(.conn)
+> [1] "[RODBC] ERROR: Could not SQLExecDirect"
+
+I have a similar problem in the following (with a PostgreSQL db):
+
+---<---------------cut here---------------start-------------->---
+R> sessionInfo()
+R version 2.7.0 (2008-04-22) 
+x86_64-pc-linux-gnu 
+
+locale:
+LC_CTYPE=en_CA.UTF-8;LC_NUMERIC=C;LC_TIME=en_CA.UTF-8;LC_COLLATE=en_CA.UTF-8;LC_MONETARY=C;LC_MESSAGES=en_CA.UTF-8;LC_PAPER=en_CA.UTF-8;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=en_CA.UTF-8;LC_IDENTIFICATION=C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] RODBC_1.2-3    lattice_0.17-8
+
+loaded via a namespace (and not attached):
+[1] grid_2.7.0
+R> sqlQuery(.conn, "CREATE TABLE zzz (aaa VARCHAR(255))", errors=FALSE)
+[1] -1
+R> odbcGetErrMsg(.conn)
+[1] "[RODBC] ERROR: Could not SQLExecDirect"                                          
+[2] "42P07 7 ERROR: relation \"zzz\" already exists;\nError while executing the query"
+---<---------------cut here---------------end---------------->---
+
+In my case though, I have an extra error message *and* the table is not
+created, even though the alleged table does not really exist.  From psql
+directly, after quitting R above:
+
+---<---------------cut here---------------start-------------->---
+test=> \d
+          List of relations
+ Schema |   Name    | Type  | Owner  
+--------+-----------+-------+--------
+ public | cities    | table | sluque
+ public | test_city | view  | sluque
+ public | weather   | table | sluque
+(3 rows)
+---<---------------cut here---------------end---------------->---
+
+So I'm also baffled at this.  I'm using unixodbc 2.2.11 to connect to
+the PostgreSQL 8.3.1 db, in a Debian sid 64 bit system.  This didn't
+happen in a previous RODBC version, although I can't recall which one it
+was.
+
+
+-- 
+Seb
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Tue Jun 10 17:28:32 2008
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Tue, 10 Jun 2008 08:28:32 -0700
+Subject: [R-sig-DB] RSQLite 0.6-9 uploaded to CRAN [was: RSQLite bug fix for
+	install	with icc]
+In-Reply-To: <6b93d1830806041128u6e1eabe9u7e2419207fa073f9@mail.gmail.com>
+References: <6b93d1830806041128u6e1eabe9u7e2419207fa073f9@mail.gmail.com>
+Message-ID: <20080610152832.GP32568@ziti.local>
+
+Hi all,
+
+A new version of RSQLite has been uploaded to CRAN and should be
+available soon.  This update contains a minor change to the C code
+that should improve compatibility on various unix OS.
+
++ seth
+
+-- 
+Seth Falcon | http://userprimary.net/user/
+
+
+

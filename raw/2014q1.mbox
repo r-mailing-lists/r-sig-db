@@ -1,0 +1,1475 @@
+From je||rey@horner @end|ng |rom gm@||@com  Mon Feb  3 17:46:17 2014
+From: je||rey@horner @end|ng |rom gm@||@com (Jeffrey Horner)
+Date: Mon, 3 Feb 2014 10:46:17 -0600
+Subject: [R-sig-DB] RFI on changing behavior in next RMySQL release
+Message-ID: <CAD+yNFgpcnF6M+chOu-2GcMDpzbgCfGCM9HHfcMG=AnF0JBwrQ@mail.gmail.com>
+
+Hi,
+
+A situation has been brought to my attention by two RMySQL users who have
+posted their issues on github.
+
+As followers of this mailing list, most will be familiar with the two ways
+in which SQL queries are executed and results obtained via the DBI:
+
+1. users execute dbSendQuery(), get back a result set object and use
+subsequent functions dbHasCompleted(), fetch(), and possibly
+dbClearResult() act on the result set.
+
+2. users execute dbGetQuery() to perform just one function to execute the
+SQL, gather the result set, and return to the user.
+
+In RMySQL, connection level options can be set that affect the work done
+for the duration of the connection only. For instance, one user sets the
+connection level character set to ensure that all results are transferred
+in UTF8.
+
+The issue is that RMySQL will create temporary connections unbeknownst to
+the user during a call to dbGetQuery() if the user has previously performed
+a dbSendQuery() without getting rid of the returned result set object. In
+essence, this is a user who has not been enlightened on exactly what's
+going on, they didn't fully read and comprehend the documentation.
+
+I'd like to get rid of the temporary connection feature, let's call it
+cloning the connection as that's the name of the low level mysql C function
+that takes care of creating the temporary connection, but I'd like to make
+this change in a way that doesn't place too much stress on the user.
+
+So, here are some options I've come up with to alter dbGetQuery() and the
+other functions that create temporary connections, but I'd like to get the
+list users opinions on this before I release:
+
+A) Do I silently remove the pending result set objects altogether,
+B) Do I do A but with a warning,
+C) Do I throw an error and let the user fix his/her code,
+D) Do I add a dbConnect() connection argument called 'clone' that tells
+whether or not to allow temporary cloning of the connection, and what
+should the default argument value be, TRUE or FALSE?
+
+D) was suggested by a github user, so I'm inclined to go with that.
+
+Thanks for your thoughts on this.
+
+Jeff
+
+	[[alternative HTML version deleted]]
+
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Wed Feb  5 00:27:45 2014
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Tue, 4 Feb 2014 18:27:45 -0500
+Subject: [R-sig-DB] RFI on changing behavior in next RMySQL release
+In-Reply-To: <CAD+yNFgpcnF6M+chOu-2GcMDpzbgCfGCM9HHfcMG=AnF0JBwrQ@mail.gmail.com>
+References: <CAD+yNFgpcnF6M+chOu-2GcMDpzbgCfGCM9HHfcMG=AnF0JBwrQ@mail.gmail.com>
+Message-ID: <52F17771.2090807@gmail.com>
+
+Jeff
+
+The one thing I would be concerned about is if the (default) behaviour 
+of dbGetQuery() in RMySQL deviates much from dbGetQuery() in other DBI 
+packages like TSPostgreSQL, TSSQLite, ... . I am using code that is 
+generic across all these.
+
+ From your description I am not sure if this problem is really specific 
+to RMySQL, or also happens with other engines, so, whether your proposed 
+change will make things more similar or less similar. (I have not been 
+using dbSendQuery() so may have just been luck.)
+
+Paul
+
+On 02/03/2014 11:46 AM, Jeffrey Horner wrote:
+> Hi,
+>
+> A situation has been brought to my attention by two RMySQL users who have
+> posted their issues on github.
+>
+> As followers of this mailing list, most will be familiar with the two ways
+> in which SQL queries are executed and results obtained via the DBI:
+>
+> 1. users execute dbSendQuery(), get back a result set object and use
+> subsequent functions dbHasCompleted(), fetch(), and possibly
+> dbClearResult() act on the result set.
+>
+> 2. users execute dbGetQuery() to perform just one function to execute the
+> SQL, gather the result set, and return to the user.
+>
+> In RMySQL, connection level options can be set that affect the work done
+> for the duration of the connection only. For instance, one user sets the
+> connection level character set to ensure that all results are transferred
+> in UTF8.
+>
+> The issue is that RMySQL will create temporary connections unbeknownst to
+> the user during a call to dbGetQuery() if the user has previously performed
+> a dbSendQuery() without getting rid of the returned result set object. In
+> essence, this is a user who has not been enlightened on exactly what's
+> going on, they didn't fully read and comprehend the documentation.
+>
+> I'd like to get rid of the temporary connection feature, let's call it
+> cloning the connection as that's the name of the low level mysql C function
+> that takes care of creating the temporary connection, but I'd like to make
+> this change in a way that doesn't place too much stress on the user.
+>
+> So, here are some options I've come up with to alter dbGetQuery() and the
+> other functions that create temporary connections, but I'd like to get the
+> list users opinions on this before I release:
+>
+> A) Do I silently remove the pending result set objects altogether,
+> B) Do I do A but with a warning,
+> C) Do I throw an error and let the user fix his/her code,
+> D) Do I add a dbConnect() connection argument called 'clone' that tells
+> whether or not to allow temporary cloning of the connection, and what
+> should the default argument value be, TRUE or FALSE?
+>
+> D) was suggested by a github user, so I'm inclined to go with that.
+>
+> Thanks for your thoughts on this.
+>
+> Jeff
+>
+> 	[[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From tomo@k|n @end|ng |rom @t@||@k@n@z@w@-u@@c@jp  Wed Feb  5 03:51:49 2014
+From: tomo@k|n @end|ng |rom @t@||@k@n@z@w@-u@@c@jp (NISHIYAMA Tomoaki)
+Date: Wed, 5 Feb 2014 11:51:49 +0900
+Subject: [R-sig-DB] RFI on changing behavior in next RMySQL release
+In-Reply-To: <52F17771.2090807@gmail.com>
+References: <CAD+yNFgpcnF6M+chOu-2GcMDpzbgCfGCM9HHfcMG=AnF0JBwrQ@mail.gmail.com>
+	<52F17771.2090807@gmail.com>
+Message-ID: <8787DD18-C855-4508-8513-C94F706EE15B@staff.kanazawa-u.ac.jp>
+
+Hi Jeff,
+
+I think A or B is preferred. 
+Cloning feature is of little benefit with large undesired feature.
+When cloning occurs, the transaction state becomes independent, and
+any change made at the other connection may not be visible to the other connection.
+Doing such thing in a hidden scene should be best avoided.
+
+In RPostgreSQL, I removed the connection cloning about 2 years ago, which perhaps inherited from RMySQL.
+http://code.google.com/p/rpostgresql/source/diff?spec=svn230&r=230&format=side&path=/trunk/RPostgreSQL/R/PostgreSQLSupport.R
+
+Some of the most likely scenario why users do not collect all the data after dbSendQuery(), 
+could that they aren't concerned on the results at all, as they have
+submitted some SET, INSERT, or UPDATE statements. (Although it is better to check for any error.)
+Making this as a error might make them some stress.
+Emitting error would benefit only at a time they try to read the discarded result set.
+
+D would perhaps make too much complication of the program with little benefit.
+(I really do not see any good reason to *silently* make 
+clone of the connection even as an option.)
+
+Kind regards,
+Tomoaki
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi, 
+Kanazawa, 920-0934, Japan
+
+
+On 2014/02/05, at 8:27, Paul Gilbert wrote:
+
+> Jeff
+> 
+> The one thing I would be concerned about is if the (default) behaviour of dbGetQuery() in RMySQL deviates much from dbGetQuery() in other DBI packages like TSPostgreSQL, TSSQLite, ... . I am using code that is generic across all these.
+> 
+> From your description I am not sure if this problem is really specific to RMySQL, or also happens with other engines, so, whether your proposed change will make things more similar or less similar. (I have not been using dbSendQuery() so may have just been luck.)
+> 
+> Paul
+> 
+> On 02/03/2014 11:46 AM, Jeffrey Horner wrote:
+>> Hi,
+>> 
+>> A situation has been brought to my attention by two RMySQL users who have
+>> posted their issues on github.
+>> 
+>> As followers of this mailing list, most will be familiar with the two ways
+>> in which SQL queries are executed and results obtained via the DBI:
+>> 
+>> 1. users execute dbSendQuery(), get back a result set object and use
+>> subsequent functions dbHasCompleted(), fetch(), and possibly
+>> dbClearResult() act on the result set.
+>> 
+>> 2. users execute dbGetQuery() to perform just one function to execute the
+>> SQL, gather the result set, and return to the user.
+>> 
+>> In RMySQL, connection level options can be set that affect the work done
+>> for the duration of the connection only. For instance, one user sets the
+>> connection level character set to ensure that all results are transferred
+>> in UTF8.
+>> 
+>> The issue is that RMySQL will create temporary connections unbeknownst to
+>> the user during a call to dbGetQuery() if the user has previously performed
+>> a dbSendQuery() without getting rid of the returned result set object. In
+>> essence, this is a user who has not been enlightened on exactly what's
+>> going on, they didn't fully read and comprehend the documentation.
+>> 
+>> I'd like to get rid of the temporary connection feature, let's call it
+>> cloning the connection as that's the name of the low level mysql C function
+>> that takes care of creating the temporary connection, but I'd like to make
+>> this change in a way that doesn't place too much stress on the user.
+>> 
+>> So, here are some options I've come up with to alter dbGetQuery() and the
+>> other functions that create temporary connections, but I'd like to get the
+>> list users opinions on this before I release:
+>> 
+>> A) Do I silently remove the pending result set objects altogether,
+>> B) Do I do A but with a warning,
+>> C) Do I throw an error and let the user fix his/her code,
+>> D) Do I add a dbConnect() connection argument called 'clone' that tells
+>> whether or not to allow temporary cloning of the connection, and what
+>> should the default argument value be, TRUE or FALSE?
+>> 
+>> D) was suggested by a github user, so I'm inclined to go with that.
+>> 
+>> Thanks for your thoughts on this.
+>> 
+>> Jeff
+>> 
+>> 	[[alternative HTML version deleted]]
+>> 
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at r-project.org
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>> 
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Wed Feb  5 15:25:42 2014
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Wed, 5 Feb 2014 09:25:42 -0500
+Subject: [R-sig-DB] RFI on changing behavior in next RMySQL release
+In-Reply-To: <52F17771.2090807@gmail.com>
+References: <CAD+yNFgpcnF6M+chOu-2GcMDpzbgCfGCM9HHfcMG=AnF0JBwrQ@mail.gmail.com>
+	<52F17771.2090807@gmail.com>
+Message-ID: <52F249E6.6030600@gmail.com>
+
+
+
+On 02/04/2014 06:27 PM, Paul Gilbert wrote:
+> Jeff
+>
+> The one thing I would be concerned about is if the (default) behaviour
+> of dbGetQuery() in RMySQL deviates much from dbGetQuery() in other DBI
+> packages like TSPostgreSQL, TSSQLite, ... . I am using code that is
+> generic across all these.
+
+I meant RPostgreSQL, RSQLite, ... . The TS* packages are mine that are 
+built on top of these. Paul
+>
+>  From your description I am not sure if this problem is really specific
+> to RMySQL, or also happens with other engines, so, whether your proposed
+> change will make things more similar or less similar. (I have not been
+> using dbSendQuery() so may have just been luck.)
+>
+> Paul
+>
+> On 02/03/2014 11:46 AM, Jeffrey Horner wrote:
+>> Hi,
+>>
+>> A situation has been brought to my attention by two RMySQL users who have
+>> posted their issues on github.
+>>
+>> As followers of this mailing list, most will be familiar with the two
+>> ways
+>> in which SQL queries are executed and results obtained via the DBI:
+>>
+>> 1. users execute dbSendQuery(), get back a result set object and use
+>> subsequent functions dbHasCompleted(), fetch(), and possibly
+>> dbClearResult() act on the result set.
+>>
+>> 2. users execute dbGetQuery() to perform just one function to execute the
+>> SQL, gather the result set, and return to the user.
+>>
+>> In RMySQL, connection level options can be set that affect the work done
+>> for the duration of the connection only. For instance, one user sets the
+>> connection level character set to ensure that all results are transferred
+>> in UTF8.
+>>
+>> The issue is that RMySQL will create temporary connections unbeknownst to
+>> the user during a call to dbGetQuery() if the user has previously
+>> performed
+>> a dbSendQuery() without getting rid of the returned result set object. In
+>> essence, this is a user who has not been enlightened on exactly what's
+>> going on, they didn't fully read and comprehend the documentation.
+>>
+>> I'd like to get rid of the temporary connection feature, let's call it
+>> cloning the connection as that's the name of the low level mysql C
+>> function
+>> that takes care of creating the temporary connection, but I'd like to
+>> make
+>> this change in a way that doesn't place too much stress on the user.
+>>
+>> So, here are some options I've come up with to alter dbGetQuery() and the
+>> other functions that create temporary connections, but I'd like to get
+>> the
+>> list users opinions on this before I release:
+>>
+>> A) Do I silently remove the pending result set objects altogether,
+>> B) Do I do A but with a warning,
+>> C) Do I throw an error and let the user fix his/her code,
+>> D) Do I add a dbConnect() connection argument called 'clone' that tells
+>> whether or not to allow temporary cloning of the connection, and what
+>> should the default argument value be, TRUE or FALSE?
+>>
+>> D) was suggested by a github user, so I'm inclined to go with that.
+>>
+>> Thanks for your thoughts on this.
+>>
+>> Jeff
+>>
+>>     [[alternative HTML version deleted]]
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at r-project.org
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+
+
+
+From je||rey@horner @end|ng |rom gm@||@com  Wed Feb  5 16:33:29 2014
+From: je||rey@horner @end|ng |rom gm@||@com (Jeffrey Horner)
+Date: Wed, 5 Feb 2014 09:33:29 -0600
+Subject: [R-sig-DB] RFI on changing behavior in next RMySQL release
+In-Reply-To: <8787DD18-C855-4508-8513-C94F706EE15B@staff.kanazawa-u.ac.jp>
+References: <CAD+yNFgpcnF6M+chOu-2GcMDpzbgCfGCM9HHfcMG=AnF0JBwrQ@mail.gmail.com>
+	<52F17771.2090807@gmail.com>
+	<8787DD18-C855-4508-8513-C94F706EE15B@staff.kanazawa-u.ac.jp>
+Message-ID: <CAD+yNFgz7FumiNSF=0wKeQRY8g1R1_6xViyWaqNLBJ3G4BmbwQ@mail.gmail.com>
+
+On Tue, Feb 4, 2014 at 8:51 PM, NISHIYAMA Tomoaki <
+tomoakin at staff.kanazawa-u.ac.jp> wrote:
+
+> Hi Jeff,
+>
+> I think A or B is preferred.
+> Cloning feature is of little benefit with large undesired feature.
+> When cloning occurs, the transaction state becomes independent, and
+> any change made at the other connection may not be visible to the other
+> connection.
+> Doing such thing in a hidden scene should be best avoided.
+>
+> In RPostgreSQL, I removed the connection cloning about 2 years ago, which
+> perhaps inherited from RMySQL.
+>
+> http://code.google.com/p/rpostgresql/source/diff?spec=svn230&r=230&format=side&path=/trunk/RPostgreSQL/R/PostgreSQLSupport.R
+
+
+Then that settles it. I will implement B: warn users when there are pending
+result sets, but get rid of them and proceed.
+
+Paul, to allay your concerns, this new change should align behavior of
+RMySQL with the rest of DBI dependent packages.
+
+Thank you both for taking time to comment.
+
+Jeff
+
+>
+>
+> Some of the most likely scenario why users do not collect all the data
+> after dbSendQuery(),
+> could that they aren't concerned on the results at all, as they have
+> submitted some SET, INSERT, or UPDATE statements. (Although it is better
+> to check for any error.)
+> Making this as a error might make them some stress.
+> Emitting error would benefit only at a time they try to read the discarded
+> result set.
+>
+> D would perhaps make too much complication of the program with little
+> benefit.
+> (I really do not see any good reason to *silently* make
+> clone of the connection even as an option.)
+>
+> Kind regards,
+> Tomoaki
+> --
+> Tomoaki NISHIYAMA
+>
+> Advanced Science Research Center,
+> Kanazawa University,
+> 13-1 Takara-machi,
+> Kanazawa, 920-0934, Japan
+>
+>
+> On 2014/02/05, at 8:27, Paul Gilbert wrote:
+>
+> > Jeff
+> >
+> > The one thing I would be concerned about is if the (default) behaviour
+> of dbGetQuery() in RMySQL deviates much from dbGetQuery() in other DBI
+> packages like TSPostgreSQL, TSSQLite, ... . I am using code that is generic
+> across all these.
+> >
+> > From your description I am not sure if this problem is really specific
+> to RMySQL, or also happens with other engines, so, whether your proposed
+> change will make things more similar or less similar. (I have not been
+> using dbSendQuery() so may have just been luck.)
+> >
+> > Paul
+> >
+> > On 02/03/2014 11:46 AM, Jeffrey Horner wrote:
+> >> Hi,
+> >>
+> >> A situation has been brought to my attention by two RMySQL users who
+> have
+> >> posted their issues on github.
+> >>
+> >> As followers of this mailing list, most will be familiar with the two
+> ways
+> >> in which SQL queries are executed and results obtained via the DBI:
+> >>
+> >> 1. users execute dbSendQuery(), get back a result set object and use
+> >> subsequent functions dbHasCompleted(), fetch(), and possibly
+> >> dbClearResult() act on the result set.
+> >>
+> >> 2. users execute dbGetQuery() to perform just one function to execute
+> the
+> >> SQL, gather the result set, and return to the user.
+> >>
+> >> In RMySQL, connection level options can be set that affect the work done
+> >> for the duration of the connection only. For instance, one user sets the
+> >> connection level character set to ensure that all results are
+> transferred
+> >> in UTF8.
+> >>
+> >> The issue is that RMySQL will create temporary connections unbeknownst
+> to
+> >> the user during a call to dbGetQuery() if the user has previously
+> performed
+> >> a dbSendQuery() without getting rid of the returned result set object.
+> In
+> >> essence, this is a user who has not been enlightened on exactly what's
+> >> going on, they didn't fully read and comprehend the documentation.
+> >>
+> >> I'd like to get rid of the temporary connection feature, let's call it
+> >> cloning the connection as that's the name of the low level mysql C
+> function
+> >> that takes care of creating the temporary connection, but I'd like to
+> make
+> >> this change in a way that doesn't place too much stress on the user.
+> >>
+> >> So, here are some options I've come up with to alter dbGetQuery() and
+> the
+> >> other functions that create temporary connections, but I'd like to get
+> the
+> >> list users opinions on this before I release:
+> >>
+> >> A) Do I silently remove the pending result set objects altogether,
+> >> B) Do I do A but with a warning,
+> >> C) Do I throw an error and let the user fix his/her code,
+> >> D) Do I add a dbConnect() connection argument called 'clone' that tells
+> >> whether or not to allow temporary cloning of the connection, and what
+> >> should the default argument value be, TRUE or FALSE?
+> >>
+> >> D) was suggested by a github user, so I'm inclined to go with that.
+> >>
+> >> Thanks for your thoughts on this.
+> >>
+> >> Jeff
+> >>
+> >>      [[alternative HTML version deleted]]
+> >>
+> >> _______________________________________________
+> >> R-sig-DB mailing list -- R Special Interest Group
+> >> R-sig-DB at r-project.org
+> >> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> >>
+> >
+> > _______________________________________________
+> > R-sig-DB mailing list -- R Special Interest Group
+> > R-sig-DB at r-project.org
+> > https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From krzy@zto|@@@krejd@ @end|ng |rom gm@||@com  Wed Feb  5 16:39:15 2014
+From: krzy@zto|@@@krejd@ @end|ng |rom gm@||@com (Krzysztof Sakrejda)
+Date: Wed, 5 Feb 2014 10:39:15 -0500
+Subject: [R-sig-DB] RFI on changing behavior in next RMySQL release
+In-Reply-To: <CAD+yNFgz7FumiNSF=0wKeQRY8g1R1_6xViyWaqNLBJ3G4BmbwQ@mail.gmail.com>
+References: <CAD+yNFgpcnF6M+chOu-2GcMDpzbgCfGCM9HHfcMG=AnF0JBwrQ@mail.gmail.com>
+	<52F17771.2090807@gmail.com>
+	<8787DD18-C855-4508-8513-C94F706EE15B@staff.kanazawa-u.ac.jp>
+	<CAD+yNFgz7FumiNSF=0wKeQRY8g1R1_6xViyWaqNLBJ3G4BmbwQ@mail.gmail.com>
+Message-ID: <20140205103915.572ef20c@Mersenne>
+
+The warning seems like the right choice.  I recently ran into this on
+RPostgreSQL and didn't realize what was going on when I later tried to
+retrieve the results.  My naive assummption was that multiple querries
+could be managed through one connection and a warning would clear up
+that misconception.
+
+Krzysztof
+
+
+
+On Wed, 5 Feb 2014 09:33:29 -0600
+Jeffrey Horner <jeffrey.horner at gmail.com> wrote:
+
+> les it. I will implement B: warn users when there are pending
+> result sets, but get rid of them and proceed.
+
+
+
+From edd @end|ng |rom deb|@n@org  Wed Feb  5 18:26:19 2014
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Wed, 5 Feb 2014 11:26:19 -0600
+Subject: [R-sig-DB] RFI on changing behavior in next RMySQL release
+In-Reply-To: <8787DD18-C855-4508-8513-C94F706EE15B@staff.kanazawa-u.ac.jp>
+References: <CAD+yNFgpcnF6M+chOu-2GcMDpzbgCfGCM9HHfcMG=AnF0JBwrQ@mail.gmail.com>
+	<52F17771.2090807@gmail.com>
+	<8787DD18-C855-4508-8513-C94F706EE15B@staff.kanazawa-u.ac.jp>
+Message-ID: <21234.29755.617597.286837@max.nulle.part>
+
+
+Hi Tomoaki,
+
+On 5 February 2014 at 11:51, NISHIYAMA Tomoaki wrote:
+| Hi Jeff,
+| 
+| I think A or B is preferred. 
+| Cloning feature is of little benefit with large undesired feature.
+| When cloning occurs, the transaction state becomes independent, and
+| any change made at the other connection may not be visible to the other connection.
+| Doing such thing in a hidden scene should be best avoided.
+| 
+| In RPostgreSQL, I removed the connection cloning about 2 years ago, which perhaps inherited from RMySQL.
+| http://code.google.com/p/rpostgresql/source/diff?spec=svn230&r=230&format=side&path=/trunk/RPostgreSQL/R/PostgreSQLSupport.R
+
+Good move, and the guilty party is me as I mentored Sameer for the GSoC /
+RPostgreSQL project with RMySQL as a shining example of how to do DBI :)
+
+Luckily we now have you, and all DBI packages could do a lot worse than to
+study what you have done to enhance and improve RPostgreSQL. It's a marvel.
+
+Thanks for all your work on this.
+
+Dirk
+
+
+| Some of the most likely scenario why users do not collect all the data after dbSendQuery(), 
+| could that they aren't concerned on the results at all, as they have
+| submitted some SET, INSERT, or UPDATE statements. (Although it is better to check for any error.)
+| Making this as a error might make them some stress.
+| Emitting error would benefit only at a time they try to read the discarded result set.
+| 
+| D would perhaps make too much complication of the program with little benefit.
+| (I really do not see any good reason to *silently* make 
+| clone of the connection even as an option.)
+| 
+| Kind regards,
+| Tomoaki
+| -- 
+| Tomoaki NISHIYAMA
+| 
+| Advanced Science Research Center,
+| Kanazawa University,
+| 13-1 Takara-machi, 
+| Kanazawa, 920-0934, Japan
+| 
+| 
+| On 2014/02/05, at 8:27, Paul Gilbert wrote:
+| 
+| > Jeff
+| > 
+| > The one thing I would be concerned about is if the (default) behaviour of dbGetQuery() in RMySQL deviates much from dbGetQuery() in other DBI packages like TSPostgreSQL, TSSQLite, ... . I am using code that is generic across all these.
+| > 
+| > From your description I am not sure if this problem is really specific to RMySQL, or also happens with other engines, so, whether your proposed change will make things more similar or less similar. (I have not been using dbSendQuery() so may have just been luck.)
+| > 
+| > Paul
+| > 
+| > On 02/03/2014 11:46 AM, Jeffrey Horner wrote:
+| >> Hi,
+| >> 
+| >> A situation has been brought to my attention by two RMySQL users who have
+| >> posted their issues on github.
+| >> 
+| >> As followers of this mailing list, most will be familiar with the two ways
+| >> in which SQL queries are executed and results obtained via the DBI:
+| >> 
+| >> 1. users execute dbSendQuery(), get back a result set object and use
+| >> subsequent functions dbHasCompleted(), fetch(), and possibly
+| >> dbClearResult() act on the result set.
+| >> 
+| >> 2. users execute dbGetQuery() to perform just one function to execute the
+| >> SQL, gather the result set, and return to the user.
+| >> 
+| >> In RMySQL, connection level options can be set that affect the work done
+| >> for the duration of the connection only. For instance, one user sets the
+| >> connection level character set to ensure that all results are transferred
+| >> in UTF8.
+| >> 
+| >> The issue is that RMySQL will create temporary connections unbeknownst to
+| >> the user during a call to dbGetQuery() if the user has previously performed
+| >> a dbSendQuery() without getting rid of the returned result set object. In
+| >> essence, this is a user who has not been enlightened on exactly what's
+| >> going on, they didn't fully read and comprehend the documentation.
+| >> 
+| >> I'd like to get rid of the temporary connection feature, let's call it
+| >> cloning the connection as that's the name of the low level mysql C function
+| >> that takes care of creating the temporary connection, but I'd like to make
+| >> this change in a way that doesn't place too much stress on the user.
+| >> 
+| >> So, here are some options I've come up with to alter dbGetQuery() and the
+| >> other functions that create temporary connections, but I'd like to get the
+| >> list users opinions on this before I release:
+| >> 
+| >> A) Do I silently remove the pending result set objects altogether,
+| >> B) Do I do A but with a warning,
+| >> C) Do I throw an error and let the user fix his/her code,
+| >> D) Do I add a dbConnect() connection argument called 'clone' that tells
+| >> whether or not to allow temporary cloning of the connection, and what
+| >> should the default argument value be, TRUE or FALSE?
+| >> 
+| >> D) was suggested by a github user, so I'm inclined to go with that.
+| >> 
+| >> Thanks for your thoughts on this.
+| >> 
+| >> Jeff
+| >> 
+| >> 	[[alternative HTML version deleted]]
+| >> 
+| >> _______________________________________________
+| >> R-sig-DB mailing list -- R Special Interest Group
+| >> R-sig-DB at r-project.org
+| >> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+| >> 
+| > 
+| > _______________________________________________
+| > R-sig-DB mailing list -- R Special Interest Group
+| > R-sig-DB at r-project.org
+| > https://stat.ethz.ch/mailman/listinfo/r-sig-db
+| 
+| _______________________________________________
+| R-sig-DB mailing list -- R Special Interest Group
+| R-sig-DB at r-project.org
+| https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+-- 
+Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Tue Feb 25 04:45:13 2014
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Mon, 24 Feb 2014 22:45:13 -0500
+Subject: [R-sig-DB] Basic R to SQL considerations
+In-Reply-To: <52FD16F3.3090708@gmail.com>
+References: <mailman.23.1391684408.14702.r-help@r-project.org>
+	<52FD16F3.3090708@gmail.com>
+Message-ID: <530C11C9.3090804@gmail.com>
+
+(This is prompted by an R-help  post entitled '[R] Problem connecting to 
+database via RPostgreSQL/RS-DBI: "could not connect" error' but this 
+post is not specific to RPostgreSQL)
+
+The general questions in the above R-help post reminded me of problems I 
+had when starting to use SQL databases in conjunction with R. Below I 
+try to provide some general comments and guidance with respect to 
+options for using SQL databases from R. The main purpose of this post is 
+so than anyone just starting to use R with SQL may find something to 
+help with some of the initial decisions they must make. I hope that 
+others will respond by posting additional detail where that seems 
+warranted. My knowledge in some parts is limited.
+
+
+In general SQL databases operate on a client/server model. R is a client 
+program and will use the client interface of the database. The client 
+interface drivers typically must be installed separately and prior to 
+installing the R package that uses the client interface. Most client 
+interfaces also include a standalone client (e.g. sqlite, mysql, psql). 
+Among other things, this is useful for ensuring your client machine can 
+connect to the database you intend to use, as it does not rely on R or 
+any R packages. Before concluding that the R package does not work, you 
+should ensure that the stand alone package does work.
+
+You will also need a database to talk to, which means (excepting SQLite) 
+a computer with the server software installed and set up, a database 
+defined, and appropriate privileges for your client machine and userid. 
+Often an R user will not need to do this because the server and database 
+is provided by someone else (e.g. a "corporate" database within an 
+organization.) When the database is provided, the choice of which R 
+client package to use will be dictated by that. When the R user must 
+also set up the database, then the main hurdle is likely to be the 
+server side rather than the client side. (The user may need to learn a 
+fair amount about system administration to install the server, and then 
+a certain amount about database administration to set up the database 
+with appropriate privileges.)
+
+It is not unusual for the server to be a Unix or Linux machine and the 
+client to have a different operating system, like Windows or Mac. In 
+fact, this may be the most common situation. The SQL interfaces handle 
+the cross-platform issues between server and client.
+
+The notion of a "totally local" database fits in the SQL context in a 
+way that will be unfamiliar to users of standalone programs (but see 
+further below about SQLite). Even for a local database, the server must 
+still be running, in this case on the same machine as the client, and 
+must be listening for requests from client applications. That means it 
+is configured to listen on a local socket, the loopback interface, or 
+the IP address of the local machine, and recognizes the userid/password 
+or some other security mechanism. This server can still respond to 
+multiple client applications running simultaneously, for example, two R 
+sessions, and to multiple users on the machine. So this is not "totally 
+local" in the sense that many people may think of that term.
+
+A message like "could not connect" or "Can't connect" in a client 
+application indicates that the client cannot talk to the server. It is 
+unlikely that you will get this far if the client software is not 
+installed properly. The problem is that the server is not running, not 
+connected to a network the client can reach, blocked by a firewall, not 
+configured to listen for the client on the interface that the client is 
+trying to use, or the client username/password or other authentication 
+mechanism is not recognized by the server. The last problem can be 
+either that the client is not using the proper credentials or the server 
+is not set up properly to recognize the credentials.
+
+You should get the same "could not connect"  message if you run the 
+standalone client on the same machine. If you don't, then you are using 
+different credentials with the standalone client than you are from the R 
+session and that is the problem you need to resolve. You will probably 
+need to talk with your system administrator or database administrator if 
+you are trying to connect to a "corporate" database. In this case it is 
+usually best to report the errors as produced by the standalone client. 
+Otherwise you are likely to confuse the administrator into thinking the 
+problem is in R. (And in many cases that will mean they then consider it 
+is your problem rather than their problem.)
+
+It is sometimes possible to work around a server setup that does not 
+allow remote connections by setting up an ssh tunnel, so the connection 
+appears to the server as if it is local. If the connection is over the 
+Internet this might also add some additional security in the transmission.
+
+
+  ***** Relative strengths of different options *****
+
+As mentioned above, if you are trying to connect to a database provided 
+by someone else then your choice of which client to use is already 
+decided, and you do not need to consider this section.
+
+SQLite (www.sqlite.org/) is by far the easiest to set up. Installation 
+is almost automatic.  R package Windows and Mac binaries are available 
+from CRAN. If you are thinking "totally local" then this is very likely 
+the option to choose. It is "serverless". The database is in a file 
+which could be read by more than one session simultaneously, but writing 
+by multiple sessions will cause difficulties. Permissions are controlled 
+by the file permissions (I think). A good discussion of whether SQLite 
+is appropriate or not is provided at www.sqlite.org/whentouse.html. To 
+compile, the source package compiling tools need to be installed before 
+the R package is installed. The R package is RSQLite.
+
+MySQL (www.mysql.com/) requires a server, which is installed and set up 
+separately from the client. An R package Mac binary is available from 
+CRAN but the Windows binaries are no longer supported (see 
+cran.at.r-project.org/bin/windows/contrib/r-release/ReadMe). The client 
+interface library binaries need to be installed. To compile, the source 
+package compiling tools need to be installed before the R package is 
+installed. The R package is RMySQL.
+
+PostgreSQL (postgresql.org/) requires a server, which is installed and 
+set up separately from the client.  R package Windows and Mac binaries 
+are available from CRAN. The client interface library binaries need to 
+be installed. To compile, the source package compiling tools need to be 
+installed before the R package is installed. The R package is RPostgreSQL.
+
+Oracle (www.oracle.com) is at the "heavy duty" end of the spectrum. It 
+seems unlikely that one would choose this without having a specialized 
+database administrator to install and set up the database and set user 
+credentials.  R package Windows and Mac binaries are not available from 
+CRAN (see cran.at.r-project.org/web/packages/ROracle/index.html). The 
+client interface library binaries need to be installed and, to compile, 
+the source package compiling tools need to be installed before the R 
+package is installed. The R package is ROracle.
+
+The choice of SQLite or Oracle may be relatively straightforward, but 
+between MySQL and PostgreSQL the choice is more difficult. There has 
+been considerable convergence and, apparently, many of the historical 
+differences no longer exist. One comparison is available at
+www.wikivs.com/wiki/MySQL_vs_PostgreSQL, and there are undoubtedly 
+others. In the end, the choice might come down to options for purchasing 
+support, or a preferred philosophy about the development model. The R 
+packages are both mature and well supported (by volunteers). Your choice 
+might be influenced more by the server side considerations than by R 
+client considerations. Both have been more than adequate for my 
+purposes. One difference I found, when loading csv data directly on the 
+server is that MySQL allowed more incorrectly formatted data (e.g. 
+dates). That is, it made more guesses, sometimes correctly and sometimes 
+not. The good guesses may be consider a feature, but PostgreSQL may be a 
+better option if you consider the loading of csv data to be part of the 
+data cleaning process. This will usually not be a consideration if you 
+are loading the data from R. (For what it is worth, my recommendation is 
+to use both and pay attention to writing standard SQL so you can switch 
+back and forth easily - but I know that people do not always follow my 
+recommendations.)
+
+Another option is ODBC (see http://en.wikipedia.org/wiki/ODBC). ODBC 
+provides a middleware API which can be useful for further standardizing 
+your interface to the database. The main reason for using this is likely 
+to be that it is the interface supported by a database you need to 
+access. The server and client will need ODBC layers in place of, or in 
+addition to, their usual interfaces. ODBC has its own configuration. If 
+you are setting up the database yourself this is likely to be more 
+rather than less complicated. You still need to install and set up the 
+server ( MySQL, PostgreSQL, or Oracle). The R package is RODBC.
+
+
+Installation and setup are beyond the scope of this post. Perhaps 
+someone else can attempt that or point to instructions elsewhere. Just 
+beware that you need to distinguish installation and setup of the client 
+from installation and setup of the server, and you may need both. There 
+are probably other lists with better discussions of the server side, 
+since it really is not specific to R.
+
+Paul
+
+
+
+From m@cqueen1 @end|ng |rom ||n|@gov  Wed Feb 26 17:19:24 2014
+From: m@cqueen1 @end|ng |rom ||n|@gov (MacQueen, Don)
+Date: Wed, 26 Feb 2014 16:19:24 +0000
+Subject: [R-sig-DB] Basic R to SQL considerations
+In-Reply-To: <530C11C9.3090804@gmail.com>
+References: <mailman.23.1391684408.14702.r-help@r-project.org>
+	<52FD16F3.3090708@gmail.com> <530C11C9.3090804@gmail.com>
+Message-ID: <CF3350F4.ED1FA%macqueen1@llnl.gov>
+
+I have a couple of things to add.
+
+For the R-to-Oracle connection, the ROracle package appears to now be
+supported by Oracle, which to me suggests some confidence in ongoing
+future support. For more information, see
+https://blogs.oracle.com/R/entry/r_to_oracle_database_connectivity
+
+Another option is JDBC
+(http://en.wikipedia.org/wiki/Java_Database_Connectivity), also mentioned
+in the Oracle blog cited above. I have had success connecting to Oracle
+using RJDBC from a Mac when other options were not available to me.
+Quoting from the Oracle blog cited above, "Any database that supports a
+JDBC driver can be used in connection with RJDBC." CRAN has both Mac and
+Windows binaries for RJDBC.
+
+-- 
+Don MacQueen
+
+Lawrence Livermore National Laboratory
+7000 East Ave., L-627
+Livermore, CA 94550
+925-423-1062
+
+
+
+
+
+On 2/24/14 7:45 PM, "Paul Gilbert" <pgilbert902 at gmail.com> wrote:
+
+>(This is prompted by an R-help  post entitled '[R] Problem connecting to
+>database via RPostgreSQL/RS-DBI: "could not connect" error' but this
+>post is not specific to RPostgreSQL)
+>
+>The general questions in the above R-help post reminded me of problems I
+>had when starting to use SQL databases in conjunction with R. Below I
+>try to provide some general comments and guidance with respect to
+>options for using SQL databases from R. The main purpose of this post is
+>so than anyone just starting to use R with SQL may find something to
+>help with some of the initial decisions they must make. I hope that
+>others will respond by posting additional detail where that seems
+>warranted. My knowledge in some parts is limited.
+>
+>
+>In general SQL databases operate on a client/server model. R is a client
+>program and will use the client interface of the database. The client
+>interface drivers typically must be installed separately and prior to
+>installing the R package that uses the client interface. Most client
+>interfaces also include a standalone client (e.g. sqlite, mysql, psql).
+>Among other things, this is useful for ensuring your client machine can
+>connect to the database you intend to use, as it does not rely on R or
+>any R packages. Before concluding that the R package does not work, you
+>should ensure that the stand alone package does work.
+>
+>You will also need a database to talk to, which means (excepting SQLite)
+>a computer with the server software installed and set up, a database
+>defined, and appropriate privileges for your client machine and userid.
+>Often an R user will not need to do this because the server and database
+>is provided by someone else (e.g. a "corporate" database within an
+>organization.) When the database is provided, the choice of which R
+>client package to use will be dictated by that. When the R user must
+>also set up the database, then the main hurdle is likely to be the
+>server side rather than the client side. (The user may need to learn a
+>fair amount about system administration to install the server, and then
+>a certain amount about database administration to set up the database
+>with appropriate privileges.)
+>
+>It is not unusual for the server to be a Unix or Linux machine and the
+>client to have a different operating system, like Windows or Mac. In
+>fact, this may be the most common situation. The SQL interfaces handle
+>the cross-platform issues between server and client.
+>
+>The notion of a "totally local" database fits in the SQL context in a
+>way that will be unfamiliar to users of standalone programs (but see
+>further below about SQLite). Even for a local database, the server must
+>still be running, in this case on the same machine as the client, and
+>must be listening for requests from client applications. That means it
+>is configured to listen on a local socket, the loopback interface, or
+>the IP address of the local machine, and recognizes the userid/password
+>or some other security mechanism. This server can still respond to
+>multiple client applications running simultaneously, for example, two R
+>sessions, and to multiple users on the machine. So this is not "totally
+>local" in the sense that many people may think of that term.
+>
+>A message like "could not connect" or "Can't connect" in a client
+>application indicates that the client cannot talk to the server. It is
+>unlikely that you will get this far if the client software is not
+>installed properly. The problem is that the server is not running, not
+>connected to a network the client can reach, blocked by a firewall, not
+>configured to listen for the client on the interface that the client is
+>trying to use, or the client username/password or other authentication
+>mechanism is not recognized by the server. The last problem can be
+>either that the client is not using the proper credentials or the server
+>is not set up properly to recognize the credentials.
+>
+>You should get the same "could not connect"  message if you run the
+>standalone client on the same machine. If you don't, then you are using
+>different credentials with the standalone client than you are from the R
+>session and that is the problem you need to resolve. You will probably
+>need to talk with your system administrator or database administrator if
+>you are trying to connect to a "corporate" database. In this case it is
+>usually best to report the errors as produced by the standalone client.
+>Otherwise you are likely to confuse the administrator into thinking the
+>problem is in R. (And in many cases that will mean they then consider it
+>is your problem rather than their problem.)
+>
+>It is sometimes possible to work around a server setup that does not
+>allow remote connections by setting up an ssh tunnel, so the connection
+>appears to the server as if it is local. If the connection is over the
+>Internet this might also add some additional security in the transmission.
+>
+>
+>  ***** Relative strengths of different options *****
+>
+>As mentioned above, if you are trying to connect to a database provided
+>by someone else then your choice of which client to use is already
+>decided, and you do not need to consider this section.
+>
+>SQLite (www.sqlite.org/) is by far the easiest to set up. Installation
+>is almost automatic.  R package Windows and Mac binaries are available
+>from CRAN. If you are thinking "totally local" then this is very likely
+>the option to choose. It is "serverless". The database is in a file
+>which could be read by more than one session simultaneously, but writing
+>by multiple sessions will cause difficulties. Permissions are controlled
+>by the file permissions (I think). A good discussion of whether SQLite
+>is appropriate or not is provided at www.sqlite.org/whentouse.html. To
+>compile, the source package compiling tools need to be installed before
+>the R package is installed. The R package is RSQLite.
+>
+>MySQL (www.mysql.com/) requires a server, which is installed and set up
+>separately from the client. An R package Mac binary is available from
+>CRAN but the Windows binaries are no longer supported (see
+>cran.at.r-project.org/bin/windows/contrib/r-release/ReadMe). The client
+>interface library binaries need to be installed. To compile, the source
+>package compiling tools need to be installed before the R package is
+>installed. The R package is RMySQL.
+>
+>PostgreSQL (postgresql.org/) requires a server, which is installed and
+>set up separately from the client.  R package Windows and Mac binaries
+>are available from CRAN. The client interface library binaries need to
+>be installed. To compile, the source package compiling tools need to be
+>installed before the R package is installed. The R package is RPostgreSQL.
+>
+>Oracle (www.oracle.com) is at the "heavy duty" end of the spectrum. It
+>seems unlikely that one would choose this without having a specialized
+>database administrator to install and set up the database and set user
+>credentials.  R package Windows and Mac binaries are not available from
+>CRAN (see cran.at.r-project.org/web/packages/ROracle/index.html). The
+>client interface library binaries need to be installed and, to compile,
+>the source package compiling tools need to be installed before the R
+>package is installed. The R package is ROracle.
+>
+>The choice of SQLite or Oracle may be relatively straightforward, but
+>between MySQL and PostgreSQL the choice is more difficult. There has
+>been considerable convergence and, apparently, many of the historical
+>differences no longer exist. One comparison is available at
+>www.wikivs.com/wiki/MySQL_vs_PostgreSQL, and there are undoubtedly
+>others. In the end, the choice might come down to options for purchasing
+>support, or a preferred philosophy about the development model. The R
+>packages are both mature and well supported (by volunteers). Your choice
+>might be influenced more by the server side considerations than by R
+>client considerations. Both have been more than adequate for my
+>purposes. One difference I found, when loading csv data directly on the
+>server is that MySQL allowed more incorrectly formatted data (e.g.
+>dates). That is, it made more guesses, sometimes correctly and sometimes
+>not. The good guesses may be consider a feature, but PostgreSQL may be a
+>better option if you consider the loading of csv data to be part of the
+>data cleaning process. This will usually not be a consideration if you
+>are loading the data from R. (For what it is worth, my recommendation is
+>to use both and pay attention to writing standard SQL so you can switch
+>back and forth easily - but I know that people do not always follow my
+>recommendations.)
+>
+>Another option is ODBC (see http://en.wikipedia.org/wiki/ODBC). ODBC
+>provides a middleware API which can be useful for further standardizing
+>your interface to the database. The main reason for using this is likely
+>to be that it is the interface supported by a database you need to
+>access. The server and client will need ODBC layers in place of, or in
+>addition to, their usual interfaces. ODBC has its own configuration. If
+>you are setting up the database yourself this is likely to be more
+>rather than less complicated. You still need to install and set up the
+>server ( MySQL, PostgreSQL, or Oracle). The R package is RODBC.
+>
+>
+>Installation and setup are beyond the scope of this post. Perhaps
+>someone else can attempt that or point to instructions elsewhere. Just
+>beware that you need to distinguish installation and setup of the client
+>from installation and setup of the server, and you may need both. There
+>are probably other lists with better discussions of the server side,
+>since it really is not specific to R.
+>
+>Paul
+>
+>_______________________________________________
+>R-sig-DB mailing list -- R Special Interest Group
+>R-sig-DB at r-project.org
+>https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From edd @end|ng |rom deb|@n@org  Thu Feb 27 15:55:51 2014
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Thu, 27 Feb 2014 08:55:51 -0600
+Subject: [R-sig-DB] Error: package 'RODBC' was built before R 3.0.0:
+	please re-install it
+In-Reply-To: <CAL09-EcGd=BUvzhUTBMrHW_3KXY22=QykX5_EuZFCqq4s9R1GQ@mail.gmail.com>
+References: <CAL09-EcGd=BUvzhUTBMrHW_3KXY22=QykX5_EuZFCqq4s9R1GQ@mail.gmail.com>
+Message-ID: <21263.20983.905088.690966@max.nulle.part>
+
+
+On 27 February 2014 at 14:09, Luis Ridao wrote:
+| 
+| I'm trying to install the RODBC on Ubuntu 12.04 (64 bits)
+
+Just do this in a terminal / at a command-prompt:
+
+     sudo apt-get install r-cran-rodb
+
+Dirk
+
+| By doing within R:
+| 
+| > install.packages('RODBC')
+| configure: error: "ODBC headers sql.h and sqlext.h not found"
+| ERROR: configuration failed for package ?RODBC?
+| * removing ?/home/luisr/R/x86_64-pc-linux-gnu-library/3.0/RODBC?
+| 
+| The downloaded source packages are in
+|     ?/tmp/Rtmp6uZtxC/downloaded_packages?
+| Warning message:
+| In install.packages("RODBC") :
+|   installation of package ?RODBC? had non-zero exit status
+| 
+| by doing outside R:
+| 
+| > sudo apt-get install r-cran-rodbc
+| 
+| it works but back in R i get this message:
+| 
+| > library(RODBC)
+| Error: package ?RODBC? was built before R 3.0.0: please re-install it
+| 
+| 
+| Can anyone help?
+| 
+| best,
+| Luis
+
+-- 
+Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+
+
+From edd @end|ng |rom deb|@n@org  Thu Feb 27 15:57:21 2014
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Thu, 27 Feb 2014 08:57:21 -0600
+Subject: [R-sig-DB] Error: package 'RODBC' was built before R 3.0.0:
+	please re-install it
+In-Reply-To: <CAL09-EcGd=BUvzhUTBMrHW_3KXY22=QykX5_EuZFCqq4s9R1GQ@mail.gmail.com>
+References: <CAL09-EcGd=BUvzhUTBMrHW_3KXY22=QykX5_EuZFCqq4s9R1GQ@mail.gmail.com>
+Message-ID: <21263.21073.220127.638941@max.nulle.part>
+
+
+On 27 February 2014 at 14:09, Luis Ridao wrote:
+| 
+| I'm trying to install the RODBC on Ubuntu 12.04 (64 bits)
+| By doing within R:
+| 
+| > install.packages('RODBC')
+| configure: error: "ODBC headers sql.h and sqlext.h not found"
+| ERROR: configuration failed for package ?RODBC?
+| * removing ?/home/luisr/R/x86_64-pc-linux-gnu-library/3.0/RODBC?
+| 
+| The downloaded source packages are in
+|     ?/tmp/Rtmp6uZtxC/downloaded_packages?
+| Warning message:
+| In install.packages("RODBC") :
+|   installation of package ?RODBC? had non-zero exit status
+| 
+| by doing outside R:
+| 
+| > sudo apt-get install r-cran-rodbc
+| 
+| it works but back in R i get this message:
+
+Sorry. Missed that.  Then do
+
+     sudo apt-get install unixodbc-dev       
+
+to be able to compile ROBDC from source and proceed with (from within R)
+
+     install.packages('RODBC')
+
+which should now work.
+
+Dirk
+ 
+| > library(RODBC)
+| Error: package ?RODBC? was built before R 3.0.0: please re-install it
+| 
+| 
+| Can anyone help?
+| 
+| best,
+| Luis
+
+-- 
+Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+
+
+From evberghe @end|ng |rom gm@||@com  Thu Feb 27 17:40:02 2014
+From: evberghe @end|ng |rom gm@||@com (Edward Vanden Berghe)
+Date: Thu, 27 Feb 2014 17:40:02 +0100
+Subject: [R-sig-DB] Error: package 'RODBC' was built before R
+	3.0.0:	please re-install it
+In-Reply-To: <21263.20983.905088.690966@max.nulle.part>
+References: <CAL09-EcGd=BUvzhUTBMrHW_3KXY22=QykX5_EuZFCqq4s9R1GQ@mail.gmail.com>
+	<21263.20983.905088.690966@max.nulle.part>
+Message-ID: <005d01cf33da$90ff95f0$b2fec1d0$@gmail.com>
+
+I've had warnings about missing header files while installing other
+packages, and the solution was to install development versions of software R
+depends on, rather than the 'normal', default version of that software.
+Missing header files would make compilation of the package fail, and make
+the installation exit with non-zero exit status.
+
+Not sure which application should be providing the missing header files
+listed below (sql.h, sqlext.h); did you install ODBC as a separate linux
+application through apt-get?
+
+Are you sure you need ODBC? I have very good experience with the combination
+of DBI and, for my set-up, RPostgreSQL; there are packages for other major
+db engines as well. ODBC works like a charm on Windows, but I found it
+fiddly on Ubuntu.
+
+Edward
+
+-----Original Message-----
+From: r-sig-db-bounces at r-project.org [mailto:r-sig-db-bounces at r-project.org]
+On Behalf Of Dirk Eddelbuettel
+Sent: Thursday, February 27, 2014 15:56 PM
+To: Luis Ridao
+Cc: r-sig-db at r-project.org; Dirk Eddelbuettel
+Subject: Re: [R-sig-DB] Error: package 'RODBC' was built before R 3.0.0:
+please re-install it
+
+
+On 27 February 2014 at 14:09, Luis Ridao wrote:
+| 
+| I'm trying to install the RODBC on Ubuntu 12.04 (64 bits)
+
+Just do this in a terminal / at a command-prompt:
+
+     sudo apt-get install r-cran-rodb
+
+Dirk
+
+| By doing within R:
+| 
+| > install.packages('RODBC')
+| configure: error: "ODBC headers sql.h and sqlext.h not found"
+| ERROR: configuration failed for package ?RODBC?
+| * removing ?/home/luisr/R/x86_64-pc-linux-gnu-library/3.0/RODBC?
+| 
+| The downloaded source packages are in
+|     ?/tmp/Rtmp6uZtxC/downloaded_packages?
+| Warning message:
+| In install.packages("RODBC") :
+|   installation of package ?RODBC? had non-zero exit status
+| 
+| by doing outside R:
+| 
+| > sudo apt-get install r-cran-rodbc
+| 
+| it works but back in R i get this message:
+| 
+| > library(RODBC)
+| Error: package ?RODBC? was built before R 3.0.0: please re-install it
+| 
+| 
+| Can anyone help?
+| 
+| best,
+| Luis
+
+--
+Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+_______________________________________________
+R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org
+https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From @||@chb@ch @end|ng |rom u@g@@gov  Thu Feb 27 21:29:42 2014
+From: @||@chb@ch @end|ng |rom u@g@@gov (Fischbach, Anthony)
+Date: Thu, 27 Feb 2014 11:29:42 -0900
+Subject: [R-sig-DB] rodbc reading Cyrllic from MS Access datatable
+Message-ID: <CA+ZRYj8suK-K6Gx_1+uymZP=SWBkrBtmjOGxOb7D4nnZtB-M+w@mail.gmail.com>
+
+I have an MS Access database with fields in both English and Russian (e.g.
+"Name", "??????? ????????") and wish to read this into r.
+I have tried the following lines, but find that my Russian Cyrllic
+characters are not retained.
+
+> data.ch<-odbcConnectAccess("D:/fakePath/MyDataBase.mdb" )
+> Tbl<-sqlFetch(data.ch, "MyTable")
+> Tbl[1:5, c(2,4)]
+                    Name                                 ??????? ????????
+1            Belyak Spit ???? ?????? ? 6 ?? ? ? ?? ????? ??????????? ????
+2       Bogoslava Island                                 ?????? ?????????
+3 Bol'shoy Routan Island                            O????? ??????? ??????
+4       Burunnye Islands                                 ??????? ????????
+5           Cape Blossom                                      ??? ???????
+
+I have tried using the DBMSencoding options with values of 'UTF-8'  but
+received the same results.  When I tried this with the value of and
+'UCS-2', I received an error (listed below).
+
+Error in iconv(tablename, to = enc) :
+  embedded nul in string:
+'??\0H\0a\0u\0l\0o\0u\0t\0L\0o\0c\0a\0t\0i\0o\0n\0s\0_\0t\0b\0l'
+
+I have tried doing the import from both .mdb and .accdb copies of the MS
+Access database using the appropriate odbcConnectAccess2007, with the same
+results.
+
+The problem is not with r representing the Cyrllic, because I may read the
+same table in from a csv format and retain the Cyrllic names (see snippet
+below).
+
+> Tbl.fromCSV<-read.csv(file='D:/fakePath/MyTable.csv', stringsAsFactors=F,
+encoding = 'UTF-8')
+> Tbl.fromCSV[1:5, c(2,4)]
+                    Name                                 ???????.????????
+1            Belyak Spit ???? ?????? ? 6 ?? ? ? ?? ????? ??????????? ????
+2       Bogoslava Island                                 ?????? ?????????
+3 Bol'shoy Routan Island                            O????? ??????? ??????
+4       Burunnye Islands                                 ??????? ????????
+5           Cape Blossom                                      ??? ???????
+
+Any help appreciated.
+
+> sessionInfo()
+R version 3.0.2 (2013-09-25)
+Platform: i386-w64-mingw32/i386 (32-bit)
+
+locale:
+[1] LC_COLLATE=English_United States.1252  LC_CTYPE=Russian_Russia.1251
+      LC_MONETARY=English_United States.1252 LC_NUMERIC=C
+        LC_TIME=English_United States.1252
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] RODBC_1.3-10  plotKML_0.4-2 rgdal_0.8-16  sp_1.0-14
+
+loaded via a namespace (and not attached):
+ [1] aqp_1.6             class_7.3-9         classInt_0.1-21
+cluster_1.14.4      colorRamps_2.3      colorspace_1.2-4    dichromat_2.0-0
+    dismo_0.9-3         e1071_1.6-2         Formula_1.1-1
+[11] grid_3.0.1          gstat_1.0-18        Hmisc_3.14-1
+ intervals_0.14.0    labeling_0.2        lattice_0.20-24
+latticeExtra_0.6-26 munsell_0.4.2       pixmap_0.4-11       plotrix_3.5-3
+
+[21] plyr_1.8.1          raster_2.2-12       RColorBrewer_1.0-5
+ Rcpp_0.11.0         reshape_0.8.4       RSAGA_0.93-6        scales_0.2.3
+     spacetime_1.0-9     splines_3.0.1       stringr_0.6.2
+[31] survival_2.37-7     tools_3.0.1         XML_3.98-1.1        xts_0.9-7
+          zoo_1.7-10
+>
+
+
+Anthony Fischbach, Wildlife Biologist
+USGS Alaska Science Center Walrus Research Program
+4210 University Drive (Glen Olds Hall room 369)
+Anchorage, AK 99508
+
+voice: (907) 786-7145
+
+http://alaska.usgs.gov/science/biology/walrus/
+
+	[[alternative HTML version deleted]]
+
+
+
+From |ur|d@o @end|ng |rom gm@||@com  Tue Mar  4 15:35:21 2014
+From: |ur|d@o @end|ng |rom gm@||@com (Luis Ridao)
+Date: Tue, 4 Mar 2014 14:35:21 +0000
+Subject: [R-sig-DB] call to isql : can't find libsqora.so.11.1
+Message-ID: <CAL09-EejoR1szaTV_-TWrZbQvepGDMxBbmRRosO+yuBvBiOAaA@mail.gmail.com>
+
+R-sig-help,
+
+After succesfully installing the RODBC package and unixodbc/unixodbc-dev on
+Ubuntu 12.04 LTS (64 bit) (thanks again to Dirk and others) i came across
+the following error when invoking isql:
+
+$ isql -v myDatabase myUID myPWD
+
+[01000][unixODBC][Driver Manager]Can't open lib
+'/u01/app/luisr/product/11.1.0/client_1/lib/libsqora.so.11.1' : file not
+found
+[ISQL]ERROR: Could not SQLConnect
+
+Tried to check if some library is missing:
+
+luisr at luisr:~$ ldd
+/u01/app/luisr/product/11.1.0/client_1/lib/libsqora.so.11.1
+    linux-gate.so.1 =>  (0xf77d9000)
+    libdl.so.2 => /lib/i386-linux-gnu/libdl.so.2 (0xf7726000)
+    libm.so.6 => /lib/i386-linux-gnu/libm.so.6 (0xf76fa000)
+    libpthread.so.0 => /lib/i386-linux-gnu/libpthread.so.0 (0xf76de000)
+    libnsl.so.1 => /lib/i386-linux-gnu/libnsl.so.1 (0xf76c4000)
+    libclntsh.so.11.1 =>
+/u01/app/luisr/product/11.1.0/client_1/lib/libclntsh.so.11.1 (0xf5b78000)
+    libodbcinst.so.1 => /usr/lib/i386-linux-gnu/libodbcinst.so.1
+(0xf5b65000)
+    libc.so.6 => /lib/i386-linux-gnu/libc.so.6 (0xf59bb000)
+    /lib/ld-linux.so.2 (0xf77da000)
+    libnnz11.so => /u01/app/luisr/product/11.1.0/client_1/lib/libnnz11.so
+(0xf5810000)
+    libaio.so.1 => /lib/i386-linux-gnu/libaio.so.1 (0xf580d000)
+    libltdl.so.7 => /usr/lib/i386-linux-gnu/libltdl.so.7 (0xf5803000)
+
+it seems ok (actually it's exactly the same output as in my older
+laptop:Ubuntu 12.04 LTS 32-bit)
+
+Comparing with an old 32 bit version in Ubuntu 12.04 LTS i can only see
+this difference:
+
+### OLD 32bit Ubuntu 12.04(32bit)
+dpkg --list | grep unixodbc
+hi  unixodbc
+2.2.14p2-5ubuntu4                      i386         Basic ODBC tools
+
+### NEW 64bit laptop Ubuntu 12.04(64bit)
+dpkg --list | grep unixodbc
+ii  unixodbc
+2.2.14p2-5ubuntu3                   Basic ODBC tools
+ii  unixodbc-dev
+2.2.14p2-5ubuntu3                   ODBC libraries for UNIX (development
+files)
+
+is this the problem? a conflict between 32 and 64 bit?
+and if so, how can i sort it out?
+
+thanks in advance
+
+-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+Luis Ridao Cruz
+Faroe Marine Research Institute
+N?at?n 1, P.O. Box 3051
+FO-110 T?rshavn
+Faroe Islands
+Tel   : (+298) 353900
+Fax: : (+298) 353901
+e-mail: luisr at hav.fo
+           luridao at gmail.com
+-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+
+	[[alternative HTML version deleted]]
+
+
+
+From ceor||ey @end|ng |rom gm@||@com  Sun Mar 23 15:42:56 2014
+From: ceor||ey @end|ng |rom gm@||@com (Chas O'Riley)
+Date: Sun, 23 Mar 2014 09:42:56 -0500
+Subject: [R-sig-DB] RMySQL
+Message-ID: <CANhdmpJ-3XDRUm6CQThyiHg0k-auF4hdoQmrvv2GAHyhMgf9QA@mail.gmail.com>
+
+Hi,
+
+Can you tell me if RMySQL is no longer supported for R version 3+?  On
+Linux, I'm running R 3.2 and on windows R3.3.  Thanks.
+
+
+With gratitude,
+
+CEO'Riley Jr.
+
+Charles Ellis O'Riley Jr.
+
+
+
+*Ambition is a state of permanent dissatisfaction with the present*
+
+	[[alternative HTML version deleted]]
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Sun Mar 23 16:42:37 2014
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Sun, 23 Mar 2014 11:42:37 -0400
+Subject: [R-sig-DB] RMySQL
+In-Reply-To: <CANhdmpJ-3XDRUm6CQThyiHg0k-auF4hdoQmrvv2GAHyhMgf9QA@mail.gmail.com>
+References: <CANhdmpJ-3XDRUm6CQThyiHg0k-auF4hdoQmrvv2GAHyhMgf9QA@mail.gmail.com>
+Message-ID: <CAP01uRmjaKwk6jJbxrDM0z6fs06-KUkJiVCumSVr5BR45NPWgg@mail.gmail.com>
+
+On Sun, Mar 23, 2014 at 10:42 AM, Chas O'Riley <ceoriley at gmail.com> wrote:
+> Hi,
+>
+> Can you tell me if RMySQL is no longer supported for R version 3+?  On
+> Linux, I'm running R 3.2 and on windows R3.3.  Thanks.
+>
+
+I am running RMySQL on R 3.0.3 under Windows 8.1.
+
+-- 
+Statistics & Software Consulting
+GKX Group, GKX Associates Inc.
+tel: 1-877-GKX-GROUP
+email: ggrothendieck at gmail.com
+
+
+

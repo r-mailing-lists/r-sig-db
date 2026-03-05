@@ -1,0 +1,159 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2005-10",
+  "messages": [
+    {
+      "id": "msg-efee67eaba10",
+      "message_id": "<966FA346-513E-456B-BC23-411D3649F4DA@mac.com>",
+      "from_name": "Parlamis Franklin",
+      "from_email_hash": "8670ceafb06f1b0a8b712b51dcd4f9941fa37cc76e410224992229c6fe696c1f",
+      "date": "2005-10-14T09:55:52-10:00",
+      "subject": "[R-sig-DB] RMySQL dbSendQuery",
+      "subject_clean": "RMySQL dbSendQuery",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "When the following statement:\n\n     dbSendQuery(MySQL.Connection, \"source ~/MySQLFiles/DateTable.sql\")\n\nis run from R (where MySQL.Connection is my connection object and  \nDateTable is a file containing MySQL statements) I get the following  \nerror:\n\n             Error in mysqlExecStatement(conn, statement, ...) :\n                 RS-DBI driver: (could not run statement: You have an  \nerror in your SQL syntax; check the manual that corresponds\n             to your MySQL server version for the right syntax to use  \nnear 'source ~/MySQLFiles/DateTable.sql' at line 1)\n\nHowever, when I run the exact same statement from an open MySQL  \ncommand line session (cut and pasted), I get the correct result,  \nwhich is that MySQL should run commands from the source file.\n\nCan anyone speculate as to why this happens?  Other commands, such as\n\n     dbSendQuery(MySQL.Connection, \"select 1\")\n\nseem to work correctly, as I receive the message\n\n         <MySQLResult:(8472,0,24)>\n\n\nI am running MySQL 4.1.14-standard and R 2.1.1 with Cocoa GUI 1.12 on  \na PowerMac G5.  Packages DBI and RMySQL are installed\n\n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "When the following statement:\n\n     dbSendQuery(MySQL.Connection, \"source ~/MySQLFiles/DateTable.sql\")\n\nis run from R (where MySQL.Connection is my connection object and  \nDateTable is a file containi",
+      "thread_id": "thread-efee67eaba10",
+      "thread_depth": 0,
+      "month": "2005-10"
+    },
+    {
+      "id": "msg-0516598c2053",
+      "message_id": "<40e66e0b0510141307o590e51e7n610c0b0b53476217@mail.gmail.com>",
+      "from_name": "Douglas Bates",
+      "from_email_hash": "89476a056e319842d168c423118f2eaa6e0bc02098c9731588d78eefe5aca737",
+      "date": "2005-10-14T15:07:58-05:00",
+      "subject": "[R-sig-DB] RMySQL dbSendQuery",
+      "subject_clean": "RMySQL dbSendQuery",
+      "in_reply_to": "<966FA346-513E-456B-BC23-411D3649F4DA@mac.com>",
+      "references": [
+        "<966FA346-513E-456B-BC23-411D3649F4DA@mac.com>"
+      ],
+      "body_plain": "On 10/14/05, Parlamis Franklin <fparlamis at mac.com> wrote:\n> When the following statement:\n>\n>      dbSendQuery(MySQL.Connection, \"source ~/MySQLFiles/DateTable.sql\")\n>\n> is run from R (where MySQL.Connection is my connection object and\n> DateTable is a file containing MySQL statements) I get the following\n> error:\n>\n>              Error in mysqlExecStatement(conn, statement, ...) :\n>                  RS-DBI driver: (could not run statement: You have an\n> error in your SQL syntax; check the manual that corresponds\n>              to your MySQL server version for the right syntax to use\n> near 'source ~/MySQLFiles/DateTable.sql' at line 1)\n>\n> However, when I run the exact same statement from an open MySQL\n> command line session (cut and pasted), I get the correct result,\n> which is that MySQL should run commands from the source file.\n>\n> Can anyone speculate as to why this happens?  Other commands, such as\n>\n>      dbSendQuery(MySQL.Connection, \"select 1\")\n>\n> seem to work correctly, as I receive the message\n>\n>          <MySQLResult:(8472,0,24)>\n\nThe \"source\" directive is not part of the SQL language - it is a\nconvenience feature built into the command line program and\ninterpreted by that program.\n\n>\n>\n> I am running MySQL 4.1.14-standard and R 2.1.1 with Cocoa GUI 1.12 on\n> a PowerMac G5.  Packages DBI and RMySQL are installed\n>\n>\n>\n>         [[alternative HTML version deleted]]\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "On 10/14/05, Parlamis Franklin <fparlamis at mac.com> wrote:\n> When the following statement:\n>\n>      dbSendQuery(MySQL.Connection, \"source ~/MySQLFiles/DateTable.sql\")\n>\n> is run from R (where MySQL.",
+      "thread_id": "thread-efee67eaba10",
+      "thread_depth": 1,
+      "month": "2005-10"
+    },
+    {
+      "id": "msg-cc285a6a4478",
+      "message_id": "<4350135B.6040103@fhcrc.org>",
+      "from_name": "Herve Pages",
+      "from_email_hash": "fd1d1d7a6264909f0236d26dfae51520f3d3455c869422fce43a45549d197dbf",
+      "date": "2005-10-14T13:21:47-07:00",
+      "subject": "[R-sig-DB] RMySQL dbSendQuery",
+      "subject_clean": "RMySQL dbSendQuery",
+      "in_reply_to": "<966FA346-513E-456B-BC23-411D3649F4DA@mac.com>",
+      "references": [
+        "<966FA346-513E-456B-BC23-411D3649F4DA@mac.com>"
+      ],
+      "body_plain": "Parlamis Franklin wrote:\n\n>When the following statement:\n>\n>     dbSendQuery(MySQL.Connection, \"source ~/MySQLFiles/DateTable.sql\")\n>\n>  \n>\nAs Douglas said, \"source\" is not an SQL statement.\n\nRemember, MySQL is a client/server RDBMS. The client (your R program)\nand the server can be on different machines. So when the server receives\nthe following statement \"source ~/MySQLFiles/DateTable.sql\", how could it\nfind the file \"~/MySQLFiles/DateTable.sql\"?\n\n-- \n------------------------\nHerv? Pag?s\nE-mail: hpages at fhcrc.org\n Phone: (206) 667-5791\n   Fax: (206) 667-1319",
+      "body_snippet": "Parlamis Franklin wrote:\n\n>When the following statement:\n>\n>     dbSendQuery(MySQL.Connection, \"source ~/MySQLFiles/DateTable.sql\")\n>\n>  \n>\nAs Douglas said, \"source\" is not an SQL statement.\n\nRemember",
+      "thread_id": "thread-efee67eaba10",
+      "thread_depth": 1,
+      "month": "2005-10"
+    },
+    {
+      "id": "msg-a9cbfdd9ae68",
+      "message_id": "<75B4EB88-B41C-4DC3-9A0E-6094B36EB30B@mac.com>",
+      "from_name": "Parlamis Franklin",
+      "from_email_hash": "8670ceafb06f1b0a8b712b51dcd4f9941fa37cc76e410224992229c6fe696c1f",
+      "date": "2005-10-14T10:46:37-10:00",
+      "subject": "[R-sig-DB] RMySQL dbSendQuery",
+      "subject_clean": "RMySQL dbSendQuery",
+      "in_reply_to": "<4350135B.6040103@fhcrc.org>",
+      "references": [
+        "<966FA346-513E-456B-BC23-411D3649F4DA@mac.com>",
+        "<4350135B.6040103@fhcrc.org>"
+      ],
+      "body_plain": "Thank you both for your responses.  I understand now.  I need to run  \nsome R code, followed by some SQL code, followed again by some R  \ncode, and wanted to do it from a single script.  dbSendQuery has a  \none-statement limit, which I was trying to avoid.  Perhaps i will  \nconcatenate all my commands into a single semicolon-separated string  \nand send that using dbQuery.\n\n\nOn Oct 14, 2005, at 10:21 AM, Herve Pages wrote:\n\n> Parlamis Franklin wrote:\n>\n>\n>> When the following statement:\n>>\n>>     dbSendQuery(MySQL.Connection, \"source ~/MySQLFiles/ \n>> DateTable.sql\")\n>>\n>>\n>>\n> As Douglas said, \"source\" is not an SQL statement.\n>\n> Remember, MySQL is a client/server RDBMS. The client (your R program)\n> and the server can be on different machines. So when the server  \n> receives\n> the following statement \"source ~/MySQLFiles/DateTable.sql\", how  \n> could it\n> find the file \"~/MySQLFiles/DateTable.sql\"?\n>\n> -- \n> ------------------------\n> Herv? Pag?s\n> E-mail: hpages at fhcrc.org\n> Phone: (206) 667-5791\n>   Fax: (206) 667-1319\n> ------------------------\n>\n>",
+      "body_snippet": "Thank you both for your responses.  I understand now.  I need to run  \nsome R code, followed by some SQL code, followed again by some R  \ncode, and wanted to do it from a single script.  dbSendQuery h",
+      "thread_id": "thread-efee67eaba10",
+      "thread_depth": 2,
+      "month": "2005-10"
+    },
+    {
+      "id": "msg-b042e36f9d1a",
+      "message_id": "<43501CCD.1040407@fhcrc.org>",
+      "from_name": "Herve Pages",
+      "from_email_hash": "fd1d1d7a6264909f0236d26dfae51520f3d3455c869422fce43a45549d197dbf",
+      "date": "2005-10-14T14:02:05-07:00",
+      "subject": "[R-sig-DB] RMySQL dbSendQuery",
+      "subject_clean": "RMySQL dbSendQuery",
+      "in_reply_to": "<75B4EB88-B41C-4DC3-9A0E-6094B36EB30B@mac.com>",
+      "references": [
+        "<966FA346-513E-456B-BC23-411D3649F4DA@mac.com>",
+        "<4350135B.6040103@fhcrc.org>",
+        "<75B4EB88-B41C-4DC3-9A0E-6094B36EB30B@mac.com>"
+      ],
+      "body_plain": "Parlamis Franklin wrote:\n\n> Thank you both for your responses.  I understand now.  I need to run  \n> some R code, followed by some SQL code, followed again by some R  \n> code, and wanted to do it from a single script.  dbSendQuery has a  \n> one-statement limit, which I was trying to avoid.  Perhaps i will  \n> concatenate all my commands into a single semicolon-separated string  \n> and send that using dbQuery.\n>\nOr, if your \"DateTable.sql\" file is big, do a loop in R that reads its \ncontent SQL statement by\nSQL statement (easy to do if you have exactly one statement per line, \nbut more complicated\nif you have several statements on the same line or a statement splitted \nover several lines)\nand sends each statement separately to the MySQL server. Advantage: (1) \nyou have more\ncontrol and can handle errors returned by the server more easily, (2) \nyou don't have to load\nall the file into memory before to send it.\n\n-- \n------------------------\nHerv? Pag?s\nE-mail: hpages at fhcrc.org\n Phone: (206) 667-5791\n   Fax: (206) 667-1319",
+      "body_snippet": "Parlamis Franklin wrote:\n\n> Thank you both for your responses.  I understand now.  I need to run  \n> some R code, followed by some SQL code, followed again by some R  \n> code, and wanted to do it from",
+      "thread_id": "thread-efee67eaba10",
+      "thread_depth": 3,
+      "month": "2005-10"
+    },
+    {
+      "id": "msg-3f488a133522",
+      "message_id": "<89CC323A-CD3A-4CEA-B6C0-B01B194AE9F0@mac.com>",
+      "from_name": "Parlamis Franklin",
+      "from_email_hash": "8670ceafb06f1b0a8b712b51dcd4f9941fa37cc76e410224992229c6fe696c1f",
+      "date": "2005-10-20T00:06:41-10:00",
+      "subject": "[R-sig-DB] DBI problem after R upgrade",
+      "subject_clean": "DBI problem after R upgrade",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I upgraded R to 2.2.0 (Mac Cocoa GUI 1.13) this evening.  I am  \nrunning MySQL Standard version 4.1.14 locally, which I installed  \nseveral months ago from binaries on the MySQL web site (mysql- \nstandard-4.1.14-apple-darwin8.2.0-powerpc-64bit.dmg).  Before I  \nupgraded R, everything worked fine with RMySQL and DBI (all I used  \nwas DBSendQuery, DBReadTable and DBWriteTable).\n\nHowever, now when I load the DBI package I get the following error:\n\n         Warning message:\n         RS-DBI driver warning: (MySQL mismatch between compiled  \nversion 4.0.24 and runtime version 4.1.14)\n\nThen, if I attempt to use one of the DBI functions, say DBReadTable,  \nR quits unexpectedly.  I reinstalled MySQL from binaries, and I also  \nreinstalled the DBI and RMySQL packages from binaries.  Nothing has  \nhelped.  I have never had MySQL 4.0.24 on my computer (4.1.14 was my  \nfirst and only install).\n\nIf anyone has any thoughts on this, I would be very appreciative.\n\nFranklin Parlamis\n\n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "I upgraded R to 2.2.0 (Mac Cocoa GUI 1.13) this evening.  I am  \nrunning MySQL Standard version 4.1.14 locally, which I installed  \nseveral months ago from binaries on the MySQL web site (mysql- \nstan",
+      "thread_id": "thread-3f488a133522",
+      "thread_depth": 0,
+      "month": "2005-10"
+    },
+    {
+      "id": "msg-470ed5be5645",
+      "message_id": "<Pine.LNX.4.61.0510201218190.10265@gannet.stats>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2005-10-20T12:22:15+01:00",
+      "subject": "[R-sig-DB] DBI problem after R upgrade",
+      "subject_clean": "DBI problem after R upgrade",
+      "in_reply_to": "<89CC323A-CD3A-4CEA-B6C0-B01B194AE9F0@mac.com>",
+      "references": [
+        "<89CC323A-CD3A-4CEA-B6C0-B01B194AE9F0@mac.com>"
+      ],
+      "body_plain": "On Thu, 20 Oct 2005, Parlamis Franklin wrote:\n\n> I upgraded R to 2.2.0 (Mac Cocoa GUI 1.13) this evening.  I am\n> running MySQL Standard version 4.1.14 locally, which I installed\n> several months ago from binaries on the MySQL web site (mysql-\n> standard-4.1.14-apple-darwin8.2.0-powerpc-64bit.dmg).  Before I\n> upgraded R, everything worked fine with RMySQL and DBI (all I used\n> was DBSendQuery, DBReadTable and DBWriteTable).\n>\n> However, now when I load the DBI package I get the following error:\n>\n>         Warning message:\n>         RS-DBI driver warning: (MySQL mismatch between compiled\n> version 4.0.24 and runtime version 4.1.14)\n>\n> Then, if I attempt to use one of the DBI functions, say DBReadTable,\n> R quits unexpectedly.  I reinstalled MySQL from binaries, and I also\n> reinstalled the DBI and RMySQL packages from binaries.  Nothing has\n> helped.  I have never had MySQL 4.0.24 on my computer (4.1.14 was my\n> first and only install).\n\nIt is the (powerpc/2.2) RMySQL MacOS X binary that is compiled against \nMySQL 4.0.24.  It seems you need to install RMySQL from the sources.\n\nThis is not really a R-sig-DB topic but a MacOS one.\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "On Thu, 20 Oct 2005, Parlamis Franklin wrote:\n\n> I upgraded R to 2.2.0 (Mac Cocoa GUI 1.13) this evening.  I am\n> running MySQL Standard version 4.1.14 locally, which I installed\n> several months ago ",
+      "thread_id": "thread-3f488a133522",
+      "thread_depth": 1,
+      "month": "2005-10"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-efee67eaba10",
+      "subject": "RMySQL dbSendQuery",
+      "message_count": 5,
+      "participants": [
+        "Douglas Bates",
+        "Herve Pages",
+        "Parlamis Franklin"
+      ],
+      "started": "2005-10-14T09:55:52-10:00",
+      "last_reply": "2005-10-14T14:02:05-07:00",
+      "root_message_id": "msg-efee67eaba10"
+    },
+    {
+      "id": "thread-3f488a133522",
+      "subject": "DBI problem after R upgrade",
+      "message_count": 2,
+      "participants": [
+        "Parlamis Franklin",
+        "Prof Brian Ripley"
+      ],
+      "started": "2005-10-20T00:06:41-10:00",
+      "last_reply": "2005-10-20T12:22:15+01:00",
+      "root_message_id": "msg-3f488a133522"
+    }
+  ]
+}

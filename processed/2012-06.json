@@ -1,0 +1,464 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2012-06",
+  "messages": [
+    {
+      "id": "msg-57bffd4f79bb",
+      "message_id": "<9E05935BF21AF74199D49249FF7BB9F9012135@AMSPRD0702MB122.eurprd07.prod.outlook.com>",
+      "from_name": "Idit Buch",
+      "from_email_hash": "e2417130e4f5fad5687878978ff72c4296dbeb2421c967c9d9393f3e7ae45c97",
+      "date": "2012-06-03T12:04:58Z",
+      "subject": "[R-sig-DB] calloc error issued by sqlQuery",
+      "subject_clean": "calloc error issued by sqlQuery",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\nI'm using R version 2.14.1 on Linux (Centos) and trying to issue a \"select * from ...\" query using sqlQuery(...).\nI then receive the following error:\nError in odbcQuery(channel, query, rows_at_time) :\n  Calloc could not allocate memory (18446744073709551616 of 22816 bytes)\n\nThe function odbcGetInfo(channel) returns the following:\n\n                  DBMS_Name                    DBMS_Ver\n     \"Microsoft SQL Server\"                \"09.00.4035\"\n            Driver_ODBC_Ver            Data_Source_Name\n                    \"03.52\"                       \"DSN\"\n                Driver_Name                  Driver_Ver\n\"libsqlncli-11.0.so.1790.0\"                \"11.00.1790\"\n                   ODBC_Ver                 Server_Name\n                    \"03.52\"                    \"RGNSQL\"\n\nThe function sessionInfo() returns the following:\nR version 2.14.1 (2011-12-22)\nPlatform: x86_64-redhat-linux-gnu (64-bit)\n\nlocale:\n[1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C\n[3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8\n[5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8\n[7] LC_PAPER=C                 LC_NAME=C\n[9] LC_ADDRESS=C               LC_TELEPHONE=C\n[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C\n\nattached base packages:\n[1] stats     graphics  grDevices utils     datasets  methods   base\n\nother attached packages:\n[1] RODBC_1.3-5\n\nloaded via a namespace (and not attached):\n[1] tools_2.14.1\n\nAny idea ?\n\nThanks\n\nIdit Buch, Ph.D.\nComputational Biologist\n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi,\n\nI'm using R version 2.14.1 on Linux (Centos) and trying to issue a \"select * from ...\" query using sqlQuery(...).\nI then receive the following error:\nError in odbcQuery(channel, query, rows_at_ti",
+      "thread_id": "thread-57bffd4f79bb",
+      "thread_depth": 0,
+      "month": "2012-06"
+    },
+    {
+      "id": "msg-c5122eb94fa8",
+      "message_id": "<20427.27811.417088.888507@max.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2012-06-03T08:54:43-05:00",
+      "subject": "[R-sig-DB] calloc error issued by sqlQuery",
+      "subject_clean": "calloc error issued by sqlQuery",
+      "in_reply_to": "<9E05935BF21AF74199D49249FF7BB9F9012135@AMSPRD0702MB122.eurprd07.prod.outlook.com>",
+      "references": [
+        "<9E05935BF21AF74199D49249FF7BB9F9012135@AMSPRD0702MB122.eurprd07.prod.outlook.com>"
+      ],
+      "body_plain": "On 3 June 2012 at 12:04, Idit Buch wrote:\n| Hi,\n| \n| I'm using R version 2.14.1 on Linux (Centos) and trying to issue a \"select * from ...\" query using sqlQuery(...).\n| I then receive the following error:\n| Error in odbcQuery(channel, query, rows_at_time) :\n|   Calloc could not allocate memory (18446744073709551616 of 22816 bytes)\n\n[...]\n \n| Any idea ?\n\nYes. Your query appears to generate a result set which would be \n\n     18446744073709551616\n\nbytes large.  So I suggest you change your query with suitable 'where ...' or\n'limit N' clauses.\n\nDirk\n\n-- \nDirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com",
+      "body_snippet": "On 3 June 2012 at 12:04, Idit Buch wrote:\n| Hi,\n| \n| I'm using R version 2.14.1 on Linux (Centos) and trying to issue a \"select * from ...\" query using sqlQuery(...).\n| I then receive the following er",
+      "thread_id": "thread-57bffd4f79bb",
+      "thread_depth": 1,
+      "month": "2012-06"
+    },
+    {
+      "id": "msg-e1fbaca24520",
+      "message_id": "<CANqbw6WgEV=3KN-s4L-f3CFjUr7xo4joXwDHw+ePr-GFScEGzw@mail.gmail.com>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2012-06-03T08:32:40-07:00",
+      "subject": "[R-sig-DB] calloc error issued by sqlQuery",
+      "subject_clean": "calloc error issued by sqlQuery",
+      "in_reply_to": "<20427.27811.417088.888507@max.nulle.part>",
+      "references": [
+        "<9E05935BF21AF74199D49249FF7BB9F9012135@AMSPRD0702MB122.eurprd07.prod.outlook.com>",
+        "<20427.27811.417088.888507@max.nulle.part>"
+      ],
+      "body_plain": "On Sun, Jun 3, 2012 at 6:54 AM, Dirk Eddelbuettel <edd at debian.org> wrote:\n>\n> On 3 June 2012 at 12:04, Idit Buch wrote:\n> | Hi,\n> |\n> | I'm using R version 2.14.1 on Linux (Centos) and trying to issue a \"select * from ...\" query using sqlQuery(...).\n> | I then receive the following error:\n> | Error in odbcQuery(channel, query, rows_at_time) :\n> | ? Calloc could not allocate memory (18446744073709551616 of 22816 bytes)\n>\n> [...]\n>\n> | Any idea ?\n>\n> Yes. Your query appears to generate a result set which would be\n>\n> ? ? 18446744073709551616\n>\n> bytes large. ?So I suggest you change your query with suitable 'where ...' or\n> 'limit N' clauses.\n\nThat's a rather unlikely root cause as it suggests that answering the\nquery requires an allocation of 16,384 petabytes. It seems more likely\nto me that something has triggered an allocation with uninitialized\nmemory. Running the query with R under gdb should help.\n\n\n-- \nSeth Falcon | @sfalcon | http://userprimary.net/",
+      "body_snippet": "On Sun, Jun 3, 2012 at 6:54 AM, Dirk Eddelbuettel <edd at debian.org> wrote:\n>\n> On 3 June 2012 at 12:04, Idit Buch wrote:\n> | Hi,\n> |\n> | I'm using R version 2.14.1 on Linux (Centos) and trying to is",
+      "thread_id": "thread-57bffd4f79bb",
+      "thread_depth": 2,
+      "month": "2012-06"
+    },
+    {
+      "id": "msg-83547566ecb4",
+      "message_id": "<9E05935BF21AF74199D49249FF7BB9F9012299@AMSPRD0702MB122.eurprd07.prod.outlook.com>",
+      "from_name": "Idit Buch",
+      "from_email_hash": "e2417130e4f5fad5687878978ff72c4296dbeb2421c967c9d9393f3e7ae45c97",
+      "date": "2012-06-04T09:51:13Z",
+      "subject": "[R-sig-DB] calloc error issued by sqlQuery",
+      "subject_clean": "calloc error issued by sqlQuery",
+      "in_reply_to": "<CANqbw6WgEV=3KN-s4L-f3CFjUr7xo4joXwDHw+ePr-GFScEGzw@mail.gmail.com>",
+      "references": [
+        "<9E05935BF21AF74199D49249FF7BB9F9012135@AMSPRD0702MB122.eurprd07.prod.outlook.com>",
+        "<20427.27811.417088.888507@max.nulle.part>",
+        "<CANqbw6WgEV=3KN-s4L-f3CFjUr7xo4joXwDHw+ePr-GFScEGzw@mail.gmail.com>"
+      ],
+      "body_plain": "Ok. I just solved it by re-installing RODBC package. The problem was that while RODBC was installed,\nI replaced the ODBC linux driver, and upgraded the driver manager 'unixODBC'. Therefore, RODBC had to be\nRemoved and installed again.\nThanks\nIdit\n\n\n-----Original Message-----\nFrom: Seth Falcon [mailto:seth at userprimary.net] \nSent: Sunday, June 03, 2012 6:33 PM\nTo: Dirk Eddelbuettel\nCc: Idit Buch; r-sig-db at r-project.org\nSubject: Re: [R-sig-DB] calloc error issued by sqlQuery\n\nOn Sun, Jun 3, 2012 at 6:54 AM, Dirk Eddelbuettel <edd at debian.org> wrote:\n>\n> On 3 June 2012 at 12:04, Idit Buch wrote:\n> | Hi,\n> |\n> | I'm using R version 2.14.1 on Linux (Centos) and trying to issue a \"select * from ...\" query using sqlQuery(...).\n> | I then receive the following error:\n> | Error in odbcQuery(channel, query, rows_at_time) :\n> | ? Calloc could not allocate memory (18446744073709551616 of 22816 \n> | bytes)\n>\n> [...]\n>\n> | Any idea ?\n>\n> Yes. Your query appears to generate a result set which would be\n>\n> ? ? 18446744073709551616\n>\n> bytes large. ?So I suggest you change your query with suitable 'where \n> ...' or 'limit N' clauses.\n\nThat's a rather unlikely root cause as it suggests that answering the query requires an allocation of 16,384 petabytes. It seems more likely to me that something has triggered an allocation with uninitialized memory. Running the query with R under gdb should help.\n\n\n--\nSeth Falcon | @sfalcon | http://userprimary.net/",
+      "body_snippet": "Ok. I just solved it by re-installing RODBC package. The problem was that while RODBC was installed,\nI replaced the ODBC linux driver, and upgraded the driver manager 'unixODBC'. Therefore, RODBC had ",
+      "thread_id": "thread-57bffd4f79bb",
+      "thread_depth": 3,
+      "month": "2012-06"
+    },
+    {
+      "id": "msg-ac0173b21828",
+      "message_id": "<1AFBC35F562FB146BD2468E5B83B990808115D82@a0775-xpo0006-s.ad.allstate.com>",
+      "from_name": "Slawin, Scott",
+      "from_email_hash": "d3b72895640ec463963bc093b1bbadd86c33fe87b70584b914179236b6ec4a1a",
+      "date": "2012-06-07T08:52:02-05:00",
+      "subject": "[R-sig-DB] Using LDAP connection",
+      "subject_clean": "Using LDAP connection",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello,\n\nI am trying to find an R package that will allow me to connect to Oracle\nusing LDAP.  Can someone help direct me to such a package or\ndocumentation.  \n\nRCURL does mention LDAP, but is not very specific on how to use LDAP\nwith sql statements.\n\nThanks in advance.\n\nScott Slawin\nAFT-Business Intelligence Delivery (BID) Team\nAllstate Insurance Company\n3100 Sanders Road, Suite J3\nNorthbrook, IL 60062 \nPhone 847-402-3649 \nsslaw at allstate.com <mailto:emailname at allstate.com>  \n\n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hello,\n\nI am trying to find an R package that will allow me to connect to Oracle\nusing LDAP.  Can someone help direct me to such a package or\ndocumentation.  \n\nRCURL does mention LDAP, but is not very",
+      "thread_id": "thread-ac0173b21828",
+      "thread_depth": 0,
+      "month": "2012-06"
+    },
+    {
+      "id": "msg-7a0c40eb8c08",
+      "message_id": "<CANeAVBkpY1UV9VKvBtyGaqMPtk9nGtVVpj7VmxXbcNoErxEVNQ@mail.gmail.com>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2012-06-07T09:59:43-04:00",
+      "subject": "[R-sig-DB] Using LDAP connection",
+      "subject_clean": "Using LDAP connection",
+      "in_reply_to": "<1AFBC35F562FB146BD2468E5B83B990808115D82@a0775-xpo0006-s.ad.allstate.com>",
+      "references": [
+        "<1AFBC35F562FB146BD2468E5B83B990808115D82@a0775-xpo0006-s.ad.allstate.com>"
+      ],
+      "body_plain": "On Thu, Jun 7, 2012 at 9:52 AM, Slawin, Scott <sslaw at allstate.com> wrote:\n> Hello,\n>\n> I am trying to find an R package that will allow me to connect to Oracle\n> using LDAP. ?Can someone help direct me to such a package or\n> documentation.\n>\n> RCURL does mention LDAP, but is not very specific on how to use LDAP\n> with sql statements.\n\nHi, Scott\n\nI'd read up on ROracle or RODBC.  The LDAP piece is behind the Oracle\npiece, I think, so you should not have to do anything special for\nconnecting.\n\nI'm not sure how far this will get you, but you could take a look here\nfor one (of several) tutorials:\n\nhttp://www.oracle.com/technetwork/articles/datawarehouse/saternos-r-161569.html\n\nSean",
+      "body_snippet": "On Thu, Jun 7, 2012 at 9:52 AM, Slawin, Scott <sslaw at allstate.com> wrote:\n> Hello,\n>\n> I am trying to find an R package that will allow me to connect to Oracle\n> using LDAP. ?Can someone help direc",
+      "thread_id": "thread-ac0173b21828",
+      "thread_depth": 1,
+      "month": "2012-06"
+    },
+    {
+      "id": "msg-7a3ed4a0c064",
+      "message_id": "<1AFBC35F562FB146BD2468E5B83B990808115EC0@a0775-xpo0006-s.ad.allstate.com>",
+      "from_name": "Slawin, Scott",
+      "from_email_hash": "d3b72895640ec463963bc093b1bbadd86c33fe87b70584b914179236b6ec4a1a",
+      "date": "2012-06-07T09:40:36-05:00",
+      "subject": "[R-sig-DB] Using LDAP connection",
+      "subject_clean": "Using LDAP connection",
+      "in_reply_to": "<CANeAVBkpY1UV9VKvBtyGaqMPtk9nGtVVpj7VmxXbcNoErxEVNQ@mail.gmail.com>",
+      "references": [
+        "<1AFBC35F562FB146BD2468E5B83B990808115D82@a0775-xpo0006-s.ad.allstate.com>",
+        "<CANeAVBkpY1UV9VKvBtyGaqMPtk9nGtVVpj7VmxXbcNoErxEVNQ@mail.gmail.com>"
+      ],
+      "body_plain": "Sean,\n\nThanks for quick reply!  The link you provide was exactly what I was looking for.  I now have it working without the use of TNSNAMES.ORA.\nNeed to make sure that you are using the DB Service name in the ODBC configuration.\n\n-- Scott \n\n-----Original Message-----\nFrom: seandavi at gmail.com [mailto:seandavi at gmail.com] On Behalf Of Sean Davis\nSent: Thursday, June 07, 2012 9:00 AM\nTo: Slawin, Scott\nCc: r-sig-db at r-project.org\nSubject: Re: [R-sig-DB] Using LDAP connection\n\nOn Thu, Jun 7, 2012 at 9:52 AM, Slawin, Scott <sslaw at allstate.com> wrote:\n> Hello,\n>\n> I am trying to find an R package that will allow me to connect to Oracle\n> using LDAP. ?Can someone help direct me to such a package or\n> documentation.\n>\n> RCURL does mention LDAP, but is not very specific on how to use LDAP\n> with sql statements.\n\nHi, Scott\n\nI'd read up on ROracle or RODBC.  The LDAP piece is behind the Oracle\npiece, I think, so you should not have to do anything special for\nconnecting.\n\nI'm not sure how far this will get you, but you could take a look here\nfor one (of several) tutorials:\n\nhttp://www.oracle.com/technetwork/articles/datawarehouse/saternos-r-161569.html\n\nSean",
+      "body_snippet": "Sean,\n\nThanks for quick reply!  The link you provide was exactly what I was looking for.  I now have it working without the use of TNSNAMES.ORA.\nNeed to make sure that you are using the DB Service nam",
+      "thread_id": "thread-ac0173b21828",
+      "thread_depth": 2,
+      "month": "2012-06"
+    },
+    {
+      "id": "msg-b02da8315b21",
+      "message_id": "<20432.49359.936614.885761@max.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2012-06-07T09:55:11-05:00",
+      "subject": "[R-sig-DB] Using LDAP connection",
+      "subject_clean": "Using LDAP connection",
+      "in_reply_to": "<1AFBC35F562FB146BD2468E5B83B990808115EC0@a0775-xpo0006-s.ad.allstate.com>",
+      "references": [
+        "<1AFBC35F562FB146BD2468E5B83B990808115D82@a0775-xpo0006-s.ad.allstate.com>",
+        "<CANeAVBkpY1UV9VKvBtyGaqMPtk9nGtVVpj7VmxXbcNoErxEVNQ@mail.gmail.com>",
+        "<1AFBC35F562FB146BD2468E5B83B990808115EC0@a0775-xpo0006-s.ad.allstate.com>"
+      ],
+      "body_plain": "Scott,\n\nScott,\n\nOn 7 June 2012 at 09:40, Slawin, Scott wrote:\n| Sean,\n| \n| Thanks for quick reply!  The link you provide was exactly what I was looking for.  I now have it working without the use of TNSNAMES.ORA.\n| Need to make sure that you are using the DB Service name in the ODBC configuration.\n\nIt would be useful for others if you could post a few bullet points as a\nshort HOWTO or recipe here...  ROracle comes up every now and then, and not\nthat many of us can help for lack of an Oracle system nearby.\n\nGreetings from downtown to Northbrook,  Dirk\n\n-- \nDirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com",
+      "body_snippet": "Scott,\n\nScott,\n\nOn 7 June 2012 at 09:40, Slawin, Scott wrote:\n| Sean,\n| \n| Thanks for quick reply!  The link you provide was exactly what I was looking for.  I now have it working without the use of T",
+      "thread_id": "thread-ac0173b21828",
+      "thread_depth": 3,
+      "month": "2012-06"
+    },
+    {
+      "id": "msg-bd41dd09e3fe",
+      "message_id": "<CAPLXN36LrRJaotFkmbnGC+Sp8mJnQJf4WJZeVm1Dw49mMPg0Gw@mail.gmail.com>",
+      "from_name": "Jim Jones",
+      "from_email_hash": "ebe0505098560107fcd04f295be891a135f43433056af8792860afc33ac27494",
+      "date": "2012-06-17T11:59:54+02:00",
+      "subject": "[R-sig-DB] Database R Package",
+      "subject_clean": "Database R Package",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Gentlemen,\n\nLast winter at university in the R Programming course I developed an R\nPackage (so far called rdba) for dealing with some DBA tasks from R\nscripts. The package basically avoids the need of the user to have\nknowledge of database (PostgreSQL + PostGIS) scripts to manage their\ndatabases. It aims to facilitate the scripts development when \"on the fly\"\nyou need to handle databases and tablespaces in a physical level.\n\nThe package contains the following functions:\n\nCreate Database (With or without a template)\nDrop Databse\nList Database\nDatabase Exists\n\nCreate Tablespace\nDrop Tablespace\nList Tablespace\nRename Tablespace\nTablespace Exists\nChange Owner Tablespace\n\nListUsers\nUserExists\n\nI would like to hear your opinion about submitting it to CRAN, since I'm\nnew in the list and you are the experts. Initially I just wrote the\nfunctions for PostgreSQL, but it is already in my plans to extend it to\nOracle and SQL Server. What do you think?\n\nBest,\n\nJim Jones\nUniversity of M??nster\nGermany\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Gentlemen,\n\nLast winter at university in the R Programming course I developed an R\nPackage (so far called rdba) for dealing with some DBA tasks from R\nscripts. The package basically avoids the need of",
+      "thread_id": "thread-bd41dd09e3fe",
+      "thread_depth": 0,
+      "month": "2012-06"
+    },
+    {
+      "id": "msg-7ea0d01f72b6",
+      "message_id": "<4FDEE3A3.9030008@stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2012-06-18T09:15:31+01:00",
+      "subject": "[R-sig-DB] Database R Package",
+      "subject_clean": "Database R Package",
+      "in_reply_to": "<CAPLXN36LrRJaotFkmbnGC+Sp8mJnQJf4WJZeVm1Dw49mMPg0Gw@mail.gmail.com>",
+      "references": [
+        "<CAPLXN36LrRJaotFkmbnGC+Sp8mJnQJf4WJZeVm1Dw49mMPg0Gw@mail.gmail.com>"
+      ],
+      "body_plain": "On 17/06/2012 10:59, Jim Jones wrote:\n> Gentlemen,\n>\n> Last winter at university in the R Programming course I developed an R\n> Package (so far called rdba) for dealing with some DBA tasks from R\n> scripts. The package basically avoids the need of the user to have\n> knowledge of database (PostgreSQL + PostGIS) scripts to manage their\n> databases. It aims to facilitate the scripts development when \"on the fly\"\n> you need to handle databases and tablespaces in a physical level.\n>\n> The package contains the following functions:\n>\n> Create Database (With or without a template)\n> Drop Databse\n> List Database\n> Database Exists\n>\n> Create Tablespace\n> Drop Tablespace\n> List Tablespace\n> Rename Tablespace\n> Tablespace Exists\n> Change Owner Tablespace\n>\n> ListUsers\n> UserExists\n>\n> I would like to hear your opinion about submitting it to CRAN, since I'm\n> new in the list and you are the experts. Initially I just wrote the\n> functions for PostgreSQL, but it is already in my plans to extend it to\n> Oracle and SQL Server. What do you think?\n\nI think you are re-inventing the wheel.  Please see the R posting guide \n(it asks for no HTML, for example), especially about doing your homework \nbefore posting.\n\nBoth RODBC and DBI provide R-level interfaces to this kind of thing the \nlatter with a few backends including RPostgreSQL and ROracle (but not \nSQL Server).  'Owner' is not really a portable concept: see the RODBC \nmanual for how it and similar things are implemented in a range of DBMSs\n\nCRAN does not make value judgements about usefulness of packages, so \nduplication is no bar there.\n\n>\n> Best,\n>\n> Jim Jones\n> University of M??nster\n> Germany\n>\n> \t[[alternative HTML version deleted]]\n>\n>\n>\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "On 17/06/2012 10:59, Jim Jones wrote:\n> Gentlemen,\n>\n> Last winter at university in the R Programming course I developed an R\n> Package (so far called rdba) for dealing with some DBA tasks from R\n> sc",
+      "thread_id": "thread-bd41dd09e3fe",
+      "thread_depth": 1,
+      "month": "2012-06"
+    },
+    {
+      "id": "msg-5e15cb34350f",
+      "message_id": "<CAPLXN37goJ25LF6GFPnmcQ268Z603KeXwhaQ2da8ojYM=wswew@mail.gmail.com>",
+      "from_name": "Jim Jones",
+      "from_email_hash": "ebe0505098560107fcd04f295be891a135f43433056af8792860afc33ac27494",
+      "date": "2012-06-18T11:56:08+02:00",
+      "subject": "[R-sig-DB] Database R Package",
+      "subject_clean": "Database R Package",
+      "in_reply_to": "<4FDEE3A3.9030008@stats.ox.ac.uk>",
+      "references": [
+        "<CAPLXN36LrRJaotFkmbnGC+Sp8mJnQJf4WJZeVm1Dw49mMPg0Gw@mail.gmail.com>",
+        "<4FDEE3A3.9030008@stats.ox.ac.uk>"
+      ],
+      "body_plain": "Dear Prof. Ripley,\n\nThanks a lot for your feedback!\n\nYou're right, the packages DBI and RODBC already provide R-level interfaces\nfor databases. My proposed package actually depend on them. What I wanted\nto propose is to have predifined functions, e.g. pgCreateTablespace, so\nthat the user doesn't need to care about the database script language, but\njust need to call the package functions and provide the necessary\nparameters. Something simple that in my opinion saves some time.\n\nBest,\nJim Jones\n\n2012/6/18 Prof Brian Ripley <ripley at stats.ox.ac.uk>\n\n> On 17/06/2012 10:59, Jim Jones wrote:\n>\n>> Gentlemen,\n>>\n>> Last winter at university in the R Programming course I developed an R\n>> Package (so far called rdba) for dealing with some DBA tasks from R\n>> scripts. The package basically avoids the need of the user to have\n>> knowledge of database (PostgreSQL + PostGIS) scripts to manage their\n>> databases. It aims to facilitate the scripts development when \"on the fly\"\n>> you need to handle databases and tablespaces in a physical level.\n>>\n>> The package contains the following functions:\n>>\n>> Create Database (With or without a template)\n>> Drop Databse\n>> List Database\n>> Database Exists\n>>\n>> Create Tablespace\n>> Drop Tablespace\n>> List Tablespace\n>> Rename Tablespace\n>> Tablespace Exists\n>> Change Owner Tablespace\n>>\n>> ListUsers\n>> UserExists\n>>\n>> I would like to hear your opinion about submitting it to CRAN, since I'm\n>> new in the list and you are the experts. Initially I just wrote the\n>> functions for PostgreSQL, but it is already in my plans to extend it to\n>> Oracle and SQL Server. What do you think?\n>>\n>\n> I think you are re-inventing the wheel.  Please see the R posting guide\n> (it asks for no HTML, for example), especially about doing your homework\n> before posting.\n>\n> Both RODBC and DBI provide R-level interfaces to this kind of thing the\n> latter with a few backends including RPostgreSQL and ROracle (but not SQL\n> Server).  'Owner' is not really a portable concept: see the RODBC manual\n> for how it and similar things are implemented in a range of DBMSs\n>\n> CRAN does not make value judgements about usefulness of packages, so\n> duplication is no bar there.\n>\n>\n>> Best,\n>>\n>> Jim Jones\n>> University of M????nster\n>> Germany\n>>\n>>        [[alternative HTML version deleted]]\n>>\n>>\n>>\n>>\n>> ______________________________**_________________\n>> R-sig-DB mailing list -- R Special Interest Group\n>> R-sig-DB at r-project.org\n>> https://stat.ethz.ch/mailman/**listinfo/r-sig-db<https://stat.ethz.ch/mailman/listinfo/r-sig-db>\n>>\n>\n>\n> --\n> Brian D. Ripley,                  ripley at stats.ox.ac.uk\n> Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~**ripley/<http://www.stats.ox.ac.uk/%7Eripley/>\n> University of Oxford,             Tel:  +44 1865 272861 (self)\n> 1 South Parks Road,                     +44 1865 272866 (PA)\n> Oxford OX1 3TG, UK                Fax:  +44 1865 272595\n>\n> ______________________________**_________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/**listinfo/r-sig-db<https://stat.ethz.ch/mailman/listinfo/r-sig-db>\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Dear Prof. Ripley,\n\nThanks a lot for your feedback!\n\nYou're right, the packages DBI and RODBC already provide R-level interfaces\nfor databases. My proposed package actually depend on them. What I want",
+      "thread_id": "thread-bd41dd09e3fe",
+      "thread_depth": 2,
+      "month": "2012-06"
+    },
+    {
+      "id": "msg-5fa0b24397b8",
+      "message_id": "<5F638AF2734EC34995CD5093310A7FBE4E325D151E@exmbx2.ad.slu.se>",
+      "from_name": "Julien Moeys",
+      "from_email_hash": "3a315d51c8d30fdd712e6d7b6bc232ad269c95c440ef39091ddc7028ee9aaab9",
+      "date": "2012-06-18T19:10:08+02:00",
+      "subject": "[R-sig-DB] Database R Package",
+      "subject_clean": "Database R Package",
+      "in_reply_to": "<CAPLXN37goJ25LF6GFPnmcQ268Z603KeXwhaQ2da8ojYM=wswew@mail.gmail.com>",
+      "references": [
+        "<CAPLXN36LrRJaotFkmbnGC+Sp8mJnQJf4WJZeVm1Dw49mMPg0Gw@mail.gmail.com>",
+        "<4FDEE3A3.9030008@stats.ox.ac.uk>",
+        "<CAPLXN37goJ25LF6GFPnmcQ268Z603KeXwhaQ2da8ojYM=wswew@mail.gmail.com>"
+      ],
+      "body_plain": "Hi\n\nI think packages that simplify database handling from R, for non-expert users, potentially can be very useful. As you said, database script language is not always easy for beginners.\n\nI have myself programmed an R packages (http://easydb.r-forge.r-project.org/) that makes it easier to read, write and subset data to and from SQLite, MySQL, MS Access and MS Excel (based on RSQLite and RODBC). I found that it speeds-up the development of R-Database applications, reduces the amount of code, and makes it easier to switch from one database system to another. It also saves some time when helping other R users writing scripts that involve a database.\n\nOn the other hand it is not easy to make sure such a package will always work as expected. I don't know any way to run tests that involve a local database server during the package compilation on CRAN or r-forge (are there any?). \n\nThere are several other projects with similar ideas:\n- dfdb (http://r-forge.r-project.org/projects/dfdb-rodbc/)\n- dbframe (https://github.com/gcalhoun/dbframe-R-library)\n\nYou may find r-forge useful if you are not sure it is ready for CRAN.\n\nAll the best\n\nJulien Moeys\nPS: I shall precise that I am not a database \"expert\", but rather a regular user of database systems.\n\n\n> -----Original Message-----\n> From: r-sig-db-bounces at r-project.org [mailto:r-sig-db-bounces at r-\n> project.org] On Behalf Of Jim Jones\n> Sent: 18 June 2012 11:56\n> To: Prof Brian Ripley; r-sig-db at r-project.org\n> Subject: Re: [R-sig-DB] Database R Package\n> \n> Dear Prof. Ripley,\n> \n> Thanks a lot for your feedback!\n> \n> You're right, the packages DBI and RODBC already provide R-level interfaces\n> for databases. My proposed package actually depend on them. What I\n> wanted to propose is to have predifined functions, e.g. pgCreateTablespace,\n> so that the user doesn't need to care about the database script language, but\n> just need to call the package functions and provide the necessary\n> parameters. Something simple that in my opinion saves some time.\n> \n> Best,\n> Jim Jones\n> \n> 2012/6/18 Prof Brian Ripley <ripley at stats.ox.ac.uk>\n> \n> > On 17/06/2012 10:59, Jim Jones wrote:\n> >\n> >> Gentlemen,\n> >>\n> >> Last winter at university in the R Programming course I developed an\n> >> R Package (so far called rdba) for dealing with some DBA tasks from R\n> >> scripts. The package basically avoids the need of the user to have\n> >> knowledge of database (PostgreSQL + PostGIS) scripts to manage their\n> >> databases. It aims to facilitate the scripts development when \"on the fly\"\n> >> you need to handle databases and tablespaces in a physical level.\n> >>\n> >> The package contains the following functions:\n> >>\n> >> Create Database (With or without a template) Drop Databse List\n> >> Database Database Exists\n> >>\n> >> Create Tablespace\n> >> Drop Tablespace\n> >> List Tablespace\n> >> Rename Tablespace\n> >> Tablespace Exists\n> >> Change Owner Tablespace\n> >>\n> >> ListUsers\n> >> UserExists\n> >>\n> >> I would like to hear your opinion about submitting it to CRAN, since\n> >> I'm new in the list and you are the experts. Initially I just wrote\n> >> the functions for PostgreSQL, but it is already in my plans to extend\n> >> it to Oracle and SQL Server. What do you think?\n> >>\n> >\n> > I think you are re-inventing the wheel.  Please see the R posting\n> > guide (it asks for no HTML, for example), especially about doing your\n> > homework before posting.\n> >\n> > Both RODBC and DBI provide R-level interfaces to this kind of thing\n> > the latter with a few backends including RPostgreSQL and ROracle (but\n> > not SQL Server).  'Owner' is not really a portable concept: see the\n> > RODBC manual for how it and similar things are implemented in a range\n> > of DBMSs\n> >\n> > CRAN does not make value judgements about usefulness of packages, so\n> > duplication is no bar there.\n> >\n> >\n> >> Best,\n> >>\n> >> Jim Jones\n> >> University of M????nster\n> >> Germany\n> >>\n> >>        [[alternative HTML version deleted]]\n> >>\n> >>\n> >>\n> >>\n> >> ______________________________**_________________\n> >> R-sig-DB mailing list -- R Special Interest Group\n> >> R-sig-DB at r-project.org\n> >> https://stat.ethz.ch/mailman/**listinfo/r-sig-db<https://stat.ethz.ch\n> >> /mailman/listinfo/r-sig-db>\n> >>\n> >\n> >\n> > --\n> > Brian D. Ripley,                  ripley at stats.ox.ac.uk\n> > Professor of Applied Statistics,\n> http://www.stats.ox.ac.uk/~**ripley/<http://www.stats.ox.ac.uk/%7Eripley/\n> >\n> > University of Oxford,             Tel:  +44 1865 272861 (self)\n> > 1 South Parks Road,                     +44 1865 272866 (PA)\n> > Oxford OX1 3TG, UK                Fax:  +44 1865 272595\n> >\n> > ______________________________**_________________\n> > R-sig-DB mailing list -- R Special Interest Group\n> > R-sig-DB at r-project.org\n> > https://stat.ethz.ch/mailman/**listinfo/r-sig-db<https://stat.ethz.ch/\n> > mailman/listinfo/r-sig-db>\n> >\n> \n> \t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi\n\nI think packages that simplify database handling from R, for non-expert users, potentially can be very useful. As you said, database script language is not always easy for beginners.\n\nI have mysel",
+      "thread_id": "thread-bd41dd09e3fe",
+      "thread_depth": 3,
+      "month": "2012-06"
+    },
+    {
+      "id": "msg-2c44f94805c6",
+      "message_id": "<CAPLXN37V2zneu7xM4b_f9ENhqLxeGWEDo6hSWYQL1LRuZiX67Q@mail.gmail.com>",
+      "from_name": "Jim Jones",
+      "from_email_hash": "ebe0505098560107fcd04f295be891a135f43433056af8792860afc33ac27494",
+      "date": "2012-06-18T21:30:16+02:00",
+      "subject": "[R-sig-DB] Database R Package",
+      "subject_clean": "Database R Package",
+      "in_reply_to": "<5F638AF2734EC34995CD5093310A7FBE4E325D151E@exmbx2.ad.slu.se>",
+      "references": [
+        "<CAPLXN36LrRJaotFkmbnGC+Sp8mJnQJf4WJZeVm1Dw49mMPg0Gw@mail.gmail.com>",
+        "<4FDEE3A3.9030008@stats.ox.ac.uk>",
+        "<CAPLXN37goJ25LF6GFPnmcQ268Z603KeXwhaQ2da8ojYM=wswew@mail.gmail.com>",
+        "<5F638AF2734EC34995CD5093310A7FBE4E325D151E@exmbx2.ad.slu.se>"
+      ],
+      "body_plain": "Hello Julien,\n\nThanks for your comments.\n\nI see there is a lot going on outside of CRAN :-). Indeed there are a lot\nof initiatives for dealing with tables and how to acquire and write data to\nthem, but less when it turns to dealing with DBA tasks, like creating /\nresizing / moving tablespaces or even creating databases.\n\nAs you pointed out, I am also not sure if there is a way of running the\nCRAN tests in the package when it depends on a pre-configured database with\nvalid credentials (local or remote). I will consider r-forge, in case I\ndon't find out a way to submit it to CRAN.\n\nOnce again, thank you for your comments and suggestions!\n\nBest,\n\nJim Jones\nInstitute for Geoinformatics\nUniversity of M??nster, Germany\n\n\n2012/6/18 Julien Moeys <julien.moeys at slu.se>\n\n> Hi\n>\n> I think packages that simplify database handling from R, for non-expert\n> users, potentially can be very useful. As you said, database script\n> language is not always easy for beginners.\n>\n> I have myself programmed an R packages (\n> http://easydb.r-forge.r-project.org/) that makes it easier to read, write\n> and subset data to and from SQLite, MySQL, MS Access and MS Excel (based on\n> RSQLite and RODBC). I found that it speeds-up the development of R-Database\n> applications, reduces the amount of code, and makes it easier to switch\n> from one database system to another. It also saves some time when helping\n> other R users writing scripts that involve a database.\n>\n> On the other hand it is not easy to make sure such a package will always\n> work as expected. I don't know any way to run tests that involve a local\n> database server during the package compilation on CRAN or r-forge (are\n> there any?).\n>\n> There are several other projects with similar ideas:\n> - dfdb (http://r-forge.r-project.org/projects/dfdb-rodbc/)\n> - dbframe (https://github.com/gcalhoun/dbframe-R-library)\n>\n> You may find r-forge useful if you are not sure it is ready for CRAN.\n>\n> All the best\n>\n> Julien Moeys\n> PS: I shall precise that I am not a database \"expert\", but rather a\n> regular user of database systems.\n>\n>\n> > -----Original Message-----\n> > From: r-sig-db-bounces at r-project.org [mailto:r-sig-db-bounces at r-\n> > project.org] On Behalf Of Jim Jones\n> > Sent: 18 June 2012 11:56\n> > To: Prof Brian Ripley; r-sig-db at r-project.org\n> > Subject: Re: [R-sig-DB] Database R Package\n> >\n> > Dear Prof. Ripley,\n> >\n> > Thanks a lot for your feedback!\n> >\n> > You're right, the packages DBI and RODBC already provide R-level\n> interfaces\n> > for databases. My proposed package actually depend on them. What I\n> > wanted to propose is to have predifined functions, e.g.\n> pgCreateTablespace,\n> > so that the user doesn't need to care about the database script\n> language, but\n> > just need to call the package functions and provide the necessary\n> > parameters. Something simple that in my opinion saves some time.\n> >\n> > Best,\n> > Jim Jones\n> >\n> > 2012/6/18 Prof Brian Ripley <ripley at stats.ox.ac.uk>\n> >\n> > > On 17/06/2012 10:59, Jim Jones wrote:\n> > >\n> > >> Gentlemen,\n> > >>\n> > >> Last winter at university in the R Programming course I developed an\n> > >> R Package (so far called rdba) for dealing with some DBA tasks from R\n> > >> scripts. The package basically avoids the need of the user to have\n> > >> knowledge of database (PostgreSQL + PostGIS) scripts to manage their\n> > >> databases. It aims to facilitate the scripts development when \"on the\n> fly\"\n> > >> you need to handle databases and tablespaces in a physical level.\n> > >>\n> > >> The package contains the following functions:\n> > >>\n> > >> Create Database (With or without a template) Drop Databse List\n> > >> Database Database Exists\n> > >>\n> > >> Create Tablespace\n> > >> Drop Tablespace\n> > >> List Tablespace\n> > >> Rename Tablespace\n> > >> Tablespace Exists\n> > >> Change Owner Tablespace\n> > >>\n> > >> ListUsers\n> > >> UserExists\n> > >>\n> > >> I would like to hear your opinion about submitting it to CRAN, since\n> > >> I'm new in the list and you are the experts. Initially I just wrote\n> > >> the functions for PostgreSQL, but it is already in my plans to extend\n> > >> it to Oracle and SQL Server. What do you think?\n> > >>\n> > >\n> > > I think you are re-inventing the wheel.  Please see the R posting\n> > > guide (it asks for no HTML, for example), especially about doing your\n> > > homework before posting.\n> > >\n> > > Both RODBC and DBI provide R-level interfaces to this kind of thing\n> > > the latter with a few backends including RPostgreSQL and ROracle (but\n> > > not SQL Server).  'Owner' is not really a portable concept: see the\n> > > RODBC manual for how it and similar things are implemented in a range\n> > > of DBMSs\n> > >\n> > > CRAN does not make value judgements about usefulness of packages, so\n> > > duplication is no bar there.\n> > >\n> > >\n> > >> Best,\n> > >>\n> > >> Jim Jones\n> > >> University of M????????nster\n> > >> Germany\n> > >>\n> > >>        [[alternative HTML version deleted]]\n> > >>\n> > >>\n> > >>\n> > >>\n> > >> ______________________________**_________________\n> > >> R-sig-DB mailing list -- R Special Interest Group\n> > >> R-sig-DB at r-project.org\n> > >> https://stat.ethz.ch/mailman/**listinfo/r-sig-db<https://stat.ethz.ch\n> > >> /mailman/listinfo/r-sig-db>\n> > >>\n> > >\n> > >\n> > > --\n> > > Brian D. Ripley,                  ripley at stats.ox.ac.uk\n> > > Professor of Applied Statistics,\n> > http://www.stats.ox.ac.uk/~**ripley/<\n> http://www.stats.ox.ac.uk/%7Eripley/\n> > >\n> > > University of Oxford,             Tel:  +44 1865 272861 (self)\n> > > 1 South Parks Road,                     +44 1865 272866 (PA)\n> > > Oxford OX1 3TG, UK                Fax:  +44 1865 272595\n> > >\n> > > ______________________________**_________________\n> > > R-sig-DB mailing list -- R Special Interest Group\n> > > R-sig-DB at r-project.org\n> > > https://stat.ethz.ch/mailman/**listinfo/r-sig-db<https://stat.ethz.ch/\n> > > mailman/listinfo/r-sig-db>\n> > >\n> >\n> >       [[alternative HTML version deleted]]\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hello Julien,\n\nThanks for your comments.\n\nI see there is a lot going on outside of CRAN :-). Indeed there are a lot\nof initiatives for dealing with tables and how to acquire and write data to\nthem, bu",
+      "thread_id": "thread-bd41dd09e3fe",
+      "thread_depth": 4,
+      "month": "2012-06"
+    },
+    {
+      "id": "msg-1f582b05ed5e",
+      "message_id": "<COL102-W189525958E0FC85A157F678FE10@phx.gbl>",
+      "from_name": "julien cuisinier",
+      "from_email_hash": "daf7621407dddca0b21d886155be61a5abcd8715ee1d59f8130b8ccfa3dd5351",
+      "date": "2012-06-25T13:46:27+02:00",
+      "subject": "[R-sig-DB] FW: Connect R to MySQL DB installed via XAMPP",
+      "subject_clean": "Connect R to MySQL DB installed via XAMPP",
+      "in_reply_to": "<COL102-W627344CF10264657E297B18FE10@phx.gbl>",
+      "references": [
+        "<COL102-W627344CF10264657E297B18FE10@phx.gbl>"
+      ],
+      "body_plain": "Hi List,\n\n\nOn windows XP & R2.15. Session info below. \n\nI installed XAMPP on my machine - I can't install MYSQL on the C:\\Program file dir because no admin rights, so I installed XAMPP onto a personal directory...which I guess makes things slightly harder, but I am hopeful I am not thhe first one struggling on this!\n\nAny feedback  redirection / hints hugely appreciated\n\n\n\n(1) I tried to install RMySQL which I used successsfully on Linux in the past but it seems to be a trouble on Windows, no binary available on CRAN (anymore?) & when trying the \"type = 'source' \" option I get the following: \n\n> install.packages(\"RMySQL\",type=\"source\")\ntrying URL 'http://cran.ma.imperial.ac.uk/src/contrib/RMySQL_0.9-3.tar.gz'\nContent type 'application/x-gzip' length 165363 bytes (161 Kb)\nopened URL\ndownloaded 161 Kb\n\n'\\\\UKLonHome.HDS.Int\\Home$\\julien.cuisinier'\nCMD.EXE was started with the above path as the current directory.\nUNC paths are not supported.  Defaulting to Windows directory.\n* installing *source* package 'RMySQL' ...\n** package 'RMySQL' successfully unpacked and MD5 sums checked\nERROR: configuration failed for package 'RMySQL'\n* removing 'P:/PersoServer/Programs/R/R-2.15.0/library/RMySQL'\n\nThe downloaded source packages are in\n        ?C:\\Documents and Settings\\julien.cuisinier\\Local Settings\\Temp\\RtmpszNeip\\downloaded_packages?\nWarning messages:\n1: running command 'P:/PersoServer/Programs/R/R-2.15.0/bin/i386/R CMD INSTALL -l \"P:/PersoServer/Programs/R/R-2.15.0/library\"   C:\\DOCUME~1\\JULIEN~1.CUI\\LOCALS~1\\Temp\\RtmpszNeip/downloaded_packages/RMySQL_0.9-3.tar.gz' had status 1 \n2: In install.packages(\"RMySQL\", type = \"source\") :\n  installation of package ?RMySQL? had non-zero exit status\n\n\n(2) I can't use tips like this one:\nhttp://blog.tersmitten.nl/archives/1345\n\nsimply because I can't install RTools.exe as I do not have admin rights\nNB: I already changed the env. variable MYSQL_HOME but without success:\n> Sys.getenv(\"MYSQL_HOME\")\n[1] \"P:/PersoServer/Programs/XAMPP/mysql\"\n\n\n\n(2) So I thought to try & connect directly using DBI package, but I am having an error msge I do not understand (My apologies if this is basic, not expert at all on DB management)\n> library(DBI)\n> drv <- dbDriver(\"MYSQL\")\nError in do.call(as.character(drvName), list(...)) : \n  could not find function \"MYSQL\"\n\ngoogling, I found the following but I do not get the answer from Prof Brian Ripley:\nhttp://r.789695.n4.nabble.com/connecting-to-DB2-database-td827626.html\n\nI am guessing the \"driver package\" he refers to is RMySQL which I could not install in the first place... I tried to fiddle with the R files you have access once you extract the tar.gz source package under RMySQL\\R, but no luck\n> source(\"zzz.R\")\n> source(\"S4R.R\")\n> source(\"dbObjectId.R\")\n> source(\"MySQLSupport.R\")\n> source(\"MySQL.R\")\n> drv <- dbDriver(\"MYSQL\")\nError in do.call(as.character(drvName), list(...)) : \n  could not find function \"MYSQL\"\n\nweird thing is that in the \"MySQL.R\" file from the source package downloaded there is a \"MYSQL\" function declared - I am guessing the error is somewhere else but R is not very helpful here (my own limitation of course...)\n\n\nAny idea of where to go from here would be hugely appreciated!! Sorry for the long email. \n\n\nThanks & regards,\nJulien\n\n\n\n\n\n> sessionInfo()\nR version 2.15.0 (2012-03-30)\nPlatform: i386-pc-mingw32/i386 (32-bit)\n\nlocale:\n[1] LC_COLLATE=English_United Kingdom.1252  LC_CTYPE=English_United Kingdom.1252   \n[3] LC_MONETARY=English_United Kingdom.1252 LC_NUMERIC=C                           \n[5] LC_TIME=English_United Kingdom.1252    \n\nattached base packages:\n[1] stats     graphics  grDevices utils     datasets  methods   base     \n\nother attached packages:\n[1] DBI_0.2-5\n\n \t\t \t   \t\t   \t\t \t   \t\t  \n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi List,\n\n\nOn windows XP & R2.15. Session info below. \n\nI installed XAMPP on my machine - I can't install MYSQL on the C:\\Program file dir because no admin rights, so I installed XAMPP onto a personal",
+      "thread_id": "thread-1f582b05ed5e",
+      "thread_depth": 0,
+      "month": "2012-06"
+    },
+    {
+      "id": "msg-dc8eecc1051a",
+      "message_id": "<COL102-W9E84D4D5DDAD94419F6A58FE10@phx.gbl>",
+      "from_name": "julien cuisinier",
+      "from_email_hash": "daf7621407dddca0b21d886155be61a5abcd8715ee1d59f8130b8ccfa3dd5351",
+      "date": "2012-06-25T16:12:54+02:00",
+      "subject": "[R-sig-DB] Connect R to MySQL DB installed via XAMPP",
+      "subject_clean": "Connect R to MySQL DB installed via XAMPP",
+      "in_reply_to": "<COL102-W189525958E0FC85A157F678FE10@phx.gbl>",
+      "references": [
+        "<COL102-W627344CF10264657E297B18FE10@phx.gbl>",
+        "<COL102-W189525958E0FC85A157F678FE10@phx.gbl>"
+      ],
+      "body_plain": "Hi List,\n\n\n\nJust to update, I could find a zip online (I unfortunately lost the address & cannot find it anymore) RMySQL_0.8-0_for_MySQL_5.5.16.zip\n\nwhich when installed locally under R allowed me to connect... not ideal but at leats it works for the time being.\n\nAny feedback on my email / question is more than welcome\n\n\nThanks & regards,\nJulien\n\n\n\nFrom: j_cuisinier at hotmail.com\nTo: r-sig-db at r-project.org\nSubject: FW: Connect R to MySQL DB installed via XAMPP\nDate: Mon, 25 Jun 2012 13:46:27 +0200\n\n\n\n\n\n\n\n\n\n\nHi List,\n\n\nOn windows XP & R2.15. Session info below. \n\nI installed XAMPP on my machine - I can't install MYSQL on the C:\\Program file dir because no admin rights, so I installed XAMPP onto a personal directory...which I guess makes things slightly harder, but I am hopeful I am not thhe first one struggling on this!\n\nAny feedback  redirection / hints hugely appreciated\n\n\n\n(1) I tried to install RMySQL which I used successsfully on Linux in the past but it seems to be a trouble on Windows, no binary available on CRAN (anymore?) & when trying the \"type = 'source' \" option I get the following: \n\n> install.packages(\"RMySQL\",type=\"source\")\ntrying URL 'http://cran.ma.imperial.ac.uk/src/contrib/RMySQL_0.9-3.tar.gz'\nContent type 'application/x-gzip' length 165363 bytes (161 Kb)\nopened URL\ndownloaded 161 Kb\n\n'\\\\UKLonHome.HDS.Int\\Home$\\julien.cuisinier'\nCMD.EXE was started with the above path as the current directory.\nUNC paths are not supported.  Defaulting to Windows directory.\n* installing *source* package 'RMySQL' ...\n** package 'RMySQL' successfully unpacked and MD5 sums checked\nERROR: configuration failed for package 'RMySQL'\n* removing 'P:/PersoServer/Programs/R/R-2.15.0/library/RMySQL'\n\nThe downloaded source packages are in\n        ?C:\\Documents and Settings\\julien.cuisinier\\Local Settings\\Temp\\RtmpszNeip\\downloaded_packages?\nWarning messages:\n1: running command 'P:/PersoServer/Programs/R/R-2.15.0/bin/i386/R CMD INSTALL -l \"P:/PersoServer/Programs/R/R-2.15.0/library\"   C:\\DOCUME~1\\JULIEN~1.CUI\\LOCALS~1\\Temp\\RtmpszNeip/downloaded_packages/RMySQL_0.9-3.tar.gz' had status 1 \n2: In install.packages(\"RMySQL\", type = \"source\") :\n  installation of package ?RMySQL? had non-zero exit status\n\n\n(2) I can't use tips like this one:\nhttp://blog.tersmitten.nl/archives/1345\n\nsimply because I can't install RTools.exe as I do not have admin rights\nNB: I already changed the env. variable MYSQL_HOME but without success:\n> Sys.getenv(\"MYSQL_HOME\")\n[1] \"P:/PersoServer/Programs/XAMPP/mysql\"\n\n\n\n(2) So I thought to try & connect directly using DBI package, but I am having an error msge I do not understand (My apologies if this is basic, not expert at all on DB management)\n> library(DBI)\n> drv <- dbDriver(\"MYSQL\")\nError in do.call(as.character(drvName), list(...)) : \n  could not find function \"MYSQL\"\n\ngoogling, I found the following but I do not get the answer from Prof Brian Ripley:\nhttp://r.789695.n4.nabble.com/connecting-to-DB2-database-td827626.html\n\nI am guessing the \"driver package\" he refers to is RMySQL which I could not install in the first place... I tried to fiddle with the R files you have access once you extract the tar.gz source package under RMySQL\\R, but no luck\n> source(\"zzz.R\")\n> source(\"S4R.R\")\n> source(\"dbObjectId.R\")\n> source(\"MySQLSupport.R\")\n> source(\"MySQL.R\")\n> drv <- dbDriver(\"MYSQL\")\nError in do.call(as.character(drvName), list(...)) : \n  could not find function \"MYSQL\"\n\nweird thing is that in the \"MySQL.R\" file from the source package downloaded there is a \"MYSQL\" function declared - I am guessing the error is somewhere else but R is not very helpful here (my own limitation of course...)\n\n\nAny idea of where to go from here would be hugely appreciated!! Sorry for the long email. \n\n\nThanks & regards,\nJulien\n\n\n\n\n\n> sessionInfo()\nR version 2.15.0 (2012-03-30)\nPlatform: i386-pc-mingw32/i386 (32-bit)\n\nlocale:\n[1] LC_COLLATE=English_United Kingdom.1252  LC_CTYPE=English_United Kingdom.1252   \n[3] LC_MONETARY=English_United Kingdom.1252 LC_NUMERIC=C                           \n[5] LC_TIME=English_United Kingdom.1252    \n\nattached base packages:\n[1] stats     graphics  grDevices utils     datasets  methods   base     \n\nother attached packages:\n[1] DBI_0.2-5\n\n \t\t \t   \t\t   \t\t \t   \t\t   \t\t \t   \t\t  \n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi List,\n\n\n\nJust to update, I could find a zip online (I unfortunately lost the address & cannot find it anymore) RMySQL_0.8-0_for_MySQL_5.5.16.zip\n\nwhich when installed locally under R allowed me to ",
+      "thread_id": "thread-1f582b05ed5e",
+      "thread_depth": 1,
+      "month": "2012-06"
+    },
+    {
+      "id": "msg-b86aa21b678a",
+      "message_id": "<4FE882B6.5020006@stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2012-06-25T16:24:38+01:00",
+      "subject": "[R-sig-DB] Connect R to MySQL DB installed via XAMPP",
+      "subject_clean": "Connect R to MySQL DB installed via XAMPP",
+      "in_reply_to": "<COL102-W9E84D4D5DDAD94419F6A58FE10@phx.gbl>",
+      "references": [
+        "<COL102-W627344CF10264657E297B18FE10@phx.gbl>",
+        "<COL102-W189525958E0FC85A157F678FE10@phx.gbl>",
+        "<COL102-W9E84D4D5DDAD94419F6A58FE10@phx.gbl>"
+      ],
+      "body_plain": "On 25/06/2012 15:12, julien cuisinier wrote:\n>\n> Hi List,\n>\n>\n>\n> Just to update, I could find a zip online (I unfortunately lost the address & cannot find it anymore) RMySQL_0.8-0_for_MySQL_5.5.16.zip\n>\n> which when installed locally under R allowed me to connect... not ideal but at leats it works for the time being.\n>\n> Any feedback on my email / question is more than welcome\n\nYou start from mendacious assumptions, and installing Windows source \npackages is way off topic here.\n\nBut you should not need administrative rights to install Rtools ....\n\n>\n>\n> Thanks & regards,\n> Julien\n>\n>\n>\n> From: j_cuisinier at hotmail.com\n> To: r-sig-db at r-project.org\n> Subject: FW: Connect R to MySQL DB installed via XAMPP\n> Date: Mon, 25 Jun 2012 13:46:27 +0200\n>\n>\n>\n>\n>\n>\n>\n>\n>\n>\n> Hi List,\n>\n>\n> On windows XP & R2.15. Session info below.\n>\n> I installed XAMPP on my machine - I can't install MYSQL on the C:\\Program file dir because no admin rights, so I installed XAMPP onto a personal directory...which I guess makes things slightly harder, but I am hopeful I am not thhe first one struggling on this!\n>\n> Any feedback  redirection / hints hugely appreciated\n>\n>\n>\n> (1) I tried to install RMySQL which I used successsfully on Linux in the past but it seems to be a trouble on Windows, no binary available on CRAN (anymore?) & when trying the \"type = 'source' \" option I get the following:\n>\n>> install.packages(\"RMySQL\",type=\"source\")\n> trying URL 'http://cran.ma.imperial.ac.uk/src/contrib/RMySQL_0.9-3.tar.gz'\n> Content type 'application/x-gzip' length 165363 bytes (161 Kb)\n> opened URL\n> downloaded 161 Kb\n>\n> '\\\\UKLonHome.HDS.Int\\Home$\\julien.cuisinier'\n> CMD.EXE was started with the above path as the current directory.\n> UNC paths are not supported.  Defaulting to Windows directory.\n> * installing *source* package 'RMySQL' ...\n> ** package 'RMySQL' successfully unpacked and MD5 sums checked\n> ERROR: configuration failed for package 'RMySQL'\n> * removing 'P:/PersoServer/Programs/R/R-2.15.0/library/RMySQL'\n>\n> The downloaded source packages are in\n>          ?C:\\Documents and Settings\\julien.cuisinier\\Local Settings\\Temp\\RtmpszNeip\\downloaded_packages?\n> Warning messages:\n> 1: running command 'P:/PersoServer/Programs/R/R-2.15.0/bin/i386/R CMD INSTALL -l \"P:/PersoServer/Programs/R/R-2.15.0/library\"   C:\\DOCUME~1\\JULIEN~1.CUI\\LOCALS~1\\Temp\\RtmpszNeip/downloaded_packages/RMySQL_0.9-3.tar.gz' had status 1\n> 2: In install.packages(\"RMySQL\", type = \"source\") :\n>    installation of package ?RMySQL? had non-zero exit status\n>\n>\n> (2) I can't use tips like this one:\n> http://blog.tersmitten.nl/archives/1345\n>\n> simply because I can't install RTools.exe as I do not have admin rights\n> NB: I already changed the env. variable MYSQL_HOME but without success:\n>> Sys.getenv(\"MYSQL_HOME\")\n> [1] \"P:/PersoServer/Programs/XAMPP/mysql\"\n>\n>\n>\n> (2) So I thought to try & connect directly using DBI package, but I am having an error msge I do not understand (My apologies if this is basic, not expert at all on DB management)\n>> library(DBI)\n>> drv <- dbDriver(\"MYSQL\")\n> Error in do.call(as.character(drvName), list(...)) :\n>    could not find function \"MYSQL\"\n>\n> googling, I found the following but I do not get the answer from Prof Brian Ripley:\n> http://r.789695.n4.nabble.com/connecting-to-DB2-database-td827626.html\n>\n> I am guessing the \"driver package\" he refers to is RMySQL which I could not install in the first place... I tried to fiddle with the R files you have access once you extract the tar.gz source package under RMySQL\\R, but no luck\n>> source(\"zzz.R\")\n>> source(\"S4R.R\")\n>> source(\"dbObjectId.R\")\n>> source(\"MySQLSupport.R\")\n>> source(\"MySQL.R\")\n>> drv <- dbDriver(\"MYSQL\")\n> Error in do.call(as.character(drvName), list(...)) :\n>    could not find function \"MYSQL\"\n>\n> weird thing is that in the \"MySQL.R\" file from the source package downloaded there is a \"MYSQL\" function declared - I am guessing the error is somewhere else but R is not very helpful here (my own limitation of course...)\n>\n>\n> Any idea of where to go from here would be hugely appreciated!! Sorry for the long email.\n>\n>\n> Thanks & regards,\n> Julien\n>\n>\n>\n>\n>\n>> sessionInfo()\n> R version 2.15.0 (2012-03-30)\n> Platform: i386-pc-mingw32/i386 (32-bit)\n>\n> locale:\n> [1] LC_COLLATE=English_United Kingdom.1252  LC_CTYPE=English_United Kingdom.1252\n> [3] LC_MONETARY=English_United Kingdom.1252 LC_NUMERIC=C\n> [5] LC_TIME=English_United Kingdom.1252\n>\n> attached base packages:\n> [1] stats     graphics  grDevices utils     datasets  methods   base\n>\n> other attached packages:\n> [1] DBI_0.2-5\n>\n>   \t\t \t   \t\t   \t\t \t   \t\t   \t\t \t   \t\t\n> \t[[alternative HTML version deleted]]\n>\n>\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "On 25/06/2012 15:12, julien cuisinier wrote:\n>\n> Hi List,\n>\n>\n>\n> Just to update, I could find a zip online (I unfortunately lost the address & cannot find it anymore) RMySQL_0.8-0_for_MySQL_5.5.16.zi",
+      "thread_id": "thread-1f582b05ed5e",
+      "thread_depth": 2,
+      "month": "2012-06"
+    },
+    {
+      "id": "msg-e5a43ccda1c6",
+      "message_id": "<COL102-W58E425C55A8C24A47B1B058FE10@phx.gbl>",
+      "from_name": "julien cuisinier",
+      "from_email_hash": "daf7621407dddca0b21d886155be61a5abcd8715ee1d59f8130b8ccfa3dd5351",
+      "date": "2012-06-25T19:16:00+02:00",
+      "subject": "[R-sig-DB] Connect R to MySQL DB installed via XAMPP",
+      "subject_clean": "Connect R to MySQL DB installed via XAMPP",
+      "in_reply_to": "<4FE882B6.5020006@stats.ox.ac.uk>",
+      "references": [
+        "<COL102-W627344CF10264657E297B18FE10@phx.gbl>",
+        "<COL102-W189525958E0FC85A157F678FE10@phx.gbl>",
+        "<COL102-W9E84D4D5DDAD94419F6A58FE10@phx.gbl>",
+        "<4FE882B6.5020006@stats.ox.ac.uk>"
+      ],
+      "body_plain": "Thanks Brain for even answering my (too) long email. \n\nI did not mean to ask how to install windows source package - merely hoping that someone would have sucessfully connect R with MySQL (through XAMPP) without using RMySQL which I could not install \"off the shelve\", while showing I did some research & tried before jumping to the list.\n\nMost probably my email was messy / too long, apologies for the inconvenience\n\nRe RTools & how to use it, I believe I had simply not read proprely what it is for / how to use it - mea culpa.\n\n\n\nRgds,\nJulien\n\n\n\n> Date: Mon, 25 Jun 2012 16:24:38 +0100\n> From: ripley at stats.ox.ac.uk\n> To: r-sig-db at r-project.org\n> Subject: Re: [R-sig-DB] Connect R to MySQL DB installed via XAMPP\n> \n> On 25/06/2012 15:12, julien cuisinier wrote:\n> >\n> > Hi List,\n> >\n> >\n> >\n> > Just to update, I could find a zip online (I unfortunately lost the address & cannot find it anymore) RMySQL_0.8-0_for_MySQL_5.5.16.zip\n> >\n> > which when installed locally under R allowed me to connect... not ideal but at leats it works for the time being.\n> >\n> > Any feedback on my email / question is more than welcome\n> \n> You start from mendacious assumptions, and installing Windows source \n> packages is way off topic here.\n> \n> But you should not need administrative rights to install Rtools ....\n> \n> >\n> >\n> > Thanks & regards,\n> > Julien\n> >\n> >\n> >\n> > From: j_cuisinier at hotmail.com\n> > To: r-sig-db at r-project.org\n> > Subject: FW: Connect R to MySQL DB installed via XAMPP\n> > Date: Mon, 25 Jun 2012 13:46:27 +0200\n> >\n> >\n> >\n> >\n> >\n> >\n> >\n> >\n> >\n> >\n> > Hi List,\n> >\n> >\n> > On windows XP & R2.15. Session info below.\n> >\n> > I installed XAMPP on my machine - I can't install MYSQL on the C:\\Program file dir because no admin rights, so I installed XAMPP onto a personal directory...which I guess makes things slightly harder, but I am hopeful I am not thhe first one struggling on this!\n> >\n> > Any feedback  redirection / hints hugely appreciated\n> >\n> >\n> >\n> > (1) I tried to install RMySQL which I used successsfully on Linux in the past but it seems to be a trouble on Windows, no binary available on CRAN (anymore?) & when trying the \"type = 'source' \" option I get the following:\n> >\n> >> install.packages(\"RMySQL\",type=\"source\")\n> > trying URL 'http://cran.ma.imperial.ac.uk/src/contrib/RMySQL_0.9-3.tar.gz'\n> > Content type 'application/x-gzip' length 165363 bytes (161 Kb)\n> > opened URL\n> > downloaded 161 Kb\n> >\n> > '\\\\UKLonHome.HDS.Int\\Home$\\julien.cuisinier'\n> > CMD.EXE was started with the above path as the current directory.\n> > UNC paths are not supported.  Defaulting to Windows directory.\n> > * installing *source* package 'RMySQL' ...\n> > ** package 'RMySQL' successfully unpacked and MD5 sums checked\n> > ERROR: configuration failed for package 'RMySQL'\n> > * removing 'P:/PersoServer/Programs/R/R-2.15.0/library/RMySQL'\n> >\n> > The downloaded source packages are in\n> >          ?C:\\Documents and Settings\\julien.cuisinier\\Local Settings\\Temp\\RtmpszNeip\\downloaded_packages?\n> > Warning messages:\n> > 1: running command 'P:/PersoServer/Programs/R/R-2.15.0/bin/i386/R CMD INSTALL -l \"P:/PersoServer/Programs/R/R-2.15.0/library\"   C:\\DOCUME~1\\JULIEN~1.CUI\\LOCALS~1\\Temp\\RtmpszNeip/downloaded_packages/RMySQL_0.9-3.tar.gz' had status 1\n> > 2: In install.packages(\"RMySQL\", type = \"source\") :\n> >    installation of package ?RMySQL? had non-zero exit status\n> >\n> >\n> > (2) I can't use tips like this one:\n> > http://blog.tersmitten.nl/archives/1345\n> >\n> > simply because I can't install RTools.exe as I do not have admin rights\n> > NB: I already changed the env. variable MYSQL_HOME but without success:\n> >> Sys.getenv(\"MYSQL_HOME\")\n> > [1] \"P:/PersoServer/Programs/XAMPP/mysql\"\n> >\n> >\n> >\n> > (2) So I thought to try & connect directly using DBI package, but I am having an error msge I do not understand (My apologies if this is basic, not expert at all on DB management)\n> >> library(DBI)\n> >> drv <- dbDriver(\"MYSQL\")\n> > Error in do.call(as.character(drvName), list(...)) :\n> >    could not find function \"MYSQL\"\n> >\n> > googling, I found the following but I do not get the answer from Prof Brian Ripley:\n> > http://r.789695.n4.nabble.com/connecting-to-DB2-database-td827626.html\n> >\n> > I am guessing the \"driver package\" he refers to is RMySQL which I could not install in the first place... I tried to fiddle with the R files you have access once you extract the tar.gz source package under RMySQL\\R, but no luck\n> >> source(\"zzz.R\")\n> >> source(\"S4R.R\")\n> >> source(\"dbObjectId.R\")\n> >> source(\"MySQLSupport.R\")\n> >> source(\"MySQL.R\")\n> >> drv <- dbDriver(\"MYSQL\")\n> > Error in do.call(as.character(drvName), list(...)) :\n> >    could not find function \"MYSQL\"\n> >\n> > weird thing is that in the \"MySQL.R\" file from the source package downloaded there is a \"MYSQL\" function declared - I am guessing the error is somewhere else but R is not very helpful here (my own limitation of course...)\n> >\n> >\n> > Any idea of where to go from here would be hugely appreciated!! Sorry for the long email.\n> >\n> >\n> > Thanks & regards,\n> > Julien\n> >\n> >\n> >\n> >\n> >\n> >> sessionInfo()\n> > R version 2.15.0 (2012-03-30)\n> > Platform: i386-pc-mingw32/i386 (32-bit)\n> >\n> > locale:\n> > [1] LC_COLLATE=English_United Kingdom.1252  LC_CTYPE=English_United Kingdom.1252\n> > [3] LC_MONETARY=English_United Kingdom.1252 LC_NUMERIC=C\n> > [5] LC_TIME=English_United Kingdom.1252\n> >\n> > attached base packages:\n> > [1] stats     graphics  grDevices utils     datasets  methods   base\n> >\n> > other attached packages:\n> > [1] DBI_0.2-5\n> >\n> >   \t\t \t   \t\t   \t\t \t   \t\t   \t\t \t   \t\t\n> > \t[[alternative HTML version deleted]]\n> >\n> >\n> >\n> > _______________________________________________\n> > R-sig-DB mailing list -- R Special Interest Group\n> > R-sig-DB at r-project.org\n> > https://stat.ethz.ch/mailman/listinfo/r-sig-db\n> >\n> \n> \n> -- \n> Brian D. Ripley,                  ripley at stats.ox.ac.uk\n> Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\n> University of Oxford,             Tel:  +44 1865 272861 (self)\n> 1 South Parks Road,                     +44 1865 272866 (PA)\n> Oxford OX1 3TG, UK                Fax:  +44 1865 272595\n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n \t\t \t   \t\t  \n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Thanks Brain for even answering my (too) long email. \n\nI did not mean to ask how to install windows source package - merely hoping that someone would have sucessfully connect R with MySQL (through XAM",
+      "thread_id": "thread-1f582b05ed5e",
+      "thread_depth": 3,
+      "month": "2012-06"
+    },
+    {
+      "id": "msg-aea160ed99cf",
+      "message_id": "<CAFu_poELp5G=7vG0vRGZkVW2XT=R_32a5AXQGWw8h7PxcH+UiQ@mail.gmail.com>",
+      "from_name": "Boris Leroy",
+      "from_email_hash": "1a985cd2c757b124a01f9786d045091147c79380b120e68311d83165fd6b7b09",
+      "date": "2012-06-26T12:38:32+02:00",
+      "subject": "[R-sig-DB] Connect R to MySQL DB installed via XAMPP",
+      "subject_clean": "Connect R to MySQL DB installed via XAMPP",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi Julien,\n\nyes I managed to connect R to MySQL through XAMPP, on the basis of the\nRODBC package, because the other packages did not work properly.\nFurthermore, some functions in RODBC did not work properly, like\nsqlSave, and I could not obtain help for this.\nI therefore wrote my own functions on the basis of \"sqlQuery\".\n\nIt now works relatively well, so I would advise you to give a try to RODBC.\n\nRegards,\n\n--\nBoris Leroy,\nPhD Student,\nEquipe Biodiversit? et Gestion des Territoires,\nService du Patrimoine Naturel, MNHN\nUMR 7204 CERSP, MNHN\nUniversit? de Rennes 1\nCampus de Beaulieu, B?t. 25, 1er ?tage\n35042 Rennes cedex\n\n+33 (0) 2 23 23 68 05\n+33 (0) 6 66 02 13 27\n\n\n\n\n\n\n\nThanks Brain for even answering my (too) long email.\n\nI did not mean to ask how to install windows source package - merely\nhoping that someone would have sucessfully connect R with MySQL\n(through XAMPP) without using RMySQL which I could not install \"off\nthe shelve\", while showing I did some research & tried before jumping\nto the list.\n\nMost probably my email was messy / too long, apologies for the inconvenience\n\nRe RTools & how to use it, I believe I had simply not read proprely\nwhat it is for / how to use it - mea culpa.\n\n\n\nRgds,\nJulien\n\n\n\n> Date: Mon, 25 Jun 2012 16:24:38 +0100\n> From: ripley at stats.ox.ac.uk\n> To: r-sig-db at r-project.org\n> Subject: Re: [R-sig-DB] Connect R to MySQL DB installed via XAMPP\n>\n> On 25/06/2012 15:12, julien cuisinier wrote:\n> >\n> > Hi List,\n> >\n> >\n> >\n> > Just to update, I could find a zip online (I unfortunately lost the address & cannot find it anymore) RMySQL_0.8-0_for_MySQL_5.5.16.\nzip\n> >\n> > which when installed locally under R allowed me to connect... not ideal but at leats it works for the time being.\n> >\n> > Any feedback on my email / question is more than welcome\n>\n> You start from mendacious assumptions, and installing Windows source\n> packages is way off topic here.\n>\n> But you should not need administrative rights to install Rtools ....\n>\n> >\n> >\n> > Thanks & regards,\n> > Julien\n> >\n> >\n> >\n> > From: j_cuisinier at hotmail.com\n> > To: r-sig-db at r-project.org\n> > Subject: FW: Connect R to MySQL DB installed via XAMPP\n> > Date: Mon, 25 Jun 2012 13:46:27 +0200\n> >\n> >\n> >\n> >\n> >\n> >\n> >\n> >\n> >\n> >\n> > Hi List,\n> >\n> >\n> > On windows XP & R2.15. Session info below.\n> >\n> > I installed XAMPP on my machine - I can't install MYSQL on the C:\\Program file dir because no admin rights, so I installed XAMPP onto a personal directory...which I guess makes things slightly harder, but I am hopeful I am not thhe first one struggling on this!\n> >\n> > Any feedback ?redirection / hints hugely appreciated\n> >\n> >\n> >\n> > (1) I tried to install RMySQL which I used successsfully on Linux in the past but it seems to be a trouble on Windows, no binary available on CRAN (anymore?) & when trying the \"type = 'source' \" option I get the following:\n> >\n> >> install.packages(\"RMySQL\",type=\"source\")\n> > trying URL 'http://cran.ma.imperial.ac.uk/src/contrib/RMySQL_0.9-3.tar.gz'\n> > Content type 'application/x-gzip' length 165363 bytes (161 Kb)\n> > opened URL\n> > downloaded 161 Kb\n> >\n> > '\\\\UKLonHome.HDS.Int\\Home$\\julien.cuisinier'\n> > CMD.EXE was started with the above path as the current directory.\n> > UNC paths are not supported. ?Defaulting to Windows directory.\n> > * installing *source* package 'RMySQL' ...\n> > ** package 'RMySQL' successfully unpacked and MD5 sums checked\n> > ERROR: configuration failed for package 'RMySQL'\n> > * removing 'P:/PersoServer/Programs/R/R-2.15.0/library/RMySQL'\n> >\n> > The downloaded source packages are in\n> > ? ? ? ? ??C:\\Documents and Settings\\julien.cuisinier\\Local Settings\\Temp\\RtmpszNeip\\downloaded_packages?\n> > Warning messages:\n> > 1: running command 'P:/PersoServer/Programs/R/R-2.15.0/bin/i386/R CMD INSTALL -l \"P:/PersoServer/Programs/R/R-2.15.0/library\" ? C:\\DOCUME~1\\JULIEN~1.CUI\\LOCALS~1\\Temp\\RtmpszNeip/downloaded_packages/RMySQL_0.9-3.tar.gz' had status 1\n> > 2: In install.packages(\"RMySQL\", type = \"source\") :\n> > ? ?installation of package ?RMySQL? had non-zero exit status\n> >\n> >\n> > (2) I can't use tips like this one:\n> > http://blog.tersmitten.nl/archives/1345\n> >\n> > simply because I can't install RTools.exe as I do not have admin rights\n> > NB: I already changed the env. variable MYSQL_HOME but without success:\n> >> Sys.getenv(\"MYSQL_HOME\")\n> > [1] \"P:/PersoServer/Programs/XAMPP/mysql\"\n> >\n> >\n> >\n> > (2) So I thought to try & connect directly using DBI package, but I am having an error msge I do not understand (My apologies if this is basic, not expert at all on DB management)\n> >> library(DBI)\n> >> drv <- dbDriver(\"MYSQL\")\n> > Error in do.call(as.character(drvName), list(...)) :\n> > ? ?could not find function \"MYSQL\"\n> >\n> > googling, I found the following but I do not get the answer from Prof Brian Ripley:\n> > http://r.789695.n4.nabble.com/connecting-to-DB2-database-td827626.html\n> >\n> > I am guessing the \"driver package\" he refers to is RMySQL which I could not install in the first place... I tried to fiddle with the R files you have access once you extract the tar.gz source package under RMySQL\\R, but no luck\n> >> source(\"zzz.R\")\n> >> source(\"S4R.R\")\n> >> source(\"dbObjectId.R\")\n> >> source(\"MySQLSupport.R\")\n> >> source(\"MySQL.R\")\n> >> drv <- dbDriver(\"MYSQL\")\n> > Error in do.call(as.character(drvName), list(...)) :\n> > ? ?could not find function \"MYSQL\"\n> >\n> > weird thing is that in the \"MySQL.R\" file from the source package downloaded there is a \"MYSQL\" function declared - I am guessing the error is somewhere else but R is not very helpful here (my own limitation of course...)\n> >\n> >\n> > Any idea of where to go from here would be hugely appreciated!! Sorry for the long email.\n> >\n> >\n> > Thanks & regards,\n> > Julien\n> >\n> >\n> >\n> >\n> >\n> >> sessionInfo()\n> > R version 2.15.0 (2012-03-30)\n> > Platform: i386-pc-mingw32/i386 (32-bit)\n> >\n> > locale:\n> > [1] LC_COLLATE=English_United Kingdom.1252 ?LC_CTYPE=English_United Kingdom.1252\n> > [3] LC_MONETARY=English_United Kingdom.1252 LC_NUMERIC=C\n> > [5] LC_TIME=English_United Kingdom.1252\n> >\n> > attached base packages:\n> > [1] stats ? ? graphics ?grDevices utils ? ? datasets ?methods ? base\n> >\n> > other attached packages:\n> > [1] DBI_0.2-5\n> >\n> >\n> > ? ? [[alternative HTML version deleted]]\n> >\n> >\n> >\n> > _______________________________________________\n> > R-sig-DB mailing list -- R Special Interest Group\n> > R-sig-DB at r-project.org\n> > https://stat.ethz.ch/mailman/listinfo/r-sig-db\n> >\n>\n>\n> --\n> Brian D. Ripley, ? ? ? ? ? ? ? ? ?ripley at stats.ox.ac.uk\n> Professor of Applied Statistics, ?http://www.stats.ox.ac.uk/~ripley/\n> University of Oxford, ? ? ? ? ? ? Tel: ?+44 1865 272861 (self)\n> 1 South Parks Road, ? ? ? ? ? ? ? ? ? ? +44 1865 272866 (PA)\n> Oxford OX1 3TG, UK ? ? ? ? ? ? ? ?Fax: ?+44 1865 272595\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "Hi Julien,\n\nyes I managed to connect R to MySQL through XAMPP, on the basis of the\nRODBC package, because the other packages did not work properly.\nFurthermore, some functions in RODBC did not work pr",
+      "thread_id": "thread-aea160ed99cf",
+      "thread_depth": 0,
+      "month": "2012-06"
+    },
+    {
+      "id": "msg-a89c483d01ef",
+      "message_id": "<CAP01uR=R9PEgRfWBp7HNcXjUY0hphuk8ekxSu1jUkt=w9b8ofg@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2012-06-26T08:48:28-04:00",
+      "subject": "[R-sig-DB] Connect R to MySQL DB installed via XAMPP",
+      "subject_clean": "Connect R to MySQL DB installed via XAMPP",
+      "in_reply_to": "<CAFu_poELp5G=7vG0vRGZkVW2XT=R_32a5AXQGWw8h7PxcH+UiQ@mail.gmail.com>",
+      "references": [
+        "<CAFu_poELp5G=7vG0vRGZkVW2XT=R_32a5AXQGWw8h7PxcH+UiQ@mail.gmail.com>"
+      ],
+      "body_plain": "On Tue, Jun 26, 2012 at 6:38 AM, Boris Leroy <leroy.boris at gmail.com> wrote:\n> Hi Julien,\n>\n> yes I managed to connect R to MySQL through XAMPP, on the basis of the\n> RODBC package, because the other packages did not work properly.\n\nThe usual problem that users have with RMySQL is not that it does not\nwork properly but that users don't read the installation instructions\nthat come with it.  Instead rely on outdated or wrong information that\nthey have found on the internet.   The installation instructions are\nin the INSTALL file in the source tar.gz and that file is also linked\nto on the RMySQL CRAN home page\nhttp://cran.r-project.org/package=RMySQL via the Installation: link.\n\n-- \nStatistics & Software Consulting\nGKX Group, GKX Associates Inc.\ntel: 1-877-GKX-GROUP\nemail: ggrothendieck at gmail.com",
+      "body_snippet": "On Tue, Jun 26, 2012 at 6:38 AM, Boris Leroy <leroy.boris at gmail.com> wrote:\n> Hi Julien,\n>\n> yes I managed to connect R to MySQL through XAMPP, on the basis of the\n> RODBC package, because the othe",
+      "thread_id": "thread-aea160ed99cf",
+      "thread_depth": 1,
+      "month": "2012-06"
+    },
+    {
+      "id": "msg-38ee170d3dd7",
+      "message_id": "<COL102-W55FE21828D70DC0E4573258FE00@phx.gbl>",
+      "from_name": "julien cuisinier",
+      "from_email_hash": "daf7621407dddca0b21d886155be61a5abcd8715ee1d59f8130b8ccfa3dd5351",
+      "date": "2012-06-26T15:00:31+02:00",
+      "subject": "[R-sig-DB] Connect R to MySQL DB installed via XAMPP",
+      "subject_clean": "Connect R to MySQL DB installed via XAMPP",
+      "in_reply_to": "<CAP01uR=R9PEgRfWBp7HNcXjUY0hphuk8ekxSu1jUkt=w9b8ofg@mail.gmail.com>",
+      "references": [
+        "<CAFu_poELp5G=7vG0vRGZkVW2XT=R_32a5AXQGWw8h7PxcH+UiQ@mail.gmail.com>",
+        "<CAP01uR=R9PEgRfWBp7HNcXjUY0hphuk8ekxSu1jUkt=w9b8ofg@mail.gmail.com>"
+      ],
+      "body_plain": "Many thanks both for your feedback. \n\nIt must be said that the install of RMySQL on Windows is much more convoluted than what  R used us to...& it was working \"off the shelve\" (with the usual simple install.packkages())  in previous versions of R under windows, hence the confusion I think (mine at least).... \n\nsorry for the unecessary noise\n\nJulien\n\n\n> From: ggrothendieck at gmail.com\n> Date: Tue, 26 Jun 2012 08:48:28 -0400\n> To: leroy.boris at gmail.com\n> CC: r-sig-db at r-project.org\n> Subject: Re: [R-sig-DB] Connect R to MySQL DB installed via XAMPP\n> \n> On Tue, Jun 26, 2012 at 6:38 AM, Boris Leroy <leroy.boris at gmail.com> wrote:\n> > Hi Julien,\n> >\n> > yes I managed to connect R to MySQL through XAMPP, on the basis of the\n> > RODBC package, because the other packages did not work properly.\n> \n> The usual problem that users have with RMySQL is not that it does not\n> work properly but that users don't read the installation instructions\n> that come with it.  Instead rely on outdated or wrong information that\n> they have found on the internet.   The installation instructions are\n> in the INSTALL file in the source tar.gz and that file is also linked\n> to on the RMySQL CRAN home page\n> http://cran.r-project.org/package=RMySQL via the Installation: link.\n> \n> -- \n> Statistics & Software Consulting\n> GKX Group, GKX Associates Inc.\n> tel: 1-877-GKX-GROUP\n> email: ggrothendieck at gmail.com\n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n \t\t \t   \t\t  \n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Many thanks both for your feedback. \n\nIt must be said that the install of RMySQL on Windows is much more convoluted than what  R used us to...& it was working \"off the shelve\" (with the usual simple i",
+      "thread_id": "thread-aea160ed99cf",
+      "thread_depth": 2,
+      "month": "2012-06"
+    },
+    {
+      "id": "msg-e8dc57e55707",
+      "message_id": "<CAP01uRmJAF3LmE--qq7ymKOs6VUdbg57_QqiwmAhs3kB8vtxUw@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2012-06-26T09:52:38-04:00",
+      "subject": "[R-sig-DB] Connect R to MySQL DB installed via XAMPP",
+      "subject_clean": "Connect R to MySQL DB installed via XAMPP",
+      "in_reply_to": "<COL102-W55FE21828D70DC0E4573258FE00@phx.gbl>",
+      "references": [
+        "<CAFu_poELp5G=7vG0vRGZkVW2XT=R_32a5AXQGWw8h7PxcH+UiQ@mail.gmail.com>",
+        "<CAP01uR=R9PEgRfWBp7HNcXjUY0hphuk8ekxSu1jUkt=w9b8ofg@mail.gmail.com>",
+        "<COL102-W55FE21828D70DC0E4573258FE00@phx.gbl>"
+      ],
+      "body_plain": "On Tue, Jun 26, 2012 at 9:00 AM, julien cuisinier\n<j_cuisinier at hotmail.com> wrote:\n> Many thanks both for your feedback.\n>\n> It must be said that the install of RMySQL on Windows is much more\n> convoluted than what? R used us to...& it was working \"off the shelve\" (with\n> the usual simple install.packkages())? in previous versions of R under\n> windows, hence the confusion I think (mine at least)....\n>\n> sorry for the unecessary noise\n>\n\nRMySQL has to be compiled against the same version of MySQL that is in\nuse.  Previously RMySQL was pre-compiled against a specific version of\nMySQL and it only worked for users with that version of MySQL.  This\ncaused no end of problems since there are many versions of MySQL in\nuse and it only worked for that one.\n\nNow that there is no binary and everyone must compile it from source\nthere are no longer any version synchronization problems.  The main\nsource of problems now is from people who do not read the installation\ninstructions that come with the package. It would be possible to\ncompile a binary for every version of MySQL out there but that is just\ntoo much work for a free project and even then you would probably find\npeople downloading the wrong binary and would lead to no end of\nsupport problems with figuring out which binary goes with which\ninstallation.\n\nNow the user simply sets an environment variable to tell it where to\nfind the MySQL dll's and then installs RMySQL from source.  As a\nresult there are never any such issues as compiling it against the\nMySQL dll's on your system ensures that everything is in sync.   That\ncompletely clears up the many problems that previously existed --\nprovided one actually reads the installation instructions that come\nwith the package.\n\nSuggest you head over to the RMySQL CRAN page at\nhttp://cran.r-project.org/package=RMySQL and actually read the\ninstallation instructions (under the Installation: link)..  They are\nalso in the INSTALL file in the source distribution.\n\n-- \nStatistics & Software Consulting\nGKX Group, GKX Associates Inc.\ntel: 1-877-GKX-GROUP\nemail: ggrothendieck at gmail.com",
+      "body_snippet": "On Tue, Jun 26, 2012 at 9:00 AM, julien cuisinier\n<j_cuisinier at hotmail.com> wrote:\n> Many thanks both for your feedback.\n>\n> It must be said that the install of RMySQL on Windows is much more\n> con",
+      "thread_id": "thread-aea160ed99cf",
+      "thread_depth": 3,
+      "month": "2012-06"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-57bffd4f79bb",
+      "subject": "calloc error issued by sqlQuery",
+      "message_count": 4,
+      "participants": [
+        "Dirk Eddelbuettel",
+        "Idit Buch",
+        "Seth Falcon"
+      ],
+      "started": "2012-06-03T12:04:58+00:00",
+      "last_reply": "2012-06-04T09:51:13+00:00",
+      "root_message_id": "msg-57bffd4f79bb"
+    },
+    {
+      "id": "thread-ac0173b21828",
+      "subject": "Using LDAP connection",
+      "message_count": 4,
+      "participants": [
+        "Dirk Eddelbuettel",
+        "Sean Davis",
+        "Slawin, Scott"
+      ],
+      "started": "2012-06-07T08:52:02-05:00",
+      "last_reply": "2012-06-07T09:55:11-05:00",
+      "root_message_id": "msg-ac0173b21828"
+    },
+    {
+      "id": "thread-bd41dd09e3fe",
+      "subject": "Database R Package",
+      "message_count": 5,
+      "participants": [
+        "Jim Jones",
+        "Julien Moeys",
+        "Prof Brian Ripley"
+      ],
+      "started": "2012-06-17T11:59:54+02:00",
+      "last_reply": "2012-06-18T21:30:16+02:00",
+      "root_message_id": "msg-bd41dd09e3fe"
+    },
+    {
+      "id": "thread-1f582b05ed5e",
+      "subject": "Connect R to MySQL DB installed via XAMPP",
+      "message_count": 4,
+      "participants": [
+        "Prof Brian Ripley",
+        "julien cuisinier"
+      ],
+      "started": "2012-06-25T13:46:27+02:00",
+      "last_reply": "2012-06-25T19:16:00+02:00",
+      "root_message_id": "msg-1f582b05ed5e"
+    },
+    {
+      "id": "thread-aea160ed99cf",
+      "subject": "Connect R to MySQL DB installed via XAMPP",
+      "message_count": 4,
+      "participants": [
+        "Boris Leroy",
+        "Gabor Grothendieck",
+        "julien cuisinier"
+      ],
+      "started": "2012-06-26T12:38:32+02:00",
+      "last_reply": "2012-06-26T09:52:38-04:00",
+      "root_message_id": "msg-aea160ed99cf"
+    }
+  ]
+}

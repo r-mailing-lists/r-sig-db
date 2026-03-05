@@ -1,0 +1,82 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2006-05",
+  "messages": [
+    {
+      "id": "msg-6a195e021469",
+      "message_id": "<389c43e40605221502h24e162dekb9be4bad66d99f36@mail.gmail.com>",
+      "from_name": "Mark Van De Vyver",
+      "from_email_hash": "cb694ec54c8d470c3d61308ae68908041d41c06053d6b2dabd211e2f9e01f73a",
+      "date": "2006-05-23T08:02:17+10:00",
+      "subject": "[R-sig-DB] Time taken by dbExistsTable()",
+      "subject_clean": "Time taken by dbExistsTable()",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\nFristly thanks for the efforts put into the DBI package for R-project.\n This has enhanced my use of R considerably - several colleagues raise\ntheir eye brows when I indicate I no-longer use SAS.....\n\nMy set-up:\nWindows-xp\nR-2.2.1\nR-MySQL package.\nMySQL 5.0.19-nt (using TCP-IP connections)\n\nI will highlight that the db in question has 10,000+ tables, so the\nfollowing may not be of general interest/concern.\n\nI have noticed that considerable time is used by the function\ndbExistsTable(), about 5 times more than the SQL 'show table' work\naround -  in my case this translates to about a 6 hour saving.\nThis of course may be due to my 'set-up' rather than dbExistsTable()?\n\nIs it possible my set-up is at fault?\nIs it possible to improve this time further using R-DBI?\n\nThe timing results are shown below.\n\nRegards\nMark\n\nsystem.time(\n\tfor(tbli in tblunionlist[1:15]){\n\t\ttblExist <- dbExistsTable(dbcon, tbli)\n\t}\n)\n\nsystem.time(\n\tfor(tbli in tblunionlist[1:15]){\n\t\tmyshowstring<-paste(\"SHOW TABLE STATUS FROM `myDB` LIKE '\",tbli, \"'\", sep=\"\")\n\t\tmytblstatus<-mysqlQuickSQL( dbcon, myshowstring )\n\t\tif( identical( identical(mytblstatus,data.frame(NULL)),F) ) {\n\t\t\ttblExist <- TRUE\n\t\t}\n\t}\n)\n\n\n[1]  4.96  1.52 29.20    NA    NA\n[1] 1.99 0.30 5.64   NA   NA",
+      "body_snippet": "Hi,\nFristly thanks for the efforts put into the DBI package for R-project.\n This has enhanced my use of R considerably - several colleagues raise\ntheir eye brows when I indicate I no-longer use SAS...",
+      "thread_id": "thread-6a195e021469",
+      "thread_depth": 0,
+      "month": "2006-05"
+    },
+    {
+      "id": "msg-6acf5b462817",
+      "message_id": "<389c43e40605221536h452fd325g403800fb669b056c@mail.gmail.com>",
+      "from_name": "Mark Van De Vyver",
+      "from_email_hash": "cb694ec54c8d470c3d61308ae68908041d41c06053d6b2dabd211e2f9e01f73a",
+      "date": "2006-05-23T08:36:39+10:00",
+      "subject": "[R-sig-DB] Repeated errors with dbReadTable and one particular table",
+      "subject_clean": "Repeated errors with dbReadTable and one particular table",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi\nThanks for the effort put into developing the DBI and RMySQL packages.\n\nMy set up:\nWindows xp (latest patches)\nMySQL 5.0.18- nt (and 5.0.19-nt) TCP-ip connections\nR 2.2.1\nDBI built with R 2.2.1\nRMySQL 0.5-7\n\nI have come across a problem when I use dbReadTable() to access one of\nmy database tables.\nThere are many (10,000+) tables on this DB but I have on always seen\nthe same problem with this table and no other.  The relevant code has\nbeen run on three quite different occasions. E.g after a full disk\ndefrag and chkdsk /f, and after creating the tables from 'scratch'\ni.e. from a 'load file'.\n\nI can run 'SHOW TABLE STATUS FROM' and 'SELECT * FROM' against this\ntable using the MySQL command line tool - no errors are indicated.  I\ncan also access/view the whole table using the MySQL QueryBrowser and\nNavicat's query tool.  Using Navicat's tools I have run their \"check\ntables\" ( normal and extended ) both return an OK indicator.\n\nThis makes me suspect there may be something happening in dbReadTables\nor the RMySQL package?\n\nThis does not seem to be 'R-session' or 'MySQL-connection' related,\ngiven that if I just skip the table in question I can process all\nremaining tables - without quiting R, without reestablishing the\nconnection to the MySQL server.  Further, the table is at the smaller\nend of the spectrum, 147 rows, ave row length = 90 bytes.\nThe data is such that I can't post this table on the web, but can send\nthis table to a DBI or RMySQL developer if they wish.\n\nThe R command used and it's output are below.\n\nRegards\nMark\n\ndbReadTable( dbcon, tbli, row.names=\"tid\" )\n\nError in mysqlExecStatement(conn, statement, ...) :\n\tRS-DBI driver: (could not run statement: You have an error in your\nSQL syntax; check the manual that corresponds to your MySQL server\nversion for the right syntax to use near '6706e2_aggtradesquotes' at\nline 1)",
+      "body_snippet": "Hi\nThanks for the effort put into developing the DBI and RMySQL packages.\n\nMy set up:\nWindows xp (latest patches)\nMySQL 5.0.18- nt (and 5.0.19-nt) TCP-ip connections\nR 2.2.1\nDBI built with R 2.2.1\nRMy",
+      "thread_id": "thread-6acf5b462817",
+      "thread_depth": 0,
+      "month": "2006-05"
+    },
+    {
+      "id": "msg-0600e5f149bc",
+      "message_id": "<Pine.LNX.4.64.0605230730110.17904@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2006-05-23T07:32:37+01:00",
+      "subject": "[R-sig-DB] Repeated errors with dbReadTable and one particular table",
+      "subject_clean": "Repeated errors with dbReadTable and one particular table",
+      "in_reply_to": "<389c43e40605221536h452fd325g403800fb669b056c@mail.gmail.com>",
+      "references": [
+        "<389c43e40605221536h452fd325g403800fb669b056c@mail.gmail.com>"
+      ],
+      "body_plain": "Both your issues are with the RMySQL package, and the R posting guide asks \nthat you contact the maintainer (who does read this list).\n\nI think you cannot expect a response on this list unless the maintainer \ntells you that he is unable to help, AND that we have a means to reproduce \nthe problems.\n\nSee  http://www.r-project.org/posting-guide.html\n\n\nOn Tue, 23 May 2006, Mark Van De Vyver wrote:\n\n> Hi\n> Thanks for the effort put into developing the DBI and RMySQL packages.\n>\n> My set up:\n> Windows xp (latest patches)\n> MySQL 5.0.18- nt (and 5.0.19-nt) TCP-ip connections\n> R 2.2.1\n> DBI built with R 2.2.1\n> RMySQL 0.5-7\n>\n> I have come across a problem when I use dbReadTable() to access one of\n> my database tables.\n> There are many (10,000+) tables on this DB but I have on always seen\n> the same problem with this table and no other.  The relevant code has\n> been run on three quite different occasions. E.g after a full disk\n> defrag and chkdsk /f, and after creating the tables from 'scratch'\n> i.e. from a 'load file'.\n>\n> I can run 'SHOW TABLE STATUS FROM' and 'SELECT * FROM' against this\n> table using the MySQL command line tool - no errors are indicated.  I\n> can also access/view the whole table using the MySQL QueryBrowser and\n> Navicat's query tool.  Using Navicat's tools I have run their \"check\n> tables\" ( normal and extended ) both return an OK indicator.\n>\n> This makes me suspect there may be something happening in dbReadTables\n> or the RMySQL package?\n>\n> This does not seem to be 'R-session' or 'MySQL-connection' related,\n> given that if I just skip the table in question I can process all\n> remaining tables - without quiting R, without reestablishing the\n> connection to the MySQL server.  Further, the table is at the smaller\n> end of the spectrum, 147 rows, ave row length = 90 bytes.\n> The data is such that I can't post this table on the web, but can send\n> this table to a DBI or RMySQL developer if they wish.\n>\n> The R command used and it's output are below.\n>\n> Regards\n> Mark\n>\n> dbReadTable( dbcon, tbli, row.names=\"tid\" )\n>\n> Error in mysqlExecStatement(conn, statement, ...) :\n> \tRS-DBI driver: (could not run statement: You have an error in your\n> SQL syntax; check the manual that corresponds to your MySQL server\n> version for the right syntax to use near '6706e2_aggtradesquotes' at\n> line 1)\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n>\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "Both your issues are with the RMySQL package, and the R posting guide asks \nthat you contact the maintainer (who does read this list).\n\nI think you cannot expect a response on this list unless the mai",
+      "thread_id": "thread-6acf5b462817",
+      "thread_depth": 1,
+      "month": "2006-05"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-6a195e021469",
+      "subject": "Time taken by dbExistsTable()",
+      "message_count": 1,
+      "participants": [
+        "Mark Van De Vyver"
+      ],
+      "started": "2006-05-23T08:02:17+10:00",
+      "last_reply": "2006-05-23T08:02:17+10:00",
+      "root_message_id": "msg-6a195e021469"
+    },
+    {
+      "id": "thread-6acf5b462817",
+      "subject": "Repeated errors with dbReadTable and one particular table",
+      "message_count": 2,
+      "participants": [
+        "Mark Van De Vyver",
+        "Prof Brian Ripley"
+      ],
+      "started": "2006-05-23T08:36:39+10:00",
+      "last_reply": "2006-05-23T07:32:37+01:00",
+      "root_message_id": "msg-6acf5b462817"
+    }
+  ]
+}

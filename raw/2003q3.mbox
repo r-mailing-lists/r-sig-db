@@ -1,0 +1,160 @@
+From edd @end|ng |rom deb|@n@org  Wed Sep 10 16:24:32 2003
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Wed, 10 Sep 2003 09:24:32 -0500
+Subject: [R-sig-DB] Sybase anyone?
+Message-ID: <20030910142432.GA18822@sonny.eddelbuettel.com>
+
+
+Sig-DBers,
+
+We're currently trying to figure how to let R (on Solaris) talk to ybase (on
+Solaris).  As there is (AFAIK) no R DBI interface package for Sybase, we
+tried RODBC with unixODBC and FreeTDS. We got halfway there -- we connect
+and get table info, but no actual content.
+
+We now have two choices: debug the both the FreeTDS and the unixODBC layer,
+or start fresh against CTlib.  
+
+Has anybody here tried either?  Or is there a fundamental reason I am
+missing about why R doesn't play with Sybase?
+
+Thanks for any and all pointers,  Dirk
+
+-- 
+Those are my principles, and if you don't like them... well, I have others.
+                                                -- Groucho Marx
+
+
+
+From Det|e|@Steuer @end|ng |rom un|bw-h@mburg@de  Wed Sep 10 16:51:41 2003
+From: Det|e|@Steuer @end|ng |rom un|bw-h@mburg@de (Detlef Steuer)
+Date: Wed, 10 Sep 2003 16:51:41 +0200
+Subject: [R-sig-DB] Sybase anyone?
+In-Reply-To: <20030910142432.GA18822@sonny.eddelbuettel.com>
+References: <20030910142432.GA18822@sonny.eddelbuettel.com>
+Message-ID: <20030910165141.4ba72165.steuer@unibw-hamburg.de>
+
+
+> 
+> Sig-DBers,
+> 
+> We're currently trying to figure how to let R (on Solaris) talk to ybase (on
+> Solaris).  As there is (AFAIK) no R DBI interface package for Sybase, we
+> tried RODBC with unixODBC and FreeTDS. We got halfway there -- we connect
+> and get table info, but no actual content.
+
+That seems familiar ...
+
+> 
+> We now have two choices: debug the both the FreeTDS and the unixODBC layer,
+> or start fresh against CTlib.  
+> 
+> Has anybody here tried either?  Or is there a fundamental reason I am
+> missing about why R doesn't play with Sybase?
+
+My way was to build a communication pipeline using Perl::DBI.
+A bit ugly, but did what it should do.
+
+Cu
+detlef
+
+
+> 
+> Thanks for any and all pointers,  Dirk
+> 
+> -- 
+> Those are my principles, and if you don't like them... well, I have others.
+>                                                 -- Groucho Marx
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://www.stat.math.ethz.ch/mailman/listinfo/r-sig-db
+> 
+
+
+-- 
+"The whole problem with the world is that fools and fanatics are always
+ so certain of themselves, but wiser people so full of doubts." Russell
+
+Detlef Steuer --- http://fawn.unibw-hamburg.de/steuer.html
+***** Encrypted mail preferred *****
+
+
+
+From edd @end|ng |rom deb|@n@org  Wed Sep 10 18:29:20 2003
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Wed, 10 Sep 2003 11:29:20 -0500
+Subject: [R-sig-DB] Sybase anyone?
+In-Reply-To: <20030910142432.GA18822@sonny.eddelbuettel.com>
+References: <20030910142432.GA18822@sonny.eddelbuettel.com>
+Message-ID: <20030910162920.GA19911@sonny.eddelbuettel.com>
+
+On Wed, Sep 10, 2003 at 09:24:32AM -0500, Dirk Eddelbuettel wrote:
+> We're currently trying to figure how to let R (on Solaris) talk to ybase (on
+> Solaris).  As there is (AFAIK) no R DBI interface package for Sybase, we
+> tried RODBC with unixODBC and FreeTDS. We got halfway there -- we connect
+> and get table info, but no actual content.
+
+As so often, we figured it out just after I sent this. The key is that in
+
+     odbcConnect(dsn, uid = "", pwd = "", case = "nochange",
+                      believeNRows = TRUE)
+
+believeNRows needs to be set to FALSE, and you're in business. That's all.
+
+For the record, and in case somebody else will retrace the same steps, here
+is what we did on Solaris 8 with current versions of R, RODBC, FreeTDS and
+unixODBC:
+
+i)   unixODBC-2.2.6 
+     ./configure --prefix=/usr/local/unixODBC-2.2.6 \
+     --x-libraries=/usr/openwin/lib --x-includes=/usr/openwin/include
+
+
+ii)  freetds-0.61
+     ./configure --prefix=/usr/local/freetds-0.61 --with-tdsver=4.2 \
+     --with-unixodbc=/usr/local/unixODBC-2.2.6
+
+iii) freetds.conf file
+
+     [FOO]
+        host = xxx.xxx.xxx.xxx
+        port = 2510
+        tds version = 4.2
+        database = FooDB
+
+iv)  odbc.ini
+
+     [FOODSN]
+     Driver = /usr/local/freetds-0.61/lib/libtdsodbc.so
+     #the below line is a valid name in freetds.conf
+     Servername = FOO
+     Server = xxx.xxx.xxx.xxx
+     Port = 2510
+     TDS_Version = 4.2
+     Database = FooDB
+
+     [Default]
+     Driver          = /usr/local/freetds-0.61/lib/libtdsodbc.so
+
+v)   odbcinst.ini
+
+     [SYBASE]
+     Driver             = /usr/local/freetds-0.61/lib/libtdsodbc.so
+     Description        = TDS Sybase Driver
+     FileUsage          = 1
+
+     [Default]
+     Driver          = /usr/local/freetds-0.61/lib/libtdsodbc.so
+
+
+
+Hth, Dirk
+
+-- 
+Those are my principles, and if you don't like them... well, I have others.
+                                                -- Groucho Marx
+
+
+

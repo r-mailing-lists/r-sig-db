@@ -1,0 +1,504 @@
+From b@te@ @end|ng |rom @t@t@w|@c@edu  Tue Nov 19 22:43:56 2002
+From: b@te@ @end|ng |rom @t@t@w|@c@edu (Douglas Bates)
+Date: 19 Nov 2002 15:43:56 -0600
+Subject: [R-sig-DB] DBI driver for PostgreSQL?
+Message-ID: <6ru1idfd5v.fsf@bates5.stat.wisc.edu>
+
+Is there an R DBI-compliant driver for PostgreSQL?
+
+
+
+From dj @end|ng |rom re@e@rch@be||-|@b@@com  Tue Nov 19 23:31:37 2002
+From: dj @end|ng |rom re@e@rch@be||-|@b@@com (David James)
+Date: Tue, 19 Nov 2002 17:31:37 -0500
+Subject: [R-sig-DB] DBI driver for PostgreSQL?
+In-Reply-To: <6ru1idfd5v.fsf@bates5.stat.wisc.edu>; from bates@stat.wisc.edu on Tue, Nov 19, 2002 at 03:43:56PM -0600
+References: <6ru1idfd5v.fsf@bates5.stat.wisc.edu>
+Message-ID: <20021119173137.D19164@jessie.research.bell-labs.com>
+
+Douglas Bates wrote:
+> Is there an R DBI-compliant driver for PostgreSQL?
+
+Yes, as of DBI 0.1-2.  See Tim Keitt's packages 
+Rdbi and Rdbi.PgSQL at sourceforge.com.
+
+--
+David
+
+>
+
+
+
+From edd @end|ng |rom deb|@n@org  Wed Nov 20 04:26:16 2002
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Tue, 19 Nov 2002 21:26:16 -0600
+Subject: [R-sig-DB] DBI driver for PostgreSQL?
+In-Reply-To: <20021119173137.D19164@jessie.research.bell-labs.com>
+References: <6ru1idfd5v.fsf@bates5.stat.wisc.edu> <20021119173137.D19164@jessie.research.bell-labs.com>
+Message-ID: <20021120032616.GA6849@sonny.eddelbuettel.com>
+
+On Tue, Nov 19, 2002 at 05:31:37PM -0500, David James wrote:
+> Douglas Bates wrote:
+> > Is there an R DBI-compliant driver for PostgreSQL?
+> 
+> Yes, as of DBI 0.1-2.  See Tim Keitt's packages 
+> Rdbi and Rdbi.PgSQL at sourceforge.com.
+
+I am confused. DBI is now at CRAN and at 0.1.4.
+
+Rdbi and Rdbi.PgSQL are still at 0.1.2 -- and it appears that Rdbi.PgSQL
+does not want to play with DBI. Is that right?
+
+> library(DBI)
+> library(Rdbi.PgSQL)
+Loading required package: Rdbi
+Error in firstlib(which.lib.loc, package) :
+        Could not load package Rdbi
+	In addition: Warning message:
+	There is no package called Rdbi' in: library(package, char = TRUE,
+logical = TRUE, warn.conflicts = warn.conflicts,
+Error in library(Rdbi.PgSQL) : .First.lib failed
+
+Should I patch Rdbi.PgSQL to work load DBI instead?
+
+Dirk
+
+-- 
+Prediction is very difficult, especially about the future. 
+				             -- Niels Bohr
+
+
+
+From dj @end|ng |rom re@e@rch@be||-|@b@@com  Wed Nov 20 14:51:41 2002
+From: dj @end|ng |rom re@e@rch@be||-|@b@@com (David James)
+Date: Wed, 20 Nov 2002 08:51:41 -0500
+Subject: [R-sig-DB] DBI driver for PostgreSQL?
+In-Reply-To: <20021120032616.GA6849@sonny.eddelbuettel.com>; from edd@debian.org on Tue, Nov 19, 2002 at 09:26:16PM -0600
+References: <6ru1idfd5v.fsf@bates5.stat.wisc.edu> <20021119173137.D19164@jessie.research.bell-labs.com> <20021120032616.GA6849@sonny.eddelbuettel.com>
+Message-ID: <20021120085141.A9793@jessie.research.bell-labs.com>
+
+That's correct.  Rdbi.PGSQL requires Rdbi, not DBI.
+
+Dirk Eddelbuettel wrote:
+> On Tue, Nov 19, 2002 at 05:31:37PM -0500, David James wrote:
+> > Douglas Bates wrote:
+> > > Is there an R DBI-compliant driver for PostgreSQL?
+> > 
+> > Yes, as of DBI 0.1-2.  See Tim Keitt's packages 
+> > Rdbi and Rdbi.PgSQL at sourceforge.com.
+> 
+> I am confused. DBI is now at CRAN and at 0.1.4.
+> 
+> Rdbi and Rdbi.PgSQL are still at 0.1.2 -- and it appears that Rdbi.PgSQL
+> does not want to play with DBI. Is that right?
+> 
+> > library(DBI)
+> > library(Rdbi.PgSQL)
+> Loading required package: Rdbi
+> Error in firstlib(which.lib.loc, package) :
+>         Could not load package Rdbi
+> 	In addition: Warning message:
+> 	There is no package called Rdbi' in: library(package, char = TRUE,
+> logical = TRUE, warn.conflicts = warn.conflicts,
+> Error in library(Rdbi.PgSQL) : .First.lib failed
+> 
+> Should I patch Rdbi.PgSQL to work load DBI instead?
+> 
+> Dirk
+> 
+> -- 
+> Prediction is very difficult, especially about the future. 
+> 				             -- Niels Bohr
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> http://www.stat.math.ethz.ch/mailman/listinfo/r-sig-db
+
+-- 
+David A. James
+Statistics Research, Room 2C-253            Phone:  (908) 582-3082       
+Bell Labs, Lucent Technologies              Fax:    (908) 582-3340
+Murray Hill, NJ 09794-0636
+
+
+
+From edd @end|ng |rom deb|@n@org  Wed Nov 20 15:36:23 2002
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Wed, 20 Nov 2002 08:36:23 -0600
+Subject: [R-sig-DB] DBI driver for PostgreSQL?
+Message-ID: <E18EVxn-00056R-00@sonny.eddelbuettel.com>
+
+
+> That's correct.  Rdbi.PGSQL requires Rdbi, not DBI.
+
+So allow me to repeat Doug's question:   
+
+   Is there an R DBI-compliant driver for PostgreSQL?
+   
+I am getting confused between DBI and in DBI-on-CRAN and DBI as 
+in what's-really-called-RDBI-and-lives-on-sourceforge ?
+
+Was RDBI an early prototype or fork of DBI?  What is needed
+to merge them?  I'd love to help, and though I have code a 
+fair amount I have very little C coding experience when it
+comes to DBMS.
+
+Dirk
+
+
+-- 
+According to the latest figures, 43% of all signatures are totally worthless.
+
+
+
+From dj @end|ng |rom re@e@rch@be||-|@b@@com  Wed Nov 20 17:24:14 2002
+From: dj @end|ng |rom re@e@rch@be||-|@b@@com (David James)
+Date: Wed, 20 Nov 2002 11:24:14 -0500
+Subject: [R-sig-DB] DBI driver for PostgreSQL?
+In-Reply-To: <E18EVxn-00056R-00@sonny.eddelbuettel.com>; from edd@debian.org on Wed, Nov 20, 2002 at 08:36:23AM -0600
+References: <E18EVxn-00056R-00@sonny.eddelbuettel.com>
+Message-ID: <20021120112414.B9793@jessie.research.bell-labs.com>
+
+Dirk Eddelbuettel wrote:
+> 
+> 
+> > That's correct.  Rdbi.PGSQL requires Rdbi, not DBI.
+> 
+> So allow me to repeat Doug's question:   
+> 
+>    Is there an R DBI-compliant driver for PostgreSQL?
+>    
+> I am getting confused between DBI and in DBI-on-CRAN and DBI as 
+> in what's-really-called-RDBI-and-lives-on-sourceforge ?
+
+Yes, IMHO there's a DBI-compliant driver for PostgreSQL, but read on.  
+Some points that I hope will clarify the issue:
+
+(1) There is one generic API (as defined by the R-SIG-DB) for database 
+    interfaces independent of packages and DBMS.
+
+(2) Both packages Rdbi and DBI are implementations of the same API
+    (except for minor changes).  These packages provide *only* the
+    generic functions and class definitions (they do not work with 
+    any DBMS).  The package Rdbi uses version 3 classes and methods, 
+    the package DBI uses version 4 style classes and methods.
+
+    One obvious analogy is ODBC, unixODBC, iOdbc and Microsoft's ODBC.
+    Generically, ODBC is a standard API conforming to bodies such
+    as the ISO, ANSI, X, etc., and unixODBC/iODBC/MS ODBC are different
+    implementations of that one API.
+
+    Just like unixODBC and iODBC are different implementations of
+    one ODBC API, the packages Rdbi and DBI are implementations 
+    of the one API defined by the R-SIG-DB (and still evolving).
+
+    (Perhaps we should call the API something other than DBI, say
+    DB-API?)
+
+(3) Users do not decide which of the Rdbi or DBI package to use (nor
+    they should care).  Developers of R/DBMS drivers do.
+
+    If you need to connect to PostgreSQL, use the packages that the
+    developer requires, in this case Rdbi and RPgSQL.  If you need
+    to connect to MySQL, use RMySQL with DBI.  And so on.
+
+> 
+> Was RDBI an early prototype or fork of DBI?  What is needed
+> to merge them?  I'd love to help, and though I have code a 
+> fair amount I have very little C coding experience when it
+> comes to DBMS.
+
+No, just a different implementation -- see (2) above.
+
+It would be great if you could help.  I think that Tim Keitt, the 
+RPgSQL developer, would like to pass on the maintance of RPgSQL,
+and since he's done a very nice job with RPgSQL it may not be
+too difficult.  You two may want to chat some more.
+
+
+> 
+> ...
+> 
+
+--
+David
+
+
+
+From @@rthur67 @end|ng |rom y@hoo@com  Thu Dec 19 17:21:12 2002
+From: @@rthur67 @end|ng |rom y@hoo@com (Stephen Arthur)
+Date: Thu, 19 Dec 2002 08:21:12 -0800 (PST)
+Subject: [R-sig-DB] ROracle: Oracle database interface for R
+Message-ID: <20021219162112.87942.qmail@web11103.mail.yahoo.com>
+
+
+
+From @@rthur67 @end|ng |rom y@hoo@com  Thu Dec 19 17:39:10 2002
+From: @@rthur67 @end|ng |rom y@hoo@com (Stephen Arthur)
+Date: Thu, 19 Dec 2002 08:39:10 -0800 (PST)
+Subject: [R-sig-DB] ROracle: Oracle database interface for R
+Message-ID: <20021219163910.23128.qmail@web11104.mail.yahoo.com>
+
+Hi,
+
+I use an Oracle 8.0.6 database (later to be 9i) on
+Windows NT 4.0.  I want to use the Oracle database
+with R using the ROracle package.
+
+However, I am having trouble installing the ROracle
+package on my machine.  Is ROracle for use on Windows
+operating systems?
+
+The downloaded file is called ROracle_0.4-0.tar.gz
+
+When I try to load ROracle package internally from R,
+using options:
+
+1) "Install packages from CRAN..." the ROracle package
+does not appear in the list as a loadable package.
+
+2) "Install package from zip file..." the R tool is
+looking for files with extension ".zip" when the file
+I have downloaded has a UNIX-like extension ".tar.gz".
+
+Is there another way to load ROracle package into R? 
+Is ROracle usable within a Windows environment?
+
+I would really like to get R linked to Oracle.
+
+Thanks for your help,
+
+Stephen
+
+
+
+From ripiey m@iii@g oii st@ts@ox@@c@uk  Thu Dec 19 17:44:59 2002
+From: ripiey m@iii@g oii st@ts@ox@@c@uk (ripiey m@iii@g oii st@ts@ox@@c@uk)
+Date: Thu, 19 Dec 2002 16:44:59 +0000 (GMT)
+Subject: [R-sig-DB] ROracle: Oracle database interface for R
+In-Reply-To: <20021219163910.23128.qmail@web11104.mail.yahoo.com>
+Message-ID: <Pine.LNX.4.31.0212191642090.4635-100000@gannet.stats>
+
+You need to INSTALL a source package: see the rw-FAQ.
+Your problem is a basic lack of understanding of R packages, and I do
+suggest you practice with a few simpler ones first.
+
+You will need the Oracle client libraries as I recall (which I don't
+have for Windows, or even know if they are available for Windows).
+
+>From Windows I think you would find it much easier to use RODBC if your
+Oracle server has an ODBC driver.
+
+On Thu, 19 Dec 2002, Stephen Arthur wrote:
+
+> Hi,
+>
+> I use an Oracle 8.0.6 database (later to be 9i) on
+> Windows NT 4.0.  I want to use the Oracle database
+> with R using the ROracle package.
+>
+> However, I am having trouble installing the ROracle
+> package on my machine.  Is ROracle for use on Windows
+> operating systems?
+>
+> The downloaded file is called ROracle_0.4-0.tar.gz
+>
+> When I try to load ROracle package internally from R,
+> using options:
+>
+> 1) "Install packages from CRAN..." the ROracle package
+> does not appear in the list as a loadable package.
+>
+> 2) "Install package from zip file..." the R tool is
+> looking for files with extension ".zip" when the file
+> I have downloaded has a UNIX-like extension ".tar.gz".
+>
+> Is there another way to load ROracle package into R?
+> Is ROracle usable within a Windows environment?
+>
+> I would really like to get R linked to Oracle.
+>
+> Thanks for your help,
+>
+> Stephen
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> http://www.stat.math.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272860 (secr)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From vkhur@n@ @end|ng |rom m@||@nm|@@h@w@||@edu  Thu Dec 19 20:14:31 2002
+From: vkhur@n@ @end|ng |rom m@||@nm|@@h@w@||@edu (Vikram Khurana)
+Date: Thu, 19 Dec 2002 09:14:31 -1000
+Subject: [R-sig-DB] ROracle: Oracle database interface for R
+In-Reply-To: <Pine.LNX.4.31.0212191642090.4635-100000@gannet.stats>
+Message-ID: <000001c2a792$db9eb3b0$f0a410ac@s464>
+
+RODBC is much simpler to install on Windows.
+Just unzip the RODBC package from CRAN
+Place it under C:\Program Files\R\rw1051\library or equivalent directory
+Create a system DSN for your Oracle database
+That's all you should need to get going with RODBC
+
+> -----Original Message-----
+> From: r-sig-db-admin at stat.math.ethz.ch [mailto:r-sig-db-
+> admin at stat.math.ethz.ch] On Behalf Of ripley at stats.ox.ac.uk
+> Sent: Thursday, December 19, 2002 6:45 AM
+> To: Stephen Arthur
+> Cc: r-sig-db at stat.math.ethz.ch
+> Subject: Re: [R-sig-DB] ROracle: Oracle database interface for R
+> 
+> You need to INSTALL a source package: see the rw-FAQ.
+> Your problem is a basic lack of understanding of R packages, and I do
+> suggest you practice with a few simpler ones first.
+> 
+> You will need the Oracle client libraries as I recall (which I don't
+> have for Windows, or even know if they are available for Windows).
+> 
+> From Windows I think you would find it much easier to use RODBC if
+your
+> Oracle server has an ODBC driver.
+> 
+> On Thu, 19 Dec 2002, Stephen Arthur wrote:
+> 
+> > Hi,
+> >
+> > I use an Oracle 8.0.6 database (later to be 9i) on
+> > Windows NT 4.0.  I want to use the Oracle database
+> > with R using the ROracle package.
+> >
+> > However, I am having trouble installing the ROracle
+> > package on my machine.  Is ROracle for use on Windows
+> > operating systems?
+> >
+> > The downloaded file is called ROracle_0.4-0.tar.gz
+> >
+> > When I try to load ROracle package internally from R,
+> > using options:
+> >
+> > 1) "Install packages from CRAN..." the ROracle package
+> > does not appear in the list as a loadable package.
+> >
+> > 2) "Install package from zip file..." the R tool is
+> > looking for files with extension ".zip" when the file
+> > I have downloaded has a UNIX-like extension ".tar.gz".
+> >
+> > Is there another way to load ROracle package into R?
+> > Is ROracle usable within a Windows environment?
+> >
+> > I would really like to get R linked to Oracle.
+> >
+> > Thanks for your help,
+> >
+> > Stephen
+> >
+> > _______________________________________________
+> > R-sig-DB mailing list -- R Special Interest Group
+> > R-sig-DB at stat.math.ethz.ch
+> > http://www.stat.math.ethz.ch/mailman/listinfo/r-sig-db
+> >
+> 
+> --
+> Brian D. Ripley,                  ripley at stats.ox.ac.uk
+> Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+> University of Oxford,             Tel:  +44 1865 272861 (self)
+> 1 South Parks Road,                     +44 1865 272860 (secr)
+> Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> http://www.stat.math.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From @@rthur67 @end|ng |rom y@hoo@com  Wed Dec 25 20:00:26 2002
+From: @@rthur67 @end|ng |rom y@hoo@com (Stephen Arthur)
+Date: Wed, 25 Dec 2002 11:00:26 -0800 (PST)
+Subject: [R-sig-DB] Reading data from an Oracle database into R from a Windows operating system.
+Message-ID: <20021225190026.12385.qmail@web11108.mail.yahoo.com>
+
+Hi Rs,
+
+Has anyone on this list successfully used package
+RODBC to connect to an Oracle database using Windows
+operating system?
+
+I am using Oracle 8.0.6 database (later Oracle 9i)
+with Windows NT operating system.
+
+I still need to read the manuals etc., but I was
+hoping to get feedback regarding whether there were
+limitations on the length of an R variable name to 8
+characters which I encountered when trying to read SAS
+data into R.
+
+Are there any other tips with regard to connecting to
+an Oracle database that you could supply me with
+before I get serious in trying to solve this problem?
+
+Thanks in advance,
+
+Stephen
+
+
+
+From edd @end|ng |rom deb|@n@org  Wed Dec 25 20:41:46 2002
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Wed, 25 Dec 2002 13:41:46 -0600
+Subject: [R-sig-DB] Reading data from an Oracle database into R from a Windows operating system.
+In-Reply-To: <20021225190026.12385.qmail@web11108.mail.yahoo.com>
+References: <20021225190026.12385.qmail@web11108.mail.yahoo.com>
+Message-ID: <20021225194146.GA3931@sonny.eddelbuettel.com>
+
+On Wed, Dec 25, 2002 at 11:00:26AM -0800, Stephen Arthur wrote:
+> Has anyone on this list successfully used package
+> RODBC to connect to an Oracle database using Windows
+> operating system?
+
+Yes.
+
+> I am using Oracle 8.0.6 database (later Oracle 9i)
+> with Windows NT operating system.
+
+It's a system at work, so I am writing this from memory. Oracle 8.0 or 8.1
+client software. ODBC drivers for Oracle from Microsoft, something called
+MAC or MCA .... NT4SP6.  Oracle backend in on Unix, but that shouldn't
+matter. 
+
+> I still need to read the manuals etc., but I was
+> hoping to get feedback regarding whether there were
+> limitations on the length of an R variable name to 8
+> characters which I encountered when trying to read SAS
+> data into R.
+> 
+> Are there any other tips with regard to connecting to
+> an Oracle database that you could supply me with
+> before I get serious in trying to solve this problem?
+
+Try to understand how RODBC works. Test the ODBC data sources from other
+client programs (e.g. Excel). Test it against other ODBC sources like
+Access, SQL Server, Excel or whatever you have. Then try both from R. 
+Once you have that working, switch to Oracle via RODBC. In other words, try
+to isolate your complex connection setup into a series of separate steps you
+can debug one by one.
+
+Dirk
+
+-- 
+Prediction is very difficult, especially about the future. 
+				             -- Niels Bohr
+
+
+

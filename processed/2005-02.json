@@ -1,0 +1,117 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2005-02",
+  "messages": [
+    {
+      "id": "msg-61c954a4dc24",
+      "message_id": "<1107424242.25620.21.camel@localhost.localdomain>",
+      "from_name": "James Bullard",
+      "from_email_hash": "37323e2af1e49bdffaeb0cb9593fbf188c260d4a0aa7d8b6271797114c3fa354",
+      "date": "2005-02-03T01:50:42-08:00",
+      "subject": "[R-sig-DB] RMySQL and factors",
+      "subject_clean": "RMySQL and factors",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I have just started using the RMySQL package and things are working out\nwell, but I would like to know if it is possible to return a data.frame\nfrom dbGetQuery with class(dta$race) => factor rather than\nclass(dta$race) => character. I want to use glm on the resultant data,\nbut I cant figure out how to change the columns without effort. \n\nCurrently what I do is write the dta to a local file and then re-read it\nat which point the columns is of class factor.\n\nThanks in advance, The code I am using to get the data is:\n\ngetrace <- function(connection) {\n  sql <- \"SELECT race FROM PATIENT\"\n  rs <- dbGetQuery(connection, sql)\n\n  class(rs$race)  \n}\n\nwhich returns \"character\" \n\n\nJim",
+      "body_snippet": "I have just started using the RMySQL package and things are working out\nwell, but I would like to know if it is possible to return a data.frame\nfrom dbGetQuery with class(dta$race) => factor rather th",
+      "thread_id": "thread-61c954a4dc24",
+      "thread_depth": 0,
+      "month": "2005-02"
+    },
+    {
+      "id": "msg-3a65f01e8fa1",
+      "message_id": "<p06110418be27e6f7fe87@[128.115.153.6]>",
+      "from_name": "Don MacQueen",
+      "from_email_hash": "e13bfb89115e8e835b0ed57c9de9e35a69bd33cf720ea654a4529b9050b00e0b",
+      "date": "2005-02-03T06:35:32-08:00",
+      "subject": "[R-sig-DB] RMySQL and factors",
+      "subject_clean": "RMySQL and factors",
+      "in_reply_to": "<1107424242.25620.21.camel@localhost.localdomain>",
+      "references": [
+        "<1107424242.25620.21.camel@localhost.localdomain>"
+      ],
+      "body_plain": "How about:\n\ngetrace <- function(connection) {\n   sql <- \"SELECT race FROM PATIENT\"\n   rs <- dbGetQuery(connection, sql)\n\n   rs$trace <- factor(rs$trace)\n\n   class(rs$race)\n}\n\nAt 1:50 AM -0800 2/3/05, James Bullard wrote:\n>I have just started using the RMySQL package and things are working out\n>well, but I would like to know if it is possible to return a data.frame\n>from dbGetQuery with class(dta$race) => factor rather than\n>class(dta$race) => character. I want to use glm on the resultant data,\n>but I cant figure out how to change the columns without effort.\n>\n>Currently what I do is write the dta to a local file and then re-read it\n>at which point the columns is of class factor.\n>\n>Thanks in advance, The code I am using to get the data is:\n>\n>getrace <- function(connection) {\n>   sql <- \"SELECT race FROM PATIENT\"\n>   rs <- dbGetQuery(connection, sql)\n>\n>   class(rs$race) \n>}\n>\n>which returns \"character\"\n>\n>\n>Jim\n>\n>_______________________________________________\n>R-sig-DB mailing list -- R Special Interest Group\n>R-sig-DB at stat.math.ethz.ch\n>https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n\n-- \n--------------------------------------\nDon MacQueen\nEnvironmental Protection Department\nLawrence Livermore National Laboratory\nLivermore, CA, USA",
+      "body_snippet": "How about:\n\ngetrace <- function(connection) {\n   sql <- \"SELECT race FROM PATIENT\"\n   rs <- dbGetQuery(connection, sql)\n\n   rs$trace <- factor(rs$trace)\n\n   class(rs$race)\n}\n\nAt 1:50 AM -0800 2/3/05, ",
+      "thread_id": "thread-61c954a4dc24",
+      "thread_depth": 1,
+      "month": "2005-02"
+    },
+    {
+      "id": "msg-edc42546ee96",
+      "message_id": "<1107460997.42028385b016e@webmail.ktl.fi>",
+      "from_name": "mikko@virt@@e@ m@iii@g oii kti@ii",
+      "from_email_hash": "813d2a40006e6ba4a84aeafd3db10c033b56ec5325354ade8a9a1acfd3cae228",
+      "date": "2005-02-03T22:03:17+02:00",
+      "subject": "[R-sig-DB] RMySQL and factors",
+      "subject_clean": "RMySQL and factors",
+      "in_reply_to": "<p06110418be27e6f7fe87@[128.115.153.6]>",
+      "references": [
+        "<1107424242.25620.21.camel@localhost.localdomain>",
+        "<p06110418be27e6f7fe87@[128.115.153.6]>"
+      ],
+      "body_plain": "Don MacQueen <macq at llnl.gov> wrote:\n> How about:\n> \n> getrace <- function(connection) {\n>    sql <- \"SELECT race FROM PATIENT\"\n>    rs <- dbGetQuery(connection, sql)\n> \n>    rs$trace <- factor(rs$trace)\n> \n>    class(rs$race)\n> }\n\nThis has the potential problem that if the data changes or the sql statement has\na WHERE in it, each run might get slightly different levels().\n\nI guess the MySQL does have the ENUM data type, and the RSDBI does have the\nhooks for using this information, but nothing seems to be implemented at the\nmoment.\n\n   MJ;",
+      "body_snippet": "Don MacQueen <macq at llnl.gov> wrote:\n> How about:\n> \n> getrace <- function(connection) {\n>    sql <- \"SELECT race FROM PATIENT\"\n>    rs <- dbGetQuery(connection, sql)\n> \n>    rs$trace <- factor(rs$t",
+      "thread_id": "thread-61c954a4dc24",
+      "thread_depth": 2,
+      "month": "2005-02"
+    },
+    {
+      "id": "msg-9dfe867781e3",
+      "message_id": "<p0611041ebe2838621407@[128.115.153.6]>",
+      "from_name": "Don MacQueen",
+      "from_email_hash": "e13bfb89115e8e835b0ed57c9de9e35a69bd33cf720ea654a4529b9050b00e0b",
+      "date": "2005-02-03T12:38:46-08:00",
+      "subject": "[R-sig-DB] RMySQL and factors",
+      "subject_clean": "RMySQL and factors",
+      "in_reply_to": "<1107460997.42028385b016e@webmail.ktl.fi>",
+      "references": [
+        "<1107424242.25620.21.camel@localhost.localdomain>",
+        "<p06110418be27e6f7fe87@[128.115.153.6]>",
+        "<1107460997.42028385b016e@webmail.ktl.fi>"
+      ],
+      "body_plain": "At 10:03 PM +0200 2/3/05, mikko.virtanen at ktl.fi wrote:\n>Don MacQueen <macq at llnl.gov> wrote:\n>>  How about:\n>>\n>>  getrace <- function(connection) {\n>>     sql <- \"SELECT race FROM PATIENT\"\n>>     rs <- dbGetQuery(connection, sql)\n>>\n>>     rs$trace <- factor(rs$trace)\n>>\n>>     class(rs$race)\n>>  }\n>\n>This has the potential problem that if the data changes or the sql \n>statement has\n>a WHERE in it, each run might get slightly different levels().\n\n\nI don't think that presents a problem. Either you know from the \nexperimental design what all of the possible levels are, or you don't.\n\nIf you don't, there is no way to make sure that all will be present \nevery time the function is used., no matter whether a 'where' clause \nis added or not, or whether or not the table changes.\n\nIf you do know what the possible levels are, you can explicitly list \nthem in the call to factor(). See ?factor.\n\nIf at any given point in time the database table is considered to \nhave all the possible levels present, and you want to have all of \nthem present in the factor variable in R, even when not all levels \nare retrieved from the database, it's still easy:\n\nAdd another query, a select distinct on the field that is to become a \nfactor. Use the results to specify the levels in the call to \nfactor(). Then you will always have the same factors, regardless of \nwhat subset is selected.\n\n>I guess the MySQL does have the ENUM data type, and the RSDBI does have the\n>hooks for using this information, but nothing seems to be implemented at the\n>moment.\n>\n>    MJ;\n\n-Don\n-- \n--------------------------------------\nDon MacQueen\nEnvironmental Protection Department\nLawrence Livermore National Laboratory\nLivermore, CA, USA",
+      "body_snippet": "At 10:03 PM +0200 2/3/05, mikko.virtanen at ktl.fi wrote:\n>Don MacQueen <macq at llnl.gov> wrote:\n>>  How about:\n>>\n>>  getrace <- function(connection) {\n>>     sql <- \"SELECT race FROM PATIENT\"\n>>   ",
+      "thread_id": "thread-61c954a4dc24",
+      "thread_depth": 3,
+      "month": "2005-02"
+    },
+    {
+      "id": "msg-37fd42efa4df",
+      "message_id": "<b98158504eae6c8d508557b59ef9498e@earthlink.net>",
+      "from_name": "Jim McLoughlin",
+      "from_email_hash": "7893d0aa2392a0ef099545e937a6da20e8730f91d3dcb9a302a31de3022aabac",
+      "date": "2005-02-03T15:08:55-08:00",
+      "subject": "[R-sig-DB] RMySQL and factors",
+      "subject_clean": "RMySQL and factors",
+      "in_reply_to": "<p0611041ebe2838621407@[128.115.153.6]>",
+      "references": [
+        "<1107424242.25620.21.camel@localhost.localdomain>",
+        "<p06110418be27e6f7fe87@[128.115.153.6]>",
+        "<1107460997.42028385b016e@webmail.ktl.fi>",
+        "<p0611041ebe2838621407@[128.115.153.6]>"
+      ],
+      "body_plain": ">> This has the potential problem that if the data changes or the sql \n>> statement has\n>> a WHERE in it, each run might get slightly different levels().\n>\n>\n> I don't think that presents a problem. Either you know from the \n> experimental design what all of the possible levels are, or you don't.\n>\n> If you don't, there is no way to make sure that all will be present \n> every time the function is used., no matter whether a 'where' clause \n> is added or not, or whether or not the table changes.\n>\n> If you do know what the possible levels are, you can explicitly list \n> them in the call to factor(). See ?factor.\n>\n> If at any given point in time the database table is considered to have \n> all the possible levels present, and you want to have all of them \n> present in the factor variable in R, even when not all levels are \n> retrieved from the database, it's still easy:\n\nTo expand on the above, one option is to make the database design \naccurately reflect the experiment:\n\nHave two tables instead of one:\nPatient (int patient_id, char* name, int race_id)\nRace(int race_id, char* race_name)\n\nRace contains all possible factor levels, and might be useful elsewhere \nin the experiment/project.  Patient reflects all observed patient \ninstances, which may or may not include all race levels.  You can \nmodify the query to something like:\n\ngetAllRaces <- function(connection) {\n\tsql <- \"SELECT race_name FROM RACE\"\n\trs <- dbGetQuery(connection, sql)\n\tallRaces <- rs$race_name\n}\n\t\ngetRaceAsFactors <- function(connection) {\n\tsql <- \"SELECT t2.race_name FROM PATIENT t1, RACE t2 where t1.race_id \n= t2.race_id\"\n\trs <- dbGetQuery(connection, sql)\n\tallRaces <- getAllRaces(connection)\n\traceFactors <- factor(rs$race_name, levels=allRaces)\n  }\n\nof course, making a second database table may be overkill depending on \nthe size of your project, and how often all race levels are needed in \nyour code.\n\nJim",
+      "body_snippet": ">> This has the potential problem that if the data changes or the sql \n>> statement has\n>> a WHERE in it, each run might get slightly different levels().\n>\n>\n> I don't think that presents a problem. E",
+      "thread_id": "thread-61c954a4dc24",
+      "thread_depth": 4,
+      "month": "2005-02"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-61c954a4dc24",
+      "subject": "RMySQL and factors",
+      "message_count": 5,
+      "participants": [
+        "Don MacQueen",
+        "James Bullard",
+        "Jim McLoughlin",
+        "mikko@virt@@e@ m@iii@g oii kti@ii"
+      ],
+      "started": "2005-02-03T01:50:42-08:00",
+      "last_reply": "2005-02-03T15:08:55-08:00",
+      "root_message_id": "msg-61c954a4dc24"
+    }
+  ]
+}

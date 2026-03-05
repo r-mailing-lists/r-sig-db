@@ -1,0 +1,84 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2008-06",
+  "messages": [
+    {
+      "id": "msg-a13743506d6b",
+      "message_id": "<EEBC169715EB8C438D3C9283AF0F201C023E474E@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+      "from_name": "McGehee, Robert",
+      "from_email_hash": "d6e856f0aa01f89698472702235348f1cd8814da0dffd4bae380a929d6d2736c",
+      "date": "2008-06-09T20:04:12-04:00",
+      "subject": "[R-sig-DB] Incorrect Error Status RODBC 1.2-3",
+      "subject_clean": "Incorrect Error Status RODBC 1.2-3",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello all,\nI'm in the process of upgrading from RODBC 1.1-9 to 1.2-3 and have\ndiscovered a problem in which RODBC will correctly run queries\ncontaining CREATE and DROP but will incorrectly report an error status\nof -1 resulting in an error in R (despite no actual error occurring). I\nwanted to see if anyone has come across this before. Note that when I\nrun this script using RODBC 1.1-9 the queries run successfully without\nreturning a -1 error code.\n\n> sqlQuery(.conn, \"CREATE TABLE dbo.aaa (fun VARCHAR(255))\", \n\t     errors = FALSE)\n[1] -1\n> odbcGetErrMsg(.conn)\n[1] \"[RODBC] ERROR: Could not SQLExecDirect\"\n\nHowever, the table is created!\n\n> sqlQuery(.conn, \"INSERT INTO dbo.aaa SELECT 1\")\ncharacter(0)\n\n> sqlQuery(.conn, \"SELECT * FROM dbo.aaa\")\n  fun\n1   1\n\n> sqlQuery(.conn, \"DROP TABLE dbo.aaa\", errors=FALSE)\n[1] -1\nodbcGetErrMsg(.conn)\n[1] \"[RODBC] ERROR: Could not SQLExecDirect\"\n\nYet, the table has, in fact, been dropped!\n\nSetup:\nMy database is Microsoft SQL Server 8.0 (SQL Server 2000). I'm running\nRODBC on a Linux cluster tested on both 32-bit and 64-bit computers\nrunning R 2.7.0. I'm using unixODBC 2.2.12 and FreeTDS 0.64 to interface\nwith the SQL server.\n\nAny thoughts are appreciated!\nCheers, \nRobert\n\nRobert McGehee, CFA\nGeode Capital Management, LLC\nOne Post Office Square, 28th Floor | Boston, MA | 02109\nTel: 617/392-8396    Fax:617/476-6389\nmailto:robert.mcgehee at geodecapital.com\n\n\n\nThis e-mail, and any attachments hereto, are intended fo...{{dropped:12}}",
+      "body_snippet": "Hello all,\nI'm in the process of upgrading from RODBC 1.1-9 to 1.2-3 and have\ndiscovered a problem in which RODBC will correctly run queries\ncontaining CREATE and DROP but will incorrectly report an e",
+      "thread_id": "thread-a13743506d6b",
+      "thread_depth": 0,
+      "month": "2008-06"
+    },
+    {
+      "id": "msg-c00a1219a8c4",
+      "message_id": "<87prqqaycc.fsf@patagonia.sebmags.homelinux.org>",
+      "from_name": "Sebastian P. Luque",
+      "from_email_hash": "64e1245723a518467f98fc9a0ecf9b5f086a4977ca9fcb21467077da9da7bf73",
+      "date": "2008-06-09T20:10:59-05:00",
+      "subject": "[R-sig-DB] Incorrect Error Status RODBC 1.2-3",
+      "subject_clean": "Incorrect Error Status RODBC 1.2-3",
+      "in_reply_to": null,
+      "references": [
+        "<EEBC169715EB8C438D3C9283AF0F201C023E474E@MSGBOSCLM2WIN.DMN1.FMR.COM>"
+      ],
+      "body_plain": "On Mon, 9 Jun 2008 20:04:12 -0400,\n\"McGehee, Robert\" <Robert.McGehee at geodecapital.com> wrote:\n\n[...]\n\n>> sqlQuery(.conn, \"CREATE TABLE dbo.aaa (fun VARCHAR(255))\",\n> \t     errors = FALSE) [1] -1\n>> odbcGetErrMsg(.conn)\n> [1] \"[RODBC] ERROR: Could not SQLExecDirect\"\n\nI have a similar problem in the following (with a PostgreSQL db):\n\n---<---------------cut here---------------start-------------->---\nR> sessionInfo()\nR version 2.7.0 (2008-04-22) \nx86_64-pc-linux-gnu \n\nlocale:\nLC_CTYPE=en_CA.UTF-8;LC_NUMERIC=C;LC_TIME=en_CA.UTF-8;LC_COLLATE=en_CA.UTF-8;LC_MONETARY=C;LC_MESSAGES=en_CA.UTF-8;LC_PAPER=en_CA.UTF-8;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=en_CA.UTF-8;LC_IDENTIFICATION=C\n\nattached base packages:\n[1] stats     graphics  grDevices utils     datasets  methods   base     \n\nother attached packages:\n[1] RODBC_1.2-3    lattice_0.17-8\n\nloaded via a namespace (and not attached):\n[1] grid_2.7.0\nR> sqlQuery(.conn, \"CREATE TABLE zzz (aaa VARCHAR(255))\", errors=FALSE)\n[1] -1\nR> odbcGetErrMsg(.conn)\n[1] \"[RODBC] ERROR: Could not SQLExecDirect\"                                          \n[2] \"42P07 7 ERROR: relation \\\"zzz\\\" already exists;\\nError while executing the query\"\n---<---------------cut here---------------end---------------->---\n\nIn my case though, I have an extra error message *and* the table is not\ncreated, even though the alleged table does not really exist.  From psql\ndirectly, after quitting R above:\n\n---<---------------cut here---------------start-------------->---\ntest=> \\d\n          List of relations\n Schema |   Name    | Type  | Owner  \n--------+-----------+-------+--------\n public | cities    | table | sluque\n public | test_city | view  | sluque\n public | weather   | table | sluque\n(3 rows)\n---<---------------cut here---------------end---------------->---\n\nSo I'm also baffled at this.  I'm using unixodbc 2.2.11 to connect to\nthe PostgreSQL 8.3.1 db, in a Debian sid 64 bit system.  This didn't\nhappen in a previous RODBC version, although I can't recall which one it\nwas.\n\n\n-- \nSeb",
+      "body_snippet": "On Mon, 9 Jun 2008 20:04:12 -0400,\n\"McGehee, Robert\" <Robert.McGehee at geodecapital.com> wrote:\n\n[...]\n\n>> sqlQuery(.conn, \"CREATE TABLE dbo.aaa (fun VARCHAR(255))\",\n> \t     errors = FALSE) [1] -1\n>>",
+      "thread_id": "thread-a13743506d6b",
+      "thread_depth": 1,
+      "month": "2008-06"
+    },
+    {
+      "id": "msg-a30908483f5a",
+      "message_id": "<20080610152832.GP32568@ziti.local>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2008-06-10T08:28:32-07:00",
+      "subject": "[R-sig-DB] RSQLite 0.6-9 uploaded to CRAN [was: RSQLite bug fix for install\twith icc]",
+      "subject_clean": "RSQLite 0.6-9 uploaded to CRAN [was: RSQLite bug fix for install\twith icc]",
+      "in_reply_to": "<6b93d1830806041128u6e1eabe9u7e2419207fa073f9@mail.gmail.com>",
+      "references": [
+        "<6b93d1830806041128u6e1eabe9u7e2419207fa073f9@mail.gmail.com>"
+      ],
+      "body_plain": "Hi all,\n\nA new version of RSQLite has been uploaded to CRAN and should be\navailable soon.  This update contains a minor change to the C code\nthat should improve compatibility on various unix OS.\n\n+ seth\n\n-- \nSeth Falcon | http://userprimary.net/user/",
+      "body_snippet": "Hi all,\n\nA new version of RSQLite has been uploaded to CRAN and should be\navailable soon.  This update contains a minor change to the C code\nthat should improve compatibility on various unix OS.\n\n+ se",
+      "thread_id": "thread-a30908483f5a",
+      "thread_depth": 0,
+      "month": "2008-06"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-a13743506d6b",
+      "subject": "Incorrect Error Status RODBC 1.2-3",
+      "message_count": 2,
+      "participants": [
+        "McGehee, Robert",
+        "Sebastian P. Luque"
+      ],
+      "started": "2008-06-09T20:04:12-04:00",
+      "last_reply": "2008-06-09T20:10:59-05:00",
+      "root_message_id": "msg-a13743506d6b"
+    },
+    {
+      "id": "thread-a30908483f5a",
+      "subject": "RSQLite 0.6-9 uploaded to CRAN [was: RSQLite bug fix for install\twith icc]",
+      "message_count": 1,
+      "participants": [
+        "Seth Falcon"
+      ],
+      "started": "2008-06-10T08:28:32-07:00",
+      "last_reply": "2008-06-10T08:28:32-07:00",
+      "root_message_id": "msg-a30908483f5a"
+    }
+  ]
+}

@@ -1,0 +1,346 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2012-09",
+  "messages": [
+    {
+      "id": "msg-b66b93907e2f",
+      "message_id": "<CAL09-EeHvGG+=0csOaryyVzbZwzTn3o18g1MEv_katWG8WqzOg@mail.gmail.com>",
+      "from_name": "Luis Ridao",
+      "from_email_hash": "420e20298c4073edc6da13a98a5809125c634fedfb8208d72fee62f5de3fbe98",
+      "date": "2012-09-07T14:26:01+01:00",
+      "subject": "[R-sig-DB] RODBC connection linux (ubuntu)",
+      "subject_clean": "RODBC connection linux (ubuntu)",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "HI,\n\ni think this problem has come up pretty often on this and other lists\nand still have not managed to solved it.\n\ni need to connect to a an Oracle database through R.\n\nI have installed the oracle install client and the package RODBC in R\nbut still get the same error:\n\n[RODBC] ERROR: state IM002, code 0, message [unixODBC][Driver Manager]Data\nsource name not found, and no default driver specified\n2: In odbcDriverConnect(\"DSN=MAGNUS;UID=my_uid;PWD=my_pwd\") :\n  ODBC connection failed\n\n/etc/odbc.ini looks like:\n\nodbc.ini\n---------------------------------------\n[ORACLE_SAMPLE]\ndriver = Easysoft ODBC-Oracle WP\ndescription = Easysoft Oracle ODBC WP driver\nserver = oserver\nport = 1521\nsid = 192.168.20.129/MAGNUS\nuser = luisr\npassword =my_pwd\nlogging = No\nlogfile =\nenable_user_catalog = yes\nenable_synonyms = yes\nmetadata_dont_change_case = no\nmetadata_dont_do_schema = no\nmetadata_id = no\nlimit_long = 0\n\ni know i need another odbcinst.ini file\nbut i don't know a stanza for it (i actually made the odbc.ini file above\nfrom some other source)\n\nthe unixODBC driver is also installed in my linux system\n\nany ideas?\n\nthanks in advance\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "HI,\n\ni think this problem has come up pretty often on this and other lists\nand still have not managed to solved it.\n\ni need to connect to a an Oracle database through R.\n\nI have installed the oracle i",
+      "thread_id": "thread-b66b93907e2f",
+      "thread_depth": 0,
+      "month": "2012-09"
+    },
+    {
+      "id": "msg-0d18ffd8b8bd",
+      "message_id": "<83F634A6-A1E4-4B41-A46F-CA4EE127AA88@me.com>",
+      "from_name": "Marc Schwartz",
+      "from_email_hash": "040b2d09159b27cfd2853bc2dbb476bd637811586f307d9583c9ef7f806f3692",
+      "date": "2012-09-07T09:20:36-05:00",
+      "subject": "[R-sig-DB] RODBC connection linux (ubuntu)",
+      "subject_clean": "RODBC connection linux (ubuntu)",
+      "in_reply_to": "<CAL09-EeHvGG+=0csOaryyVzbZwzTn3o18g1MEv_katWG8WqzOg@mail.gmail.com>",
+      "references": [
+        "<CAL09-EeHvGG+=0csOaryyVzbZwzTn3o18g1MEv_katWG8WqzOg@mail.gmail.com>"
+      ],
+      "body_plain": "On Sep 7, 2012, at 8:26 AM, Luis Ridao <luridao at gmail.com> wrote:\n\n> HI,\n> \n> i think this problem has come up pretty often on this and other lists\n> and still have not managed to solved it.\n> \n> i need to connect to a an Oracle database through R.\n> \n> I have installed the oracle install client and the package RODBC in R\n> but still get the same error:\n> \n> [RODBC] ERROR: state IM002, code 0, message [unixODBC][Driver Manager]Data\n> source name not found, and no default driver specified\n> 2: In odbcDriverConnect(\"DSN=MAGNUS;UID=my_uid;PWD=my_pwd\") :\n>  ODBC connection failed\n> \n> /etc/odbc.ini looks like:\n> \n> odbc.ini\n> ---------------------------------------\n> [ORACLE_SAMPLE]\n> driver = Easysoft ODBC-Oracle WP\n> description = Easysoft Oracle ODBC WP driver\n> server = oserver\n> port = 1521\n> sid = 192.168.20.129/MAGNUS\n> user = luisr\n> password =my_pwd\n> logging = No\n> logfile =\n> enable_user_catalog = yes\n> enable_synonyms = yes\n> metadata_dont_change_case = no\n> metadata_dont_do_schema = no\n> metadata_id = no\n> limit_long = 0\n> \n> i know i need another odbcinst.ini file\n> but i don't know a stanza for it (i actually made the odbc.ini file above\n> from some other source)\n> \n> the unixODBC driver is also installed in my linux system\n> \n> any ideas?\n> \n> thanks in advance\n\n\n\nThe content above is unlikely to be correct, as the EasySoft ODBC driver for Oracle is rather expensive as I recall, so I would doubt that you are using it on Ubuntu. The errors above suggest that you have not configured the DNS connection properly.\n\nIn R use:\n\n  vignette(\"RODBC\")\n\nwhich will bring up the package vignette, which has additional details on configuring the DNS settings.\n\nAs noted in the above document, if you have the Oracle client set up correctly, you should be able to login to the server from the command line. If you can, then that leaves RODBC related configuration issues to resolve. If you cannot, then you still have Oracle client related configuration issues and you may need assistance from your SysAdmin/DBAdmin.\n\nRegards,\n\nMarc Schwartz",
+      "body_snippet": "On Sep 7, 2012, at 8:26 AM, Luis Ridao <luridao at gmail.com> wrote:\n\n> HI,\n> \n> i think this problem has come up pretty often on this and other lists\n> and still have not managed to solved it.\n> \n> i",
+      "thread_id": "thread-b66b93907e2f",
+      "thread_depth": 1,
+      "month": "2012-09"
+    },
+    {
+      "id": "msg-8fc7daef7638",
+      "message_id": "<505895EA.9040309@gmail.com>",
+      "from_name": "Paul Gilbert",
+      "from_email_hash": "29fea860e182a01f3e4160bbdef3ad0b7144bad40faef12022989132ed8ec2b1",
+      "date": "2012-09-18T11:40:26-04:00",
+      "subject": "[R-sig-DB] RMySQL and RPostgreSQL interaction",
+      "subject_clean": "RMySQL and RPostgreSQL interaction",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I am doing some comparison for which I load both RMySQL and RPostgreSQL \nfrom my own packages TSMySQL and TSPostgreSQL and I am getting the \nfollowing warning building a vignette. I think with package namespaces / \nS4 definitions it is a bit difficult to generate a self contained \nexample, at least I have not yet managed to do that, but I would \nappreciate any suggestions about what needs to be done.\n\nLoading required package: TSPostgreSQL\nLoading required package: RPostgreSQL\nWarning in .simpleDuplicateClass(def, prev) :\n   A specification for class \"dbObjectId\" in package 'RPostgreSQL' seems \nequivalent to one from package 'RMySQL' and is not turning on duplicate \nclass definitions for this class\n\n(I'm using  R version 2.15.1 on Ubuntu.)\n\nThanks,\nPaul",
+      "body_snippet": "I am doing some comparison for which I load both RMySQL and RPostgreSQL \nfrom my own packages TSMySQL and TSPostgreSQL and I am getting the \nfollowing warning building a vignette. I think with package",
+      "thread_id": "thread-8fc7daef7638",
+      "thread_depth": 0,
+      "month": "2012-09"
+    },
+    {
+      "id": "msg-64329bfa77fb",
+      "message_id": "<5058A279.2060901@structuremonitoring.com>",
+      "from_name": "Spencer Graves",
+      "from_email_hash": "74d65542d39045b8f519f051690253c45d7423bc83fbcf361d3e6c7f58751916",
+      "date": "2012-09-18T09:34:01-07:00",
+      "subject": "[R-sig-DB] RMySQL and RPostgreSQL interaction",
+      "subject_clean": "RMySQL and RPostgreSQL interaction",
+      "in_reply_to": "<505895EA.9040309@gmail.com>",
+      "references": [
+        "<505895EA.9040309@gmail.com>"
+      ],
+      "body_plain": "On 9/18/2012 8:40 AM, Paul Gilbert wrote:\n> I am doing some comparison for which I load both RMySQL and\n> RPostgreSQL from my own packages TSMySQL and TSPostgreSQL and I am\n> getting the following warning building a vignette. I think with\n> package namespaces / S4 definitions it is a bit difficult to generate\n> a self contained example, at least I have not yet managed to do that,\n> but I would appreciate any suggestions about what needs to be done.\n\n\n       If someone else identifies your problem, great.  Otherwise, have \nyou tried creating a toy package containing only the minimum? If you get \nthat to work, then I'd create a second toy package starting as a full \ncopy of your existing package, then start throwing things out until you \nfind the problem.  I know that's a lot of work, but if you use a manual \nbinary search technique (discard roughly half of the package at each \nstep -- or discard first the 90% you think is least likely to contain \nthe problem), it could go fairly fast.  If you do it on R-Forge, then \nit's easy to give others access to your toy examples.\n\n\n       I hope someone else helps you fix this without the route I \nsuggested.  If not, I hope this helps.  Spencer\n\n>\n> Loading required package: TSPostgreSQL\n> Loading required package: RPostgreSQL\n> Warning in .simpleDuplicateClass(def, prev) :\n>   A specification for class \"dbObjectId\" in package 'RPostgreSQL'\n> seems equivalent to one from package 'RMySQL' and is not turning on\n> duplicate class definitions for this class\n>\n> (I'm using  R version 2.15.1 on Ubuntu.)\n>\n> Thanks,\n> Paul\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n\n-- \nSpencer Graves, PE, PhD\nPresident and Chief Technology Officer\nStructure Inspection and Monitoring, Inc.\n751 Emerson Ct.\nSan Jos?, CA 95126\nph:  408-655-4567\nweb:  www.structuremonitoring.com",
+      "body_snippet": "On 9/18/2012 8:40 AM, Paul Gilbert wrote:\n> I am doing some comparison for which I load both RMySQL and\n> RPostgreSQL from my own packages TSMySQL and TSPostgreSQL and I am\n> getting the following war",
+      "thread_id": "thread-8fc7daef7638",
+      "thread_depth": 1,
+      "month": "2012-09"
+    },
+    {
+      "id": "msg-656a0a0c6eed",
+      "message_id": "<87mx0n9r3b.fsf@kolob.subpolar.dyndns.org>",
+      "from_name": "Sebastian P. Luque",
+      "from_email_hash": "64e1245723a518467f98fc9a0ecf9b5f086a4977ca9fcb21467077da9da7bf73",
+      "date": "2012-09-18T12:30:00-05:00",
+      "subject": "[R-sig-DB] RMySQL and RPostgreSQL interaction",
+      "subject_clean": "RMySQL and RPostgreSQL interaction",
+      "in_reply_to": null,
+      "references": [
+        "<505895EA.9040309@gmail.com>"
+      ],
+      "body_plain": "On Tue, 18 Sep 2012 11:40:26 -0400,\nPaul Gilbert <pgilbert902 at gmail.com> wrote:\n\n> I am doing some comparison for which I load both RMySQL and\n> RPostgreSQL from my own packages TSMySQL and TSPostgreSQL and I am\n> getting the following warning building a vignette. I think with\n> package namespaces / S4 definitions it is a bit difficult to generate\n> a self contained example, at least I have not yet managed to do that,\n> but I would appreciate any suggestions about what needs to be done.\n\n> Loading required package: TSPostgreSQL Loading required package:\n> RPostgreSQL Warning in .simpleDuplicateClass(def, prev) : A\n> specification for class \"dbObjectId\" in package 'RPostgreSQL' seems\n> equivalent to one from package 'RMySQL' and is not turning on\n> duplicate class definitions for this class\n\nI've seen this with a vignette using both the maptools and trip\npackages, but it was just a warning and the vignette built just fine.\n\n-- \nSeb",
+      "body_snippet": "On Tue, 18 Sep 2012 11:40:26 -0400,\nPaul Gilbert <pgilbert902 at gmail.com> wrote:\n\n> I am doing some comparison for which I load both RMySQL and\n> RPostgreSQL from my own packages TSMySQL and TSPostg",
+      "thread_id": "thread-8fc7daef7638",
+      "thread_depth": 1,
+      "month": "2012-09"
+    },
+    {
+      "id": "msg-7723df4d5294",
+      "message_id": "<5058B35E.3060805@gmail.com>",
+      "from_name": "Paul Gilbert",
+      "from_email_hash": "29fea860e182a01f3e4160bbdef3ad0b7144bad40faef12022989132ed8ec2b1",
+      "date": "2012-09-18T13:46:06-04:00",
+      "subject": "[R-sig-DB] RMySQL and RPostgreSQL interaction",
+      "subject_clean": "RMySQL and RPostgreSQL interaction",
+      "in_reply_to": "<87mx0n9r3b.fsf@kolob.subpolar.dyndns.org>",
+      "references": [
+        "<505895EA.9040309@gmail.com>",
+        "<87mx0n9r3b.fsf@kolob.subpolar.dyndns.org>"
+      ],
+      "body_plain": "On 12-09-18 01:30 PM, Sebastian P. Luque wrote:\n> On Tue, 18 Sep 2012 11:40:26 -0400,\n> Paul Gilbert <pgilbert902 at gmail.com> wrote:\n>\n>> I am doing some comparison for which I load both RMySQL and\n>> RPostgreSQL from my own packages TSMySQL and TSPostgreSQL and I am\n>> getting the following warning building a vignette. I think with\n>> package namespaces / S4 definitions it is a bit difficult to generate\n>> a self contained example, at least I have not yet managed to do that,\n>> but I would appreciate any suggestions about what needs to be done.\n>\n>> Loading required package: TSPostgreSQL Loading required package:\n>> RPostgreSQL Warning in .simpleDuplicateClass(def, prev) : A\n>> specification for class \"dbObjectId\" in package 'RPostgreSQL' seems\n>> equivalent to one from package 'RMySQL' and is not turning on\n>> duplicate class definitions for this class\n>\n> I've seen this with a vignette using both the maptools and trip\n> packages, but it was just a warning and the vignette built just fine.\n>\nYes, it is just a warning, and the vignette builds fine. It also looks \nlike there is probably a simple fix to remove the problem that causes \nthe warning, since that is what the warning suggests. However, as \nSpencer pointed out, isolating a simple example is not so easy.\n\nPaul",
+      "body_snippet": "On 12-09-18 01:30 PM, Sebastian P. Luque wrote:\n> On Tue, 18 Sep 2012 11:40:26 -0400,\n> Paul Gilbert <pgilbert902 at gmail.com> wrote:\n>\n>> I am doing some comparison for which I load both RMySQL and\n",
+      "thread_id": "thread-8fc7daef7638",
+      "thread_depth": 2,
+      "month": "2012-09"
+    },
+    {
+      "id": "msg-0d580894b85a",
+      "message_id": "<5058C2B3.5000405@structuremonitoring.com>",
+      "from_name": "Spencer Graves",
+      "from_email_hash": "74d65542d39045b8f519f051690253c45d7423bc83fbcf361d3e6c7f58751916",
+      "date": "2012-09-18T11:51:31-07:00",
+      "subject": "[R-sig-DB] RMySQL and RPostgreSQL interaction",
+      "subject_clean": "RMySQL and RPostgreSQL interaction",
+      "in_reply_to": "<5058B35E.3060805@gmail.com>",
+      "references": [
+        "<505895EA.9040309@gmail.com>",
+        "<87mx0n9r3b.fsf@kolob.subpolar.dyndns.org>",
+        "<5058B35E.3060805@gmail.com>"
+      ],
+      "body_plain": "On 9/18/2012 10:46 AM, Paul Gilbert wrote:\n> On 12-09-18 01:30 PM, Sebastian P. Luque wrote:\n>> On Tue, 18 Sep 2012 11:40:26 -0400,\n>> Paul Gilbert <pgilbert902 at gmail.com> wrote:\n>>\n>>> I am doing some comparison for which I load both RMySQL and\n>>> RPostgreSQL from my own packages TSMySQL and TSPostgreSQL and I am\n>>> getting the following warning building a vignette. I think with\n>>> package namespaces / S4 definitions it is a bit difficult to generate\n>>> a self contained example, at least I have not yet managed to do that,\n>>> but I would appreciate any suggestions about what needs to be done.\n>>\n>>> Loading required package: TSPostgreSQL Loading required package:\n>>> RPostgreSQL Warning in .simpleDuplicateClass(def, prev) : A\n>>> specification for class \"dbObjectId\" in package 'RPostgreSQL' seems\n>>> equivalent to one from package 'RMySQL' and is not turning on\n>>> duplicate class definitions for this class\n>>\n>> I've seen this with a vignette using both the maptools and trip\n>> packages, but it was just a warning and the vignette built just fine.\n>>\n> Yes, it is just a warning, and the vignette builds fine. It also looks \n> like there is probably a simple fix to remove the problem that causes \n> the warning, since that is what the warning suggests. However, as \n> Spencer pointed out, isolating a simple example is not so easy.\n\n\n       CRAN policy, at least as of August 30, 2012, was to reject \npackages that generate either Warnings or Notes.  Thus, \"just a warning\" \nis a show-stopper if you plan to submit the package to CRAN.  There is \nnow a \"CRAN\" function in the development version of \"fda\" on R-Forge \nthat we use to reduce the test time with \"R CMD check --as-cran\".  There \nwas as thread on the R-Devel list, subject:  \"if(--as-cran)?\", which I \nthought mentioned a similar function in a development version of  R.  \nUnfortunately, I can't find it now.\n\n\n       Spencer\n\n>\n> Paul\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n>\n\n\n-- \nSpencer Graves, PE, PhD\nPresident and Chief Technology Officer\nStructure Inspection and Monitoring, Inc.\n751 Emerson Ct.\nSan Jos?, CA 95126\nph:  408-655-4567\nweb:  www.structuremonitoring.com",
+      "body_snippet": "On 9/18/2012 10:46 AM, Paul Gilbert wrote:\n> On 12-09-18 01:30 PM, Sebastian P. Luque wrote:\n>> On Tue, 18 Sep 2012 11:40:26 -0400,\n>> Paul Gilbert <pgilbert902 at gmail.com> wrote:\n>>\n>>> I am doing ",
+      "thread_id": "thread-8fc7daef7638",
+      "thread_depth": 3,
+      "month": "2012-09"
+    },
+    {
+      "id": "msg-9972467b4106",
+      "message_id": "<877grr9mzt.fsf@kolob.subpolar.dyndns.org>",
+      "from_name": "Sebastian P. Luque",
+      "from_email_hash": "64e1245723a518467f98fc9a0ecf9b5f086a4977ca9fcb21467077da9da7bf73",
+      "date": "2012-09-18T13:58:30-05:00",
+      "subject": "[R-sig-DB] RMySQL and RPostgreSQL interaction",
+      "subject_clean": "RMySQL and RPostgreSQL interaction",
+      "in_reply_to": null,
+      "references": [
+        "<505895EA.9040309@gmail.com>",
+        "<87mx0n9r3b.fsf@kolob.subpolar.dyndns.org>",
+        "<5058B35E.3060805@gmail.com>"
+      ],
+      "body_plain": "On Tue, 18 Sep 2012 13:46:06 -0400,\nPaul Gilbert <pgilbert902 at gmail.com> wrote:\n\n> On 12-09-18 01:30 PM, Sebastian P. Luque wrote:\n>> On Tue, 18 Sep 2012 11:40:26 -0400,\n>> Paul Gilbert <pgilbert902 at gmail.com> wrote:\n\n>>> I am doing some comparison for which I load both RMySQL and\n>>> RPostgreSQL from my own packages TSMySQL and TSPostgreSQL and I am\n>>> getting the following warning building a vignette. I think with\n>>> package namespaces / S4 definitions it is a bit difficult to\n>>> generate a self contained example, at least I have not yet managed\n>>> to do that, but I would appreciate any suggestions about what needs\n>>> to be done.\n\n>>> Loading required package: TSPostgreSQL Loading required package:\n>>> RPostgreSQL Warning in .simpleDuplicateClass(def, prev) : A\n>>> specification for class \"dbObjectId\" in package 'RPostgreSQL' seems\n>>> equivalent to one from package 'RMySQL' and is not turning on\n>>> duplicate class definitions for this class\n\n>> I've seen this with a vignette using both the maptools and trip\n>> packages, but it was just a warning and the vignette built just fine.\n\n> Yes, it is just a warning, and the vignette builds fine. It also looks\n> like there is probably a simple fix to remove the problem that causes\n> the warning, since that is what the warning suggests. However, as\n> Spencer pointed out, isolating a simple example is not so easy.\n\nI had actually built such an example with those packages (available from\nCRAN):\n\n---<--------------------cut here---------------start------------------->---\n\\documentclass{article}\n\\usepackage{Sweave}\n\n\\begin{document}\n\n<<load-packages>>=\nlibrary(maptools)\nlibrary(trip)\n\n@\n\n\\end{document}\n---<--------------------cut here---------------end--------------------->---\n\nwhich produces the warnings:\n\n---<--------------------cut here---------------start------------------->---\n    Warning in .simpleDuplicateClass(def, prev) :\n    ?A specification for class ?owin? in package ?trip? seems equivalent to one from package ?maptools? and is not turning on duplicate class definitions for this class\n    Warning in .simpleDuplicateClass(def, prev) :\n    ?A specification for class ?ppp? in package ?trip? seems equivalent to one from package ?maptools? and is not turning on duplicate class definitions for this class\n    Warning in .simpleDuplicateClass(def, prev) :\n    ?A specification for class ?psp? in package ?trip? seems equivalent to one from package ?maptools? and is not turning on duplicate class definitions for this class\n---<--------------------cut here---------------end--------------------->---\n\nBoth packages have the same definitions for these classes.  A quick\nsearch on this warning points to\nhttps://stat.ethz.ch/pipermail/r-devel/2011-July/061628.html, which\nsuggests that adding an importClassesFrom() directive in NAMESPACE and\nremoving the class definition from one of the packages, might solve\nthis.  A dependency may be needed though...\n\n-- \nSeb",
+      "body_snippet": "On Tue, 18 Sep 2012 13:46:06 -0400,\nPaul Gilbert <pgilbert902 at gmail.com> wrote:\n\n> On 12-09-18 01:30 PM, Sebastian P. Luque wrote:\n>> On Tue, 18 Sep 2012 11:40:26 -0400,\n>> Paul Gilbert <pgilbert90",
+      "thread_id": "thread-8fc7daef7638",
+      "thread_depth": 3,
+      "month": "2012-09"
+    },
+    {
+      "id": "msg-c3b7fe6cdff7",
+      "message_id": "<5058E1C1.90401@gmail.com>",
+      "from_name": "Paul Gilbert",
+      "from_email_hash": "29fea860e182a01f3e4160bbdef3ad0b7144bad40faef12022989132ed8ec2b1",
+      "date": "2012-09-18T17:04:01-04:00",
+      "subject": "[R-sig-DB] RMySQL and RPostgreSQL interaction",
+      "subject_clean": "RMySQL and RPostgreSQL interaction",
+      "in_reply_to": "<877grr9mzt.fsf@kolob.subpolar.dyndns.org>",
+      "references": [
+        "<505895EA.9040309@gmail.com>",
+        "<87mx0n9r3b.fsf@kolob.subpolar.dyndns.org>",
+        "<5058B35E.3060805@gmail.com>",
+        "<877grr9mzt.fsf@kolob.subpolar.dyndns.org>"
+      ],
+      "body_plain": "So it has to do with Sweave. Following Sebastian's model, This vignette \nproduces the warning\n\n\\documentclass{article}\n\\usepackage{Sweave}\n\\begin{document}\n\\begin{Scode}\nlibrary(\"RMySQL\")\nlibrary(\"RPostgreSQL\")\n\\end{Scode}\n\\end{document}\n\nbut running the those lines in an R session does not. I think I will \nre-phrase the issue and move it to R-devel.\n\nPaul\n\n\nOn 12-09-18 02:58 PM, Sebastian P. Luque wrote:\n> On Tue, 18 Sep 2012 13:46:06 -0400,\n> Paul Gilbert <pgilbert902 at gmail.com> wrote:\n>\n>> On 12-09-18 01:30 PM, Sebastian P. Luque wrote:\n>>> On Tue, 18 Sep 2012 11:40:26 -0400,\n>>> Paul Gilbert <pgilbert902 at gmail.com> wrote:\n>\n>>>> I am doing some comparison for which I load both RMySQL and\n>>>> RPostgreSQL from my own packages TSMySQL and TSPostgreSQL and I am\n>>>> getting the following warning building a vignette. I think with\n>>>> package namespaces / S4 definitions it is a bit difficult to\n>>>> generate a self contained example, at least I have not yet managed\n>>>> to do that, but I would appreciate any suggestions about what needs\n>>>> to be done.\n>\n>>>> Loading required package: TSPostgreSQL Loading required package:\n>>>> RPostgreSQL Warning in .simpleDuplicateClass(def, prev) : A\n>>>> specification for class \"dbObjectId\" in package 'RPostgreSQL' seems\n>>>> equivalent to one from package 'RMySQL' and is not turning on\n>>>> duplicate class definitions for this class\n>\n>>> I've seen this with a vignette using both the maptools and trip\n>>> packages, but it was just a warning and the vignette built just fine.\n>\n>> Yes, it is just a warning, and the vignette builds fine. It also looks\n>> like there is probably a simple fix to remove the problem that causes\n>> the warning, since that is what the warning suggests. However, as\n>> Spencer pointed out, isolating a simple example is not so easy.\n>\n> I had actually built such an example with those packages (available from\n> CRAN):\n>\n> ---<--------------------cut here---------------start------------------->---\n> \\documentclass{article}\n> \\usepackage{Sweave}\n>\n> \\begin{document}\n>\n> <<load-packages>>=\n> library(maptools)\n> library(trip)\n>\n> @\n>\n> \\end{document}\n> ---<--------------------cut here---------------end--------------------->---\n>\n> which produces the warnings:\n>\n> ---<--------------------cut here---------------start------------------->---\n>      Warning in .simpleDuplicateClass(def, prev) :\n>       A specification for class ?owin? in package ?trip? seems equivalent to one from package ?maptools? and is not turning on duplicate class definitions for this class\n>      Warning in .simpleDuplicateClass(def, prev) :\n>       A specification for class ?ppp? in package ?trip? seems equivalent to one from package ?maptools? and is not turning on duplicate class definitions for this class\n>      Warning in .simpleDuplicateClass(def, prev) :\n>       A specification for class ?psp? in package ?trip? seems equivalent to one from package ?maptools? and is not turning on duplicate class definitions for this class\n> ---<--------------------cut here---------------end--------------------->---\n>\n> Both packages have the same definitions for these classes.  A quick\n> search on this warning points to\n> https://stat.ethz.ch/pipermail/r-devel/2011-July/061628.html, which\n> suggests that adding an importClassesFrom() directive in NAMESPACE and\n> removing the class definition from one of the packages, might solve\n> this.  A dependency may be needed though...\n>",
+      "body_snippet": "So it has to do with Sweave. Following Sebastian's model, This vignette \nproduces the warning\n\n\\documentclass{article}\n\\usepackage{Sweave}\n\\begin{document}\n\\begin{Scode}\nlibrary(\"RMySQL\")\nlibrary(\"RPo",
+      "thread_id": "thread-8fc7daef7638",
+      "thread_depth": 4,
+      "month": "2012-09"
+    },
+    {
+      "id": "msg-ed55216fb61e",
+      "message_id": "<4356BEF4-7789-4E28-B78B-6186E6EA5E3D@staff.kanazawa-u.ac.jp>",
+      "from_name": "NISHIYAMA Tomoaki",
+      "from_email_hash": "ad7d0ad7e619994bf2ad9845ab93b14a1002af9dca9ed0f127abe8dd8475d08f",
+      "date": "2012-09-19T11:33:48+09:00",
+      "subject": "[R-sig-DB] RMySQL and RPostgreSQL interaction",
+      "subject_clean": "RMySQL and RPostgreSQL interaction",
+      "in_reply_to": "<505895EA.9040309@gmail.com>",
+      "references": [
+        "<505895EA.9040309@gmail.com>"
+      ],
+      "body_plain": "Hi,\n\nIt is a pity that such interference between different database driver happens.\nWe can exclude export of dbObjectId from RPostgreSQL, but I reallized that would \ncause a warning on TSPostgreSQL. \nOne of the possible solution may moving the definition of db* to DBI and exclude from\nindividual database drivers.  Other routines that may be imported to DBI includes\ndbBeginTransaction(), now deleted from RPostgreSQL, but some request are coming.\n\nDBI is last published on 2009-12-22, but not changed thereafter.\nhttp://cran.r-project.org/web/packages/DBI/index.html\nAuthor:\tR Special Interest Group on Databases (R-SIG-DB)\n\nSo, it appears the DBI can be updated based on discussion on this mailing-list.\nBut I do not know how do we make agreement and update.\n\nBest regards,\n\nOn 2012/09/19, at 0:40, Paul Gilbert wrote:\n\n> I am doing some comparison for which I load both RMySQL and RPostgreSQL from my own packages TSMySQL and TSPostgreSQL and I am getting the following warning building a vignette. I think with package namespaces / S4 definitions it is a bit difficult to generate a self contained example, at least I have not yet managed to do that, but I would appreciate any suggestions about what needs to be done.\n> \n> Loading required package: TSPostgreSQL\n> Loading required package: RPostgreSQL\n> Warning in .simpleDuplicateClass(def, prev) :\n>  A specification for class \"dbObjectId\" in package 'RPostgreSQL' seems equivalent to one from package 'RMySQL' and is not turning on duplicate class definitions for this class\n> \n> (I'm using  R version 2.15.1 on Ubuntu.)\n> \n> Thanks,\n> Paul\n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "Hi,\n\nIt is a pity that such interference between different database driver happens.\nWe can exclude export of dbObjectId from RPostgreSQL, but I reallized that would \ncause a warning on TSPostgreSQL. \n",
+      "thread_id": "thread-8fc7daef7638",
+      "thread_depth": 1,
+      "month": "2012-09"
+    },
+    {
+      "id": "msg-e65ec52bae32",
+      "message_id": "<5059819D.9020209@stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2012-09-19T09:26:05+01:00",
+      "subject": "[R-sig-DB] RMySQL and RPostgreSQL interaction",
+      "subject_clean": "RMySQL and RPostgreSQL interaction",
+      "in_reply_to": "<4356BEF4-7789-4E28-B78B-6186E6EA5E3D@staff.kanazawa-u.ac.jp>",
+      "references": [
+        "<505895EA.9040309@gmail.com>",
+        "<4356BEF4-7789-4E28-B78B-6186E6EA5E3D@staff.kanazawa-u.ac.jp>"
+      ],
+      "body_plain": "On 19/09/2012 03:33, NISHIYAMA Tomoaki wrote:\n> Hi,\n>\n> It is a pity that such interference between different database driver happens.\n> We can exclude export of dbObjectId from RPostgreSQL, but I reallized that would\n> cause a warning on TSPostgreSQL.\n> One of the possible solution may moving the definition of db* to DBI and exclude from\n> individual database drivers.  Other routines that may be imported to DBI includes\n> dbBeginTransaction(), now deleted from RPostgreSQL, but some request are coming.\n>\n> DBI is last published on 2009-12-22, but not changed thereafter.\n> http://cran.r-project.org/web/packages/DBI/index.html\n> Author:\tR Special Interest Group on Databases (R-SIG-DB)\n>\n> So, it appears the DBI can be updated based on discussion on this mailing-list.\n> But I do not know how do we make agreement and update.\n>\n\nNot so: CRAN packages can only be updated by their maintainer (Cc:ed here).\n\nIf David James does not want to update DBI, he maybe could be persuaded \nto hand over the maintainership.\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "On 19/09/2012 03:33, NISHIYAMA Tomoaki wrote:\n> Hi,\n>\n> It is a pity that such interference between different database driver happens.\n> We can exclude export of dbObjectId from RPostgreSQL, but I rea",
+      "thread_id": "thread-8fc7daef7638",
+      "thread_depth": 2,
+      "month": "2012-09"
+    },
+    {
+      "id": "msg-e84916dea3d0",
+      "message_id": "<CAMu32ACFMBa7Z-6ZepagkdsXvqxi7ObSXCa-hn0FMcLQUZ9Y+g@mail.gmail.com>",
+      "from_name": "James David Smith",
+      "from_email_hash": "dd89f045970e588c9c1cd25b447415e2e9bf5d07f9e3d341647ec316ff7a19fe",
+      "date": "2012-09-28T15:14:51+01:00",
+      "subject": "[R-sig-DB] R and PostgreSQL - Writing data?",
+      "subject_clean": "R and PostgreSQL - Writing data?",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear all,\n\nSorry if this isn't quite the right place, but it's the first time\nI've posted here. My issue is to do with writing to a PostgreSQL\ndatabase from within R. My situation is best explained by some R code\nto start:\n\n#Connect to the database\ncon <- dbConnect(PostgreSQL(), user=\"postgres\", password=\"password\",\ndbname=\"database\")\n\n#Get some data out of the database.\nucam_no2$original_data <- dbGetQuery(con, \"select ucam_no2 FROM table\")\n\nThis returns say 10000 rows of data, but there is only data in about\nhalf of those rows. What I want to do is interpolate the missing data\nso I do this:\n\n#Generate some data\nucam_no2$interpolated_data <- na.approx(ucam_data$ucam_no2, na.rm = FALSE)\n\nThis works well and I now have 10000 rows of data with no empty cells.\nI now want to write this back into my PostgresSQL database. Into the\nsame row that I took the data from in the first place. But I don't\nknow how. I can write to a new table with something like the below,\nbut what I'd really like to do is put the data back into the table I\ngot it from.\n\n# Try to write the data back\ndbWriteTable(con, \"new_data\", ucam_no2$interpolated_data)\n\nThanks\n\nJames",
+      "body_snippet": "Dear all,\n\nSorry if this isn't quite the right place, but it's the first time\nI've posted here. My issue is to do with writing to a PostgreSQL\ndatabase from within R. My situation is best explained by",
+      "thread_id": "thread-e84916dea3d0",
+      "thread_depth": 0,
+      "month": "2012-09"
+    },
+    {
+      "id": "msg-d21b65ecd0ee",
+      "message_id": "<CANeAVB=5Rm17sQnfvAThu0X7z3P=gOX5WcqadJjss+0J0QzBZA@mail.gmail.com>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2012-09-28T10:19:47-04:00",
+      "subject": "[R-sig-DB] R and PostgreSQL - Writing data?",
+      "subject_clean": "R and PostgreSQL - Writing data?",
+      "in_reply_to": "<CAMu32ACFMBa7Z-6ZepagkdsXvqxi7ObSXCa-hn0FMcLQUZ9Y+g@mail.gmail.com>",
+      "references": [
+        "<CAMu32ACFMBa7Z-6ZepagkdsXvqxi7ObSXCa-hn0FMcLQUZ9Y+g@mail.gmail.com>"
+      ],
+      "body_plain": "On Fri, Sep 28, 2012 at 10:14 AM, James David Smith\n<james.david.smith at gmail.com> wrote:\n> Dear all,\n>\n> Sorry if this isn't quite the right place, but it's the first time\n> I've posted here. My issue is to do with writing to a PostgreSQL\n> database from within R. My situation is best explained by some R code\n> to start:\n>\n> #Connect to the database\n> con <- dbConnect(PostgreSQL(), user=\"postgres\", password=\"password\",\n> dbname=\"database\")\n>\n> #Get some data out of the database.\n> ucam_no2$original_data <- dbGetQuery(con, \"select ucam_no2 FROM table\")\n>\n> This returns say 10000 rows of data, but there is only data in about\n> half of those rows. What I want to do is interpolate the missing data\n> so I do this:\n>\n> #Generate some data\n> ucam_no2$interpolated_data <- na.approx(ucam_data$ucam_no2, na.rm = FALSE)\n>\n> This works well and I now have 10000 rows of data with no empty cells.\n> I now want to write this back into my PostgresSQL database. Into the\n> same row that I took the data from in the first place. But I don't\n> know how. I can write to a new table with something like the below,\n> but what I'd really like to do is put the data back into the table I\n> got it from.\n>\n> # Try to write the data back\n> dbWriteTable(con, \"new_data\", ucam_no2$interpolated_data)\n\nHi, James.\n\nYou'll need to look into doing a SQL UPDATE.  That is the standard way\nto \"put data back into the table I got it from\".\n\nSean",
+      "body_snippet": "On Fri, Sep 28, 2012 at 10:14 AM, James David Smith\n<james.david.smith at gmail.com> wrote:\n> Dear all,\n>\n> Sorry if this isn't quite the right place, but it's the first time\n> I've posted here. My is",
+      "thread_id": "thread-e84916dea3d0",
+      "thread_depth": 1,
+      "month": "2012-09"
+    },
+    {
+      "id": "msg-6e9cf566ee10",
+      "message_id": "<CAMu32ADVRDn=ExeAYnVn-Xv7YDhFJgAe=qAJC4ai0OaQohV3qA@mail.gmail.com>",
+      "from_name": "James David Smith",
+      "from_email_hash": "dd89f045970e588c9c1cd25b447415e2e9bf5d07f9e3d341647ec316ff7a19fe",
+      "date": "2012-09-28T15:36:20+01:00",
+      "subject": "[R-sig-DB] R and PostgreSQL - Writing data?",
+      "subject_clean": "R and PostgreSQL - Writing data?",
+      "in_reply_to": "<CANeAVB=5Rm17sQnfvAThu0X7z3P=gOX5WcqadJjss+0J0QzBZA@mail.gmail.com>",
+      "references": [
+        "<CAMu32ACFMBa7Z-6ZepagkdsXvqxi7ObSXCa-hn0FMcLQUZ9Y+g@mail.gmail.com>",
+        "<CANeAVB=5Rm17sQnfvAThu0X7z3P=gOX5WcqadJjss+0J0QzBZA@mail.gmail.com>"
+      ],
+      "body_plain": "Hi Sean,\n\nThanks for the reply. I'm familiar with UPDATE queries when working in\nPostgreSQL, but not from within R. Would it look something like this?\n\ndbWriteTable(con, \" UPDATE table SET ucam_no2 = 'ucam_no2$interpolated_data' \")\n\nMy problem is how to get the R data 'within' my SQL statement I think.\n\nThanks\n\nJames\n\n\n\nOn 28 September 2012 15:19, Sean Davis <sdavis2 at mail.nih.gov> wrote:\n> On Fri, Sep 28, 2012 at 10:14 AM, James David Smith\n> <james.david.smith at gmail.com> wrote:\n>> Dear all,\n>>\n>> Sorry if this isn't quite the right place, but it's the first time\t\nSendSave NowDiscardDraft autosaved at 15:36 (0 minutes ago)\n33% full\nUsing 3.4 GB of your 10.1 GB\n?2012 Google - Terms & Privacy\nLast account activity: 50 minutes ago\nDetails\nPeople (2)\nSean Davis\t\nAdd to circles\n\nShow details\nAds ? Why these ads?\nBig Data Too Slow?\nReal-Time Analytics for Big Data. Visual Drag & Drop UI. Quick & Easy\nPentahoBigData.com\nTalend Open Source ESB\nOpen Source ESB Based on Apache CXF and Apache Camel. Free Download!\nwww.talend.com/Free_ESB_Software\nWarp I/O for SQL Server\nSpeed SQL Server performance 3x Faster I/O, reduced storage\nwww.confio.com/warp-io\nStorage Container Sussex\nEx-Shipping Containers Sale & Hire Storage Container 0800 043 6311\nwww.CsShippingContainers.co.uk\nMore about...\nMS Access Database SQL ?\nDatabase ?\nExcel Database Query ?\nOracle Database Problems ?\n\n>> I've posted here. My issue is to do with writing to a PostgreSQL\n>> database from within R. My situation is best explained by some R code\n>> to start:\n>>\n>> #Connect to the database\n>> con <- dbConnect(PostgreSQL(), user=\"postgres\", password=\"password\",\n>> dbname=\"database\")\n>>\n>> #Get some data out of the database.\n>> ucam_no2$original_data <- dbGetQuery(con, \"select ucam_no2 FROM table\")\n>>\n>> This returns say 10000 rows of data, but there is only data in about\n>> half of those rows. What I want to do is interpolate the missing data\n>> so I do this:\n>>\n>> #Generate some data\n>> ucam_no2$interpolated_data <- na.approx(ucam_data$ucam_no2, na.rm = FALSE)\n>>\n>> This works well and I now have 10000 rows of data with no empty cells.\n>> I now want to write this back into my PostgresSQL database. Into the\n>> same row that I took the data from in the first place. But I don't\n>> know how. I can write to a new table with something like the below,\n>> but what I'd really like to do is put the data back into the table I\n>> got it from.\n>>\n>> # Try to write the data back\n>> dbWriteTable(con, \"new_data\", ucam_no2$interpolated_data)\n>\n> Hi, James.\n>\n> You'll need to look into doing a SQL UPDATE.  That is the standard way\n> to \"put data back into the table I got it from\".\n>\n> Sean",
+      "body_snippet": "Hi Sean,\n\nThanks for the reply. I'm familiar with UPDATE queries when working in\nPostgreSQL, but not from within R. Would it look something like this?\n\ndbWriteTable(con, \" UPDATE table SET ucam_no2 = ",
+      "thread_id": "thread-e84916dea3d0",
+      "thread_depth": 2,
+      "month": "2012-09"
+    },
+    {
+      "id": "msg-ccf768292774",
+      "message_id": "<CANeAVBksja5EyLYNbCk_mz=msidSFjKU8RgCzr09-j9a5y23iQ@mail.gmail.com>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2012-09-28T11:43:22-04:00",
+      "subject": "[R-sig-DB] R and PostgreSQL - Writing data?",
+      "subject_clean": "R and PostgreSQL - Writing data?",
+      "in_reply_to": "<CAMu32ADVRDn=ExeAYnVn-Xv7YDhFJgAe=qAJC4ai0OaQohV3qA@mail.gmail.com>",
+      "references": [
+        "<CAMu32ACFMBa7Z-6ZepagkdsXvqxi7ObSXCa-hn0FMcLQUZ9Y+g@mail.gmail.com>",
+        "<CANeAVB=5Rm17sQnfvAThu0X7z3P=gOX5WcqadJjss+0J0QzBZA@mail.gmail.com>",
+        "<CAMu32ADVRDn=ExeAYnVn-Xv7YDhFJgAe=qAJC4ai0OaQohV3qA@mail.gmail.com>"
+      ],
+      "body_plain": "On Fri, Sep 28, 2012 at 10:36 AM, James David Smith\n<james.david.smith at gmail.com> wrote:\n> Hi Sean,\n>\n> Thanks for the reply. I'm familiar with UPDATE queries when working in\n> PostgreSQL, but not from within R. Would it look something like this?\n>\n> dbWriteTable(con, \" UPDATE table SET ucam_no2 = 'ucam_no2$interpolated_data' \")\n>\n> My problem is how to get the R data 'within' my SQL statement I think.\n\nTo do an update, you'll need to loop through your data.frame and issue\na dbSendQuery().  To create the SQL string, I often use something\nlike:\n\nsprintf(\"UPDATE originalTable SET ucam_no2=%f WHERE originalTable.id = %d\",....)\n\nYou can't do this in one step, unfortunately.  This is how UPDATE\nworks and has nothing to do with R.\n\nSean\n\n\n>\n> On 28 September 2012 15:19, Sean Davis <sdavis2 at mail.nih.gov> wrote:\n>> On Fri, Sep 28, 2012 at 10:14 AM, James David Smith\n>> <james.david.smith at gmail.com> wrote:\n>>> Dear all,\n>>>\n>>> Sorry if this isn't quite the right place, but it's the first time\n> SendSave NowDiscardDraft autosaved at 15:36 (0 minutes ago)\n> 33% full\n> Using 3.4 GB of your 10.1 GB\n> ?2012 Google - Terms & Privacy\n> Last account activity: 50 minutes ago\n> Details\n> People (2)\n> Sean Davis\n> Add to circles\n>\n> Show details\n> Ads ? Why these ads?\n> Big Data Too Slow?\n> Real-Time Analytics for Big Data. Visual Drag & Drop UI. Quick & Easy\n> PentahoBigData.com\n> Talend Open Source ESB\n> Open Source ESB Based on Apache CXF and Apache Camel. Free Download!\n> www.talend.com/Free_ESB_Software\n> Warp I/O for SQL Server\n> Speed SQL Server performance 3x Faster I/O, reduced storage\n> www.confio.com/warp-io\n> Storage Container Sussex\n> Ex-Shipping Containers Sale & Hire Storage Container 0800 043 6311\n> www.CsShippingContainers.co.uk\n> More about...\n> MS Access Database SQL ?\n> Database ?\n> Excel Database Query ?\n> Oracle Database Problems ?\n>\n>>> I've posted here. My issue is to do with writing to a PostgreSQL\n>>> database from within R. My situation is best explained by some R code\n>>> to start:\n>>>\n>>> #Connect to the database\n>>> con <- dbConnect(PostgreSQL(), user=\"postgres\", password=\"password\",\n>>> dbname=\"database\")\n>>>\n>>> #Get some data out of the database.\n>>> ucam_no2$original_data <- dbGetQuery(con, \"select ucam_no2 FROM table\")\n>>>\n>>> This returns say 10000 rows of data, but there is only data in about\n>>> half of those rows. What I want to do is interpolate the missing data\n>>> so I do this:\n>>>\n>>> #Generate some data\n>>> ucam_no2$interpolated_data <- na.approx(ucam_data$ucam_no2, na.rm = FALSE)\n>>>\n>>> This works well and I now have 10000 rows of data with no empty cells.\n>>> I now want to write this back into my PostgresSQL database. Into the\n>>> same row that I took the data from in the first place. But I don't\n>>> know how. I can write to a new table with something like the below,\n>>> but what I'd really like to do is put the data back into the table I\n>>> got it from.\n>>>\n>>> # Try to write the data back\n>>> dbWriteTable(con, \"new_data\", ucam_no2$interpolated_data)\n>>\n>> Hi, James.\n>>\n>> You'll need to look into doing a SQL UPDATE.  That is the standard way\n>> to \"put data back into the table I got it from\".\n>>\n>> Sean",
+      "body_snippet": "On Fri, Sep 28, 2012 at 10:36 AM, James David Smith\n<james.david.smith at gmail.com> wrote:\n> Hi Sean,\n>\n> Thanks for the reply. I'm familiar with UPDATE queries when working in\n> PostgreSQL, but not ",
+      "thread_id": "thread-e84916dea3d0",
+      "thread_depth": 3,
+      "month": "2012-09"
+    },
+    {
+      "id": "msg-b259c9c63555",
+      "message_id": "<f3b9eca0-6059-440d-b636-729bf05438f0@default>",
+      "from_name": "Denis Mukhin",
+      "from_email_hash": "041ea1b7eb0f43534e23277b525b1c45c8ea6faff2576dba09f1defeb90ed34d",
+      "date": "2012-09-28T09:13:41-07:00",
+      "subject": "[R-sig-DB] R and PostgreSQL - Writing data?",
+      "subject_clean": "R and PostgreSQL - Writing data?",
+      "in_reply_to": "<CANeAVBksja5EyLYNbCk_mz=msidSFjKU8RgCzr09-j9a5y23iQ@mail.gmail.com>",
+      "references": [
+        "<CAMu32ACFMBa7Z-6ZepagkdsXvqxi7ObSXCa-hn0FMcLQUZ9Y+g@mail.gmail.com>",
+        "<CANeAVB=5Rm17sQnfvAThu0X7z3P=gOX5WcqadJjss+0J0QzBZA@mail.gmail.com>",
+        "<CAMu32ADVRDn=ExeAYnVn-Xv7YDhFJgAe=qAJC4ai0OaQohV3qA@mail.gmail.com>",
+        "<CANeAVBksja5EyLYNbCk_mz=msidSFjKU8RgCzr09-j9a5y23iQ@mail.gmail.com>"
+      ],
+      "body_plain": "James,\n\nI have never tried RPostgreSQL before but in ROracle which is also a DBI based interface you can do something like this:\n\nlibrary(ROracle)\ncon <- dbConnect(Oracle(), \"scott\", \"tiger\")\ndbGetQuery(con, \"create table foo as select * from emp\")\n\ndat <- dbGetQuery(con, \"select * from foo\")\ndat$SAL <- dat$SAL*10\ndbGetQuery(con, \"update foo set sal = :1 where empno = :2\",\n           data = dat[,c(\"SAL\",\"EMPNO\")])\ndbCommit(con)\ndbGetQuery(con, \"select * from foo\")\n\ndbGetQuery(con, \"drop table foo purge\")\ndbDisconnect(con)\n\nDenis\n\n-----Original Message-----\nFrom: Sean Davis [mailto:sdavis2 at mail.nih.gov] \nSent: Friday, September 28, 2012 11:43 AM\nTo: James David Smith\nCc: r-sig-db at r-project.org\nSubject: Re: [R-sig-DB] R and PostgreSQL - Writing data?\n\nOn Fri, Sep 28, 2012 at 10:36 AM, James David Smith <james.david.smith at gmail.com> wrote:\n> Hi Sean,\n>\n> Thanks for the reply. I'm familiar with UPDATE queries when working in \n> PostgreSQL, but not from within R. Would it look something like this?\n>\n> dbWriteTable(con, \" UPDATE table SET ucam_no2 = \n> 'ucam_no2$interpolated_data' \")\n>\n> My problem is how to get the R data 'within' my SQL statement I think.\n\nTo do an update, you'll need to loop through your data.frame and issue a dbSendQuery().  To create the SQL string, I often use something\nlike:\n\nsprintf(\"UPDATE originalTable SET ucam_no2=%f WHERE originalTable.id = %d\",....)\n\nYou can't do this in one step, unfortunately.  This is how UPDATE works and has nothing to do with R.\n\nSean\n\n\n>\n> On 28 September 2012 15:19, Sean Davis <sdavis2 at mail.nih.gov> wrote:\n>> On Fri, Sep 28, 2012 at 10:14 AM, James David Smith \n>> <james.david.smith at gmail.com> wrote:\n>>> Dear all,\n>>>\n>>> Sorry if this isn't quite the right place, but it's the first time\n> SendSave NowDiscardDraft autosaved at 15:36 (0 minutes ago) 33% full \n> Using 3.4 GB of your 10.1 GB\n> ?2012 Google - Terms & Privacy\n> Last account activity: 50 minutes ago\n> Details\n> People (2)\n> Sean Davis\n> Add to circles\n>\n> Show details\n> Ads ? Why these ads?\n> Big Data Too Slow?\n> Real-Time Analytics for Big Data. Visual Drag & Drop UI. Quick & Easy \n> PentahoBigData.com Talend Open Source ESB Open Source ESB Based on \n> Apache CXF and Apache Camel. Free Download!\n> www.talend.com/Free_ESB_Software\n> Warp I/O for SQL Server\n> Speed SQL Server performance 3x Faster I/O, reduced storage \n> www.confio.com/warp-io Storage Container Sussex Ex-Shipping Containers \n> Sale & Hire Storage Container 0800 043 6311 \n> www.CsShippingContainers.co.uk More about...\n> MS Access Database SQL ?\n> Database ?\n> Excel Database Query ?\n> Oracle Database Problems ?\n>\n>>> I've posted here. My issue is to do with writing to a PostgreSQL \n>>> database from within R. My situation is best explained by some R \n>>> code to start:\n>>>\n>>> #Connect to the database\n>>> con <- dbConnect(PostgreSQL(), user=\"postgres\", password=\"password\",\n>>> dbname=\"database\")\n>>>\n>>> #Get some data out of the database.\n>>> ucam_no2$original_data <- dbGetQuery(con, \"select ucam_no2 FROM \n>>> table\")\n>>>\n>>> This returns say 10000 rows of data, but there is only data in about \n>>> half of those rows. What I want to do is interpolate the missing \n>>> data so I do this:\n>>>\n>>> #Generate some data\n>>> ucam_no2$interpolated_data <- na.approx(ucam_data$ucam_no2, na.rm = \n>>> FALSE)\n>>>\n>>> This works well and I now have 10000 rows of data with no empty cells.\n>>> I now want to write this back into my PostgresSQL database. Into the \n>>> same row that I took the data from in the first place. But I don't \n>>> know how. I can write to a new table with something like the below, \n>>> but what I'd really like to do is put the data back into the table I \n>>> got it from.\n>>>\n>>> # Try to write the data back\n>>> dbWriteTable(con, \"new_data\", ucam_no2$interpolated_data)\n>>\n>> Hi, James.\n>>\n>> You'll need to look into doing a SQL UPDATE.  That is the standard \n>> way to \"put data back into the table I got it from\".\n>>\n>> Sean\n\n_______________________________________________\nR-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "James,\n\nI have never tried RPostgreSQL before but in ROracle which is also a DBI based interface you can do something like this:\n\nlibrary(ROracle)\ncon <- dbConnect(Oracle(), \"scott\", \"tiger\")\ndbGetQue",
+      "thread_id": "thread-e84916dea3d0",
+      "thread_depth": 4,
+      "month": "2012-09"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-b66b93907e2f",
+      "subject": "RODBC connection linux (ubuntu)",
+      "message_count": 2,
+      "participants": [
+        "Luis Ridao",
+        "Marc Schwartz"
+      ],
+      "started": "2012-09-07T14:26:01+01:00",
+      "last_reply": "2012-09-07T09:20:36-05:00",
+      "root_message_id": "msg-b66b93907e2f"
+    },
+    {
+      "id": "thread-8fc7daef7638",
+      "subject": "RMySQL and RPostgreSQL interaction",
+      "message_count": 9,
+      "participants": [
+        "NISHIYAMA Tomoaki",
+        "Paul Gilbert",
+        "Prof Brian Ripley",
+        "Sebastian P. Luque",
+        "Spencer Graves"
+      ],
+      "started": "2012-09-18T11:40:26-04:00",
+      "last_reply": "2012-09-19T09:26:05+01:00",
+      "root_message_id": "msg-8fc7daef7638"
+    },
+    {
+      "id": "thread-e84916dea3d0",
+      "subject": "R and PostgreSQL - Writing data?",
+      "message_count": 5,
+      "participants": [
+        "Denis Mukhin",
+        "James David Smith",
+        "Sean Davis"
+      ],
+      "started": "2012-09-28T15:14:51+01:00",
+      "last_reply": "2012-09-28T09:13:41-07:00",
+      "root_message_id": "msg-e84916dea3d0"
+    }
+  ]
+}

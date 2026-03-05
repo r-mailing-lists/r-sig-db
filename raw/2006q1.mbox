@@ -1,0 +1,1526 @@
+From je||@horner @end|ng |rom v@nderb||t@edu  Fri Feb 10 19:04:25 2006
+From: je||@horner @end|ng |rom v@nderb||t@edu (Jeffrey Horner)
+Date: Fri, 10 Feb 2006 12:04:25 -0600
+Subject: [R-sig-DB] RODBC and BLOBS
+Message-ID: <43ECD5A9.8040700@vanderbilt.edu>
+
+Does RODBC support BLOBS? I ask because I would like to 
+serialize(ascii=FALSE) an R variable and store it in a database table.
+Is this doable?
+
+My naive attempt went like this:
+
+ > library(RODBC)
+ > chan <- odbcConnect('test') # to mysql thru myodbc thru unixodbc
+ > sqlQuery(chan,"create table vars( name varchar(255), val blob)")
+[1] "No Data"
+ > data(iris)
+ > x<-serialize(iris,connection=NULL)
+ > sqlQuery(chan,paste("insert into vars VALUES ('iris','",x,"')",sep=''))
+character(0)
+ > y<- sqlQuery(chan,"select * from vars")
+ > z<-unserialize(y$val)
+Error in unserialize(y$val) : 'connection' must be a connection
+ > typeof(y$val)
+[1] "integer"
+
+-- 
+Jeffrey Horner       Computer Systems Analyst         School of Medicine
+615-322-8606         Department of Biostatistics   Vanderbilt University
+
+
+
+From jhorn @end|ng |rom bu@edu  Mon Feb 20 12:29:21 2006
+From: jhorn @end|ng |rom bu@edu (Jason Horn)
+Date: Mon, 20 Feb 2006 06:29:21 -0500
+Subject: [R-sig-DB] RMySQL Error Messages, crashing R
+Message-ID: <CA95591D-FB32-47CD-9D36-B38942F77C85@bu.edu>
+
+I am having trouble getting RMySQL working with R.  It did at one  
+point, work with an older 1.x version of R, but now with R2.2.1, I am  
+getting the following messages on my OS X 10.4.5 system:
+
+RS-DBI driver warning: (MySQL mismatch between compiled version  
+4.0.24 and runtime version 4.1.14)
+
+if I then try to run any further db commands such as dbConnect, R  
+crashes with a bus error.  When I started getting this error, I was  
+using MySQL 5.  I have since removed that installation and instead  
+installed the older 4.0.24.  I still get the error message.  I have  
+also tried other versions of MySQL, but the error persists.  I have  
+also tried installing RMySQL from sources, but it makes no difference.
+
+Does anyone know what this error message means.  Are there any OS X  
+users that have with R 2.x working with RMySQL?
+
+Please help!
+
+- Jason
+
+
+Jason Horn
+Boston University Department of Biology
+5 Cumington Street  Boston, MA 02215
+
+jhorn at bu.edu
+office: 617 353 6987
+cell: 401 588 2766
+
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From jhorn @end|ng |rom bu@edu  Mon Feb 20 14:09:49 2006
+From: jhorn @end|ng |rom bu@edu (Jason Horn)
+Date: Mon, 20 Feb 2006 08:09:49 -0500
+Subject: [R-sig-DB] [R] RMySQL Error Messages, crashing R
+In-Reply-To: <Pine.LNX.4.64.0602192017580.12132@springer.berkeley.edu>
+References: <E586A268-8D74-46C2-9169-171171D4F9A5@bu.edu>
+	<Pine.LNX.4.64.0602192017580.12132@springer.berkeley.edu>
+Message-ID: <0E366731-895B-42DD-8E70-A9C7D0E66B05@bu.edu>
+
+Phil,
+
+Thanks for the tip.  I have tried rebuilding the RMySQL library, but  
+it always fails.  When I run:
+
+R CMD INSTALL --configure-args='--with-mysql-inc=/usr/local/mysql/ 
+include --with-mysql-lib=/usr/local/mysql/lib' /Users/jason/Desktop/ 
+RMySQL_0.5-7.tar.gz.tar
+
+I get ...
+
+gcc-3.3 -bundle -flat_namespace -undefined suppress -L/usr/local/lib - 
+o RMySQL.so RS-DBI.o RS-MySQL.o -L/usr/local/mysql/lib -lmysqlclient - 
+lz -lcc_dynamic -F/Library/Frameworks/R.framework/.. -framework R
+ld: can't locate file for: -lcc_dynamic
+make: *** [RMySQL.so] Error 1
+ERROR: compilation failed for package 'RMySQL'
+
+The MySQL that I have is 5.0.18 that I downloaded as a binary  
+directly from mysql.com.  Is your mySQL installation from elsewhere?   
+What do you mean "...that I installed through port."
+
+It sounds like you have everything working.  What commands did you  
+use to get mySQL 5 installed?  To get  RMySQL compiled?  Any help  
+here is appreciated. I am heavily dependent on R working with mySQL  
+for my project.
+
+Thanks,
+
+- Jason
+
+On Feb 19, 2006, at 11:21 PM, Phil Spector wrote:
+
+> Jason -
+>     In order to get mysql5 to work with R.2.2 on Tiger, I had to  
+> rebuild
+> the RMySQL library against the mysql libraries that I installed  
+> through port.
+> (You didn't mention where you got your mysql from).  The problem I saw
+> was that I kept seeing the warning message, and R wouldn't connect  
+> to the database, but I'm pretty sure what you need to do is rebuild  
+> the R library
+> against the system libraries that you've currently got installed.
+>
+>                                        - Phil Spector
+> 					 Statistical Computing Facility
+> 					 Department of Statistics
+> 					 UC Berkeley
+> 					 spector at stat.berkeley.edu
+>
+>
+> On Sun, 19 Feb 2006, Jason Horn wrote:
+>
+>> I am having trouble getting RMySQL working with R.  It did at one
+>> point, work with an older 1.x version of R, but now with R2.2.1, I am
+>> getting the following messages on my OS X 10.4.5 system:
+>>
+>> RS-DBI driver warning: (MySQL mismatch between compiled version
+>> 4.0.24 and runtime version 4.1.14)
+>>
+>> if I then try to run any further db commands such as dbConnect, R
+>> crashes with a bus error.  When I started getting this error, I was
+>> using MySQL 5.  I have since removed that installation and instead
+>> installed the older 4.0.24.  I still get the error message.  I have
+>> also tried other versions of MySQL, but the error persists.  I have
+>> also tried installing RMySQL from sources, but it makes no  
+>> difference.
+>>
+>> Does anyone know what this error message means.  Are there any OS X
+>> users that have with R 2.x working with RMySQL?
+>>
+>> Please help!
+>>
+>> - Jason
+>>
+>>
+>> Jason Horn
+>> Boston University Department of Biology
+>> 5 Cumington Street  Boston, MA 02215
+>>
+>> jhorn at bu.edu
+>> office: 617 353 6987
+>> cell: 401 588 2766
+>>
+>>
+>>
+>> 	[[alternative HTML version deleted]]
+>>
+>> ______________________________________________
+>> R-help at stat.math.ethz.ch mailing list
+>> https://stat.ethz.ch/mailman/listinfo/r-help
+>> PLEASE do read the posting guide! http://www.R-project.org/posting- 
+>> guide.html
+>>
+>
+
+
+
+From jhorn @end|ng |rom bu@edu  Mon Feb 20 14:31:28 2006
+From: jhorn @end|ng |rom bu@edu (Jason Horn)
+Date: Mon, 20 Feb 2006 08:31:28 -0500
+Subject: [R-sig-DB] (no subject)
+Message-ID: <36993BFB-C6F9-4199-99B5-9D2C96423838@bu.edu>
+
+Brian,
+
+I am having exactly the same problem.  I am very interested to know  
+if you have R 2.2.x, mySQL and RMySQL working together successfully  
+(it sounds like you do).  If recompiling MySQL with gcc 3.3 was the  
+solution, can you tell me how you managed to do it?  I have never  
+tried to compile mySQL before, much less with a version of gcc that I  
+don't have on my system (I currently have gcc 4.0.1 on my OS X 10.4.5  
+system).  Any and all details are welcome.
+
+Thanks,
+
+-Jason
+
+Jason Horn
+Boston University Department of Biology
+5 Cumington Street  Boston, MA 02215
+
+jhorn at bu.edu
+office: 617 353 6987
+cell: 401 588 2766
+
+
+> Update on this thread:
+>
+> It turned out that, not only did I need to install RMySQL from
+> sources, I also needed to reinstall MySQL from sources, using gcc 3.3
+> as the c and c++ compiler.  The binary version of MySQL 5.0.15 was
+> compiled using gcc 4.0, which caused some kind of conflict with R
+> relating to the C API (R complained as follows):
+>
+> >> ld: truncated or malformed archive: /usr/local/mysql/lib/
+> >> libmysqlclient.a (ranlib structures in table of contents extends  
+> past
+> >> the end of the table of contents, can't load from it)
+>
+> Anyway, it all works now.  I am not sure whether it was the compiler
+> version that did the trick, of whether something else in my
+> configuration was different than in the MySQL binary (perhaps
+> relating to the ld flags) but it works.
+>
+> FP
+>
+> On Oct 20, 2005, at 1:22 AM, Prof Brian Ripley wrote:
+>
+> > On Thu, 20 Oct 2005, Parlamis Franklin wrote:
+> >
+> >> I upgraded R to 2.2.0 (Mac Cocoa GUI 1.13) this evening.  I am
+> >> running MySQL Standard version 4.1.14 locally, which I installed
+> >> several months ago from binaries on the MySQL web site (mysql-
+> >> standard-4.1.14-apple-darwin8.2.0-powerpc-64bit.dmg).  Before I
+> >> upgraded R, everything worked fine with RMySQL and DBI (all I used
+> >> was DBSendQuery, DBReadTable and DBWriteTable).
+> >>
+> >> However, now when I load the DBI package I get the following error:
+> >>
+> >>         Warning message:
+> >>         RS-DBI driver warning: (MySQL mismatch between compiled
+> >> version 4.0.24 and runtime version 4.1.14)
+> >>
+> >> Then, if I attempt to use one of the DBI functions, say  
+> DBReadTable,
+> >> R quits unexpectedly.  I reinstalled MySQL from binaries, and I  
+> also
+> >> reinstalled the DBI and RMySQL packages from binaries.  Nothing has
+> >> helped.  I have never had MySQL 4.0.24 on my computer (4.1.14  
+> was my
+> >> first and only install).
+> >
+> > It is the (powerpc/2.2) RMySQL MacOS X binary that is compiled
+> > against MySQL 4.0.24.  It seems you need to install RMySQL from the
+> > sources.
+> >
+> > This is not really a R-sig-DB topic but a MacOS one.
+> >
+> > --
+> > Brian D. Ripley,                  ripley at stats.ox.ac.uk
+> > Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+> > University of Oxford,             Tel:  +44 1865 272861 (self)
+> > 1 South Parks Road,                     +44 1865 272866 (PA)
+> > Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From jhorn @end|ng |rom bu@edu  Mon Feb 20 14:35:23 2006
+From: jhorn @end|ng |rom bu@edu (Jason Horn)
+Date: Mon, 20 Feb 2006 08:35:23 -0500
+Subject: [R-sig-DB] [R] RMySQL Error Messages, crashing R
+Message-ID: <9C7C73B4-54C6-4D0D-B2ED-C7DAEAE1D95F@bu.edu>
+
+Phil,
+
+Thanks for the tip.  I have tried rebuilding the RMySQL library, but  
+it always fails.  When I run:
+
+R CMD INSTALL --configure-args='--with-mysql-inc=/usr/local/mysql/ 
+include --with-mysql-lib=/usr/local/mysql/lib' /Users/jason/Desktop/ 
+RMySQL_0.5-7.tar.gz.tar
+
+I get ...
+
+gcc-3.3 -bundle -flat_namespace -undefined suppress -L/usr/local/lib - 
+o RMySQL.so RS-DBI.o RS-MySQL.o -L/usr/local/mysql/lib -lmysqlclient - 
+lz -lcc_dynamic -F/Library/Frameworks/R.framework/.. -framework R
+ld: can't locate file for: -lcc_dynamic
+make: *** [RMySQL.so] Error 1
+ERROR: compilation failed for package 'RMySQL'
+
+The MySQL that I have is 5.0.18 that I downloaded as a binary  
+directly from mysql.com.  Is your mySQL installation from elsewhere?   
+What do you mean "...that I installed through port."
+
+It sounds like you have everything working.  What commands did you  
+use to get mySQL 5 installed?  To get  RMySQL compiled?  Any help  
+here is appreciated. I am heavily dependent on R working with mySQL  
+for my project.
+
+Thanks,
+
+- Jason
+
+On Feb 19, 2006, at 11:21 PM, Phil Spector wrote:
+
+
+> Jason -
+>     In order to get mysql5 to work with R.2.2 on Tiger, I had to  
+> rebuild
+> the RMySQL library against the mysql libraries that I installed  
+> through port.
+> (You didn't mention where you got your mysql from).  The problem I saw
+> was that I kept seeing the warning message, and R wouldn't connect  
+> to the database, but I'm pretty sure what you need to do is rebuild  
+> the R library
+> against the system libraries that you've currently got installed.
+>
+>                                        - Phil Spector
+> 					 Statistical Computing Facility
+> 					 Department of Statistics
+> 					 UC Berkeley
+> 					 spector at stat.berkeley.edu
+>
+>
+> On Sun, 19 Feb 2006, Jason Horn wrote:
+>
+>
+>> I am having trouble getting RMySQL working with R.  It did at one
+>> point, work with an older 1.x version of R, but now with R2.2.1, I am
+>> getting the following messages on my OS X 10.4.5 system:
+>>
+>> RS-DBI driver warning: (MySQL mismatch between compiled version
+>> 4.0.24 and runtime version 4.1.14)
+>>
+>> if I then try to run any further db commands such as dbConnect, R
+>> crashes with a bus error.  When I started getting this error, I was
+>> using MySQL 5.  I have since removed that installation and instead
+>> installed the older 4.0.24.  I still get the error message.  I have
+>> also tried other versions of MySQL, but the error persists.  I have
+>> also tried installing RMySQL from sources, but it makes no  
+>> difference.
+>>
+>> Does anyone know what this error message means.  Are there any OS X
+>> users that have with R 2.x working with RMySQL?
+>>
+>> Please help!
+>>
+>> - Jason
+>>
+>>
+>> Jason Horn
+>> Boston University Department of Biology
+>> 5 Cumington Street  Boston, MA 02215
+>>
+>> jhorn at bu.edu
+>> office: 617 353 6987
+>> cell: 401 588 2766
+>>
+>>
+>>
+>> 	[[alternative HTML version deleted]]
+>>
+>> ______________________________________________
+>> R-help at stat.math.ethz.ch mailing list
+>> https://stat.ethz.ch/mailman/listinfo/r-help
+>> PLEASE do read the posting guide! http://www.R-project.org/posting- 
+>> guide.html
+>>
+>>
+>
+>
+
+
+
+From @|mon@urb@nek @end|ng |rom r-project@org  Mon Feb 20 15:41:53 2006
+From: @|mon@urb@nek @end|ng |rom r-project@org (Simon Urbanek)
+Date: Mon, 20 Feb 2006 09:41:53 -0500
+Subject: [R-sig-DB] [R-SIG-Mac] [R] RMySQL Error Messages, crashing R
+In-Reply-To: <9C7C73B4-54C6-4D0D-B2ED-C7DAEAE1D95F@bu.edu>
+References: <9C7C73B4-54C6-4D0D-B2ED-C7DAEAE1D95F@bu.edu>
+Message-ID: <D07B67A7-05D3-4B61-9A45-F2E04FFD27BC@r-project.org>
+
+Jason,
+
+please consult the R FAQ for Mac OS X, this has been discussed many  
+times - run
+sudo gcc_select 3.3
+
+Just in case you are using Xcode 2.2.1, you may also want to read this:
+https://stat.ethz.ch/pipermail/r-sig-mac/2006-January/002593.html
+
+As it says, last time I checked, I had no problem using the stock  
+MySQL libraries (i.e. simply the binary from www.mysql.com), no need  
+to re-compile it.
+
+Cheers,
+Simon
+
+
+On Feb 20, 2006, at 8:35 AM, Jason Horn wrote:
+
+> Phil,
+>
+> Thanks for the tip.  I have tried rebuilding the RMySQL library, but
+> it always fails.  When I run:
+>
+> R CMD INSTALL --configure-args='--with-mysql-inc=/usr/local/mysql/
+> include --with-mysql-lib=/usr/local/mysql/lib' /Users/jason/Desktop/
+> RMySQL_0.5-7.tar.gz.tar
+>
+> I get ...
+>
+> gcc-3.3 -bundle -flat_namespace -undefined suppress -L/usr/local/lib -
+> o RMySQL.so RS-DBI.o RS-MySQL.o -L/usr/local/mysql/lib -lmysqlclient -
+> lz -lcc_dynamic -F/Library/Frameworks/R.framework/.. -framework R
+> ld: can't locate file for: -lcc_dynamic
+> make: *** [RMySQL.so] Error 1
+> ERROR: compilation failed for package 'RMySQL'
+>
+> The MySQL that I have is 5.0.18 that I downloaded as a binary
+> directly from mysql.com.  Is your mySQL installation from elsewhere?
+> What do you mean "...that I installed through port."
+>
+> It sounds like you have everything working.  What commands did you
+> use to get mySQL 5 installed?  To get  RMySQL compiled?  Any help
+> here is appreciated. I am heavily dependent on R working with mySQL
+> for my project.
+
+
+
+From jhorn @end|ng |rom bu@edu  Mon Feb 20 19:40:27 2006
+From: jhorn @end|ng |rom bu@edu (Jason Horn)
+Date: Mon, 20 Feb 2006 13:40:27 -0500
+Subject: [R-sig-DB] Extracting a column of numbers from a data frame
+Message-ID: <84E65AB7-114A-495F-BB12-DF2307761238@bu.edu>
+
+When using RMySQL to retrieve data from a database, the result is  
+always a data frame.  What is the best way to take get the numbers  
+from a column of the data frame into a vector?  That is, I just want  
+the column of numbers from the data frame and not the column label.   
+I'm sure this has been done many times, but I'm new to this, so I  
+thought I'd ask.
+
+Thanks,
+
+- Jason
+
+
+
+From b@te@ @end|ng |rom @t@t@w|@c@edu  Mon Feb 20 21:37:50 2006
+From: b@te@ @end|ng |rom @t@t@w|@c@edu (Douglas Bates)
+Date: Mon, 20 Feb 2006 14:37:50 -0600
+Subject: [R-sig-DB] Extracting a column of numbers from a data frame
+In-Reply-To: <84E65AB7-114A-495F-BB12-DF2307761238@bu.edu>
+References: <84E65AB7-114A-495F-BB12-DF2307761238@bu.edu>
+Message-ID: <40e66e0b0602201237p46c16630t47da28db75de952f@mail.gmail.com>
+
+On 2/20/06, Jason Horn <jhorn at bu.edu> wrote:
+> When using RMySQL to retrieve data from a database, the result is
+> always a data frame.  What is the best way to take get the numbers
+> from a column of the data frame into a vector?  That is, I just want
+> the column of numbers from the data frame and not the column label.
+> I'm sure this has been done many times, but I'm new to this, so I
+> thought I'd ask.
+
+You use the "[[" subscripting operator or its short form for use with
+names, the $ operator.
+
+If your data frame is called "df" and you want the third column as a vector use
+
+df[[3]]
+
+If the name of the column is "foo" you can also use
+
+df[["foo"]]
+
+The expression
+
+df$foo
+
+is syntactic sugar for df[["foo"]]
+
+
+
+From jhorn @end|ng |rom bu@edu  Tue Feb 21 17:27:24 2006
+From: jhorn @end|ng |rom bu@edu (Jason Horn)
+Date: Tue, 21 Feb 2006 11:27:24 -0500
+Subject: [R-sig-DB] Error calling stored procedures with RMySQL
+Message-ID: <9BC6895D-B153-4962-BE29-A9BFD8B04713@bu.edu>
+
+Has anyone had success with calling stored procedures with RMySQL?  I  
+get this error when I try to call a simple stored procedure with  
+select statements:
+
+Error in mysqlExecStatement(conn, statement, ...) :
+	RS-DBI driver: (could not run statement: PROCEDURE radarbats.ia_mean  
+can't return a result set in the given context)
+
+
+Any ideas?
+
+- Jason
+
+
+
+From jhorn @end|ng |rom bu@edu  Thu Mar  2 15:57:07 2006
+From: jhorn @end|ng |rom bu@edu (Jason Horn)
+Date: Thu, 2 Mar 2006 09:57:07 -0500
+Subject: [R-sig-DB] (no subject)
+Message-ID: <1C60DC60-24BD-4814-8479-AFCD58F0C7FF@bu.edu>
+
+Does anyone know what this error means:
+
+"RS-DBI driver warning: (unrecognized MySQL field type 246 in column 1)"
+
+Here's the script:
+
+query<-paste("select all_months.date as 'date', avg(all_months.count)  
+as 'counts' from (select date, time, loc, count(sum) as 'count' from  
+measurements where sum>0 and year(date)=2000 group by date, loc)  
+all_months group by all_months.date order by 'date'",sep="")
+rs <- dbSendQuery(con, query)
+data<-fetch(rs, n=-1)
+	[[alternative HTML version deleted]]
+
+
+
+From dj @end|ng |rom re@e@rch@be||-|@b@@com  Thu Mar  2 19:22:38 2006
+From: dj @end|ng |rom re@e@rch@be||-|@b@@com (David James)
+Date: Thu, 2 Mar 2006 13:22:38 -0500
+Subject: [R-sig-DB] (no subject)
+In-Reply-To: <1C60DC60-24BD-4814-8479-AFCD58F0C7FF@bu.edu>
+References: <1C60DC60-24BD-4814-8479-AFCD58F0C7FF@bu.edu>
+Message-ID: <20060302182238.GA5370@jessie.research.bell-labs.com>
+
+Jason Horn wrote:
+> Does anyone know what this error means:
+> 
+> "RS-DBI driver warning: (unrecognized MySQL field type 246 in column 1)"
+> 
+
+That the data type in column 1 could not be mapped to a known 
+R type (type here as in "integer", "double", "logical", ...),
+perhaps MYSQL_TYPE_NEWDATE.  If so, a workaround is to extract 
+dates as strings, e.g.,
+
+  SELECT CONVERT(all_months_date USING ASCII) as date, ....
+
+and then use you favorite R date/time routine on the output data.frame.
+
+HTH,
+
+--
+David
+
+
+> Here's the script:
+> 
+> query<-paste("select all_months.date as 'date', avg(all_months.count)  
+> as 'counts' from (select date, time, loc, count(sum) as 'count' from  
+> measurements where sum>0 and year(date)=2000 group by date, loc)  
+> all_months group by all_months.date order by 'date'",sep="")
+> rs <- dbSendQuery(con, query)
+> data<-fetch(rs, n=-1)
+> 	[[alternative HTML version deleted]]
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From |g@ut|er @end|ng |rom gm@||@com  Fri Mar  3 04:39:02 2006
+From: |g@ut|er @end|ng |rom gm@||@com (Laurent Gautier)
+Date: Fri, 3 Mar 2006 11:39:02 +0800
+Subject: [R-sig-DB] [R] prepared query with RODBC ?
+In-Reply-To: <20060302163543.GD2955@jessie.research.bell-labs.com>
+References: <27d1e6020602270638u55cf0687na67c76a78b6cdf66@mail.gmail.com>
+	<20060302163543.GD2955@jessie.research.bell-labs.com>
+Message-ID: <27d1e6020603021939wbcc3527ke37b51a5ae85f63e@mail.gmail.com>
+
+[A thread started on r-help, now moved to the r-sig-db list.]
+
+I am precisely about about something similar.
+>From what I read/heard some folks/DBMs make the distinction
+between prepared queries (as you give example code for) and
+batch queries. Both of them speed up the process when similar
+queries are to be performed, with the batch queries being the fastest
+(since in the case of the prepared query an answer is returned by
+the database for each query...).
+
+>From what I could understand, RODBC will make a prepared query
+(at the C level) when one wants to write a data.frame and select the
+option 'fast=TRUE'...
+
+I shall experiment further...
+
+
+Thanks,
+
+
+Laurent
+
+
+On 3/3/06, David James <dj at research.bell-labs.com> wrote:
+> Perhaps this thread should be continued in the r-sig-db list?
+>
+> Laurent Gautier wrote:
+> > Dear List,
+> >
+> > Would anyone know how to perform prepared queries with ROBC ?
+> > I had a shot with some of the internal (non-exported) functions of the package
+> > but ended up with a segfault, so I prefer asking around before
+> > experimenting further...
+> >
+> > Thanks,
+> >
+> >
+> >
+> > Laurent
+> >
+> > ______________________________________________
+> > R-help at stat.math.ethz.ch mailing list
+> > https://stat.ethz.ch/mailman/listinfo/r-help
+> > PLEASE do read the posting guide! http://www.R-project.org/posting-guide.html
+>
+>
+> R applications that require a tighter interface to DBMSs could
+> greatly benefit from such a facility, but prepared statements
+> have not been used much from R, AFAIK.
+>
+> In a nutshell, a prepared statement is an SQL statement that is
+> parsed, optimized, cached in the server, and then repeatedly executed
+> with new data (using what is called "data binding").  Some of its
+> benefits are significant improved performance, breaking big tasks
+> into smaller, more manageable tasks, etc.
+>
+> A trivial example:
+>
+>   ## prepare an SQL statement for repeated insertions, and bind
+>   ## output data.frame columns 1, 2, 3, and 4 to the SQL statement
+>
+>   ps <- dbPrepareStatement(conn,
+>            "INSERT into SCORING (id, x1, x2, score) VALUES (:1,:2,:3,:4)",
+>            bind = c("char", "char", "numeric", "numeric"))
+>
+>   ## compute new scores....
+>   while(condition){
+>      ...
+>      new_scores <- predict(model, newdata)
+>      dbExecStatement(ps, data = new_scores)
+>
+>   }
+>   dbCommit(con)
+>   dbClearResult(ps)
+>
+> I believe most DBMSs provide means to do this (PostgreSQL, MySQL,
+> Sybase, Oracle, SQLite, ODBC 3.0, ...), but I think only the
+> R-Oracle interface currently implements them (and only in an
+> experimental basis).
+>
+> Regards,
+>
+> --
+> David
+>
+
+
+
+From |g@ut|er @end|ng |rom gm@||@com  Fri Mar  3 05:06:33 2006
+From: |g@ut|er @end|ng |rom gm@||@com (Laurent Gautier)
+Date: Fri, 3 Mar 2006 12:06:33 +0800
+Subject: [R-sig-DB] [R] prepared query with RODBC ?
+In-Reply-To: <67DCA285A2D7754280D3B8E88EB548020C946785@MSGBOSCLB2WIN.DMN1.FMR.COM>
+References: <67DCA285A2D7754280D3B8E88EB548020C946785@MSGBOSCLB2WIN.DMN1.FMR.COM>
+Message-ID: <27d1e6020603022006x40233150p3387a0b99405a6c5@mail.gmail.com>
+
+As said, my experience with (R)ODBC is limited.
+I am trying to decompose the steps to be clear (preparation of the
+query with placeholders
+marked with ? or :1, :2... then run of the prepared query with values for
+the placeholders). From some of the database connectivity kits I also
+know of (non-R ones), both steps can be bundled.
+According to your first paragraph, we may be talking about the same
+thing (and I do mean "preparing" in what you call a traditional sense).
+
+The answer from David James (in this thread), matches what I am after.
+
+
+Thanks.
+
+
+Laurent
+
+On 3/2/06, McGehee, Robert <Robert.McGehee at geodecapital.com> wrote:
+> Well, I'm still not sure what you're trying to do, specifically because
+> I don't understand your distinction here between "preparing" and
+> "running" a query, especially if you do not mean preparing in the
+> traditional sense, i.e. pre-process a dynamic SQL query so that it can
+> be run multiple times without re-processing.
+>
+> Certainly, however, you can run a query and fetch its results in two
+> different steps using RODBC, and this can actually be quite useful for
+> fine-tuning performance and inserting error control in complex queries.
+> One does this by first using the odbcQuery() function to run the query
+> and then the sqlGetResults() function to fetch the rows (if as you said,
+> there are rows to be fetched).
+>
+> If you are more interested in batch processing multiple SQL queries,
+> which is not the same as preparing a query, an easy way to do this is to
+> just define a stored procedure and then run the stored procedure using
+> sqlQuery or odbcQuery, or alternatively use transaction control. You can
+> send an entire batch statement as a single string to sqlQuery.
+>
+> Lastly, a previous version of RODBC had a function odbcDirectQuery which
+> I made use of in the past to toggle between direct execution and batch
+> execution for multiple queries. This was most useful for me if I wanted
+> to make use of temporary tables. However, the odbcDirectQuery function
+> is no longer supported in the current version of RODBC, probably because
+> it was not stable across SQL platforms. That said, you might take a look
+> at the C code for ideas.
+>
+> HTH,
+> Robert
+>
+>
+> -----Original Message-----
+> From: Laurent Gautier [mailto:lgautier at gmail.com]
+> Sent: Thursday, March 02, 2006 3:20 AM
+> To: McGehee, Robert
+> Cc: r-help at stat.math.ethz.ch
+> Subject: Re: [R] prepared query with RODBC ?
+>
+> Well, I may not have been clear enough. My experience with database
+> drivers
+> is so far mostly limited to JDBC, Perl's DBI, and some other things with
+> Python.
+> I am rather new to (R)ODBC.
+>
+> What I am after is something like:
+> ## -- dummy R code
+> pq <- prepareQuery("SELECT * FROM foo WHERE bar = ?", dbHandle)
+> res <- runQuery(pq, allMyBars, dbHandle)
+> ## then fetch the query if needed (may be not the case if 'pq'
+> ## is about updating tables).
+>
+> (as I am just told, this is may be more something like a BATCH query
+> than
+> a prepared query stricto senso).
+>
+> I have tracked down things to the C level, with the function
+> RODBCUpdate, that appear
+> to do something related (
+>     res = SQLPrepare( thisHandle->hStmt, (SQLCHAR *) cquery,
+>                       strlen(cquery) );
+> can be spotted around line 960)
+> but the documentation is rare down there, so I was asking if anyone
+> had experience
+> on the topic.
+>
+> If I understand correctly your suggestion, the idea would be to build a
+> complete
+> set of (Visual Basic ?) instructions into a (potentially very long)
+> string and send them to the SQL server ?
+>
+>
+> Thanks.
+>
+>
+> Laurent
+>
+>
+>
+> On 3/1/06, McGehee, Robert <Robert.McGehee at geodecapital.com> wrote:
+> > I may be misunderstanding you, but why can't you execute a prepared
+> > query the same in RODBC as you would directly on your SQL server? In
+> > Microsoft SQL server, for instance, I would just set up an ADO
+> > application and set the Prepared and CommandText properties before
+> > running the query.
+> >
+> > Here is an example from the Microsoft SQL help page. In this example,
+> I
+> > would try storing all of the below as a string in R, and simply pass
+> > this into the odbcQuery or sqlQuery.  However, see the help for your
+> > specific SQL application. Note that (for at least SQL server) one can
+> > disable the prepare/execute model, so you might have to check your
+> ODBC
+> > settings before running.
+> >
+> > --Robert
+> >
+> > Dim cn As New ADODB.Connection
+> > Dim cmdPrep1 As New ADODB.Command
+> > Dim prm1 As New ADODB.Parameter
+> > Dim prm2 As New ADODB.Parameter
+> > Dim strCn As String
+> >
+> > strCn = "Server=MyServerName;Database=pubs;Trusted_Connection=yes"
+> > cn.Provider = "sqloledb"
+> > cn.Open strCn
+> > Set cmdPrep1.ActiveConnection = cn
+> > cmdPrep1.CommandText = "UPDATE titles SET type=? WHERE title_id =?"
+> > cmdPrep1.CommandType = adCmdText
+> > cmdPrep1.Prepared = True
+> >
+> > Set prm1 = cmdPrep1.CreateParameter("Type", adChar, adParamInput, 12,
+> > "New Bus")
+> > cmdPrep1.Parameters.Append prm1
+> >
+> > Set prm2 = cmdPrep1.CreateParameter("ProductID", adInteger,
+> > adParamInput, 4, 3)
+> > cmdPrep1.Parameters.Append prm2
+> >
+> > cmdPrep1.Execute
+> >
+> > cmdPrep1("Type") = "New Cook"
+> > cmdPrep1("title_id") = "TC7777"
+> > cmdPrep1.Execute
+> >
+> > cn.Close
+> >
+> >
+> > -----Original Message-----
+> > From: r-help-bounces at stat.math.ethz.ch
+> > [mailto:r-help-bounces at stat.math.ethz.ch] On Behalf Of Laurent Gautier
+> > Sent: Monday, February 27, 2006 9:38 AM
+> > To: r-help at stat.math.ethz.ch
+> > Subject: [R] prepared query with RODBC ?
+> >
+> > Dear List,
+> >
+> > Would anyone know how to perform prepared queries with ROBC ?
+> > I had a shot with some of the internal (non-exported) functions of the
+> > package
+> > but ended up with a segfault, so I prefer asking around before
+> > experimenting further...
+> >
+> > Thanks,
+> >
+> >
+> >
+> > Laurent
+> >
+> > ______________________________________________
+> > R-help at stat.math.ethz.ch mailing list
+> > https://stat.ethz.ch/mailman/listinfo/r-help
+> > PLEASE do read the posting guide!
+> > http://www.R-project.org/posting-guide.html
+> >
+> >
+>
+>
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Fri Mar  3 12:44:03 2006
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Fri, 03 Mar 2006 06:44:03 -0500
+Subject: [R-sig-DB] [R] prepared query with RODBC ?
+In-Reply-To: <27d1e6020603022006x40233150p3387a0b99405a6c5@mail.gmail.com>
+Message-ID: <C02D9633.7419%sdavis2@mail.nih.gov>
+
+Laurent,
+
+What database are you using?  Some, like postgresql (just because I use it)
+support server-side prepared statements, something like:
+
+PREPARE my_prepped_stmt(text,text) as
+ SELECT * 
+   FROM mytable
+  WHERE col1 = $1 AND
+        col2 = $2;
+
+Followed by:
+
+EXECUTE my_prepped_stmt('test1','test2');
+
+The PREPAREd statement can be sent to the server as a SQL command and will
+remain on the server for the life of the connection.  You can then use
+successive RODBC calls to EXECUTE that query as often as you like and get
+the benefit of a PREPAREd statement.  Doing this two-step PREPARE/EXECUTE on
+the server allows you to overcome the lack of prepared statements via the
+client interface.  I don't know which other database engines offer such
+functionality, but it would probably be worth a quick question on the
+RDMS-specific mailing list or a glance at the documentation for a PREPARE
+syntax.
+
+Hope that helps.
+
+Sean
+
+
+On 3/2/06 11:06 PM, "Laurent Gautier" <lgautier at gmail.com> wrote:
+
+> As said, my experience with (R)ODBC is limited.
+> I am trying to decompose the steps to be clear (preparation of the
+> query with placeholders
+> marked with ? or :1, :2... then run of the prepared query with values for
+> the placeholders). From some of the database connectivity kits I also
+> know of (non-R ones), both steps can be bundled.
+> According to your first paragraph, we may be talking about the same
+> thing (and I do mean "preparing" in what you call a traditional sense).
+> 
+> The answer from David James (in this thread), matches what I am after.
+> 
+> 
+> Thanks.
+> 
+> 
+> Laurent
+> 
+> On 3/2/06, McGehee, Robert <Robert.McGehee at geodecapital.com> wrote:
+>> Well, I'm still not sure what you're trying to do, specifically because
+>> I don't understand your distinction here between "preparing" and
+>> "running" a query, especially if you do not mean preparing in the
+>> traditional sense, i.e. pre-process a dynamic SQL query so that it can
+>> be run multiple times without re-processing.
+>> 
+>> Certainly, however, you can run a query and fetch its results in two
+>> different steps using RODBC, and this can actually be quite useful for
+>> fine-tuning performance and inserting error control in complex queries.
+>> One does this by first using the odbcQuery() function to run the query
+>> and then the sqlGetResults() function to fetch the rows (if as you said,
+>> there are rows to be fetched).
+>> 
+>> If you are more interested in batch processing multiple SQL queries,
+>> which is not the same as preparing a query, an easy way to do this is to
+>> just define a stored procedure and then run the stored procedure using
+>> sqlQuery or odbcQuery, or alternatively use transaction control. You can
+>> send an entire batch statement as a single string to sqlQuery.
+>> 
+>> Lastly, a previous version of RODBC had a function odbcDirectQuery which
+>> I made use of in the past to toggle between direct execution and batch
+>> execution for multiple queries. This was most useful for me if I wanted
+>> to make use of temporary tables. However, the odbcDirectQuery function
+>> is no longer supported in the current version of RODBC, probably because
+>> it was not stable across SQL platforms. That said, you might take a look
+>> at the C code for ideas.
+>> 
+>> HTH,
+>> Robert
+>> 
+>> 
+>> -----Original Message-----
+>> From: Laurent Gautier [mailto:lgautier at gmail.com]
+>> Sent: Thursday, March 02, 2006 3:20 AM
+>> To: McGehee, Robert
+>> Cc: r-help at stat.math.ethz.ch
+>> Subject: Re: [R] prepared query with RODBC ?
+>> 
+>> Well, I may not have been clear enough. My experience with database
+>> drivers
+>> is so far mostly limited to JDBC, Perl's DBI, and some other things with
+>> Python.
+>> I am rather new to (R)ODBC.
+>> 
+>> What I am after is something like:
+>> ## -- dummy R code
+>> pq <- prepareQuery("SELECT * FROM foo WHERE bar = ?", dbHandle)
+>> res <- runQuery(pq, allMyBars, dbHandle)
+>> ## then fetch the query if needed (may be not the case if 'pq'
+>> ## is about updating tables).
+>> 
+>> (as I am just told, this is may be more something like a BATCH query
+>> than
+>> a prepared query stricto senso).
+>> 
+>> I have tracked down things to the C level, with the function
+>> RODBCUpdate, that appear
+>> to do something related (
+>>     res = SQLPrepare( thisHandle->hStmt, (SQLCHAR *) cquery,
+>>                       strlen(cquery) );
+>> can be spotted around line 960)
+>> but the documentation is rare down there, so I was asking if anyone
+>> had experience
+>> on the topic.
+>> 
+>> If I understand correctly your suggestion, the idea would be to build a
+>> complete
+>> set of (Visual Basic ?) instructions into a (potentially very long)
+>> string and send them to the SQL server ?
+>> 
+>> 
+>> Thanks.
+>> 
+>> 
+>> Laurent
+>> 
+>> 
+>> 
+>> On 3/1/06, McGehee, Robert <Robert.McGehee at geodecapital.com> wrote:
+>>> I may be misunderstanding you, but why can't you execute a prepared
+>>> query the same in RODBC as you would directly on your SQL server? In
+>>> Microsoft SQL server, for instance, I would just set up an ADO
+>>> application and set the Prepared and CommandText properties before
+>>> running the query.
+>>> 
+>>> Here is an example from the Microsoft SQL help page. In this example,
+>> I
+>>> would try storing all of the below as a string in R, and simply pass
+>>> this into the odbcQuery or sqlQuery.  However, see the help for your
+>>> specific SQL application. Note that (for at least SQL server) one can
+>>> disable the prepare/execute model, so you might have to check your
+>> ODBC
+>>> settings before running.
+>>> 
+>>> --Robert
+>>> 
+>>> Dim cn As New ADODB.Connection
+>>> Dim cmdPrep1 As New ADODB.Command
+>>> Dim prm1 As New ADODB.Parameter
+>>> Dim prm2 As New ADODB.Parameter
+>>> Dim strCn As String
+>>> 
+>>> strCn = "Server=MyServerName;Database=pubs;Trusted_Connection=yes"
+>>> cn.Provider = "sqloledb"
+>>> cn.Open strCn
+>>> Set cmdPrep1.ActiveConnection = cn
+>>> cmdPrep1.CommandText = "UPDATE titles SET type=? WHERE title_id =?"
+>>> cmdPrep1.CommandType = adCmdText
+>>> cmdPrep1.Prepared = True
+>>> 
+>>> Set prm1 = cmdPrep1.CreateParameter("Type", adChar, adParamInput, 12,
+>>> "New Bus")
+>>> cmdPrep1.Parameters.Append prm1
+>>> 
+>>> Set prm2 = cmdPrep1.CreateParameter("ProductID", adInteger,
+>>> adParamInput, 4, 3)
+>>> cmdPrep1.Parameters.Append prm2
+>>> 
+>>> cmdPrep1.Execute
+>>> 
+>>> cmdPrep1("Type") = "New Cook"
+>>> cmdPrep1("title_id") = "TC7777"
+>>> cmdPrep1.Execute
+>>> 
+>>> cn.Close
+>>> 
+>>> 
+>>> -----Original Message-----
+>>> From: r-help-bounces at stat.math.ethz.ch
+>>> [mailto:r-help-bounces at stat.math.ethz.ch] On Behalf Of Laurent Gautier
+>>> Sent: Monday, February 27, 2006 9:38 AM
+>>> To: r-help at stat.math.ethz.ch
+>>> Subject: [R] prepared query with RODBC ?
+>>> 
+>>> Dear List,
+>>> 
+>>> Would anyone know how to perform prepared queries with ROBC ?
+>>> I had a shot with some of the internal (non-exported) functions of the
+>>> package
+>>> but ended up with a segfault, so I prefer asking around before
+>>> experimenting further...
+>>> 
+>>> Thanks,
+>>> 
+>>> 
+>>> 
+>>> Laurent
+>>> 
+>>> ______________________________________________
+>>> R-help at stat.math.ethz.ch mailing list
+>>> https://stat.ethz.ch/mailman/listinfo/r-help
+>>> PLEASE do read the posting guide!
+>>> http://www.R-project.org/posting-guide.html
+>>> 
+>>> 
+>> 
+>> 
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From dj @end|ng |rom re@e@rch@be||-|@b@@com  Fri Mar  3 20:46:26 2006
+From: dj @end|ng |rom re@e@rch@be||-|@b@@com (David James)
+Date: Fri, 3 Mar 2006 14:46:26 -0500
+Subject: [R-sig-DB] [R] prepared query with RODBC ?
+In-Reply-To: <C02D9633.7419%sdavis2@mail.nih.gov>
+References: <27d1e6020603022006x40233150p3387a0b99405a6c5@mail.gmail.com>
+	<C02D9633.7419%sdavis2@mail.nih.gov>
+Message-ID: <20060303194626.GE25278@jessie.research.bell-labs.com>
+
+Hi Sean,
+
+MySQL also provides server-side or SQL-level PREPARE statements
+as of version 4.1.3, and behave similarly to what you describe;
+however, in general server-side prepared statements are not
+as efficient as "binary" or C-level prepared statements when
+it comes to transferring large amounts of data, which is what
+one may want/need to do from R.
+
+--
+David
+
+Sean Davis wrote:
+> Laurent,
+> 
+> What database are you using?  Some, like postgresql (just because I use it)
+> support server-side prepared statements, something like:
+> 
+> PREPARE my_prepped_stmt(text,text) as
+>  SELECT * 
+>    FROM mytable
+>   WHERE col1 = $1 AND
+>         col2 = $2;
+> 
+> Followed by:
+> 
+> EXECUTE my_prepped_stmt('test1','test2');
+> 
+> The PREPAREd statement can be sent to the server as a SQL command and will
+> remain on the server for the life of the connection.  You can then use
+> successive RODBC calls to EXECUTE that query as often as you like and get
+> the benefit of a PREPAREd statement.  Doing this two-step PREPARE/EXECUTE on
+> the server allows you to overcome the lack of prepared statements via the
+> client interface.  I don't know which other database engines offer such
+> functionality, but it would probably be worth a quick question on the
+> RDMS-specific mailing list or a glance at the documentation for a PREPARE
+> syntax.
+> 
+> Hope that helps.
+> 
+> Sean
+> 
+> 
+> On 3/2/06 11:06 PM, "Laurent Gautier" <lgautier at gmail.com> wrote:
+> 
+> > As said, my experience with (R)ODBC is limited.
+> > I am trying to decompose the steps to be clear (preparation of the
+> > query with placeholders
+> > marked with ? or :1, :2... then run of the prepared query with values for
+> > the placeholders). From some of the database connectivity kits I also
+> > know of (non-R ones), both steps can be bundled.
+> > According to your first paragraph, we may be talking about the same
+> > thing (and I do mean "preparing" in what you call a traditional sense).
+> > 
+> > The answer from David James (in this thread), matches what I am after.
+> > 
+> > 
+> > Thanks.
+> > 
+> > 
+> > Laurent
+> > 
+> > On 3/2/06, McGehee, Robert <Robert.McGehee at geodecapital.com> wrote:
+> >> Well, I'm still not sure what you're trying to do, specifically because
+> >> I don't understand your distinction here between "preparing" and
+> >> "running" a query, especially if you do not mean preparing in the
+> >> traditional sense, i.e. pre-process a dynamic SQL query so that it can
+> >> be run multiple times without re-processing.
+> >> 
+> >> Certainly, however, you can run a query and fetch its results in two
+> >> different steps using RODBC, and this can actually be quite useful for
+> >> fine-tuning performance and inserting error control in complex queries.
+> >> One does this by first using the odbcQuery() function to run the query
+> >> and then the sqlGetResults() function to fetch the rows (if as you said,
+> >> there are rows to be fetched).
+> >> 
+> >> If you are more interested in batch processing multiple SQL queries,
+> >> which is not the same as preparing a query, an easy way to do this is to
+> >> just define a stored procedure and then run the stored procedure using
+> >> sqlQuery or odbcQuery, or alternatively use transaction control. You can
+> >> send an entire batch statement as a single string to sqlQuery.
+> >> 
+> >> Lastly, a previous version of RODBC had a function odbcDirectQuery which
+> >> I made use of in the past to toggle between direct execution and batch
+> >> execution for multiple queries. This was most useful for me if I wanted
+> >> to make use of temporary tables. However, the odbcDirectQuery function
+> >> is no longer supported in the current version of RODBC, probably because
+> >> it was not stable across SQL platforms. That said, you might take a look
+> >> at the C code for ideas.
+> >> 
+> >> HTH,
+> >> Robert
+> >> 
+> >> 
+> >> -----Original Message-----
+> >> From: Laurent Gautier [mailto:lgautier at gmail.com]
+> >> Sent: Thursday, March 02, 2006 3:20 AM
+> >> To: McGehee, Robert
+> >> Cc: r-help at stat.math.ethz.ch
+> >> Subject: Re: [R] prepared query with RODBC ?
+> >> 
+> >> Well, I may not have been clear enough. My experience with database
+> >> drivers
+> >> is so far mostly limited to JDBC, Perl's DBI, and some other things with
+> >> Python.
+> >> I am rather new to (R)ODBC.
+> >> 
+> >> What I am after is something like:
+> >> ## -- dummy R code
+> >> pq <- prepareQuery("SELECT * FROM foo WHERE bar = ?", dbHandle)
+> >> res <- runQuery(pq, allMyBars, dbHandle)
+> >> ## then fetch the query if needed (may be not the case if 'pq'
+> >> ## is about updating tables).
+> >> 
+> >> (as I am just told, this is may be more something like a BATCH query
+> >> than
+> >> a prepared query stricto senso).
+> >> 
+> >> I have tracked down things to the C level, with the function
+> >> RODBCUpdate, that appear
+> >> to do something related (
+> >>     res = SQLPrepare( thisHandle->hStmt, (SQLCHAR *) cquery,
+> >>                       strlen(cquery) );
+> >> can be spotted around line 960)
+> >> but the documentation is rare down there, so I was asking if anyone
+> >> had experience
+> >> on the topic.
+> >> 
+> >> If I understand correctly your suggestion, the idea would be to build a
+> >> complete
+> >> set of (Visual Basic ?) instructions into a (potentially very long)
+> >> string and send them to the SQL server ?
+> >> 
+> >> 
+> >> Thanks.
+> >> 
+> >> 
+> >> Laurent
+> >> 
+> >> 
+> >> 
+> >> On 3/1/06, McGehee, Robert <Robert.McGehee at geodecapital.com> wrote:
+> >>> I may be misunderstanding you, but why can't you execute a prepared
+> >>> query the same in RODBC as you would directly on your SQL server? In
+> >>> Microsoft SQL server, for instance, I would just set up an ADO
+> >>> application and set the Prepared and CommandText properties before
+> >>> running the query.
+> >>> 
+> >>> Here is an example from the Microsoft SQL help page. In this example,
+> >> I
+> >>> would try storing all of the below as a string in R, and simply pass
+> >>> this into the odbcQuery or sqlQuery.  However, see the help for your
+> >>> specific SQL application. Note that (for at least SQL server) one can
+> >>> disable the prepare/execute model, so you might have to check your
+> >> ODBC
+> >>> settings before running.
+> >>> 
+> >>> --Robert
+> >>> 
+> >>> Dim cn As New ADODB.Connection
+> >>> Dim cmdPrep1 As New ADODB.Command
+> >>> Dim prm1 As New ADODB.Parameter
+> >>> Dim prm2 As New ADODB.Parameter
+> >>> Dim strCn As String
+> >>> 
+> >>> strCn = "Server=MyServerName;Database=pubs;Trusted_Connection=yes"
+> >>> cn.Provider = "sqloledb"
+> >>> cn.Open strCn
+> >>> Set cmdPrep1.ActiveConnection = cn
+> >>> cmdPrep1.CommandText = "UPDATE titles SET type=? WHERE title_id =?"
+> >>> cmdPrep1.CommandType = adCmdText
+> >>> cmdPrep1.Prepared = True
+> >>> 
+> >>> Set prm1 = cmdPrep1.CreateParameter("Type", adChar, adParamInput, 12,
+> >>> "New Bus")
+> >>> cmdPrep1.Parameters.Append prm1
+> >>> 
+> >>> Set prm2 = cmdPrep1.CreateParameter("ProductID", adInteger,
+> >>> adParamInput, 4, 3)
+> >>> cmdPrep1.Parameters.Append prm2
+> >>> 
+> >>> cmdPrep1.Execute
+> >>> 
+> >>> cmdPrep1("Type") = "New Cook"
+> >>> cmdPrep1("title_id") = "TC7777"
+> >>> cmdPrep1.Execute
+> >>> 
+> >>> cn.Close
+> >>> 
+> >>> 
+> >>> -----Original Message-----
+> >>> From: r-help-bounces at stat.math.ethz.ch
+> >>> [mailto:r-help-bounces at stat.math.ethz.ch] On Behalf Of Laurent Gautier
+> >>> Sent: Monday, February 27, 2006 9:38 AM
+> >>> To: r-help at stat.math.ethz.ch
+> >>> Subject: [R] prepared query with RODBC ?
+> >>> 
+> >>> Dear List,
+> >>> 
+> >>> Would anyone know how to perform prepared queries with ROBC ?
+> >>> I had a shot with some of the internal (non-exported) functions of the
+> >>> package
+> >>> but ended up with a segfault, so I prefer asking around before
+> >>> experimenting further...
+> >>> 
+> >>> Thanks,
+> >>> 
+> >>> 
+> >>> 
+> >>> Laurent
+> >>> 
+> >>> ______________________________________________
+> >>> R-help at stat.math.ethz.ch mailing list
+> >>> https://stat.ethz.ch/mailman/listinfo/r-help
+> >>> PLEASE do read the posting guide!
+> >>> http://www.R-project.org/posting-guide.html
+> >>> 
+> >>> 
+> >> 
+> >> 
+> > 
+> > _______________________________________________
+> > R-sig-DB mailing list -- R Special Interest Group
+> > R-sig-DB at stat.math.ethz.ch
+> > https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From h@t@nge @end|ng |rom jutt@@t@nge@de  Wed Mar 15 17:47:55 2006
+From: h@t@nge @end|ng |rom jutt@@t@nge@de (Hendrik Stange)
+Date: Wed, 15 Mar 2006 17:47:55 +0100
+Subject: [R-sig-DB] RODBC with an Oracle DBS
+Message-ID: <4418453B.5070205@juttastange.de>
+
+Hello,
+
+today, I tried saving a data.frame to Oracle by using an ODBC-connection.
+It failed every single time, giving me a "missing column name" error.
+Reading works perfectly fine, though.
+
+My question is, how can I upload a df to Oracle using an ODBC connection?
+
+The code I used looks like this:
+channel <- odbcConnect("someODBCname")
+sqlSave(channel, df, tablename="test", rownames=FALSE, addPK=T, verbose=T)
+
+df is a 100x100 matrix; dimnames are set.
+
+In my desperation I tried uploading it to MS-Access and it worked 
+absolutely accurate - same statement just another ODBC-connector name.
+
+I'd appreciate any help.
+
+Thanks in advanced,
+H. Stange
+
+
+
+From t@r|q@kh@n @end|ng |rom gm@||@com  Wed Mar 15 20:32:44 2006
+From: t@r|q@kh@n @end|ng |rom gm@||@com (=?ISO-8859-1?Q?=A8Tariq_Khan?=)
+Date: Wed, 15 Mar 2006 19:32:44 +0000
+Subject: [R-sig-DB] RODBC with an Oracle DBS
+In-Reply-To: <4418453B.5070205@juttastange.de>
+References: <4418453B.5070205@juttastange.de>
+Message-ID: <2310043c0603151132v19e4bd8fycce0777fd573be8@mail.gmail.com>
+
+Hendrik,
+
+can we see a sample of your column names?
+
+Seems like your code should work. what if safer=F?.. and if addPK=F?
+(not that I expect that to work).
+
+-Tariq
+
+On 3/15/06, Hendrik Stange <hstange at juttastange.de> wrote:
+> Hello,
+>
+> today, I tried saving a data.frame to Oracle by using an ODBC-connection.
+> It failed every single time, giving me a "missing column name" error.
+> Reading works perfectly fine, though.
+>
+> My question is, how can I upload a df to Oracle using an ODBC connection?
+>
+> The code I used looks like this:
+> channel <- odbcConnect("someODBCname")
+> sqlSave(channel, df, tablename="test", rownames=FALSE, addPK=T, verbose=T)
+>
+> df is a 100x100 matrix; dimnames are set.
+>
+> In my desperation I tried uploading it to MS-Access and it worked
+> absolutely accurate - same statement just another ODBC-connector name.
+>
+> I'd appreciate any help.
+>
+> Thanks in advanced,
+> H. Stange
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From j@@on @end|ng |rom bodymed|@@com  Fri Mar 24 23:02:23 2006
+From: j@@on @end|ng |rom bodymed|@@com (Jason Trimble)
+Date: Fri, 24 Mar 2006 17:02:23 -0500
+Subject: [R-sig-DB] RMysql and MySQL 5 Decimal Type Support
+Message-ID: <9A503071B5428346A39E2AAF217FD912394FCF@mainserver.bodymedia.com>
+
+Hi,
+
+ 
+
+Whenever I have a MySQL query that returns a Decimal result to R I get
+the following warning in R:
+
+ 
+
+Warning message:
+
+RS-DBI driver warning: (unrecognized MySQL field type 246 in column 1)
+
+ 
+
+I get this for a simple query like "SELECT 2, 2.5" !!
+
+ 
+
+I am using:
+
+R ver 2.1.1
+
+RMySQL ver. 0.5-7
+
+DBI ver. 0.1-10
+
+MySQL  Ver 14.12 Distrib 5.0.18. 
+
+ 
+
+Please Help!
+
+Jason
+
+	[[alternative HTML version deleted]]
+
+
+
+From |g@ut|er @end|ng |rom gm@||@com  Sun Mar 26 11:10:33 2006
+From: |g@ut|er @end|ng |rom gm@||@com (Laurent Gautier)
+Date: Sun, 26 Mar 2006 17:10:33 +0800
+Subject: [R-sig-DB] Follow-up: prepared query with RODBC ?
+Message-ID: <27d1e6020603260110n5e224b08w1ce55a54ef66b865@mail.gmail.com>
+
+Dear all,
+
+I have been experimenting with RODBC, and prepared queries.
+
+My setting was as follows:
+* server:
+   - Linux desktop
+   - latest stable version for Postgres DBM (version 8.1.3)
+* client:
+   - Windows XP notebook
+   - 'psqlodbc' Postgres-ODBC drivers (latest stable version from
+http://pgfoundry.org/projects/psqlodbc/), and use of the
+"Postgres-unicode" driver
+   - R-2.2.1
+   - RODBC-1.1.5
+
+This seemed a reasonable standard setting to me
+(and felt at times enough like opening a Pandora's box to keep me from
+venturing into devel versions for any of the components).
+
+The outcome is 1) a bug (and a suggested patch), and 2) the belief
+that it is not possible for pulling the result of 'SELECT' statements
+without writting C code (which I had no for):
+
+1- There is apparently a problem triggered when calling 'sqlSave' with
+a data.frame that contains any uppercase letter in the identifiers. I
+tracked the problem up to
+a call to a C function in "odbcUpdate"
+
+.Call("RODBCUpdate", attr(channel, "handle_ptr"), as.character(query),
+    data, cnames, as.integer(nrow(data)), as.integer(ncol(data)),
+    as.character(params), as.integer(vflag), PACKAGE = "RODBC")
+
+where the column names in the 'query' were all turned to lower case
+while the original names remain in 'data' (the data.frame). A trivial fix could
+be to have the names in 'data' converted to lower.case before the .Call
+(if this does not cause the copy of a potentially very large 'data'
+object, naturally).
+This is may be not the best possible fix, but it has the benefit of not touching
+too much of what is a non-exported function.
+
+The following demonstrates the problem
+library(RODBC)
+# assuming the existence of a database 'testdb' and the priviledges to
+write to it
+channel <- sqlConnect("testdb")
+dataf <- data.frame(ID = 1:10, values = rnorm(10))
+sqlSave(channel, dataf)
+## error about a missing column name
+
+The problem is probably not noticeable on systems that have problems
+distinguishing upper-case from lower-case (e.g., MS-Windows).
+
+2- My attempt at having prepared/batch queries ended with the conclusion that
+one needs to extend the current package with C code to achieve for 'SELECT'
+queries.
+The C function 'RODBCUpdate' can be used for 'INSERT', 'UPDATE' or
+'DELETE' statements.
+In the meanwhile, a hack can be to write temporary tables in the database
+(especially since the writting of tables can used prepared statements)
+and perform join operation on these (although this can be hair-rising
+in a multiple-users setting).
+
+
+Laurent
+
+
+

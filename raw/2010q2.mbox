@@ -1,0 +1,2856 @@
+From h@r|@n @end|ng |rom h@rr|@@n@me  Thu Apr  1 16:25:24 2010
+From: h@r|@n @end|ng |rom h@rr|@@n@me (Harlan Harris)
+Date: Thu, 1 Apr 2010 10:25:24 -0400
+Subject: [R-sig-DB] RODBC:sqlQuery() choking on null date in Oracle database
+Message-ID: <z2n924bb5e21004010725ud7560cf6ne59491b7be4f929f@mail.gmail.com>
+
+Hello,
+
+I'm running R 2.10.1, RODBC 13.1, Actual Technologies ODBC, etc., to connect
+to an Oracle 10g database. Ran across a problem today where a query was
+crashing because of a null value in the database. The column is of type
+Date, and is allowed to be null.
+
+When I query this field, I get the following error:
+
+Error in charToDate(x) :
+  character string is not in a standard unambiguous format
+
+I traced it to this block of code in the function sqlGetResults():
+
+        for (i in seq_len(cols)) {
+            if (is.character(data[[i]]) && nchar(enc))
+                data[[i]] <- iconv(data[[i]], from = enc)
+            if (as.is[i] || is.list(data[[i]]))
+                next
+            if (is.numeric(data[[i]]))
+                next
+            if (cData$type[i] == "date")
+                data[[i]] <- as.Date(data[[i]])
+            else if (cData$type[i] == "timestamp")
+                data[[i]] <- as.POSIXct(data[[i]])
+            else data[[i]] <- type.convert(as.character(data[[i]]),
+                as.is = !stringsAsFactors, dec = dec)
+        }
+
+In this case, data[[i]][1] is of type character, str_length 0. Indeed, that
+data type causes as.Date to throw an error.
+
+> as.Date("")
+Error during wrapup: character string is not in a standard unambiguous
+format
+
+This should not happen. The correct behavior is for zero-length dates to be
+converted into as.Date(NA), I think.
+
+(That is, it's OK if as.Date() throws an error, but it is definitely not OK
+that RODBC allows correctly-formed data to throw an error!)
+
+Null fields of non-Date types (character, integer) seem to work fine.
+
+Is there a workaround?
+
+Thank you!
+
+ -Harlan
+
+	[[alternative HTML version deleted]]
+
+
+
+From m@rc_@chw@rtz @end|ng |rom me@com  Thu Apr  1 18:39:17 2010
+From: m@rc_@chw@rtz @end|ng |rom me@com (Marc Schwartz)
+Date: Thu, 01 Apr 2010 11:39:17 -0500
+Subject: [R-sig-DB] RODBC:sqlQuery() choking on null date in Oracle
+	database
+In-Reply-To: <z2n924bb5e21004010725ud7560cf6ne59491b7be4f929f@mail.gmail.com>
+References: <z2n924bb5e21004010725ud7560cf6ne59491b7be4f929f@mail.gmail.com>
+Message-ID: <A4999DB9-6727-440A-B21E-ED0C162953F3@me.com>
+
+On Apr 1, 2010, at 9:25 AM, Harlan Harris wrote:
+
+> Hello,
+> 
+> I'm running R 2.10.1, RODBC 13.1, Actual Technologies ODBC, etc., to connect
+> to an Oracle 10g database. Ran across a problem today where a query was
+> crashing because of a null value in the database. The column is of type
+> Date, and is allowed to be null.
+> 
+> When I query this field, I get the following error:
+> 
+> Error in charToDate(x) :
+>  character string is not in a standard unambiguous format
+> 
+> I traced it to this block of code in the function sqlGetResults():
+> 
+>        for (i in seq_len(cols)) {
+>            if (is.character(data[[i]]) && nchar(enc))
+>                data[[i]] <- iconv(data[[i]], from = enc)
+>            if (as.is[i] || is.list(data[[i]]))
+>                next
+>            if (is.numeric(data[[i]]))
+>                next
+>            if (cData$type[i] == "date")
+>                data[[i]] <- as.Date(data[[i]])
+>            else if (cData$type[i] == "timestamp")
+>                data[[i]] <- as.POSIXct(data[[i]])
+>            else data[[i]] <- type.convert(as.character(data[[i]]),
+>                as.is = !stringsAsFactors, dec = dec)
+>        }
+> 
+> In this case, data[[i]][1] is of type character, str_length 0. Indeed, that
+> data type causes as.Date to throw an error.
+> 
+>> as.Date("")
+> Error during wrapup: character string is not in a standard unambiguous
+> format
+> 
+> This should not happen. The correct behavior is for zero-length dates to be
+> converted into as.Date(NA), I think.
+> 
+> (That is, it's OK if as.Date() throws an error, but it is definitely not OK
+> that RODBC allows correctly-formed data to throw an error!)
+> 
+> Null fields of non-Date types (character, integer) seem to work fine.
+> 
+> Is there a workaround?
+> 
+> Thank you!
+> 
+> -Harlan
+
+
+I can certainly replicate the error with as.Date():
+
+R version 2.10.1 Patched (2010-03-10 r51274)
+
+32 bit on OSX 10.6.3
+
+> as.Date("")
+Error in charToDate(x) : 
+  character string is not in a standard unambiguous format
+
+However, also using the AT ODBC driver for Oracle 11G, along with RODBC 1.3-1, I cannot replicate the problem that you are having with blank dates. Such empty dates in my queries come back as NAs and have for quite some time. Without tracking through code, it would be reasonable to presume that blank dates are being converted to NA's before the loop above is encountered, for example in the call to odbcFetchRows(). 
+
+As an additional thought, if you are calling a lower level query function directly and have modified any of the defaults for arguments such as nullstring or na.strings, that could obviously have an effect as well.
+
+There have been some "quirky" things occurring with Oracle and ODBC connections of late and I would recommend that you try both connecting to Oracle and subsequent queries using the general form:
+
+db <- odbcConnect(dsn, uid = "XXXXX", pwd = "XXXX",
+                  case = "toupper", rows_at_time = 1)
+
+sqlQuery(db, Query, rows_at_time = 1)  
+
+
+The key above is the use of "rows_at_time = 1". It would appear that at least some ODBC drivers have trouble with the default value of 100, which can cause unpredictable results in the query. I have had this issue on my system, not with dates, but with getting inconsistent numbers of rows coming back.
+
+See if that might help.  Needless to say, this date related issue would have been reported a long time ago by others if there were a chronic problem in RODBC itself. 
+
+Finally, given our prior exchange, I also presume that you are not using the beta 64 bit AT driver and are using the release 32 bit version as I do? If the former and none of the above is helpful, then you should consider reporting a bug to AT.
+
+Marc Schwartz
+
+
+
+From d@n|e|e@@mbert| @end|ng |rom or@@|t  Fri Apr  2 10:37:24 2010
+From: d@n|e|e@@mbert| @end|ng |rom or@@|t (Daniele Amberti)
+Date: Fri, 2 Apr 2010 10:37:24 +0200
+Subject: [R-sig-DB] How to save a model in DB and retrieve It
+In-Reply-To: <mailman.17.1270116006.6468.r-help@r-project.org>
+References: <mailman.17.1270116006.6468.r-help@r-project.org>
+Message-ID: <5C57984CA179A247803E12AAB0F7ABA66AE8E0BFFE@adorsmail01.ors.local>
+
+I'm wondering how to save an object (models like lm, loess, etc) in a DB to retrieve and use it afterwards, an example:
+
+wind_ms <- abs(rnorm(24*30)*4+8)
+air_kgm3 <- rnorm(24*30, 0.1)*0.1 + 1.1
+wind_dg <- rnorm(24*30) * 360/7
+ms <- c(0:25)
+kw_mm92 <- c(0,0,0,20,94,205,391,645,979,1375,1795,2000,2040)
+kw_mm92 <- c(kw_mm92, rep(2050, length(ms)-length(kw_mm92)))
+modelspline <- splinefun(ms, kw_mm92)
+kw <- abs(modelspline(wind_ms) - (wind_dg)*2 + (air_kgm3 - 1.15)*300 + rnorm(length(wind_ms))*10)
+#plot(wind_ms, kw)
+windDat <- data.frame(kw, wind_ms, air_kgm3, wind_dg)
+windDat[windDat$wind_ms < 3, 'kw'] <- 0
+model <- loess(kw ~ wind_ms + air_kgm3 + wind_dg, data = windDat, enp.target = 10*5*3) #, span = 0.1)
+
+modX <- serialize(model, connection = NULL, ascii = T)
+
+Channel <- odbcConnect("someSysDSN; UID=aUid; PWD=aPwd")
+sqlQuery(Channel,
+paste(
+"INSERT INTO GRT.GeneratorsModels
+           ([cGeneratorID]
+           ,[tModel]
+   VALUES
+           (1,",
+           paste("'", gsub("'", "''", rawToChar(modX)), "'", sep = ''),
+           ")", sep = "") )
+# Up to this it is working correctly,
+# in DB I have the "modX" variable
+# Problem arise retrieving data and 64kb limit:
+  strQ <- "
+    SELECT  CONVERT(varchar(max), tModel) AS tModel
+    FROM    GRT.GeneratorsModels
+    WHERE   (cGeneratorID = 1)
+    "
+x <- sqlQuery(Channel, strQ, stringsAsFactors = F, believeNRows = FALSE)
+x <- sqlQuery(Channel, strQ, stringsAsFactors = F, believeNRows = FALSE) #read error
+
+
+
+Above code is working for simplier models that have a shorter representation in variable "modX".
+Any advice on how to store and retieve this kind of objects?
+Thanks
+Daniele
+
+
+ORS Srl
+
+Via Agostino Morando 1/3 12060 Roddi (Cn) - Italy
+Tel. +39 0173 620211
+Fax. +39 0173 620299 / +39 0173 433111
+Web Site www.ors.it
+
+------------------------------------------------------------------------------------------------------------------------
+Qualsiasi utilizzo non autorizzato del presente messaggio e dei suoi allegati ? vietato e potrebbe costituire reato.
+Se lei avesse ricevuto erroneamente questo messaggio, Le saremmo grati se provvedesse alla distruzione dello stesso
+e degli eventuali allegati.
+Opinioni, conclusioni o altre informazioni riportate nella e-mail, che non siano relative alle attivit? e/o
+alla missione aziendale di O.R.S. Srl si intendono non  attribuibili alla societ? stessa, n? la impegnano in alcun modo.
+
+From Greg@Snow @end|ng |rom |m@||@org  Fri Apr  2 19:12:40 2010
+From: Greg@Snow @end|ng |rom |m@||@org (Greg Snow)
+Date: Fri, 2 Apr 2010 11:12:40 -0600
+Subject: [R-sig-DB] How to save a model in DB and retrieve It
+In-Reply-To: <5C57984CA179A247803E12AAB0F7ABA66AE8E0BFFE@adorsmail01.ors.local>
+References: <mailman.17.1270116006.6468.r-help@r-project.org>
+	<5C57984CA179A247803E12AAB0F7ABA66AE8E0BFFE@adorsmail01.ors.local>
+Message-ID: <B37C0A15B8FB3C468B5BC7EBC7DA14CC62FF740A8C@LP-EXMBVS10.CO.IHC.COM>
+
+Look at the serialize function, it may accomplish what you want.
+
+-- 
+Gregory (Greg) L. Snow Ph.D.
+Statistical Data Center
+Intermountain Healthcare
+greg.snow at imail.org
+801.408.8111
+
+
+> -----Original Message-----
+> From: r-help-bounces at r-project.org [mailto:r-help-bounces at r-
+> project.org] On Behalf Of Daniele Amberti
+> Sent: Friday, April 02, 2010 2:37 AM
+> To: r-help at r-project.org; r-sig-db at stat.math.ethz.ch
+> Subject: [R] How to save a model in DB and retrieve It
+> 
+> I'm wondering how to save an object (models like lm, loess, etc) in a
+> DB to retrieve and use it afterwards, an example:
+> 
+> wind_ms <- abs(rnorm(24*30)*4+8)
+> air_kgm3 <- rnorm(24*30, 0.1)*0.1 + 1.1
+> wind_dg <- rnorm(24*30) * 360/7
+> ms <- c(0:25)
+> kw_mm92 <- c(0,0,0,20,94,205,391,645,979,1375,1795,2000,2040)
+> kw_mm92 <- c(kw_mm92, rep(2050, length(ms)-length(kw_mm92)))
+> modelspline <- splinefun(ms, kw_mm92)
+> kw <- abs(modelspline(wind_ms) - (wind_dg)*2 + (air_kgm3 - 1.15)*300 +
+> rnorm(length(wind_ms))*10)
+> #plot(wind_ms, kw)
+> windDat <- data.frame(kw, wind_ms, air_kgm3, wind_dg)
+> windDat[windDat$wind_ms < 3, 'kw'] <- 0
+> model <- loess(kw ~ wind_ms + air_kgm3 + wind_dg, data = windDat,
+> enp.target = 10*5*3) #, span = 0.1)
+> 
+> modX <- serialize(model, connection = NULL, ascii = T)
+> 
+> Channel <- odbcConnect("someSysDSN; UID=aUid; PWD=aPwd")
+> sqlQuery(Channel,
+> paste(
+> "INSERT INTO GRT.GeneratorsModels
+>            ([cGeneratorID]
+>            ,[tModel]
+>    VALUES
+>            (1,",
+>            paste("'", gsub("'", "''", rawToChar(modX)), "'", sep = ''),
+>            ")", sep = "") )
+> # Up to this it is working correctly,
+> # in DB I have the "modX" variable
+> # Problem arise retrieving data and 64kb limit:
+>   strQ <- "
+>     SELECT  CONVERT(varchar(max), tModel) AS tModel
+>     FROM    GRT.GeneratorsModels
+>     WHERE   (cGeneratorID = 1)
+>     "
+> x <- sqlQuery(Channel, strQ, stringsAsFactors = F, believeNRows =
+> FALSE)
+> x <- sqlQuery(Channel, strQ, stringsAsFactors = F, believeNRows =
+> FALSE) #read error
+> 
+> 
+> 
+> Above code is working for simplier models that have a shorter
+> representation in variable "modX".
+> Any advice on how to store and retieve this kind of objects?
+> Thanks
+> Daniele
+> 
+> 
+> ORS Srl
+> 
+> Via Agostino Morando 1/3 12060 Roddi (Cn) - Italy
+> Tel. +39 0173 620211
+> Fax. +39 0173 620299 / +39 0173 433111
+> Web Site www.ors.it
+> 
+> -----------------------------------------------------------------------
+> -------------------------------------------------
+> Qualsiasi utilizzo non autorizzato del presente messaggio e dei suoi
+> allegati ? vietato e potrebbe costituire reato.
+> Se lei avesse ricevuto erroneamente questo messaggio, Le saremmo grati
+> se provvedesse alla distruzione dello stesso
+> e degli eventuali allegati.
+> Opinioni, conclusioni o altre informazioni riportate nella e-mail, che
+> non siano relative alle attivit? e/o
+> alla missione aziendale di O.R.S. Srl si intendono non  attribuibili
+> alla societ? stessa, n? la impegnano in alcun modo.
+> ______________________________________________
+> R-help at r-project.org mailing list
+> https://stat.ethz.ch/mailman/listinfo/r-help
+> PLEASE do read the posting guide http://www.R-project.org/posting-
+> guide.html
+> and provide commented, minimal, self-contained, reproducible code.
+
+From m@|| @end|ng |rom joeconw@y@com  Fri Apr  2 22:45:35 2010
+From: m@|| @end|ng |rom joeconw@y@com (Joe Conway)
+Date: Fri, 02 Apr 2010 13:45:35 -0700
+Subject: [R-sig-DB] How to save a model in DB and retrieve It
+In-Reply-To: <5C57984CA179A247803E12AAB0F7ABA66AE8E0BFFE@adorsmail01.ors.local>
+References: <mailman.17.1270116006.6468.r-help@r-project.org>
+	<5C57984CA179A247803E12AAB0F7ABA66AE8E0BFFE@adorsmail01.ors.local>
+Message-ID: <4BB6576F.3010501@joeconway.com>
+
+On 04/02/2010 01:37 AM, Daniele Amberti wrote:
+> I'm wondering how to save an object (models like lm, loess, etc) in a DB to retrieve and use it afterwards, an example:
+
+> # Up to this it is working correctly,
+> # in DB I have the "modX" variable
+> # Problem arise retrieving data and 64kb limit:
+
+> Above code is working for simplier models that have a shorter representation in variable "modX".
+> Any advice on how to store and retieve this kind of objects?
+
+You can mostly do what you want with PL/R and PostgreSQL
+(see http://www.joeconway.com)
+
+For example:
+
+8<------------------------------
+CREATE OR REPLACE FUNCTION get_model() RETURNS bytea AS $$
+  wind_ms <- abs(rnorm(24*30)*4+8)
+  air_kgm3 <- rnorm(24*30, 0.1)*0.1 + 1.1
+  wind_dg <- rnorm(24*30) * 360/7
+  ms <- c(0:25)
+  kw_mm92 <- c(0,0,0,20,94,205,391,645,979,1375,1795,2000,2040)
+  kw_mm92 <- c(kw_mm92, rep(2050, length(ms)-length(kw_mm92)))
+  modelspline <- splinefun(ms, kw_mm92)
+  kw <- abs(modelspline(wind_ms)
+        - (wind_dg)*2 + (air_kgm3 - 1.15)*300
+        + rnorm(length(wind_ms))*10)
+  windDat <- data.frame(kw, wind_ms, air_kgm3, wind_dg)
+  windDat[windDat$wind_ms < 3, 'kw'] <- 0
+  model <- loess(kw ~ wind_ms + air_kgm3 + wind_dg,
+                 data = windDat, enp.target = 10*5*3) #, span = 0.1)
+  return(model)
+$$ LANGUAGE plr;
+
+
+CREATE OR REPLACE FUNCTION extract_fitted(bytea) RETURNS SETOF float8 AS $$
+  return(arg1$fitted)
+$$ LANGUAGE plr;
+8<------------------------------
+
+select length(get_model());
+ length
+--------
+ 219361
+(1 row)
+
+select * from extract_fitted(get_model());
+   extract_fitted
+---------------------
+    429.108839675228
+    994.109512291517
+    858.011203975038
+[...]
+     349.87845982039
+     884.26297556709
+    155.996698202327
+    117.920754039095
+(720 rows)
+8<------------------------------
+
+
+However while working up this example I discovered a bug in PL/R. In the
+*next* release you will be able to do the following, which with the
+current release does not quite work:
+
+8<------------------------------
+CREATE TABLE model_store (id int primary key, model bytea);
+INSERT INTO model_store VALUES (1, get_model()), (2, get_model()), (3,
+get_model());
+
+select *
+ from extract_fitted((select model from model_store where id = 1));
+   extract_fitted
+---------------------
+   -29.4074157828657
+    -3.7532027827115
+    803.524262857045
+[...]
+    1463.03742124991
+    2051.01939505223
+    13.4600408221842
+(720 rows)
+8<------------------------------
+
+Joe
+
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 899 bytes
+Desc: OpenPGP digital signature
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20100402/664f491f/attachment.sig>
+
+From je||@@@ry@n @end|ng |rom gm@||@com  Fri Apr  2 22:56:35 2010
+From: je||@@@ry@n @end|ng |rom gm@||@com (Jeff Ryan)
+Date: Fri, 2 Apr 2010 15:56:35 -0500
+Subject: [R-sig-DB] How to save a model in DB and retrieve It
+In-Reply-To: <5C57984CA179A247803E12AAB0F7ABA66AE8E0BFFE@adorsmail01.ors.local>
+References: <mailman.17.1270116006.6468.r-help@r-project.org>
+	<5C57984CA179A247803E12AAB0F7ABA66AE8E0BFFE@adorsmail01.ors.local>
+Message-ID: <s2pe8e755251004021356w52d241bcn52f6921f48e68470@mail.gmail.com>
+
+A very simple option, since you're only looking to efficiently store
+and retrieve, is something like a key-value store.
+
+There is a new rredis (redis) package on CRAN, as well as the
+RBerkeley (Oracle Berkeley DB) package.
+
+RBerkeley is as simple as db_put() and db_get() calls where you
+specify a key and serialize/unserialize the object before and after.
+
+Caveat to RBerkeley is that it is only functional on *nix until
+someone contributes a Windows version or insight on what I need to do
+to make that work (issue is that Berkeley DB can't be compiled easily
+using the R version of mingw to compile).  The package code is likely
+to work for windows if you can manage to get the db headers/libs
+installed with the R toolchain.
+
+HTH
+Jeff
+
+On Fri, Apr 2, 2010 at 3:37 AM, Daniele Amberti <daniele.amberti at ors.it> wrote:
+> I'm wondering how to save an object (models like lm, loess, etc) in a DB to retrieve and use it afterwards, an example:
+>
+> wind_ms <- abs(rnorm(24*30)*4+8)
+> air_kgm3 <- rnorm(24*30, 0.1)*0.1 + 1.1
+> wind_dg <- rnorm(24*30) * 360/7
+> ms <- c(0:25)
+> kw_mm92 <- c(0,0,0,20,94,205,391,645,979,1375,1795,2000,2040)
+> kw_mm92 <- c(kw_mm92, rep(2050, length(ms)-length(kw_mm92)))
+> modelspline <- splinefun(ms, kw_mm92)
+> kw <- abs(modelspline(wind_ms) - (wind_dg)*2 + (air_kgm3 - 1.15)*300 + rnorm(length(wind_ms))*10)
+> #plot(wind_ms, kw)
+> windDat <- data.frame(kw, wind_ms, air_kgm3, wind_dg)
+> windDat[windDat$wind_ms < 3, 'kw'] <- 0
+> model <- loess(kw ~ wind_ms + air_kgm3 + wind_dg, data = windDat, enp.target = 10*5*3) #, span = 0.1)
+>
+> modX <- serialize(model, connection = NULL, ascii = T)
+>
+> Channel <- odbcConnect("someSysDSN; UID=aUid; PWD=aPwd")
+> sqlQuery(Channel,
+> paste(
+> "INSERT INTO GRT.GeneratorsModels
+> ? ? ? ? ? ([cGeneratorID]
+> ? ? ? ? ? ,[tModel]
+> ? VALUES
+> ? ? ? ? ? (1,",
+> ? ? ? ? ? paste("'", gsub("'", "''", rawToChar(modX)), "'", sep = ''),
+> ? ? ? ? ? ")", sep = "") )
+> # Up to this it is working correctly,
+> # in DB I have the "modX" variable
+> # Problem arise retrieving data and 64kb limit:
+> ?strQ <- "
+> ? ?SELECT ?CONVERT(varchar(max), tModel) AS tModel
+> ? ?FROM ? ?GRT.GeneratorsModels
+> ? ?WHERE ? (cGeneratorID = 1)
+> ? ?"
+> x <- sqlQuery(Channel, strQ, stringsAsFactors = F, believeNRows = FALSE)
+> x <- sqlQuery(Channel, strQ, stringsAsFactors = F, believeNRows = FALSE) #read error
+>
+>
+>
+> Above code is working for simplier models that have a shorter representation in variable "modX".
+> Any advice on how to store and retieve this kind of objects?
+> Thanks
+> Daniele
+>
+>
+> ORS Srl
+>
+> Via Agostino Morando 1/3 12060 Roddi (Cn) - Italy
+> Tel. +39 0173 620211
+> Fax. +39 0173 620299 / +39 0173 433111
+> Web Site www.ors.it
+>
+> ------------------------------------------------------------------------------------------------------------------------
+> Qualsiasi utilizzo non autorizzato del presente messaggio e dei suoi allegati ? vietato e potrebbe costituire reato.
+> Se lei avesse ricevuto erroneamente questo messaggio, Le saremmo grati se provvedesse alla distruzione dello stesso
+> e degli eventuali allegati.
+> Opinioni, conclusioni o altre informazioni riportate nella e-mail, che non siano relative alle attivit? e/o
+> alla missione aziendale di O.R.S. Srl si intendono non ?attribuibili alla societ? stessa, n? la impegnano in alcun modo.
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+-- 
+Jeffrey Ryan
+jeffrey.ryan at insightalgo.com
+
+ia: insight algorithmics
+www.insightalgo.com
+
+
+
+From m@|| @end|ng |rom joeconw@y@com  Sat Apr  3 01:50:33 2010
+From: m@|| @end|ng |rom joeconw@y@com (Joe Conway)
+Date: Fri, 02 Apr 2010 16:50:33 -0700
+Subject: [R-sig-DB] How to save a model in DB and retrieve It
+In-Reply-To: <4BB6576F.3010501@joeconway.com>
+References: <mailman.17.1270116006.6468.r-help@r-project.org>	<5C57984CA179A247803E12AAB0F7ABA66AE8E0BFFE@adorsmail01.ors.local>
+	<4BB6576F.3010501@joeconway.com>
+Message-ID: <4BB682C9.4030908@joeconway.com>
+
+On 04/02/2010 01:45 PM, Joe Conway wrote:
+
+> However while working up this example I discovered a bug in PL/R. In the
+> *next* release you will be able to do the following, which with the
+> current release does not quite work:
+
+FWIW, I released a new tarball with the fix for this issue. See:
+http://www.joeconway.com/plr/plr-8.3.0.10.tar.gz
+
+Joe
+
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 899 bytes
+Desc: OpenPGP digital signature
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20100402/00d3d61b/attachment.sig>
+
+From j@me@ @end|ng |rom |pec@co@uk  Tue Apr 13 18:14:02 2010
+From: j@me@ @end|ng |rom |pec@co@uk (james)
+Date: Tue, 13 Apr 2010 17:14:02 +0100
+Subject: [R-sig-DB] [RPostgreSQL]  Fails to Load
+Message-ID: <4BC4984A.8090404@ipec.co.uk>
+
+Reposting a message I posted on the R-help list.
+
+|Hi List,
+| 
+| Running R 2.10.1 on a fresh install of Windows 7. I get the following 
+| error when loading the RPostgreSQL package.
+| 
+| 
+|  >library(RPostgreSQL)
+| Loading required package: DBI
+| Error in inDL(x, as.logical(local), as.logical(now), ...) :
+|   unable to load shared library 
+| 'C:/Users/james/Documents/R/win-library/2.10/RPostgreSQL/libs/RPostgreSQL.dll':
+|   LoadLibrary failure:  The specified module could not be found.
+| 
+| Error: package/namespace load failed for 'RPostgreSQL'
+| 
+| 
+| I have reinstalled the RPostgreSQL package from several different 
+| mirrors and reinstalled R, and the error remains. I know that 
+| RPostgreSQL depends on libpq.dll and others, so I downloaded and 
+| installed Postgres, then copied the contents of PostgreSQL\8.4\lib to 
+| the RPostgreSQL library 
+| (C:/Users/james/Documents/R/win-library/2.10/RPostgreSQL/libs/)
+| 
+| Regards,
+| James Hargreaves
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Tue Apr 13 20:31:55 2010
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Tue, 13 Apr 2010 14:31:55 -0400
+Subject: [R-sig-DB] [RPostgreSQL] Fails to Load
+In-Reply-To: <4BC4984A.8090404@ipec.co.uk>
+References: <4BC4984A.8090404@ipec.co.uk>
+Message-ID: <n2q971536df1004131131zd3b76e4ak356fa220c24c079a@mail.gmail.com>
+
+1. Use dependencywalker at dependencywalker.com to find out where
+RPostgreSQL.dll is looking for the other dll's.
+
+2. There is also the RpgSQL package on CRAN which uses JDBC.  See the
+INSTALL file in that package for more info:
+
+http://cran.r-project.org/web/packages/RpgSQL/INSTALL
+http://cran.r-project.org/web/packages/RpgSQL/index.html
+
+On Tue, Apr 13, 2010 at 12:14 PM, james <james at ipec.co.uk> wrote:
+> Reposting a message I posted on the R-help list.
+>
+> |Hi List,
+> | | Running R 2.10.1 on a fresh install of Windows 7. I get the following |
+> error when loading the RPostgreSQL package.
+> | | | ?>library(RPostgreSQL)
+> | Loading required package: DBI
+> | Error in inDL(x, as.logical(local), as.logical(now), ...) :
+> | ? unable to load shared library |
+> 'C:/Users/james/Documents/R/win-library/2.10/RPostgreSQL/libs/RPostgreSQL.dll':
+> | ? LoadLibrary failure: ?The specified module could not be found.
+> | | Error: package/namespace load failed for 'RPostgreSQL'
+> | | | I have reinstalled the RPostgreSQL package from several different |
+> mirrors and reinstalled R, and the error remains. I know that | RPostgreSQL
+> depends on libpq.dll and others, so I downloaded and | installed Postgres,
+> then copied the contents of PostgreSQL\8.4\lib to | the RPostgreSQL library
+> | (C:/Users/james/Documents/R/win-library/2.10/RPostgreSQL/libs/)
+> | | Regards,
+> | James Hargreaves
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From ne||t @end|ng |rom ne||t||||n@com  Wed Apr 14 01:59:42 2010
+From: ne||t @end|ng |rom ne||t||||n@com (Neil Tiffin)
+Date: Tue, 13 Apr 2010 18:59:42 -0500
+Subject: [R-sig-DB] [RPostgreSQL] Fails to Load
+In-Reply-To: <n2q971536df1004131131zd3b76e4ak356fa220c24c079a@mail.gmail.com>
+References: <4BC4984A.8090404@ipec.co.uk>
+	<n2q971536df1004131131zd3b76e4ak356fa220c24c079a@mail.gmail.com>
+Message-ID: <3707EB49-AC2E-40C8-8E75-33FABE70821F@neiltiffin.com>
+
+It appears to me that it is looking for the dependency DBI.  When you installed RPostgreSQL did you check the box (at least on Mac) to install all dependencies?  Is DBI installed?
+
+On Apr 13, 2010, at 1:31 PM, Gabor Grothendieck wrote:
+
+> 1. Use dependencywalker at dependencywalker.com to find out where
+> RPostgreSQL.dll is looking for the other dll's.
+> 
+> 2. There is also the RpgSQL package on CRAN which uses JDBC.  See the
+> INSTALL file in that package for more info:
+> 
+> http://cran.r-project.org/web/packages/RpgSQL/INSTALL
+> http://cran.r-project.org/web/packages/RpgSQL/index.html
+> 
+> On Tue, Apr 13, 2010 at 12:14 PM, james <james at ipec.co.uk> wrote:
+>> Reposting a message I posted on the R-help list.
+>> 
+>> |Hi List,
+>> | | Running R 2.10.1 on a fresh install of Windows 7. I get the following |
+>> error when loading the RPostgreSQL package.
+>> | | |  >library(RPostgreSQL)
+>> | Loading required package: DBI
+>> | Error in inDL(x, as.logical(local), as.logical(now), ...) :
+>> |   unable to load shared library |
+>> 'C:/Users/james/Documents/R/win-library/2.10/RPostgreSQL/libs/RPostgreSQL.dll':
+>> |   LoadLibrary failure:  The specified module could not be found.
+>> | | Error: package/namespace load failed for 'RPostgreSQL'
+>> | | | I have reinstalled the RPostgreSQL package from several different |
+>> mirrors and reinstalled R, and the error remains. I know that | RPostgreSQL
+>> depends on libpq.dll and others, so I downloaded and | installed Postgres,
+>> then copied the contents of PostgreSQL\8.4\lib to | the RPostgreSQL library
+>> | (C:/Users/james/Documents/R/win-library/2.10/RPostgreSQL/libs/)
+>> | | Regards,
+>> | James Hargreaves
+>> 
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at stat.math.ethz.ch
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>> 
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From edd @end|ng |rom deb|@n@org  Wed Apr 14 02:47:38 2010
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Tue, 13 Apr 2010 19:47:38 -0500
+Subject: [R-sig-DB] [RPostgreSQL] Fails to Load
+In-Reply-To: <3707EB49-AC2E-40C8-8E75-33FABE70821F@neiltiffin.com>
+References: <4BC4984A.8090404@ipec.co.uk>
+	<n2q971536df1004131131zd3b76e4ak356fa220c24c079a@mail.gmail.com>
+	<3707EB49-AC2E-40C8-8E75-33FABE70821F@neiltiffin.com>
+Message-ID: <19397.4266.44067.356433@ron.nulle.part>
+
+
+On 13 April 2010 at 18:59, Neil Tiffin wrote:
+| It appears to me that it is looking for the dependency DBI.  When you installed RPostgreSQL did you check the box (at least on Mac) to install all dependencies?  Is DBI installed?
+
+I think I disagree
+
+| >> 'C:/Users/james/Documents/R/win-library/2.10/RPostgreSQL/libs/RPostgreSQL.dll':
+| >> |   LoadLibrary failure:  The specified module could not be found.
+
+It fails to load the dll for the package.  As I told James when he first
+posted to r-help, he should try to added the Postgresql binary directory to
+the path.
+
+Dirk
+
+| 
+| On Apr 13, 2010, at 1:31 PM, Gabor Grothendieck wrote:
+| 
+| > 1. Use dependencywalker at dependencywalker.com to find out where
+| > RPostgreSQL.dll is looking for the other dll's.
+| > 
+| > 2. There is also the RpgSQL package on CRAN which uses JDBC.  See the
+| > INSTALL file in that package for more info:
+| > 
+| > http://cran.r-project.org/web/packages/RpgSQL/INSTALL
+| > http://cran.r-project.org/web/packages/RpgSQL/index.html
+| > 
+| > On Tue, Apr 13, 2010 at 12:14 PM, james <james at ipec.co.uk> wrote:
+| >> Reposting a message I posted on the R-help list.
+| >> 
+| >> |Hi List,
+| >> | | Running R 2.10.1 on a fresh install of Windows 7. I get the following |
+| >> error when loading the RPostgreSQL package.
+| >> | | |  >library(RPostgreSQL)
+| >> | Loading required package: DBI
+| >> | Error in inDL(x, as.logical(local), as.logical(now), ...) :
+| >> |   unable to load shared library |
+| >> 'C:/Users/james/Documents/R/win-library/2.10/RPostgreSQL/libs/RPostgreSQL.dll':
+| >> |   LoadLibrary failure:  The specified module could not be found.
+| >> | | Error: package/namespace load failed for 'RPostgreSQL'
+| >> | | | I have reinstalled the RPostgreSQL package from several different |
+| >> mirrors and reinstalled R, and the error remains. I know that | RPostgreSQL
+| >> depends on libpq.dll and others, so I downloaded and | installed Postgres,
+| >> then copied the contents of PostgreSQL\8.4\lib to | the RPostgreSQL library
+| >> | (C:/Users/james/Documents/R/win-library/2.10/RPostgreSQL/libs/)
+| >> | | Regards,
+| >> | James Hargreaves
+| >> 
+| >> _______________________________________________
+| >> R-sig-DB mailing list -- R Special Interest Group
+| >> R-sig-DB at stat.math.ethz.ch
+| >> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+| >> 
+| > 
+| > _______________________________________________
+| > R-sig-DB mailing list -- R Special Interest Group
+| > R-sig-DB at stat.math.ethz.ch
+| > https://stat.ethz.ch/mailman/listinfo/r-sig-db
+| 
+| _______________________________________________
+| R-sig-DB mailing list -- R Special Interest Group
+| R-sig-DB at stat.math.ethz.ch
+| https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+-- 
+  Registration is open for the 2nd International conference R / Finance 2010
+  See http://www.RinFinance.com for details, and see you in Chicago in April!
+
+
+
+From ne||t @end|ng |rom ne||t||||n@com  Wed Apr 14 14:02:52 2010
+From: ne||t @end|ng |rom ne||t||||n@com (Neil Tiffin)
+Date: Wed, 14 Apr 2010 07:02:52 -0500
+Subject: [R-sig-DB] [RPostgreSQL] Fails to Load
+In-Reply-To: <19397.4266.44067.356433@ron.nulle.part>
+References: <4BC4984A.8090404@ipec.co.uk>
+	<n2q971536df1004131131zd3b76e4ak356fa220c24c079a@mail.gmail.com>
+	<3707EB49-AC2E-40C8-8E75-33FABE70821F@neiltiffin.com>
+	<19397.4266.44067.356433@ron.nulle.part>
+Message-ID: <BB78ECAC-B699-4BEE-8973-E0571506A385@neiltiffin.com>
+
+Sorry, I did not see your reply on r-help and way too much going on.  Thanks for the clarification.
+
+On Apr 13, 2010, at 7:47 PM, Dirk Eddelbuettel wrote:
+
+> 
+> On 13 April 2010 at 18:59, Neil Tiffin wrote:
+> | It appears to me that it is looking for the dependency DBI.  When you installed RPostgreSQL did you check the box (at least on Mac) to install all dependencies?  Is DBI installed?
+> 
+> I think I disagree
+> 
+> | >> 'C:/Users/james/Documents/R/win-library/2.10/RPostgreSQL/libs/RPostgreSQL.dll':
+> | >> |   LoadLibrary failure:  The specified module could not be found.
+> 
+> It fails to load the dll for the package.  As I told James when he first
+> posted to r-help, he should try to added the Postgresql binary directory to
+> the path.
+> 
+> Dirk
+> 
+> | 
+> | On Apr 13, 2010, at 1:31 PM, Gabor Grothendieck wrote:
+> | 
+> | > 1. Use dependencywalker at dependencywalker.com to find out where
+> | > RPostgreSQL.dll is looking for the other dll's.
+> | > 
+> | > 2. There is also the RpgSQL package on CRAN which uses JDBC.  See the
+> | > INSTALL file in that package for more info:
+> | > 
+> | > http://cran.r-project.org/web/packages/RpgSQL/INSTALL
+> | > http://cran.r-project.org/web/packages/RpgSQL/index.html
+> | > 
+> | > On Tue, Apr 13, 2010 at 12:14 PM, james <james at ipec.co.uk> wrote:
+> | >> Reposting a message I posted on the R-help list.
+> | >> 
+> | >> |Hi List,
+> | >> | | Running R 2.10.1 on a fresh install of Windows 7. I get the following |
+> | >> error when loading the RPostgreSQL package.
+> | >> | | |  >library(RPostgreSQL)
+> | >> | Loading required package: DBI
+> | >> | Error in inDL(x, as.logical(local), as.logical(now), ...) :
+> | >> |   unable to load shared library |
+> | >> 'C:/Users/james/Documents/R/win-library/2.10/RPostgreSQL/libs/RPostgreSQL.dll':
+> | >> |   LoadLibrary failure:  The specified module could not be found.
+> | >> | | Error: package/namespace load failed for 'RPostgreSQL'
+> | >> | | | I have reinstalled the RPostgreSQL package from several different |
+> | >> mirrors and reinstalled R, and the error remains. I know that | RPostgreSQL
+> | >> depends on libpq.dll and others, so I downloaded and | installed Postgres,
+> | >> then copied the contents of PostgreSQL\8.4\lib to | the RPostgreSQL library
+> | >> | (C:/Users/james/Documents/R/win-library/2.10/RPostgreSQL/libs/)
+> | >> | | Regards,
+> | >> | James Hargreaves
+> | >> 
+> | >> _______________________________________________
+> | >> R-sig-DB mailing list -- R Special Interest Group
+> | >> R-sig-DB at stat.math.ethz.ch
+> | >> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> | >> 
+> | > 
+> | > _______________________________________________
+> | > R-sig-DB mailing list -- R Special Interest Group
+> | > R-sig-DB at stat.math.ethz.ch
+> | > https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> | 
+> | _______________________________________________
+> | R-sig-DB mailing list -- R Special Interest Group
+> | R-sig-DB at stat.math.ethz.ch
+> | https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> 
+> -- 
+>  Registration is open for the 2nd International conference R / Finance 2010
+>  See http://www.RinFinance.com for details, and see you in Chicago in April!
+
+
+
+From @e@npor @end|ng |rom @cm@org  Sat Apr 24 10:39:47 2010
+From: @e@npor @end|ng |rom @cm@org (Sean O'Riordain)
+Date: Sat, 24 Apr 2010 09:39:47 +0100
+Subject: [R-sig-DB] RODBC connection to Oracle on 64-bit RHEL box failing
+In-Reply-To: <924bb5e21003240802g554958e9h61e40bb7c5f957ab@mail.gmail.com>
+References: <924bb5e21003231247qf510cdaq70bb23f21d296b43@mail.gmail.com>
+	<C6DFDC86-7D92-4632-AA52-3D50DC4D520D@me.com>
+	<924bb5e21003240721y5e1818b2q66bba282e19a2858@mail.gmail.com>
+	<3758523A-6CAC-48B7-9DDB-FB2051CA94D6@me.com>
+	<924bb5e21003240802g554958e9h61e40bb7c5f957ab@mail.gmail.com>
+Message-ID: <m2m8ed68eed1004240139vf01a94ecj5330d340c71933c7@mail.gmail.com>
+
+Have you considered using RJDBC instead of ODBC?  I don't know about
+the relative performance - but I've no problems using jdbc from 64-bit
+ubuntu to oracle on 32/64 bit redhat.
+
+In the past I gave up on using odbc due to the difficulty in setting
+it up... jdbc is a piece of cake by comparison and doesn't require
+system changes only a local copy of the ojdbc14.jar (from memory) to
+be accessible.
+
+cheers,
+Sean
+
+
+On Wed, Mar 24, 2010 at 4:02 PM, Harlan Harris <harlan at harris.name> wrote:
+> On Wed, Mar 24, 2010 at 10:53 AM, Marc Schwartz <marc_schwartz at me.com>wrote:
+>
+>> Interesting. Monroe is the guy that I had communicated with last year on
+>> this point. Presumably either they were not yet ready to announce anything
+>> and/or it was still on their TODO list.
+>>
+>> Can the 64 bit driver co-exist with the 32 bit driver or is it a choice of
+>> one or the other? In other words, can I create 32 bit and 64 bit DSN's
+>> separately, so that I can use either 32 bit or 64 bit R as I may need
+>> interchangeably?
+>>
+>
+> I have no idea! :)
+>
+>
+>> I would certainly never speak for Prof. Ripley, but I can tell you that
+>> during my 8+ years of using R, whether it be via onlist postings or my
+>> periodic offlist communications with him, I have never had a reason to doubt
+>> his availability or responsiveness when it comes to anything R related,
+>> whether that be 'base R' as a member of R Core, or the other packages that
+>> he maintains. That experience includes both day and night for any given time
+>> zone...
+>>
+>
+> In theory I agree, but if (heaven forbid) Prof. Ripley were hit by a bus,
+> this could never get fixed. That's not true for R as a whole (see that
+> interesting article in a recent R Journal), but it is true for a number of
+> non-core packages... And Oracle is not very high on the list of databases
+> used by R's core user base!
+>
+>
+>> I checked the archives and at least recently, don't see a post here from
+>> David after late 2008, but I would not hesitate to send him an e-mail
+>> directly, which appears to be daj025 at gmail.com or dj at bell-labs.com.
+>>
+>
+> Ah, thanks, will do.
+>
+> ?-Harlan
+>
+>
+>>
+>>
+>> Marc
+>>
+>>
+>
+> ? ? ? ?[[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Sun May  2 23:17:50 2010
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Sun, 02 May 2010 14:17:50 -0700
+Subject: [R-sig-DB] Request for testers for RSQLite release candidate
+Message-ID: <4BDDEBFE.1060704@userprimary.net>
+
+Hi all,
+
+I've been working on the next release of RSQLite and would appreciate
+feedback on the release candidate from anyone willing to take it for a
+test drive.
+
+The NEWS items for what I hope will be the 0.9-0 release are at the end
+of this mail.  Highlights in brief:
+
+* Better compatibility with multicore, driver handle no longer needs to
+match current process ID.
+
+* Support for SQLite BLOBs via raw vectors
+
+* Reworked memory model for DB connections to tie into R's garbage
+collector.  When a db connection is no longer referenced by an R
+variable, it will be closed and cleaned up.
+
+You can grab the source package for the release candidate here:
+
+    http://userprimary.net/software/RSQLite_0.8-99.tar.gz
+
+Thanks,
+
++ seth
+
+
+Version 0.9-0
+
+- The SQLite driver handle validation code, is_ValidHandle, no longer
+  requires the driver ID to be equal to the current process ID.
+  SQLite supports multiple processes accessing the same SQLite file
+  via locking (however, results are known to be unreliable on NFS).
+  This change should make using RSQLite with the multicore package
+  easier.  For an example of the issue that the PID check causes see:
+  https://stat.ethz.ch/pipermail/r-sig-hpc/2009-August/000335.html
+
+- Refactor to use external pointers to wrap handle IDs; remove handle
+  ID coerce code (e.g. as(obj at Id, "integer")).  For now, the old
+  scheme of storing handle IDs in an integer vector is mostly
+  maintained only these integer vectors are stored in the protection
+  slot of an external pointer.  Using external pointers will allow the
+  use of finalizer code so that, for example, unreferenced result sets
+  can be cleaned up.
+
+- Upgrade to SQLite 3.6.23.1.
+
+- The memory mangement code for keeping track of database connections
+  was significantly refactored.  Instead of tracking connections in a
+  pre-allocated array attached to the driver manager, connections are
+  now managed dynamically using R's external pointers and finalizers.
+  Consequences of this change are as follows:
+
+    * There is no longer a maximum connection limit (values specified
+      using the max.con argument to SQLite() are now ignored).
+
+    * The dbGetInfo(mgr) method no longer lists open connections and
+      dbListConnections will now always return an empty list.  This
+      functionality was only needed because one needed a reference to
+      a connection in order to finalize the resource via
+      dbDisconnect().  While calling dbDisconnect() is still the
+      recommended approach, database connections that are no longer
+      referenced by any R variables will be finalized by R's garbage
+      collector.
+
+    * The behavior of SQLiteConnection objects now follows typical R
+      semantics.  If no R variables reference a given connection, it
+      will be finalized by R's garbage collector.
+
+- Add support for SQLite BLOBs.  You can now insert and retrieve BLOBs
+  using raw vectors.  For parameterized queries using
+  dbSendPreparedQuery the BLOB column should be a list.  When a query
+  returns a result set with a BLOB column, that column will be a list
+  of raw vectors.  Lists as columns in data.frames work for simple
+  access, but may break some code that expects columns to be atomic
+  vectors.
+
+- RSQLite now depends on R >= 2.10.0.
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Tue May  4 18:41:02 2010
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Tue, 04 May 2010 09:41:02 -0700
+Subject: [R-sig-DB] RSQLite Issue
+In-Reply-To: <3BB38AB7-2C35-4FE9-8C90-2CF33E415A96@wisc.edu>
+References: <3BB38AB7-2C35-4FE9-8C90-2CF33E415A96@wisc.edu>
+Message-ID: <4BE04E1E.70802@userprimary.net>
+
+Hi Erik,
+
+On 5/4/10 8:33 AM, Erik Wright wrote:
+> I couldn't find a user forum for RSQLite, so I decided to email you directly.  Here is my problem:
+
+Next time, you can send email to r-sig-db at stat.math.ethz.ch
+https://stat.ethz.ch/mailman/listinfo/r-sig-db
+for RSQLite related questions.
+
+> 1.  Loop updating values of a column in a table.
+> 2.  Immediately after finishing the loop, query that column.
+>
+> In step 2, I get an error "no such column".  It is almost like the database is still in the middle of updating the column.  When I go look at the database, the column is most definitely there.  Obviously it must be there because I have been updating it repeatedly without any problems.
+>
+> Any ideas for a fix?  I tried implementing a delay with Sys.sleep before querying the column, but that didn't work.
+
+You'll need to send along a bit more information for me to help you.  Is 
+there a way you can create a small reproducible example script?  Please 
+also include sessionInfo() output so I know what version of R and 
+RSQLite you are using.
+
+You might find it useful to review the examples of prepared queries in 
+the RSQLite docs.  For example, try help("dbSendPreparedQuery"), and 
+then scroll down to look at the examples.
+
++ seth
+
+-- 
+Seth Falcon | @sfalcon | http://userprimary.net/
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Fri May  7 19:42:15 2010
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Fri, 07 May 2010 10:42:15 -0700
+Subject: [R-sig-DB] Release announcement: RSQLite 0.9-0 now with more BLOBs
+Message-ID: <4BE450F7.2090705@userprimary.net>
+
+RSQLite is an R package conforming to the R DBI interface that allows 
+for interaction with SQLite.
+
+Version 0.9-0 highlights:
+
+* Support for SQLite BLOBs using raw vectors in R
+
+* New memory model for db connections allows for more familiar R 
+semantics and no predefined limit to the number of connections you can 
+have in an R session.
+
+* Upgrade to SQLite 3.6.23.1
+
+* Removed an unnecessary validity check on process ID for the manager 
+handle.  This should make use of RSQLite with the multicore package easier.
+
+* RSQLite now depends on R >= 2.10.0
+
+You can read more details about these and other changes here:
+
+    http://cran.r-project.org/web/packages/RSQLite/NEWS
+
+
++ seth
+
+
+-- 
+Seth Falcon | @sfalcon | http://userprimary.net/
+
+
+
+From |eroy@bor|@ @end|ng |rom gm@||@com  Mon May 10 13:26:13 2010
+From: |eroy@bor|@ @end|ng |rom gm@||@com (Boris Leroy)
+Date: Mon, 10 May 2010 13:26:13 +0200
+Subject: [R-sig-DB] RODBC and MySQL: problem with sqlSave function
+Message-ID: <AANLkTilxBQZjyj9XhE8AK_oyQDrOehVFZzazz7jw3IL6@mail.gmail.com>
+
+Hello,
+
+I have trouble using RODBC with MySQL. (R version : 2.9.2 ; MySQL version :
+5.1.37 (embedded with xampp on a remote server))
+
+The main problem is that I can't use the function sqlSave, since it seems to
+send "?" to the server instead of the correct values in tables.
+
+Here is my code :
+note: I extract from the database a table, and then I try to write it into
+the database.
+This is because I want to be sure that the table is in a correct format, and
+I can therefore try to understand why the function sqlSave doesn't work.
+
+> require(RODBC)
+Le chargement a n?cessit? le package : RODBC
+
+> channel<-odbcDriverConnect() #I do not specify the database name here
+
+> stationsData<-sqlFetch(channel, "baseimport.importstations")
+Erreur dans fromchar(x) :
+  character string is not in a standard unambiguous format
+
+This does not work because I have null dates in my table : "00-00-0000" and
+R does not manage to convert them
+The solution is:
+
+> stationsData<-sqlFetch(channel, "baseimport.importstations", as.is=T)
+
+Now, I would like to write the table "stationsData" in my database:
+
+> sqlSave(channel, stationsData, "baseimport.test1")
+Erreur dans odbcUpdate(channel, query, mydata, coldata[m, ], test = test,  :
+
+  no parameters, so nothing to update
+
+Didn't work..
+
+> sqlSave(channel, stationsData, "baseimport.test2", verbose=T)
+Query: CREATE TABLE baseimport.test2  (`rownames` varchar(255), `station_id`
+integer, `dept` varchar(255), `commune` varchar(255), `corine` varchar(255),
+`c1` varchar(255), `c2` varchar(255), `c3` varchar(255), `c4` varchar(255),
+`c5` varchar(255), `c6` varchar(255), `c7` varchar(255), `c8` varchar(255),
+`lieudit` varchar(255), `reservelabel` varchar(255), `milieu` varchar(255),
+`dateech` varchar(255), `datedebutech` varchar(255), `datefinech`
+varchar(255), `anneeech` integer, `anneedebutech` integer, `anneefinech`
+integer, `anneepub` integer, `typeech` varchar(255), `xreleve` integer,
+`yreleve` integer)
+Query: INSERT INTO baseimport.test2 ( `` ) VALUES (
+?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )
+Erreur dans odbcUpdate(channel, query, mydata, coldata[m, ], test = test,  :
+
+  no parameters, so nothing to update
+
+So, the function seems to be able to create the table, but the INSERT INTO
+query does contain any correct value.
+Do you have any idea about this problem, or where did I fail ?
+I tried to add columns in an existing table with append=T, I had the same
+error.
+
+note: Another function of RODBC did not want to work with MySQL: sqlColumns,
+which never gave any results, but this is not my major concern.
+
+Many thanks in advance,
+
+Boris
+
+-- 
+Boris Leroy,
+PhD Student
+URU 420 Biodiversity and Territory Management
+University of Rennes 1 / Mus?um National d'Histoire Naturelle
+
+	[[alternative HTML version deleted]]
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Mon May 10 14:53:00 2010
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Mon, 10 May 2010 13:53:00 +0100 (BST)
+Subject: [R-sig-DB] RODBC and MySQL: problem with sqlSave function
+In-Reply-To: <AANLkTilxBQZjyj9XhE8AK_oyQDrOehVFZzazz7jw3IL6@mail.gmail.com>
+References: <AANLkTilxBQZjyj9XhE8AK_oyQDrOehVFZzazz7jw3IL6@mail.gmail.com>
+Message-ID: <alpine.LFD.2.00.1005101352140.11821@gannet.stats.ox.ac.uk>
+
+Please do study the posting guide and post again with the information 
+requested there.
+
+The list moderator
+
+On Mon, 10 May 2010, Boris Leroy wrote:
+
+> Hello,
+>
+> I have trouble using RODBC with MySQL. (R version : 2.9.2 ; MySQL version :
+> 5.1.37 (embedded with xampp on a remote server))
+>
+> The main problem is that I can't use the function sqlSave, since it seems to
+> send "?" to the server instead of the correct values in tables.
+>
+> Here is my code :
+> note: I extract from the database a table, and then I try to write it into
+> the database.
+> This is because I want to be sure that the table is in a correct format, and
+> I can therefore try to understand why the function sqlSave doesn't work.
+>
+>> require(RODBC)
+> Le chargement a n?cessit? le package : RODBC
+>
+>> channel<-odbcDriverConnect() #I do not specify the database name here
+>
+>> stationsData<-sqlFetch(channel, "baseimport.importstations")
+> Erreur dans fromchar(x) :
+>  character string is not in a standard unambiguous format
+>
+> This does not work because I have null dates in my table : "00-00-0000" and
+> R does not manage to convert them
+> The solution is:
+>
+>> stationsData<-sqlFetch(channel, "baseimport.importstations", as.is=T)
+>
+> Now, I would like to write the table "stationsData" in my database:
+>
+>> sqlSave(channel, stationsData, "baseimport.test1")
+> Erreur dans odbcUpdate(channel, query, mydata, coldata[m, ], test = test,  :
+>
+>  no parameters, so nothing to update
+>
+> Didn't work..
+>
+>> sqlSave(channel, stationsData, "baseimport.test2", verbose=T)
+> Query: CREATE TABLE baseimport.test2  (`rownames` varchar(255), `station_id`
+> integer, `dept` varchar(255), `commune` varchar(255), `corine` varchar(255),
+> `c1` varchar(255), `c2` varchar(255), `c3` varchar(255), `c4` varchar(255),
+> `c5` varchar(255), `c6` varchar(255), `c7` varchar(255), `c8` varchar(255),
+> `lieudit` varchar(255), `reservelabel` varchar(255), `milieu` varchar(255),
+> `dateech` varchar(255), `datedebutech` varchar(255), `datefinech`
+> varchar(255), `anneeech` integer, `anneedebutech` integer, `anneefinech`
+> integer, `anneepub` integer, `typeech` varchar(255), `xreleve` integer,
+> `yreleve` integer)
+> Query: INSERT INTO baseimport.test2 ( `` ) VALUES (
+> ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )
+> Erreur dans odbcUpdate(channel, query, mydata, coldata[m, ], test = test,  :
+>
+>  no parameters, so nothing to update
+>
+> So, the function seems to be able to create the table, but the INSERT INTO
+> query does contain any correct value.
+> Do you have any idea about this problem, or where did I fail ?
+> I tried to add columns in an existing table with append=T, I had the same
+> error.
+>
+> note: Another function of RODBC did not want to work with MySQL: sqlColumns,
+> which never gave any results, but this is not my major concern.
+>
+> Many thanks in advance,
+>
+> Boris
+>
+> -- 
+> Boris Leroy,
+> PhD Student
+> URU 420 Biodiversity and Territory Management
+> University of Rennes 1 / Mus?um National d'Histoire Naturelle
+>
+> 	[[alternative HTML version deleted]]
+>
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From |eroy@bor|@ @end|ng |rom gm@||@com  Mon May 10 15:49:51 2010
+From: |eroy@bor|@ @end|ng |rom gm@||@com (Boris Leroy)
+Date: Mon, 10 May 2010 15:49:51 +0200
+Subject: [R-sig-DB] RODBC and MySQL: problem with sqlSave function
+In-Reply-To: <alpine.LFD.2.00.1005101352140.11821@gannet.stats.ox.ac.uk>
+References: <AANLkTilxBQZjyj9XhE8AK_oyQDrOehVFZzazz7jw3IL6@mail.gmail.com> 
+	<alpine.LFD.2.00.1005101352140.11821@gannet.stats.ox.ac.uk>
+Message-ID: <AANLkTikl8iTLymnSYOGcF0K-b38svk1QqTo35NyJxwbl@mail.gmail.com>
+
+2010/5/10 Prof Brian Ripley <ripley at stats.ox.ac.uk>:
+> Please do study the posting guide and post again with the information
+> requested there.
+>
+> The list moderator
+
+I put the additional informations below, as well as a much simpler example.
+Please note that I also tested my code on the last R version (2.11.0)
+but I got exactly the same error.
+
+>
+> On Mon, 10 May 2010, Boris Leroy wrote:
+>
+>> Hello,
+>>
+>> I have trouble using RODBC with MySQL. (R version : 2.9.2 ; MySQL version
+>> :
+>> 5.1.37 (embedded with xampp on a remote server))
+
+OS: Windows XP Professional SP3 on both client and server
+
+>>
+>> The main problem is that I can't use the function sqlSave, since it seems
+>> to
+>> send "?" to the server instead of the correct values in tables.
+>>
+>> Here is my code :
+>> note: I extract from the database a table, and then I try to write it into
+>> the database.
+>> This is because I want to be sure that the table is in a correct format,
+>> and
+>> I can therefore try to understand why the function sqlSave doesn't work.
+>>
+>>> require(RODBC)
+>>
+>> Le chargement a n?cessit? le package : RODBC
+>>
+>>> channel<-odbcDriverConnect() #I do not specify the database name here
+
+> odbcGetInfo(channel)
+                 DBMS_Name                   DBMS_Ver
+                   "MySQL"                   "5.1.37"
+           Driver_ODBC_Ver           Data_Source_Name
+                   "03.51"               "URU420serv"
+               Driver_Name                 Driver_Ver
+             "myodbc5.dll"               "05.01.0006"
+                  ODBC_Ver                Server_Name
+              "03.52.0000" "129.20.94.228 via TCP/IP"
+
+
+>>
+>>> stationsData<-sqlFetch(channel, "baseimport.importstations")
+>>
+>> Erreur dans fromchar(x) :
+>> ?character string is not in a standard unambiguous format
+>>
+>> This does not work because I have null dates in my table : "00-00-0000"
+>> and
+>> R does not manage to convert them
+>> The solution is:
+>>
+>>> stationsData<-sqlFetch(channel, "baseimport.importstations", as.is=T)
+>>
+>> Now, I would like to write the table "stationsData" in my database:
+>>
+>>> sqlSave(channel, stationsData, "baseimport.test1")
+>>
+>> Erreur dans odbcUpdate(channel, query, mydata, coldata[m, ], test = test,
+>> ?:
+>>
+>> ?no parameters, so nothing to update
+>>
+>> Didn't work..
+>>
+>>> sqlSave(channel, stationsData, "baseimport.test2", verbose=T)
+>>
+>> Query: CREATE TABLE baseimport.test2 ?(`rownames` varchar(255),
+>> `station_id`
+>> integer, `dept` varchar(255), `commune` varchar(255), `corine`
+>> varchar(255),
+>> `c1` varchar(255), `c2` varchar(255), `c3` varchar(255), `c4`
+>> varchar(255),
+>> `c5` varchar(255), `c6` varchar(255), `c7` varchar(255), `c8`
+>> varchar(255),
+>> `lieudit` varchar(255), `reservelabel` varchar(255), `milieu`
+>> varchar(255),
+>> `dateech` varchar(255), `datedebutech` varchar(255), `datefinech`
+>> varchar(255), `anneeech` integer, `anneedebutech` integer, `anneefinech`
+>> integer, `anneepub` integer, `typeech` varchar(255), `xreleve` integer,
+>> `yreleve` integer)
+>> Query: INSERT INTO baseimport.test2 ( `` ) VALUES (
+>> ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )
+>> Erreur dans odbcUpdate(channel, query, mydata, coldata[m, ], test = test,
+>> ?:
+>>
+>> ?no parameters, so nothing to update
+
+A simpler example:
+
+> nameData<-sqlFetch(channel, "dbmassifarmoricain.collaborateurs", as.is=T)[1,]
+
+> nameData
+  collaborateur_id   nom prenom
+1                1 Leroy  Boris
+
+> sqlSave(channel, nameData, "baseimport.test", verbose=T )
+Query: CREATE TABLE baseimport.test  (`rownames` varchar(255),
+`collaborateur_id` integer, `nom` varchar(255), `prenom` varchar(255))
+Query: INSERT INTO baseimport.test ( `` ) VALUES ( ?,?,?,? )
+Erreur dans odbcUpdate(channel, query, mydata, coldata[m, ], test = test,  :
+  no parameters, so nothing to update
+
+Additional information:
+
+> sessionInfo()
+R version 2.9.2 (2009-08-24)
+i386-pc-mingw32
+
+locale:
+LC_COLLATE=French_France.1252;LC_CTYPE=French_France.1252;LC_MONETARY=French_France.1252;LC_NUMERIC=C;LC_TIME=French_France.1252
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] RODBC_1.3-1
+
+>>
+>> So, the function seems to be able to create the table, but the INSERT INTO
+>> query does contain any correct value.
+>> Do you have any idea about this problem, or where did I fail ?
+>> I tried to add columns in an existing table with append=T, I had the same
+>> error.
+>>
+>> note: Another function of RODBC did not want to work with MySQL:
+>> sqlColumns,
+>> which never gave any results, but this is not my major concern.
+>>
+>> Many thanks in advance,
+>>
+>> Boris
+>>
+>> --
+>> Boris Leroy,
+>> PhD Student
+>> URU 420 Biodiversity and Territory Management
+>> University of Rennes 1 / Mus?um National d'Histoire Naturelle
+>>
+>> ? ? ? ?[[alternative HTML version deleted]]
+>>
+>>
+>
+> --
+> Brian D. Ripley, ? ? ? ? ? ? ? ? ?ripley at stats.ox.ac.uk
+> Professor of Applied Statistics, ?http://www.stats.ox.ac.uk/~ripley/
+> University of Oxford, ? ? ? ? ? ? Tel: ?+44 1865 272861 (self)
+> 1 South Parks Road, ? ? ? ? ? ? ? ? ? ? +44 1865 272866 (PA)
+> Oxford OX1 3TG, UK ? ? ? ? ? ? ? ?Fax: ?+44 1865 272595
+>
+
+
+
+From D@v|d@Ger@et@ @end|ng |rom w|v-|@p@be  Mon May 17 15:22:59 2010
+From: D@v|d@Ger@et@ @end|ng |rom w|v-|@p@be (Geraets, David)
+Date: Mon, 17 May 2010 15:22:59 +0200
+Subject: [R-sig-DB] Using RODBC with Access open
+Message-ID: <7CD7F82CFC6FDF4AA81FF984F85050081998B71B97@EXCH2007>
+
+
+I all,
+
+I face a strange behaviour, using RODBC - SQLSave to save a table into an Access Database :
+- If the Access database is closed, the (initially empty) database increases to a size of 55 MB.
+- If the database is open during the "Save" operation, it increases to a size of around 900 MB, which I can reduce to 55 if I compress/repair the database.
+
+Does anyone know what's happening ? (is it linked to some sort of rights problem ? do I have a way to connect to the database that might change this, or a parameter in the SQLSave function ?)
+
+(my interest in keeping the database open is due to the fact that I call R from an access VBA, using the RDCom tool)
+
+
+Thanks in advance,
+
+David
+
+
+[cid:image001.gif at 01CAF5D4.D55FD5E0] DAVID GERAETS, PhD
+
+Epid?miologie
+Rue Juliette Wytsmanstraat 14 | 1050 Brussels
+T 02 642 50 26 | F 02 642 54 10
+
+Institut Scientifique de Sant? Publique
+Wetenschappelijk Instituut Volksgezondheid
+Scientific Institute of Public Health
+www.wiv-isp.be<http://www.wiv-isp.be>
+
+
+###########################################################
+Checked as being free of known viruses.
+
+Scientific Institute of Public Health, Brussels, Belgium
+Wetenschappelijk Instituut Volksgezondheid, Brussel, Belgi?
+Institut scientifique de Sant? publique, Bruxelles, Belgique
+Visit our website: http://www.wiv-isp.be 
+###########################################################
+DISCLAIMER: Please see http://www.wiv-isp.be/Disclaimer.asp
+###########################################################
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20100517/bd7c8166/attachment.html>
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: image001.gif
+Type: image/gif
+Size: 1173 bytes
+Desc: image001.gif
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20100517/bd7c8166/attachment.gif>
+
+From P@tr|ck@P@|m|er @end|ng |rom deve|oppement-dur@b|e@gouv@|r  Wed May 12 08:44:17 2010
+From: P@tr|ck@P@|m|er @end|ng |rom deve|oppement-dur@b|e@gouv@|r (PALMIER Patrick - CETE NP/INFRA/TRF)
+Date: Wed, 12 May 2010 08:44:17 +0200
+Subject: [R-sig-DB] Package RPostgreSQL : Problem with dbWriteTable
+Message-ID: <4BEA4E41.4050903@developpement-durable.gouv.fr>
+
+Hello,
+
+I have a probem with dbWriteTable method of package RPostrgreSQL
+The table is well added in the database but R doesn't succeed in 
+inserting rows
+But If I send the "COPY FROM"  as an sql query in  R, the rows are then 
+well added
+I think it is a problem with the temp file create by dbWriteTable
+
+As anyone solved this problem?
+
+
+Thanks in advance
+
+-- 
+
+*Patrick PALMIER**
+**Centre d'?tudes Techniques de l'?quipement Nord - Picardie
+D?partement Infrastructures
+*/*Trafic ? Socio-?conomie
+*/2, rue de Bruxelles, BP 275
+59019 Lille cedex
+FRANCE
+T?l: +33 (0) 3 20 49 60 70
+Fax: +33 (0) 3 20 49 63 69
+
+
+
+From m@rc_@chw@rtz @end|ng |rom me@com  Fri May 28 20:40:27 2010
+From: m@rc_@chw@rtz @end|ng |rom me@com (Marc Schwartz)
+Date: Fri, 28 May 2010 13:40:27 -0500
+Subject: [R-sig-DB] OT Sorta: New R Interface to Oracle Data Mining
+	Available for Download
+Message-ID: <15FEAD28-32B5-4E66-A48E-DF49CE060320@me.com>
+
+Hi all,
+
+Thought folks might find this Oracle blog post of interest:
+
+  http://blogs.oracle.com/datamining/2010/05/new_r_interface_to_oracle_data_mining_available_for_download.html
+
+
+The RODM package referenced is available via CRAN and mirrors, eg:
+
+  http://cran.r-project.org/web/packages/RODM/index.html
+
+
+Regards,
+
+Marc Schwartz
+
+
+
+From d@n @end|ng |rom on@emb|e@w@  Tue Jun  1 17:52:08 2010
+From: d@n @end|ng |rom on@emb|e@w@ (Dan Rowlands)
+Date: Tue, 1 Jun 2010 16:52:08 +0100
+Subject: [R-sig-DB] RODBC error
+Message-ID: <DB0D8E4D-0346-4513-B7C1-C9B9E7CDD022@onsemble.ws>
+
+Hi,
+
+I have been using RODBC to connect to a mysql database from R. I have  
+recently upgraded to Mac OSX 10.6 and am having some trouble getting R  
+to connect. My
+setup worked fine in Mac OS X 10.5.
+
+Specifically I can set up a dsn and test it in ODBC Administrator  
+fine, but when I try in R using
+
+con <- odbcConnect("test")
+
+I get the following set of warnings, and the program hangs.
+
+Warning messages:
+1: In odbcDriverConnect("DSN=test") :
+  [RODBC] ERROR: state 00000, code 8663360, message [iODBC][Driver  
+Manager]dlopen(/opt/local/lib/libmyodbc5.so, 6): no suitable image  
+found.  Did find:
+	/opt/local/lib/libmyodbc5.so: mach-o, but wrong architecture
+2: In odbcDriverConnect("DSN=test") :
+  [RODBC] ERROR: state IM003, code 8663360, message [iODBC][Driver  
+Manager]Specified driver could not be loaded
+3: In odbcDriverConnect("DSN=test") :
+  [RODBC] ERROR: state IM003, code 8663360, message [iODBC][Driver  
+Manager]Specified driver could not be loaded
+4: In odbcDriverConnect("DSN=test") :
+  [RODBC] ERROR: state IM003, code 8663360, message [iODBC][Driver  
+Manager]Specified driver could not be loaded
+5: In odbcDriverConnect("DSN=test") :
+  [RODBC] ERROR: state IM003, code 8663360, message [iODBC][Driver  
+Manager]Specified driver could not be loaded
+6: In odbcDriverConnect("DSN=test") :
+  [RODBC] ERROR: state IM003, code 8663
+etc...
+
+The test dsn is just a connection to the mysql test database, and I  
+have verified the connection is working using ODBC administrator on  
+the Mac.
+
+Has anyone experienced similar problems?
+
+Thanks
+
+Dan
+
+
+
+From k@@perd@n|e|h@n@en @end|ng |rom gm@||@com  Wed Jun  2 06:57:33 2010
+From: k@@perd@n|e|h@n@en @end|ng |rom gm@||@com (Kasper Daniel Hansen)
+Date: Wed, 2 Jun 2010 00:57:33 -0400
+Subject: [R-sig-DB] RODBC error
+In-Reply-To: <DB0D8E4D-0346-4513-B7C1-C9B9E7CDD022@onsemble.ws>
+References: <DB0D8E4D-0346-4513-B7C1-C9B9E7CDD022@onsemble.ws>
+Message-ID: <AANLkTinDXbQdH4XQIaiedHEz4dQ7_4v2xTeavrcJBulo@mail.gmail.com>
+
+Well, use file on the library, like
+
+# file /opt/local/lib/libmyodbc5.so
+
+to see what architecture the file supports.  My guess is that the
+library is 32 bit only and your R is 64 bit.  But that could be
+completely wrong, I have no mysql nor odbc experience on the Mac.
+
+Kasper
+
+On Tue, Jun 1, 2010 at 11:52 AM, Dan Rowlands <dan at onsemble.ws> wrote:
+> Hi,
+>
+> I have been using RODBC to connect to a mysql database from R. I have
+> recently upgraded to Mac OSX 10.6 and am having some trouble getting R to
+> connect. My
+> setup worked fine in Mac OS X 10.5.
+>
+> Specifically I can set up a dsn and test it in ODBC Administrator fine, but
+> when I try in R using
+>
+> con <- odbcConnect("test")
+>
+> I get the following set of warnings, and the program hangs.
+>
+> Warning messages:
+> 1: In odbcDriverConnect("DSN=test") :
+> ?[RODBC] ERROR: state 00000, code 8663360, message [iODBC][Driver
+> Manager]dlopen(/opt/local/lib/libmyodbc5.so, 6): no suitable image found.
+> ?Did find:
+> ? ? ? ?/opt/local/lib/libmyodbc5.so: mach-o, but wrong architecture
+> 2: In odbcDriverConnect("DSN=test") :
+> ?[RODBC] ERROR: state IM003, code 8663360, message [iODBC][Driver
+> Manager]Specified driver could not be loaded
+> 3: In odbcDriverConnect("DSN=test") :
+> ?[RODBC] ERROR: state IM003, code 8663360, message [iODBC][Driver
+> Manager]Specified driver could not be loaded
+> 4: In odbcDriverConnect("DSN=test") :
+> ?[RODBC] ERROR: state IM003, code 8663360, message [iODBC][Driver
+> Manager]Specified driver could not be loaded
+> 5: In odbcDriverConnect("DSN=test") :
+> ?[RODBC] ERROR: state IM003, code 8663360, message [iODBC][Driver
+> Manager]Specified driver could not be loaded
+> 6: In odbcDriverConnect("DSN=test") :
+> ?[RODBC] ERROR: state IM003, code 8663
+> etc...
+>
+> The test dsn is just a connection to the mysql test database, and I have
+> verified the connection is working using ODBC administrator on the Mac.
+>
+> Has anyone experienced similar problems?
+>
+> Thanks
+>
+> Dan
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From v8extr@ @end|ng |rom gm@||@com  Sat Jun  5 16:20:34 2010
+From: v8extr@ @end|ng |rom gm@||@com (=?iso-8859-1?Q?S=E9bastien_Durand?=)
+Date: Sat, 5 Jun 2010 10:20:34 -0400
+Subject: [R-sig-DB] Which DB type
+Message-ID: <CA5669F7-05ED-4206-B946-A00EC0198C09@gmail.com>
+
+Hello to all,
+
+I got my mind into it did some search and comparison I got myself decided to do the following :
+
+I want to build a package for personal finance : 
+
+-In this package I wish to be able to :
+	-Read OFX data
+	-Recognize transaction
+	-Setup a budget through the use of buckets or envelope through time
+	-Have cashflow plotting methods
+	-This package will be able to utilise data from multiple accounts
+
+My first question is quite simple:  
+	Is this a good idea, import OFX data into a SQL data base using R.
+
+It must be said that I am planning to use a Database support in order to facilitate user usage (example visualisation of transactions, sorting and so on...)
+
+Any suggestion or comment would be appreciated
+
+Thanks a lot!
+
+S?bastien
+
+
+
+From n@vdeep@@|ngh @end|ng |rom oct@ve-|m@com  Tue Jun 15 15:42:42 2010
+From: n@vdeep@@|ngh @end|ng |rom oct@ve-|m@com (Navdeep Singh)
+Date: Tue, 15 Jun 2010 14:42:42 +0100
+Subject: [R-sig-DB] Very slow MySQL access using RJDBC
+Message-ID: <9519CA2E75D49B45BF80D0D89830171423DDD532B0@THHS2E12BE2X.hostedservice2.net>
+
+Hi all,
+
+I am having severe speed issues when trying to use R (version 2.10.1, 32-bit) and RJDBC (0.1-5) to access tables on a remote MySQL (5.1.47-community) via the driver "com.mysql.jdbc.Driver" as supplied with the MySQL client on my workstation. I am using a very simple select query to select a fairly large number (hundreds of thousands) of rows from a table as follows:
+
+Library(RJDBC);
+db.loc <- "jdbc:mysql://192.168.0.2/schema";
+dbDrvJDBC <- JDBC("com.mysql.jdbc.Driver");
+conn <- dbConnect(dbDrvJDBC,
+                  db.loc,
+                  user="user",
+                  password="pass");
+sqlMom <- paste("select p_date, id, s_1006, s_1054",
+              "from signals",
+              "where s_1025 = 1",
+              "and p_date>'2010-01-01'");
+data.mom <- dbGetQuery(conn,sqlMom);
+
+For example this brings back about 70,000 rows and takes a couple of minutes to run. Unfortunately the time taken seems to scale with the number of records returned, and I need to work with several datasets 10-20 times this size. Running this same query in the SQL client or in Matlab using the same JDBC driver takes a couple of seconds.
+
+I thought the slowdown might be due to restricted Java heap size so tried increasing this (to no avail) via:
+
+Options(java.parameters="-Xmx900M");
+
+Also memory.limit() indicates R has 3583MB available (of 12GB physical).
+
+
+I also had a brief attempt at using the RMySQL package, but this did not work, I am guessing due to having the client rather than the MySQL server installed on my machine. I made a go of moving around the required  libmySQL.dll so that RMySQL could find it, but ultimately got the following error when using dbConnect as above (with the MySQL driver instead):
+
+RS-DBI driver: (Failed to connect to database: Error: Can't connect to MySQL server on 'localhost' (10061)
+
+
+I am still missing something, having scanned through the Data Import/Export manual, previous mailing list posts and Google this morning so any guidance would be appreciated very much.
+
+
+Best wishes,
+Navdeep
+
+
+
+__________ Information from ESET NOD32 Antivirus, version of virus signature database 5198 (20100615) __________
+
+The message was checked by ESET NOD32 Antivirus.
+
+http://www.eset.com
+
+
+______________________________________________________________________
+This email has been scanned by the MessageLabs Email Security System.
+For more information please visit http://www.messagelabs.com/email 
+
+
+
+From dm@||v @end|ng |rom gm@||@com  Thu Jun 17 15:21:48 2010
+From: dm@||v @end|ng |rom gm@||@com (Daniel)
+Date: Thu, 17 Jun 2010 10:21:48 -0300
+Subject: [R-sig-DB] updating values
+Message-ID: <AANLkTimVK-6GhzwAG0I86gSuEu-BZSte0GzL1zhtWwvW@mail.gmail.com>
+
+Hello all,I have a table with about 18000 rows, I need to UPDATE the strings
+in the "name.x" column in each row by the strings from "name.y" given if
+"name.x" is NA or " ". How can I do it?
+Also I want to update values in other columns, but I think that will be the
+same job.
+Daniel
+-- 
+Daniel Marcelino
+http://bit.ly/pol4vc
+
+	[[alternative HTML version deleted]]
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Thu Jun 17 15:32:15 2010
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Thu, 17 Jun 2010 09:32:15 -0400
+Subject: [R-sig-DB] updating values
+In-Reply-To: <AANLkTimVK-6GhzwAG0I86gSuEu-BZSte0GzL1zhtWwvW@mail.gmail.com>
+References: <AANLkTimVK-6GhzwAG0I86gSuEu-BZSte0GzL1zhtWwvW@mail.gmail.com>
+Message-ID: <AANLkTinsQyLkBW5MJ4hjkpnlpjx_PhOnY-91GiRqDE1S@mail.gmail.com>
+
+On Thu, Jun 17, 2010 at 9:21 AM, Daniel <dmsilv at gmail.com> wrote:
+
+> Hello all,I have a table with about 18000 rows, I need to UPDATE the
+> strings
+> in the "name.x" column in each row by the strings from "name.y" given if
+> "name.x" is NA or " ". How can I do it?
+>
+
+You didn't really give us enough information to answer your question (what
+database, what interface, etc.)  However, you'll probably want to use a SQL
+update statement.  The syntax will vary slightly depending on database
+engine and a little googling will probably get you the answer you need.
+
+Sean
+
+
+> Also I want to update values in other columns, but I think that will be the
+> same job.
+> Daniel
+> --
+> Daniel Marcelino
+> http://bit.ly/pol4vc
+>
+>        [[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From jeii@@@ry@@ m@iii@g oii gm@ii@com  Thu Jun 17 15:33:31 2010
+From: jeii@@@ry@@ m@iii@g oii gm@ii@com (jeii@@@ry@@ m@iii@g oii gm@ii@com)
+Date: Thu, 17 Jun 2010 13:33:31 +0000
+Subject: [R-sig-DB] updating values
+In-Reply-To: <AANLkTimVK-6GhzwAG0I86gSuEu-BZSte0GzL1zhtWwvW@mail.gmail.com>
+References: <AANLkTimVK-6GhzwAG0I86gSuEu-BZSte0GzL1zhtWwvW@mail.gmail.com>
+Message-ID: <2011707201-1276781613-cardhu_decombobulator_blackberry.rim.net-847182356-@bda325.bisx.prod.on.blackberry>
+
+Much like R-SIG-Finance, this isn't the correct forum or way to ask for help. 
+
+Once is a mistake, twice isn't. Follow the posting guidelines if you want help. 
+
+Jeff
+Sent via BlackBerry from T-Mobile
+
+-----Original Message-----
+From: Daniel <dmsilv at gmail.com>
+Date: Thu, 17 Jun 2010 10:21:48 
+To: <r-sig-db at stat.math.ethz.ch>
+Subject: [R-sig-DB] updating values
+
+Hello all,I have a table with about 18000 rows, I need to UPDATE the strings
+in the "name.x" column in each row by the strings from "name.y" given if
+"name.x" is NA or " ". How can I do it?
+Also I want to update values in other columns, but I think that will be the
+same job.
+Daniel
+-- 
+Daniel Marcelino
+http://bit.ly/pol4vc
+
+	[[alternative HTML version deleted]]
+
+_______________________________________________
+R-sig-DB mailing list -- R Special Interest Group
+R-sig-DB at stat.math.ethz.ch
+https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From joh@nne@r@j@ @end|ng |rom gm@||@com  Thu Jun 17 20:17:33 2010
+From: joh@nne@r@j@ @end|ng |rom gm@||@com (johannes rara)
+Date: Thu, 17 Jun 2010 21:17:33 +0300
+Subject: [R-sig-DB] RODBC: AD authentication when accessing database?
+In-Reply-To: <AANLkTim8f9UFkjRszJAjFKfAiSrg5ssno7vSNdZeYsD1@mail.gmail.com>
+References: <AANLkTim8f9UFkjRszJAjFKfAiSrg5ssno7vSNdZeYsD1@mail.gmail.com>
+Message-ID: <AANLkTinSRGvvat8IWMRw-kQTgX_UWzNyWoih3D6zF_tu@mail.gmail.com>
+
+Hi (posted this to r-help, but got advised to post this on R-sig-db),
+
+I'm trying to fetch data from SQL Server database using RODBC. Is
+there a way to use AD authentication method when accessing data via R?
+I'm using R 2.10.1 and Windows XP.
+
+-J
+
+
+
+From gux|@obo1982 @end|ng |rom gm@||@com  Mon Jun 21 14:27:02 2010
+From: gux|@obo1982 @end|ng |rom gm@||@com (=?utf-8?B?6aG+5bCP5rOi?=)
+Date: Mon, 21 Jun 2010 20:27:02 +0800
+Subject: [R-sig-DB] RODBC on 64bit Windows
+Message-ID: <001701cb113d$0fc224d0$2f466e70$@com>
+
+Hi all,
+
+         Since now R has a Windows 64 bit version, is there plan for 64bit RODBC packages, thanks.
+
+ 
+
+Xiaobo.Gu
+
+ 
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Mon Jun 21 15:00:25 2010
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Mon, 21 Jun 2010 14:00:25 +0100 (BST)
+Subject: [R-sig-DB] RODBC on 64bit Windows
+In-Reply-To: <001701cb113d$0fc224d0$2f466e70$@com>
+References: <001701cb113d$0fc224d0$2f466e70$@com>
+Message-ID: <alpine.LFD.2.00.1006211353430.18508@localhost>
+
+On Mon, 21 Jun 2010, ??? wrote:
+
+> Hi all,
+>
+>         Since now R has a Windows 64 bit version, is there plan for 
+> 64bit RODBC packages, thanks.
+
+But there has been a 64-bit Windows package at 
+http://cran.r-project.org/bin/windows64/contrib/2.11/RODBC_1.3-1.zip 
+for several months, so what are you asking for?  (Note that 64-bit 
+ODBC drivers are in short supply, but I have tested MySQL and 
+sqliteodbc has recently gained a 64-bit binary.)
+
+It is also simple to install RODBC from its sources.
+
+>
+>
+>
+> Xiaobo.Gu
+>
+>
+>
+>
+> 	[[alternative HTML version deleted]]
+
+Please note that the posting guide has to say about that.
+
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+From gux|@obo1982 @end|ng |rom gm@||@com  Mon Jun 21 16:43:56 2010
+From: gux|@obo1982 @end|ng |rom gm@||@com (=?utf-8?B?6aG+5bCP5rOi?=)
+Date: Mon, 21 Jun 2010 22:43:56 +0800
+Subject: [R-sig-DB] RODBC on 64bit Windows
+In-Reply-To: <alpine.LFD.2.00.1006211353430.18508@localhost>
+References: <001701cb113d$0fc224d0$2f466e70$@com>
+	<alpine.LFD.2.00.1006211353430.18508@localhost>
+Message-ID: <000001cb1150$31bc7000$95355000$@com>
+
+Ripley,
+	Thanks, lucky enough we are working with IBM DB2 and Greenplum, which both have 64bit ODBC dirvers.
+BTW, there are three ways to work with R - Greenplum integration:
+1. via RODBC package, which now has a 64 bit version
+2. via RPostgres interface, which seems does not a 64 bit version yet.
+3. via plr for Greenplum, which only supports a few kinds of functionality, and supports only specific versions of R.
+
+Do you have any idea about the advantages and disadvantages of each, and the differences among them?
+
+
+Xiaobo.Gu
+
+-----Original Message-----
+From: Prof Brian Ripley [mailto:ripley at stats.ox.ac.uk] 
+Sent: Monday, June 21, 2010 9:00 PM
+To: ???
+Cc: r-sig-db at stat.math.ethz.ch
+Subject: Re: [R-sig-DB] RODBC on 64bit Windows
+
+On Mon, 21 Jun 2010, ??? wrote:
+
+> Hi all,
+>
+>         Since now R has a Windows 64 bit version, is there plan for 
+> 64bit RODBC packages, thanks.
+
+But there has been a 64-bit Windows package at 
+http://cran.r-project.org/bin/windows64/contrib/2.11/RODBC_1.3-1.zip 
+for several months, so what are you asking for?  (Note that 64-bit 
+ODBC drivers are in short supply, but I have tested MySQL and 
+sqliteodbc has recently gained a 64-bit binary.)
+
+It is also simple to install RODBC from its sources.
+
+>
+>
+>
+> Xiaobo.Gu
+>
+>
+>
+>
+> 	[[alternative HTML version deleted]]
+
+Please note that the posting guide has to say about that.
+
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From joh@nne@r@j@ @end|ng |rom gm@||@com  Mon Jun 21 20:56:21 2010
+From: joh@nne@r@j@ @end|ng |rom gm@||@com (johannes rara)
+Date: Mon, 21 Jun 2010 21:56:21 +0300
+Subject: [R-sig-DB] RODBC: AD authentication when accessing database?
+In-Reply-To: <AANLkTinSRGvvat8IWMRw-kQTgX_UWzNyWoih3D6zF_tu@mail.gmail.com>
+References: <AANLkTim8f9UFkjRszJAjFKfAiSrg5ssno7vSNdZeYsD1@mail.gmail.com>
+	<AANLkTinSRGvvat8IWMRw-kQTgX_UWzNyWoih3D6zF_tu@mail.gmail.com>
+Message-ID: <AANLkTim_m7OHbCy5Co1akqLNL0ll2uWk7Rwxkv5SStp6@mail.gmail.com>
+
+I tested using System DSN and different accounts on the same computer.
+Seems to work, different users can query data using their own Windows
+credentials.
+
+-J
+
+2010/6/17 johannes rara <johannesraja at gmail.com>:
+> Hi (posted this to r-help, but got advised to post this on R-sig-db),
+>
+> I'm trying to fetch data from SQL Server database using RODBC. Is
+> there a way to use AD authentication method when accessing data via R?
+> I'm using R 2.10.1 and Windows XP.
+>
+> -J
+>
+
+
+
+From greenberg @end|ng |rom ucd@v|@@edu  Mon Jun 28 22:26:33 2010
+From: greenberg @end|ng |rom ucd@v|@@edu (Jonathan Greenberg)
+Date: Mon, 28 Jun 2010 13:26:33 -0700
+Subject: [R-sig-DB] concurrent reading/writing in "chunks" with RSQLite
+	(need some help troubleshooting)
+Message-ID: <AANLkTimpByMYkw0BXjfKeW5lQB2wHpJ8QqiGPaWCF9Vi@mail.gmail.com>
+
+Folks:
+
+I'm trying to cycle through a database, reading a chunk of data from
+one table in the DB, processing this data chunk, and then writing the
+output to another table in the database.  I'm having to set the
+fetch(n=) option because the database is too large to read the entire
+thing into memory at once.  Here's my sample code:
+
+***
+
+require(RSQLite)
+mysqldb='test.sqlite'
+fetch_n=3
+
+# Create a data table.
+somedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3)
+
+# Make a table in our database with it.
+m <- dbDriver("SQLite")
+con=dbConnect(m, dbname=mysqldb)
+dbWriteTable(con,"TABLEA",somedata,overwrite=TRUE)
+dbDisconnect(con)
+
+# Now we want to read from TABLEA in "chunks" and write to TABLEB.
+read_con=dbConnect(m, dbname=mysqldb)
+write_con=dbConnect(m, dbname=mysqldb)
+
+read_query=dbSendQuery(read_con,"SELECT * FROM TABLEA")
+
+while(!dbHasCompleted(read_query))
+{
+	read_chunk=fetch(read_query,fetch_n)
+	new_data=data.frame(data3=read_chunk$data1*4,data4=read_chunk$data2*4)
+	if(!dbExistsTable(write_con, "TABLEB"))
+	{
+		dbWriteTable(write_con,"TABLEB",new_data)
+	} else
+	{
+		dbWriteTable(write_con,"TABLEB",new_data, append=TRUE)
+	}	
+}
+dbDisconnect(read_con)
+dbDisconnect(write_con)
+
+**
+
+I am getting this error:
+
+Warning messages:
+1: In sqliteWriteTable(conn, name, value, ...) :
+  RS_SQLite_exec: could not execute1: database is locked
+2: In sqliteWriteTable(conn, name, value, ...) :
+  RS_SQLite_exec: could not execute1: database is locked
+3: In sqliteWriteTable(conn, name, value, ...) :
+  RS_SQLite_exec: could not execute1: database is locked
+> dbDisconnect(read_con)
+[1] TRUE
+Warning message:
+In sqliteCloseConnection(conn, ...) :
+  RS-DBI driver warning: (closing pending result sets before closing
+this connection)
+> dbDisconnect(write_con)
+[1] TRUE
+
+Any suggestions on how to fix this?  Thanks!
+
+--j
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Mon Jun 28 22:52:41 2010
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Mon, 28 Jun 2010 13:52:41 -0700
+Subject: [R-sig-DB] concurrent reading/writing in "chunks" with RSQLite
+	(need some help troubleshooting)
+In-Reply-To: <AANLkTimpByMYkw0BXjfKeW5lQB2wHpJ8QqiGPaWCF9Vi@mail.gmail.com>
+References: <AANLkTimpByMYkw0BXjfKeW5lQB2wHpJ8QqiGPaWCF9Vi@mail.gmail.com>
+Message-ID: <AANLkTikp6zjZ-_kcJnl0m6ORcNXs4uUkNHHxP2we_tvg@mail.gmail.com>
+
+Hi,
+
+A couple of ideas below...  I will try to reproduce this later.
+
+On Mon, Jun 28, 2010 at 1:26 PM, Jonathan Greenberg
+<greenberg at ucdavis.edu> wrote:
+> I'm trying to cycle through a database, reading a chunk of data from
+> one table in the DB, processing this data chunk, and then writing the
+> output to another table in the database. ?I'm having to set the
+> fetch(n=) option because the database is too large to read the entire
+> thing into memory at once. ?Here's my sample code:
+>
+> ***
+>
+> require(RSQLite)
+> mysqldb='test.sqlite'
+> fetch_n=3
+>
+> # Create a data table.
+> somedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3)
+>
+> # Make a table in our database with it.
+> m <- dbDriver("SQLite")
+> con=dbConnect(m, dbname=mysqldb)
+> dbWriteTable(con,"TABLEA",somedata,overwrite=TRUE)
+> dbDisconnect(con)
+>
+> # Now we want to read from TABLEA in "chunks" and write to TABLEB.
+> read_con=dbConnect(m, dbname=mysqldb)
+> write_con=dbConnect(m, dbname=mysqldb)
+
+You might try setting the flags on the read connection to indicate
+that it is read only:
+
+ read_con = dbConnect(m, dbname = mysqldb, flags = SQLITE_RO)
+
+There are some details in ?sqliteSupport
+
+I wonder if it would make a difference if you created the destination
+table (TABLEB) earlier (say before opening read/write cons).
+
+> read_query=dbSendQuery(read_con,"SELECT * FROM TABLEA")
+>
+> while(!dbHasCompleted(read_query))
+> {
+> ? ? ? ?read_chunk=fetch(read_query,fetch_n)
+> ? ? ? ?new_data=data.frame(data3=read_chunk$data1*4,data4=read_chunk$data2*4)
+> ? ? ? ?if(!dbExistsTable(write_con, "TABLEB"))
+> ? ? ? ?{
+> ? ? ? ? ? ? ? ?dbWriteTable(write_con,"TABLEB",new_data)
+> ? ? ? ?} else
+> ? ? ? ?{
+> ? ? ? ? ? ? ? ?dbWriteTable(write_con,"TABLEB",new_data, append=TRUE)
+> ? ? ? ?}
+> }
+> dbDisconnect(read_con)
+> dbDisconnect(write_con)
+>
+> **
+>
+> I am getting this error:
+>
+> Warning messages:
+> 1: In sqliteWriteTable(conn, name, value, ...) :
+> ?RS_SQLite_exec: could not execute1: database is locked
+> 2: In sqliteWriteTable(conn, name, value, ...) :
+> ?RS_SQLite_exec: could not execute1: database is locked
+> 3: In sqliteWriteTable(conn, name, value, ...) :
+> ?RS_SQLite_exec: could not execute1: database is locked
+>> dbDisconnect(read_con)
+> [1] TRUE
+> Warning message:
+> In sqliteCloseConnection(conn, ...) :
+> ?RS-DBI driver warning: (closing pending result sets before closing
+> this connection)
+
+You can get rid of this warning by calling dbClearResult on your query
+result object.
+
+>> dbDisconnect(write_con)
+> [1] TRUE
+>
+> Any suggestions on how to fix this? ?Thanks!
+
+I will try and have a closer look over the next couple of days.
+
++ seth
+
+-- 
+Seth Falcon | @sfalcon | http://userprimary.net/
+
+
+
+From greenberg @end|ng |rom ucd@v|@@edu  Mon Jun 28 23:15:32 2010
+From: greenberg @end|ng |rom ucd@v|@@edu (Jonathan Greenberg)
+Date: Mon, 28 Jun 2010 14:15:32 -0700
+Subject: [R-sig-DB] Fwd: concurrent reading/writing in "chunks" with RSQLite
+	(need some help troubleshooting)
+In-Reply-To: <AANLkTim7g5MZ5yFazRx-mTlj69lsHVPC5NEgcJ0kR8Eq@mail.gmail.com>
+References: <AANLkTimpByMYkw0BXjfKeW5lQB2wHpJ8QqiGPaWCF9Vi@mail.gmail.com>
+	<AANLkTikp6zjZ-_kcJnl0m6ORcNXs4uUkNHHxP2we_tvg@mail.gmail.com>
+	<AANLkTim7g5MZ5yFazRx-mTlj69lsHVPC5NEgcJ0kR8Eq@mail.gmail.com>
+Message-ID: <AANLkTilFR5hroZROFN8LQNv5RNC9Bov7uzEUOs-QMQbd@mail.gmail.com>
+
+A bit more troubleshooting, see the modded code below. ?I'm noticing
+that dbExistsTable() appears to be failing. ?If you run the code
+below, you'll see that the output is:
+
+[1] "row extraction begins: 0"
+[1] "making new table"
+[1] "row extraction begins: 3"
+[1] "making new table"
+[1] "row extraction begins: 6"
+[1] "making new table"
+[1] "row extraction begins: 9"
+[1] "making new table"
+
+E.g. it keeps seeing dbExistsTable() as FALSE even though, after the
+first pass, it should have created that table. ?I through in some
+other things I thought might work (placing the dbConnect statement for
+the writing inside the while() loop, and adding a dbCommit()
+statement), but none of these worked either. ?Is it possible that the
+dbDisconnect() statement is not behaving properly?
+
+Thanks a ton for any help you can give me!
+
+--j
+
+***
+
+require(RSQLite)
+mysqldb='test.sqlite'
+fetch_n=3
+
+# Create a small table.
+somedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3)
+
+# Make a table with it.
+m <- dbDriver("SQLite",flags = SQLITE_RO)
+con=dbConnect(m, dbname=mysqldb)
+dbWriteTable(con,"TABLEA",somedata,overwrite=TRUE)
+dbDisconnect(con)
+
+# Now we want to read from TABLEA in "chunks" and write to TABLEB.
+read_con=dbConnect(m, dbname=mysqldb)
+read_query=dbSendQuery(read_con,"SELECT * FROM TABLEA")
+
+while(!dbHasCompleted(read_query))
+{
+? ? ? ?print(dbGetRowCount(read_query))
+? ? ? ?write_con=dbConnect(m, dbname=mysqldb)
+? ? ? ?read_chunk=fetch(read_query,fetch_n)
+? ? ? ?new_data=data.frame(data3=read_chunk$data1*4,data4=read_chunk$data2*4)
+? ? ? ?# Let's check dbexists with a different connection.
+? ? ? ?tables_exists_con=dbConnect(m, dbname=mysqldb)
+? ? ? ?table_exists=dbExistsTable(tables_exists_con, "TABLEB")
+? ? ? ?dbDisconnect(tables_exists_con)
+
+? ? ? ?if(!table_exists)
+? ? ? ?{
+? ? ? ? ? ? ? ?print("making new table")
+? ? ? ? ? ? ? ?dbWriteTable(write_con,"TABLEB",new_data)
+? ? ? ?} else
+? ? ? ?{
+? ? ? ? ? ? ? ?print("append to existing table")
+? ? ? ? ? ? ? ?dbWriteTable(write_con,"TABLEB",new_data, append=TRUE)
+? ? ? ?}
+? ? ? ?dbCommit(write_con)
+? ? ? ?dbDisconnect(write_con)
+}
+dbClearResult(read_query)
+dbDisconnect(read_con)
+
+
+On Mon, Jun 28, 2010 at 1:52 PM, Seth Falcon <seth at userprimary.net> wrote:
+> Hi,
+>
+> A couple of ideas below... ?I will try to reproduce this later.
+>
+> On Mon, Jun 28, 2010 at 1:26 PM, Jonathan Greenberg
+> <greenberg at ucdavis.edu> wrote:
+>> I'm trying to cycle through a database, reading a chunk of data from
+>> one table in the DB, processing this data chunk, and then writing the
+>> output to another table in the database. ?I'm having to set the
+>> fetch(n=) option because the database is too large to read the entire
+>> thing into memory at once. ?Here's my sample code:
+>>
+>> ***
+>>
+>> require(RSQLite)
+>> mysqldb='test.sqlite'
+>> fetch_n=3
+>>
+>> # Create a data table.
+>> somedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3)
+>>
+>> # Make a table in our database with it.
+>> m <- dbDriver("SQLite")
+>> con=dbConnect(m, dbname=mysqldb)
+>> dbWriteTable(con,"TABLEA",somedata,overwrite=TRUE)
+>> dbDisconnect(con)
+>>
+>> # Now we want to read from TABLEA in "chunks" and write to TABLEB.
+>> read_con=dbConnect(m, dbname=mysqldb)
+>> write_con=dbConnect(m, dbname=mysqldb)
+>
+> You might try setting the flags on the read connection to indicate
+> that it is read only:
+>
+> ?read_con = dbConnect(m, dbname = mysqldb, flags = SQLITE_RO)
+>
+> There are some details in ?sqliteSupport
+>
+> I wonder if it would make a difference if you created the destination
+> table (TABLEB) earlier (say before opening read/write cons).
+>
+>> read_query=dbSendQuery(read_con,"SELECT * FROM TABLEA")
+>>
+>> while(!dbHasCompleted(read_query))
+>> {
+>> ? ? ? ?read_chunk=fetch(read_query,fetch_n)
+>> ? ? ? ?new_data=data.frame(data3=read_chunk$data1*4,data4=read_chunk$data2*4)
+>> ? ? ? ?if(!dbExistsTable(write_con, "TABLEB"))
+>> ? ? ? ?{
+>> ? ? ? ? ? ? ? ?dbWriteTable(write_con,"TABLEB",new_data)
+>> ? ? ? ?} else
+>> ? ? ? ?{
+>> ? ? ? ? ? ? ? ?dbWriteTable(write_con,"TABLEB",new_data, append=TRUE)
+>> ? ? ? ?}
+>> }
+>> dbDisconnect(read_con)
+>> dbDisconnect(write_con)
+>>
+>> **
+>>
+>> I am getting this error:
+>>
+>> Warning messages:
+>> 1: In sqliteWriteTable(conn, name, value, ...) :
+>> ?RS_SQLite_exec: could not execute1: database is locked
+>> 2: In sqliteWriteTable(conn, name, value, ...) :
+>> ?RS_SQLite_exec: could not execute1: database is locked
+>> 3: In sqliteWriteTable(conn, name, value, ...) :
+>> ?RS_SQLite_exec: could not execute1: database is locked
+>>> dbDisconnect(read_con)
+>> [1] TRUE
+>> Warning message:
+>> In sqliteCloseConnection(conn, ...) :
+>> ?RS-DBI driver warning: (closing pending result sets before closing
+>> this connection)
+>
+> You can get rid of this warning by calling dbClearResult on your query
+> result object.
+>
+>>> dbDisconnect(write_con)
+>> [1] TRUE
+>>
+>> Any suggestions on how to fix this? ?Thanks!
+>
+> I will try and have a closer look over the next couple of days.
+>
+> + seth
+>
+> --
+> Seth Falcon | @sfalcon | http://userprimary.net/
+>
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Tue Jun 29 05:50:50 2010
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Mon, 28 Jun 2010 20:50:50 -0700
+Subject: [R-sig-DB] Fwd: concurrent reading/writing in "chunks" with
+	RSQLite (need some help troubleshooting)
+In-Reply-To: <AANLkTilFR5hroZROFN8LQNv5RNC9Bov7uzEUOs-QMQbd@mail.gmail.com>
+References: <AANLkTimpByMYkw0BXjfKeW5lQB2wHpJ8QqiGPaWCF9Vi@mail.gmail.com>
+	<AANLkTikp6zjZ-_kcJnl0m6ORcNXs4uUkNHHxP2we_tvg@mail.gmail.com>
+	<AANLkTim7g5MZ5yFazRx-mTlj69lsHVPC5NEgcJ0kR8Eq@mail.gmail.com>
+	<AANLkTilFR5hroZROFN8LQNv5RNC9Bov7uzEUOs-QMQbd@mail.gmail.com>
+Message-ID: <AANLkTimi0rLaqIuCpyOTS4Ycnws4Q-m9SKCS5EV3n227@mail.gmail.com>
+
+Hi again,
+
+I had a chance to play with this a bit.  You may find it useful to
+read up on the how SQLite does locking
+(http://www.sqlite.org/lockingv3.html).
+
+I think what's happening is that read_con with the open read_query is
+holding a shared lock on the db.  While that shared lock is held,
+writes are not allowed.  The discussion of transaction in the SQLite
+doc referenced above gave me the idea to try putting the writes into a
+transaction and waiting to commit until after the read_query is
+complete.  This seems to work.  Here's an example:
+
+library("RSQLite")
+mysqldb='test.sqlite'
+unlink(mysqldb)
+fetch_n=3
+
+# Create a data table.
+somedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3)
+
+# Make a table in our database with it.
+m <- dbDriver("SQLite")
+con=dbConnect(m, dbname=mysqldb)
+dbWriteTable(con,"TABLEA",somedata,overwrite=TRUE)
+dbGetQuery(con, "CREATE table t2 (data1 INTEGER, data2 FLOAT)")
+dbDisconnect(con)
+
+# Now we want to read from TABLEA in "chunks" and write to TABLEB.
+read_con=dbConnect(m, dbname=mysqldb)
+write_con=dbConnect(m, dbname=mysqldb)
+
+read_query=dbSendQuery(read_con,"SELECT * FROM TABLEA")
+dbBeginTransaction(write_con)
+while (!dbHasCompleted(read_query))
+{
+       read_chunk=fetch(read_query,fetch_n)
+       new_data=data.frame(data3=read_chunk$data1*4,data4=read_chunk$data2*4)
+       dbGetPreparedQuery(write_con, "INSERT into t2 values (?, ?)", new_data)
+}
+dbClearResult(read_query)
+dbCommit(write_con)
+
+dbDisconnect(read_con)
+dbDisconnect(write_con)
+
+
+
+Unfortunately, dbWriteTable does not currently allow you to interact
+with transactions so I'm not sure there is a way to accomplish what
+you want and still use the dbWriteTable convenience function.
+
+Hope that helps,
+
++ seth
+
+-- 
+Seth Falcon | @sfalcon | http://userprimary.net/
+
+
+
+From kch@mber|n @end|ng |rom gm@||@com  Wed Jun 30 05:19:46 2010
+From: kch@mber|n @end|ng |rom gm@||@com (kMan)
+Date: Tue, 29 Jun 2010 21:19:46 -0600
+Subject: [R-sig-DB] R-sig-DB Digest, Vol 68, Issue 7
+In-Reply-To: <mailman.17.1277805604.20129.r-sig-db@stat.math.ethz.ch>
+References: <mailman.17.1277805604.20129.r-sig-db@stat.math.ethz.ch>
+Message-ID: <029c01cb1803$18afbd10$4a0f3730$@gmail.com>
+
+Dear Jonathan,
+
+>I'm trying to cycle through a database, reading a chunk of data from one
+table in the DB, processing this data chunk, >and then writing the output to
+another table in the database.  I'm having to set the fetch(n=) option
+because the >database is too large to read the entire thing into memory at
+once.  Here's my sample code:
+[snip]
+
+There is no need to open separate connections for reading vs. writing.
+
+Your code was corrupting the connection between R/driver, I think, and I
+don't know why. But when I close a connection in R and my OS won't let me
+delete the file, there is a different kind of problem. The code below works
+on my system. I wish I knew enough to explain wtf happened with your code.
+------------------------------------------------------------------------
+##
+## Prelim/Declarations
+##
+require(RSQLite)
+mysqldb <- "test.sqlite"
+m <- dbDriver("SQLite")
+tbl.names <- c("TABLEA", "TABLEB")
+q1<-paste("SELECT COUNT(*) FROM", tbl.names[1])
+
+##
+## Surrogate data (if not allready done)
+##
+(somedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3))
+con<-dbConnect(m, dbname=mysqldb)
+dbWriteTable(con,"TABLEA",somedata, overwrite=TRUE)
+dbDisconnect(con)
+
+##
+## Process TABLEA in parts, write to TABLEB
+##
+con<-dbConnect(m, dbname=mysqldb)
+n.lines<-dbGetQuery(con, q1) #NOTE class is data.frame
+chunk.size<-3
+start.index<-seq(from = 1, to = n.lines[1,1], by = 3)
+limit<-c(diff(start.index), n.lines[1,1]-sum(diff(start.index)))
+i<-1
+for(i in 1:length(limit)){
+  if(i<length(limit)) { q2<-paste("SELECT * FROM TABLEA WHERE row_names >=",
+
+      start.index[i], "LIMIT", limit[i])
+  } else { q2<-paste("SELECT * FROM TABLEA WHERE row_names =", 
+      start.index[i], "LIMIT", limit[i])
+  }
+  dat<-dbGetQuery(con, q2)
+  dbWriteTable(con, tbl.names[2], dat, row.names=FALSE, append=TRUE)
+}
+dbGetQuery(con, "SELECT * FROM TABLEB")
+dbDisconnect(con)
+------------------------------------------------------------------------
+
+Sincerely,
+KeithC.
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Wed Jun 30 05:36:46 2010
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Tue, 29 Jun 2010 20:36:46 -0700
+Subject: [R-sig-DB] R-sig-DB Digest, Vol 68, Issue 7
+In-Reply-To: <029c01cb1803$18afbd10$4a0f3730$@gmail.com>
+References: <mailman.17.1277805604.20129.r-sig-db@stat.math.ethz.ch>
+	<029c01cb1803$18afbd10$4a0f3730$@gmail.com>
+Message-ID: <AANLkTin39mr81IryNc3uYL5fLlP_BeL2dlAijwxEoah4@mail.gmail.com>
+
+On Tue, Jun 29, 2010 at 8:19 PM, kMan <kchamberln at gmail.com> wrote:
+> Dear Jonathan,
+>
+>>I'm trying to cycle through a database, reading a chunk of data from one
+> table in the DB, processing this data chunk, >and then writing the output to
+> another table in the database. ?I'm having to set the fetch(n=) option
+> because the >database is too large to read the entire thing into memory at
+> once. ?Here's my sample code:
+> [snip]
+>
+> There is no need to open separate connections for reading vs. writing.
+
+While it is true that you can read and write from a single connection,
+you can only have one result set open at a time and so if you want to
+iterate through a result set and then write, you do, I believe, need
+two connections.
+
+
+I suspect that the code you propose will be considerably slower as you
+are issuing multiple queries along with a WHERE constraint.
+
++ seth
+
+
+>
+> Your code was corrupting the connection between R/driver, I think, and I
+> don't know why. But when I close a connection in R and my OS won't let me
+> delete the file, there is a different kind of problem. The code below works
+> on my system. I wish I knew enough to explain wtf happened with your code.
+> ------------------------------------------------------------------------
+> ##
+> ## Prelim/Declarations
+> ##
+> require(RSQLite)
+> mysqldb <- "test.sqlite"
+> m <- dbDriver("SQLite")
+> tbl.names <- c("TABLEA", "TABLEB")
+> q1<-paste("SELECT COUNT(*) FROM", tbl.names[1])
+>
+> ##
+> ## Surrogate data (if not allready done)
+> ##
+> (somedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3))
+> con<-dbConnect(m, dbname=mysqldb)
+> dbWriteTable(con,"TABLEA",somedata, overwrite=TRUE)
+> dbDisconnect(con)
+>
+> ##
+> ## Process TABLEA in parts, write to TABLEB
+> ##
+> con<-dbConnect(m, dbname=mysqldb)
+> n.lines<-dbGetQuery(con, q1) #NOTE class is data.frame
+> chunk.size<-3
+> start.index<-seq(from = 1, to = n.lines[1,1], by = 3)
+> limit<-c(diff(start.index), n.lines[1,1]-sum(diff(start.index)))
+> i<-1
+> for(i in 1:length(limit)){
+> ?if(i<length(limit)) { q2<-paste("SELECT * FROM TABLEA WHERE row_names >=",
+>
+> ? ? ?start.index[i], "LIMIT", limit[i])
+> ?} else { q2<-paste("SELECT * FROM TABLEA WHERE row_names =",
+> ? ? ?start.index[i], "LIMIT", limit[i])
+> ?}
+> ?dat<-dbGetQuery(con, q2)
+> ?dbWriteTable(con, tbl.names[2], dat, row.names=FALSE, append=TRUE)
+> }
+> dbGetQuery(con, "SELECT * FROM TABLEB")
+> dbDisconnect(con)
+> ------------------------------------------------------------------------
+>
+> Sincerely,
+> KeithC.
+>
+>
+>
+
+
+
+-- 
+Seth Falcon | @sfalcon | http://userprimary.net/
+
+
+
+From kch@mber|n @end|ng |rom gm@||@com  Wed Jun 30 05:39:11 2010
+From: kch@mber|n @end|ng |rom gm@||@com (kMan)
+Date: Tue, 29 Jun 2010 21:39:11 -0600
+Subject: [R-sig-DB] concurrent reading/writing in "chunks" with RSQLite
+	(need some help troubleshooting)
+Message-ID: <029d01cb1805$cf228440$6d678cc0$@gmail.com>
+
+I apologize. I sent this initially without correcting the subject line.
+
+Sincerely,
+KeithC.
+
+-----Original Message-----
+Dear Jonathan,
+
+>I'm trying to cycle through a database, reading a chunk of data from 
+>one
+table in the DB, processing this data chunk, >and then writing the output to
+another table in the database.  I'm having to set the fetch(n=) option
+because the >database is too large to read the entire thing into memory at
+once.  Here's my sample code:
+[snip]
+
+There is no need to open separate connections for reading vs. writing.
+
+Your code was corrupting the connection between R/driver, I think, and I
+don't know why. But when I close a connection in R and my OS won't let me
+delete the file, there is a different kind of problem. The code below works
+on my system. I wish I knew enough to explain wtf happened with your code.
+------------------------------------------------------------------------
+##
+## Prelim/Declarations
+##
+require(RSQLite)
+mysqldb <- "test.sqlite"
+m <- dbDriver("SQLite")
+tbl.names <- c("TABLEA", "TABLEB")
+q1<-paste("SELECT COUNT(*) FROM", tbl.names[1])
+
+##
+## Surrogate data (if not allready done) ##
+(somedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3))
+con<-dbConnect(m, dbname=mysqldb)
+dbWriteTable(con,"TABLEA",somedata, overwrite=TRUE)
+dbDisconnect(con)
+
+##
+## Process TABLEA in parts, write to TABLEB ## con<-dbConnect(m,
+dbname=mysqldb) n.lines<-dbGetQuery(con, q1) #NOTE class is data.frame
+chunk.size<-3
+start.index<-seq(from = 1, to = n.lines[1,1], by = 3)
+limit<-c(diff(start.index), n.lines[1,1]-sum(diff(start.index)))
+i<-1
+for(i in 1:length(limit)){
+  if(i<length(limit)) { q2<-paste("SELECT * FROM TABLEA WHERE row_names >=",
+
+      start.index[i], "LIMIT", limit[i])
+  } else { q2<-paste("SELECT * FROM TABLEA WHERE row_names =", 
+      start.index[i], "LIMIT", limit[i])
+  }
+  dat<-dbGetQuery(con, q2)
+  dbWriteTable(con, tbl.names[2], dat, row.names=FALSE, append=TRUE) }
+dbGetQuery(con, "SELECT * FROM TABLEB")
+dbDisconnect(con)
+------------------------------------------------------------------------
+
+Sincerely,
+KeithC.
+
+
+
+From kch@mber|n @end|ng |rom gm@||@com  Wed Jun 30 06:50:32 2010
+From: kch@mber|n @end|ng |rom gm@||@com (kMan)
+Date: Tue, 29 Jun 2010 22:50:32 -0600
+Subject: [R-sig-DB] concurrent reading/writing in "chunks" with RSQLite
+	(need some help troubleshooting)
+Message-ID: <029e01cb180f$c6c7ccb0$54576610$@gmail.com>
+
+Hi Seth,
+
+This particular list requires considerable stretching on my part, so I would not be surprised if I missed a goal implied by the code style used or off-list correspondence.
+
+If I understood the original code correctly, though, each iteration through the loop required (2) queries, a read and a write, where (I've assumed) the result sets are handled one at a time anyway. The code I proposed does the same thing, but overall there is (1) additional query prior to the loop to get the number of rows. The rest is just case processing b/c dbGetQuery() seemed to do funny things when LIMIT extended beyond the end of the table, and it wouldn't remember its last read location (e.g. didn't work like scan()). In addition, it works with dbWriteTable() and gets around the need for creating the table first, and filling it in later. 
+
+I used the WHERE condition for lack of a better way to seek to a particular record. The fetch() & fetch_n, were those intended to get the read queries to start at the last read location (e.g. like serial reads using scan())? Eliminating need to condition match or generate a db index first would speed things up, and I'd very much like to learn that trick. I'd think it would also make for an excellent R-wiki post. 
+
+Sincerely,
+KeithC.
+
+-----Original Message-----
+From: Seth Falcon [mailto:seth at userprimary.net] 
+Sent: Tuesday, June 29, 2010 9:37 PM
+To: kMan
+Cc: Jonathan Greenberg; r-sig-db at stat.math.ethz.ch
+Subject: Re: R-sig-DB Digest, Vol 68, Issue 7
+
+On Tue, Jun 29, 2010 at 8:19 PM, kMan <kchamberln at gmail.com> wrote:
+> Dear Jonathan,
+>
+>>I'm trying to cycle through a database, reading a chunk of data from one
+> table in the DB, processing this data chunk, >and then writing the output to
+> another table in the database.  I'm having to set the fetch(n=) option
+> because the >database is too large to read the entire thing into memory at
+> once.  Here's my sample code:
+> [snip]
+>
+> There is no need to open separate connections for reading vs. writing.
+
+While it is true that you can read and write from a single connection,
+you can only have one result set open at a time and so if you want to
+iterate through a result set and then write, you do, I believe, need
+two connections.
+
+
+I suspect that the code you propose will be considerably slower as you
+are issuing multiple queries along with a WHERE constraint.
+
++ seth
+
+
+>
+> Your code was corrupting the connection between R/driver, I think, and I
+> don't know why. But when I close a connection in R and my OS won't let me
+> delete the file, there is a different kind of problem. The code below works
+> on my system. I wish I knew enough to explain wtf happened with your code.
+> ------------------------------------------------------------------------
+> ##
+> ## Prelim/Declarations
+> ##
+> require(RSQLite)
+> mysqldb <- "test.sqlite"
+> m <- dbDriver("SQLite")
+> tbl.names <- c("TABLEA", "TABLEB")
+> q1<-paste("SELECT COUNT(*) FROM", tbl.names[1])
+>
+> ##
+> ## Surrogate data (if not allready done)
+> ##
+> (somedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3))
+> con<-dbConnect(m, dbname=mysqldb)
+> dbWriteTable(con,"TABLEA",somedata, overwrite=TRUE)
+> dbDisconnect(con)
+>
+> ##
+> ## Process TABLEA in parts, write to TABLEB
+> ##
+> con<-dbConnect(m, dbname=mysqldb)
+> n.lines<-dbGetQuery(con, q1) #NOTE class is data.frame
+> chunk.size<-3
+> start.index<-seq(from = 1, to = n.lines[1,1], by = 3)
+> limit<-c(diff(start.index), n.lines[1,1]-sum(diff(start.index)))
+> i<-1
+> for(i in 1:length(limit)){
+>  if(i<length(limit)) { q2<-paste("SELECT * FROM TABLEA WHERE row_names >=",
+>
+>      start.index[i], "LIMIT", limit[i])
+>  } else { q2<-paste("SELECT * FROM TABLEA WHERE row_names =",
+>      start.index[i], "LIMIT", limit[i])
+>  }
+>  dat<-dbGetQuery(con, q2)
+>  dbWriteTable(con, tbl.names[2], dat, row.names=FALSE, append=TRUE)
+> }
+> dbGetQuery(con, "SELECT * FROM TABLEB")
+> dbDisconnect(con)
+> ------------------------------------------------------------------------
+>
+> Sincerely,
+> KeithC.
+>
+>
+>
+
+
+
+-- 
+Seth Falcon | @sfalcon | http://userprimary.net/
+
+
+

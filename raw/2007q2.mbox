@@ -1,0 +1,2115 @@
+From @|@|con @end|ng |rom |hcrc@org  Sun Apr 15 17:47:49 2007
+From: @|@|con @end|ng |rom |hcrc@org (Seth Falcon)
+Date: Sun, 15 Apr 2007 08:47:49 -0700
+Subject: [R-sig-DB] New version of DBI package uploaded to CRAN
+Message-ID: <m21wilfxlm.fsf@fhcrc.org>
+
+Hello all,
+
+I've just uploaded a minor update to DBI, version 0.2-2 after
+discovering that there were a couple of methods listed in
+exportMethods directives in the new NAMESPACE file which were not
+actually defined/used in the packge code.  These have been removed in
+the new version.
+
+The new package should be available in a few days from a CRAN mirror
+near you.
+
++ seth
+
+-- 
+Seth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center
+http://bioconductor.org
+
+
+
+From hp@ge@ @end|ng |rom |hcrc@org  Fri Apr 20 20:22:36 2007
+From: hp@ge@ @end|ng |rom |hcrc@org (Herve Pages)
+Date: Fri, 20 Apr 2007 11:22:36 -0700
+Subject: [R-sig-DB] DBI+RSQLite NAMESPACE problem
+Message-ID: <462904EC.6070803@fhcrc.org>
+
+Hi,
+
+With DBI and RSQlite now having namespaces, if I want to do this in my package:
+
+
+.onLoad <- function(libname, pkgname)
+{
+    drv <- dbDriver("SQLite")
+    ...
+}
+
+then I need to import DBI in my NAMESPACE which is fine.
+
+Now at load time, my package will be able to call DBI::dbDriver() but
+DBI::dbDriver() itself will fail because it tries to call the SQLite()
+function. SQLite() is defined in the RSQLite package but DBI doesn't
+import RSQLite hence the load-time error.
+
+It seems that the workaround is to put RSQLite in the Depends field
+of my package. With this addition, it loads :-)
+
+However, 'R CMD check mypackage' will still complain with the following
+warning:
+
+  * checking whether the name space can be loaded with stated dependencies ... WARNING
+  Error in do.call(as.character(drvName), list(...)) :
+          could not find function "SQLite"
+  Error: .onLoad failed in 'loadNamespace' for 'mypackage'
+  Execution halted
+
+  A namespace must be able to be loaded with just the base namespace loaded:
+  otherwise if the namespace gets loaded by a saved object, the session will
+  be unable to start.
+
+  Probably some imports need to be declared in the NAMESPACE file.
+
+This error occurs in the DBI::dbDriver() method: 'drvName' contains the "SQLite"
+string so do.call() tries to call the SQLite() function which is of course not
+defined.
+
+Any idea how this could be addressed?
+
+Thanks,
+H.
+
+
+
+From @|@|con @end|ng |rom |hcrc@org  Fri Apr 20 23:54:30 2007
+From: @|@|con @end|ng |rom |hcrc@org (Seth Falcon)
+Date: Fri, 20 Apr 2007 14:54:30 -0700
+Subject: [R-sig-DB] DBI+RSQLite NAMESPACE problem
+In-Reply-To: <462904EC.6070803@fhcrc.org> (Herve Pages's message of "Fri,
+	20 Apr 2007 11:22:36 -0700")
+References: <462904EC.6070803@fhcrc.org>
+Message-ID: <m23b2un23t.fsf@ziti.local>
+
+Herve Pages <hpages at fhcrc.org> writes:
+
+> Hi,
+>
+> With DBI and RSQlite now having namespaces, if I want to do this in my package:
+>
+>
+> .onLoad <- function(libname, pkgname)
+> {
+>     drv <- dbDriver("SQLite")
+>     ...
+> }
+
+After some discussion, I think the best answer is: don't do it like
+that.  Instead, create a driver instance directly:
+
+    drv <- SQLite()
+
+This avoid any name space confusion.
+
+At the same time, this prompted a closer look at the recently added
+NAMESPACE files and I found some things that need fixing.  After a bit
+more testing I will be pushing out updates for DBI and RSQLite.  It
+remains to be seen whether these fixes would resolve this particular
+issue or not.
+
++ seth
+
+-- 
+Seth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center
+http://bioconductor.org
+
+
+
+From djmcgo|dr|ck @end|ng |rom comc@@t@net  Tue Apr 24 03:21:04 2007
+From: djmcgo|dr|ck @end|ng |rom comc@@t@net (Daniel J McGoldrick)
+Date: Mon, 23 Apr 2007 19:21:04 -0600
+Subject: [R-sig-DB] RMySQL for R version 2.4.1?
+Message-ID: <005101c7860e$d49b4c40$0a00a8c0@cosmo>
+
+Hello :-)
+
+I am running R version 2.4.1 on windows XP, and was looking for a way to get my RMySQL interface back together...
+
+Apparently the upgrade from my previous R versions broke this interface? Is there a RMySQL binary for windows
+that works with R 2.4.1?
+
+The kicker is that the XML package requires R 2.4.1 so either I get a system that can parse XML 
+nicely or I can have a MySQL API but not both in the same R instance?
+
+I would be very grateful if anyone knew how I could fix this problem either by installing from source 
+or finding a windows binary, or even switching to another package and interface???
+
+Any News about this?
+
+Regards,
+
+Daniel J McGoldrick Ph.D.
+Sentient Solutions Inc
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From d@j025 @end|ng |rom gm@||@com  Tue Apr 24 03:39:54 2007
+From: d@j025 @end|ng |rom gm@||@com (David James)
+Date: Mon, 23 Apr 2007 21:39:54 -0400
+Subject: [R-sig-DB] RMySQL for R version 2.4.1?
+In-Reply-To: <005101c7860e$d49b4c40$0a00a8c0@cosmo>
+References: <005101c7860e$d49b4c40$0a00a8c0@cosmo>
+Message-ID: <74c69e370704231839y2062c7f8j7cc355aedf755af8@mail.gmail.com>
+
+Hi,
+
+Thanks to Joe Byers, Seth Falcon, and a few other kind souls, a binary version
+is available at
+
+    http://bioconductor.org/packages/omegahat/html/RMySQL.html
+
+Regards,
+
+--
+
+David
+
+
+
+On 4/23/07, Daniel J McGoldrick <djmcgoldrick at comcast.net> wrote:
+> Hello :-)
+>
+> I am running R version 2.4.1 on windows XP, and was looking for a way to get my RMySQL interface back together...
+>
+> Apparently the upgrade from my previous R versions broke this interface? Is there a RMySQL binary for windows
+> that works with R 2.4.1?
+>
+> The kicker is that the XML package requires R 2.4.1 so either I get a system that can parse XML
+> nicely or I can have a MySQL API but not both in the same R instance?
+>
+> I would be very grateful if anyone knew how I could fix this problem either by installing from source
+> or finding a windows binary, or even switching to another package and interface???
+>
+> Any News about this?
+>
+> Regards,
+>
+> Daniel J McGoldrick Ph.D.
+> Sentient Solutions Inc
+>
+>
+>        [[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From @|@|con @end|ng |rom |hcrc@org  Sun Apr 29 04:08:51 2007
+From: @|@|con @end|ng |rom |hcrc@org (Seth Falcon)
+Date: Sat, 28 Apr 2007 19:08:51 -0700
+Subject: [R-sig-DB] New versions of DBI and RSQLite uploaded to CRAN
+Message-ID: <m2lkgcc4p8.fsf@ziti.fhcrc.org>
+
+Hello all,
+
+DBI_0.2-3.tar.gz and RSQLite_0.5-4.tar.gz should be available on a
+CRAN mirror near you in few days.
+
+Changes include minor fixes for the recently added NAMESPACE files in
+both packages.
+
+Best Wishes,
+
++ seth
+
+-- 
+Seth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center
+http://bioconductor.org
+
+
+
+From mwk|mpe| @end|ng |rom gm@||@com  Sat May 12 03:43:48 2007
+From: mwk|mpe| @end|ng |rom gm@||@com (Mark W Kimpel)
+Date: Fri, 11 May 2007 21:43:48 -0400
+Subject: [R-sig-DB] help on deciding which open-source database to use with R
+Message-ID: <46451BD4.7030709@gmail.com>
+
+I need to store and access increasingly large numbers of microarray 
+datasets, which I analyze with R and BioC packages, and have decided to 
+delve into the world of relational databases. For those of you 
+unfamiliar with microarray datasets, they consist of unique indentifiers 
+with associated raw and summary data. The unique identifiers map to 
+established gene annotations that are updated regularly, a key reason I 
+would like to use a relational database.
+
+In addition to just storing results, I would also like the database to 
+perform SQL queries as well as use R within the database itself, so 
+that, for example, an FDR calculation could be done on a geneset that 
+was selected using various criteria from a web front-end without 
+explicitly invoking R (I think postgreSQL can do that). Finally, I would 
+like the database to be open-source and run on Linux.
+
+Here is what I have gathered from perusing reviews of databases and the 
+R mailing lists and the cran and BioC repositories:
+1. my top 3 choices would be MySQL, postgreSQL, and SQLite
+2. postgreSQL is probably the most powerful and ideologically "pure"
+3. MySQL has the largest user community and the most available books
+4. SQLite is the easiest to set up and R from within R
+5. there are several R packages for SQLite that assist with very routine 
+things like storing dataframes
+6. DBI and RMySQL seem to offer the most combined active development and 
+power from cran and RdbiPgSQL and postgreSQL would be an analogous 
+offering from BioC
+7. RODBC would allow me to use just about any of the databases as well 
+as Excel
+
+For all that "understanding", there is so much I can't figure out just 
+from reading disparate sources. In particular, in am concerned about: 1. 
+level of documentation so that I can learn, 2. likelihood of continued 
+support and development, 3. ability to satisfy my present (as outlined 
+in the first para) and unanticipated future needs, and 4. ease of use.
+
+Would someone who is familiar with these databases and how they "relate" 
+(pun intended) to the R and BioC communities compare and contrast them 
+for me?
+
+Thanks,
+
+Mark
+
+---
+
+Mark W. Kimpel MD  ** Neuroinformatics ** Dept. of Psychiatry
+Indiana University School of Medicine
+
+15032 Hunter Court, Westfield, IN  46074
+
+(317) 490-5129 Work, & Mobile & VoiceMail
+(317) 663-0513 Home (no voice mail please)
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Wed May 16 08:18:03 2007
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Wed, 16 May 2007 07:18:03 +0100 (BST)
+Subject: [R-sig-DB] help on deciding which open-source database to use
+ with R
+In-Reply-To: <46451BD4.7030709@gmail.com>
+References: <46451BD4.7030709@gmail.com>
+Message-ID: <Pine.LNX.4.64.0705121228240.27426@gannet.stats.ox.ac.uk>
+
+I've not seen any response, so here are some thoughts.
+
+On Fri, 11 May 2007, Mark W Kimpel wrote:
+
+> I need to store and access increasingly large numbers of microarray
+> datasets, which I analyze with R and BioC packages, and have decided to
+> delve into the world of relational databases. For those of you
+> unfamiliar with microarray datasets, they consist of unique indentifiers
+> with associated raw and summary data. The unique identifiers map to
+> established gene annotations that are updated regularly, a key reason I
+> would like to use a relational database.
+>
+> In addition to just storing results, I would also like the database to
+> perform SQL queries as well as use R within the database itself, so
+> that, for example, an FDR calculation could be done on a geneset that
+> was selected using various criteria from a web front-end without
+> explicitly invoking R (I think postgreSQL can do that). Finally, I would
+> like the database to be open-source and run on Linux.
+
+I think you are ruling out SQLite: its internal scripting capabilities are 
+much less.  Our experience is that PostgreSQL is a more powerful DBMS, but 
+harder to manage than MySQL.  If SQLite were in play, it can be very slow 
+compared to the other two.
+
+> Here is what I have gathered from perusing reviews of databases and the
+> R mailing lists and the cran and BioC repositories:
+> 1. my top 3 choices would be MySQL, postgreSQL, and SQLite
+> 2. postgreSQL is probably the most powerful and ideologically "pure"
+> 3. MySQL has the largest user community and the most available books
+> 4. SQLite is the easiest to set up and R from within R
+> 5. there are several R packages for SQLite that assist with very routine
+> things like storing dataframes
+> 6. DBI and RMySQL seem to offer the most combined active development and
+> power from cran and RdbiPgSQL and postgreSQL would be an analogous
+> offering from BioC
+
+Where do you get that from?  For example, RMySQL still does not work out 
+of the box on standard 64-bit systems (despite detailed reports and 
+promises to incorporate them), and it and DBI are two of a handful of CRAN 
+packages still using the deprecated SaveImage (and were the last two to 
+make use of install.R).  That's not 'active development' in my book.
+
+RODBC has more access to advanced features (e.g. bulk updates, fast 
+transfers to the database) and several people have reported it to be much 
+faster than RMySQL (and that is also my experience).
+
+> 7. RODBC would allow me to use just about any of the databases as well
+> as Excel
+
+Excel only on Windows.
+
+> For all that "understanding", there is so much I can't figure out just
+> from reading disparate sources. In particular, in am concerned about: 1.
+> level of documentation so that I can learn, 2. likelihood of continued
+> support and development, 3. ability to satisfy my present (as outlined
+> in the first para) and unanticipated future needs, and 4. ease of use.
+>
+> Would someone who is familiar with these databases and how they "relate"
+> (pun intended) to the R and BioC communities compare and contrast them
+> for me?
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From ric@rdd m@iii@g oii m@thst@t@d@i@c@  Wed May 16 15:51:19 2007
+From: ric@rdd m@iii@g oii m@thst@t@d@i@c@ (ric@rdd m@iii@g oii m@thst@t@d@i@c@)
+Date: Wed, 16 May 2007 10:51:19 -0300 (ADT)
+Subject: [R-sig-DB] help on deciding which open-source database to use
+ with R
+In-Reply-To: <Pine.LNX.4.64.0705121228240.27426@gannet.stats.ox.ac.uk>
+References: <46451BD4.7030709@gmail.com>
+	<Pine.LNX.4.64.0705121228240.27426@gannet.stats.ox.ac.uk>
+Message-ID: <60101.24.224.156.112.1179323479.squirrel@mail.mathstat.dal.ca>
+
+Hello,
+I have been using postgreSQL with the postGIS extension for a few years
+now and I'm really happy with its performance and features. I still use
+mySQL for other applications but what really determined my choice was the
+fact that the OGC simple spatial features were fully implemented in
+postGIS whereas mySQL only had limited support of spatial features.
+
+As far as connecting from R goes, I have been using RODBC successfully and
+found it to be in more active development than other R packages. The other
+advantage of using RODBC is that you will setup ODBC connectivity to your
+database, hence making it accessible to other software that provide ODBC
+bindings. In my case, I connect to the same database server from R, SAS,
+Perl, Matlab, Python and PHP through ODBC.
+
+I run all this on a Linux box and it's been a great learning experience.
+Both postgreSQL and postGIS are now available as packages and are easily
+installed in Ubuntu. That's quite different from a few years ago where one
+needed to built from source, a task that can be intimidating if you don't
+have access to a good sysadmin/DBadmin person.
+
+All the best.
+
+Daniel Ricard
+Dalhousie University, Halifax, NS, Canada
+
+
+> I've not seen any response, so here are some thoughts.
+>
+> On Fri, 11 May 2007, Mark W Kimpel wrote:
+>
+>> I need to store and access increasingly large numbers of microarray
+>> datasets, which I analyze with R and BioC packages, and have decided to
+>> delve into the world of relational databases. For those of you
+>> unfamiliar with microarray datasets, they consist of unique indentifiers
+>> with associated raw and summary data. The unique identifiers map to
+>> established gene annotations that are updated regularly, a key reason I
+>> would like to use a relational database.
+>>
+>> In addition to just storing results, I would also like the database to
+>> perform SQL queries as well as use R within the database itself, so
+>> that, for example, an FDR calculation could be done on a geneset that
+>> was selected using various criteria from a web front-end without
+>> explicitly invoking R (I think postgreSQL can do that). Finally, I would
+>> like the database to be open-source and run on Linux.
+>
+> I think you are ruling out SQLite: its internal scripting capabilities are
+> much less.  Our experience is that PostgreSQL is a more powerful DBMS, but
+> harder to manage than MySQL.  If SQLite were in play, it can be very slow
+> compared to the other two.
+>
+>> Here is what I have gathered from perusing reviews of databases and the
+>> R mailing lists and the cran and BioC repositories:
+>> 1. my top 3 choices would be MySQL, postgreSQL, and SQLite
+>> 2. postgreSQL is probably the most powerful and ideologically "pure"
+>> 3. MySQL has the largest user community and the most available books
+>> 4. SQLite is the easiest to set up and R from within R
+>> 5. there are several R packages for SQLite that assist with very routine
+>> things like storing dataframes
+>> 6. DBI and RMySQL seem to offer the most combined active development and
+>> power from cran and RdbiPgSQL and postgreSQL would be an analogous
+>> offering from BioC
+>
+> Where do you get that from?  For example, RMySQL still does not work out
+> of the box on standard 64-bit systems (despite detailed reports and
+> promises to incorporate them), and it and DBI are two of a handful of CRAN
+> packages still using the deprecated SaveImage (and were the last two to
+> make use of install.R).  That's not 'active development' in my book.
+>
+> RODBC has more access to advanced features (e.g. bulk updates, fast
+> transfers to the database) and several people have reported it to be much
+> faster than RMySQL (and that is also my experience).
+>
+>> 7. RODBC would allow me to use just about any of the databases as well
+>> as Excel
+>
+> Excel only on Windows.
+>
+>> For all that "understanding", there is so much I can't figure out just
+>> from reading disparate sources. In particular, in am concerned about: 1.
+>> level of documentation so that I can learn, 2. likelihood of continued
+>> support and development, 3. ability to satisfy my present (as outlined
+>> in the first para) and unanticipated future needs, and 4. ease of use.
+>>
+>> Would someone who is familiar with these databases and how they "relate"
+>> (pun intended) to the R and BioC communities compare and contrast them
+>> for me?
+>
+> --
+> Brian D. Ripley,                  ripley at stats.ox.ac.uk
+> Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+> University of Oxford,             Tel:  +44 1865 272861 (self)
+> 1 South Parks Road,                     +44 1865 272866 (PA)
+> Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Thu May 17 16:57:40 2007
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Thu, 17 May 2007 10:57:40 -0400
+Subject: [R-sig-DB] RSQLite and Date
+Message-ID: <971536df0705170757lb439704y248b8c478ed0774e@mail.gmail.com>
+
+Below dbDataType reports that "Date" class is represented as TEXT in the
+data base.  When I write and read back a data frame it does come back
+as "character" but as the character representation of the number of days
+since the Epoch.  Is that how its supposed to work?
+
+Are there any facilities that the user can control to specify how
+given classes are converted back and forth?
+
+> m <- dbDriver("SQLite")
+> dbDataType(m, Sys.Date())
+[1] "TEXT"
+> con <- dbConnect(m, dbname=":memory:")
+> DF <- data.frame(Date = Sys.Date() + 0:3, Value = 10:13)
+> dbWriteTable(con, "DF", DF)
+[1] TRUE
+> str(dbReadTable(con, "DF"))
+'data.frame':   4 obs. of  2 variables:
+ $ Date__1 : chr  "13650.0" "13651.0" "13652.0" "13653.0"
+ $ Value__1: int  10 11 12 13
+
+
+
+From edd @end|ng |rom deb|@n@org  Thu May 17 17:43:48 2007
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Thu, 17 May 2007 10:43:48 -0500
+Subject: [R-sig-DB] RSQLite and Date
+In-Reply-To: <971536df0705170757lb439704y248b8c478ed0774e@mail.gmail.com>
+References: <971536df0705170757lb439704y248b8c478ed0774e@mail.gmail.com>
+Message-ID: <17996.30772.977457.700366@basebud.nulle.part>
+
+
+On 17 May 2007 at 10:57, Gabor Grothendieck wrote:
+| Below dbDataType reports that "Date" class is represented as TEXT in the
+| data base.  When I write and read back a data frame it does come back
+| as "character" but as the character representation of the number of days
+| since the Epoch.  Is that how its supposed to work?
+| 
+| Are there any facilities that the user can control to specify how
+| given classes are converted back and forth?
+| 
+| > m <- dbDriver("SQLite")
+| > dbDataType(m, Sys.Date())
+| [1] "TEXT"
+| > con <- dbConnect(m, dbname=":memory:")
+| > DF <- data.frame(Date = Sys.Date() + 0:3, Value = 10:13)
+| > dbWriteTable(con, "DF", DF)
+| [1] TRUE
+| > str(dbReadTable(con, "DF"))
+| 'data.frame':   4 obs. of  2 variables:
+|  $ Date__1 : chr  "13650.0" "13651.0" "13652.0" "13653.0"
+|  $ Value__1: int  10 11 12 13
+
+Great topic.  
+
+I once had a similar issue with RdbiPgSQL and found (from looking at
+dbiPgSQL/R/types.R as well as the Postgres docs) that all I needed was to add
+
+       rpgsql.cast.values.1114 <- function(x) { 
+		as.POSIXct(strptime(x, "%a %b %d %H:%M:%OS %Y")) }; 
+
+and I'd get POSIXct's mapped.  
+
+It would be nice if we get the maximum number of types mapped for the maximum
+number of db backends...  And it would of course also be nice if one day we
+get a volunteer to bring RdbiPgSQL into the proper DBI world.  Maybe next
+year's Google SoC.
+
+Dirk
+
+-- 
+Hell, there are no rules here - we're trying to accomplish something. 
+                                                  -- Thomas A. Edison
+
+
+
+From @|@|con @end|ng |rom |hcrc@org  Thu May 17 18:17:24 2007
+From: @|@|con @end|ng |rom |hcrc@org (Seth Falcon)
+Date: Thu, 17 May 2007 09:17:24 -0700
+Subject: [R-sig-DB] RSQLite and Date
+In-Reply-To: <17996.30772.977457.700366@basebud.nulle.part> (Dirk
+	Eddelbuettel's message of "Thu, 17 May 2007 10:43:48 -0500")
+References: <971536df0705170757lb439704y248b8c478ed0774e@mail.gmail.com>
+	<17996.30772.977457.700366@basebud.nulle.part>
+Message-ID: <m2abw3h1bf.fsf@ziti.fhcrc.org>
+
+Dirk Eddelbuettel <edd at debian.org> writes:
+
+> On 17 May 2007 at 10:57, Gabor Grothendieck wrote:
+> | Below dbDataType reports that "Date" class is represented as TEXT in the
+> | data base.  When I write and read back a data frame it does come back
+> | as "character" but as the character representation of the number of days
+> | since the Epoch.  Is that how its supposed to work?
+> | 
+> | Are there any facilities that the user can control to specify how
+> | given classes are converted back and forth?
+> | 
+> | > m <- dbDriver("SQLite")
+> | > dbDataType(m, Sys.Date())
+> | [1] "TEXT"
+> | > con <- dbConnect(m, dbname=":memory:")
+> | > DF <- data.frame(Date = Sys.Date() + 0:3, Value = 10:13)
+> | > dbWriteTable(con, "DF", DF)
+> | [1] TRUE
+> | > str(dbReadTable(con, "DF"))
+> | 'data.frame':   4 obs. of  2 variables:
+> |  $ Date__1 : chr  "13650.0" "13651.0" "13652.0" "13653.0"
+> |  $ Value__1: int  10 11 12 13
+>
+> Great topic.  
+>
+> I once had a similar issue with RdbiPgSQL and found (from looking at
+> dbiPgSQL/R/types.R as well as the Postgres docs) that all I needed was to add
+>
+>        rpgsql.cast.values.1114 <- function(x) { 
+> 		as.POSIXct(strptime(x, "%a %b %d %H:%M:%OS %Y")) }; 
+>
+> and I'd get POSIXct's mapped.  
+>
+> It would be nice if we get the maximum number of types mapped for the maximum
+> number of db backends...  And it would of course also be nice if one day we
+> get a volunteer to bring RdbiPgSQL into the proper DBI world.  Maybe next
+> year's Google SoC.
+
+Patches welcome.  But the date problem is quite possibly trickier with
+SQLite since there is no date type.  So I don't know where that
+information should get stored/specified.
+
++ seth
+
+-- 
+Seth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center
+http://bioconductor.org
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Thu May 17 19:33:01 2007
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Thu, 17 May 2007 13:33:01 -0400
+Subject: [R-sig-DB] RSQLite and Date
+In-Reply-To: <m2abw3h1bf.fsf@ziti.fhcrc.org>
+References: <971536df0705170757lb439704y248b8c478ed0774e@mail.gmail.com>
+	<17996.30772.977457.700366@basebud.nulle.part>
+	<m2abw3h1bf.fsf@ziti.fhcrc.org>
+Message-ID: <971536df0705171033m3ed447c2wf128cbfdf9ea1931@mail.gmail.com>
+
+On 5/17/07, Seth Falcon <sfalcon at fhcrc.org> wrote:
+> Dirk Eddelbuettel <edd at debian.org> writes:
+>
+> > On 17 May 2007 at 10:57, Gabor Grothendieck wrote:
+> > | Below dbDataType reports that "Date" class is represented as TEXT in the
+> > | data base.  When I write and read back a data frame it does come back
+> > | as "character" but as the character representation of the number of days
+> > | since the Epoch.  Is that how its supposed to work?
+> > |
+> > | Are there any facilities that the user can control to specify how
+> > | given classes are converted back and forth?
+> > |
+> > | > m <- dbDriver("SQLite")
+> > | > dbDataType(m, Sys.Date())
+> > | [1] "TEXT"
+> > | > con <- dbConnect(m, dbname=":memory:")
+> > | > DF <- data.frame(Date = Sys.Date() + 0:3, Value = 10:13)
+> > | > dbWriteTable(con, "DF", DF)
+> > | [1] TRUE
+> > | > str(dbReadTable(con, "DF"))
+> > | 'data.frame':   4 obs. of  2 variables:
+> > |  $ Date__1 : chr  "13650.0" "13651.0" "13652.0" "13653.0"
+> > |  $ Value__1: int  10 11 12 13
+> >
+> > Great topic.
+> >
+> > I once had a similar issue with RdbiPgSQL and found (from looking at
+> > dbiPgSQL/R/types.R as well as the Postgres docs) that all I needed was to add
+> >
+> >        rpgsql.cast.values.1114 <- function(x) {
+> >               as.POSIXct(strptime(x, "%a %b %d %H:%M:%OS %Y")) };
+> >
+> > and I'd get POSIXct's mapped.
+> >
+> > It would be nice if we get the maximum number of types mapped for the maximum
+> > number of db backends...  And it would of course also be nice if one day we
+> > get a volunteer to bring RdbiPgSQL into the proper DBI world.  Maybe next
+> > year's Google SoC.
+>
+> Patches welcome.  But the date problem is quite possibly trickier with
+> SQLite since there is no date type.  So I don't know where that
+> information should get stored/specified.
+
+There is no 100% clean solution I can think of but one idea would be
+to translate
+the R class into an SQLite class + an SQL constraint.  So "Date" class
+might be translated into TEXT  plus a constraint that the contents of the column
+be of the form yyyy-mm-dd.  In translating back it would have a table of
+constraints so that it could translate back properly.
+
+
+
+From chr|@c @end|ng |rom chgr@mgh@h@rv@rd@edu  Fri Jun  1 19:09:44 2007
+From: chr|@c @end|ng |rom chgr@mgh@h@rv@rd@edu (Chris Cotsapas)
+Date: Fri, 01 Jun 2007 13:09:44 -0400
+Subject: [R-sig-DB] DBI:dbConnect () inherited method error for RMySQL v
+	0.5-11 driver
+Message-ID: <466052D8.20305@chgr.mgh.harvard.edu>
+
+Dear list,
+
+I've been getting the error below when trying to connect to a MySQL 
+database (similar to this post from late last year: 
+https://stat.ethz.ch/pipermail/r-sig-db/2006-October/000224.html)
+
+I'm using R 2.4.1 on an x86_64 machine running Ubuntu/Dapper, RMySQL 
+v0.5-11 and DBI v0.2-3.
+
+I'm really not sure what to do with this: I've tried updating all mysql 
+Ubuntu packages, adding dev packages etc, to no avail. The database 
+itself is functional and accessible.
+
+I've also created a ~/.my.cnf file with appropriate entries, to no avail.
+
+Any hints or comments most welcome.
+
+Thanks
+
+Chris
+
+## Error Log ##
+
+drv <- dbDriver("MySQL")
+   Warning message:
+   RS-DBI driver warning: (MySQL mismatch between compiled version 
+5.0.19
+   and runtime version 5.0.22)
+
+dbConnect(drv=drv)
+   Error in function (classes, fdef, mtable)  :
+	unable to find an inherited method for function "dbConnect", for
+         signature "MySQLDriver"
+
+## End ##
+
+
+
+-- 
+Chris Cotsapas, PhD
+
+Research Associate
+Center for Human Genetic Research,
+Massachusetts General Hospital
+and
+Broad Institute of Harvard and MIT
+
+A: 185 Cambridge St CPZN 6818, Boston, MA, 02114
+P: 1 617 643 1634 (MGH)/ 1 617 324 7176 (Broad)
+
+
+
+From d@j025 @end|ng |rom gm@||@com  Fri Jun  1 23:24:38 2007
+From: d@j025 @end|ng |rom gm@||@com (David James)
+Date: Fri, 1 Jun 2007 17:24:38 -0400
+Subject: [R-sig-DB] DBI:dbConnect () inherited method error for RMySQL v
+	0.5-11 driver
+In-Reply-To: <466052D8.20305@chgr.mgh.harvard.edu>
+References: <466052D8.20305@chgr.mgh.harvard.edu>
+Message-ID: <74c69e370706011424i3c34f2dev3795c38a31ab236f@mail.gmail.com>
+
+Hi Chris,
+
+The message seems to indicate a S4 dispatching error from the generic
+function dbConnect when given a drv = "MySQLConnection" and not
+with the mysql libraries themselves.   The idiom that you're using is widely
+used, so I cannot see why it would fail, so I would try
+(1)  what's the output of
+     summary(drv, verbose = TRUE)
+     (you should see a full description of the MySQLDriver object)
+(2)  try other dbConnect methods, namely
+      con <- dbConnect("MySQL")
+      con <- dbConnect(MySQL())
+(3) What do you see if you type
+      getMethods("dbConnect")
+
+Regards,
+
+--
+David
+
+On 6/1/07, Chris Cotsapas <chrisc at chgr.mgh.harvard.edu> wrote:
+> Dear list,
+>
+> I've been getting the error below when trying to connect to a MySQL
+> database (similar to this post from late last year:
+> https://stat.ethz.ch/pipermail/r-sig-db/2006-October/000224.html)
+>
+> I'm using R 2.4.1 on an x86_64 machine running Ubuntu/Dapper, RMySQL
+> v0.5-11 and DBI v0.2-3.
+>
+> I'm really not sure what to do with this: I've tried updating all mysql
+> Ubuntu packages, adding dev packages etc, to no avail. The database
+> itself is functional and accessible.
+>
+> I've also created a ~/.my.cnf file with appropriate entries, to no avail.
+>
+> Any hints or comments most welcome.
+>
+> Thanks
+>
+> Chris
+>
+> ## Error Log ##
+>
+> drv <- dbDriver("MySQL")
+>   Warning message:
+>   RS-DBI driver warning: (MySQL mismatch between compiled version
+> 5.0.19
+>   and runtime version 5.0.22)
+>
+> dbConnect(drv=drv)
+>   Error in function (classes, fdef, mtable)  :
+>        unable to find an inherited method for function "dbConnect", for
+>         signature "MySQLDriver"
+>
+> ## End ##
+>
+>
+>
+> --
+> Chris Cotsapas, PhD
+>
+> Research Associate
+> Center for Human Genetic Research,
+> Massachusetts General Hospital
+> and
+> Broad Institute of Harvard and MIT
+>
+> A: 185 Cambridge St CPZN 6818, Boston, MA, 02114
+> P: 1 617 643 1634 (MGH)/ 1 617 324 7176 (Broad)
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From tke|tt @end|ng |rom gm@||@com  Sat Jun  2 19:47:21 2007
+From: tke|tt @end|ng |rom gm@||@com (Tim Keitt)
+Date: Sat, 2 Jun 2007 12:47:21 -0500
+Subject: [R-sig-DB] [R-sig-Geo] [R] Connecting to PostgreSQL/PostGIS
+	from R (rgdal?)
+In-Reply-To: <46617E84.6050904@geo.uu.nl>
+References: <Pine.LNX.4.44.0705312217550.23714-100000@reclus.nhh.no>
+	<46617E84.6050904@geo.uu.nl>
+Message-ID: <6262c54c0706021047v17fb6ec8v384a836b604f90dd@mail.gmail.com>
+
+My Rdbi (+Rdbi.PgSQL) package was written to be much simpler and
+easier to use than either DBI or RODBC. Unfortunately, I do not have
+time to maintain it, so I'm not sure what state it is in. Either DBI
+or RODBC should work fine for pushing tables back and forth. RODBC is
+probably the most up-to-date and might be the best long term solution.
+(DBI is the most complete I think in terms of a full blown db API.)
+
+For pushing geometries into PostGIS, I invariably use the shp2pgsql
+utility as it seems to give the best results. You could easily dump
+our Spatial*DataFrame to a file and shell out to run shp2pgsql. Not
+elegant but would work. (Wish I had time to finish low-level OGR
+coverage in rgdal...)
+
+Edzer's approach is one I've suggested on many occasions -- that we
+subclass the sp classes to act as a proxy to a PostGIS table. I first
+developed that approach in rpgsql -- you could create proxy data
+frames that simply forwarded access requests to PostgreSQL (I think
+the idea has now been applied to SQLite tables). The problem of course
+is that R does not support polymorphism "below the surface" in the C
+level implementation, so once a proxy object is passed to R's
+internals, it is nothing more than a pointer with no call interface.
+
+THK
+
+On 6/2/07, Edzer J. Pebesma <e.pebesma at geo.uu.nl> wrote:
+> Mike, my experience with linking R with PostGIS are documented here:
+>
+> http://wiki.intamap.org/index.php/PostGIS
+>
+> which I may have mentioned before on r-sig-geo.
+>
+> Indeed, as Tim confirms, besides the (r)gdal link, (R)ODBC is another
+> working link for transferring table information. I doubt whether it will
+> be easy to transport e.g. line or polygon topology through this link.
+> --
+> Edzer
+>
+>
+> >
+> >
+> >
+> >>I apologize if I come accross as somewhat naive in this - I certainly am
+> >>still a novice when it come to the use of R.  Also, I apologize for the
+> >>longish email that follows, but if you're interested in what I'm trying
+> >>to do, this is the clearest explanation I have off the top of my head:
+> >>
+> >>My needs are that I'm working on a .Net gui which displays map data
+> >>using the C# MapScript library for MapServer, and manipulates/analyzes
+> >>spatial data (generally just points for now, but this might change in
+> >>the future) stored in a PostgreSQL/PostGIS database.  Roger, I think
+> >>you'll recall asking me about this tool, for which I had a poster up at
+> >>the OSGeo conference in Lausanne last year.  Lately, I've been trying to
+> >>port it to Gtk# so that it will work on both Linux and Windows, and so
+> >>far it seems to be working.  However, if I add any real functionality to
+> >>it in the future, I'd like to find a better way to link PostgreSQL with
+> >>the functionality of R.
+> >>
+> >>In this tool, I had started to use R as I feel it's better suited to do
+> >>some of the more complicated processing - though so far this is limited
+> >>to creating voronoi polygons, for which the deldir library in R worked
+> >>very well.  To make this happen, I used system process objects in
+> >>Mono/.Net to control the R commandline.  The issue I faced here is that
+> >>the only way I could get the data into R from PostgreSQL (without
+> >>requiring 'a priori' setup on the client machine of something like an
+> >>ODBC driver with the RODBC librar) was to dump the data to a temporary
+> >>text file, import it into R, process it in R, dump it back into text
+> >>formatted for SQL, then execute the SQL to input the data into PostgreSQL.
+> >>
+> >>This overall process would be much more efficient if I could find a more
+> >>integrated way of transferring data between R/PostgreSQL - right now my
+> >>.Net application primarily processes data within PostgreSQL itself, but
+> >>integration with R would make a great deal of sense for me, as its
+> >>primary purpose is to calculate spatial statistics.
+> >>
+> >>However, my ideal solution would be to have a package of binaries that
+> >>are self sufficient, so I can give someone the compiled binaries on a CD
+> >>for example, and that person could use it on a Windows machine with no
+> >>initial setup, or he/she could use it on a Linux machine where
+> >>installation of the necessary prequisites is either already done, or
+> >>fairly easy (at least from my experience with Fedora so far, using the
+> >>standard repositories).  At the moment, the only missing piece here is
+> >>the link between R and PostgreSQL.
+> >>
+> >>Maybe there is a way I can accomplish this with RODBC that I'm unaware
+> >>of...but as as I understand it, this requires a Windows user to install
+> >>the PostgreSQL ODBC driver first, then create a DSN to each database
+> >>that is used in PostgreSQL.  If I'm wrong about any of this, I
+> >>apologize, and I'd be happy to be corrected.  Every once in a while I
+> >>take a look around online to see if anything new has been released
+> >>(e.g., a win32 port of pl/r, or some easy-to-use solution for connecting
+> >>to PgSQL from within R).  It seems like rgdal might be a sort-of
+> >>solution, at least for spatail data - except that I'm somewhat inept at
+> >>compiling it cleanly (I did get it working, and it seems okay, but it's
+> >>not packaged properly - I'm sure of that).  Even so, it doesn't seem to
+> >>have an option for linking to non-spatial data (at least, from what I've
+> >>been able to figure out from experimentation and documentation), which
+> >>would be pretty useful as well.
+> >>
+> >>If either of you have any additional suggestions, I'd be glad to hear them.
+> >>
+> >>Sorry again for such a long email.
+> >>
+> >>Regards,
+> >>Mike
+> >>
+> >>Roger Bivand wrote:
+> >>
+> >>
+> >>>On Thu, 31 May 2007, Prof Brian Ripley wrote:
+> >>>
+> >>>
+> >>>
+> >>>>Roger,
+> >>>>
+> >>>>I see that on Linux I have an ODBC driver.  That should not introduce
+> >>>>further dependencies on Windows, and might be useful.
+> >>>>
+> >>>>OTOH, I do think RODBC is the answer to the underlying question.  It works
+> >>>>well with PostgreSQL on Windows, and abstracts out the pesky differences
+> >>>>between PostgreSQL clients in different versions (as the ODBC driver is
+> >>>>part of PostgreSQL).
+> >>>>
+> >>>>
+> >>>Brian,
+> >>>
+> >>>Thanks, of course there are better routes than rgdal/PostGIS when the data
+> >>>are not geometries. But because PostGIS stores its representations in
+> >>>specific ways, both the PostgreSQL and GDAL/OGR sides need access to the
+> >>>PostGIS library to unpick the parts of the lines and polygons involved.
+> >>>Edzer has had some success with this on Linux, as far as I understand to
+> >>>insert results from R into a PostGIS/PostgreSQL database, I think being
+> >>>read by MapServer for HTTP delivery.
+> >>>
+> >>>I'm not sure what Mike's specific needs are - if aspatial or simple point
+> >>>coordinates, it ought to be possible to avoid the intermediate data layer,
+> >>>unless something "on the other side" needs it. With line or polygon
+> >>>geometries, some intermediate layer is needed, and that's where the
+> >>>dependencies come from.
+> >>>
+> >>>The FWTools Windows binaries for rgdal built against HDF4 seem to work,
+> >>>against its NetCDF which crashes R (I think this is one of Frank
+> >>>Warmerdam's DLLs doing stdcall, and another not doing it). The user
+> >>>workaround in that case was to use your ncdf binary, which was feasible
+> >>>for raster data.
+> >>>
+> >>>FWTools is advertised as aiming: "to track the latested development
+> >>>versions of the packages included as opposed to official releases. While
+> >>>this may mean the packages are less stable, it is intended to give folks a
+> >>>chance to use the latest and greatest". Having talked to the OSGeo
+> >>>developers, it seems that their "user" is a system integrator of some
+> >>>kind, setting up a production system for a larger organisation in-house or
+> >>>more broadly. This doesn't match too well with the R "user" profile,
+> >>>particularly in a one-off research setting.
+> >>>
+> >>>Roger
+> >>>
+> >>>
+> >>>
+> >>>>Brian
+> >>>>
+> >>>>
+> >>>>On Wed, 30 May 2007, Roger Bivand wrote:
+> >>>>
+> >>>>
+> >>>>
+> >>>>>On Wed, 30 May 2007, Mike Leahy wrote:
+> >>>>>
+> >>>>>
+> >>>>>
+> >>>>>>Hello,
+> >>>>>>
+> >>>>>>I've been trying every now and then to find a cross operating system
+> >>>>>>solution that would let me access PostgreSQL (and PostGIS) from R, or to
+> >>>>>>access R from PostgreSQL.  I know of pl/r, which accomplishes the
+> >>>>>>latter, but has yet to be successfully ported to Windows.  Similarly,
+> >>>>>>I've tried to use Rdbi and DBI, but I haven't had luck with those on
+> >>>>>>Windows either for connecting to PostgreSQL from R.  Can anyone suggest
+> >>>>>>a solution for this?
+> >>>>>>
+> >>>>>>It would seem that rgdal could also help me in this case. Unfortunately,
+> >>>>>>the version of the GDAL library that is included in the rdgal binary
+> >>>>>>available on CRAN (for windows) doesn't include the PostgreSQL driver
+> >>>>>>for OGR (i.e., it's not listed by the ogrDrivers() function).
+> >>>>>>
+> >>>>>>I compiled rgdal on Windows myself using the GDAL library from
+> >>>>>>FWTools-1.3.1, but I was unsuccessful at creating a proper binary
+> >>>>>>package for R.  I was only able to get it to work by substituting the
+> >>>>>>rgdal.dll that was installed by CRAN with the one that I compiled that
+> >>>>>>links against the GDAL library from FWTools.  Even though it works (at
+> >>>>>>first glance with ogrInfo(), and readOGR()), I still get a warning
+> >>>>>>message when I load the libary: "DLL attempted to change FPU control
+> >>>>>>word from 8001f to 9001f".
+> >>>>>>
+> >>>>>>So my question with respect to rgdal is a) is it likely that an rgdal
+> >>>>>>package is going to be released in the future with the PostgreSQL driver
+> >>>>>>included in GDAL/OGR, or b) are there any suggestions/instructions that
+> >>>>>>might get me through the compilation and packaging process for rgdal
+> >>>>>>with better success?
+> >>>>>>
+> >>>>>>
+> >>>>>The warning is harmless - R is just reporting that it has stopped the
+> >>>>>dynamically linked libraries resetting a flag that they should not change
+> >>>>>while R is running. If you followed the notes in README.windows in rgdal,
+> >>>>>you ought to be OK. There are no plans to provide more Windows binary
+> >>>>>drivers than those present now, because the others involve further
+> >>>>>external dependencies, which most users would not welcome.
+> >>>>>
+> >>>>>So please try to do an ogrinfo at the command line in Windows using
+> >>>>>FWTools to your PostGIS data, and then the equivalent within R with your
+> >>>>>locally built rgdal, and see how it goes. Even on Linux, getting all the
+> >>>>>components lined up isn't easy, according to people who have tried, but
+> >>>>>can be done if you need to do it.
+> >>>>>
+> >>>>>Hope this helps,
+> >>>>>
+> >>>>>Roger
+> >>>>>
+> >>>>>
+> >>>>>
+> >>>>>>Thanks in advance for any help,
+> >>>>>>Mike
+> >>>>>>
+> >>>>>>_______________________________________________
+> >>>>>>R-sig-Geo mailing list
+> >>>>>>R-sig-Geo at stat.math.ethz.ch
+> >>>>>>https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+> >>>>>>
+> >>>>>>
+> >>>>>>
+> >>
+> >>
+> >
+> >
+> >
+>
+> _______________________________________________
+> R-sig-Geo mailing list
+> R-sig-Geo at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+>
+
+
+-- 
+Timothy H. Keitt, University of Texas at Austin
+Contact info and schedule at http://www.keittlab.org/tkeitt/
+Reprints at http://www.keittlab.org/tkeitt/papers/
+ODF attachment? See http://www.openoffice.org/
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Sat Jun  2 20:08:59 2007
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Sat, 2 Jun 2007 19:08:59 +0100 (BST)
+Subject: [R-sig-DB] [R-sig-Geo] [R] Connecting to PostgreSQL/PostGIS
+ from R (rgdal?)
+In-Reply-To: <6262c54c0706021047v17fb6ec8v384a836b604f90dd@mail.gmail.com>
+References: <Pine.LNX.4.44.0705312217550.23714-100000@reclus.nhh.no>
+	<46617E84.6050904@geo.uu.nl>
+	<6262c54c0706021047v17fb6ec8v384a836b604f90dd@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0706021901480.8291@gannet.stats.ox.ac.uk>
+
+On Sat, 2 Jun 2007, Tim Keitt wrote:
+
+> My Rdbi (+Rdbi.PgSQL) package was written to be much simpler and
+> easier to use than either DBI or RODBC. Unfortunately, I do not have
+> time to maintain it, so I'm not sure what state it is in. Either DBI
+> or RODBC should work fine for pushing tables back and forth. RODBC is
+> probably the most up-to-date and might be the best long term solution.
+> (DBI is the most complete I think in terms of a full blown db API.)
+
+There are quite a few 'db API' features in RODBC that are not in DBI.
+
+> For pushing geometries into PostGIS, I invariably use the shp2pgsql
+> utility as it seems to give the best results. You could easily dump
+> our Spatial*DataFrame to a file and shell out to run shp2pgsql. Not
+> elegant but would work. (Wish I had time to finish low-level OGR
+> coverage in rgdal...)
+>
+> Edzer's approach is one I've suggested on many occasions -- that we
+> subclass the sp classes to act as a proxy to a PostGIS table. I first
+> developed that approach in rpgsql -- you could create proxy data
+> frames that simply forwarded access requests to PostgreSQL (I think
+> the idea has now been applied to SQLite tables). The problem of course
+> is that R does not support polymorphism "below the surface" in the C
+> level implementation, so once a proxy object is passed to R's
+> internals, it is nothing more than a pointer with no call interface.
+
+I really don't think that is true, and indeed polymorphism is almost 
+entirely implemented at C level.  A visible R object and a SEXP are one 
+and the same thing.
+
+>
+> THK
+>
+> On 6/2/07, Edzer J. Pebesma <e.pebesma at geo.uu.nl> wrote:
+>> Mike, my experience with linking R with PostGIS are documented here:
+>>
+>> http://wiki.intamap.org/index.php/PostGIS
+>>
+>> which I may have mentioned before on r-sig-geo.
+>>
+>> Indeed, as Tim confirms, besides the (r)gdal link, (R)ODBC is another
+>> working link for transferring table information. I doubt whether it will
+>> be easy to transport e.g. line or polygon topology through this link.
+>> --
+>> Edzer
+>>
+>>
+>>>
+>>>
+>>>
+>>>> I apologize if I come accross as somewhat naive in this - I certainly am
+>>>> still a novice when it come to the use of R.  Also, I apologize for the
+>>>> longish email that follows, but if you're interested in what I'm trying
+>>>> to do, this is the clearest explanation I have off the top of my head:
+>>>>
+>>>> My needs are that I'm working on a .Net gui which displays map data
+>>>> using the C# MapScript library for MapServer, and manipulates/analyzes
+>>>> spatial data (generally just points for now, but this might change in
+>>>> the future) stored in a PostgreSQL/PostGIS database.  Roger, I think
+>>>> you'll recall asking me about this tool, for which I had a poster up at
+>>>> the OSGeo conference in Lausanne last year.  Lately, I've been trying to
+>>>> port it to Gtk# so that it will work on both Linux and Windows, and so
+>>>> far it seems to be working.  However, if I add any real functionality to
+>>>> it in the future, I'd like to find a better way to link PostgreSQL with
+>>>> the functionality of R.
+>>>>
+>>>> In this tool, I had started to use R as I feel it's better suited to do
+>>>> some of the more complicated processing - though so far this is limited
+>>>> to creating voronoi polygons, for which the deldir library in R worked
+>>>> very well.  To make this happen, I used system process objects in
+>>>> Mono/.Net to control the R commandline.  The issue I faced here is that
+>>>> the only way I could get the data into R from PostgreSQL (without
+>>>> requiring 'a priori' setup on the client machine of something like an
+>>>> ODBC driver with the RODBC librar) was to dump the data to a temporary
+>>>> text file, import it into R, process it in R, dump it back into text
+>>>> formatted for SQL, then execute the SQL to input the data into PostgreSQL.
+>>>>
+>>>> This overall process would be much more efficient if I could find a more
+>>>> integrated way of transferring data between R/PostgreSQL - right now my
+>>>> .Net application primarily processes data within PostgreSQL itself, but
+>>>> integration with R would make a great deal of sense for me, as its
+>>>> primary purpose is to calculate spatial statistics.
+>>>>
+>>>> However, my ideal solution would be to have a package of binaries that
+>>>> are self sufficient, so I can give someone the compiled binaries on a CD
+>>>> for example, and that person could use it on a Windows machine with no
+>>>> initial setup, or he/she could use it on a Linux machine where
+>>>> installation of the necessary prequisites is either already done, or
+>>>> fairly easy (at least from my experience with Fedora so far, using the
+>>>> standard repositories).  At the moment, the only missing piece here is
+>>>> the link between R and PostgreSQL.
+>>>>
+>>>> Maybe there is a way I can accomplish this with RODBC that I'm unaware
+>>>> of...but as as I understand it, this requires a Windows user to install
+>>>> the PostgreSQL ODBC driver first, then create a DSN to each database
+>>>> that is used in PostgreSQL.  If I'm wrong about any of this, I
+>>>> apologize, and I'd be happy to be corrected.  Every once in a while I
+>>>> take a look around online to see if anything new has been released
+>>>> (e.g., a win32 port of pl/r, or some easy-to-use solution for connecting
+>>>> to PgSQL from within R).  It seems like rgdal might be a sort-of
+>>>> solution, at least for spatail data - except that I'm somewhat inept at
+>>>> compiling it cleanly (I did get it working, and it seems okay, but it's
+>>>> not packaged properly - I'm sure of that).  Even so, it doesn't seem to
+>>>> have an option for linking to non-spatial data (at least, from what I've
+>>>> been able to figure out from experimentation and documentation), which
+>>>> would be pretty useful as well.
+>>>>
+>>>> If either of you have any additional suggestions, I'd be glad to hear them.
+>>>>
+>>>> Sorry again for such a long email.
+>>>>
+>>>> Regards,
+>>>> Mike
+>>>>
+>>>> Roger Bivand wrote:
+>>>>
+>>>>
+>>>>> On Thu, 31 May 2007, Prof Brian Ripley wrote:
+>>>>>
+>>>>>
+>>>>>
+>>>>>> Roger,
+>>>>>>
+>>>>>> I see that on Linux I have an ODBC driver.  That should not introduce
+>>>>>> further dependencies on Windows, and might be useful.
+>>>>>>
+>>>>>> OTOH, I do think RODBC is the answer to the underlying question.  It works
+>>>>>> well with PostgreSQL on Windows, and abstracts out the pesky differences
+>>>>>> between PostgreSQL clients in different versions (as the ODBC driver is
+>>>>>> part of PostgreSQL).
+>>>>>>
+>>>>>>
+>>>>> Brian,
+>>>>>
+>>>>> Thanks, of course there are better routes than rgdal/PostGIS when the data
+>>>>> are not geometries. But because PostGIS stores its representations in
+>>>>> specific ways, both the PostgreSQL and GDAL/OGR sides need access to the
+>>>>> PostGIS library to unpick the parts of the lines and polygons involved.
+>>>>> Edzer has had some success with this on Linux, as far as I understand to
+>>>>> insert results from R into a PostGIS/PostgreSQL database, I think being
+>>>>> read by MapServer for HTTP delivery.
+>>>>>
+>>>>> I'm not sure what Mike's specific needs are - if aspatial or simple point
+>>>>> coordinates, it ought to be possible to avoid the intermediate data layer,
+>>>>> unless something "on the other side" needs it. With line or polygon
+>>>>> geometries, some intermediate layer is needed, and that's where the
+>>>>> dependencies come from.
+>>>>>
+>>>>> The FWTools Windows binaries for rgdal built against HDF4 seem to work,
+>>>>> against its NetCDF which crashes R (I think this is one of Frank
+>>>>> Warmerdam's DLLs doing stdcall, and another not doing it). The user
+>>>>> workaround in that case was to use your ncdf binary, which was feasible
+>>>>> for raster data.
+>>>>>
+>>>>> FWTools is advertised as aiming: "to track the latested development
+>>>>> versions of the packages included as opposed to official releases. While
+>>>>> this may mean the packages are less stable, it is intended to give folks a
+>>>>> chance to use the latest and greatest". Having talked to the OSGeo
+>>>>> developers, it seems that their "user" is a system integrator of some
+>>>>> kind, setting up a production system for a larger organisation in-house or
+>>>>> more broadly. This doesn't match too well with the R "user" profile,
+>>>>> particularly in a one-off research setting.
+>>>>>
+>>>>> Roger
+>>>>>
+>>>>>
+>>>>>
+>>>>>> Brian
+>>>>>>
+>>>>>>
+>>>>>> On Wed, 30 May 2007, Roger Bivand wrote:
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>> On Wed, 30 May 2007, Mike Leahy wrote:
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>> Hello,
+>>>>>>>>
+>>>>>>>> I've been trying every now and then to find a cross operating system
+>>>>>>>> solution that would let me access PostgreSQL (and PostGIS) from R, or to
+>>>>>>>> access R from PostgreSQL.  I know of pl/r, which accomplishes the
+>>>>>>>> latter, but has yet to be successfully ported to Windows.  Similarly,
+>>>>>>>> I've tried to use Rdbi and DBI, but I haven't had luck with those on
+>>>>>>>> Windows either for connecting to PostgreSQL from R.  Can anyone suggest
+>>>>>>>> a solution for this?
+>>>>>>>>
+>>>>>>>> It would seem that rgdal could also help me in this case. Unfortunately,
+>>>>>>>> the version of the GDAL library that is included in the rdgal binary
+>>>>>>>> available on CRAN (for windows) doesn't include the PostgreSQL driver
+>>>>>>>> for OGR (i.e., it's not listed by the ogrDrivers() function).
+>>>>>>>>
+>>>>>>>> I compiled rgdal on Windows myself using the GDAL library from
+>>>>>>>> FWTools-1.3.1, but I was unsuccessful at creating a proper binary
+>>>>>>>> package for R.  I was only able to get it to work by substituting the
+>>>>>>>> rgdal.dll that was installed by CRAN with the one that I compiled that
+>>>>>>>> links against the GDAL library from FWTools.  Even though it works (at
+>>>>>>>> first glance with ogrInfo(), and readOGR()), I still get a warning
+>>>>>>>> message when I load the libary: "DLL attempted to change FPU control
+>>>>>>>> word from 8001f to 9001f".
+>>>>>>>>
+>>>>>>>> So my question with respect to rgdal is a) is it likely that an rgdal
+>>>>>>>> package is going to be released in the future with the PostgreSQL driver
+>>>>>>>> included in GDAL/OGR, or b) are there any suggestions/instructions that
+>>>>>>>> might get me through the compilation and packaging process for rgdal
+>>>>>>>> with better success?
+>>>>>>>>
+>>>>>>>>
+>>>>>>> The warning is harmless - R is just reporting that it has stopped the
+>>>>>>> dynamically linked libraries resetting a flag that they should not change
+>>>>>>> while R is running. If you followed the notes in README.windows in rgdal,
+>>>>>>> you ought to be OK. There are no plans to provide more Windows binary
+>>>>>>> drivers than those present now, because the others involve further
+>>>>>>> external dependencies, which most users would not welcome.
+>>>>>>>
+>>>>>>> So please try to do an ogrinfo at the command line in Windows using
+>>>>>>> FWTools to your PostGIS data, and then the equivalent within R with your
+>>>>>>> locally built rgdal, and see how it goes. Even on Linux, getting all the
+>>>>>>> components lined up isn't easy, according to people who have tried, but
+>>>>>>> can be done if you need to do it.
+>>>>>>>
+>>>>>>> Hope this helps,
+>>>>>>>
+>>>>>>> Roger
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>> Thanks in advance for any help,
+>>>>>>>> Mike
+>>>>>>>>
+>>>>>>>> _______________________________________________
+>>>>>>>> R-sig-Geo mailing list
+>>>>>>>> R-sig-Geo at stat.math.ethz.ch
+>>>>>>>> https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>
+>>>>
+>>>
+>>>
+>>>
+>>
+>> _______________________________________________
+>> R-sig-Geo mailing list
+>> R-sig-Geo at stat.math.ethz.ch
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+>>
+>
+>
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From tke|tt @end|ng |rom gm@||@com  Sat Jun  2 20:30:21 2007
+From: tke|tt @end|ng |rom gm@||@com (Tim Keitt)
+Date: Sat, 2 Jun 2007 13:30:21 -0500
+Subject: [R-sig-DB] [R-sig-Geo] [R] Connecting to PostgreSQL/PostGIS
+	from R (rgdal?)
+In-Reply-To: <Pine.LNX.4.64.0706021901480.8291@gannet.stats.ox.ac.uk>
+References: <Pine.LNX.4.44.0705312217550.23714-100000@reclus.nhh.no>
+	<46617E84.6050904@geo.uu.nl>
+	<6262c54c0706021047v17fb6ec8v384a836b604f90dd@mail.gmail.com>
+	<Pine.LNX.4.64.0706021901480.8291@gannet.stats.ox.ac.uk>
+Message-ID: <6262c54c0706021130k19b1360uc86ab616b5ef35@mail.gmail.com>
+
+On 6/2/07, Prof Brian Ripley <ripley at stats.ox.ac.uk> wrote:
+> On Sat, 2 Jun 2007, Tim Keitt wrote:
+>
+> > My Rdbi (+Rdbi.PgSQL) package was written to be much simpler and
+> > easier to use than either DBI or RODBC. Unfortunately, I do not have
+> > time to maintain it, so I'm not sure what state it is in. Either DBI
+> > or RODBC should work fine for pushing tables back and forth. RODBC is
+> > probably the most up-to-date and might be the best long term solution.
+> > (DBI is the most complete I think in terms of a full blown db API.)
+>
+> There are quite a few 'db API' features in RODBC that are not in DBI.
+
+It does look good. I've started experimenting with it and I may switch
+entirely to RODBC. (I'm once again needing to do some work with very
+large datasets.)
+
+>
+> > For pushing geometries into PostGIS, I invariably use the shp2pgsql
+> > utility as it seems to give the best results. You could easily dump
+> > our Spatial*DataFrame to a file and shell out to run shp2pgsql. Not
+> > elegant but would work. (Wish I had time to finish low-level OGR
+> > coverage in rgdal...)
+> >
+> > Edzer's approach is one I've suggested on many occasions -- that we
+> > subclass the sp classes to act as a proxy to a PostGIS table. I first
+> > developed that approach in rpgsql -- you could create proxy data
+> > frames that simply forwarded access requests to PostgreSQL (I think
+> > the idea has now been applied to SQLite tables). The problem of course
+> > is that R does not support polymorphism "below the surface" in the C
+> > level implementation, so once a proxy object is passed to R's
+> > internals, it is nothing more than a pointer with no call interface.
+>
+> I really don't think that is true, and indeed polymorphism is almost
+> entirely implemented at C level.  A visible R object and a SEXP are one
+> and the same thing.
+
+I guess what I mean is that -- unless I'm mistaken -- I cannot
+override the data access routines. Lets say I have a C function that
+takes an SEXP as an argument and the function expects that SEXP to
+point to a data frame. I cannot call the same C function on an SEXP
+that points to a PostgreSQL proxy object because the C code will try
+to dereference memory offset from the base of the data portion of the
+SEXP. In the case of the db handle, there is no data in memory! Or is
+there now a full C-level function call interface for manipulating data
+frames (that can handle type dependent dispatch)? Cool if so -- its
+been awhile since I looked.
+
+(Just as an example think about what happens when the data in a matrix
+is passed to BLAS routines and what would happen if you tried to pass
+the db handle to BLAS.)
+
+THK
+
+>
+> >
+> > THK
+> >
+> > On 6/2/07, Edzer J. Pebesma <e.pebesma at geo.uu.nl> wrote:
+> >> Mike, my experience with linking R with PostGIS are documented here:
+> >>
+> >> http://wiki.intamap.org/index.php/PostGIS
+> >>
+> >> which I may have mentioned before on r-sig-geo.
+> >>
+> >> Indeed, as Tim confirms, besides the (r)gdal link, (R)ODBC is another
+> >> working link for transferring table information. I doubt whether it will
+> >> be easy to transport e.g. line or polygon topology through this link.
+> >> --
+> >> Edzer
+> >>
+> >>
+> >>>
+> >>>
+> >>>
+> >>>> I apologize if I come accross as somewhat naive in this - I certainly am
+> >>>> still a novice when it come to the use of R.  Also, I apologize for the
+> >>>> longish email that follows, but if you're interested in what I'm trying
+> >>>> to do, this is the clearest explanation I have off the top of my head:
+> >>>>
+> >>>> My needs are that I'm working on a .Net gui which displays map data
+> >>>> using the C# MapScript library for MapServer, and manipulates/analyzes
+> >>>> spatial data (generally just points for now, but this might change in
+> >>>> the future) stored in a PostgreSQL/PostGIS database.  Roger, I think
+> >>>> you'll recall asking me about this tool, for which I had a poster up at
+> >>>> the OSGeo conference in Lausanne last year.  Lately, I've been trying to
+> >>>> port it to Gtk# so that it will work on both Linux and Windows, and so
+> >>>> far it seems to be working.  However, if I add any real functionality to
+> >>>> it in the future, I'd like to find a better way to link PostgreSQL with
+> >>>> the functionality of R.
+> >>>>
+> >>>> In this tool, I had started to use R as I feel it's better suited to do
+> >>>> some of the more complicated processing - though so far this is limited
+> >>>> to creating voronoi polygons, for which the deldir library in R worked
+> >>>> very well.  To make this happen, I used system process objects in
+> >>>> Mono/.Net to control the R commandline.  The issue I faced here is that
+> >>>> the only way I could get the data into R from PostgreSQL (without
+> >>>> requiring 'a priori' setup on the client machine of something like an
+> >>>> ODBC driver with the RODBC librar) was to dump the data to a temporary
+> >>>> text file, import it into R, process it in R, dump it back into text
+> >>>> formatted for SQL, then execute the SQL to input the data into PostgreSQL.
+> >>>>
+> >>>> This overall process would be much more efficient if I could find a more
+> >>>> integrated way of transferring data between R/PostgreSQL - right now my
+> >>>> .Net application primarily processes data within PostgreSQL itself, but
+> >>>> integration with R would make a great deal of sense for me, as its
+> >>>> primary purpose is to calculate spatial statistics.
+> >>>>
+> >>>> However, my ideal solution would be to have a package of binaries that
+> >>>> are self sufficient, so I can give someone the compiled binaries on a CD
+> >>>> for example, and that person could use it on a Windows machine with no
+> >>>> initial setup, or he/she could use it on a Linux machine where
+> >>>> installation of the necessary prequisites is either already done, or
+> >>>> fairly easy (at least from my experience with Fedora so far, using the
+> >>>> standard repositories).  At the moment, the only missing piece here is
+> >>>> the link between R and PostgreSQL.
+> >>>>
+> >>>> Maybe there is a way I can accomplish this with RODBC that I'm unaware
+> >>>> of...but as as I understand it, this requires a Windows user to install
+> >>>> the PostgreSQL ODBC driver first, then create a DSN to each database
+> >>>> that is used in PostgreSQL.  If I'm wrong about any of this, I
+> >>>> apologize, and I'd be happy to be corrected.  Every once in a while I
+> >>>> take a look around online to see if anything new has been released
+> >>>> (e.g., a win32 port of pl/r, or some easy-to-use solution for connecting
+> >>>> to PgSQL from within R).  It seems like rgdal might be a sort-of
+> >>>> solution, at least for spatail data - except that I'm somewhat inept at
+> >>>> compiling it cleanly (I did get it working, and it seems okay, but it's
+> >>>> not packaged properly - I'm sure of that).  Even so, it doesn't seem to
+> >>>> have an option for linking to non-spatial data (at least, from what I've
+> >>>> been able to figure out from experimentation and documentation), which
+> >>>> would be pretty useful as well.
+> >>>>
+> >>>> If either of you have any additional suggestions, I'd be glad to hear them.
+> >>>>
+> >>>> Sorry again for such a long email.
+> >>>>
+> >>>> Regards,
+> >>>> Mike
+> >>>>
+> >>>> Roger Bivand wrote:
+> >>>>
+> >>>>
+> >>>>> On Thu, 31 May 2007, Prof Brian Ripley wrote:
+> >>>>>
+> >>>>>
+> >>>>>
+> >>>>>> Roger,
+> >>>>>>
+> >>>>>> I see that on Linux I have an ODBC driver.  That should not introduce
+> >>>>>> further dependencies on Windows, and might be useful.
+> >>>>>>
+> >>>>>> OTOH, I do think RODBC is the answer to the underlying question.  It works
+> >>>>>> well with PostgreSQL on Windows, and abstracts out the pesky differences
+> >>>>>> between PostgreSQL clients in different versions (as the ODBC driver is
+> >>>>>> part of PostgreSQL).
+> >>>>>>
+> >>>>>>
+> >>>>> Brian,
+> >>>>>
+> >>>>> Thanks, of course there are better routes than rgdal/PostGIS when the data
+> >>>>> are not geometries. But because PostGIS stores its representations in
+> >>>>> specific ways, both the PostgreSQL and GDAL/OGR sides need access to the
+> >>>>> PostGIS library to unpick the parts of the lines and polygons involved.
+> >>>>> Edzer has had some success with this on Linux, as far as I understand to
+> >>>>> insert results from R into a PostGIS/PostgreSQL database, I think being
+> >>>>> read by MapServer for HTTP delivery.
+> >>>>>
+> >>>>> I'm not sure what Mike's specific needs are - if aspatial or simple point
+> >>>>> coordinates, it ought to be possible to avoid the intermediate data layer,
+> >>>>> unless something "on the other side" needs it. With line or polygon
+> >>>>> geometries, some intermediate layer is needed, and that's where the
+> >>>>> dependencies come from.
+> >>>>>
+> >>>>> The FWTools Windows binaries for rgdal built against HDF4 seem to work,
+> >>>>> against its NetCDF which crashes R (I think this is one of Frank
+> >>>>> Warmerdam's DLLs doing stdcall, and another not doing it). The user
+> >>>>> workaround in that case was to use your ncdf binary, which was feasible
+> >>>>> for raster data.
+> >>>>>
+> >>>>> FWTools is advertised as aiming: "to track the latested development
+> >>>>> versions of the packages included as opposed to official releases. While
+> >>>>> this may mean the packages are less stable, it is intended to give folks a
+> >>>>> chance to use the latest and greatest". Having talked to the OSGeo
+> >>>>> developers, it seems that their "user" is a system integrator of some
+> >>>>> kind, setting up a production system for a larger organisation in-house or
+> >>>>> more broadly. This doesn't match too well with the R "user" profile,
+> >>>>> particularly in a one-off research setting.
+> >>>>>
+> >>>>> Roger
+> >>>>>
+> >>>>>
+> >>>>>
+> >>>>>> Brian
+> >>>>>>
+> >>>>>>
+> >>>>>> On Wed, 30 May 2007, Roger Bivand wrote:
+> >>>>>>
+> >>>>>>
+> >>>>>>
+> >>>>>>> On Wed, 30 May 2007, Mike Leahy wrote:
+> >>>>>>>
+> >>>>>>>
+> >>>>>>>
+> >>>>>>>> Hello,
+> >>>>>>>>
+> >>>>>>>> I've been trying every now and then to find a cross operating system
+> >>>>>>>> solution that would let me access PostgreSQL (and PostGIS) from R, or to
+> >>>>>>>> access R from PostgreSQL.  I know of pl/r, which accomplishes the
+> >>>>>>>> latter, but has yet to be successfully ported to Windows.  Similarly,
+> >>>>>>>> I've tried to use Rdbi and DBI, but I haven't had luck with those on
+> >>>>>>>> Windows either for connecting to PostgreSQL from R.  Can anyone suggest
+> >>>>>>>> a solution for this?
+> >>>>>>>>
+> >>>>>>>> It would seem that rgdal could also help me in this case. Unfortunately,
+> >>>>>>>> the version of the GDAL library that is included in the rdgal binary
+> >>>>>>>> available on CRAN (for windows) doesn't include the PostgreSQL driver
+> >>>>>>>> for OGR (i.e., it's not listed by the ogrDrivers() function).
+> >>>>>>>>
+> >>>>>>>> I compiled rgdal on Windows myself using the GDAL library from
+> >>>>>>>> FWTools-1.3.1, but I was unsuccessful at creating a proper binary
+> >>>>>>>> package for R.  I was only able to get it to work by substituting the
+> >>>>>>>> rgdal.dll that was installed by CRAN with the one that I compiled that
+> >>>>>>>> links against the GDAL library from FWTools.  Even though it works (at
+> >>>>>>>> first glance with ogrInfo(), and readOGR()), I still get a warning
+> >>>>>>>> message when I load the libary: "DLL attempted to change FPU control
+> >>>>>>>> word from 8001f to 9001f".
+> >>>>>>>>
+> >>>>>>>> So my question with respect to rgdal is a) is it likely that an rgdal
+> >>>>>>>> package is going to be released in the future with the PostgreSQL driver
+> >>>>>>>> included in GDAL/OGR, or b) are there any suggestions/instructions that
+> >>>>>>>> might get me through the compilation and packaging process for rgdal
+> >>>>>>>> with better success?
+> >>>>>>>>
+> >>>>>>>>
+> >>>>>>> The warning is harmless - R is just reporting that it has stopped the
+> >>>>>>> dynamically linked libraries resetting a flag that they should not change
+> >>>>>>> while R is running. If you followed the notes in README.windows in rgdal,
+> >>>>>>> you ought to be OK. There are no plans to provide more Windows binary
+> >>>>>>> drivers than those present now, because the others involve further
+> >>>>>>> external dependencies, which most users would not welcome.
+> >>>>>>>
+> >>>>>>> So please try to do an ogrinfo at the command line in Windows using
+> >>>>>>> FWTools to your PostGIS data, and then the equivalent within R with your
+> >>>>>>> locally built rgdal, and see how it goes. Even on Linux, getting all the
+> >>>>>>> components lined up isn't easy, according to people who have tried, but
+> >>>>>>> can be done if you need to do it.
+> >>>>>>>
+> >>>>>>> Hope this helps,
+> >>>>>>>
+> >>>>>>> Roger
+> >>>>>>>
+> >>>>>>>
+> >>>>>>>
+> >>>>>>>> Thanks in advance for any help,
+> >>>>>>>> Mike
+> >>>>>>>>
+> >>>>>>>> _______________________________________________
+> >>>>>>>> R-sig-Geo mailing list
+> >>>>>>>> R-sig-Geo at stat.math.ethz.ch
+> >>>>>>>> https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+> >>>>>>>>
+> >>>>>>>>
+> >>>>>>>>
+> >>>>
+> >>>>
+> >>>
+> >>>
+> >>>
+> >>
+> >> _______________________________________________
+> >> R-sig-Geo mailing list
+> >> R-sig-Geo at stat.math.ethz.ch
+> >> https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+> >>
+> >
+> >
+> >
+>
+> --
+> Brian D. Ripley,                  ripley at stats.ox.ac.uk
+> Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+> University of Oxford,             Tel:  +44 1865 272861 (self)
+> 1 South Parks Road,                     +44 1865 272866 (PA)
+> Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+>
+
+
+-- 
+Timothy H. Keitt, University of Texas at Austin
+Contact info and schedule at http://www.keittlab.org/tkeitt/
+Reprints at http://www.keittlab.org/tkeitt/papers/
+ODF attachment? See http://www.openoffice.org/
+
+
+
+From edd @end|ng |rom deb|@n@org  Sat Jun  2 20:32:38 2007
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Sat, 2 Jun 2007 13:32:38 -0500
+Subject: [R-sig-DB] [R-sig-Geo] [R] Connecting to PostgreSQL/PostGIS
+ from R (rgdal?)
+In-Reply-To: <Pine.LNX.4.64.0706021901480.8291@gannet.stats.ox.ac.uk>
+References: <Pine.LNX.4.44.0705312217550.23714-100000@reclus.nhh.no>
+	<46617E84.6050904@geo.uu.nl>
+	<6262c54c0706021047v17fb6ec8v384a836b604f90dd@mail.gmail.com>
+	<Pine.LNX.4.64.0706021901480.8291@gannet.stats.ox.ac.uk>
+Message-ID: <18017.47046.487119.452733@basebud.nulle.part>
+
+
+Brian,
+
+On 2 June 2007 at 19:08, Prof Brian Ripley wrote:
+| There are quite a few 'db API' features in RODBC that are not in DBI.
+
+Random idea of the day: Would it be wortwhile to re-think what the DBI API
+should cover?  
+
+These days, it may matter less to be R and S-Plus compatible [1] but e.g. to
+me it matters whether I get niceties like POSIXct times in and out of
+databases intact, and that doesn't seem be a concern per se for DBI.
+
+A unified DBI interface is still the right idea, but I'd like to push the
+feature set further. But then I know little about the gory details so feel
+free to correct me.
+
+Regards, Dirk
+
+[1] (or, given who accrues benefits from this, we could make it Insightful's
+concern to catch up)
+
+-- 
+Hell, there are no rules here - we're trying to accomplish something. 
+                                                  -- Thomas A. Edison
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Sat Jun  2 20:40:55 2007
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Sat, 2 Jun 2007 19:40:55 +0100 (BST)
+Subject: [R-sig-DB] [R-sig-Geo] [R] Connecting to PostgreSQL/PostGIS
+ from R (rgdal?)
+In-Reply-To: <6262c54c0706021130k19b1360uc86ab616b5ef35@mail.gmail.com>
+References: <Pine.LNX.4.44.0705312217550.23714-100000@reclus.nhh.no> 
+	<46617E84.6050904@geo.uu.nl>
+	<6262c54c0706021047v17fb6ec8v384a836b604f90dd@mail.gmail.com>
+	<Pine.LNX.4.64.0706021901480.8291@gannet.stats.ox.ac.uk>
+	<6262c54c0706021130k19b1360uc86ab616b5ef35@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0706021931540.8291@gannet.stats.ox.ac.uk>
+
+On Sat, 2 Jun 2007, Tim Keitt wrote:
+
+> On 6/2/07, Prof Brian Ripley <ripley at stats.ox.ac.uk> wrote:
+>> On Sat, 2 Jun 2007, Tim Keitt wrote:
+
+[...]
+
+>> > Edzer's approach is one I've suggested on many occasions -- that we
+>> > subclass the sp classes to act as a proxy to a PostGIS table. I first
+>> > developed that approach in rpgsql -- you could create proxy data
+>> > frames that simply forwarded access requests to PostgreSQL (I think
+>> > the idea has now been applied to SQLite tables). The problem of course
+>> > is that R does not support polymorphism "below the surface" in the C
+>> > level implementation, so once a proxy object is passed to R's
+>> > internals, it is nothing more than a pointer with no call interface.
+>> 
+>> I really don't think that is true, and indeed polymorphism is almost
+>> entirely implemented at C level.  A visible R object and a SEXP are one
+>> and the same thing.
+>
+> I guess what I mean is that -- unless I'm mistaken -- I cannot
+> override the data access routines. Lets say I have a C function that
+> takes an SEXP as an argument and the function expects that SEXP to
+> point to a data frame. I cannot call the same C function on an SEXP
+> that points to a PostgreSQL proxy object because the C code will try
+> to dereference memory offset from the base of the data portion of the
+> SEXP. In the case of the db handle, there is no data in memory! Or is
+> there now a full C-level function call interface for manipulating data
+> frames (that can handle type dependent dispatch)? Cool if so -- its
+> been awhile since I looked.
+>
+> (Just as an example think about what happens when the data in a matrix
+> is passed to BLAS routines and what would happen if you tried to pass
+> the db handle to BLAS.)
+
+But that is several layers deeper. In general one should check that your 
+code points to the type of object you want, and dispatch if you want to be 
+polymorphic.  Remember that in S/R it is functions (including operators) 
+that are polymorphic, and for example the C-level versions of [, $, $<- 
+... all are (and long have been).
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From tke|tt @end|ng |rom gm@||@com  Sat Jun  2 21:02:10 2007
+From: tke|tt @end|ng |rom gm@||@com (Tim Keitt)
+Date: Sat, 2 Jun 2007 14:02:10 -0500
+Subject: [R-sig-DB] [R-sig-Geo] [R] Connecting to PostgreSQL/PostGIS
+	from R (rgdal?)
+In-Reply-To: <Pine.LNX.4.64.0706021931540.8291@gannet.stats.ox.ac.uk>
+References: <Pine.LNX.4.44.0705312217550.23714-100000@reclus.nhh.no>
+	<46617E84.6050904@geo.uu.nl>
+	<6262c54c0706021047v17fb6ec8v384a836b604f90dd@mail.gmail.com>
+	<Pine.LNX.4.64.0706021901480.8291@gannet.stats.ox.ac.uk>
+	<6262c54c0706021130k19b1360uc86ab616b5ef35@mail.gmail.com>
+	<Pine.LNX.4.64.0706021931540.8291@gannet.stats.ox.ac.uk>
+Message-ID: <6262c54c0706021202p2927fa57mbdc39422664485f7@mail.gmail.com>
+
+On 6/2/07, Prof Brian Ripley <ripley at stats.ox.ac.uk> wrote:
+> On Sat, 2 Jun 2007, Tim Keitt wrote:
+>
+> > On 6/2/07, Prof Brian Ripley <ripley at stats.ox.ac.uk> wrote:
+> >> On Sat, 2 Jun 2007, Tim Keitt wrote:
+>
+> [...]
+>
+> >> > Edzer's approach is one I've suggested on many occasions -- that we
+> >> > subclass the sp classes to act as a proxy to a PostGIS table. I first
+> >> > developed that approach in rpgsql -- you could create proxy data
+> >> > frames that simply forwarded access requests to PostgreSQL (I think
+> >> > the idea has now been applied to SQLite tables). The problem of course
+> >> > is that R does not support polymorphism "below the surface" in the C
+> >> > level implementation, so once a proxy object is passed to R's
+> >> > internals, it is nothing more than a pointer with no call interface.
+> >>
+> >> I really don't think that is true, and indeed polymorphism is almost
+> >> entirely implemented at C level.  A visible R object and a SEXP are one
+> >> and the same thing.
+> >
+> > I guess what I mean is that -- unless I'm mistaken -- I cannot
+> > override the data access routines. Lets say I have a C function that
+> > takes an SEXP as an argument and the function expects that SEXP to
+> > point to a data frame. I cannot call the same C function on an SEXP
+> > that points to a PostgreSQL proxy object because the C code will try
+> > to dereference memory offset from the base of the data portion of the
+> > SEXP. In the case of the db handle, there is no data in memory! Or is
+> > there now a full C-level function call interface for manipulating data
+> > frames (that can handle type dependent dispatch)? Cool if so -- its
+> > been awhile since I looked.
+> >
+> > (Just as an example think about what happens when the data in a matrix
+> > is passed to BLAS routines and what would happen if you tried to pass
+> > the db handle to BLAS.)
+>
+> But that is several layers deeper. In general one should check that your
+> code points to the type of object you want, and dispatch if you want to be
+> polymorphic.  Remember that in S/R it is functions (including operators)
+> that are polymorphic, and for example the C-level versions of [, $, $<-
+> ... all are (and long have been).
+
+Right. Point well taken. However, in general R functions like "lm" (or
+more precisely, the low level R functions called by "lm") do not use
+those C-level functions but instead pass the SEXP through and assume
+that the SEXP points to a block of allocated memory, not eg a database
+handle. I had hoped at one point to make proxy data frames fully
+substitutable for real data frames so they could be passed directly to
+functions like "lm". It is possible as you point out, but would
+require extensive rewriting of R's low level code to always call the
+correct getter/setter functions for each object type.
+
+THK
+
+>
+> --
+> Brian D. Ripley,                  ripley at stats.ox.ac.uk
+> Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+> University of Oxford,             Tel:  +44 1865 272861 (self)
+> 1 South Parks Road,                     +44 1865 272866 (PA)
+> Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+>
+
+
+-- 
+Timothy H. Keitt, University of Texas at Austin
+Contact info and schedule at http://www.keittlab.org/tkeitt/
+Reprints at http://www.keittlab.org/tkeitt/papers/
+ODF attachment? See http://www.openoffice.org/
+
+
+
+From d@j025 @end|ng |rom gm@||@com  Sun Jun  3 05:10:33 2007
+From: d@j025 @end|ng |rom gm@||@com (David James)
+Date: Sat, 2 Jun 2007 23:10:33 -0400
+Subject: [R-sig-DB] [R-sig-Geo] [R] Connecting to PostgreSQL/PostGIS
+	from R (rgdal?)
+In-Reply-To: <18017.47046.487119.452733@basebud.nulle.part>
+References: <Pine.LNX.4.44.0705312217550.23714-100000@reclus.nhh.no>
+	<46617E84.6050904@geo.uu.nl>
+	<6262c54c0706021047v17fb6ec8v384a836b604f90dd@mail.gmail.com>
+	<Pine.LNX.4.64.0706021901480.8291@gannet.stats.ox.ac.uk>
+	<18017.47046.487119.452733@basebud.nulle.part>
+Message-ID: <74c69e370706022010x112620edy2a132cbec02529f2@mail.gmail.com>
+
+Dirk,
+
+I agree that it would be worthwhile to re-visit what the DBI should
+provide, and I
+fully agree that R/S-Plus compatibility should not be a goal.   Let me
+remind you
+that the DBI at the time it was defined more than 5 years ago was not meant
+to be a complete specification --  it  identified many features that
+were yet to be formalized into the API (prepared statements, stored
+procedures, asynchronous communications, transcations, etc.).   Some
+of these features were later
+added as extensions to packages (e.g., prepared statements in RSQLite by
+Seth Falcon  and in ROracle by me) but it would be better to ensure a
+common interface for these and other new features.
+
+In terms of data mappings, date/time types are valid concerns, but so are
+unsigned ints and longs, BLOBS, fixed decimals, money, points, etc.
+
+Extending the feature set at this point seems to me like a good idea.
+
+Regards,
+
+--
+David
+
+On 6/2/07, Dirk Eddelbuettel <edd at debian.org> wrote:
+>
+> Brian,
+>
+> On 2 June 2007 at 19:08, Prof Brian Ripley wrote:
+> | There are quite a few 'db API' features in RODBC that are not in DBI.
+>
+> Random idea of the day: Would it be wortwhile to re-think what the DBI API
+> should cover?
+>
+> These days, it may matter less to be R and S-Plus compatible [1] but e.g. to
+> me it matters whether I get niceties like POSIXct times in and out of
+> databases intact, and that doesn't seem be a concern per se for DBI.
+>
+> A unified DBI interface is still the right idea, but I'd like to push the
+> feature set further. But then I know little about the gory details so feel
+> free to correct me.
+>
+> Regards, Dirk
+>
+> [1] (or, given who accrues benefits from this, we could make it Insightful's
+> concern to catch up)
+>
+> --
+> Hell, there are no rules here - we're trying to accomplish something.
+>                                                   -- Thomas A. Edison
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From chr|@c @end|ng |rom chgr@mgh@h@rv@rd@edu  Sun Jun  3 21:53:08 2007
+From: chr|@c @end|ng |rom chgr@mgh@h@rv@rd@edu (Chris Cotsapas)
+Date: Sun, 03 Jun 2007 15:53:08 -0400
+Subject: [R-sig-DB] DBI:dbConnect () inherited method error for RMySQL v
+ 0.5-11 driver
+In-Reply-To: <74c69e370706011424i3c34f2dev3795c38a31ab236f@mail.gmail.com>
+References: <466052D8.20305@chgr.mgh.harvard.edu>
+	<74c69e370706011424i3c34f2dev3795c38a31ab236f@mail.gmail.com>
+Message-ID: <46631C24.3070009@chgr.mgh.harvard.edu>
+
+Hi David, thanks for your response:
+
+David James wrote:
+> Hi Chris,
+> 
+> The message seems to indicate a S4 dispatching error from the generic
+> function dbConnect when given a drv = "MySQLConnection" and not
+> with the mysql libraries themselves.   The idiom that you're using is 
+> widely
+> used, so I cannot see why it would fail, so I would try
+> (1)  what's the output of
+>     summary(drv, verbose = TRUE)
+>     (you should see a full description of the MySQLDriver object)
+
+
+> summary(drv, verbose = TRUE)
+Error in function (classes, fdef, mtable)  :
+         unable to find an inherited method for function "dbGetInfo",
+for signatu re "MySQLDriver"
+
+
+> (2)  try other dbConnect methods, namely
+>      con <- dbConnect("MySQL")
+>      con <- dbConnect(MySQL())
+
+> con <- dbConnect("MySQL")
+Error in function (classes, fdef, mtable)  :
+         unable to find an inherited method for function "dbConnect",
+for signatu re "character"
+> con <- dbConnect(MySQL())
+Error in function (classes, fdef, mtable)  :
+         unable to find an inherited method for function "dbConnect",
+for signatu re "MySQLDriver"
+In addition: Warning message:
+RS-DBI driver warning: (MySQL mismatch between compiled version 5.0.19
+and runti me version 5.0.22)
+
+
+
+> (3) What do you see if you type
+>      getMethods("dbConnect")
+
+
+> getMethods("dbConnect")
+An object of class ?MethodsList?
+Slot "methods":
+list()
+
+Slot "argument":
+drv
+
+Slot "allMethods":
+list()
+
+
+This looks telling - there seem to be no methods associated with dbConnect?
+
+Thanks!
+
+Chris
+
+
+>> I'm really not sure what to do with this: I've tried updating all mysql
+>> Ubuntu packages, adding dev packages etc, to no avail. The database
+>> itself is functional and accessible.
+>>
+>> I've also created a ~/.my.cnf file with appropriate entries, to no avail.
+>>
+>> Any hints or comments most welcome.
+>>
+>> Thanks
+>>
+>> Chris
+>>
+>> ## Error Log ##
+>>
+>> drv <- dbDriver("MySQL")
+>>   Warning message:
+>>   RS-DBI driver warning: (MySQL mismatch between compiled version
+>> 5.0.19
+>>   and runtime version 5.0.22)
+>>
+>> dbConnect(drv=drv)
+>>   Error in function (classes, fdef, mtable)  :
+>>        unable to find an inherited method for function "dbConnect", for
+>>         signature "MySQLDriver"
+>>
+>> ## End ##
+>>
+>>
+>>
+
+
+
+
+-- 
+Chris Cotsapas, PhD
+
+Research Associate
+Center for Human Genetic Research,
+Massachusetts General Hospital
+and
+Broad Institute of Harvard and MIT
+
+A: 185 Cambridge St CPZN 6818, Boston, MA, 02114
+P: 1 617 643 1634 (MGH)/ 1 617 324 7176 (Broad)
+
+
+
+From m@|co|m@cook @end|ng |rom gm@||@com  Tue Jun 19 19:50:48 2007
+From: m@|co|m@cook @end|ng |rom gm@||@com (Malcolm Cook)
+Date: Tue, 19 Jun 2007 12:50:48 -0500
+Subject: [R-sig-DB]  [R] prepared query with RODBC / Rmysql
+Message-ID: <cfebe0020706191050j6ef9f120l9f105788b0c29a8a@mail.gmail.com>
+
+I am hoping to find an answer to this old thread from March 2006 but do not
+find one.
+
+Can you perpare  select queries with placeholders in RODBC and then execute
+tehm providing values for the placeholders?
+
+Any examples out there?
+
+THanks!
+
+-- 
+Malcolm Cook
+(h) 913 642-5257
+(w) 816 926-4449
+8939 Sagmore Rd
+Leawood, Kansas 66206
+
+	[[alternative HTML version deleted]]
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Tue Jun 19 20:10:54 2007
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Tue, 19 Jun 2007 19:10:54 +0100 (BST)
+Subject: [R-sig-DB] [R] prepared query with RODBC / Rmysql
+In-Reply-To: <cfebe0020706191050j6ef9f120l9f105788b0c29a8a@mail.gmail.com>
+References: <cfebe0020706191050j6ef9f120l9f105788b0c29a8a@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0706191907420.6009@gannet.stats.ox.ac.uk>
+
+I am not sure exactly what you intend here, but that is what sqlUpdate 
+does, for example.
+
+
+On Tue, 19 Jun 2007, Malcolm Cook wrote:
+
+> I am hoping to find an answer to this old thread from March 2006 but do not
+> find one.
+>
+> Can you perpare  select queries with placeholders in RODBC and then execute
+> tehm providing values for the placeholders?
+>
+> Any examples out there?
+>
+> THanks!
+>
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+

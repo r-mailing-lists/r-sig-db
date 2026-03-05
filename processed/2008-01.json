@@ -1,0 +1,492 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2008-01",
+  "messages": [
+    {
+      "id": "msg-b2babaa5e619",
+      "message_id": "<20080103160409.GA8094@delphioutpost.com>",
+      "from_name": "Don Allen",
+      "from_email_hash": "8505c4dcb4e50c773ec89caa430468a394c4478c4534290d9fed432692b8902c",
+      "date": "2008-01-03T11:04:09-05:00",
+      "subject": "[R-sig-DB] ROracle problem?",
+      "subject_clean": "ROracle problem?",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Our configuration: R 2.6.1, DBI_0.2-4, ROracle_0.5-9, all running on a\ndual-processor 64-bit Ubuntu 6.06 system.\n\nIf you run the following\n\ndrv <- Oracle()\nconn <- dbConnect(drv, '<oracle user>/<password>')\nsql <- \"select sysdate from dual where to_date(:1) = to_date(:1)\"\nps <- dbPrepareStatement(conn=conn,\n                             statement=sql,\n                             bind = c('character'))\n\nYou get:\n\n> source('test.r')\n\nError in oraPrepareStatement(conn, statement, bind, ...) :\n RS-DBI driver: (number of parameters must equal ncol(data))\n\nEnter a frame number, or 0 to exit\n\n1: source(\" test.r\")\n2: eval.with.vis(ei, envir)\n3: eval.with.vis(expr, envir, enclos)\n4: dbPrepareStatement(conn = conn, statement = sql, bind =\nc(\"character\"))\n5: .valueClassTest({\n6: is(object, Cl)\n7: .class1(object)\n8: .class1(object)\n9: oraPrepareStatement(conn, statement, bind, ...)\n\nSelection:\n\nChanging the example to\n\ndrv <- Oracle()\nconn <- dbConnect(drv, '<oracle user>/<password>')\nsql <- \"select sysdate from dual where to_date(:1) = to_date('2007-01-01')\"\nps <- dbPrepareStatement(conn=conn,\n                             statement=sql,\n                             bind = c('character'))\n\nworks fine -- no error.\n\nThe (nonsensical query) in the example is based on a much more\ncomplicated (not nonsensical) query that failed the same way. The\ncommon thread is that the example and the real query both make\nmultiple references to the same data column. Either I'm not\nunderstanding something, or there's a bug. Any help would be\nappreciated.\n\nThanks --\nDon Allen\nDelphi Capital Management",
+      "body_snippet": "Our configuration: R 2.6.1, DBI_0.2-4, ROracle_0.5-9, all running on a\ndual-processor 64-bit Ubuntu 6.06 system.\n\nIf you run the following\n\ndrv <- Oracle()\nconn <- dbConnect(drv, '<oracle user>/<passw",
+      "thread_id": "thread-b2babaa5e619",
+      "thread_depth": 0,
+      "month": "2008-01"
+    },
+    {
+      "id": "msg-feb293cb5fbf",
+      "message_id": "<000701c850a7$b666a580$0100007f@riycar>",
+      "from_name": "Hunter Price",
+      "from_email_hash": "de2a35b58b4d7543030b8534ac8fa86a8a70a01bea9fdbca8c9109e73cee8846",
+      "date": "2008-01-06T21:05:10Z",
+      "subject": "[R-sig-DB] FYI",
+      "subject_clean": "FYI",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Type 'xhighereasy. com' in |nternet Explorer\n(please delete space and quotes)\n\nvirtualdj 4.3 for mac - 39\nadobe acrobat professional 7 - 69\napollo divx2dvd divx to dvd creator v3.3.0 - 29\nintuit quicken home and business 2008 - 39\navid xpress pro 5.7 - 119\nms windows 2003 enterprise server - 69\ncreative suite 3 design premium for win - 269\nturbotax business 2006 (usa only) - 29\nadobe after effects 7.0 standard - 59\nmicrosoft money home & business 7 - 39\nmicrosoft vista ultimate - 89\nsony vegas 6 - 69\n\nYou can save 71-90% here!",
+      "body_snippet": "Type 'xhighereasy. com' in |nternet Explorer\n(please delete space and quotes)\n\nvirtualdj 4.3 for mac - 39\nadobe acrobat professional 7 - 69\napollo divx2dvd divx to dvd creator v3.3.0 - 29\nintuit quick",
+      "thread_id": "thread-feb293cb5fbf",
+      "thread_depth": 0,
+      "month": "2008-01"
+    },
+    {
+      "id": "msg-d4528d7f79e6",
+      "message_id": "<d36c26c00801080535h4a0a3f91l5c9bf5446a510fdb@mail.gmail.com>",
+      "from_name": "文波胡",
+      "from_email_hash": "319b9df999c7bfa3732216f73068eabaf7ea0251d923e0ff800c0bb18fe2605e",
+      "date": "2008-01-08T21:35:32+08:00",
+      "subject": "[R-sig-DB] one problem when i use package JRI",
+      "subject_clean": "one problem when i use package JRI",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I use the JRI package in java to do some compute with R\n\nbut  i haved one  problem\n\n\n              re.eval(\"library(lattice)\");             //????????????????????????\n              y=re.idleEval(\"print(1:10)\");\n              y=re.eval(\"feq <- read.delim('c:/minist.txt',header=T)\");\n              y=re.eval(\"feq1<-as.matrix(feq)\");\n              System.out.println(y=re.eval(\"feq1[1,]\"));\n              y=re.eval(\"jpeg()\");\n              y=re.eval(\"levelplot(feq1)\");\n              re.eval(\"dev.off()\");\n              re.end();\n              System.out.println(\"end\");\n\n\nthis block  can't run  , and  system warn :WARNING: org.rosuda.JRI.Mutex was\nunlocked by other thread than locked! This may soon lead to a crash...\nwwhwwhen i delete :  re.eval(\"library(lattice)\");     this program  can\nrun\nWHY?? can somebody  help me?\n\n\n-- \n??????\nTEL:\nE-MAIL:bbbiiiooo at 163.com\n            huwenb at gmail.com\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "I use the JRI package in java to do some compute with R\n\nbut  i haved one  problem\n\n\n              re.eval(\"library(lattice)\");             //????????????????????????\n              y=re.idleEval(\"prin",
+      "thread_id": "thread-d4528d7f79e6",
+      "thread_depth": 0,
+      "month": "2008-01"
+    },
+    {
+      "id": "msg-0d273ce6ab95",
+      "message_id": "<Pine.LNX.4.64.0801081416260.7485@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2008-01-08T14:17:50Z",
+      "subject": "[R-sig-DB] one problem when i use package JRI",
+      "subject_clean": "one problem when i use package JRI",
+      "in_reply_to": "<d36c26c00801080535h4a0a3f91l5c9bf5446a510fdb@mail.gmail.com>",
+      "references": [
+        "<d36c26c00801080535h4a0a3f91l5c9bf5446a510fdb@mail.gmail.com>"
+      ],
+      "body_plain": "This list is for database interfaces: nothing to do with Java.\nPlease do study the R posting guide at\n\nhttp://www.r-project.org/posting-guide.html\n\nOn Tue, 8 Jan 2008, ?????? wrote:\n\n> I use the JRI package in java to do some compute with R\n\nbut  i haved one  problem\n\n\n               re.eval(\"library(lattice)\");             //????????????????????????\n               y=re.idleEval(\"print(1:10)\");\n               y=re.eval(\"feq <- read.delim('c:/minist.txt',header=T)\");\n               y=re.eval(\"feq1<-as.matrix(feq)\");\n               System.out.println(y=re.eval(\"feq1[1,]\"));\n               y=re.eval(\"jpeg()\");\n               y=re.eval(\"levelplot(feq1)\");\n               re.eval(\"dev.off()\");\n               re.end();\n               System.out.println(\"end\");\n\n\nthis block  can't run  , and  system warn :WARNING: org.rosuda.JRI.Mutex was\nunlocked by other thread than locked! This may soon lead to a crash...\nwwhwwhen i delete :  re.eval(\"library(lattice)\");     this program  can\nrun\nWHY?? can somebody  help me?\n\n\n-- \n??????\nTEL:\nE-MAIL:bbbiiiooo at 163.com\n             huwenb at gmail.com\n\n \t[[alternative HTML version deleted]]\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "This list is for database interfaces: nothing to do with Java.\nPlease do study the R posting guide at\n\nhttp://www.r-project.org/posting-guide.html\n\nOn Tue, 8 Jan 2008, ?????? wrote:\n\n> I use the JRI p",
+      "thread_id": "thread-d4528d7f79e6",
+      "thread_depth": 1,
+      "month": "2008-01"
+    },
+    {
+      "id": "msg-74a7585f3fd5",
+      "message_id": "<1199804417.47839001cc026@webmail.mail.gatech.edu>",
+      "from_name": "Tudor Bodea",
+      "from_email_hash": "574766cc2842918aea9c4bead0e0091732894f2216b2e7c805537694827d74e7",
+      "date": "2008-01-08T10:00:17-05:00",
+      "subject": "[R-sig-DB] Oracle connectivity",
+      "subject_clean": "Oracle connectivity",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear useRs,\n\nI would like to access a remote Oracle database through R but I just cannot\nfind sufficient online information to do so. As a result, I am wondering if you\ncan provide me with a link to a document that details the steps I need to\nundertake to successfuly complete the task (e.g., packages that I need to\ninstall/look into, the set up of the cnf file for remote access, etc.).\n\nMy system: Windows XP, R2.6.1\nInvestigated packages: DBI, RODBC\n\nThank you so much.\n\nTudor\n--\nTudor Dan Bodea\nGeorgia Institute of Technology\nSchool of Civil and Environmental Engineering\nWeb: http://www.prism.gatech.edu/~gtg757i",
+      "body_snippet": "Dear useRs,\n\nI would like to access a remote Oracle database through R but I just cannot\nfind sufficient online information to do so. As a result, I am wondering if you\ncan provide me with a link to a",
+      "thread_id": "thread-74a7585f3fd5",
+      "thread_depth": 0,
+      "month": "2008-01"
+    },
+    {
+      "id": "msg-945b1b150ec1",
+      "message_id": "<Pine.LNX.4.64.0801081534000.8296@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2008-01-08T15:36:36Z",
+      "subject": "[R-sig-DB] Oracle connectivity",
+      "subject_clean": "Oracle connectivity",
+      "in_reply_to": "<1199804417.47839001cc026@webmail.mail.gatech.edu>",
+      "references": [
+        "<1199804417.47839001cc026@webmail.mail.gatech.edu>"
+      ],
+      "body_plain": "On Tue, 8 Jan 2008, Tudor Bodea wrote:\n\n> Dear useRs,\n\nPlease do NOT cross-post: I have removed R-help.\n\n> I would like to access a remote Oracle database through R but I just cannot\n> find sufficient online information to do so. As a result, I am wondering if you\n> can provide me with a link to a document that details the steps I need to\n> undertake to successfuly complete the task (e.g., packages that I need to\n> install/look into, the set up of the cnf file for remote access, etc.).\n>\n> My system: Windows XP, R2.6.1\n> Investigated packages: DBI, RODBC\n\nWith RODBC, all you need is the Oracle ODBC drivers and a DSN set up.\nThat's not an R issue and your Oracle support should be able to help you \ndo it.\n\nWith DBI, you also need ROracle, and to compile it yourself for Windows.\nIt has been done in the past, but not AFAIK recently.\n\n>\n> Thank you so much.\n>\n> Tudor\n> --\n> Tudor Dan Bodea\n> Georgia Institute of Technology\n> School of Civil and Environmental Engineering\n> Web: http://www.prism.gatech.edu/~gtg757i\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "On Tue, 8 Jan 2008, Tudor Bodea wrote:\n\n> Dear useRs,\n\nPlease do NOT cross-post: I have removed R-help.\n\n> I would like to access a remote Oracle database through R but I just cannot\n> find sufficient",
+      "thread_id": "thread-74a7585f3fd5",
+      "thread_depth": 1,
+      "month": "2008-01"
+    },
+    {
+      "id": "msg-410c66629f58",
+      "message_id": "<1199821571.4783d303382fa@webmail.mail.gatech.edu>",
+      "from_name": "Tudor Bodea",
+      "from_email_hash": "574766cc2842918aea9c4bead0e0091732894f2216b2e7c805537694827d74e7",
+      "date": "2008-01-08T14:46:11-05:00",
+      "subject": "[R-sig-DB] Oracle connectivity",
+      "subject_clean": "Oracle connectivity",
+      "in_reply_to": "<Pine.LNX.4.64.0801081534000.8296@gannet.stats.ox.ac.uk>",
+      "references": [
+        "<1199804417.47839001cc026@webmail.mail.gatech.edu>",
+        "<Pine.LNX.4.64.0801081534000.8296@gannet.stats.ox.ac.uk>"
+      ],
+      "body_plain": "Dear Professor Ripley / R community:\n\nThank you so much for your prompt reply.\n\nHappy New Year.\n\nTudor\n\nQuoting Prof Brian Ripley <ripley at stats.ox.ac.uk>:\n\n> On Tue, 8 Jan 2008, Tudor Bodea wrote:\n>\n> > Dear useRs,\n>\n> Please do NOT cross-post: I have removed R-help.\n>\n> > I would like to access a remote Oracle database through R but I just cannot\n> > find sufficient online information to do so. As a result, I am wondering if\n> you\n> > can provide me with a link to a document that details the steps I need to\n> > undertake to successfuly complete the task (e.g., packages that I need to\n> > install/look into, the set up of the cnf file for remote access, etc.).\n> >\n> > My system: Windows XP, R2.6.1\n> > Investigated packages: DBI, RODBC\n>\n> With RODBC, all you need is the Oracle ODBC drivers and a DSN set up.\n> That's not an R issue and your Oracle support should be able to help you\n> do it.\n>\n> With DBI, you also need ROracle, and to compile it yourself for Windows.\n> It has been done in the past, but not AFAIK recently.\n>\n> >\n> > Thank you so much.\n> >\n> > Tudor\n> > --\n> > Tudor Dan Bodea\n> > Georgia Institute of Technology\n> > School of Civil and Environmental Engineering\n> > Web: http://www.prism.gatech.edu/~gtg757i\n> >\n> > _______________________________________________\n> > R-sig-DB mailing list -- R Special Interest Group\n> > R-sig-DB at stat.math.ethz.ch\n> > https://stat.ethz.ch/mailman/listinfo/r-sig-db\n> >\n>\n> --\n> Brian D. Ripley,                  ripley at stats.ox.ac.uk\n> Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\n> University of Oxford,             Tel:  +44 1865 272861 (self)\n> 1 South Parks Road,                     +44 1865 272866 (PA)\n> Oxford OX1 3TG, UK                Fax:  +44 1865 272595\n>\n\n\n--\nTudor Dan Bodea\nGeorgia Institute of Technology\nSchool of Civil and Environmental Engineering\nWeb: http://www.prism.gatech.edu/~gtg757i",
+      "body_snippet": "Dear Professor Ripley / R community:\n\nThank you so much for your prompt reply.\n\nHappy New Year.\n\nTudor\n\nQuoting Prof Brian Ripley <ripley at stats.ox.ac.uk>:\n\n> On Tue, 8 Jan 2008, Tudor Bodea wrote:\n",
+      "thread_id": "thread-74a7585f3fd5",
+      "thread_depth": 2,
+      "month": "2008-01"
+    },
+    {
+      "id": "msg-992125bb7134",
+      "message_id": "<478FF946.6020204@fhcrc.org>",
+      "from_name": "Herve Pages",
+      "from_email_hash": "fd1d1d7a6264909f0236d26dfae51520f3d3455c869422fce43a45549d197dbf",
+      "date": "2008-01-17T16:56:38-08:00",
+      "subject": "[R-sig-DB] RSQLite: ATTACH statement not executed when the db connection is holding a resultSet",
+      "subject_clean": "RSQLite: ATTACH statement not executed when the db connection is holding a resultSet",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi Seth,\n\nHere is how to reproduce the problem.\n\nFirst create 2 databases with a single empty table in each:\n\n  library(RSQLite)\n\n  db1 <- dbConnect(SQLite(), \"db1.sqlite\")\n  dbGetQuery(db1, \"CREATE TABLE t1 (a integer, aa text)\")\n\n  db2 <- dbConnect(SQLite(), \"db2.sqlite\")\n  res <- dbSendQuery(db2, \"CREATE TABLE t2 (b integer, bb text)\")\n\nNote that dbSendQuery() is used instead of dbGetQuery() to create the\ntable in db2 so now db2 is holding a resultSet:\n\n  > summary(db2)\n  <SQLiteConnection:(28981,1)>\n    User: NA\n    Host: localhost\n    Dbname: db2.sqlite\n    Connection type: direct\n    Loadable extensions: off\n      1  <SQLiteResult:(28981,1,1)>\n\nSecond, try to attach db1 to db2:\n\n  > dbGetQuery(db2, \"ATTACH 'db1.sqlite' AS db1\")\n  NULL\n\nNo errors so it looks like it got attached but:\n\n  1. This doesn't work:\n\n       dbGetQuery(db2, \"SELECT * FROM db1.t1\")\n\n  2. I can run this as many times I want (normally you can't attach a\n     db that's already attached):\n\n       dbGetQuery(db2, \"ATTACH 'db1.sqlite' AS db1\")\n       dbGetQuery(db2, \"ATTACH 'db1.sqlite' AS db1\")\n       ... etc ...\n\n  3. I can't detach it either:\n\n       dbGetQuery(db2, \"DETACH db1\")\n\nso everything tends to indicate that db1 was not attached in the\nfirst place.\n\nNow if I clear 'res', things work as expected:\n\n  dbClearResult(res)\n  summary(db2)\n  dbGetQuery(db2, \"ATTACH 'db1.sqlite' AS db1\")\n  dbGetQuery(db2, \"SELECT * FROM db1.t1\")\n  dbGetQuery(db2, \"DETACH db1\")\n\nAny idea what's going on?\n\nThanks!\nH.\n\n\n> sessionInfo()\nR version 2.7.0 Under development (unstable) (2007-12-20 r43747)\nx86_64-unknown-linux-gnu\n\nlocale:\nLC_CTYPE=en_US;LC_NUMERIC=C;LC_TIME=en_US;LC_COLLATE=en_US;LC_MONETARY=en_US;LC_MESSAGES=en_US;LC_PAPER=en_US;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=en_US;LC_IDENTIFICATION=C\n\nattached base packages:\n[1] stats     graphics  grDevices utils     datasets  methods   base\n\nother attached packages:\n[1] RSQLite_0.6-4 DBI_0.2-4",
+      "body_snippet": "Hi Seth,\n\nHere is how to reproduce the problem.\n\nFirst create 2 databases with a single empty table in each:\n\n  library(RSQLite)\n\n  db1 <- dbConnect(SQLite(), \"db1.sqlite\")\n  dbGetQuery(db1, \"CREATE T",
+      "thread_id": "thread-992125bb7134",
+      "thread_depth": 0,
+      "month": "2008-01"
+    },
+    {
+      "id": "msg-ce801e0ce2a5",
+      "message_id": "<971536df0801171800y7f1fcad9u8d0e4d6fa359892a@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2008-01-17T21:00:52-05:00",
+      "subject": "[R-sig-DB] RSQLite: ATTACH statement not executed when the db connection is holding a resultSet",
+      "subject_clean": "RSQLite: ATTACH statement not executed when the db connection is holding a resultSet",
+      "in_reply_to": "<478FF946.6020204@fhcrc.org>",
+      "references": [
+        "<478FF946.6020204@fhcrc.org>"
+      ],
+      "body_plain": "I don't think you have established db1.sqlite as an external sqlite\ndatabase yet -- its still only known to the db1 connection.  Try\ndisconnecting from db1 before attaching it in the db2 connection to\nflush it out.\n\nYou can likely re-connect to db1 again right after disconnecting db1\neven before attaching it in db2 if you wish -- that would be optional.\n\nOn Jan 17, 2008 7:56 PM, Herve Pages <hpages at fhcrc.org> wrote:\n> Hi Seth,\n>\n> Here is how to reproduce the problem.\n>\n> First create 2 databases with a single empty table in each:\n>\n>  library(RSQLite)\n>\n>  db1 <- dbConnect(SQLite(), \"db1.sqlite\")\n>  dbGetQuery(db1, \"CREATE TABLE t1 (a integer, aa text)\")\n>\n>  db2 <- dbConnect(SQLite(), \"db2.sqlite\")\n>  res <- dbSendQuery(db2, \"CREATE TABLE t2 (b integer, bb text)\")\n>\n> Note that dbSendQuery() is used instead of dbGetQuery() to create the\n> table in db2 so now db2 is holding a resultSet:\n>\n>  > summary(db2)\n>  <SQLiteConnection:(28981,1)>\n>    User: NA\n>    Host: localhost\n>    Dbname: db2.sqlite\n>    Connection type: direct\n>    Loadable extensions: off\n>      1  <SQLiteResult:(28981,1,1)>\n>\n> Second, try to attach db1 to db2:\n>\n>  > dbGetQuery(db2, \"ATTACH 'db1.sqlite' AS db1\")\n>  NULL\n>\n> No errors so it looks like it got attached but:\n>\n>  1. This doesn't work:\n>\n>       dbGetQuery(db2, \"SELECT * FROM db1.t1\")\n>\n>  2. I can run this as many times I want (normally you can't attach a\n>     db that's already attached):\n>\n>       dbGetQuery(db2, \"ATTACH 'db1.sqlite' AS db1\")\n>       dbGetQuery(db2, \"ATTACH 'db1.sqlite' AS db1\")\n>       ... etc ...\n>\n>  3. I can't detach it either:\n>\n>       dbGetQuery(db2, \"DETACH db1\")\n>\n> so everything tends to indicate that db1 was not attached in the\n> first place.\n>\n> Now if I clear 'res', things work as expected:\n>\n>  dbClearResult(res)\n>  summary(db2)\n>  dbGetQuery(db2, \"ATTACH 'db1.sqlite' AS db1\")\n>  dbGetQuery(db2, \"SELECT * FROM db1.t1\")\n>  dbGetQuery(db2, \"DETACH db1\")\n>\n> Any idea what's going on?\n>\n> Thanks!\n> H.\n>\n>\n> > sessionInfo()\n> R version 2.7.0 Under development (unstable) (2007-12-20 r43747)\n> x86_64-unknown-linux-gnu\n>\n> locale:\n> LC_CTYPE=en_US;LC_NUMERIC=C;LC_TIME=en_US;LC_COLLATE=en_US;LC_MONETARY=en_US;LC_MESSAGES=en_US;LC_PAPER=en_US;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=en_US;LC_IDENTIFICATION=C\n>\n> attached base packages:\n> [1] stats     graphics  grDevices utils     datasets  methods   base\n>\n> other attached packages:\n> [1] RSQLite_0.6-4 DBI_0.2-4\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "I don't think you have established db1.sqlite as an external sqlite\ndatabase yet -- its still only known to the db1 connection.  Try\ndisconnecting from db1 before attaching it in the db2 connection to",
+      "thread_id": "thread-992125bb7134",
+      "thread_depth": 1,
+      "month": "2008-01"
+    },
+    {
+      "id": "msg-8756714c5fb6",
+      "message_id": "<m2wsq7drpz.fsf@userprimary.net>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2008-01-18T08:27:20-08:00",
+      "subject": "[R-sig-DB] RSQLite: ATTACH statement not executed when the db connection is holding a resultSet",
+      "subject_clean": "RSQLite: ATTACH statement not executed when the db connection is holding a resultSet",
+      "in_reply_to": "<478FF946.6020204@fhcrc.org> (Herve Pages's message of \"Thu\\, 17 Jan 2008 16\\:56\\:38 -0800\")",
+      "references": [
+        "<478FF946.6020204@fhcrc.org>"
+      ],
+      "body_plain": "Hi Herve,\n\nA quick response now and I will try to take a closer look later on...\n\nHerve Pages <hpages at fhcrc.org> writes:\n> Here is how to reproduce the problem.\n>\n> First create 2 databases with a single empty table in each:\n>\n>   library(RSQLite)\n>\n>   db1 <- dbConnect(SQLite(), \"db1.sqlite\")\n>   dbGetQuery(db1, \"CREATE TABLE t1 (a integer, aa text)\")\n>\n>   db2 <- dbConnect(SQLite(), \"db2.sqlite\")\n>   res <- dbSendQuery(db2, \"CREATE TABLE t2 (b integer, bb text)\")\n[snip]\n>\n> Second, try to attach db1 to db2:\n>\n>   > dbGetQuery(db2, \"ATTACH 'db1.sqlite' AS db1\")\n>   NULL\n>\n> No errors so it looks like it got attached but:\n\nI'm pretty sure that SQLite only allows one result set per connection.\nHence it does not surprise me that the above does not work -- but an\nerror message would be nice :-)\n\nDo you have a use-case where you really want to be able to have open\nresultSets and keep doing things (which I'm not sure is possible)?  I\nthink the fix here is going to be to raise an error when this is\nattempted.\n\nFor example, if you try to create two result sets that have pending\nrows, you do get an error:\n\n    > res <- dbSendQuery(db2, \"select * from t2\")\n    > dbListResults(db2)\n    [[1]]\n    <SQLiteResult:(7183,1,4)> \n    \n    > res <- dbSendQuery(db2, \"select * from t2\")\n    Error in sqliteExecStatement(conn, statement, ...) : \n      RS-DBI driver: (connection with pending rows, close resultSet before continuing)\n\nFor result sets that don't return rows, there isn't much good that you\ncan do with the result set.  Perhaps these should be invalidated on\nreturn so that you can open another resultSet?\n\nOther ideas?\n\n+ seth\n\n-- \nSeth Falcon | seth at userprimary.net | blog: http://userprimary.net/user/",
+      "body_snippet": "Hi Herve,\n\nA quick response now and I will try to take a closer look later on...\n\nHerve Pages <hpages at fhcrc.org> writes:\n> Here is how to reproduce the problem.\n>\n> First create 2 databases with a ",
+      "thread_id": "thread-992125bb7134",
+      "thread_depth": 1,
+      "month": "2008-01"
+    },
+    {
+      "id": "msg-b4dc2c0529aa",
+      "message_id": "<4790F226.9020000@fhcrc.org>",
+      "from_name": "Herve Pages",
+      "from_email_hash": "fd1d1d7a6264909f0236d26dfae51520f3d3455c869422fce43a45549d197dbf",
+      "date": "2008-01-18T10:38:30-08:00",
+      "subject": "[R-sig-DB] RSQLite: ATTACH statement not executed when the db connection is holding a resultSet",
+      "subject_clean": "RSQLite: ATTACH statement not executed when the db connection is holding a resultSet",
+      "in_reply_to": "<m2wsq7drpz.fsf@userprimary.net>",
+      "references": [
+        "<478FF946.6020204@fhcrc.org>",
+        "<m2wsq7drpz.fsf@userprimary.net>"
+      ],
+      "body_plain": "Hi Seth,\n\nSeth Falcon wrote:\n> Hi Herve,\n> \n> A quick response now and I will try to take a closer look later on...\n> \n> Herve Pages <hpages at fhcrc.org> writes:\n>> Here is how to reproduce the problem.\n>>\n>> First create 2 databases with a single empty table in each:\n>>\n>>   library(RSQLite)\n>>\n>>   db1 <- dbConnect(SQLite(), \"db1.sqlite\")\n>>   dbGetQuery(db1, \"CREATE TABLE t1 (a integer, aa text)\")\n>>\n>>   db2 <- dbConnect(SQLite(), \"db2.sqlite\")\n>>   res <- dbSendQuery(db2, \"CREATE TABLE t2 (b integer, bb text)\")\n> [snip]\n>> Second, try to attach db1 to db2:\n>>\n>>   > dbGetQuery(db2, \"ATTACH 'db1.sqlite' AS db1\")\n>>   NULL\n>>\n>> No errors so it looks like it got attached but:\n> \n> I'm pretty sure that SQLite only allows one result set per connection.\n> Hence it does not surprise me that the above does not work -- but an\n> error message would be nice :-)\n> \n> Do you have a use-case where you really want to be able to have open\n> resultSets and keep doing things (which I'm not sure is possible)?  I\n> think the fix here is going to be to raise an error when this is\n> attempted.\n\nNo use-case. But we have no way no prevent our users to make improper\nuse of dbSendQuery() (we'll try to advertise the use of much safer\ndbGetQuery() instead but that's all we can do). So, yes, raising an\nerror that tells them that the ATTACH command failed (or could not be\nsent) or, more generally, that any SQL statement failed, seems like\nthe right thing to have.\n\n> \n> For example, if you try to create two result sets that have pending\n> rows, you do get an error:\n> \n>     > res <- dbSendQuery(db2, \"select * from t2\")\n>     > dbListResults(db2)\n>     [[1]]\n>     <SQLiteResult:(7183,1,4)> \n>     \n>     > res <- dbSendQuery(db2, \"select * from t2\")\n>     Error in sqliteExecStatement(conn, statement, ...) : \n>       RS-DBI driver: (connection with pending rows, close resultSet before continuing)\n\nYes I've seen this. And if the first result set does not correspond to a\nSELECT statement, then it is silently replaced by the next result set:\n\n  library(RSQLite)\n  db <- dbConnect(SQLite(), \"test.sqlite\")\n  dbSendQuery(db, \"CREATE TABLE test (a integer, aa text)\")\n  dbSendQuery(db, \"SELECT * FROM test\")\n\nFirst result has disappeared:\n\n  > dbListResults(db)\n  [[1]]\n  <SQLiteResult:(31978,0,2)>\n\nPersonally I find this \"automatic result set clearing\" feature a little\nbit confusing and it raises some concerns about compatibility with other\nRDBMSs (see below).\n\nBack to the ATTACH problem: if I try to ATTACH with dbSendQuery() instead\nof dbGetQuery() then the \"automatic result set clearing\" feature enter in\naction:\n\n  library(RSQLite)\n  db1 <- dbConnect(SQLite(), \"db1.sqlite\")\n  dbGetQuery(db1, \"CREATE TABLE t1 (a integer, aa text)\")\n  db2 <- dbConnect(SQLite(), \"db2.sqlite\")\n  dbSendQuery(db2, \"CREATE TABLE t2 (b integer, bb text)\")\n  dbSendQuery(db2, \"ATTACH 'db1.sqlite' AS db1\")\n  dbListResults(db2) # only 1 result set\n\nbut now it's hard to tell whether or not db1 is attached to db2:\n\n  1. This seems to indicate that it is NOT:\n\n       > dbGetQuery(db2, \"SELECT * FROM db1.t1\")\n       Error in sqliteExecStatement(new.con, statement, bind.data) :\n          RS-DBI driver: (error in statement: no such table: db1.t1)\n\n  2. This seems to indicate that it is:\n\n       > dbSendQuery(db2, \"ATTACH 'db1.sqlite' AS db1\")\n       Error in sqliteExecStatement(conn, statement, ...) :\n         RS-DBI driver: (RS_SQLite_exec: could not execute1: database db1 is already in use)\n\n  3. And this too seems to indicate that it is was attached:\n\n       > dbGetQuery(db2, \"DETACH db1\")\n       NULL\n       > dbGetQuery(db2, \"DETACH db1\")\n       Error in sqliteExecStatement(con, statement, bind.data) :\n         RS-DBI driver: (RS_SQLite_exec: could not execute1: no such database: db1)\n\n> \n> For result sets that don't return rows, there isn't much good that you\n> can do with the result set.  Perhaps these should be invalidated on\n> return so that you can open another resultSet?\n\nThe problem is consistency with other RDBMSs: if the users want to be able\nto write portable code, they need to have some guarantee that things behave\nconsistently between RSQLite, RMySQL, ROracle, etc...\nIn this regard I would say it's better to keep things as predictable as\npossible and maybe to avoid features like the \"automatic result set clearing\".\nEvery successful call to dbSendQuery creates a new entry in the result set\ntable and this entry remains here until explicitly removed by the user,\nwhatever the nature of the SQL statement was. If SQLite allows only one\nresult set per connection, then an error should be raised when dbSendQuery\nis called and there is already an entry in the result set table.\n\nI can see that the \"automatic result set clearing\" feature adds some\nconvenience by discarding result sets that DO NOT correspond to a SELECT\nstatement (so that they never end up in the result set table) but then\neverybody in the DBI family should do the same thing.\n\nAs for treating result sets that DO correspond to a SELECT statement\nbut contain 0 rows the same way as result sets that DO NOT correspond\nto a SELECT statement, I don't really like the idea. Because the 2 types\nof result sets are fundamentally different: having rows or not in the\nformer depends on the data found in the DB while getting a result set\nof the latter type does not (it only depends on a programmatic decision\ni.e. on the nature of the SQL statement that was sent).\n\nThanks!\nH.\n\n\n> \n> Other ideas?\n> \n> + seth\n>",
+      "body_snippet": "Hi Seth,\n\nSeth Falcon wrote:\n> Hi Herve,\n> \n> A quick response now and I will try to take a closer look later on...\n> \n> Herve Pages <hpages at fhcrc.org> writes:\n>> Here is how to reproduce the probl",
+      "thread_id": "thread-992125bb7134",
+      "thread_depth": 2,
+      "month": "2008-01"
+    },
+    {
+      "id": "msg-971f597f8cf6",
+      "message_id": "<4790F963.8020203@fhcrc.org>",
+      "from_name": "Herve Pages",
+      "from_email_hash": "fd1d1d7a6264909f0236d26dfae51520f3d3455c869422fce43a45549d197dbf",
+      "date": "2008-01-18T11:09:23-08:00",
+      "subject": "[R-sig-DB] RSQLite: ATTACH statement not executed when the db connection is holding a resultSet",
+      "subject_clean": "RSQLite: ATTACH statement not executed when the db connection is holding a resultSet",
+      "in_reply_to": "<971536df0801171800y7f1fcad9u8d0e4d6fa359892a@mail.gmail.com>",
+      "references": [
+        "<478FF946.6020204@fhcrc.org>",
+        "<971536df0801171800y7f1fcad9u8d0e4d6fa359892a@mail.gmail.com>"
+      ],
+      "body_plain": "Hi Gabor,\n\nGabor Grothendieck wrote:\n> I don't think you have established db1.sqlite as an external sqlite\n> database yet -- its still only known to the db1 connection.  Try\n> disconnecting from db1 before attaching it in the db2 connection to\n> flush it out.\n\nNo, disconnecting from db1 doesn't change anything. When someone in my\ngroup found this problem, he was working with real dbs i.e. dbs that have\nbeen on disk for a long time and opened/closed many times. Using a freshly\ncreated db1.sqlite in my example is only for the purpose of providing\nreproducible code.\n\nAnyway if ATTACH fails for the reason you suggest or for whatever reason,\nthen an error should be raised.\n\nThanks,\nH.\n\n\n> \n> You can likely re-connect to db1 again right after disconnecting db1\n> even before attaching it in db2 if you wish -- that would be optional.\n>",
+      "body_snippet": "Hi Gabor,\n\nGabor Grothendieck wrote:\n> I don't think you have established db1.sqlite as an external sqlite\n> database yet -- its still only known to the db1 connection.  Try\n> disconnecting from db1 b",
+      "thread_id": "thread-992125bb7134",
+      "thread_depth": 2,
+      "month": "2008-01"
+    },
+    {
+      "id": "msg-546b56629300",
+      "message_id": "<m2lk6ld5tq.fsf@userprimary.net>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2008-01-19T10:32:33-08:00",
+      "subject": "[R-sig-DB] RSQLite: ATTACH statement not executed when the db connection is holding a resultSet",
+      "subject_clean": "RSQLite: ATTACH statement not executed when the db connection is holding a resultSet",
+      "in_reply_to": "<4790F226.9020000@fhcrc.org> (Herve Pages's message of \"Fri\\, 18 Jan 2008 10\\:38\\:30 -0800\")",
+      "references": [
+        "<478FF946.6020204@fhcrc.org>",
+        "<m2wsq7drpz.fsf@userprimary.net>",
+        "<4790F226.9020000@fhcrc.org>"
+      ],
+      "body_plain": "Hi Herve,\n\nHerve Pages <hpages at fhcrc.org> writes:\n> No use-case. But we have no way no prevent our users to make improper\n> use of dbSendQuery() (we'll try to advertise the use of much safer\n> dbGetQuery() instead but that's all we can do).\n\nAt present, dbGetQuery is IMO less safe, or at least more confusing\n(see more below).\n\n> Yes I've seen this. And if the first result set does not correspond to a\n> SELECT statement, then it is silently replaced by the next result\n> set:\n\nAlmost.  If my reading of the code is correct, a ResultSet contains a\nflag indicating whether or not is is complete.  For a SELECT query,\ncomplete set to FALSE means there are more rows to fetch.  For\nnon-SELECT queries it is assumed that complete is TRUE right away\n(there is a comment in the code that this might cause a problem if\nthere are asynchronous queries, but I don't think this is an issue\nwith SQLite).\n\nWhen RSQLite attempts to execute SQL, it checks for an existing\nResultSet and _closes is automatically_ if its complete flag is TRUE.\nIf the existing ResultSet is not complete, an error is thrown.\n\n> Personally I find this \"automatic result set clearing\" feature a little\n> bit confusing and it raises some concerns about compatibility with other\n> RDBMSs (see below).\n\nI agree that this can cause confusion and that using this \"feature\"\ndefeats the notion of DBI (being able to swap RDBMS's without changing\nmuch code).\n\nBut I didn't invent this feature and don't have any sense of whether\nor not people are relying on it :-\\\n\n> Back to the ATTACH problem: if I try to ATTACH with dbSendQuery() instead\n> of dbGetQuery() then the \"automatic result set clearing\" feature enter in\n> action:\n\nYes.  But what is confusing is what dbGetQuery does.  The semantics of\ndbGetQuery are not what they seem.  When a ResultSet already exists,\ndbGetQuery creats a new _connection_ and executes there.  SQL\nstatements like ATTACH that are called essentially for their\nside-effect on the connection are lost.  In your example, the ATTACH\nworks just fine, but occurs on a new (transient) connection.  If\ninstead of dbGetQuery, you had used dbSendQuery, things would have\nworked.\n\nHere's my example:\n\n  library(\"RSQLite\")\n  db1 <- dbConnect(SQLite(), \"db1.sqlite\")\n  data(USArrests)\n  dbWriteTable(db1, \"ua\", USArrests, row.names=FALSE)\n  \n  db2 <- dbConnect(SQLite(), \"db2.sqlite\")\n  res <- dbSendQuery(db2, \"CREATE TABLE t1 (b integer, bb text)\")\n  \n  ## this does the ATTACH on a transient connection :-(\n  dbGetQuery(db2, \"ATTACH 'db1.sqlite' AS db1\")\n  ## Hence, this fails:\n  dbGetQuery(db2, \"select * from db1.ua limit 3\")\n  \n  ## redo ATTACH... this works because ResultSet res is complete\n  ## and so it can be auto-closed.\n  res2 <- dbSendQuery(db2, \"ATTACH 'db1.sqlite' AS db1\")\n  \n  ## Note that dbGetQuery _still_ won't work because now\n  ## res2 is open (although complete) and the new transient connection\n  ## won't have the ATTACH'ed DB.\n  dbGetQuery(db2, \"select * from db1.ua limit 3\")\n  \n  ## But using dbSendQuery, we get the auto-close behavior\n  res3 <- dbSendQuery(db2, \"select * from db1.ua limit 3\")\n  fetch(res3)\n  \n  ## And if we close the ResultSet, dbGetQuery behaves as \"expected\".\n  dbClearResult(res3)\n  dbGetQuery(db2, \"select * from db1.ua limit 3\")\n\n>> For result sets that don't return rows, there isn't much good that you\n>> can do with the result set.  Perhaps these should be invalidated on\n>> return so that you can open another resultSet?\n>\n> The problem is consistency with other RDBMSs: if the users want to be able\n> to write portable code, they need to have some guarantee that things behave\n> consistently between RSQLite, RMySQL, ROracle, etc...\n> In this regard I would say it's better to keep things as predictable as\n> possible and maybe to avoid features like the \"automatic result set clearing\".\n> Every successful call to dbSendQuery creates a new entry in the result set\n> table and this entry remains here until explicitly removed by the user,\n> whatever the nature of the SQL statement was. If SQLite allows only one\n> result set per connection, then an error should be raised when dbSendQuery\n> is called and there is already an entry in the result set table.\n\nI agree that consistency is valuable and is in large part the point of\nDBI.  However, things will never be symmetric since SQLite doesn't\nsupport the same features as other RDBMS's.  Code that happily creates\nmultiple ResultSets might work find in RMySQL (does it?) would raise\nerrors with RSQLite.\n\nI guess I see your argument, but the auto-close feature doesn't\nprevent you from making explicit dbClearResult calls and having\nportable code.\n\n> I can see that the \"automatic result set clearing\" feature adds some\n> convenience by discarding result sets that DO NOT correspond to a SELECT\n> statement (so that they never end up in the result set table) but then\n> everybody in the DBI family should do the same thing.\n>\n> As for treating result sets that DO correspond to a SELECT statement\n> but contain 0 rows the same way as result sets that DO NOT correspond\n> to a SELECT statement, I don't really like the idea. Because the 2 types\n> of result sets are fundamentally different: having rows or not in the\n> former depends on the data found in the DB while getting a result set\n> of the latter type does not (it only depends on a programmatic decision\n> i.e. on the nature of the SQL statement that was sent).\n\nI think there are two ways to go here:\n\n1. Fix dbGetQuery to have the same auto-close semantics.\n\n2. Remove the auto-close feature entirely.  Should dbGetQuery change\n   too such that it fails when a ResultSet is open instead of opening\n   a new connection?  That is easier to explain, but not at all\n   backwards compatible.\n\n+ seth\n\n-- \nSeth Falcon | seth at userprimary.net | blog: http://userprimary.net/user/",
+      "body_snippet": "Hi Herve,\n\nHerve Pages <hpages at fhcrc.org> writes:\n> No use-case. But we have no way no prevent our users to make improper\n> use of dbSendQuery() (we'll try to advertise the use of much safer\n> dbGe",
+      "thread_id": "thread-992125bb7134",
+      "thread_depth": 3,
+      "month": "2008-01"
+    },
+    {
+      "id": "msg-d14b50ada76f",
+      "message_id": "<f2e3401f0801221411p5e7721b4kf6fcaf823383407c@mail.gmail.com>",
+      "from_name": "Paul DeBruicker",
+      "from_email_hash": "a5db9d827a6b75676aca7d49592f3779f316484f06f485a6bae9d97280bd927b",
+      "date": "2008-01-22T17:11:55-05:00",
+      "subject": "[R-sig-DB] R crashes while executing sqlSave from RODBC to PostgreSQL dsn inside a for loop - debug help",
+      "subject_clean": "R crashes while executing sqlSave from RODBC to PostgreSQL dsn inside a for loop - debug help",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello List\n\nI have a reproducible example at the bottom of this message, if you\nhave PostgreSQL set up as a data source in Windows.  I'm just looking\nfor ideas on how to debug a problem that crashes R with the following\nWindows error messages:\n\n\nfirst error msg:\n\nMicrosoft Visual C++ Runtime Library\n\n    Runtime Error!\n    Program: C:\\Program Files\\R\\R-2.6.1\\bin\\Rgui.exe\n\n    This application has requested the Runtime to terminate it in an\nunusual way.  Please contact the application's support team for more\ninformation.\n\n\nClick \"OK\" then get the second error msg:\n\nRGui: Rgui.exe - Application Error\n\n    The instruction at \"0x00000001\" referenced memory at \"0x00000001\".\n The memory could not be \"read\".\n\n    Click on OK to terminate the program\n\n\n\nI'm using the latest released RODBC, R, and PostgreSQL ANSI ODBC\ndriver to connect to a PostgreSQL 8.2.6 database over a LAN. Both\ncomputers are running Windows XP.\n\nThe for loop in question uses read.csv to import 730 csv files with 55\ncolumns each, averaging 1500 lines per file.  On any given row the\nmajority of columns are blank (~80%).  I declare the column classes\nfor the imported file and varTypes for the database.\n\nSince R crashes I do not know how to use traceback() or debugger() on\nthe crashed instance.  My questions are:\n\n1. How can I debug this problem?\n\n2. Should I learn/use another language to regularly import this much\ndata into a Postgres DB?\n\n3. Is there another opensource database that might be more appropriate\nto use with R?\n\n4. I know that the RODBC manual mentions that PostgreSQL ODBC driver\nhas generated internal memory corruption if addPK=TRUE.  Is my problem\nanother symptom of that problem?\n\n5. Should I send this to another mailing list or file a bug report?\n\nI've been able to recreate the crash using the code below on 3\nmachines in the office, so I don't think its specific to my computer\nor setup.\n\nThanks for any guidance you can provide\n\nPaul DeBruicker\n\n\n\nR Code:\n\n# the \"asdf\" table in the database does not exist and is created by\n# the first sqlSave statement.  Generally when I check the\n# PostgreSQL  database after R crashes, the first one or two\n# files have been successfully imported, but no others.\n#\n# con is the odbcConnect return value\n# vt is the varType list and is the same as what my csv files have\n# df1 is the data.frame used in this test example in lieu of my data\n# files. It has the same number and type of columns (55) and the\n# average number of rows (1500).\n#\n\n\nlibrary(RODBC)\n\ncon<-odbcConnect(\"PostgresDB\",uid=\"paul\",pwd=\"paul\")\n\n\nvt<-c(\"varchar(3)\", \"varchar(71)\", \"varchar(5)\", \"varchar(13)\",\n\"varchar(9)\", \"varchar(9)\", \"varchar(9)\", \"float8\", \"varchar(2)\",\n\"varchar(5)\",\n \"varchar(13)\", \"float8\", \"float8\", \"float8\", \"varchar(2)\", \"float8\",\n\"float8\", \"varchar(16)\", \"float8\", \"int4\", \"float8\", \"float8\",\n\"varchar(13)\",\n \"varchar(2)\", \"float8\", \"varchar(4)\", \"varchar(2)\", \"float8\",\n\"varchar(2)\", \"varchar(4)\", \"varchar(16)\", \"varchar(16)\",\n\"varchar(16)\", \"varchar(4)\",\n \"varchar(4)\", \"varchar(4)\", \"float8\", \"float8\", \"float8\",\n\"varchar(4)\", \"varchar(9)\", \"varchar(2)\", \"float8\", \"float8\",\n\"varchar(9)\", \"float8\",\n \"varchar(9)\", \"varchar(73)\", \"varchar(16)\", \"varchar(11)\",\n\"varchar(9)\", \"varchar(9)\", \"varchar(2)\", \"varchar(15)\", \"serial\")\nnames(vt)<-paste(\"v\",1:55,sep=\"\")\n\n\nfor(i in 1:730){\n\n#create the big data frame\n\tdf1<-data.frame(v1=rep(\"a\",1500),v2=rep(\"a\",1500),v3=rep(\"a\",1500),\nv4=rep(\"a\",1500),v5=rep(\"a\",1500)\n\t,v6=rep(\"a\",1500),v7=rep(\"a\",1500),v8=rep(1.25,1500),v9=rep(\"a\",1500)\n\t,v10=rep(\"a\",1500),v11=rep(\"a\",1500),v12=rep(1.25,1500),v13=rep(1.25,1500)\n\t,v14=rep(1.25,1500),v15=rep(\"a\",1500),v16=rep(1.25,1500),v17=rep(1.25,1500)\n\t,v18=rep(\"a\",1500),v19=rep(1.25,1500),v20=rep(1,1500),v21=rep(1.25,1500)\n\t,v22=rep(1.25,1500),v23=rep(\"a\",1500),v24=rep(\"a\",1500),v25=rep(1.25,1500)\n\t,v26=rep(\"a\",1500),v27=rep(\"a\",1500),v28=rep(1.25,1500),v29=rep(\"a\",1500)\n\t,v30=rep(\"a\",1500),v31=rep(\"a\",1500),v32=rep(\"a\",1500),v33=rep(\"a\",1500)\n\t,v34=rep(\"a\",1500),v35=rep(\"a\",1500),v36=rep(\"a\",1500),v37=rep(1.25,1500)\n\t,v38=rep(1.25,1500),v39=rep(1.25,1500),v40=rep(\"a\",1500),v41=rep(\"a\",1500)\n\t,v42=rep(\"a\",1500),v43=rep(1.25,1500),v44=rep(1.25,1500),v45=rep(\"a\",1500)\n\t,v46=rep(1.25,1500),v47=rep(\"a\",1500),v48=rep(\"a\",1500),v49=rep(\"a\",1500)\n\t,v50=rep(\"a\",1500),v51=rep(\"a\",1500),v52=rep(\"a\",1500),v53=rep(\"a\",1500)\n\t,v54=rep(\"a\",1500),v55=rep(1,1500))\n\n#save it to the PostgreSQL database\n\tsqlSave(con,df1,\"asdf\",append=TRUE,rownames=FALSE,varType=vt)\n\n# clean up after yourself\n\tdf1<-0\n\tgc()\n}",
+      "body_snippet": "Hello List\n\nI have a reproducible example at the bottom of this message, if you\nhave PostgreSQL set up as a data source in Windows.  I'm just looking\nfor ideas on how to debug a problem that crashes R",
+      "thread_id": "thread-d14b50ada76f",
+      "thread_depth": 0,
+      "month": "2008-01"
+    },
+    {
+      "id": "msg-d401454a9c01",
+      "message_id": "<m2zlustorw.fsf@userprimary.net>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2008-01-26T10:39:15-08:00",
+      "subject": "[R-sig-DB] RSQLite: ATTACH statement not executed when the db connection is holding a resultSet",
+      "subject_clean": "RSQLite: ATTACH statement not executed when the db connection is holding a resultSet",
+      "in_reply_to": "<m2lk6ld5tq.fsf@userprimary.net> (Seth Falcon's message of \"Sat\\, 19 Jan 2008 10\\:32\\:33 -0800\")",
+      "references": [
+        "<478FF946.6020204@fhcrc.org>",
+        "<m2wsq7drpz.fsf@userprimary.net>",
+        "<4790F226.9020000@fhcrc.org>",
+        "<m2lk6ld5tq.fsf@userprimary.net>"
+      ],
+      "body_plain": "Hi all,\n\nSeth Falcon <seth at userprimary.net> writes:\n> I think there are two ways to go here:\n>\n> 1. Fix dbGetQuery to have the same auto-close semantics.\n>\n> 2. Remove the auto-close feature entirely.  Should dbGetQuery change\n>    too such that it fails when a ResultSet is open instead of opening\n>    a new connection?  That is easier to explain, but not at all\n>    backwards compatible.\n\nI've just uploaded a new RSQLite 0.6-7 with the following changes:\n\n* dbGetQuery now has the same auto-close semantics as dbSendQuery\n\n* dbGetQuery issues a warning message when it opens a temporary\n  connection because there is an incomplete result set.\n\n+ seth\n\n-- \nSeth Falcon | seth at userprimary.net | blog: http://userprimary.net/user/",
+      "body_snippet": "Hi all,\n\nSeth Falcon <seth at userprimary.net> writes:\n> I think there are two ways to go here:\n>\n> 1. Fix dbGetQuery to have the same auto-close semantics.\n>\n> 2. Remove the auto-close feature entire",
+      "thread_id": "thread-992125bb7134",
+      "thread_depth": 4,
+      "month": "2008-01"
+    },
+    {
+      "id": "msg-26eefdb661ae",
+      "message_id": "<479E41ED.9000709@fhcrc.org>",
+      "from_name": "Herve Pages",
+      "from_email_hash": "fd1d1d7a6264909f0236d26dfae51520f3d3455c869422fce43a45549d197dbf",
+      "date": "2008-01-28T12:58:21-08:00",
+      "subject": "[R-sig-DB] RSQLite: ATTACH statement not executed when the db connection is holding a resultSet",
+      "subject_clean": "RSQLite: ATTACH statement not executed when the db connection is holding a resultSet",
+      "in_reply_to": "<m2zlustorw.fsf@userprimary.net>",
+      "references": [
+        "<478FF946.6020204@fhcrc.org>",
+        "<m2wsq7drpz.fsf@userprimary.net>",
+        "<4790F226.9020000@fhcrc.org>",
+        "<m2lk6ld5tq.fsf@userprimary.net>",
+        "<m2zlustorw.fsf@userprimary.net>"
+      ],
+      "body_plain": "Hi Seth,\n\nSeth Falcon wrote:\n> Hi all,\n> \n> Seth Falcon <seth at userprimary.net> writes:\n>> I think there are two ways to go here:\n>>\n>> 1. Fix dbGetQuery to have the same auto-close semantics.\n>>\n>> 2. Remove the auto-close feature entirely.  Should dbGetQuery change\n>>    too such that it fails when a ResultSet is open instead of opening\n>>    a new connection?  That is easier to explain, but not at all\n>>    backwards compatible.\n> \n> I've just uploaded a new RSQLite 0.6-7 with the following changes:\n> \n> * dbGetQuery now has the same auto-close semantics as dbSendQuery\n> \n> * dbGetQuery issues a warning message when it opens a temporary\n>   connection because there is an incomplete result set.\n\n\nOK I get the warning now:\n\n  library(RSQLite)\n  db1 <- dbConnect(SQLite(), \"db1.sqlite\")\n  dbGetQuery(db1, \"CREATE TABLE t1 (a integer, aa text)\")\n  db2 <- dbConnect(SQLite(), \"db2.sqlite\")\n  dbGetQuery(db2, \"CREATE TABLE t2 (b integer, bb text)\")\n  dbGetQuery(db2, \"ATTACH 'db1.sqlite' AS db1\")\n  dbSendQuery(db2, \"SELECT * FROM db1.t1\")\n\n  > dbGetQuery(db2, \"SELECT * FROM db1.t1\")\n  Error in sqliteExecStatement(new.con, statement, bind.data) :\n    RS-DBI driver: (error in statement: no such table: db1.t1)\n  In addition: Warning message:\n  In sqliteQuickSQL(conn, statement, ...) :\n    There is an open, incomplete result set; executing query on a temporary connection\n\n  > dbGetQuery(db2, \"DETACH db1\")\n  Error in sqliteExecStatement(new.con, statement, bind.data) :\n    RS-DBI driver: (RS_SQLite_exec: could not execute1: no such database: db1)\n  In addition: Warning message:\n  In sqliteQuickSQL(conn, statement, ...) :\n    There is an open, incomplete result set; executing query on a temporary connection\n\nbut dbGetQuery() doesn't seem to be reporting what one would expect.\nEven if there is a warning now, I still find the \"temporary connection\"\nfeature confusing...\n\nThanks!\nH.\n\n\n> sessionInfo()\nR version 2.7.0 Under development (unstable) (2007-12-20 r43747)\nx86_64-unknown-linux-gnu\n\nlocale:\nLC_CTYPE=en_US;LC_NUMERIC=C;LC_TIME=en_US;LC_COLLATE=en_US;LC_MONETARY=en_US;LC_MESSAGES=en_US;LC_PAPER=en_US;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=en_US;LC_IDENTIFICATION=C\n\nattached base packages:\n[1] stats     graphics  grDevices utils     datasets  methods   base\n\nother attached packages:\n[1] RSQLite_0.6-7 DBI_0.2-4\n>\n\n\n> \n> + seth\n>",
+      "body_snippet": "Hi Seth,\n\nSeth Falcon wrote:\n> Hi all,\n> \n> Seth Falcon <seth at userprimary.net> writes:\n>> I think there are two ways to go here:\n>>\n>> 1. Fix dbGetQuery to have the same auto-close semantics.\n>>\n>>",
+      "thread_id": "thread-992125bb7134",
+      "thread_depth": 5,
+      "month": "2008-01"
+    },
+    {
+      "id": "msg-8f70035db15f",
+      "message_id": "<m2myqpsked.fsf@userprimary.net>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2008-01-28T13:35:54-08:00",
+      "subject": "[R-sig-DB] RSQLite: ATTACH statement not executed when the db connection is holding a resultSet",
+      "subject_clean": "RSQLite: ATTACH statement not executed when the db connection is holding a resultSet",
+      "in_reply_to": "<479E41ED.9000709@fhcrc.org> (Herve Pages's message of \"Mon\\, 28 Jan 2008 12\\:58\\:21 -0800\")",
+      "references": [
+        "<478FF946.6020204@fhcrc.org>",
+        "<m2wsq7drpz.fsf@userprimary.net>",
+        "<4790F226.9020000@fhcrc.org>",
+        "<m2lk6ld5tq.fsf@userprimary.net>",
+        "<m2zlustorw.fsf@userprimary.net>",
+        "<479E41ED.9000709@fhcrc.org>"
+      ],
+      "body_plain": "Hi Herve,\n\nHerve Pages <hpages at fhcrc.org> writes:\n> OK I get the warning now:\n>\n>   library(RSQLite)\n>   db1 <- dbConnect(SQLite(), \"db1.sqlite\")\n>   dbGetQuery(db1, \"CREATE TABLE t1 (a integer, aa text)\")\n>   db2 <- dbConnect(SQLite(), \"db2.sqlite\")\n>   dbGetQuery(db2, \"CREATE TABLE t2 (b integer, bb text)\")\n>   dbGetQuery(db2, \"ATTACH 'db1.sqlite' AS db1\")\n>   dbSendQuery(db2, \"SELECT * FROM db1.t1\")\n>\n>   > dbGetQuery(db2, \"SELECT * FROM db1.t1\")\n>   Error in sqliteExecStatement(new.con, statement, bind.data) :\n>     RS-DBI driver: (error in statement: no such table: db1.t1)\n>   In addition: Warning message:\n>   In sqliteQuickSQL(conn, statement, ...) :\n>     There is an open, incomplete result set; executing query on a temporary connection\n>\n>   > dbGetQuery(db2, \"DETACH db1\")\n>   Error in sqliteExecStatement(new.con, statement, bind.data) :\n>     RS-DBI driver: (RS_SQLite_exec: could not execute1: no such database: db1)\n>   In addition: Warning message:\n>   In sqliteQuickSQL(conn, statement, ...) :\n>     There is an open, incomplete result set; executing query on a temporary connection\n>\n> but dbGetQuery() doesn't seem to be reporting what one would expect.\n\nI'm not sure what you mean.  What do you expect dbGetQuery to report?\n\nThe above looks \"right\" to me.  You got a warning that told you that\nyour ATTACH occured on a temp connection.  Since ATTACH is called for\nits side-effect on the _connection_ this means your ATTACH was\nuseless.\n\n> Even if there is a warning now, I still find the \"temporary connection\"\n> feature confusing...\n\nYes, the temporary connection \"feature\" _is_ confusing.  I would like\nto remove this feature and have dbGetQuery behave like dbSendQuery:\nerror if there is an open and incomplete result set, close and process\na complete, but open result set, and encourage users to explicitly\nclose all result sets that they open.\n\nI haven't done this yet, because making non-backwards compatible\nchanges should be done with some thought ... and some time for\ninterested parties to weigh in... anyone?\n\n+ seth\n\n-- \nSeth Falcon | seth at userprimary.net | blog: http://userprimary.net/user/",
+      "body_snippet": "Hi Herve,\n\nHerve Pages <hpages at fhcrc.org> writes:\n> OK I get the warning now:\n>\n>   library(RSQLite)\n>   db1 <- dbConnect(SQLite(), \"db1.sqlite\")\n>   dbGetQuery(db1, \"CREATE TABLE t1 (a integer, aa",
+      "thread_id": "thread-992125bb7134",
+      "thread_depth": 6,
+      "month": "2008-01"
+    },
+    {
+      "id": "msg-46aac0081dea",
+      "message_id": "<479E790F.5080608@fhcrc.org>",
+      "from_name": "Herve Pages",
+      "from_email_hash": "fd1d1d7a6264909f0236d26dfae51520f3d3455c869422fce43a45549d197dbf",
+      "date": "2008-01-28T16:53:35-08:00",
+      "subject": "[R-sig-DB] RSQLite: ATTACH statement not executed when the db connection is holding a resultSet",
+      "subject_clean": "RSQLite: ATTACH statement not executed when the db connection is holding a resultSet",
+      "in_reply_to": "<m2myqpsked.fsf@userprimary.net>",
+      "references": [
+        "<478FF946.6020204@fhcrc.org>",
+        "<m2wsq7drpz.fsf@userprimary.net>",
+        "<4790F226.9020000@fhcrc.org>",
+        "<m2lk6ld5tq.fsf@userprimary.net>",
+        "<m2zlustorw.fsf@userprimary.net>",
+        "<479E41ED.9000709@fhcrc.org>",
+        "<m2myqpsked.fsf@userprimary.net>"
+      ],
+      "body_plain": "Hi Seth,\n\nSeth Falcon wrote:\n> Hi Herve,\n> \n> Herve Pages <hpages at fhcrc.org> writes:\n>> OK I get the warning now:\n>>\n>>   library(RSQLite)\n>>   db1 <- dbConnect(SQLite(), \"db1.sqlite\")\n>>   dbGetQuery(db1, \"CREATE TABLE t1 (a integer, aa text)\")\n>>   db2 <- dbConnect(SQLite(), \"db2.sqlite\")\n>>   dbGetQuery(db2, \"CREATE TABLE t2 (b integer, bb text)\")\n>>   dbGetQuery(db2, \"ATTACH 'db1.sqlite' AS db1\")\n>>   dbSendQuery(db2, \"SELECT * FROM db1.t1\")\n>>\n>>   > dbGetQuery(db2, \"SELECT * FROM db1.t1\")\n>>   Error in sqliteExecStatement(new.con, statement, bind.data) :\n>>     RS-DBI driver: (error in statement: no such table: db1.t1)\n>>   In addition: Warning message:\n>>   In sqliteQuickSQL(conn, statement, ...) :\n>>     There is an open, incomplete result set; executing query on a temporary connection\n>>\n>>   > dbGetQuery(db2, \"DETACH db1\")\n>>   Error in sqliteExecStatement(new.con, statement, bind.data) :\n>>     RS-DBI driver: (RS_SQLite_exec: could not execute1: no such database: db1)\n>>   In addition: Warning message:\n>>   In sqliteQuickSQL(conn, statement, ...) :\n>>     There is an open, incomplete result set; executing query on a temporary connection\n>>\n>> but dbGetQuery() doesn't seem to be reporting what one would expect.\n> \n> I'm not sure what you mean.  What do you expect dbGetQuery to report?\n> \n> The above looks \"right\" to me.  You got a warning that told you that\n> your ATTACH occured on a temp connection.\n\nAre you sure? My understanding is that the ATTACH didn't occur on a temp connection\nbut really occurred on the db2 connection itself (I mean the real one). It's my\ndbGetQuery(db2, \"SELECT * FROM db1.t1\") that was sent later thru a temporary connection\nand thus was not aware that db1 was attached to db2. Or am I missing something?\n\n>  Since ATTACH is called for\n> its side-effect on the _connection_ this means your ATTACH was\n> useless.\n\nI agree. But the ATTACH could have been sent a long time before (many queries before\nin the query history), and not necessarily by me, so I don't really know the who/how/when\nof it. And then suddenly, db1 doesn't seem to be attached to db2 anymore, even if everything\nso far seemed to indicate that it was attached (let's say I've sent\ndbGetQuery(db2, \"SELECT * FROM db1.t1\") many times before with no problems because there\nwas no pending results in db2).\n\nSo we have a situation where depending on whether I use dbGetQuery() or dbSendQuery() and\nwhether there is a pending result set or not, db1 will sometimes appear as attached to db2,\nand sometimes not. That's what I mean by dbGetQuery() not reporting what one would expect.\n\nMaybe the motivation behind the temporary connection \"feature\" feature was to provide\nsome convenience to the user so s/he can do:\n\n  dbGetQuery(db2, myquery)\n\neven if there is a pending result set. But then it should not affect the semantic of\ndbGetQuery() i.e. one might expect the same result as with:\n\n  ## clear all pending results first\n  while (length(dbListResults(db2)) >= 1) dbClearResult(dbListResults(db2)[[1]])\n  ## send the query\n  dbGetQuery(db2, myquery)\n\nwhich is not the case.\n\nI understand that this is due to the temporary connection \"feature\" and that it might\nlook right to anybody who knows all the internal gears, but still...\n\nBTW, according to the documentation it seems that the 'cache_size' and 'synchronous'\nvalues that the user can specify when opening an SQLite connection with dbConnect()\nare not used for the temporary connection. Any reason behind this?\n\n\n> \n>> Even if there is a warning now, I still find the \"temporary connection\"\n>> feature confusing...\n> \n> Yes, the temporary connection \"feature\" _is_ confusing.  I would like\n> to remove this feature and have dbGetQuery behave like dbSendQuery:\n> error if there is an open and incomplete result set, close and process\n> a complete, but open result set, and encourage users to explicitly\n> close all result sets that they open.\n\nSounds good.\n\nThanks,\nH.\n\n> \n> I haven't done this yet, because making non-backwards compatible\n> changes should be done with some thought ... and some time for\n> interested parties to weigh in... anyone?\n> \n> + seth\n>",
+      "body_snippet": "Hi Seth,\n\nSeth Falcon wrote:\n> Hi Herve,\n> \n> Herve Pages <hpages at fhcrc.org> writes:\n>> OK I get the warning now:\n>>\n>>   library(RSQLite)\n>>   db1 <- dbConnect(SQLite(), \"db1.sqlite\")\n>>   dbGetQu",
+      "thread_id": "thread-992125bb7134",
+      "thread_depth": 7,
+      "month": "2008-01"
+    },
+    {
+      "id": "msg-5ddff6988986",
+      "message_id": "<m2abmps9xk.fsf@userprimary.net>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2008-01-28T17:21:59-08:00",
+      "subject": "[R-sig-DB] RSQLite: ATTACH statement not executed when the db connection is holding a resultSet",
+      "subject_clean": "RSQLite: ATTACH statement not executed when the db connection is holding a resultSet",
+      "in_reply_to": "<479E790F.5080608@fhcrc.org> (Herve Pages's message of \"Mon\\, 28 Jan 2008 16\\:53\\:35 -0800\")",
+      "references": [
+        "<478FF946.6020204@fhcrc.org>",
+        "<m2wsq7drpz.fsf@userprimary.net>",
+        "<4790F226.9020000@fhcrc.org>",
+        "<m2lk6ld5tq.fsf@userprimary.net>",
+        "<m2zlustorw.fsf@userprimary.net>",
+        "<479E41ED.9000709@fhcrc.org>",
+        "<m2myqpsked.fsf@userprimary.net>",
+        "<479E790F.5080608@fhcrc.org>"
+      ],
+      "body_plain": "Herve Pages <hpages at fhcrc.org> writes:\n>> I'm not sure what you mean.  What do you expect dbGetQuery to report?\n>> \n>> The above looks \"right\" to me.  You got a warning that told you that\n>> your ATTACH occured on a temp connection.\n>\n> Are you sure? My understanding is that the ATTACH didn't occur on a temp connection\n> but really occurred on the db2 connection itself (I mean the real one). It's my\n> dbGetQuery(db2, \"SELECT * FROM db1.t1\") that was sent later thru a temporary connection\n> and thus was not aware that db1 was attached to db2. Or am I missing\n> something?\n\nSorry, I was not being careful.  You are right, the ATTACH should have\noccured on the db2 connection, but because you have an incomplete\nresult set hanging around, the subsequent calls to dbGetQuery are\nexecuted on a connection without the attach -- so you are not missing\nsomething and I was.  {though I'm still missing what you expected, the\noutput looks \"right\"}.\n\n> I agree. But the ATTACH could have been sent a long time before (many queries before\n> in the query history), and not necessarily by me, so I don't really know the who/how/when\n> of it. And then suddenly, db1 doesn't seem to be attached to db2 anymore, even if everything\n> so far seemed to indicate that it was attached (let's say I've sent\n> dbGetQuery(db2, \"SELECT * FROM db1.t1\") many times before with no problems because there\n> was no pending results in db2).\n>\n> So we have a situation where depending on whether I use dbGetQuery() or dbSendQuery() and\n> whether there is a pending result set or not, db1 will sometimes appear as attached to db2,\n> and sometimes not. That's what I mean by dbGetQuery() not reporting\n> what one would expect.\n\nAnd that's why as a start, I added the warning message which\npresumably would lead you to the problem rather quickly.\n\n> Maybe the motivation behind the temporary connection \"feature\" feature was to provide\n> some convenience to the user so s/he can do:\n>\n>   dbGetQuery(db2, myquery)\n>\n> even if there is a pending result set. But then it should not affect the semantic of\n> dbGetQuery() i.e. one might expect the same result as with:\n>\n>   ## clear all pending results first\n>   while (length(dbListResults(db2)) >= 1) dbClearResult(dbListResults(db2)[[1]])\n\nwhy not:\n\n    lapply(dbListResults(db2), dbClearResult)\n\n>   ## send the query\n>   dbGetQuery(db2, myquery)\n>\n> which is not the case.\n>\n> I understand that this is due to the temporary connection \"feature\" and that it might\n> look right to anybody who knows all the internal gears, but still...\n>\n> BTW, according to the documentation it seems that the 'cache_size' and 'synchronous'\n> values that the user can specify when opening an SQLite connection with dbConnect()\n> are not used for the temporary connection. Any reason behind this?\n\nOnly that I only learned of the temp connection behavior from your\ndetailed bug report ;-)\n\nI'm becomming quite convinced that the temp conneciton \"feature\" is\nfar too expensive in terms of maintenance (the cache_size issue) and\nuser confusion (the ATTACH type of issues).  I would not be surprised if\nthe code originated before SQLite even supported ATTACH.\n\nI will be testing a patch that removes the temp connection and gives a\nclear error message about how to close open connections.\n\nThanks, Herve, for your detailed explanations and report.\n\n+ seth\n\n-- \nSeth Falcon | seth at userprimary.net | blog: http://userprimary.net/user/",
+      "body_snippet": "Herve Pages <hpages at fhcrc.org> writes:\n>> I'm not sure what you mean.  What do you expect dbGetQuery to report?\n>> \n>> The above looks \"right\" to me.  You got a warning that told you that\n>> your A",
+      "thread_id": "thread-992125bb7134",
+      "thread_depth": 8,
+      "month": "2008-01"
+    },
+    {
+      "id": "msg-9321bd2a98ca",
+      "message_id": "<479FB407.7080208@fhcrc.org>",
+      "from_name": "Herve Pages",
+      "from_email_hash": "fd1d1d7a6264909f0236d26dfae51520f3d3455c869422fce43a45549d197dbf",
+      "date": "2008-01-29T15:17:27-08:00",
+      "subject": "[R-sig-DB] RSQLite: ATTACH statement not executed when the db connection is holding a resultSet",
+      "subject_clean": "RSQLite: ATTACH statement not executed when the db connection is holding a resultSet",
+      "in_reply_to": "<m2abmps9xk.fsf@userprimary.net>",
+      "references": [
+        "<478FF946.6020204@fhcrc.org>",
+        "<m2wsq7drpz.fsf@userprimary.net>",
+        "<4790F226.9020000@fhcrc.org>",
+        "<m2lk6ld5tq.fsf@userprimary.net>",
+        "<m2zlustorw.fsf@userprimary.net>",
+        "<479E41ED.9000709@fhcrc.org>",
+        "<m2myqpsked.fsf@userprimary.net>",
+        "<479E790F.5080608@fhcrc.org>",
+        "<m2abmps9xk.fsf@userprimary.net>"
+      ],
+      "body_plain": "Hi Seth,\n\nJust FYI, I tried with RMySQL and here too dbGetQuery() seems to use the\ntemp connection trick. So, not surprisingly, it leads to the same kind of\nproblems:\n\n  > library(RMySQL)\n  > db <- dbConnect(\"MySQL\", ...)\n  > dbGetQuery(db, \"USE test\") # selecting the 'test' database\n  > dbSendQuery(db, \"SELECT * FROM go_term\")\n  <MySQLResult:(24051,0,3)>\n  > dbGetQuery(db, \"SELECT * FROM go_term\")\n  Error in mysqlExecStatement(conn, statement, ...) :\n    RS-DBI driver: (could not run statement: No Database Selected)\n\nA workaround for this particular error would have been to specify the database\nat connection time with the 'db' arg:\n\n  > test_db <- dbConnect(\"MySQL\", ..., db=\"test\")\n\nThen any temp connection created by dbGetQuery() will use the same db by default.\n\nBut again, I can see many different ways to get hit by the temp connection \"feature\",\nespecially when one needs to work with several databases and wants to switch between\nthem with the USE command.\n\nSeth Falcon wrote:\n[...]\n> I'm becomming quite convinced that the temp conneciton \"feature\" is\n> far too expensive in terms of maintenance (the cache_size issue) and\n> user confusion (the ATTACH type of issues).  I would not be surprised if\n> the code originated before SQLite even supported ATTACH.\n> \n> I will be testing a patch that removes the temp connection and gives a\n> clear error message about how to close open connections.\n\nGood. Let me know if you need more testing.\nThanks a lot!\n\nH.",
+      "body_snippet": "Hi Seth,\n\nJust FYI, I tried with RMySQL and here too dbGetQuery() seems to use the\ntemp connection trick. So, not surprisingly, it leads to the same kind of\nproblems:\n\n  > library(RMySQL)\n  > db <- db",
+      "thread_id": "thread-992125bb7134",
+      "thread_depth": 9,
+      "month": "2008-01"
+    },
+    {
+      "id": "msg-29a9beb2aa2c",
+      "message_id": "<56B5F1AFB06FD54FAE658019A935AECBA6009EC138@adorsmail01.ors.local>",
+      "from_name": "Daniele Amberti",
+      "from_email_hash": "9e22dc2d370adad3b1b4d2871df86869a9d5b577d709d6cf9e0b5078ef1ae990",
+      "date": "2008-01-31T17:17:03+01:00",
+      "subject": "[R-sig-DB] Date time, MSSQL and RODBC",
+      "subject_clean": "Date time, MSSQL and RODBC",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\nI have to connect to MSSQL server to get some TimeSeries value (datetime, float) on output.\nDatetime data type in R is a POSIXct date with information about timezone, daylight or solar time.\nIn the DB I have not this kind of information and this cause some problem at the change of time for energy savings.\n\nAny idea on how to connect and have an simple and clear interpretation of date (without all this information)?\n\nWhich is the best way to connect to MSSQL server with R on windows?\n\nWhen I insert datetime into the DB with R there are problems  in the date interpretation (I think this depend on the system settings of R installation (on windows) and MSSQL installation. Sometimes it works directly (POSIXct to DB) sometimes I have to format a POSIXct to YYYYmmdd format to be able to insert date. What about a safe methodology about this kind of operation?\n\nThanks in advance\n\nDaniele\n\n\n\n\n________________________________\nORS Srl\n\nVia Agostino Morando 1/3 12060 Roddi (Cn) - Italy\nTel. +39 0173 620211\nFax. +39 0173 620299 / +39 0173 433111\nWeb Site www.ors.it\n\n------------------------------------------------------------------------------------------------------------------------\nQualsiasi utilizzo non autorizzato del presente messaggio e dei suoi allegati ?? vietato e potrebbe costituire reato.\nSe lei avesse ricevuto erroneamente questo messaggio, Le saremmo grati se provvedesse alla distruzione dello stesso\ne degli eventuali allegati.\nOpinioni, conclusioni o altre informazioni riportate nella e-mail, che non siano relative alle attivit?? e/o\nalla missione aziendale di O.R.S. Srl si intendono non attribuibili alla societ?? stessa, n?? la impegnano in alcun modo.\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi,\nI have to connect to MSSQL server to get some TimeSeries value (datetime, float) on output.\nDatetime data type in R is a POSIXct date with information about timezone, daylight or solar time.\nIn th",
+      "thread_id": "thread-29a9beb2aa2c",
+      "thread_depth": 0,
+      "month": "2008-01"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-b2babaa5e619",
+      "subject": "ROracle problem?",
+      "message_count": 1,
+      "participants": [
+        "Don Allen"
+      ],
+      "started": "2008-01-03T11:04:09-05:00",
+      "last_reply": "2008-01-03T11:04:09-05:00",
+      "root_message_id": "msg-b2babaa5e619"
+    },
+    {
+      "id": "thread-feb293cb5fbf",
+      "subject": "FYI",
+      "message_count": 1,
+      "participants": [
+        "Hunter Price"
+      ],
+      "started": "2008-01-06T21:05:10+00:00",
+      "last_reply": "2008-01-06T21:05:10+00:00",
+      "root_message_id": "msg-feb293cb5fbf"
+    },
+    {
+      "id": "thread-74a7585f3fd5",
+      "subject": "Oracle connectivity",
+      "message_count": 3,
+      "participants": [
+        "Prof Brian Ripley",
+        "Tudor Bodea"
+      ],
+      "started": "2008-01-08T10:00:17-05:00",
+      "last_reply": "2008-01-08T14:46:11-05:00",
+      "root_message_id": "msg-74a7585f3fd5"
+    },
+    {
+      "id": "thread-d4528d7f79e6",
+      "subject": "one problem when i use package JRI",
+      "message_count": 2,
+      "participants": [
+        "Prof Brian Ripley",
+        "文波胡"
+      ],
+      "started": "2008-01-08T21:35:32+08:00",
+      "last_reply": "2008-01-08T14:17:50+00:00",
+      "root_message_id": "msg-d4528d7f79e6"
+    },
+    {
+      "id": "thread-992125bb7134",
+      "subject": "RSQLite: ATTACH statement not executed when the db connection is holding a resultSet",
+      "message_count": 12,
+      "participants": [
+        "Gabor Grothendieck",
+        "Herve Pages",
+        "Seth Falcon"
+      ],
+      "started": "2008-01-17T16:56:38-08:00",
+      "last_reply": "2008-01-29T15:17:27-08:00",
+      "root_message_id": "msg-992125bb7134"
+    },
+    {
+      "id": "thread-d14b50ada76f",
+      "subject": "R crashes while executing sqlSave from RODBC to PostgreSQL dsn inside a for loop - debug help",
+      "message_count": 1,
+      "participants": [
+        "Paul DeBruicker"
+      ],
+      "started": "2008-01-22T17:11:55-05:00",
+      "last_reply": "2008-01-22T17:11:55-05:00",
+      "root_message_id": "msg-d14b50ada76f"
+    },
+    {
+      "id": "thread-29a9beb2aa2c",
+      "subject": "Date time, MSSQL and RODBC",
+      "message_count": 1,
+      "participants": [
+        "Daniele Amberti"
+      ],
+      "started": "2008-01-31T17:17:03+01:00",
+      "last_reply": "2008-01-31T17:17:03+01:00",
+      "root_message_id": "msg-29a9beb2aa2c"
+    }
+  ]
+}

@@ -1,0 +1,1196 @@
+From pg||bert902 @end|ng |rom gm@||@com  Sat Oct 11 19:18:59 2014
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Sat, 11 Oct 2014 13:18:59 -0400
+Subject: [R-sig-DB] DBI preferred syntax
+Message-ID: <54396683.1090801@gmail.com>
+
+I am trying to understand what is the new preferred way to establish a 
+db connection. (And there seems to be an error in SQLite.)
+
+There also seems to be, from a user's perspective, an inconsistency in 
+the call dbConnect() relative to dbDriver(), in that the first works 
+with, for example, RSQLite::SQLite() and "SQLite", whereas the latter 
+wants only the character string.
+
+I am using
+
+R version 3.1.1 (2014-07-10) -- "Sock it to Me"
+on Linux Mint (3.11.0-12-generic #19-Ubuntu SMP  x86_64 x86_64 x86_64 
+GNU/Linux)
+
+installed.packages()[c("DBI","RSQLite", "RMySQL", 
+"RPostgreSQL"),c("Package","Version")]
+             Package       Version
+DBI         "DBI"         "0.3.1"
+RSQLite     "RSQLite"     "0.11.4"
+RMySQL      "RMySQL"      "0.9-3"
+RPostgreSQL "RPostgreSQL" "0.4"
+
+For easy comparison the commands are shown here. The R session was 
+restarted between testing the different packages. The sessions with 
+error messages are further below.
+
+##########
+require("RSQLite")
+z <-dbConnect("SQLite", dbname="test")          #works but see below
+z <-dbConnect(SQLite, dbname="test")            #fails
+z <-dbConnect(RSQLite::SQLite(), dbname="test") #works
+z <-dbConnect(RSQLite::SQLite, dbname="test")   #fails
+
+m <- dbDriver("SQLite")
+z <-dbConnect(m, dbname="test")                 #works
+
+m <- dbDriver(RMySQL::MySQL())                  #fails
+
+z <-dbConnect("SQLite", dbname="test")     # worked above but now fails
+
+##########
+require("RMySQL")
+z <-dbConnect("MySQL", dbname="test")           #works
+z <-dbConnect(MySQL, dbname="test")             #fails
+z <-dbConnect(RMySQL::MySQL(), dbname="test")   #works
+z <-dbConnect(RMySQL::MySQL, dbname="test")     #fails
+
+m <- dbDriver("MySQL")
+z <-dbConnect(m, dbname="test")                 #works
+
+m <- dbDriver(RMySQL::MySQL())                  #fails
+
+##########
+require("RPostgreSQL")
+z <-dbConnect("PostgreSQL", dbname="test")                #works
+z <-dbConnect(PostgreSQL, dbname="test")                  #fails
+z <-dbConnect(RPostgreSQL::PostgreSQL(), dbname="test")   #works
+z <-dbConnect(RPostgreSQL::PostgreSQL, dbname="test")     #fails
+
+m <- dbDriver("PostgreSQL")
+z <-dbConnect(m, dbname="test")                           #works
+
+m <- dbDriver(RPostgreSQL::PostgreSQL())                  #fails
+
+
+##############################
+  Sessions showing errors. R was restarted for each package test.
+##############################
+ > require("RSQLite")
+Loading required package: RSQLite
+Loading required package: DBI
+ > z <-dbConnect("SQLite", dbname="test")          #works but see below
+ > z <-dbConnect(SQLite, dbname="test")            #fails
+Error in (function (classes, fdef, mtable)  :
+   unable to find an inherited method for function \u2018dbConnect\u2019 
+for signature \u2018"function"\u2019
+ > z <-dbConnect(RSQLite::SQLite(), dbname="test") #works
+ > z <-dbConnect(RSQLite::SQLite, dbname="test")   #fails
+Error in (function (classes, fdef, mtable)  :
+   unable to find an inherited method for function \u2018dbConnect\u2019 
+for signature \u2018"function"\u2019
+ >
+ > m <- dbDriver("SQLite")
+ > z <-dbConnect(m, dbname="test")                 #works
+ >
+ > m <- dbDriver(RMySQL::MySQL())                  #fails
+Error in (function (classes, fdef, mtable)  :
+   unable to find an inherited method for function \u2018dbDriver\u2019 
+for signature \u2018"MySQLDriver"\u2019
+ >
+ > z <-dbConnect("SQLite", dbname="test")          # now fails
+Error in as.integer(from) :
+   cannot coerce type 'externalptr' to vector of type 'integer'
+
+
+
+ > require("RMySQL")
+Loading required package: RMySQL
+Loading required package: DBI
+ > z <-dbConnect("MySQL", dbname="test")           #works
+ > z <-dbConnect(MySQL, dbname="test")             #fails
+Error in (function (classes, fdef, mtable)  :
+   unable to find an inherited method for function \u2018dbConnect\u2019 
+for signature \u2018"function"\u2019
+ > z <-dbConnect(RMySQL::MySQL(), dbname="test")   #works
+ > z <-dbConnect(RMySQL::MySQL, dbname="test")     #fails
+Error in (function (classes, fdef, mtable)  :
+   unable to find an inherited method for function \u2018dbConnect\u2019 
+for signature \u2018"function"\u2019
+ >
+ > m <- dbDriver("MySQL")
+ > z <-dbConnect(m, dbname="test")                 #works
+ >
+ > m <- dbDriver(RMySQL::MySQL())                  #fails
+Error in (function (classes, fdef, mtable)  :
+   unable to find an inherited method for function \u2018dbDriver\u2019 
+for signature \u2018"MySQLDriver"\u2019
+
+
+
+ > require("RPostgreSQL")
+Loading required package: RPostgreSQL
+Loading required package: DBI
+ > z <-dbConnect("PostgreSQL", dbname="test")                #works
+ > z <-dbConnect(PostgreSQL, dbname="test")                  #fails
+Error in (function (classes, fdef, mtable)  :
+   unable to find an inherited method for function \u2018dbConnect\u2019 
+for signature \u2018"function"\u2019
+ > z <-dbConnect(RPostgreSQL::PostgreSQL(), dbname="test")   #works
+ > z <-dbConnect(RPostgreSQL::PostgreSQL, dbname="test")     #fails
+Error in (function (classes, fdef, mtable)  :
+   unable to find an inherited method for function \u2018dbConnect\u2019 
+for signature \u2018"function"\u2019
+ >
+ > m <- dbDriver("PostgreSQL")
+ > z <-dbConnect(m, dbname="test")                           #works
+ >
+ > m <- dbDriver(RPostgreSQL::PostgreSQL())                  #fails
+Error in (function (classes, fdef, mtable)  :
+   unable to find an inherited method for function \u2018dbDriver\u2019 
+for signature \u2018"PostgreSQLDriver"\u2019
+
+
+In addition to the above, I am sometimes faced with getting from a 
+string to a driver.  Is there any preference for one of these rather 
+than the other?
+
+z <-dbConnect(do.call("SQLite", list()), dbname="test")   #works
+
+z <-dbConnect(get("SQLite")(), dbname="test")   #works
+
+z <-dbConnect("SQLite", dbname="test")          #when it works
+
+or is there a better way to do this?
+
+Thanks,
+Paul
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Sat Oct 11 19:30:46 2014
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Sat, 11 Oct 2014 12:30:46 -0500
+Subject: [R-sig-DB] DBI preferred syntax
+In-Reply-To: <54396683.1090801@gmail.com>
+References: <54396683.1090801@gmail.com>
+Message-ID: <CABdHhvG8+cE4=UHK7tcASned=UN4Jf0eMNTAo0zT8UzecO12sw@mail.gmail.com>
+
+Hi Paul,
+
+Here are my thoughts:
+
+* dbDriver("SQLite") - never do this. dbDriver initialisation should
+only ever be performed by the package (that's the whole point of
+RSQLite::SQLite).
+
+* dbConnect("SQLite", "test") - this used to work, but I think it's a
+bad idea in general, because it interfaces poorly with namesspaces
+
+* dbConnect(SQLite(), "test") - this will work but only if RSQLite is
+attached (i.e. on the search path)
+
+* dbConnect(RSQLite::SQLite(), "test") - this is the best way in my
+opinion. It doesn't require that RSQLite be attached, just DBI, which
+I think is the right approach. A DBI backend (in general) should only
+ever provide methods, not new generics, so it shouldn't need to be
+attached. In other words, you should _never_ need require("RSQLite").
+
+* dbConnect(getExportedValue("RSQLite", "SQLite")()) - equivalent to
+above, but use strings.
+
+
+Hadley
+
+
+
+On Sat, Oct 11, 2014 at 12:18 PM, Paul Gilbert <pgilbert902 at gmail.com> wrote:
+> I am trying to understand what is the new preferred way to establish a db
+> connection. (And there seems to be an error in SQLite.)
+>
+> There also seems to be, from a user's perspective, an inconsistency in the
+> call dbConnect() relative to dbDriver(), in that the first works with, for
+> example, RSQLite::SQLite() and "SQLite", whereas the latter wants only the
+> character string.
+>
+> I am using
+>
+> R version 3.1.1 (2014-07-10) -- "Sock it to Me"
+> on Linux Mint (3.11.0-12-generic #19-Ubuntu SMP  x86_64 x86_64 x86_64
+> GNU/Linux)
+>
+> installed.packages()[c("DBI","RSQLite", "RMySQL",
+> "RPostgreSQL"),c("Package","Version")]
+>             Package       Version
+> DBI         "DBI"         "0.3.1"
+> RSQLite     "RSQLite"     "0.11.4"
+> RMySQL      "RMySQL"      "0.9-3"
+> RPostgreSQL "RPostgreSQL" "0.4"
+>
+> For easy comparison the commands are shown here. The R session was restarted
+> between testing the different packages. The sessions with error messages are
+> further below.
+>
+> ##########
+> require("RSQLite")
+> z <-dbConnect("SQLite", dbname="test")          #works but see below
+> z <-dbConnect(SQLite, dbname="test")            #fails
+> z <-dbConnect(RSQLite::SQLite(), dbname="test") #works
+> z <-dbConnect(RSQLite::SQLite, dbname="test")   #fails
+>
+> m <- dbDriver("SQLite")
+> z <-dbConnect(m, dbname="test")                 #works
+>
+> m <- dbDriver(RMySQL::MySQL())                  #fails
+>
+> z <-dbConnect("SQLite", dbname="test")     # worked above but now fails
+>
+> ##########
+> require("RMySQL")
+> z <-dbConnect("MySQL", dbname="test")           #works
+> z <-dbConnect(MySQL, dbname="test")             #fails
+> z <-dbConnect(RMySQL::MySQL(), dbname="test")   #works
+> z <-dbConnect(RMySQL::MySQL, dbname="test")     #fails
+>
+> m <- dbDriver("MySQL")
+> z <-dbConnect(m, dbname="test")                 #works
+>
+> m <- dbDriver(RMySQL::MySQL())                  #fails
+>
+> ##########
+> require("RPostgreSQL")
+> z <-dbConnect("PostgreSQL", dbname="test")                #works
+> z <-dbConnect(PostgreSQL, dbname="test")                  #fails
+> z <-dbConnect(RPostgreSQL::PostgreSQL(), dbname="test")   #works
+> z <-dbConnect(RPostgreSQL::PostgreSQL, dbname="test")     #fails
+>
+> m <- dbDriver("PostgreSQL")
+> z <-dbConnect(m, dbname="test")                           #works
+>
+> m <- dbDriver(RPostgreSQL::PostgreSQL())                  #fails
+>
+>
+> ##############################
+>  Sessions showing errors. R was restarted for each package test.
+> ##############################
+>> require("RSQLite")
+> Loading required package: RSQLite
+> Loading required package: DBI
+>> z <-dbConnect("SQLite", dbname="test")          #works but see below
+>> z <-dbConnect(SQLite, dbname="test")            #fails
+> Error in (function (classes, fdef, mtable)  :
+>   unable to find an inherited method for function \u2018dbConnect\u2019 for
+> signature \u2018"function"\u2019
+>> z <-dbConnect(RSQLite::SQLite(), dbname="test") #works
+>> z <-dbConnect(RSQLite::SQLite, dbname="test")   #fails
+> Error in (function (classes, fdef, mtable)  :
+>   unable to find an inherited method for function \u2018dbConnect\u2019 for
+> signature \u2018"function"\u2019
+>>
+>> m <- dbDriver("SQLite")
+>> z <-dbConnect(m, dbname="test")                 #works
+>>
+>> m <- dbDriver(RMySQL::MySQL())                  #fails
+> Error in (function (classes, fdef, mtable)  :
+>   unable to find an inherited method for function \u2018dbDriver\u2019 for
+> signature \u2018"MySQLDriver"\u2019
+>>
+>> z <-dbConnect("SQLite", dbname="test")          # now fails
+> Error in as.integer(from) :
+>   cannot coerce type 'externalptr' to vector of type 'integer'
+>
+>
+>
+>> require("RMySQL")
+> Loading required package: RMySQL
+> Loading required package: DBI
+>> z <-dbConnect("MySQL", dbname="test")           #works
+>> z <-dbConnect(MySQL, dbname="test")             #fails
+> Error in (function (classes, fdef, mtable)  :
+>   unable to find an inherited method for function \u2018dbConnect\u2019 for
+> signature \u2018"function"\u2019
+>> z <-dbConnect(RMySQL::MySQL(), dbname="test")   #works
+>> z <-dbConnect(RMySQL::MySQL, dbname="test")     #fails
+> Error in (function (classes, fdef, mtable)  :
+>   unable to find an inherited method for function \u2018dbConnect\u2019 for
+> signature \u2018"function"\u2019
+>>
+>> m <- dbDriver("MySQL")
+>> z <-dbConnect(m, dbname="test")                 #works
+>>
+>> m <- dbDriver(RMySQL::MySQL())                  #fails
+> Error in (function (classes, fdef, mtable)  :
+>   unable to find an inherited method for function \u2018dbDriver\u2019 for
+> signature \u2018"MySQLDriver"\u2019
+>
+>
+>
+>> require("RPostgreSQL")
+> Loading required package: RPostgreSQL
+> Loading required package: DBI
+>> z <-dbConnect("PostgreSQL", dbname="test")                #works
+>> z <-dbConnect(PostgreSQL, dbname="test")                  #fails
+> Error in (function (classes, fdef, mtable)  :
+>   unable to find an inherited method for function \u2018dbConnect\u2019 for
+> signature \u2018"function"\u2019
+>> z <-dbConnect(RPostgreSQL::PostgreSQL(), dbname="test")   #works
+>> z <-dbConnect(RPostgreSQL::PostgreSQL, dbname="test")     #fails
+> Error in (function (classes, fdef, mtable)  :
+>   unable to find an inherited method for function \u2018dbConnect\u2019 for
+> signature \u2018"function"\u2019
+>>
+>> m <- dbDriver("PostgreSQL")
+>> z <-dbConnect(m, dbname="test")                           #works
+>>
+>> m <- dbDriver(RPostgreSQL::PostgreSQL())                  #fails
+> Error in (function (classes, fdef, mtable)  :
+>   unable to find an inherited method for function \u2018dbDriver\u2019 for
+> signature \u2018"PostgreSQLDriver"\u2019
+>
+>
+> In addition to the above, I am sometimes faced with getting from a string to
+> a driver.  Is there any preference for one of these rather than the other?
+>
+> z <-dbConnect(do.call("SQLite", list()), dbname="test")   #works
+>
+> z <-dbConnect(get("SQLite")(), dbname="test")   #works
+>
+> z <-dbConnect("SQLite", dbname="test")          #when it works
+>
+> or is there a better way to do this?
+>
+> Thanks,
+> Paul
+
+
+
+-- 
+http://had.co.nz/
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Sun Oct 12 00:58:20 2014
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Sat, 11 Oct 2014 15:58:20 -0700
+Subject: [R-sig-DB] DBI preferred syntax
+In-Reply-To: <CABdHhvG8+cE4=UHK7tcASned=UN4Jf0eMNTAo0zT8UzecO12sw@mail.gmail.com>
+References: <54396683.1090801@gmail.com>
+	<CABdHhvG8+cE4=UHK7tcASned=UN4Jf0eMNTAo0zT8UzecO12sw@mail.gmail.com>
+Message-ID: <1DA7D250-AC36-47F8-8093-06D7F318A1F2@userprimary.net>
+
+Hey there,
+
+> On Oct 11, 2014, at 10:30 AM, Hadley Wickham <h.wickham at gmail.com> wrote:
+> 
+> * dbConnect(RSQLite::SQLite(), "test") - this is the best way in my
+> opinion. It doesn't require that RSQLite be attached, just DBI, which
+> I think is the right approach. A DBI backend (in general) should only
+> ever provide methods, not new generics, so it shouldn't need to be
+> attached. In other words, you should _never_ need require("RSQLite").
+
+I agree with that as a general guideline. 
+
+It might be worth considering that some backends may implement backend specific functionality. While that brings it out of line of DBI, it always bums me out to not have a way to escape the lowest common denominator functionality.  So perhaps there are cases for directly requiring a backend?
+ 
+
++ seth
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Sun Oct 12 15:59:49 2014
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Sun, 12 Oct 2014 08:59:49 -0500
+Subject: [R-sig-DB] DBI preferred syntax
+In-Reply-To: <1DA7D250-AC36-47F8-8093-06D7F318A1F2@userprimary.net>
+References: <54396683.1090801@gmail.com>
+	<CABdHhvG8+cE4=UHK7tcASned=UN4Jf0eMNTAo0zT8UzecO12sw@mail.gmail.com>
+	<1DA7D250-AC36-47F8-8093-06D7F318A1F2@userprimary.net>
+Message-ID: <CABdHhvGx0Ot3GVxKjxzN8tDmHmk6gQ9wBc=CrKjGy1NDR1Zo5g@mail.gmail.com>
+
+>> * dbConnect(RSQLite::SQLite(), "test") - this is the best way in my
+>> opinion. It doesn't require that RSQLite be attached, just DBI, which
+>> I think is the right approach. A DBI backend (in general) should only
+>> ever provide methods, not new generics, so it shouldn't need to be
+>> attached. In other words, you should _never_ need require("RSQLite").
+>
+> I agree with that as a general guideline.
+>
+> It might be worth considering that some backends may implement backend specific functionality. While that brings it out of line of DBI, it always bums me out to not have a way to escape the lowest common denominator functionality.  So perhaps there are cases for directly requiring a backend?
+
+Right - you shouldn't have to require a backend, but you might want
+to. (Also I think it would be good for custom backend functions to be
+named like sqliteFunction rather than dbFunction, to make it more
+clear to the user that they're extensions)
+
+Hadley
+
+-- 
+http://had.co.nz/
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Sun Oct 12 21:18:26 2014
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Sun, 12 Oct 2014 15:18:26 -0400
+Subject: [R-sig-DB] DBI preferred syntax
+In-Reply-To: <CABdHhvGx0Ot3GVxKjxzN8tDmHmk6gQ9wBc=CrKjGy1NDR1Zo5g@mail.gmail.com>
+References: <54396683.1090801@gmail.com>
+	<CABdHhvG8+cE4=UHK7tcASned=UN4Jf0eMNTAo0zT8UzecO12sw@mail.gmail.com>
+	<1DA7D250-AC36-47F8-8093-06D7F318A1F2@userprimary.net>
+	<CABdHhvGx0Ot3GVxKjxzN8tDmHmk6gQ9wBc=CrKjGy1NDR1Zo5g@mail.gmail.com>
+Message-ID: <CAP01uRmNUhW0MVjERPT+nH4emjP7pP1qDaOsKskaiJWEqy1O2Q@mail.gmail.com>
+
+On Sun, Oct 12, 2014 at 9:59 AM, Hadley Wickham <h.wickham at gmail.com> wrote:
+>>> * dbConnect(RSQLite::SQLite(), "test") - this is the best way in my
+>>> opinion. It doesn't require that RSQLite be attached, just DBI, which
+>>> I think is the right approach. A DBI backend (in general) should only
+>>> ever provide methods, not new generics, so it shouldn't need to be
+>>> attached. In other words, you should _never_ need require("RSQLite").
+>>
+>> I agree with that as a general guideline.
+>>
+>> It might be worth considering that some backends may implement backend specific functionality. While that brings it out of line of DBI, it always bums me out to not have a way to escape the lowest common denominator functionality.  So perhaps there are cases for directly requiring a backend?
+>
+> Right - you shouldn't have to require a backend, but you might want
+> to. (Also I think it would be good for custom backend functions to be
+> named like sqliteFunction rather than dbFunction, to make it more
+> clear to the user that they're extensions)
+
+But then if there is an extension that several databases support you
+can't call them with common code with them but will be forced to
+create yet another layer over them.
+
+
+-- 
+Statistics & Software Consulting
+GKX Group, GKX Associates Inc.
+tel: 1-877-GKX-GROUP
+email: ggrothendieck at gmail.com
+
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Tue Oct 14 23:22:13 2014
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Tue, 14 Oct 2014 17:22:13 -0400
+Subject: [R-sig-DB] DBI preferred syntax
+In-Reply-To: <CABdHhvG8+cE4=UHK7tcASned=UN4Jf0eMNTAo0zT8UzecO12sw@mail.gmail.com>
+References: <54396683.1090801@gmail.com>
+	<CABdHhvG8+cE4=UHK7tcASned=UN4Jf0eMNTAo0zT8UzecO12sw@mail.gmail.com>
+Message-ID: <543D9405.20508@gmail.com>
+
+I reported earlier in this thread that this works:
+
+Type 'q()' to quit R.
+ > require("RPostgreSQL")
+Loading required package: RPostgreSQL
+Loading required package: DBI
+ > require("DBI")
+ > z <-dbConnect(RPostgreSQL::PostgreSQL(), dbname="test")   #works
+
+but there are some circumstance I have not isolated where if fails with 
+the same problem as this (which fails reliably):
+
+Type 'q()' to quit R.
+ > requireNamespace("RPostgreSQL")
+Loading required namespace: RPostgreSQL
+ > require("DBI")
+Loading required package: DBI
+ > z <- dbConnect(RPostgreSQL::PostgreSQL(), "test")
+Error in postgresqlNewConnection(drv, ...) :
+   RS-DBI driver: (could not connect test at local on dbname "test"
+)
+
+For some reason, done this way it does not find my setting of 
+environment variable PGHOST, which is not localhost, and picks up test 
+as my user name, which is not correct.
+
+(As before
+ >> R version 3.1.1 (2014-07-10) -- "Sock it to Me"
+ >> DBI         "DBI"         "0.3.1"
+ >> RPostgreSQL "RPostgreSQL" "0.4"
+)
+
+Paul
+
+On 10/11/2014 01:30 PM, Hadley Wickham wrote:
+> Hi Paul,
+>
+> Here are my thoughts:
+>
+> * dbDriver("SQLite") - never do this. dbDriver initialisation should
+> only ever be performed by the package (that's the whole point of
+> RSQLite::SQLite).
+>
+> * dbConnect("SQLite", "test") - this used to work, but I think it's a
+> bad idea in general, because it interfaces poorly with namesspaces
+>
+> * dbConnect(SQLite(), "test") - this will work but only if RSQLite is
+> attached (i.e. on the search path)
+>
+> * dbConnect(RSQLite::SQLite(), "test") - this is the best way in my
+> opinion. It doesn't require that RSQLite be attached, just DBI, which
+> I think is the right approach. A DBI backend (in general) should only
+> ever provide methods, not new generics, so it shouldn't need to be
+> attached. In other words, you should _never_ need require("RSQLite").
+>
+> * dbConnect(getExportedValue("RSQLite", "SQLite")()) - equivalent to
+> above, but use strings.
+>
+>
+> Hadley
+>
+>
+>
+> On Sat, Oct 11, 2014 at 12:18 PM, Paul Gilbert <pgilbert902 at gmail.com> wrote:
+>> I am trying to understand what is the new preferred way to establish a db
+>> connection. (And there seems to be an error in SQLite.)
+>>
+>> There also seems to be, from a user's perspective, an inconsistency in the
+>> call dbConnect() relative to dbDriver(), in that the first works with, for
+>> example, RSQLite::SQLite() and "SQLite", whereas the latter wants only the
+>> character string.
+>>
+>> I am using
+>>
+>> R version 3.1.1 (2014-07-10) -- "Sock it to Me"
+>> on Linux Mint (3.11.0-12-generic #19-Ubuntu SMP  x86_64 x86_64 x86_64
+>> GNU/Linux)
+>>
+>> installed.packages()[c("DBI","RSQLite", "RMySQL",
+>> "RPostgreSQL"),c("Package","Version")]
+>>              Package       Version
+>> DBI         "DBI"         "0.3.1"
+>> RSQLite     "RSQLite"     "0.11.4"
+>> RMySQL      "RMySQL"      "0.9-3"
+>> RPostgreSQL "RPostgreSQL" "0.4"
+>>
+>> For easy comparison the commands are shown here. The R session was restarted
+>> between testing the different packages. The sessions with error messages are
+>> further below.
+>>
+>> ##########
+>> require("RSQLite")
+>> z <-dbConnect("SQLite", dbname="test")          #works but see below
+>> z <-dbConnect(SQLite, dbname="test")            #fails
+>> z <-dbConnect(RSQLite::SQLite(), dbname="test") #works
+>> z <-dbConnect(RSQLite::SQLite, dbname="test")   #fails
+>>
+>> m <- dbDriver("SQLite")
+>> z <-dbConnect(m, dbname="test")                 #works
+>>
+>> m <- dbDriver(RMySQL::MySQL())                  #fails
+>>
+>> z <-dbConnect("SQLite", dbname="test")     # worked above but now fails
+>>
+>> ##########
+>> require("RMySQL")
+>> z <-dbConnect("MySQL", dbname="test")           #works
+>> z <-dbConnect(MySQL, dbname="test")             #fails
+>> z <-dbConnect(RMySQL::MySQL(), dbname="test")   #works
+>> z <-dbConnect(RMySQL::MySQL, dbname="test")     #fails
+>>
+>> m <- dbDriver("MySQL")
+>> z <-dbConnect(m, dbname="test")                 #works
+>>
+>> m <- dbDriver(RMySQL::MySQL())                  #fails
+>>
+>> ##########
+>> require("RPostgreSQL")
+>> z <-dbConnect("PostgreSQL", dbname="test")                #works
+>> z <-dbConnect(PostgreSQL, dbname="test")                  #fails
+>> z <-dbConnect(RPostgreSQL::PostgreSQL(), dbname="test")   #works
+>> z <-dbConnect(RPostgreSQL::PostgreSQL, dbname="test")     #fails
+>>
+>> m <- dbDriver("PostgreSQL")
+>> z <-dbConnect(m, dbname="test")                           #works
+>>
+>> m <- dbDriver(RPostgreSQL::PostgreSQL())                  #fails
+>>
+>>
+>> ##############################
+>>   Sessions showing errors. R was restarted for each package test.
+>> ##############################
+>>> require("RSQLite")
+>> Loading required package: RSQLite
+>> Loading required package: DBI
+>>> z <-dbConnect("SQLite", dbname="test")          #works but see below
+>>> z <-dbConnect(SQLite, dbname="test")            #fails
+>> Error in (function (classes, fdef, mtable)  :
+>>    unable to find an inherited method for function \u2018dbConnect\u2019 for
+>> signature \u2018"function"\u2019
+>>> z <-dbConnect(RSQLite::SQLite(), dbname="test") #works
+>>> z <-dbConnect(RSQLite::SQLite, dbname="test")   #fails
+>> Error in (function (classes, fdef, mtable)  :
+>>    unable to find an inherited method for function \u2018dbConnect\u2019 for
+>> signature \u2018"function"\u2019
+>>>
+>>> m <- dbDriver("SQLite")
+>>> z <-dbConnect(m, dbname="test")                 #works
+>>>
+>>> m <- dbDriver(RMySQL::MySQL())                  #fails
+>> Error in (function (classes, fdef, mtable)  :
+>>    unable to find an inherited method for function \u2018dbDriver\u2019 for
+>> signature \u2018"MySQLDriver"\u2019
+>>>
+>>> z <-dbConnect("SQLite", dbname="test")          # now fails
+>> Error in as.integer(from) :
+>>    cannot coerce type 'externalptr' to vector of type 'integer'
+>>
+>>
+>>
+>>> require("RMySQL")
+>> Loading required package: RMySQL
+>> Loading required package: DBI
+>>> z <-dbConnect("MySQL", dbname="test")           #works
+>>> z <-dbConnect(MySQL, dbname="test")             #fails
+>> Error in (function (classes, fdef, mtable)  :
+>>    unable to find an inherited method for function \u2018dbConnect\u2019 for
+>> signature \u2018"function"\u2019
+>>> z <-dbConnect(RMySQL::MySQL(), dbname="test")   #works
+>>> z <-dbConnect(RMySQL::MySQL, dbname="test")     #fails
+>> Error in (function (classes, fdef, mtable)  :
+>>    unable to find an inherited method for function \u2018dbConnect\u2019 for
+>> signature \u2018"function"\u2019
+>>>
+>>> m <- dbDriver("MySQL")
+>>> z <-dbConnect(m, dbname="test")                 #works
+>>>
+>>> m <- dbDriver(RMySQL::MySQL())                  #fails
+>> Error in (function (classes, fdef, mtable)  :
+>>    unable to find an inherited method for function \u2018dbDriver\u2019 for
+>> signature \u2018"MySQLDriver"\u2019
+>>
+>>
+>>
+>>> require("RPostgreSQL")
+>> Loading required package: RPostgreSQL
+>> Loading required package: DBI
+>>> z <-dbConnect("PostgreSQL", dbname="test")                #works
+>>> z <-dbConnect(PostgreSQL, dbname="test")                  #fails
+>> Error in (function (classes, fdef, mtable)  :
+>>    unable to find an inherited method for function \u2018dbConnect\u2019 for
+>> signature \u2018"function"\u2019
+>>> z <-dbConnect(RPostgreSQL::PostgreSQL(), dbname="test")   #works
+>>> z <-dbConnect(RPostgreSQL::PostgreSQL, dbname="test")     #fails
+>> Error in (function (classes, fdef, mtable)  :
+>>    unable to find an inherited method for function \u2018dbConnect\u2019 for
+>> signature \u2018"function"\u2019
+>>>
+>>> m <- dbDriver("PostgreSQL")
+>>> z <-dbConnect(m, dbname="test")                           #works
+>>>
+>>> m <- dbDriver(RPostgreSQL::PostgreSQL())                  #fails
+>> Error in (function (classes, fdef, mtable)  :
+>>    unable to find an inherited method for function \u2018dbDriver\u2019 for
+>> signature \u2018"PostgreSQLDriver"\u2019
+>>
+>>
+>> In addition to the above, I am sometimes faced with getting from a string to
+>> a driver.  Is there any preference for one of these rather than the other?
+>>
+>> z <-dbConnect(do.call("SQLite", list()), dbname="test")   #works
+>>
+>> z <-dbConnect(get("SQLite")(), dbname="test")   #works
+>>
+>> z <-dbConnect("SQLite", dbname="test")          #when it works
+>>
+>> or is there a better way to do this?
+>>
+>> Thanks,
+>> Paul
+>
+>
+>
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Wed Oct 15 17:46:30 2014
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Wed, 15 Oct 2014 11:46:30 -0400
+Subject: [R-sig-DB] DBI preferred syntax
+In-Reply-To: <543D9405.20508@gmail.com>
+References: <54396683.1090801@gmail.com>
+	<CABdHhvG8+cE4=UHK7tcASned=UN4Jf0eMNTAo0zT8UzecO12sw@mail.gmail.com>
+	<543D9405.20508@gmail.com>
+Message-ID: <CABdHhvFZbZVSv219vJnCG17K5c273ni4GcufPukbFgHstUYg9w@mail.gmail.com>
+
+On Tue, Oct 14, 2014 at 5:22 PM, Paul Gilbert <pgilbert902 at gmail.com> wrote:
+> I reported earlier in this thread that this works:
+>
+> Type 'q()' to quit R.
+>> require("RPostgreSQL")
+> Loading required package: RPostgreSQL
+> Loading required package: DBI
+>> require("DBI")
+>> z <-dbConnect(RPostgreSQL::PostgreSQL(), dbname="test")   #works
+>
+> but there are some circumstance I have not isolated where if fails with the
+> same problem as this (which fails reliably):
+>
+> Type 'q()' to quit R.
+>> requireNamespace("RPostgreSQL")
+> Loading required namespace: RPostgreSQL
+>> require("DBI")
+> Loading required package: DBI
+>> z <- dbConnect(RPostgreSQL::PostgreSQL(), "test")
+> Error in postgresqlNewConnection(drv, ...) :
+>   RS-DBI driver: (could not connect test at local on dbname "test"
+> )
+>
+> For some reason, done this way it does not find my setting of environment
+> variable PGHOST, which is not localhost, and picks up test as my user name,
+> which is not correct.
+
+I suspect this is because RPostgreSQL needs some tweaks to work when
+it's not attached - it's possible it's using .onAttach instead of
+.onLoad for initialisation.
+
+Hadley
+
+-- 
+http://had.co.nz/
+
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Thu Oct 16 20:35:21 2014
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Thu, 16 Oct 2014 14:35:21 -0400
+Subject: [R-sig-DB] DBI preferred syntax - RPostgreSQL problem
+In-Reply-To: <CABdHhvFZbZVSv219vJnCG17K5c273ni4GcufPukbFgHstUYg9w@mail.gmail.com>
+References: <54396683.1090801@gmail.com>
+	<CABdHhvG8+cE4=UHK7tcASned=UN4Jf0eMNTAo0zT8UzecO12sw@mail.gmail.com>
+	<543D9405.20508@gmail.com>
+	<CABdHhvFZbZVSv219vJnCG17K5c273ni4GcufPukbFgHstUYg9w@mail.gmail.com>
+Message-ID: <54400FE9.1050005@gmail.com>
+
+
+
+On 10/15/2014 11:46 AM, Hadley Wickham wrote:
+> On Tue, Oct 14, 2014 at 5:22 PM, Paul Gilbert <pgilbert902 at gmail.com> wrote:
+>> I reported earlier in this thread that this works:
+>>
+>> Type 'q()' to quit R.
+>>> require("RPostgreSQL")
+>> Loading required package: RPostgreSQL
+>> Loading required package: DBI
+>>> require("DBI")
+>>> z <-dbConnect(RPostgreSQL::PostgreSQL(), dbname="test")   #works
+>>
+>> but there are some circumstance I have not isolated where if fails with the
+>> same problem as this (which fails reliably):
+>>
+>> Type 'q()' to quit R.
+>>> requireNamespace("RPostgreSQL")
+>> Loading required namespace: RPostgreSQL
+>>> require("DBI")
+>> Loading required package: DBI
+>>> z <- dbConnect(RPostgreSQL::PostgreSQL(), "test")
+>> Error in postgresqlNewConnection(drv, ...) :
+>>    RS-DBI driver: (could not connect test at local on dbname "test"
+>> )
+>>
+>> For some reason, done this way it does not find my setting of environment
+>> variable PGHOST, which is not localhost, and picks up test as my user name,
+>> which is not correct.
+>
+> I suspect this is because RPostgreSQL needs some tweaks to work when
+> it's not attached - it's possible it's using .onAttach instead of
+> .onLoad for initialisation.
+
+No, it is using .onLoad and loading vs attaching does not seem to be the 
+issue. I've isolated a bit better, it seems to need dbname indicated, 
+which is not the case for RSQLite or RMySQL:
+
+dbConnect(RPostgreSQL::PostgreSQL(), dbname="test")   #works
+dbConnect(RPostgreSQL::PostgreSQL(), "test")   #fails
+
+ > dbConnect(RPostgreSQL::PostgreSQL(), dbname="test")   #works
+<PostgreSQLConnection:(9341,5)>
+ > dbConnect(RPostgreSQL::PostgreSQL(), "test")   #fails
+Error in postgresqlNewConnection(drv, ...) :
+   RS-DBI driver: (could not connect test at local on dbname "test"
+)
+
+I guess this must be something to do with the order of matching ...?
+
+Paul
+
+ >
+>
+> Hadley
+>
+
+
+
+From tomo@k|n @end|ng |rom @t@||@k@n@z@w@-u@@c@jp  Fri Oct 17 02:12:50 2014
+From: tomo@k|n @end|ng |rom @t@||@k@n@z@w@-u@@c@jp (NISHIYAMA Tomoaki)
+Date: Fri, 17 Oct 2014 09:12:50 +0900
+Subject: [R-sig-DB] DBI preferred syntax - RPostgreSQL problem
+In-Reply-To: <54400FE9.1050005@gmail.com>
+References: <54396683.1090801@gmail.com>
+	<CABdHhvG8+cE4=UHK7tcASned=UN4Jf0eMNTAo0zT8UzecO12sw@mail.gmail.com>
+	<543D9405.20508@gmail.com>
+	<CABdHhvFZbZVSv219vJnCG17K5c273ni4GcufPukbFgHstUYg9w@mail.gmail.com>
+	<54400FE9.1050005@gmail.com>
+Message-ID: <855D3237-53C0-46C7-A7A1-14B0B9EAFCE9@staff.kanazawa-u.ac.jp>
+
+Hi,
+
+> > dbConnect(RPostgreSQL::PostgreSQL(), "test")   #fails
+> Error in postgresqlNewConnection(drv, ...) :
+>  RS-DBI driver: (could not connect test at local on dbname "test"
+> )
+> 
+> I guess this must be something to do with the order of matching ...?
+
+On the manual of dbConnect(drv, ...) in
+http://cran.r-project.org/web/packages/DBI/DBI.pdf
+the argument ... is explained as
+	authorization arguments needed by the DBMS instance; 
+	these typically include user, password, dbname, host, port, etc. 
+	For details see the appropriate DBIDriver.
+
+There is no implication that the first unnamed argument be dbname.
+Because no order is specified in the manual, the parameter name should
+be explicitly written always. 
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi, 
+Kanazawa, 920-0934, Japan
+
+
+On 2014/10/17, at 3:35, Paul Gilbert wrote:
+
+> 
+> 
+> On 10/15/2014 11:46 AM, Hadley Wickham wrote:
+>> On Tue, Oct 14, 2014 at 5:22 PM, Paul Gilbert <pgilbert902 at gmail.com> wrote:
+>>> I reported earlier in this thread that this works:
+>>> 
+>>> Type 'q()' to quit R.
+>>>> require("RPostgreSQL")
+>>> Loading required package: RPostgreSQL
+>>> Loading required package: DBI
+>>>> require("DBI")
+>>>> z <-dbConnect(RPostgreSQL::PostgreSQL(), dbname="test")   #works
+>>> 
+>>> but there are some circumstance I have not isolated where if fails with the
+>>> same problem as this (which fails reliably):
+>>> 
+>>> Type 'q()' to quit R.
+>>>> requireNamespace("RPostgreSQL")
+>>> Loading required namespace: RPostgreSQL
+>>>> require("DBI")
+>>> Loading required package: DBI
+>>>> z <- dbConnect(RPostgreSQL::PostgreSQL(), "test")
+>>> Error in postgresqlNewConnection(drv, ...) :
+>>>   RS-DBI driver: (could not connect test at local on dbname "test"
+>>> )
+>>> 
+>>> For some reason, done this way it does not find my setting of environment
+>>> variable PGHOST, which is not localhost, and picks up test as my user name,
+>>> which is not correct.
+>> 
+>> I suspect this is because RPostgreSQL needs some tweaks to work when
+>> it's not attached - it's possible it's using .onAttach instead of
+>> .onLoad for initialisation.
+> 
+> No, it is using .onLoad and loading vs attaching does not seem to be the issue. I've isolated a bit better, it seems to need dbname indicated, which is not the case for RSQLite or RMySQL:
+> 
+> dbConnect(RPostgreSQL::PostgreSQL(), dbname="test")   #works
+> dbConnect(RPostgreSQL::PostgreSQL(), "test")   #fails
+> 
+> > dbConnect(RPostgreSQL::PostgreSQL(), dbname="test")   #works
+> <PostgreSQLConnection:(9341,5)>
+> > dbConnect(RPostgreSQL::PostgreSQL(), "test")   #fails
+> Error in postgresqlNewConnection(drv, ...) :
+>  RS-DBI driver: (could not connect test at local on dbname "test"
+> )
+> 
+> I guess this must be something to do with the order of matching ...?
+> 
+> Paul
+> 
+> >
+>> 
+>> Hadley
+>> 
+
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Fri Oct 17 15:49:06 2014
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Fri, 17 Oct 2014 09:49:06 -0400
+Subject: [R-sig-DB] DBI preferred syntax
+In-Reply-To: <855D3237-53C0-46C7-A7A1-14B0B9EAFCE9@staff.kanazawa-u.ac.jp>
+References: <54396683.1090801@gmail.com>
+	<CABdHhvG8+cE4=UHK7tcASned=UN4Jf0eMNTAo0zT8UzecO12sw@mail.gmail.com>
+	<543D9405.20508@gmail.com>
+	<CABdHhvFZbZVSv219vJnCG17K5c273ni4GcufPukbFgHstUYg9w@mail.gmail.com>
+	<54400FE9.1050005@gmail.com>
+	<855D3237-53C0-46C7-A7A1-14B0B9EAFCE9@staff.kanazawa-u.ac.jp>
+Message-ID: <54411E52.7060004@gmail.com>
+
+On 10/16/2014 08:12 PM, NISHIYAMA Tomoaki wrote:
+> Hi,
+>
+>>> dbConnect(RPostgreSQL::PostgreSQL(), "test")   #fails
+>> Error in postgresqlNewConnection(drv, ...) :
+>>   RS-DBI driver: (could not connect test at local on dbname "test"
+>> )
+>>
+>> I guess this must be something to do with the order of matching ...?
+>
+> On the manual of dbConnect(drv, ...) in
+> http://cran.r-project.org/web/packages/DBI/DBI.pdf
+> the argument ... is explained as
+> 	authorization arguments needed by the DBMS instance;
+> 	these typically include user, password, dbname, host, port, etc.
+> 	For details see the appropriate DBIDriver.
+>
+> There is no implication that the first unnamed argument be dbname.
+> Because no order is specified in the manual, the parameter name should
+> be explicitly written always.
+
+Yes, it is probably an accident that it worked for RSQLite and RMySQL.
+
+Thanks,
+Paul
+
+>
+ >-- Tomoaki NISHIYAMA Advanced Science Research Center, Kanazawa 
+ >University, 13-1 Takara-machi, Kanazawa, 920-0934, Japan On 
+2014/10/17, >at 3:35, Paul Gilbert wrote:
+ >
+ >
+ > On 10/15/2014 11:46 AM, Hadley Wickham wrote:
+ >> On Tue, Oct 14, 2014 at 5:22 PM, Paul Gilbert 
+<pgilbert902 at gmail.com> wrote:
+ >>> I reported earlier in this thread that this works:
+ >>>
+ >>> Type 'q()' to quit R.
+ >>>> require("RPostgreSQL")
+ >>> Loading required package: RPostgreSQL
+ >>> Loading required package: DBI
+ >>>> require("DBI")
+ >>>> z <-dbConnect(RPostgreSQL::PostgreSQL(), dbname="test")   #works
+ >>>
+ >>> but there are some circumstance I have not isolated where if fails 
+with the
+ >>> same problem as this (which fails reliably):
+ >>>
+ >>> Type 'q()' to quit R.
+ >>>> requireNamespace("RPostgreSQL")
+ >>> Loading required namespace: RPostgreSQL
+ >>>> require("DBI")
+ >>> Loading required package: DBI
+ >>>> z <- dbConnect(RPostgreSQL::PostgreSQL(), "test")
+ >>> Error in postgresqlNewConnection(drv, ...) :
+ >>>   RS-DBI driver: (could not connect test at local on dbname "test"
+ >>> )
+ >>>
+ >>> For some reason, done this way it does not find my setting of 
+environment
+ >>> variable PGHOST, which is not localhost, and picks up test as my 
+user name,
+ >>> which is not correct.
+ >>
+ >> I suspect this is because RPostgreSQL needs some tweaks to work when
+ >> it's not attached - it's possible it's using .onAttach instead of
+ >> .onLoad for initialisation.
+ >
+ > No, it is using .onLoad and loading vs attaching does not seem to be 
+the issue. I've isolated a bit better, it seems to need dbname 
+indicated, which is not the case for RSQLite or RMySQL:
+ >
+ > dbConnect(RPostgreSQL::PostgreSQL(), dbname="test")   #works
+ > dbConnect(RPostgreSQL::PostgreSQL(), "test")   #fails
+ >
+ >> dbConnect(RPostgreSQL::PostgreSQL(), dbname="test")   #works
+ > <PostgreSQLConnection:(9341,5)>
+ >> dbConnect(RPostgreSQL::PostgreSQL(), "test")   #fails
+ > Error in postgresqlNewConnection(drv, ...) :
+ >  RS-DBI driver: (could not connect test at local on dbname "test"
+ > )
+ >
+ > I guess this must be something to do with the order of matching ...?
+ >
+ > Paul
+ >
+ >>
+ >>
+ >> Hadley
+ >>
+
+
+
+From @ud@y1958 @end|ng |rom gm@||@com  Mon Oct 20 12:57:44 2014
+From: @ud@y1958 @end|ng |rom gm@||@com (Jon Beach)
+Date: Mon, 20 Oct 2014 21:57:44 +1100
+Subject: [R-sig-DB] Using RJDBC with HBASE 98.1 with Phoenix-4.1 JDBC driver
+Message-ID: <CALTGMfBODMRcnsJsE7rs44Y9vGhtC2EnY5cQD8qK=jJypnM9Kg@mail.gmail.com>
+
+Hi
+
+I am trying to connect to HBASE (HADOOP 2.3) with Phoenix 4.1 JDBC Driver
+from R 3.1.1 via RJDBC using the following code:
+
+Has anyone tried this and been successful?
+
+> library(rJava)
+> library(RJDBC)
+Loading required package: DBI
+> drv <-
+JDBC("org.apache.phoenix.jdbc.PhoenixDriver","~/phoenix-4.1.0-bin/hadoop2/phoenix-4.1.0-client-hadoop2.jar",identifier.quote="'")
+> conn <-dbConnect(drv,"jdbc:phoenix:hdmaster:2181")
+log4j:WARN No appenders could be found for logger
+(org.apache.hadoop.conf.Configuration.deprecation).
+log4j:WARN Please initialize the log4j system properly.
+log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for
+more info.
+> dbListTables(conn)
+[1] "CATALOG"             "SEQUENCE"            "PERFORMANCE_1000000"
+[4] "STOCK_SYMBOL"
+> dbGetQuery(conn,"select * from STOCK_SYMBOL")
+Error in .jcall(rp, "I", "fetch", stride) :
+  java.sql.SQLFeatureNotSupportedException
+
+rJava, DBI and RJDBC are all the latest versions and I am using Java 1.8
+from Oracle on Ubuntu 12.04
+
+Thanks
+
+Jon
+
+	[[alternative HTML version deleted]]
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Sat Oct 25 19:15:42 2014
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Sat, 25 Oct 2014 12:15:42 -0500
+Subject: [R-sig-DB] RSQLite 1.0.0
+Message-ID: <CABdHhvFXkWNAB-wYK3T_fA9UV0=5g-yXxqb6vrt+tdVL1E_sWg@mail.gmail.com>
+
+I'm very pleased to announce a new version of RSQLite 1.0.0. RSQLite is
+*the* easiest way to use SQL database from R:
+
+    library(DBI)
+    # Create an ephemeral in-memory RSQLite database
+    con <- dbConnect(RSQLite::SQLite(), ":memory:")
+    # Copy in the buit-in mtcars data frame
+    dbWriteTable(con, "mtcars", mtcars, row.names = FALSE)
+    #> [1] TRUE
+
+    # Fetch all results from a query:
+    res <- dbSendQuery(con, "SELECT * FROM mtcars WHERE cyl = 4
+       AND mpg < 23")
+    dbFetch(res)
+    #>    mpg cyl  disp  hp drat    wt  qsec vs am gear carb
+    #> 1 22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1
+    #> 2 22.8   4 140.8  95 3.92 3.150 22.90  1  0    4    2
+    #> 3 21.5   4 120.1  97 3.70 2.465 20.01  1  0    3    1
+    #> 4 21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2
+    dbClearResult(res)
+    #> [1] TRUE
+
+    # Or fetch them a chunk at a time
+    res <- dbSendQuery(con, "SELECT * FROM mtcars WHERE cyl = 4")
+    while(!dbHasCompleted(res)){
+      chunk <- dbFetch(res, n = 10)
+      print(nrow(chunk))
+    }
+    #> [1] 10
+    #> [1] 1
+    dbClearResult(res)
+    #> [1] TRUE
+
+    # Good practice to disconnect from the database when you're done
+    dbDisconnect(con)
+    #> [1] TRUE
+
+RSQLite 1.0.0 is mostly a cleanup release. This means a lot of old
+functions have been deprecated and removed:
+
+-   `idIsValid()` is deprecated; use `dbIsValid()` instead.
+    `dbBeginTransaction()` is deprecated; use `dbBegin()` instead. Use
+    `dbFetch()` instead of `fetch()`.
+
+-   `dbBuildTableDefinition()` is now `sqliteBuildTableDefinition()` (to
+    avoid implying that it's a DBI generic).
+
+-   Internal `sqlite*()` functions are no longer exported (\#20).
+    `safe.write()` is no longer exported.
+
+It also includes a few minor improvements and bug fixes. The most
+important are:
+
+-   Inlined `RSQLite.extfuns` - use `initExtension()` to load the many
+    useful extension functions.
+
+-   Methods no longer automatically clone the connection is there is an
+    open result set. This was implemented inconsistently in a handful of
+    places. RSQLite is now more forgiving if you forget to close a
+    result set - it will close it for you, with a warning. It's still
+    good practice to clean up after yourself with `dbClearResults()`,
+    but you don't have to.
+
+-   `dbBegin()`, `dbCommit()` and `dbRollback()` throw errors on
+    failure, rather than returning `FALSE`. They all gain a `name`
+    argument to specify named savepoints.
+
+-   `dbWriteTable()` has been rewritten. It uses a better quoting
+    strategy, throws errors on failure, and only automatically adds row
+    names only if they're strings. (NB: `dbWriteTable()` also has a
+    method that allows you load files directly from disk.)
+
+For a complete list of changes, please see the full release
+notes: https://github.com/rstats-db/RSQLite/releases/tag/v1.0.0.
+
+Hadley
+
+-- 
+http://had.co.nz/
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Sun Oct 26 23:03:00 2014
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Sun, 26 Oct 2014 18:03:00 -0400
+Subject: [R-sig-DB] Change in RMySQL? DBI?
+Message-ID: <CAP01uRn-cE4rtx4-6iE4mLq+yD9TSQvR_p_YM4N6i7KebmS8LQ@mail.gmail.com>
+
+An sqldf unit test that once worked that involves Date class with
+MySQL is failing.  I can reduce it to the following which does not
+involve sqldf  (assuming there exists a MySQL database called test).
+Is this due to some change in RMySQL?  DBI?
+
+library(RMySQL)
+
+t1 <- data.frame(d = as.Date("2001-01-30"))
+con <- dbConnect("MySQL", "test")
+dbWriteTable(con, "t1", t1, row.names = FALSE)
+dbGetQuery(con, "describe t1")
+
+which produces:
+
+  Field Type Null Key Default Extra
+1     d text  YES        <NA>
+
+but d should be of MySQL date type, not text.
+
+> packageVersion("RMySQL")
+[1] ?0.9.3?
+> packageVersion("DBI")
+[1] ?0.3.1?
+> R.version.string
+[1] "R version 3.1.1 Patched (2014-08-21 r66456)"
+
+
+-- 
+Statistics & Software Consulting
+GKX Group, GKX Associates Inc.
+tel: 1-877-GKX-GROUP
+email: ggrothendieck at gmail.com
+
+
+

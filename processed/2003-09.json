@@ -1,0 +1,73 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2003-09",
+  "messages": [
+    {
+      "id": "msg-98df1d84a970",
+      "message_id": "<20030910142432.GA18822@sonny.eddelbuettel.com>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2003-09-10T09:24:32-05:00",
+      "subject": "[R-sig-DB] Sybase anyone?",
+      "subject_clean": "Sybase anyone?",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Sig-DBers,\n\nWe're currently trying to figure how to let R (on Solaris) talk to ybase (on\nSolaris).  As there is (AFAIK) no R DBI interface package for Sybase, we\ntried RODBC with unixODBC and FreeTDS. We got halfway there -- we connect\nand get table info, but no actual content.\n\nWe now have two choices: debug the both the FreeTDS and the unixODBC layer,\nor start fresh against CTlib.  \n\nHas anybody here tried either?  Or is there a fundamental reason I am\nmissing about why R doesn't play with Sybase?\n\nThanks for any and all pointers,  Dirk\n\n-- \nThose are my principles, and if you don't like them... well, I have others.\n                                                -- Groucho Marx",
+      "body_snippet": "Sig-DBers,\n\nWe're currently trying to figure how to let R (on Solaris) talk to ybase (on\nSolaris).  As there is (AFAIK) no R DBI interface package for Sybase, we\ntried RODBC with unixODBC and FreeTDS.",
+      "thread_id": "thread-98df1d84a970",
+      "thread_depth": 0,
+      "month": "2003-09"
+    },
+    {
+      "id": "msg-de74407d3476",
+      "message_id": "<20030910165141.4ba72165.steuer@unibw-hamburg.de>",
+      "from_name": "Detlef Steuer",
+      "from_email_hash": "ff665b202faacbfe5641e147506231e4318199837b8a99139d8ecc9fb61550ff",
+      "date": "2003-09-10T16:51:41+02:00",
+      "subject": "[R-sig-DB] Sybase anyone?",
+      "subject_clean": "Sybase anyone?",
+      "in_reply_to": "<20030910142432.GA18822@sonny.eddelbuettel.com>",
+      "references": [
+        "<20030910142432.GA18822@sonny.eddelbuettel.com>"
+      ],
+      "body_plain": "> \n> Sig-DBers,\n> \n> We're currently trying to figure how to let R (on Solaris) talk to ybase (on\n> Solaris).  As there is (AFAIK) no R DBI interface package for Sybase, we\n> tried RODBC with unixODBC and FreeTDS. We got halfway there -- we connect\n> and get table info, but no actual content.\n\nThat seems familiar ...\n\n> \n> We now have two choices: debug the both the FreeTDS and the unixODBC layer,\n> or start fresh against CTlib.  \n> \n> Has anybody here tried either?  Or is there a fundamental reason I am\n> missing about why R doesn't play with Sybase?\n\nMy way was to build a communication pipeline using Perl::DBI.\nA bit ugly, but did what it should do.\n\nCu\ndetlef\n\n\n> \n> Thanks for any and all pointers,  Dirk\n> \n> -- \n> Those are my principles, and if you don't like them... well, I have others.\n>                                                 -- Groucho Marx\n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://www.stat.math.ethz.ch/mailman/listinfo/r-sig-db\n> \n\n\n-- \n\"The whole problem with the world is that fools and fanatics are always\n so certain of themselves, but wiser people so full of doubts.\" Russell\n\nDetlef Steuer --- http://fawn.unibw-hamburg.de/steuer.html\n***** Encrypted mail preferred *****",
+      "body_snippet": "> \n> Sig-DBers,\n> \n> We're currently trying to figure how to let R (on Solaris) talk to ybase (on\n> Solaris).  As there is (AFAIK) no R DBI interface package for Sybase, we\n> tried RODBC with unixODBC",
+      "thread_id": "thread-98df1d84a970",
+      "thread_depth": 1,
+      "month": "2003-09"
+    },
+    {
+      "id": "msg-3865292596bf",
+      "message_id": "<20030910162920.GA19911@sonny.eddelbuettel.com>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2003-09-10T11:29:20-05:00",
+      "subject": "[R-sig-DB] Sybase anyone?",
+      "subject_clean": "Sybase anyone?",
+      "in_reply_to": "<20030910142432.GA18822@sonny.eddelbuettel.com>",
+      "references": [
+        "<20030910142432.GA18822@sonny.eddelbuettel.com>"
+      ],
+      "body_plain": "On Wed, Sep 10, 2003 at 09:24:32AM -0500, Dirk Eddelbuettel wrote:\n> We're currently trying to figure how to let R (on Solaris) talk to ybase (on\n> Solaris).  As there is (AFAIK) no R DBI interface package for Sybase, we\n> tried RODBC with unixODBC and FreeTDS. We got halfway there -- we connect\n> and get table info, but no actual content.\n\nAs so often, we figured it out just after I sent this. The key is that in\n\n     odbcConnect(dsn, uid = \"\", pwd = \"\", case = \"nochange\",\n                      believeNRows = TRUE)\n\nbelieveNRows needs to be set to FALSE, and you're in business. That's all.\n\nFor the record, and in case somebody else will retrace the same steps, here\nis what we did on Solaris 8 with current versions of R, RODBC, FreeTDS and\nunixODBC:\n\ni)   unixODBC-2.2.6 \n     ./configure --prefix=/usr/local/unixODBC-2.2.6 \\\n     --x-libraries=/usr/openwin/lib --x-includes=/usr/openwin/include\n\n\nii)  freetds-0.61\n     ./configure --prefix=/usr/local/freetds-0.61 --with-tdsver=4.2 \\\n     --with-unixodbc=/usr/local/unixODBC-2.2.6\n\niii) freetds.conf file\n\n     [FOO]\n        host = xxx.xxx.xxx.xxx\n        port = 2510\n        tds version = 4.2\n        database = FooDB\n\niv)  odbc.ini\n\n     [FOODSN]\n     Driver = /usr/local/freetds-0.61/lib/libtdsodbc.so\n     #the below line is a valid name in freetds.conf\n     Servername = FOO\n     Server = xxx.xxx.xxx.xxx\n     Port = 2510\n     TDS_Version = 4.2\n     Database = FooDB\n\n     [Default]\n     Driver          = /usr/local/freetds-0.61/lib/libtdsodbc.so\n\nv)   odbcinst.ini\n\n     [SYBASE]\n     Driver             = /usr/local/freetds-0.61/lib/libtdsodbc.so\n     Description        = TDS Sybase Driver\n     FileUsage          = 1\n\n     [Default]\n     Driver          = /usr/local/freetds-0.61/lib/libtdsodbc.so\n\n\n\nHth, Dirk\n\n-- \nThose are my principles, and if you don't like them... well, I have others.\n                                                -- Groucho Marx",
+      "body_snippet": "On Wed, Sep 10, 2003 at 09:24:32AM -0500, Dirk Eddelbuettel wrote:\n> We're currently trying to figure how to let R (on Solaris) talk to ybase (on\n> Solaris).  As there is (AFAIK) no R DBI interface pa",
+      "thread_id": "thread-98df1d84a970",
+      "thread_depth": 1,
+      "month": "2003-09"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-98df1d84a970",
+      "subject": "Sybase anyone?",
+      "message_count": 3,
+      "participants": [
+        "Detlef Steuer",
+        "Dirk Eddelbuettel"
+      ],
+      "started": "2003-09-10T09:24:32-05:00",
+      "last_reply": "2003-09-10T11:29:20-05:00",
+      "root_message_id": "msg-98df1d84a970"
+    }
+  ]
+}

@@ -1,0 +1,3583 @@
+From W||||@m@A|pert @end|ng |rom b@rron@@com  Tue Oct  4 21:58:58 2011
+From: W||||@m@A|pert @end|ng |rom b@rron@@com (Alpert, William)
+Date: Tue, 4 Oct 2011 15:58:58 -0400
+Subject: [R-sig-DB] Internship Opportunity at New York financial weekly
+Message-ID: <02BF89F8F8F5434281FB674D2BC513C361A44CB08B@SBKMXSMB09.win.dowjones.net>
+
+
+
+It's not too early for statistically-adept students to think about underpaid, but life-altering, internships for the summer of 2012. In fact, after November 1st it may be too late to apply here at Barron's. This will be the second summer we've offered paid internships, which means that applicants can now poll the hapless folks who interned this past summer. Contact me, Bill Alpert, and I'll put you wise. Meanwhile, here's the public service announcement:
+
+
+
+Do some good.  Intern at Barron's, the New York financial publication with a decades-long tradition of investigative journalism and a more recent commitment to data analytic exposure of fraud in finance, business and healthcare.  Bring us your zeal and your data munging skills and we'll teach you how to be a writer, stock analyst and gumshoe investigator.  We assemble unique data sets to scrutinize activities like Jim Cramer's CNBC stock picking, for-profit colleges, Medicare rip-offs and the hyping of US-listed China stocks.  Our stories move stocks, achieving instant reform of bad situations. Please help us make Wall Street safe for the little guy.
+
+
+
+We will hire one or two programmer-journalist interns to work from June through August of 2012. Desirable skills would include programming fluency in R (for data analysis and visualization), a scripting language (like Python) and SQL.  You will get stories published under your byline and should be able to stomach libel threats.
+
+
+
+As part of the Dow Jones News Fund, the program provides free pre-internship training seminars, 10 weeks' salary, $1,000 scholarships for interns returning to school, and a travel allowance. The salary is not princely, so it helps if you have a place to stay in the New York area.
+
+
+
+APPLICATION DEADLINE: November 1, 2011
+
+
+
+Apply online at https://www.newsfund.org...Click Programs...then Internship Applications...make sure to complete the business reporting form.
+
+
+
+Also, send a resume, writing and code samples to me
+
+and call me with any questions at 212.416.2742.
+
+
+Bill Alpert
+
+Sr. Editor
+
+Barron's
+
+1.212.416.2742 w
+
+william.alpert at barrons.com<mailto:william.alpert at barrons.com>
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp  Wed Oct  5 01:54:17 2011
+From: tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp (Tomoaki NISHIYAMA)
+Date: Wed, 5 Oct 2011 08:54:17 +0900
+Subject: [R-sig-DB] Announce: RPostgreSQL 0.2-0 released
+Message-ID: <A6EBDAE0-9C35-4887-A5C3-9CB7621D21C4@kenroku.kanazawa-u.ac.jp>
+
+Dear all,
+
+We are happy to announce that we released version 0.2-0 of RPostgreSQL, 
+which is available at.
+http://cran.r-project.org/web/packages/RPostgreSQL/index.html
+
+Major changes since 0.1-7 are
+
+   o   Error check for dbWriteTable
+
+   o   dbWriteTable does not write a temporary file.
+       Control characters in strings are properly escaped for dbWriteTable.
+
+   o   Remove warning for enum and arrays etc.  The value are still transferred
+       as string and not converted to arrays etc.
+
+   o   use c('schema', 'table') to specify schema
+
+   o   Integer is mapped to integer in postgresql rather than bigint.
+
+
+Note that c('schema', 'table') are quite new and you may find some error
+related to schema if you heavily use it.
+So, don't hesitate to ask questions or report errors.
+
+If you have any question, please ask to this mailing list.
+rpostgresql-dev at googlegroups.com
+
+If you think you found an error or a bug, please check the issue list
+and create a new issue if it is new.
+http://code.google.com/p/rpostgresql/issues/list
+
+Best regards,
+
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi, 
+Kanazawa, 920-0934, Japan
+
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From m@cqueen1 @end|ng |rom ||n|@gov  Thu Oct  6 22:42:20 2011
+From: m@cqueen1 @end|ng |rom ||n|@gov (MacQueen, Don)
+Date: Thu, 6 Oct 2011 13:42:20 -0700
+Subject: [R-sig-DB] dbUnloadDriver() fails for RJDBC
+Message-ID: <CAB360BC.75CC6%macqueen1@llnl.gov>
+
+I have the following:
+
+----------------------------------------
+
+> con.str
+[1] "jdbc:oracle:thin:@myhost.domain:1521:dbname"
+
+
+> path.to.jar
+[1] "path.to.oracle/instantclient_10_2/ojdbc14.jar"
+
+
+
+> jdbm <- JDBC('oracle.jdbc.OracleDriver', path.to.jar, "`")
+> jcon <- dbConnect(jdbm, con.str, ora.usr, ora.pw)
+> 
+> jdbm
+An object of class "JDBCDriver"
+Slot "identifier.quote":
+[1] "`"
+
+Slot "jdrv":
+[1] "Java-Object{oracle.jdbc.OracleDriver at 6262937c}"
+
+> jcon
+An object of class "JDBCConnection"
+Slot "jc":
+[1] "Java-Object{oracle.jdbc.driver.T4CConnection at 35c0e45a}"
+
+Slot "identifier.quote":
+[1] "`"
+
+> 
+> dbDisconnect(jcon)
+[1] TRUE
+> dbUnloadDriver(jdbm)
+Error in .valueClassTest(standardGeneric("dbUnloadDriver"), "logical",  :
+  invalid value from generic function "dbUnloadDriver", class "NULL",
+expected "logical"
+----------------------------------------
+
+This is of course not a big problem; I don't absolutely have to unload the
+driver. But it should succeed, shouldn't it?
+
+
+
+> sessionInfo()
+R version 2.13.1 (2011-07-08)
+Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
+
+locale:
+[1] C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] RJDBC_0.2-0 rJava_0.9-1 DBI_0.2-5
+
+loaded via a namespace (and not attached):
+[1] tools_2.13.1
+
+
+
+Thanks
+-Don
+
+
+-- 
+Don MacQueen
+
+Lawrence Livermore National Laboratory
+7000 East Ave., L-627
+Livermore, CA 94550
+925-423-1062
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Fri Oct  7 08:26:06 2011
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Fri, 7 Oct 2011 07:26:06 +0100 (BST)
+Subject: [R-sig-DB] dbUnloadDriver() fails for RJDBC
+In-Reply-To: <CAB360BC.75CC6%macqueen1@llnl.gov>
+References: <CAB360BC.75CC6%macqueen1@llnl.gov>
+Message-ID: <alpine.LFD.2.02.1110070725410.21223@gannet.stats.ox.ac.uk>
+
+Have you reported this to the maintainer?  It looks like a bug in the 
+package.
+
+On Thu, 6 Oct 2011, MacQueen, Don wrote:
+
+> I have the following:
+>
+> ----------------------------------------
+>
+>> con.str
+> [1] "jdbc:oracle:thin:@myhost.domain:1521:dbname"
+>
+>
+>> path.to.jar
+> [1] "path.to.oracle/instantclient_10_2/ojdbc14.jar"
+>
+>
+>
+>> jdbm <- JDBC('oracle.jdbc.OracleDriver', path.to.jar, "`")
+>> jcon <- dbConnect(jdbm, con.str, ora.usr, ora.pw)
+>>
+>> jdbm
+> An object of class "JDBCDriver"
+> Slot "identifier.quote":
+> [1] "`"
+>
+> Slot "jdrv":
+> [1] "Java-Object{oracle.jdbc.OracleDriver at 6262937c}"
+>
+>> jcon
+> An object of class "JDBCConnection"
+> Slot "jc":
+> [1] "Java-Object{oracle.jdbc.driver.T4CConnection at 35c0e45a}"
+>
+> Slot "identifier.quote":
+> [1] "`"
+>
+>>
+>> dbDisconnect(jcon)
+> [1] TRUE
+>> dbUnloadDriver(jdbm)
+> Error in .valueClassTest(standardGeneric("dbUnloadDriver"), "logical",  :
+>  invalid value from generic function "dbUnloadDriver", class "NULL",
+> expected "logical"
+> ----------------------------------------
+>
+> This is of course not a big problem; I don't absolutely have to unload the
+> driver. But it should succeed, shouldn't it?
+>
+>
+>
+>> sessionInfo()
+> R version 2.13.1 (2011-07-08)
+> Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
+>
+> locale:
+> [1] C
+>
+> attached base packages:
+> [1] stats     graphics  grDevices utils     datasets  methods   base
+>
+> other attached packages:
+> [1] RJDBC_0.2-0 rJava_0.9-1 DBI_0.2-5
+>
+> loaded via a namespace (and not attached):
+> [1] tools_2.13.1
+>
+>
+>
+> Thanks
+> -Don
+>
+>
+> -- 
+> Don MacQueen
+>
+> Lawrence Livermore National Laboratory
+> 7000 East Ave., L-627
+> Livermore, CA 94550
+> 925-423-1062
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From md@ng2 @end|ng |rom b|gpond@com@@u  Sat Oct  8 11:10:33 2011
+From: md@ng2 @end|ng |rom b|gpond@com@@u (Mai Dang @BigPond)
+Date: Sat, 8 Oct 2011 02:10:33 -0700
+Subject: [R-sig-DB] sqlQuery precision issue
+Message-ID: <CAEm+50g1nrqGzbf0=qTx2fLqv_ZXNRL+PXipym7ZvvzeA5DAJw@mail.gmail.com>
+
+Hi All,
+
+Can you please have a look at precision issue in sqlQuery statement
+as below example
+
+This is not related to the database as this fault is reproducible with
+different databases.
+
+>library(RODBC)
+>orcl<- odbcConnect("orcl",uid="user_id",pwd="password")
+> ca_con <- format(sqlQuery(card, paste("select '453458325698925182' as long_string from dual")), digits=20)
+> ca_con
+         LONG_STRING
+1 453458325698924992
+
+
+Mai Dang
+
+
+
+From jho|tm@n @end|ng |rom gm@||@com  Sat Oct  8 19:08:06 2011
+From: jho|tm@n @end|ng |rom gm@||@com (jim holtman)
+Date: Sat, 8 Oct 2011 13:08:06 -0400
+Subject: [R-sig-DB] sqlQuery precision issue
+In-Reply-To: <CAEm+50g1nrqGzbf0=qTx2fLqv_ZXNRL+PXipym7ZvvzeA5DAJw@mail.gmail.com>
+References: <CAEm+50g1nrqGzbf0=qTx2fLqv_ZXNRL+PXipym7ZvvzeA5DAJw@mail.gmail.com>
+Message-ID: <CAAxdm-4FeC5yvH6kHzgELOwxAVFdn4_LE2O63nU396Co47G9RA@mail.gmail.com>
+
+Probably FAQ 7.31
+
+Floating point numbers only have about 15 digits of precision.
+
+On Saturday, October 8, 2011, Mai Dang @BigPond <mdang2 at bigpond.com.au>
+wrote:
+> Hi All,
+>
+> Can you please have a look at precision issue in sqlQuery statement
+> as below example
+>
+> This is not related to the database as this fault is reproducible with
+> different databases.
+>
+>>library(RODBC)
+>>orcl<- odbcConnect("orcl",uid="user_id",pwd="password")
+>> ca_con <- format(sqlQuery(card, paste("select '453458325698925182' as
+long_string from dual")), digits=20)
+>> ca_con
+>         LONG_STRING
+> 1 453458325698924992
+>
+>
+> Mai Dang
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Jim Holtman
+Data Munger Guru
+
+What is the problem that you are trying to solve?
+
+	[[alternative HTML version deleted]]
+
+
+
+From md@ng2 @end|ng |rom b|gpond@com@@u  Mon Oct 10 01:33:40 2011
+From: md@ng2 @end|ng |rom b|gpond@com@@u (Mai Dang @BigPond)
+Date: Mon, 10 Oct 2011 10:33:40 +1100
+Subject: [R-sig-DB] R-sig-DB Digest, Vol 84, Issue 4
+In-Reply-To: <mailman.5.1318154402.3411.r-sig-db@r-project.org>
+References: <mailman.5.1318154402.3411.r-sig-db@r-project.org>
+Message-ID: <CAEm+50ieUQX+eiAsSrDqpE+C=q9imVZ1izZ=V+UTj4K0o4TghA@mail.gmail.com>
+
+Hi Jim,
+
+I tried to compare 2 columns (18 digits numeric format) from 2
+different databases.
+
+Mai
+
+On Sun, Oct 9, 2011 at 9:00 PM,  <r-sig-db-request at r-project.org> wrote:
+> Send R-sig-DB mailing list submissions to
+> ? ? ? ?r-sig-db at r-project.org
+>
+> To subscribe or unsubscribe via the World Wide Web, visit
+> ? ? ? ?https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> or, via email, send a message with subject or body 'help' to
+> ? ? ? ?r-sig-db-request at r-project.org
+>
+> You can reach the person managing the list at
+> ? ? ? ?r-sig-db-owner at r-project.org
+>
+> When replying, please edit your Subject line so it is more specific
+> than "Re: Contents of R-sig-DB digest..."
+>
+>
+> Today's Topics:
+>
+> ? 1. Re: sqlQuery precision issue (jim holtman)
+>
+>
+> ----------------------------------------------------------------------
+>
+> Message: 1
+> Date: Sat, 8 Oct 2011 13:08:06 -0400
+> From: jim holtman <jholtman at gmail.com>
+> To: "Mai Dang @BigPond" <mdang2 at bigpond.com.au>
+> Cc: "r-sig-db at r-project.org" <r-sig-db at r-project.org>
+> Subject: Re: [R-sig-DB] sqlQuery precision issue
+> Message-ID:
+> ? ? ? ?<CAAxdm-4FeC5yvH6kHzgELOwxAVFdn4_LE2O63nU396Co47G9RA at mail.gmail.com>
+> Content-Type: text/plain
+>
+> Probably FAQ 7.31
+>
+> Floating point numbers only have about 15 digits of precision.
+>
+> On Saturday, October 8, 2011, Mai Dang @BigPond <mdang2 at bigpond.com.au>
+> wrote:
+>> Hi All,
+>>
+>> Can you please have a look at precision issue in sqlQuery statement
+>> as below example
+>>
+>> This is not related to the database as this fault is reproducible with
+>> different databases.
+>>
+>>>library(RODBC)
+>>>orcl<- odbcConnect("orcl",uid="user_id",pwd="password")
+>>> ca_con <- format(sqlQuery(card, paste("select '453458325698925182' as
+> long_string from dual")), digits=20)
+>>> ca_con
+>> ? ? ? ? LONG_STRING
+>> 1 453458325698924992
+>>
+>>
+>> Mai Dang
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at r-project.org
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+>
+> --
+> Jim Holtman
+> Data Munger Guru
+>
+> What is the problem that you are trying to solve?
+>
+> ? ? ? ?[[alternative HTML version deleted]]
+>
+>
+>
+> ------------------------------
+>
+> _______________________________________________
+> R-sig-DB mailing list
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+>
+> End of R-sig-DB Digest, Vol 84, Issue 4
+> ***************************************
+>
+
+
+
+From jho|tm@n @end|ng |rom gm@||@com  Mon Oct 10 05:09:25 2011
+From: jho|tm@n @end|ng |rom gm@||@com (Jim Holtman)
+Date: Sun, 9 Oct 2011 23:09:25 -0400
+Subject: [R-sig-DB] R-sig-DB Digest, Vol 84, Issue 4
+In-Reply-To: <CAEm+50ieUQX+eiAsSrDqpE+C=q9imVZ1izZ=V+UTj4K0o4TghA@mail.gmail.com>
+References: <mailman.5.1318154402.3411.r-sig-db@r-project.org>
+	<CAEm+50ieUQX+eiAsSrDqpE+C=q9imVZ1izZ=V+UTj4K0o4TghA@mail.gmail.com>
+Message-ID: <E5D1CF9A-8B2E-4AC2-8E82-B8A4AE25DBF4@gmail.com>
+
+if you want 18 numeric digits to compare, read them in from the database as a character for comparison.
+
+Sent from my iPad
+
+On Oct 9, 2011, at 19:33, "Mai Dang @BigPond" <mdang2 at bigpond.com.au> wrote:
+
+> Hi Jim,
+> 
+> I tried to compare 2 columns (18 digits numeric format) from 2
+> different databases.
+> 
+> Mai
+> 
+> On Sun, Oct 9, 2011 at 9:00 PM,  <r-sig-db-request at r-project.org> wrote:
+>> Send R-sig-DB mailing list submissions to
+>>        r-sig-db at r-project.org
+>> 
+>> To subscribe or unsubscribe via the World Wide Web, visit
+>>        https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>> or, via email, send a message with subject or body 'help' to
+>>        r-sig-db-request at r-project.org
+>> 
+>> You can reach the person managing the list at
+>>        r-sig-db-owner at r-project.org
+>> 
+>> When replying, please edit your Subject line so it is more specific
+>> than "Re: Contents of R-sig-DB digest..."
+>> 
+>> 
+>> Today's Topics:
+>> 
+>>   1. Re: sqlQuery precision issue (jim holtman)
+>> 
+>> 
+>> ----------------------------------------------------------------------
+>> 
+>> Message: 1
+>> Date: Sat, 8 Oct 2011 13:08:06 -0400
+>> From: jim holtman <jholtman at gmail.com>
+>> To: "Mai Dang @BigPond" <mdang2 at bigpond.com.au>
+>> Cc: "r-sig-db at r-project.org" <r-sig-db at r-project.org>
+>> Subject: Re: [R-sig-DB] sqlQuery precision issue
+>> Message-ID:
+>>        <CAAxdm-4FeC5yvH6kHzgELOwxAVFdn4_LE2O63nU396Co47G9RA at mail.gmail.com>
+>> Content-Type: text/plain
+>> 
+>> Probably FAQ 7.31
+>> 
+>> Floating point numbers only have about 15 digits of precision.
+>> 
+>> On Saturday, October 8, 2011, Mai Dang @BigPond <mdang2 at bigpond.com.au>
+>> wrote:
+>>> Hi All,
+>>> 
+>>> Can you please have a look at precision issue in sqlQuery statement
+>>> as below example
+>>> 
+>>> This is not related to the database as this fault is reproducible with
+>>> different databases.
+>>> 
+>>>> library(RODBC)
+>>>> orcl<- odbcConnect("orcl",uid="user_id",pwd="password")
+>>>> ca_con <- format(sqlQuery(card, paste("select '453458325698925182' as
+>> long_string from dual")), digits=20)
+>>>> ca_con
+>>>         LONG_STRING
+>>> 1 453458325698924992
+>>> 
+>>> 
+>>> Mai Dang
+>>> 
+>>> _______________________________________________
+>>> R-sig-DB mailing list -- R Special Interest Group
+>>> R-sig-DB at r-project.org
+>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>> 
+>> 
+>> --
+>> Jim Holtman
+>> Data Munger Guru
+>> 
+>> What is the problem that you are trying to solve?
+>> 
+>>        [[alternative HTML version deleted]]
+>> 
+>> 
+>> 
+>> ------------------------------
+>> 
+>> _______________________________________________
+>> R-sig-DB mailing list
+>> R-sig-DB at r-project.org
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>> 
+>> 
+>> End of R-sig-DB Digest, Vol 84, Issue 4
+>> ***************************************
+>> 
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Mon Oct 24 07:12:42 2011
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Sun, 23 Oct 2011 22:12:42 -0700
+Subject: [R-sig-DB] RSQLite,
+	segfault in dbGetPreparedQuery() when bind.data is bad
+In-Reply-To: <CANqbw6VGzKmiTJVCCNx3K5xyMbCVucPOOP2QA5MSCp8Sk8A67w@mail.gmail.com>
+References: <20110821211039.GA45572@piskorski.com>
+	<CANqbw6VOqo=UAmUtrwV8w=z=wEXqR7Y0OBiDbjsYhcuz_K2S_w@mail.gmail.com>
+	<CANqbw6VGzKmiTJVCCNx3K5xyMbCVucPOOP2QA5MSCp8Sk8A67w@mail.gmail.com>
+Message-ID: <CANqbw6U42uG2NgzKj543WMfRhFk+_nUf1rmRw6p4p9NqyUcY0A@mail.gmail.com>
+
+For the archives...
+
+On Mon, Aug 22, 2011 at 10:49 PM, Seth Falcon <seth at userprimary.net> wrote:
+> Hi again,
+>
+> I found a bug in the handling of the parameter bindings that prevented
+> a missing binding from being raised as an error. ?I have put together
+> a preview of the fix which you can download and install here:
+>
+> ? ?unofficial non-release for testing:
+> ? ?http://userprimary.net/software/RSQLite_0.9-5.tar.gz
+>
+> Can you give this version a try? ?I would be interested to see if this
+> fix also addresses your other issue.
+
+A new version of RSQLite is on CRAN which I believe fixes the issue
+discussed in this thread.  Also includes version 3.7.8 of SQLite.
+
++ seth
+
+-- 
+Seth Falcon | @sfalcon | http://userprimary.net/
+
+
+
+From eder m@iii@g oii ieg@uipr@br  Wed Oct 26 12:30:56 2011
+From: eder m@iii@g oii ieg@uipr@br (eder m@iii@g oii ieg@uipr@br)
+Date: Wed, 26 Oct 2011 08:30:56 -0200
+Subject: [R-sig-DB] Open .DB (Paradox)
+Message-ID: <38694bc85acccc631b208f0f424dc0f0.squirrel@www.leg.ufpr.br>
+
+Dear member list,
+Appreciate your help,
+I need to open the file that is located in:
+http://www.leg.ufpr.br/~eder/E2D00007.DB
+This file is Paradox, but I could not open at the RODBC package, I want to
+import it to R.
+My OS is Windows 7 - 64 Bit
+Does anyone have a suggestion for such a task?
+Thanks
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Wed Oct 26 13:55:04 2011
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Wed, 26 Oct 2011 12:55:04 +0100 (BST)
+Subject: [R-sig-DB] Open .DB (Paradox)
+In-Reply-To: <38694bc85acccc631b208f0f424dc0f0.squirrel@www.leg.ufpr.br>
+References: <38694bc85acccc631b208f0f424dc0f0.squirrel@www.leg.ufpr.br>
+Message-ID: <alpine.LFD.2.02.1110261254130.5037@gannet.stats.ox.ac.uk>
+
+On Wed, 26 Oct 2011, eder at leg.ufpr.br wrote:
+
+> Dear member list,
+> Appreciate your help,
+> I need to open the file that is located in:
+> http://www.leg.ufpr.br/~eder/E2D00007.DB
+> This file is Paradox, but I could not open at the RODBC package, I want to
+> import it to R.
+
+Why not?
+
+> My OS is Windows 7 - 64 Bit
+> Does anyone have a suggestion for such a task?
+
+R has a 'Data Import/Export Manual', with many suggestions.
+
+> Thanks
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From eder @end|ng |rom |eg@u|pr@br  Wed Oct 26 14:29:21 2011
+From: eder @end|ng |rom |eg@u|pr@br (Eder David Borges da Silva)
+Date: Wed, 26 Oct 2011 10:29:21 -0200
+Subject: [R-sig-DB] Open .DB (Paradox)
+In-Reply-To: <alpine.LFD.2.02.1110261254130.5037@gannet.stats.ox.ac.uk>
+References: <38694bc85acccc631b208f0f424dc0f0.squirrel@www.leg.ufpr.br>
+	<alpine.LFD.2.02.1110261254130.5037@gannet.stats.ox.ac.uk>
+Message-ID: <CALKkXXqY-jpVscD_xRXSekVYOs2nx6mc-J0LATzrh+SjEuMc-w@mail.gmail.com>
+
+Prof Ripley,
+my problem is:
+> require(RODBC)
+> con0 <- odbcConnect('http://www.leg.ufpr.br/~eder/E2D00007.DB')
+Mensagens de aviso perdidas:
+1: In odbcDriverConnect("DSN=http://www.leg.ufpr.br/~eder/E2D00007.DB") :
+  [RODBC] ERROR: state IM010, code 0, message [Microsoft][ODBC Driver
+Manager] Nome de fonte de dados muito longo
+2: In odbcDriverConnect("DSN=http://www.leg.ufpr.br/~eder/E2D00007.DB") :
+  ODBC connection failed
+> con0
+[1] -1
+problem with drive ODBC....
+thanks
+?der
+
+
+2011/10/26 Prof Brian Ripley <ripley at stats.ox.ac.uk>:
+> On Wed, 26 Oct 2011, eder at leg.ufpr.br wrote:
+>
+>> Dear member list,
+>> Appreciate your help,
+>> I need to open the file that is located in:
+>> http://www.leg.ufpr.br/~eder/E2D00007.DB
+>> This file is Paradox, but I could not open at the RODBC package, I want to
+>> import it to R.
+>
+> Why not?
+>
+>> My OS is Windows 7 - 64 Bit
+>> Does anyone have a suggestion for such a task?
+>
+> R has a 'Data Import/Export Manual', with many suggestions.
+>
+>> Thanks
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at r-project.org
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+>
+> --
+> Brian D. Ripley, ? ? ? ? ? ? ? ? ?ripley at stats.ox.ac.uk
+> Professor of Applied Statistics, ?http://www.stats.ox.ac.uk/~ripley/
+> University of Oxford, ? ? ? ? ? ? Tel: ?+44 1865 272861 (self)
+> 1 South Parks Road, ? ? ? ? ? ? ? ? ? ? +44 1865 272866 (PA)
+> Oxford OX1 3TG, UK ? ? ? ? ? ? ? ?Fax: ?+44 1865 272595
+>
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Wed Oct 26 15:13:12 2011
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Wed, 26 Oct 2011 14:13:12 +0100 (BST)
+Subject: [R-sig-DB] Open .DB (Paradox)
+In-Reply-To: <CALKkXXqY-jpVscD_xRXSekVYOs2nx6mc-J0LATzrh+SjEuMc-w@mail.gmail.com>
+References: <38694bc85acccc631b208f0f424dc0f0.squirrel@www.leg.ufpr.br>
+	<alpine.LFD.2.02.1110261254130.5037@gannet.stats.ox.ac.uk>
+	<CALKkXXqY-jpVscD_xRXSekVYOs2nx6mc-J0LATzrh+SjEuMc-w@mail.gmail.com>
+Message-ID: <alpine.LFD.2.02.1110261411380.8168@gannet.stats.ox.ac.uk>
+
+On Wed, 26 Oct 2011, Eder David Borges da Silva wrote:
+
+> Prof Ripley,
+> my problem is:
+>> require(RODBC)
+>> con0 <- odbcConnect('http://www.leg.ufpr.br/~eder/E2D00007.DB')
+> Mensagens de aviso perdidas:
+> 1: In odbcDriverConnect("DSN=http://www.leg.ufpr.br/~eder/E2D00007.DB") :
+>  [RODBC] ERROR: state IM010, code 0, message [Microsoft][ODBC Driver
+> Manager] Nome de fonte de dados muito longo
+> 2: In odbcDriverConnect("DSN=http://www.leg.ufpr.br/~eder/E2D00007.DB") :
+>  ODBC connection failed
+>> con0
+> [1] -1
+> problem with drive ODBC....
+
+Who said DSNs could be URLs ... and they are not the names of a 
+database either.
+
+library(fortunes); fortune(14)
+
+applies.
+
+> thanks
+> ?der
+>
+>
+> 2011/10/26 Prof Brian Ripley <ripley at stats.ox.ac.uk>:
+>> On Wed, 26 Oct 2011, eder at leg.ufpr.br wrote:
+>>
+>>> Dear member list,
+>>> Appreciate your help,
+>>> I need to open the file that is located in:
+>>> http://www.leg.ufpr.br/~eder/E2D00007.DB
+>>> This file is Paradox, but I could not open at the RODBC package, I want to
+>>> import it to R.
+>>
+>> Why not?
+>>
+>>> My OS is Windows 7 - 64 Bit
+>>> Does anyone have a suggestion for such a task?
+>>
+>> R has a 'Data Import/Export Manual', with many suggestions.
+>>
+>>> Thanks
+>>>
+>>> _______________________________________________
+>>> R-sig-DB mailing list -- R Special Interest Group
+>>> R-sig-DB at r-project.org
+>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>>
+>>
+>> --
+>> Brian D. Ripley, ? ? ? ? ? ? ? ? ?ripley at stats.ox.ac.uk
+>> Professor of Applied Statistics, ?http://www.stats.ox.ac.uk/~ripley/
+>> University of Oxford, ? ? ? ? ? ? Tel: ?+44 1865 272861 (self)
+>> 1 South Parks Road, ? ? ? ? ? ? ? ? ? ? +44 1865 272866 (PA)
+>> Oxford OX1 3TG, UK ? ? ? ? ? ? ? ?Fax: ?+44 1865 272595
+>>
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+From eder @end|ng |rom |eg@u|pr@br  Wed Oct 26 16:16:49 2011
+From: eder @end|ng |rom |eg@u|pr@br (Eder David Borges da Silva)
+Date: Wed, 26 Oct 2011 12:16:49 -0200
+Subject: [R-sig-DB] Open .DB (Paradox)
+In-Reply-To: <alpine.LFD.2.02.1110261411380.8168@gannet.stats.ox.ac.uk>
+References: <38694bc85acccc631b208f0f424dc0f0.squirrel@www.leg.ufpr.br>
+	<alpine.LFD.2.02.1110261254130.5037@gannet.stats.ox.ac.uk>
+	<CALKkXXqY-jpVscD_xRXSekVYOs2nx6mc-J0LATzrh+SjEuMc-w@mail.gmail.com>
+	<alpine.LFD.2.02.1110261411380.8168@gannet.stats.ox.ac.uk>
+Message-ID: <CALKkXXrbwgoMk1+mcKquxhSQ3S3wYP4gTkdLRzDxUv49BRofaw@mail.gmail.com>
+
+Prof Brian Ripley,
+Even the question of modifying the database name:
+channel <- odbcConnect("E2D00007.DB")
+Mensagens de aviso perdidas:
+1: In odbcDriverConnect("DSN=E2D00007.DB") :
+  [RODBC] ERROR: state IM002, code 0, message [Microsoft][ODBC Driver
+Manager] Nome da fonte de dados n?o encontrado e nenhum driver padr?o
+especificado
+2: In odbcDriverConnect("DSN=E2D00007.DB") : ODBC connection failed
+Thanks,
+
+
+
+2011/10/26 Prof Brian Ripley <ripley at stats.ox.ac.uk>:
+> On Wed, 26 Oct 2011, Eder David Borges da Silva wrote:
+>
+>> Prof Ripley,
+>> my problem is:
+>>>
+>>> require(RODBC)
+>>> con0 <- odbcConnect('http://www.leg.ufpr.br/~eder/E2D00007.DB')
+>>
+>> Mensagens de aviso perdidas:
+>> 1: In odbcDriverConnect("DSN=http://www.leg.ufpr.br/~eder/E2D00007.DB") :
+>> ?[RODBC] ERROR: state IM010, code 0, message [Microsoft][ODBC Driver
+>> Manager] Nome de fonte de dados muito longo
+>> 2: In odbcDriverConnect("DSN=http://www.leg.ufpr.br/~eder/E2D00007.DB") :
+>> ?ODBC connection failed
+>>>
+>>> con0
+>>
+>> [1] -1
+>> problem with drive ODBC....
+>
+> Who said DSNs could be URLs ... and they are not the names of a database
+> either.
+>
+> library(fortunes); fortune(14)
+>
+> applies.
+>
+>> thanks
+>> ?der
+>>
+>>
+>> 2011/10/26 Prof Brian Ripley <ripley at stats.ox.ac.uk>:
+>>>
+>>> On Wed, 26 Oct 2011, eder at leg.ufpr.br wrote:
+>>>
+>>>> Dear member list,
+>>>> Appreciate your help,
+>>>> I need to open the file that is located in:
+>>>> http://www.leg.ufpr.br/~eder/E2D00007.DB
+>>>> This file is Paradox, but I could not open at the RODBC package, I want
+>>>> to
+>>>> import it to R.
+>>>
+>>> Why not?
+>>>
+>>>> My OS is Windows 7 - 64 Bit
+>>>> Does anyone have a suggestion for such a task?
+>>>
+>>> R has a 'Data Import/Export Manual', with many suggestions.
+>>>
+>>>> Thanks
+>>>>
+>>>> _______________________________________________
+>>>> R-sig-DB mailing list -- R Special Interest Group
+>>>> R-sig-DB at r-project.org
+>>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>>>
+>>>
+>>> --
+>>> Brian D. Ripley, ? ? ? ? ? ? ? ? ?ripley at stats.ox.ac.uk
+>>> Professor of Applied Statistics, ?http://www.stats.ox.ac.uk/~ripley/
+>>> University of Oxford, ? ? ? ? ? ? Tel: ?+44 1865 272861 (self)
+>>> 1 South Parks Road, ? ? ? ? ? ? ? ? ? ? +44 1865 272866 (PA)
+>>> Oxford OX1 3TG, UK ? ? ? ? ? ? ? ?Fax: ?+44 1865 272595
+>>>
+>>
+>
+> --
+> Brian D. Ripley, ? ? ? ? ? ? ? ? ?ripley at stats.ox.ac.uk
+> Professor of Applied Statistics, ?http://www.stats.ox.ac.uk/~ripley/
+> University of Oxford, ? ? ? ? ? ? Tel: ?+44 1865 272861 (self)
+> 1 South Parks Road, ? ? ? ? ? ? ? ? ? ? +44 1865 272866 (PA)
+> Oxford OX1 3TG, UK ? ? ? ? ? ? ? ?Fax: ?+44 1865 272595
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Wed Oct 26 18:34:03 2011
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Wed, 26 Oct 2011 17:34:03 +0100 (BST)
+Subject: [R-sig-DB] Open .DB (Paradox)
+In-Reply-To: <CALKkXXrbwgoMk1+mcKquxhSQ3S3wYP4gTkdLRzDxUv49BRofaw@mail.gmail.com>
+References: <38694bc85acccc631b208f0f424dc0f0.squirrel@www.leg.ufpr.br>
+	<alpine.LFD.2.02.1110261254130.5037@gannet.stats.ox.ac.uk>
+	<CALKkXXqY-jpVscD_xRXSekVYOs2nx6mc-J0LATzrh+SjEuMc-w@mail.gmail.com>
+	<alpine.LFD.2.02.1110261411380.8168@gannet.stats.ox.ac.uk>
+	<CALKkXXrbwgoMk1+mcKquxhSQ3S3wYP4gTkdLRzDxUv49BRofaw@mail.gmail.com>
+Message-ID: <alpine.LFD.2.02.1110261732410.15400@gannet.stats.ox.ac.uk>
+
+Let me say it again:
+
+A DSN is **NOT** a database name.  Please do study the RODBC manual, 
+and ask no more really disrespectful questions here.
+
+On Wed, 26 Oct 2011, Eder David Borges da Silva wrote:
+
+> Prof Brian Ripley,
+> Even the question of modifying the database name:
+> channel <- odbcConnect("E2D00007.DB")
+> Mensagens de aviso perdidas:
+> 1: In odbcDriverConnect("DSN=E2D00007.DB") :
+>  [RODBC] ERROR: state IM002, code 0, message [Microsoft][ODBC Driver
+> Manager] Nome da fonte de dados n?o encontrado e nenhum driver padr?o
+> especificado
+> 2: In odbcDriverConnect("DSN=E2D00007.DB") : ODBC connection failed
+> Thanks,
+>
+>
+>
+> 2011/10/26 Prof Brian Ripley <ripley at stats.ox.ac.uk>:
+>> On Wed, 26 Oct 2011, Eder David Borges da Silva wrote:
+>>
+>>> Prof Ripley,
+>>> my problem is:
+>>>>
+>>>> require(RODBC)
+>>>> con0 <- odbcConnect('http://www.leg.ufpr.br/~eder/E2D00007.DB')
+>>>
+>>> Mensagens de aviso perdidas:
+>>> 1: In odbcDriverConnect("DSN=http://www.leg.ufpr.br/~eder/E2D00007.DB") :
+>>> ?[RODBC] ERROR: state IM010, code 0, message [Microsoft][ODBC Driver
+>>> Manager] Nome de fonte de dados muito longo
+>>> 2: In odbcDriverConnect("DSN=http://www.leg.ufpr.br/~eder/E2D00007.DB") :
+>>> ?ODBC connection failed
+>>>>
+>>>> con0
+>>>
+>>> [1] -1
+>>> problem with drive ODBC....
+>>
+>> Who said DSNs could be URLs ... and they are not the names of a database
+>> either.
+>>
+>> library(fortunes); fortune(14)
+>>
+>> applies.
+>>
+>>> thanks
+>>> ?der
+>>>
+>>>
+>>> 2011/10/26 Prof Brian Ripley <ripley at stats.ox.ac.uk>:
+>>>>
+>>>> On Wed, 26 Oct 2011, eder at leg.ufpr.br wrote:
+>>>>
+>>>>> Dear member list,
+>>>>> Appreciate your help,
+>>>>> I need to open the file that is located in:
+>>>>> http://www.leg.ufpr.br/~eder/E2D00007.DB
+>>>>> This file is Paradox, but I could not open at the RODBC package, I want
+>>>>> to
+>>>>> import it to R.
+>>>>
+>>>> Why not?
+>>>>
+>>>>> My OS is Windows 7 - 64 Bit
+>>>>> Does anyone have a suggestion for such a task?
+>>>>
+>>>> R has a 'Data Import/Export Manual', with many suggestions.
+>>>>
+>>>>> Thanks
+>>>>>
+>>>>> _______________________________________________
+>>>>> R-sig-DB mailing list -- R Special Interest Group
+>>>>> R-sig-DB at r-project.org
+>>>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>>>>
+>>>>
+>>>> --
+>>>> Brian D. Ripley, ? ? ? ? ? ? ? ? ?ripley at stats.ox.ac.uk
+>>>> Professor of Applied Statistics, ?http://www.stats.ox.ac.uk/~ripley/
+>>>> University of Oxford, ? ? ? ? ? ? Tel: ?+44 1865 272861 (self)
+>>>> 1 South Parks Road, ? ? ? ? ? ? ? ? ? ? +44 1865 272866 (PA)
+>>>> Oxford OX1 3TG, UK ? ? ? ? ? ? ? ?Fax: ?+44 1865 272595
+>>>>
+>>>
+>>
+>> --
+>> Brian D. Ripley, ? ? ? ? ? ? ? ? ?ripley at stats.ox.ac.uk
+>> Professor of Applied Statistics, ?http://www.stats.ox.ac.uk/~ripley/
+>> University of Oxford, ? ? ? ? ? ? Tel: ?+44 1865 272861 (self)
+>> 1 South Parks Road, ? ? ? ? ? ? ? ? ? ? +44 1865 272866 (PA)
+>> Oxford OX1 3TG, UK ? ? ? ? ? ? ? ?Fax: ?+44 1865 272595
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+From ezeevt|v @end|ng |rom gm@||@com  Thu Oct 27 00:58:54 2011
+From: ezeevt|v @end|ng |rom gm@||@com (Elinor Zeev)
+Date: Wed, 26 Oct 2011 15:58:54 -0700
+Subject: [R-sig-DB] append=TRUE, overwrite=FALSE ignored in dbWriteTable
+Message-ID: <CAGGvXuQqN1ZbM+3f=UcQbxS=xveNZomcunDGfAtOx4UKmWo_Kg@mail.gmail.com>
+
+Hello,
+Within a bigger loop, I want to write results to a table in Postgress,
+
+the overwrite and append arguments are ignored and I end up with only the
+current data in the table and the older data is overwritten.
+My code is;
+
+ifelse((dbExistsTable(con, "region_subgroup_mktseg")),
+dbWriteTable(con, "region_subgroup_mktseg", results_tograph,  append=TRUE,
+overwrite=FALSE),
+ dbWriteTable(con, "region_subgroup_mktseg", results_tograph))
+
+R.version
+               _
+platform       i386-pc-mingw32
+arch           i386
+os             mingw32
+system         i386, mingw32
+status
+major          2
+minor          13.2
+year           2011
+month          09
+day            30
+svn rev        57111
+language       R
+version.string R version 2.13.2 (2011-09-30)
+
+Thank you
+
+	[[alternative HTML version deleted]]
+
+
+
+From tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp  Thu Oct 27 01:41:09 2011
+From: tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp (Tomoaki NISHIYAMA)
+Date: Thu, 27 Oct 2011 08:41:09 +0900
+Subject: [R-sig-DB] append=TRUE, overwrite=FALSE ignored in dbWriteTable
+In-Reply-To: <CAGGvXuQqN1ZbM+3f=UcQbxS=xveNZomcunDGfAtOx4UKmWo_Kg@mail.gmail.com>
+References: <CAGGvXuQqN1ZbM+3f=UcQbxS=xveNZomcunDGfAtOx4UKmWo_Kg@mail.gmail.com>
+Message-ID: <53F97E99-0D56-48FC-A5CA-07635644AA7F@kenroku.kanazawa-u.ac.jp>
+
+Hi,
+
+Can you tell the PostgreSQL driver version?
+
+BTW,
+dbWriteTable(con, "region_subgroup_mktseg", results_tograph,  append=TRUE)
+should work without prior check for dbExistTable.
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi, 
+Kanazawa, 920-0934, Japan
+
+
+On 2011/10/27, at 7:58, Elinor Zeev wrote:
+
+> Hello,
+> Within a bigger loop, I want to write results to a table in Postgress,
+> 
+> the overwrite and append arguments are ignored and I end up with only the
+> current data in the table and the older data is overwritten.
+> My code is;
+> 
+> ifelse((dbExistsTable(con, "region_subgroup_mktseg")),
+> dbWriteTable(con, "region_subgroup_mktseg", results_tograph,  append=TRUE,
+> overwrite=FALSE),
+> dbWriteTable(con, "region_subgroup_mktseg", results_tograph))
+> 
+> R.version
+>               _
+> platform       i386-pc-mingw32
+> arch           i386
+> os             mingw32
+> system         i386, mingw32
+> status
+> major          2
+> minor          13.2
+> year           2011
+> month          09
+> day            30
+> svn rev        57111
+> language       R
+> version.string R version 2.13.2 (2011-09-30)
+> 
+> Thank you
+> 
+> 	[[alternative HTML version deleted]]
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp  Thu Oct 27 12:05:07 2011
+From: tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp (Tomoaki NISHIYAMA)
+Date: Thu, 27 Oct 2011 19:05:07 +0900
+Subject: [R-sig-DB] append=TRUE, overwrite=FALSE ignored in dbWriteTable
+In-Reply-To: <CAGGvXuQqhhavzQMw7detrDrK4XcRLAMDzFqdLHD7oQUwohfKSg@mail.gmail.com>
+References: <CAGGvXuQqN1ZbM+3f=UcQbxS=xveNZomcunDGfAtOx4UKmWo_Kg@mail.gmail.com>
+	<53F97E99-0D56-48FC-A5CA-07635644AA7F@kenroku.kanazawa-u.ac.jp>
+	<CAGGvXuQzNxVgX_CGUnYFG2EK0NWY-tzGHaQmJPVFzQEUteNkxA@mail.gmail.com>
+	<7F188B82-B720-4941-9A32-0312E1BE6778@kenroku.kanazawa-u.ac.jp>
+	<CAGGvXuQqhhavzQMw7detrDrK4XcRLAMDzFqdLHD7oQUwohfKSg@mail.gmail.com>
+Message-ID: <6F82082B-33AA-4A9D-994C-CCAD885B8FB5@kenroku.kanazawa-u.ac.jp>
+
+Hi,
+
+Ok, back to the mailing list.
+
+If I understand correctly, you are using RpgSQL (note this is one of the most important information)
+and it appears that RpgSQL does not match to the specification of DBI. 
+http://cran.r-project.org/web/packages/DBI/index.html
+
+The definition in RpgSQL is something like
+setMethod("dbWriteTable", "pgSQLConnection", def=function(conn, name, value, overwrite=TRUE, ...) {
+and does NOT have append argument.
+In addition, the default value of overwrite differs to the DBI spec.
+In DBI the spec is
+  dbWriteTable(conn, name, value, row.names = T, ...,
+              overwrite = F, append = F)
+
+This discrepancy is perhaps inherited from RJDBC.
+There was a similar report early this year.
+https://stat.ethz.ch/pipermail/r-sig-db/2011q1/000996.html
+
+So, I Cc:ed this mail to the maintainers of RpgSQL and RJDBC.
+
+You can modify the respective source code
+RpgSQL/R/class.R
+as you like, or use RPostgreSQL.
+Using RPostgreSQL on windows is not very easy, though.
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi, 
+Kanazawa, 920-0934, Japan
+
+
+On 2011/10/27, at 18:07, Elinor Zeev wrote:
+
+> orry, I misunderstood, I am pretty new to using R,
+> I got the libraries using add packages and the Greece mirror
+> the version of the driver is      RJDBC      "GPL-2"            "2.13.2"
+> 
+> On Thu, Oct 27, 2011 at 1:49 AM, Tomoaki NISHIYAMA <tomoakin at kenroku.kanazawa-u.ac.jp> wrote:
+> Hi,
+> 
+> I am asking for the *driver* version, not the PostgreSQL version.
+> 
+> What library do you load and how do you connect?
+> 
+> http://cran.r-project.org/web/packages/RPostgreSQL/index.html
+> http://cran.r-project.org/web/packages/RpgSQL/index.html
+> -- 
+> Tomoaki NISHIYAMA
+> 
+> Advanced Science Research Center,
+> Kanazawa University,
+> 13-1 Takara-machi, 
+> Kanazawa, 920-0934, Japan
+> 
+> 
+> On 2011/10/27, at 17:33, Elinor Zeev wrote:
+> 
+>> version PostgreSQL 9.1,
+>>  
+>> the append does not work, and I  get an error;
+>>   Error in .local(conn, name, value, ...) : 
+>>   Table `region_subgroup_mktseg' already exists
+>>  
+>> Thank you
+>> 
+>> On Wed, Oct 26, 2011 at 4:41 PM, Tomoaki NISHIYAMA <tomoakin at kenroku.kanazawa-u.ac.jp> wrote:
+>> Hi,
+>> 
+>> Can you tell the PostgreSQL driver version?
+>> 
+>> BTW,
+>> dbWriteTable(con, "region_subgroup_mktseg", results_tograph,  append=TRUE)
+>> should work without prior check for dbExistTable.
+>> --
+>> Tomoaki NISHIYAMA
+>> 
+>> Advanced Science Research Center,
+>> Kanazawa University,
+>> 13-1 Takara-machi,
+>> Kanazawa, 920-0934, Japan
+>> 
+>> 
+>> On 2011/10/27, at 7:58, Elinor Zeev wrote:
+>> 
+>> > Hello,
+>> > Within a bigger loop, I want to write results to a table in Postgress,
+>> >
+>> > the overwrite and append arguments are ignored and I end up with only the
+>> > current data in the table and the older data is overwritten.
+>> > My code is;
+>> >
+>> > ifelse((dbExistsTable(con, "region_subgroup_mktseg")),
+>> > dbWriteTable(con, "region_subgroup_mktseg", results_tograph,  append=TRUE,
+>> > overwrite=FALSE),
+>> > dbWriteTable(con, "region_subgroup_mktseg", results_tograph))
+>> >
+>> > R.version
+>> >               _
+>> > platform       i386-pc-mingw32
+>> > arch           i386
+>> > os             mingw32
+>> > system         i386, mingw32
+>> > status
+>> > major          2
+>> > minor          13.2
+>> > year           2011
+>> > month          09
+>> > day            30
+>> > svn rev        57111
+>> > language       R
+>> > version.string R version 2.13.2 (2011-09-30)
+>> >
+>> > Thank you
+>> >
+>> >       [[alternative HTML version deleted]]
+>> >
+>> > _______________________________________________
+>> > R-sig-DB mailing list -- R Special Interest Group
+>> > R-sig-DB at r-project.org
+>> > https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>> >
+>> 
+>> 
+> 
+> 
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Thu Oct 27 13:11:07 2011
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Thu, 27 Oct 2011 07:11:07 -0400
+Subject: [R-sig-DB] append=TRUE, overwrite=FALSE ignored in dbWriteTable
+In-Reply-To: <6F82082B-33AA-4A9D-994C-CCAD885B8FB5@kenroku.kanazawa-u.ac.jp>
+References: <CAGGvXuQqN1ZbM+3f=UcQbxS=xveNZomcunDGfAtOx4UKmWo_Kg@mail.gmail.com>
+	<53F97E99-0D56-48FC-A5CA-07635644AA7F@kenroku.kanazawa-u.ac.jp>
+	<CAGGvXuQzNxVgX_CGUnYFG2EK0NWY-tzGHaQmJPVFzQEUteNkxA@mail.gmail.com>
+	<7F188B82-B720-4941-9A32-0312E1BE6778@kenroku.kanazawa-u.ac.jp>
+	<CAGGvXuQqhhavzQMw7detrDrK4XcRLAMDzFqdLHD7oQUwohfKSg@mail.gmail.com>
+	<6F82082B-33AA-4A9D-994C-CCAD885B8FB5@kenroku.kanazawa-u.ac.jp>
+Message-ID: <CAP01uR=p26RZR=e50ZOgntt2iLdS=KQ3y1qhbHYv-xEtB6TeUA@mail.gmail.com>
+
+On Thu, Oct 27, 2011 at 6:05 AM, Tomoaki NISHIYAMA
+<tomoakin at kenroku.kanazawa-u.ac.jp> wrote:
+> Hi,
+>
+> Ok, back to the mailing list.
+>
+> If I understand correctly, you are using RpgSQL (note this is one of the most important information)
+> and it appears that RpgSQL does not match to the specification of DBI.
+> http://cran.r-project.org/web/packages/DBI/index.html
+>
+> The definition in RpgSQL is something like
+> setMethod("dbWriteTable", "pgSQLConnection", def=function(conn, name, value, overwrite=TRUE, ...) {
+> and does NOT have append argument.
+> In addition, the default value of overwrite differs to the DBI spec.
+> In DBI the spec is
+> ?dbWriteTable(conn, name, value, row.names = T, ...,
+> ? ? ? ? ? ? ?overwrite = F, append = F)
+>
+> This discrepancy is perhaps inherited from RJDBC.
+> There was a similar report early this year.
+> https://stat.ethz.ch/pipermail/r-sig-db/2011q1/000996.html
+>
+> So, I Cc:ed this mail to the maintainers of RpgSQL and RJDBC.
+>
+> You can modify the respective source code
+> RpgSQL/R/class.R
+> as you like, or use RPostgreSQL.
+> Using RPostgreSQL on windows is not very easy, though.
+
+
+Both RpgSQL and RJDBC do handle overwrite.  Neither support append but
+insert can be used instead.
+
+library(RpgSQL)
+library(gsubfn) # fn - quasi-perl style string interpolation
+
+## assumes appropriate RpgSQL startup options have been set.
+## See example in ?pgSQL
+con <- dbConnect(pgSQL())
+
+## write BOD to database. BOD comes with R
+if (dbExistsTable(con, "bod")) dbSendUpdate(con, "drop table bod")
+dbWriteTable(con, "bod", BOD)
+
+## insert some new rows.
+## Here we don't need to use quotes around the values but
+## if the values were not numeric we would need to.
+NEW <- 2*BOD
+for(i in 1:nrow(NEW)) fn$dbSendUpdate(con,
+	"insert into bod values(`NEW[i,1]`, `NEW[i,2]`)")
+
+dbGetQuery(con, "select * from bod")
+
+dbDisconnect(con)
+
+
+Statistics & Software Consulting
+GKX Group, GKX Associates Inc.
+tel: 1-877-GKX-GROUP
+email: ggrothendieck at gmail.com
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Thu Oct 27 18:52:04 2011
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Thu, 27 Oct 2011 12:52:04 -0400
+Subject: [R-sig-DB] append=TRUE, overwrite=FALSE ignored in dbWriteTable
+In-Reply-To: <CAP01uR=p26RZR=e50ZOgntt2iLdS=KQ3y1qhbHYv-xEtB6TeUA@mail.gmail.com>
+References: <CAGGvXuQqN1ZbM+3f=UcQbxS=xveNZomcunDGfAtOx4UKmWo_Kg@mail.gmail.com>
+	<53F97E99-0D56-48FC-A5CA-07635644AA7F@kenroku.kanazawa-u.ac.jp>
+	<CAGGvXuQzNxVgX_CGUnYFG2EK0NWY-tzGHaQmJPVFzQEUteNkxA@mail.gmail.com>
+	<7F188B82-B720-4941-9A32-0312E1BE6778@kenroku.kanazawa-u.ac.jp>
+	<CAGGvXuQqhhavzQMw7detrDrK4XcRLAMDzFqdLHD7oQUwohfKSg@mail.gmail.com>
+	<6F82082B-33AA-4A9D-994C-CCAD885B8FB5@kenroku.kanazawa-u.ac.jp>
+	<CAP01uR=p26RZR=e50ZOgntt2iLdS=KQ3y1qhbHYv-xEtB6TeUA@mail.gmail.com>
+Message-ID: <CAP01uRnNMr5Wz8143GM8DiiE2Hh6REOorxCHtV1Lh=Vz4weGLw@mail.gmail.com>
+
+On Thu, Oct 27, 2011 at 7:11 AM, Gabor Grothendieck
+<ggrothendieck at gmail.com> wrote:
+> On Thu, Oct 27, 2011 at 6:05 AM, Tomoaki NISHIYAMA
+> <tomoakin at kenroku.kanazawa-u.ac.jp> wrote:
+>> Hi,
+>>
+>> Ok, back to the mailing list.
+>>
+>> If I understand correctly, you are using RpgSQL (note this is one of the most important information)
+>> and it appears that RpgSQL does not match to the specification of DBI.
+>> http://cran.r-project.org/web/packages/DBI/index.html
+>>
+>> The definition in RpgSQL is something like
+>> setMethod("dbWriteTable", "pgSQLConnection", def=function(conn, name, value, overwrite=TRUE, ...) {
+>> and does NOT have append argument.
+>> In addition, the default value of overwrite differs to the DBI spec.
+>> In DBI the spec is
+>> ?dbWriteTable(conn, name, value, row.names = T, ...,
+>> ? ? ? ? ? ? ?overwrite = F, append = F)
+>>
+>> This discrepancy is perhaps inherited from RJDBC.
+>> There was a similar report early this year.
+>> https://stat.ethz.ch/pipermail/r-sig-db/2011q1/000996.html
+>>
+>> So, I Cc:ed this mail to the maintainers of RpgSQL and RJDBC.
+>>
+>> You can modify the respective source code
+>> RpgSQL/R/class.R
+>> as you like, or use RPostgreSQL.
+>> Using RPostgreSQL on windows is not very easy, though.
+>
+>
+> Both RpgSQL and RJDBC do handle overwrite. ?Neither support append but
+> insert can be used instead.
+>
+> library(RpgSQL)
+> library(gsubfn) # fn - quasi-perl style string interpolation
+>
+> ## assumes appropriate RpgSQL startup options have been set.
+> ## See example in ?pgSQL
+> con <- dbConnect(pgSQL())
+>
+> ## write BOD to database. BOD comes with R
+> if (dbExistsTable(con, "bod")) dbSendUpdate(con, "drop table bod")
+> dbWriteTable(con, "bod", BOD)
+>
+> ## insert some new rows.
+> ## Here we don't need to use quotes around the values but
+> ## if the values were not numeric we would need to.
+> NEW <- 2*BOD
+> for(i in 1:nrow(NEW)) fn$dbSendUpdate(con,
+> ? ? ? ?"insert into bod values(`NEW[i,1]`, `NEW[i,2]`)")
+>
+> dbGetQuery(con, "select * from bod")
+>
+> dbDisconnect(con)
+>
+
+Here is a second alternative.  Instead of inserting the new records
+one by one this one writes the new records all at once to a temporary
+table, tmp, and then inserts them en masse into the existing bod table
+and finally drops the temporary table at the end.
+
+library(RpgSQL)
+
+con <- dbConnect(pgSQL())
+
+## write BOD into bod table
+if (dbExistsTable(con, "bod")) dbSendUpdate(con, "drop table bod")
+dbWriteTable(con, "bod", BOD)
+
+## insert NEW into tmp table, insert that into bod and drop tmp
+NEW <- 2*BOD
+if (dbExistsTable(con, "tmp")) dbSendUpdate(con, "drop table tmp")
+dbWriteTable(con, "tmp", NEW)
+dbSendUpdate(con, "insert into bod select * from tmp")
+dbSendUpdate(con, "drop table tmp")
+
+## show result
+dbGetQuery(con, "select * from bod")
+
+dbDisconnect(con)
+
+
+-- 
+Statistics & Software Consulting
+GKX Group, GKX Associates Inc.
+tel: 1-877-GKX-GROUP
+email: ggrothendieck at gmail.com
+
+
+
+From tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp  Fri Oct 28 03:07:34 2011
+From: tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp (Tomoaki NISHIYAMA)
+Date: Fri, 28 Oct 2011 10:07:34 +0900
+Subject: [R-sig-DB] append=TRUE, overwrite=FALSE ignored in dbWriteTable
+In-Reply-To: <CAP01uRnNMr5Wz8143GM8DiiE2Hh6REOorxCHtV1Lh=Vz4weGLw@mail.gmail.com>
+References: <CAGGvXuQqN1ZbM+3f=UcQbxS=xveNZomcunDGfAtOx4UKmWo_Kg@mail.gmail.com>
+	<53F97E99-0D56-48FC-A5CA-07635644AA7F@kenroku.kanazawa-u.ac.jp>
+	<CAGGvXuQzNxVgX_CGUnYFG2EK0NWY-tzGHaQmJPVFzQEUteNkxA@mail.gmail.com>
+	<7F188B82-B720-4941-9A32-0312E1BE6778@kenroku.kanazawa-u.ac.jp>
+	<CAGGvXuQqhhavzQMw7detrDrK4XcRLAMDzFqdLHD7oQUwohfKSg@mail.gmail.com>
+	<6F82082B-33AA-4A9D-994C-CCAD885B8FB5@kenroku.kanazawa-u.ac.jp>
+	<CAP01uR=p26RZR=e50ZOgntt2iLdS=KQ3y1qhbHYv-xEtB6TeUA@mail.gmail.com>
+	<CAP01uRnNMr5Wz8143GM8DiiE2Hh6REOorxCHtV1Lh=Vz4weGLw@mail.gmail.com>
+Message-ID: <31C66942-AD76-4614-9AFA-05EFC8F78BF9@kenroku.kanazawa-u.ac.jp>
+
+Hi Gabor,
+
+Is there any reason not to support append in RpgSQL and JDBC?
+I expect that omitting CREATE TABLE in case there is the preexisting table and
+append=TRUE would be sufficient and that will not hurt the performance too much.  
+An untested patch to show the concept is below.  
+(I don't have the Java setup right now).
+
+$ diff -urp RpgSQL.orig RpgSQL
+diff -urp RpgSQL.orig/R/class.R RpgSQL/R/class.R
+--- RpgSQL.orig/R/class.R	2011-05-12 10:55:39.000000000 +0900
++++ RpgSQL/R/class.R	2011-10-28 09:56:48.156864736 +0900
+@@ -113,7 +113,7 @@ setMethod("dbConnect", "pgSQLDriver", de
+   new("pgSQLConnection", jc=jc, identifier.quote=drv at identifier.quote)},
+           valueClass="pgSQLConnection")
+ 
+-setMethod("dbWriteTable", "pgSQLConnection", def=function(conn, name, value, overwrite=TRUE, ...) {
++setMethod("dbWriteTable", "pgSQLConnection", def=function(conn, name, value, overwrite=FALSE, append=FALSE, ...) {
+   ac <- .jcall(conn at jc, "Z", "getAutoCommit")
+   if (is.vector(value) && !is.list(value)) value <- data.frame(x=value)
+   if (length(value)<1) stop("value must have at least one column")
+@@ -124,21 +124,26 @@ setMethod("dbWriteTable", "pgSQLConnecti
+     if (!is.data.frame(value)) value <- as.data.frame(value)
+   }
+   fts <- sapply(value, dbDataType, dbObj=conn)
+-  if (dbExistsTable(conn, name)) {
+-    if (overwrite) dbRemoveTable(conn, name)
+-    else stop("Table `",name,"' already exists")
+-  }
+-  fdef <- paste(.sql.qescape(names(value), FALSE, conn at identifier.quote),fts,collapse=',')
+-  # cat("conn at identifier.quote:", conn at identifier.quote, "\n")
+-  # qname <- .sql.qescape(name, FALSE, conn at identifier.quote)
+-  qname <- .sql.qescape(name, TRUE, conn at identifier.quote)
+-  ct <- paste("CREATE TABLE ",qname," (",fdef,")",sep= '')
+-  # cat("ct:", ct, "\n")
+   if (ac) {
+     .jcall(conn at jc, "V", "setAutoCommit", FALSE)
+     on.exit(.jcall(conn at jc, "V", "setAutoCommit", ac))
+   }
+-  dbSendUpdate(conn, ct)
++  tablepreexist <-dbExistsTable(conn, name)
++  if (tablepreexist) {
++    if (overwrite) dbRemoveTable(conn, name)
++    else {
++      if(!append) stop("Table `",name,"' already exists")
++    }
++  }
++  if(!tablepreexist || overwrite){
++    fdef <- paste(.sql.qescape(names(value), FALSE, conn at identifier.quote),fts,collapse=',')
++    # cat("conn at identifier.quote:", conn at identifier.quote, "\n")
++    # qname <- .sql.qescape(name, FALSE, conn at identifier.quote)
++    qname <- .sql.qescape(name, TRUE, conn at identifier.quote)
++    ct <- paste("CREATE TABLE ",qname," (",fdef,")",sep= '')
++    # cat("ct:", ct, "\n")
++    dbSendUpdate(conn, ct)
++  }
+   if (length(value[[1]])) {
+     inss <- paste("INSERT INTO ",qname," VALUES(", paste(rep("?",length(value)),collapse=','),")",sep='')
+     for (j in 1:length(value[[1]]))
+
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi, 
+Kanazawa, 920-0934, Japan
+
+
+On 2011/10/28, at 1:52, Gabor Grothendieck wrote:
+
+> On Thu, Oct 27, 2011 at 7:11 AM, Gabor Grothendieck
+> <ggrothendieck at gmail.com> wrote:
+>> On Thu, Oct 27, 2011 at 6:05 AM, Tomoaki NISHIYAMA
+>> <tomoakin at kenroku.kanazawa-u.ac.jp> wrote:
+>>> Hi,
+>>> 
+>>> Ok, back to the mailing list.
+>>> 
+>>> If I understand correctly, you are using RpgSQL (note this is one of the most important information)
+>>> and it appears that RpgSQL does not match to the specification of DBI.
+>>> http://cran.r-project.org/web/packages/DBI/index.html
+>>> 
+>>> The definition in RpgSQL is something like
+>>> setMethod("dbWriteTable", "pgSQLConnection", def=function(conn, name, value, overwrite=TRUE, ...) {
+>>> and does NOT have append argument.
+>>> In addition, the default value of overwrite differs to the DBI spec.
+>>> In DBI the spec is
+>>>  dbWriteTable(conn, name, value, row.names = T, ...,
+>>>              overwrite = F, append = F)
+>>> 
+>>> This discrepancy is perhaps inherited from RJDBC.
+>>> There was a similar report early this year.
+>>> https://stat.ethz.ch/pipermail/r-sig-db/2011q1/000996.html
+>>> 
+>>> So, I Cc:ed this mail to the maintainers of RpgSQL and RJDBC.
+>>> 
+>>> You can modify the respective source code
+>>> RpgSQL/R/class.R
+>>> as you like, or use RPostgreSQL.
+>>> Using RPostgreSQL on windows is not very easy, though.
+>> 
+>> 
+>> Both RpgSQL and RJDBC do handle overwrite.  Neither support append but
+>> insert can be used instead.
+>> 
+>> library(RpgSQL)
+>> library(gsubfn) # fn - quasi-perl style string interpolation
+>> 
+>> ## assumes appropriate RpgSQL startup options have been set.
+>> ## See example in ?pgSQL
+>> con <- dbConnect(pgSQL())
+>> 
+>> ## write BOD to database. BOD comes with R
+>> if (dbExistsTable(con, "bod")) dbSendUpdate(con, "drop table bod")
+>> dbWriteTable(con, "bod", BOD)
+>> 
+>> ## insert some new rows.
+>> ## Here we don't need to use quotes around the values but
+>> ## if the values were not numeric we would need to.
+>> NEW <- 2*BOD
+>> for(i in 1:nrow(NEW)) fn$dbSendUpdate(con,
+>>        "insert into bod values(`NEW[i,1]`, `NEW[i,2]`)")
+>> 
+>> dbGetQuery(con, "select * from bod")
+>> 
+>> dbDisconnect(con)
+>> 
+> 
+> Here is a second alternative.  Instead of inserting the new records
+> one by one this one writes the new records all at once to a temporary
+> table, tmp, and then inserts them en masse into the existing bod table
+> and finally drops the temporary table at the end.
+> 
+> library(RpgSQL)
+> 
+> con <- dbConnect(pgSQL())
+> 
+> ## write BOD into bod table
+> if (dbExistsTable(con, "bod")) dbSendUpdate(con, "drop table bod")
+> dbWriteTable(con, "bod", BOD)
+> 
+> ## insert NEW into tmp table, insert that into bod and drop tmp
+> NEW <- 2*BOD
+> if (dbExistsTable(con, "tmp")) dbSendUpdate(con, "drop table tmp")
+> dbWriteTable(con, "tmp", NEW)
+> dbSendUpdate(con, "insert into bod select * from tmp")
+> dbSendUpdate(con, "drop table tmp")
+> 
+> ## show result
+> dbGetQuery(con, "select * from bod")
+> 
+> dbDisconnect(con)
+> 
+> 
+> -- 
+> Statistics & Software Consulting
+> GKX Group, GKX Associates Inc.
+> tel: 1-877-GKX-GROUP
+> email: ggrothendieck at gmail.com
+> 
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Fri Oct 28 03:19:28 2011
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Thu, 27 Oct 2011 21:19:28 -0400
+Subject: [R-sig-DB] append=TRUE, overwrite=FALSE ignored in dbWriteTable
+In-Reply-To: <31C66942-AD76-4614-9AFA-05EFC8F78BF9@kenroku.kanazawa-u.ac.jp>
+References: <CAGGvXuQqN1ZbM+3f=UcQbxS=xveNZomcunDGfAtOx4UKmWo_Kg@mail.gmail.com>
+	<53F97E99-0D56-48FC-A5CA-07635644AA7F@kenroku.kanazawa-u.ac.jp>
+	<CAGGvXuQzNxVgX_CGUnYFG2EK0NWY-tzGHaQmJPVFzQEUteNkxA@mail.gmail.com>
+	<7F188B82-B720-4941-9A32-0312E1BE6778@kenroku.kanazawa-u.ac.jp>
+	<CAGGvXuQqhhavzQMw7detrDrK4XcRLAMDzFqdLHD7oQUwohfKSg@mail.gmail.com>
+	<6F82082B-33AA-4A9D-994C-CCAD885B8FB5@kenroku.kanazawa-u.ac.jp>
+	<CAP01uR=p26RZR=e50ZOgntt2iLdS=KQ3y1qhbHYv-xEtB6TeUA@mail.gmail.com>
+	<CAP01uRnNMr5Wz8143GM8DiiE2Hh6REOorxCHtV1Lh=Vz4weGLw@mail.gmail.com>
+	<31C66942-AD76-4614-9AFA-05EFC8F78BF9@kenroku.kanazawa-u.ac.jp>
+Message-ID: <CAP01uRnAExF6fGsZA-AkL_zdViRYqsRBnNjD5NuxV2g3PrnH3Q@mail.gmail.com>
+
+On Thu, Oct 27, 2011 at 9:07 PM, Tomoaki NISHIYAMA
+<tomoakin at kenroku.kanazawa-u.ac.jp> wrote:
+> Hi Gabor,
+>
+> Is there any reason not to support append in RpgSQL and JDBC?
+> I expect that omitting CREATE TABLE in case there is the preexisting table and
+> append=TRUE would be sufficient and that will not hurt the performance too much.
+> An untested patch to show the concept is below.
+> (I don't have the Java setup right now).
+>
+> $ diff -urp RpgSQL.orig RpgSQL
+> diff -urp RpgSQL.orig/R/class.R RpgSQL/R/class.R
+> --- RpgSQL.orig/R/class.R ? ? ? 2011-05-12 10:55:39.000000000 +0900
+> +++ RpgSQL/R/class.R ? ?2011-10-28 09:56:48.156864736 +0900
+> @@ -113,7 +113,7 @@ setMethod("dbConnect", "pgSQLDriver", de
+> ? new("pgSQLConnection", jc=jc, identifier.quote=drv at identifier.quote)},
+> ? ? ? ? ? valueClass="pgSQLConnection")
+>
+> -setMethod("dbWriteTable", "pgSQLConnection", def=function(conn, name, value, overwrite=TRUE, ...) {
+> +setMethod("dbWriteTable", "pgSQLConnection", def=function(conn, name, value, overwrite=FALSE, append=FALSE, ...) {
+> ? ac <- .jcall(conn at jc, "Z", "getAutoCommit")
+> ? if (is.vector(value) && !is.list(value)) value <- data.frame(x=value)
+> ? if (length(value)<1) stop("value must have at least one column")
+> @@ -124,21 +124,26 @@ setMethod("dbWriteTable", "pgSQLConnecti
+> ? ? if (!is.data.frame(value)) value <- as.data.frame(value)
+> ? }
+> ? fts <- sapply(value, dbDataType, dbObj=conn)
+> - ?if (dbExistsTable(conn, name)) {
+> - ? ?if (overwrite) dbRemoveTable(conn, name)
+> - ? ?else stop("Table `",name,"' already exists")
+> - ?}
+> - ?fdef <- paste(.sql.qescape(names(value), FALSE, conn at identifier.quote),fts,collapse=',')
+> - ?# cat("conn at identifier.quote:", conn at identifier.quote, "\n")
+> - ?# qname <- .sql.qescape(name, FALSE, conn at identifier.quote)
+> - ?qname <- .sql.qescape(name, TRUE, conn at identifier.quote)
+> - ?ct <- paste("CREATE TABLE ",qname," (",fdef,")",sep= '')
+> - ?# cat("ct:", ct, "\n")
+> ? if (ac) {
+> ? ? .jcall(conn at jc, "V", "setAutoCommit", FALSE)
+> ? ? on.exit(.jcall(conn at jc, "V", "setAutoCommit", ac))
+> ? }
+> - ?dbSendUpdate(conn, ct)
+> + ?tablepreexist <-dbExistsTable(conn, name)
+> + ?if (tablepreexist) {
+> + ? ?if (overwrite) dbRemoveTable(conn, name)
+> + ? ?else {
+> + ? ? ?if(!append) stop("Table `",name,"' already exists")
+> + ? ?}
+> + ?}
+> + ?if(!tablepreexist || overwrite){
+> + ? ?fdef <- paste(.sql.qescape(names(value), FALSE, conn at identifier.quote),fts,collapse=',')
+> + ? ?# cat("conn at identifier.quote:", conn at identifier.quote, "\n")
+> + ? ?# qname <- .sql.qescape(name, FALSE, conn at identifier.quote)
+> + ? ?qname <- .sql.qescape(name, TRUE, conn at identifier.quote)
+> + ? ?ct <- paste("CREATE TABLE ",qname," (",fdef,")",sep= '')
+> + ? ?# cat("ct:", ct, "\n")
+> + ? ?dbSendUpdate(conn, ct)
+> + ?}
+> ? if (length(value[[1]])) {
+> ? ? inss <- paste("INSERT INTO ",qname," VALUES(", paste(rep("?",length(value)),collapse=','),")",sep='')
+> ? ? for (j in 1:length(value[[1]]))
+>
+
+The main reasons have been that (1) RpgSQL was developed for sqldf and
+that feature would rarely be needed by sqldf users, (2) RpgSQL is JDBC
+based and so is based on RJDBC and it seemed reasonable to follow
+RJDBC in terms of feature set particularly if it means that RpgSQL can
+leverage code in RJDBC once its implemented there (note that that is
+particularly important because RpgSQL is not my only JDBC-basd driver
+-- there is also RH2 and any code that can put in RJDBC potentially
+removes it from two other packages making everything simpler), (3)
+lastly its relatively easy for the user to accomplish the same thing
+in other ways.  My preference would be for the RJDBC author to
+implement it first and then to leverage it if possible.
+
+-- 
+Statistics & Software Consulting
+GKX Group, GKX Associates Inc.
+tel: 1-877-GKX-GROUP
+email: ggrothendieck at gmail.com
+
+
+
+From m@cr@k|@ @end|ng |rom @|um@m|t@edu  Thu Nov  3 22:56:45 2011
+From: m@cr@k|@ @end|ng |rom @|um@m|t@edu (Stavros Macrakis)
+Date: Thu, 3 Nov 2011 17:56:45 -0400
+Subject: [R-sig-DB] Minor documentation glitch in RODBC sqlQuery
+Message-ID: <CACLVabXbULSr+-ozQfhPi9SJDwq8x34FoT_=qx=OFFoe14783A@mail.gmail.com>
+
+The help page for sqlQuery (RODBC 1.3.3 under R 2.13.1 on 64-bit
+Windows 7) documents the 'errors' argument as:
+
+     errors: logical: if true halt and display error, else return '-1'.
+
+In fact, with errors=TRUE, sqlQuery does not halt and display an
+error; instead it behaves as documented in the Value section, which
+reads:
+
+     ...On error, if 'errors = TRUE' a character vector of error
+message(s), otherwise...
+
+That is, it displays nothing and returns a character-vector value.
+
+May I suggest the maintainers update the document?
+
+           -s
+
+
+
+From r@u@er @end|ng |rom c|ur@n@@eu  Sun Nov  6 22:40:09 2011
+From: r@u@er @end|ng |rom c|ur@n@@eu (CIURANA EUGENE)
+Date: Sun, 06 Nov 2011 13:40:09 -0800
+Subject: [R-sig-DB] Problem with RMySQL installation - R64.app 2.14, OS X
+Message-ID: <557e8eb9fa56b0e487dba4ac73cf3595@varenka.cime.net>
+
+  
+
+Greetings. 
+
+I installed DBI and RMySQL under R 64-bit console
+without issues, but after several attempts at installing it under
+R64.app it continues to give this error message in response to
+library(RMySQL): 
+
+Loading required package: DBI
+Error : .onLoad failed
+in loadNamespace() for 'RMySQL', details:
+ call: dyn.load(file, DLLpath
+= DLLpath, ...)
+ error: unable to load shared object
+'/Users/ciurana/Library/R/2.14/library/RMySQL/libs/x86_64/RMySQL.so':
+
+dlopen(/Users/ciurana/Library/R/2.14/library/RMySQL/libs/x86_64/RMySQL.so,
+6): Library not loaded:
+/Library/Frameworks/R.framework/Versions/2.13/Resources/lib/libR.dylib
+
+Referenced from:
+/Users/ciurana/Library/R/2.14/library/RMySQL/libs/x86_64/RMySQL.so
+
+Reason: image not found
+Error: package/namespace load failed for
+'RMySQL' 
+
+I tried installing from the command line using R CMD INSTALL
+RMySQL-whatever.tgz 
+
+I also tried setting up the environment variables
+within R64.app for the MySQL client headers and libraries, then
+installing using install.packages(). 
+
+I tried installing this as a
+normal user, and as root. Same effect in both cases. 
+
+The net effect is
+this error message ONLY under R64.app. R from the command line works
+fine, and my scripts and interactive sessions can talk to the MySQL
+databases just fine, sans errors or warnings. 
+
+I was able to install
+(and run) RMySQL under R64 both console and GUI app version 2.13. This
+problem appeared only under 2.14.0. 
+
+Can you please suggest a way of
+troubleshooting this, or a good installation guide specific to OS X?
+Google reports none; I'll be happy to write one too. 
+
+Thanks in advance
+and have a great week, 
+
+E 
+
+-- 
+pr3d4t0r at #R, ##java, #awk,
+#pyton
+irc.freeenode.net
+  
+	[[alternative HTML version deleted]]
+
+
+
+From boerder @end|ng |rom un|-|@nd@u@de  Thu Nov 10 11:51:33 2011
+From: boerder @end|ng |rom un|-|@nd@u@de (=?iso-8859-1?Q?Meike_B=F6rder?=)
+Date: Thu, 10 Nov 2011 11:51:33 +0100
+Subject: [R-sig-DB] R/PostgreSQL
+Message-ID: <000301cc9f96$b6b83ca0$2428b5e0$@de>
+
+Dear all,
+
+ 
+
+I have two problems while using R and PostgreSQL 9.0 and need some help.
+
+ 
+
+1)      I want to import tables from a specific PostgreSQL-Database into R.
+
+Connecting R to PostgreSQL using dbConnect worked, but instead of showing
+just the tables in the requested database, R returned every single table
+from all databases.
+
+ 
+
+I used these commands:
+
+conRLP <- dbConnect(pgSQL(), user = "postgres", password = "pw?, dbname =
+"Data RLP")
+
+ 
+
+dbListTables(conRLP)  
+
+ 
+
+and now instead of just the 15 tables from ?Data RLP? I need, I see a list
+of all tables. Is there a way to just show the tables that are in Data RLP?
+
+ 
+
+My session info:
+
+R version 2.13.2 (2011-09-30)
+
+Platform: i386-pc-mingw32/i386 (32-bit)
+
+ 
+
+locale:
+
+[1] LC_COLLATE=German_Germany.1252  LC_CTYPE=German_Germany.1252
+LC_MONETARY=German_Germany.1252 LC_NUMERIC=C
+LC_TIME=German_Germany.1252    
+
+ 
+
+attached base packages:
+
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+ 
+
+ 
+
+2)      I tried to install RPostgreSQL, but got an error report that the
+confirmation failed.
+
+ 
+
+install.packages("RPostgreSQL", type="source")
+
+Installiere Paket(e) nach ?C:/Users/Hinata/Documents/R/win-library/2.13?
+#translation from german: install packages to C:/?
+
+(da ?lib? nicht spezifiziert)
+#?lib? not specified
+
+versuche URL 'http://cran.rakanu.com/src/contrib/RPostgreSQL_0.2-0.tar.gz'
+#tries URL ?http://??
+
+Content type 'application/x-gzip' length 159167 bytes (155 Kb)
+
+URL ge?ffnet
+#URL opened
+
+downloaded 155 Kb
+
+ 
+
+* installing *source* package 'RPostgreSQL' ...
+
+ERROR: configuration failed for package 'RPostgreSQL'
+
+* removing 'C:/Users/Hinata/Documents/R/win-library/2.13/RPostgreSQL'
+
+ 
+
+Die heruntergeladenen Pakete sind in
+#downloaded packages can be found in folder c:\users?
+
+        ?C:\Users\Hinata\AppData\Local\Temp\RtmpBsQJ05\downloaded_packages?
+
+ 
+
+ 
+
+What can I do?
+
+  
+
+Cheers, Meike
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From edd @end|ng |rom deb|@n@org  Thu Nov 10 18:32:01 2011
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Thu, 10 Nov 2011 11:32:01 -0600
+Subject: [R-sig-DB] R/PostgreSQL
+In-Reply-To: <000301cc9f96$b6b83ca0$2428b5e0$@de>
+References: <000301cc9f96$b6b83ca0$2428b5e0$@de>
+Message-ID: <20156.2705.947895.128342@max.nulle.part>
+
+
+On 10 November 2011 at 11:51, Meike B?rder wrote:
+| 2)      I tried to install RPostgreSQL, but got an error report that the
+| confirmation failed.
+| 
+|  
+| 
+| install.packages("RPostgreSQL", type="source")
+| 
+| Installiere Paket(e) nach ?C:/Users/Hinata/Documents/R/win-library/2.13?
+| #translation from german: install packages to C:/?
+| 
+| (da ?lib? nicht spezifiziert)
+| #?lib? not specified
+| 
+| versuche URL 'http://cran.rakanu.com/src/contrib/RPostgreSQL_0.2-0.tar.gz'
+| #tries URL ?http://??
+| 
+| Content type 'application/x-gzip' length 159167 bytes (155 Kb)
+| 
+| URL ge?ffnet
+| #URL opened
+| 
+| downloaded 155 Kb
+| 
+|  
+| 
+| * installing *source* package 'RPostgreSQL' ...
+| 
+| ERROR: configuration failed for package 'RPostgreSQL'
+| 
+| * removing 'C:/Users/Hinata/Documents/R/win-library/2.13/RPostgreSQL'
+| 
+|  
+| 
+| Die heruntergeladenen Pakete sind in
+| #downloaded packages can be found in folder c:\users?
+| 
+|         ?C:\Users\Hinata\AppData\Local\Temp\RtmpBsQJ05\downloaded_packages?
+| 
+|  
+| 
+|  
+| 
+| What can I do?
+
+If everything else fails, read the documentation. ;-)
+
+To build RPostgreSQL from source you _must have_ the header files and library
+installed.  
+
+On Windows, where locations of programs and files are a little less (let's be
+charitable here) "predicable" you also need to set an environment variable
+PG_HOME to point to the directory holding these files.
+
+I just did this on Windows a couple of days ago, and I effectively had to
+install a full PostgreSQL 9.1 installation: PostgreSQL server, PgAdmin,
+... just to get the headers and libraries. After setting PG_HOME the package
+built like a charm and I am happily talking to a PostgreSQL server on another
+machine. 
+
+Beste Gruesse,  Dirk
+
+-- 
+"Outside of a dog, a book is a man's best friend. Inside of a dog, it is too
+dark to read." -- Groucho Marx
+
+
+
+From tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp  Sat Nov 12 03:59:22 2011
+From: tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp (Tomoaki NISHIYAMA)
+Date: Sat, 12 Nov 2011 11:59:22 +0900
+Subject: [R-sig-DB] RpostgreSQL install on Windows
+In-Reply-To: <CAG2PC+ddv-ytdbSqBX7cFEPNmmME+nM-wfZdAoinm8PrG+TOCQ@mail.gmail.com>
+References: <CAG2PC+ddv-ytdbSqBX7cFEPNmmME+nM-wfZdAoinm8PrG+TOCQ@mail.gmail.com>
+Message-ID: <0B960CB1-20F1-41EA-8FAB-8B7EBECF3FF2@kenroku.kanazawa-u.ac.jp>
+
+Hi,
+
+I wrote an instruction to install on windows in rpostgresql wiki.
+For 32 bit version:
+http://code.google.com/p/rpostgresql/wiki/WindowsInstall32
+and for 64 bit version:
+http://code.google.com/p/rpostgresql/wiki/WindowsInstall64
+
+Note that this was written with very few experience and may contain errors.
+So, please let me know if you find something incorrect, not working, or missing.
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi, 
+Kanazawa, 920-0934, Japan
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From br@d@bow||ng @end|ng |rom b@nko|@mer|c@@com  Tue Nov 15 00:12:31 2011
+From: br@d@bow||ng @end|ng |rom b@nko|@mer|c@@com (Bowling, Brad)
+Date: Mon, 14 Nov 2011 18:12:31 -0500
+Subject: [R-sig-DB] Unable to install ROracle on R 2.14.0
+Message-ID: <E26B217404968B4C9B0B800C7716C8CE018011E0@ex2k.bankofamerica.com>
+
+I am having an issue compiling and installing ROracle.  My knowledge of
+R is very limited so I am looking for any advice on ways I can
+troubleshoot and/or solve this issue, i.e. logs, commands, patches, etc.
+My environment is as follows:
+
+Operating System - Red Hat Enterprise Linux AS release 4 (Nahant Update
+6)
+Linux atlqtfldplz01 2.6.9-78.0.1.ELhugemem #1 SMP Tue Jul 22 18:23:25
+EDT 2008 i686 i686 i386 GNU/Linux
+
+R version 2.14.0 (2011-10-31) Platform: i686-pc-linux-gnu (32-bit)
+Trying to install ROracle_0.5-12.tar.gz
+
+Oracle Client:  10.1.0.3.0 (32bit)
+ORACLE_HOME=/mass/oracle/product/10.1.0.3.0
+LD_LIBRARY_PATH=/mass/oracle/product/10.1.0.3.0/lib
+
+Installed R libraries:
+# /mass/bin/R --slave -e 'cat(rownames(installed.packages()), "\n")'
+base bitops boot caTools chron class cluster codetools corpcor datasets
+DBI digest ellipse fAssets fBasics fCopulae fda fields foreign
+fPortfolio gdata getopt glpk gplots graphics grDevices grid gtools Hmisc
+KernSmooth lars lattice leaps limSolve lpSolve MASS Matrix methods mgcv
+mnormt nlme nnet optparse pls proto quadprog Rcpp Rglpk rjson
+R.methodsS3 robustbase R.oo ROracle roxygen rpart Runiversal slam sn
+spam spatial splines stats stats4 survival tcltk timeDate timeSeries
+tools tseries urca utils zoo
+
+When attempting to compile/install ROracle I receive the following:
+
+# /mass/R/R-2.14.0/bin/R CMD INSTALL -l /mass/R/R-2.14.0/lib/R/library
+./ROracle_0.5-12.tar.gz
+* installing *source* package 'ROracle' ...
+** package 'ROracle' successfully unpacked and MD5 sums checked
+checking for gcc... gcc
+checking for C compiler default output... a.out
+checking whether the C compiler works... yes
+checking whether we are cross compiling... no
+checking for suffix of executables...
+checking for suffix of object files... o
+checking whether we are using the GNU C compiler... yes
+checking whether gcc accepts -g... yes
+checking for gcc option to accept ANSI C... none needed
+checking how to run the C preprocessor... gcc -E
+## You are not building with distcc and have been limited to -j2
+## If you are on the build machine consider stopping and running
+## envy distcc before restarting the build
+configure: creating ./config.status
+config.status: creating src/Makevars
+sed: file ./confstatSv9983/subs-1.sed line 43: unterminated `s' command
+config.status: creating src/Makefile
+sed: file ./confstatSv9983/subs-1.sed line 43: unterminated `s' command
+** libs
+** arch -
+make: *** No targets.  Stop.
+ERROR: compilation failed for package 'ROracle'
+* removing '/mass/R/R-2.14.0/lib/R/library/ROracle'
+
+Has anyone experienced this issue?  I haven't found much in the way of
+documentation out there.  Just install procedures, which I've checked
+and double checked.  Not really sure how to troubleshoot this further.
+Any help will be greatly appreciated.
+
+
+Thanks,
+-Brad
+
+
+----------------------------------------------------------------------
+This message w/attachments (message) is intended solely ...{{dropped:7}}
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Tue Nov 15 07:17:11 2011
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Tue, 15 Nov 2011 06:17:11 +0000 (GMT)
+Subject: [R-sig-DB] Unable to install ROracle on R 2.14.0
+In-Reply-To: <E26B217404968B4C9B0B800C7716C8CE018011E0@ex2k.bankofamerica.com>
+References: <E26B217404968B4C9B0B800C7716C8CE018011E0@ex2k.bankofamerica.com>
+Message-ID: <alpine.LFD.2.02.1111150615070.1495@gannet.stats.ox.ac.uk>
+
+Please ask the maintainer (as the posting guide said).  This is about 
+his configure script, not R nor DBMSs.
+
+If I read it correctly your Linux is very old (RHEL are on 6.x now), 
+and the configure script may need a more recent set of tools.
+
+On Mon, 14 Nov 2011, Bowling, Brad wrote:
+
+> I am having an issue compiling and installing ROracle.  My knowledge of
+> R is very limited so I am looking for any advice on ways I can
+> troubleshoot and/or solve this issue, i.e. logs, commands, patches, etc.
+> My environment is as follows:
+>
+> Operating System - Red Hat Enterprise Linux AS release 4 (Nahant Update
+> 6)
+> Linux atlqtfldplz01 2.6.9-78.0.1.ELhugemem #1 SMP Tue Jul 22 18:23:25
+> EDT 2008 i686 i686 i386 GNU/Linux
+>
+> R version 2.14.0 (2011-10-31) Platform: i686-pc-linux-gnu (32-bit)
+> Trying to install ROracle_0.5-12.tar.gz
+>
+> Oracle Client:  10.1.0.3.0 (32bit)
+> ORACLE_HOME=/mass/oracle/product/10.1.0.3.0
+> LD_LIBRARY_PATH=/mass/oracle/product/10.1.0.3.0/lib
+>
+> Installed R libraries:
+> # /mass/bin/R --slave -e 'cat(rownames(installed.packages()), "\n")'
+> base bitops boot caTools chron class cluster codetools corpcor datasets
+> DBI digest ellipse fAssets fBasics fCopulae fda fields foreign
+> fPortfolio gdata getopt glpk gplots graphics grDevices grid gtools Hmisc
+> KernSmooth lars lattice leaps limSolve lpSolve MASS Matrix methods mgcv
+> mnormt nlme nnet optparse pls proto quadprog Rcpp Rglpk rjson
+> R.methodsS3 robustbase R.oo ROracle roxygen rpart Runiversal slam sn
+> spam spatial splines stats stats4 survival tcltk timeDate timeSeries
+> tools tseries urca utils zoo
+>
+> When attempting to compile/install ROracle I receive the following:
+>
+> # /mass/R/R-2.14.0/bin/R CMD INSTALL -l /mass/R/R-2.14.0/lib/R/library
+> ./ROracle_0.5-12.tar.gz
+> * installing *source* package 'ROracle' ...
+> ** package 'ROracle' successfully unpacked and MD5 sums checked
+> checking for gcc... gcc
+> checking for C compiler default output... a.out
+> checking whether the C compiler works... yes
+> checking whether we are cross compiling... no
+> checking for suffix of executables...
+> checking for suffix of object files... o
+> checking whether we are using the GNU C compiler... yes
+> checking whether gcc accepts -g... yes
+> checking for gcc option to accept ANSI C... none needed
+> checking how to run the C preprocessor... gcc -E
+> ## You are not building with distcc and have been limited to -j2
+> ## If you are on the build machine consider stopping and running
+> ## envy distcc before restarting the build
+> configure: creating ./config.status
+> config.status: creating src/Makevars
+> sed: file ./confstatSv9983/subs-1.sed line 43: unterminated `s' command
+> config.status: creating src/Makefile
+> sed: file ./confstatSv9983/subs-1.sed line 43: unterminated `s' command
+> ** libs
+> ** arch -
+> make: *** No targets.  Stop.
+> ERROR: compilation failed for package 'ROracle'
+> * removing '/mass/R/R-2.14.0/lib/R/library/ROracle'
+>
+> Has anyone experienced this issue?  I haven't found much in the way of
+> documentation out there.  Just install procedures, which I've checked
+> and double checked.  Not really sure how to troubleshoot this further.
+> Any help will be greatly appreciated.
+>
+>
+> Thanks,
+> -Brad
+>
+>
+> ----------------------------------------------------------------------
+> This message w/attachments (message) is intended solely ...{{dropped:7}}
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From edd @end|ng |rom deb|@n@org  Tue Nov 29 15:26:43 2011
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Tue, 29 Nov 2011 08:26:43 -0600
+Subject: [R-sig-DB] RpostgreSQL install on Windows
+In-Reply-To: <0B960CB1-20F1-41EA-8FAB-8B7EBECF3FF2@kenroku.kanazawa-u.ac.jp>
+References: <CAG2PC+ddv-ytdbSqBX7cFEPNmmME+nM-wfZdAoinm8PrG+TOCQ@mail.gmail.com>
+	<0B960CB1-20F1-41EA-8FAB-8B7EBECF3FF2@kenroku.kanazawa-u.ac.jp>
+Message-ID: <20180.60323.756815.980663@max.nulle.part>
+
+
+On 12 November 2011 at 11:59, Tomoaki NISHIYAMA wrote:
+| Hi,
+| 
+| I wrote an instruction to install on windows in rpostgresql wiki.
+| For 32 bit version:
+| http://code.google.com/p/rpostgresql/wiki/WindowsInstall32
+| and for 64 bit version:
+| http://code.google.com/p/rpostgresql/wiki/WindowsInstall64
+| 
+| Note that this was written with very few experience and may contain errors.
+| So, please let me know if you find something incorrect, not working, or
+| missing.
+
+A follow-up is in order here as Tomoaki not only provided this writeup, but
+then proceeded to re-engineer the build on Windows, making the write-up
+somewhat data: By shipping an embedded copy of the source of the PostgreSQL
+connection code (which we can ship as it is of course Open Source), the
+RPostgreSQL package is now no longer dependent on a PostgreSQL installation
+in order to be built.
+
+Hence, Windows binaries are back on CRAN, and Windows users of RPostgreSQL
+can install a pre-compiled package just as they can for RMySQL or RODBC.
+
+That is very good news which I detailed, along with more praise for Tomoaki,
+in a short blog post a couple of days ago:
+
+  http://dirk.eddelbuettel.com/blog/2011/11/21/#rpostgresql_0.2-0_0.2-1
+
+RPostgreSQL is in very fine shape thanks to all his contributions. So three
+cheers for Tomoaki!
+
+Dirk
+
+-- 
+"Outside of a dog, a book is a man's best friend. Inside of a dog, it is too
+dark to read." -- Groucho Marx
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Thu Dec  1 22:52:19 2011
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Thu, 1 Dec 2011 13:52:19 -0800
+Subject: [R-sig-DB] RSQLite 0.11.0 uploaded to CRAN
+Message-ID: <D3C6D78A-B964-47C4-9752-606BF24CD792@userprimary.net>
+
+Hi all,
+
+A new version of RSQLite is available. Details on new features and fixes below. Thanks to Gabor Grothendieck for some useful bug reports and feature suggestions.
+
++ seth
+
+Version 0.11.0
+
+- Enhance type detection in sqliteDataType (dbDataType). The storage
+  mode of a data.frame column is now used as part of the type
+  detection. Prior to this patch, all vectors with class other than
+  numeric or logical were mapped to a TEXT column. This patch uses the
+  output of storage.mode to map to integer and double vectors to
+  INTEGER and REAL columns, respectively.  All other modes are mapped
+  to a TEXT column.
+
+- Detection of BLOBs was narrowed slightly. The code now treats only
+  objects with data.class(obj) == "list" as BLOBs. Previously, is.list
+  was used which could return TRUE for lists of various classes.
+
+- Fix bug in sqliteImportFile (used by dbWriteTable) that prevented a
+  comment character from being specified for the input file.
+
+- Increase compile-time SQLite limits for maximum number of columns in
+  a table to 30000 and maximum number of parameters (?N) in a SELECT
+  to 40000. Use of wide tables is not encouraged. The default values
+  for SQLite are 2000 and 999, respectively. Databases containing
+  tables with more than 2000 columns may not be compatible with
+  versions of SQLite compiled with default settings.
+
+- Upgrade to SQLite 3.7.9.
+
+--
+Seth Falcon | @sfalcon | http://userprimary.net/
+
+
+
+From ju||en@moey@ @end|ng |rom @|u@@e  Tue Dec  6 10:42:49 2011
+From: ju||en@moey@ @end|ng |rom @|u@@e (Julien Moeys)
+Date: Tue, 6 Dec 2011 10:42:49 +0100
+Subject: [R-sig-DB] "easydb" package
+Message-ID: <5F638AF2734EC34995CD5093310A7FBE298DABBDC9@exmbx2.ad.slu.se>
+
+Hi all,
+
+I have recently created a new project/package on r-forge, "easydb".
+http://easydb.r-forge.r-project.org/
+
+In short:
+- This package provides a simplified interface to SQLite, MS Access and MySQL (on top of RSQLite and RODBC);
+- Identical interface (= same functions & arguments) for these 3 databases;
+- Data subsetting style similar to data.frame, with single square brackets
+  myDatabase[ "myTable", row_constrains, col_name ]
+- Intended to be user friendly;
+- Similar to what had been done by John Fox and Oswaldo Cruz in their package dfdb-rodbc;
+- Database connection handled internally;
+- Some SQL queries handled internally;
+- Minimal operation log system, to keep track of operations done on a database;
+- Internally handles SQL's "LAST_INSERT_ID()" for the 3 databases;
+
+Limitations:
+- Not intended to replace DBI and RODBC. Only the most common operations are covered.
+- Not designed for speed (but rather usability)
+
+All functions are documented + I made a vignette too that cover the most important operation.
+
+I was considering to release the package on CRAN, to make it more visible to potential users. Nonetheless, I was wondering what could be the opinion of the R/Database community on this package:
+
+Could it be beneficial to the R community, especially R beginners? Or will it add confusion to the confusion (Yet another database package, Yet another data subsetting style)? 
+
+I was also wondering how to make sure that the code always works as it is supposed to work. As far as I know there are no possibilities for automatic tests of RODBC Access and MySQL during package compilation on r-forge and CRAN -- At the moment I run the tests (testthat, ...) on my local Windows / Linux machines.
+
+all the best
+
+Julien
+PS: I must admit I am not an R guRu, and neither an SQL pro... But the package has been tested on rather data-intensive applications.
+
+
+
+From @@uren @end|ng |rom ctru@@uck|@nd@@c@nz  Wed Dec 21 02:27:32 2011
+From: @@uren @end|ng |rom ctru@@uck|@nd@@c@nz (Stuart Uren)
+Date: Wed, 21 Dec 2011 14:27:32 +1300
+Subject: [R-sig-DB] Unable to get RODBC or ROracle to work on Linux
+Message-ID: <4EF13604.1020308@ctru.auckland.ac.nz>
+
+Hi,
+
+First, my apologies for a lengthy email.
+
+I have been trying to get connectivity between R and Oracle over the 
+past few days (I am new to R, but know Oracle and Linux).
+
+I have tried both RODBC and ROracle methods to connect, but having 
+issues with both.
+
+Below is our environment, what I have done, and the issues to date.   I 
+would much appreciate any help on this, as I'm not sure what to do now.
+
+Our server:
+- RHEL 5.7 64-bit
+- Oracle 11.2.0.3 64-bit
+- R version 2.14.0 (2011-10-31) 64-bit  i.e. .Machine$sizeof.pointer = 8.
+
+_RODBC_
+
+I have installed unixODBC-2.2.14, as I had issues with the standard RHEL 
+2.2.11.
+
+Also installed is the following Oracle 11.2.0.3 64-bit instant client 
+software:
+- instantclient-basic-linux.x64-11.2.0.3.0
+- instantclient-odbc-linux.x64-11.2.0.3.0
+- instantclient-precomp-linux.x64-11.2.0.3.0
+- instantclient-sdk-linux.x64-11.2.0.3.0
+- instantclient-sqlplus-linux.x64-11.2.0.3.0
+
+With the unixODBC 2.2.11 rpm, I kept getting the error with isql:
+isql: symbol lookup error: 
+/u04/app/oracle/product/11.2.0.3/dbhome_1/lib/libsqora.so.11.1: 
+undefined symbol: SQLGetPrivateProfileStringW
+
+This was due to unixODBC 2.2.12+ not being certified on RHEL5 (see 
+attachment bug_12691067.txt for details).
+After installing the 2.2.14 unixODBC, I can now connect to the local 
+Oracle database with isql.
+
+So,... now I do the following as 'root':
+root at predict: export LD_LIBRARY_PATH=/opt/oracle-instantclient/P
+root at predict: export ORACLE_HOME=/u04/app/oracle/product/11.2.0.3/dbhome_1
+root at predict: export ORACLE_SID=PREDICT
+root at predict: export 
+PATH=/u04/app/oracle/product/11.2.0.3/dbhome_1:/u04/app/oracle/product/11.2.0.3/dbhome_1/bin:/usr/kerberos/sbin:/usr/kerberos/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+root at predict: export 
+TNS_ADMIN=/u04/app/oracle/product/11.2.0.3/dbhome_1/network/admin
+
+root at predict:/u05/db_downloads> R
+
+R version 2.14.0 (2011-10-31)
+...
+...
+...
+ >
+ > Sys.getenv("ORACLE_SID")
+[1] "PREDICT"
+ > Sys.getenv("ORACLE_HOME")
+[1] "/u04/app/oracle/product/11.2.0.3/dbhome_1"
+ > Sys.getenv("LD_LIBRARY_PATH")
+[1] 
+"/usr/lib64/R/lib:/usr/local/lib64:/usr/lib/jvm/jre/lib/amd64/server:/usr/lib/jvm/jre/lib/amd64:/usr/lib/jvm/java/lib/amd64:/usr/java/packages/lib/amd64:/lib:/usr/lib:/opt/oracle-instantclient/P:/usr/lib64/R/lib:/usr/local/lib64:/usr/lib/jvm/jre/lib/amd64/server:/usr/lib/jvm/jre/lib/amd64:/usr/lib/jvm/java/lib/amd64:/usr/java/packages/lib/amd64:/lib:/usr/lib"
+ > Sys.getenv("TNS_ADMIN")
+[1] "/u04/app/oracle/product/11.2.0.3/dbhome_1/network/admin"
+ > library(RODBC)
+ > hdl <- odbcConnect('predict', '<user>', '<password>')
+/usr/lib64/R/bin/exec/R: symbol lookup error: 
+/opt/oracle-instantclient/P/libsqora.so.11.1: undefined symbol: 
+SQLGetPrivateProfileStringW
+root at predict:/u05/db_downloads>
+
+I noticed the LD_LIBRARY_PATH had my instant client directory appended 
+to it,  so I tried updating to be at the start, but I still get the same 
+error.  i.e. set to:
+ > 
+Sys.setenv(LD_LIBRARY_PATH="/opt/oracle-instantclient/P:/usr/lib64/R/lib:/usr/local/lib64:/usr/lib/jvm/jre/lib/amd64/server:/usr/lib/jvm/jre/lib/amd64:/usr/lib/jvm/java/lib/amd64:/usr/java/packages/lib/amd64:/lib:/usr/lib")
+
+I find it strange that isql works, but ROracle gives the same error as 
+though I'm running on the unixODBC 2.2.11.    Is there something else I 
+need to configure in R to fix this?
+
+
+
+_ROracle_
+
+I now turn to trying to install the ROracle package, but am unable to 
+get that to install.
+
+I have looked at this posting:   
+http://www.mail-archive.com/r-help at r-project.org/msg121901.html
+... and the ROracle install package at 
+http://cran.r-project.org/web/packages/ROracle/INSTALL
+
+root at predict:/u05/db_downloads> R CMD INSTALL ROracle_0.5-12.tar.gz
+* installing to library '/usr/lib64/R/library'
+* installing *source* package 'ROracle' ...
+** package 'ROracle' successfully unpacked and MD5 sums checked
+checking for gcc... gcc
+checking for C compiler default output... a.out
+checking whether the C compiler works... yes
+checking whether we are cross compiling... no
+checking for suffix of executables...
+checking for suffix of object files... o
+checking whether we are using the GNU C compiler... yes
+checking whether gcc accepts -g... yes
+checking for gcc option to accept ANSI C... none needed
+checking how to run the C preprocessor... gcc -E
+configure: creating ./config.status
+config.status: creating src/Makevars
+config.status: creating src/Makefile
+** libs
+** arch -
+R CMD COMPILE RS-DBI.c
+make[1]: Entering directory `/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/src'
+gcc -m64 -std=gnu99 -I/usr/include/R -DRS_ORA_SQLGLS_WORKAROUND 
+-I/usr/local/include    -fpic  -O2 -g -pipe -Wall 
+-Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector 
+--param=ssp-buffer-size=4 -m64 -mtune=generic -c RS-DBI.c -o RS-DBI.o
+make[1]: Leaving directory `/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/src'
+proc CODE=ANSI_C MODE=ORACLE INCLUDE=/usr/lib64/R/include \
+                 PARSE=NONE LINES=false PREFETCH=1 RS-Oracle.pc
+
+Pro*C/C++: Release 11.2.0.3.0 - Production on Wed Dec 21 13:59:21 2011
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights 
+reserved.
+
+System default option values taken from: 
+/u04/app/oracle/product/11.2.0.3/dbhome_1/precomp/admin/pcscfg.cfg
+
+R CMD COMPILE RS-Oracle.c
+make[1]: Entering directory `/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/src'
+gcc -m64 -std=gnu99 -I/usr/include/R -DRS_ORA_SQLGLS_WORKAROUND 
+-I/usr/local/include    -fpic  -O2 -g -pipe -Wall 
+-Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector 
+--param=ssp-buffer-size=4 -m64 -mtune=generic -c RS-Oracle.c -o RS-Oracle.o
+RS-Oracle.c: In function 'RS_Ora_varCharCpy':
+RS-Oracle.c:6726: warning: pointer targets in passing argument 1 of 
+'__builtin___strcpy_chk' differ in signedness
+RS-Oracle.c:6726: warning: pointer targets in passing argument 1 of 
+'__strcpy_ichk' differ in signedness
+RS-Oracle.c: At top level:
+RS-Oracle.c:114: warning: 'sqlstm' defined but not used
+make[1]: Leaving directory `/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/src'
+R CMD SHLIB -o ROracle.so RS-DBI.o RS-Oracle.o
+make[1]: Entering directory `/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/src'
+gcc -m64 -std=gnu99 -shared -L/usr/local/lib64 -o ROracle.so RS-DBI.o 
+RS-Oracle.o -L/u04/app/oracle/product/11.2.0.3/dbhome_1/lib 
+-L/u04/app/oracle/product/11.2.0.3/dbhome_1/network/lib -lclntst11 
+-lnbeq11 -lnhost11 -lnus11 -lnldap11 -lldapclnt11 -lnsslb11 -lntcp11 
+-lntcps11 -lnsslb11 -lntcp11 -lntns11 -ldl -lm -lpthread -lnsl -lirc 
+-lipgo -lsvml -ldl -lm -L/usr/lib64/R/lib -lR
+make[1]: Leaving directory `/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/src'
+installing to /usr/lib64/R/library/ROracle/libs
+** R
+** inst
+** preparing package for lazy loading
+Creating a generic function for 'format' from package 'base' in package 
+'ROracle'
+** help
+*** installing help indices
+   converting help for package 'ROracle'
+     finding HTML links ... done
+     DBIPreparedStatement-class              html
+Rd warning: 
+/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/DBIPreparedStatement-class.Rd:17: 
+missing file link 'dbPrepareStatement'
+     OraConnection-class                     html
+     OraDriver-class                         html
+     OraObject-class                         html
+     OraPreparedStatement-class              html
+     OraResult-class                         html
+     Oracle                                  html
+Rd warning: /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:90: 
+missing file link 'dbRollback'
+Rd warning: /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:99: 
+missing file link 'dbRollback'
+Rd warning: /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:102: 
+missing file link 'dbGetQuery'
+Rd warning: /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:106: 
+missing file link 'dbWriteTable'
+Rd warning: /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:128: 
+missing file link 'dbUnloadDriver'
+Rd warning: /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:133: 
+missing file link 'dbDisconnect'
+Rd warning: /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:139: 
+missing file link 'dbGetQuery'
+Rd warning: /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:140: 
+missing file link 'dbClearResult'
+Rd warning: /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:147: 
+missing file link 'dbRollback'
+Rd warning: /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:154: 
+missing file link 'dbListFields'
+Rd warning: /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:155: 
+missing file link 'dbListConnections'
+Rd warning: /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:156: 
+missing file link 'dbListResults'
+Rd warning: /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:157: 
+missing file link 'dbGetException'
+Rd warning: /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:158: 
+missing file link 'dbGetStatement'
+Rd warning: /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:159: 
+missing file link 'dbHasCompleted'
+Rd warning: /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:160: 
+missing file link 'dbGetRowCount'
+Rd warning: /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:161: 
+missing file link 'dbGetRowsAffected'
+     S4R                                     html
+     dbCallProc-methods                      html
+Rd warning: 
+/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbCallProc-methods.Rd:30: 
+missing file link 'dbGetQuery'
+     dbCommit-methods                        html
+Rd warning: 
+/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbCommit-methods.Rd:31: 
+missing file link 'dbGetQuery'
+     dbConnect-methods                       html
+Rd warning: 
+/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbConnect-methods.Rd:51: 
+missing file link 'dbGetQuery'
+     dbDataType-methods                      html
+Rd warning: 
+/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbDataType-methods.Rd:32: 
+missing file link 'isSQLKeyword'
+     dbDriver-methods                        html
+Rd warning: 
+/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbDriver-methods.Rd:38: 
+missing file link 'dbGetQuery'
+     dbGetInfo-methods                       html
+Rd warning: 
+/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbGetInfo-methods.Rd:47: 
+missing file link 'dbGetQuery'
+     dbListTables-methods                    html
+Rd warning: 
+/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbListTables-methods.Rd:36: missing 
+file link 'dbColumnInfo'
+     dbObjectId-class                        html
+     dbPrepareStatement-methods              html
+Rd warning: 
+/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbPrepareStatement-methods.Rd:86: 
+missing file link 'dbClearResult'
+Rd warning: 
+/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbPrepareStatement-methods.Rd:87: 
+missing file link 'dbGetStatement'
+Rd warning: 
+/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbPrepareStatement-methods.Rd:88: 
+missing file link 'dbGetRowsAffected'
+Rd warning: 
+/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbPrepareStatement-methods.Rd:109: 
+missing file link 'dbGetQuery'
+     dbReadTable-methods                     html
+Rd warning: 
+/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbReadTable-methods.Rd:80: 
+missing file link 'dbGetQuery'
+     dbSendQuery-methods                     html
+     dbSetDataMappings-methods               html
+Rd warning: 
+/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbSetDataMappings-methods.Rd:34: 
+missing file link 'dbColumnInfo'
+     fetch-methods                           html
+Rd warning: 
+/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/fetch-methods.Rd:44: 
+missing file link 'dbGetQuery'
+Rd warning: 
+/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/fetch-methods.Rd:45: 
+missing file link 'dbClearResult'
+     isIdCurrent                             html
+Rd warning: 
+/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/isIdCurrent.Rd:34: missing 
+file link 'dbGetQuery'
+     make.db.names-methods                   html
+Rd warning: 
+/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/make.db.names-methods.Rd:67: 
+missing file link 'dbWriteTable'
+Rd warning: 
+/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/make.db.names-methods.Rd:68: 
+missing file link 'dbExistsTable'
+Rd warning: 
+/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/make.db.names-methods.Rd:69: 
+missing file link 'dbRemoveTable'
+     oraParseConParams                       html
+     oraSupport                              html
+     safe.write                              html
+Rd warning: 
+/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/safe.write.Rd:21: missing 
+file link 'oraWriteTable'
+     summary-methods                         html
+** building package indices ...
+** testing if installed package can be loaded
+Error in dyn.load(file, DLLpath = DLLpath, ...) :
+   unable to load shared object 
+'/usr/lib64/R/library/ROracle/libs/ROracle.so':
+   /usr/lib64/R/library/ROracle/libs/ROracle.so: undefined symbol: sqlprc
+Error: loading failed
+Execution halted
+ERROR: loading failed
+* removing '/usr/lib64/R/library/ROracle'
+
+As mentioned, I've been through the R forums for answers, but still get 
+this error.
+
+I am unsure what to do next, and would much appreciate if anyone would 
+provide some help with either the RODBC method or ROracle method to 
+connect to my database.
+
+Thanks in advance,
+
+Stuart Uren
+Database Administrator
+Clinical Trials Research Unit
+The University of Auckland
+Auckland, New Zealand
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20111221/5921f0b1/attachment.html>
+
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: bug_12691067.txt
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20111221/5921f0b1/attachment.txt>
+
+From @@uren @end|ng |rom ctru@@uck|@nd@@c@nz  Wed Dec 21 03:37:22 2011
+From: @@uren @end|ng |rom ctru@@uck|@nd@@c@nz (Stuart Uren)
+Date: Wed, 21 Dec 2011 15:37:22 +1300
+Subject: [R-sig-DB] Unable to get RODBC or ROracle to work on Linux
+In-Reply-To: <4EF13604.1020308@ctru.auckland.ac.nz>
+References: <4EF13604.1020308@ctru.auckland.ac.nz>
+Message-ID: <4EF14662.1070400@ctru.auckland.ac.nz>
+
+Ahh,... I just unzipped / untarred the ROracle_0.5-12.tar.gz file, and 
+read the inst/README.Oracle9 doc which suggests a fix to this error:
+
+Workaround
+----------
+    Add the libsqlplus (-lsqplus) library during ROracle configuration.
+    Starting with version 0.5-4, you may specify the --enable-extralibs
+    configuration argument:
+
+R CMD INSTALL--configure-args='--enable-extralibs' ROracle_0.5-4.tar.gz
+
+So,... I have tried this (substituting 0.5-12 for 0.5-4) and ROracle has 
+now installed without errors.
+
+I can now load the ROracle library, connect and run a query.
+
+Maybe someone could comment on the RODBC, however, that doesn't matter 
+too much to me now that I have ROracle working.
+
+I didn't think of looking in the .gz file, mainly because R 
+unzips/untars/installs for me.   Perhaps this item could be included in 
+this doc: http://cran.r-project.org/web/packages/ROracle/INSTALL
+
+Regards
+
+Stuart.
+
+
+On 21/12/11 14:27, Stuart Uren wrote:
+> Hi,
+>
+> First, my apologies for a lengthy email.
+>
+> I have been trying to get connectivity between R and Oracle over the 
+> past few days (I am new to R, but know Oracle and Linux).
+>
+> I have tried both RODBC and ROracle methods to connect, but having 
+> issues with both.
+>
+> Below is our environment, what I have done, and the issues to date.   
+> I would much appreciate any help on this, as I'm not sure what to do now.
+>
+> Our server:
+> - RHEL 5.7 64-bit
+> - Oracle 11.2.0.3 64-bit
+> - R version 2.14.0 (2011-10-31) 64-bit  i.e. .Machine$sizeof.pointer = 8.
+>
+> _RODBC_
+>
+> I have installed unixODBC-2.2.14, as I had issues with the standard 
+> RHEL 2.2.11.
+>
+> Also installed is the following Oracle 11.2.0.3 64-bit instant client 
+> software:
+> - instantclient-basic-linux.x64-11.2.0.3.0
+> - instantclient-odbc-linux.x64-11.2.0.3.0
+> - instantclient-precomp-linux.x64-11.2.0.3.0
+> - instantclient-sdk-linux.x64-11.2.0.3.0
+> - instantclient-sqlplus-linux.x64-11.2.0.3.0
+>
+> With the unixODBC 2.2.11 rpm, I kept getting the error with isql:
+> isql: symbol lookup error: 
+> /u04/app/oracle/product/11.2.0.3/dbhome_1/lib/libsqora.so.11.1: 
+> undefined symbol: SQLGetPrivateProfileStringW
+>
+> This was due to unixODBC 2.2.12+ not being certified on RHEL5 (see 
+> attachment bug_12691067.txt for details).
+> After installing the 2.2.14 unixODBC, I can now connect to the local 
+> Oracle database with isql.
+>
+> So,... now I do the following as 'root':
+> root at predict: export LD_LIBRARY_PATH=/opt/oracle-instantclient/P
+> root at predict: export ORACLE_HOME=/u04/app/oracle/product/11.2.0.3/dbhome_1
+> root at predict: export ORACLE_SID=PREDICT
+> root at predict: export 
+> PATH=/u04/app/oracle/product/11.2.0.3/dbhome_1:/u04/app/oracle/product/11.2.0.3/dbhome_1/bin:/usr/kerberos/sbin:/usr/kerberos/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+> root at predict: export 
+> TNS_ADMIN=/u04/app/oracle/product/11.2.0.3/dbhome_1/network/admin
+>
+> root at predict:/u05/db_downloads> R
+>
+> R version 2.14.0 (2011-10-31)
+> ...
+> ...
+> ...
+> >
+> > Sys.getenv("ORACLE_SID")
+> [1] "PREDICT"
+> > Sys.getenv("ORACLE_HOME")
+> [1] "/u04/app/oracle/product/11.2.0.3/dbhome_1"
+> > Sys.getenv("LD_LIBRARY_PATH")
+> [1] 
+> "/usr/lib64/R/lib:/usr/local/lib64:/usr/lib/jvm/jre/lib/amd64/server:/usr/lib/jvm/jre/lib/amd64:/usr/lib/jvm/java/lib/amd64:/usr/java/packages/lib/amd64:/lib:/usr/lib:/opt/oracle-instantclient/P:/usr/lib64/R/lib:/usr/local/lib64:/usr/lib/jvm/jre/lib/amd64/server:/usr/lib/jvm/jre/lib/amd64:/usr/lib/jvm/java/lib/amd64:/usr/java/packages/lib/amd64:/lib:/usr/lib"
+> > Sys.getenv("TNS_ADMIN")
+> [1] "/u04/app/oracle/product/11.2.0.3/dbhome_1/network/admin"
+> > library(RODBC)
+> > hdl <- odbcConnect('predict', '<user>', '<password>')
+> /usr/lib64/R/bin/exec/R: symbol lookup error: 
+> /opt/oracle-instantclient/P/libsqora.so.11.1: undefined symbol: 
+> SQLGetPrivateProfileStringW
+> root at predict:/u05/db_downloads>
+>
+> I noticed the LD_LIBRARY_PATH had my instant client directory appended 
+> to it,  so I tried updating to be at the start, but I still get the 
+> same error.  i.e. set to:
+> > 
+> Sys.setenv(LD_LIBRARY_PATH="/opt/oracle-instantclient/P:/usr/lib64/R/lib:/usr/local/lib64:/usr/lib/jvm/jre/lib/amd64/server:/usr/lib/jvm/jre/lib/amd64:/usr/lib/jvm/java/lib/amd64:/usr/java/packages/lib/amd64:/lib:/usr/lib")
+>
+> I find it strange that isql works, but ROracle gives the same error as 
+> though I'm running on the unixODBC 2.2.11.    Is there something else 
+> I need to configure in R to fix this?
+>
+>
+>
+> _ROracle_
+>
+> I now turn to trying to install the ROracle package, but am unable to 
+> get that to install.
+>
+> I have looked at this posting: 
+> http://www.mail-archive.com/r-help at r-project.org/msg121901.html
+> ... and the ROracle install package at 
+> http://cran.r-project.org/web/packages/ROracle/INSTALL
+>
+> root at predict:/u05/db_downloads> R CMD INSTALL ROracle_0.5-12.tar.gz
+> * installing to library '/usr/lib64/R/library'
+> * installing *source* package 'ROracle' ...
+> ** package 'ROracle' successfully unpacked and MD5 sums checked
+> checking for gcc... gcc
+> checking for C compiler default output... a.out
+> checking whether the C compiler works... yes
+> checking whether we are cross compiling... no
+> checking for suffix of executables...
+> checking for suffix of object files... o
+> checking whether we are using the GNU C compiler... yes
+> checking whether gcc accepts -g... yes
+> checking for gcc option to accept ANSI C... none needed
+> checking how to run the C preprocessor... gcc -E
+> configure: creating ./config.status
+> config.status: creating src/Makevars
+> config.status: creating src/Makefile
+> ** libs
+> ** arch -
+> R CMD COMPILE RS-DBI.c
+> make[1]: Entering directory 
+> `/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/src'
+> gcc -m64 -std=gnu99 -I/usr/include/R -DRS_ORA_SQLGLS_WORKAROUND 
+> -I/usr/local/include    -fpic  -O2 -g -pipe -Wall 
+> -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector 
+> --param=ssp-buffer-size=4 -m64 -mtune=generic -c RS-DBI.c -o RS-DBI.o
+> make[1]: Leaving directory `/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/src'
+> proc CODE=ANSI_C MODE=ORACLE INCLUDE=/usr/lib64/R/include \
+>                 PARSE=NONE LINES=false PREFETCH=1 RS-Oracle.pc
+>
+> Pro*C/C++: Release 11.2.0.3.0 - Production on Wed Dec 21 13:59:21 2011
+>
+> Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights 
+> reserved.
+>
+> System default option values taken from: 
+> /u04/app/oracle/product/11.2.0.3/dbhome_1/precomp/admin/pcscfg.cfg
+>
+> R CMD COMPILE RS-Oracle.c
+> make[1]: Entering directory 
+> `/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/src'
+> gcc -m64 -std=gnu99 -I/usr/include/R -DRS_ORA_SQLGLS_WORKAROUND 
+> -I/usr/local/include    -fpic  -O2 -g -pipe -Wall 
+> -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector 
+> --param=ssp-buffer-size=4 -m64 -mtune=generic -c RS-Oracle.c -o 
+> RS-Oracle.o
+> RS-Oracle.c: In function 'RS_Ora_varCharCpy':
+> RS-Oracle.c:6726: warning: pointer targets in passing argument 1 of 
+> '__builtin___strcpy_chk' differ in signedness
+> RS-Oracle.c:6726: warning: pointer targets in passing argument 1 of 
+> '__strcpy_ichk' differ in signedness
+> RS-Oracle.c: At top level:
+> RS-Oracle.c:114: warning: 'sqlstm' defined but not used
+> make[1]: Leaving directory `/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/src'
+> R CMD SHLIB -o ROracle.so RS-DBI.o RS-Oracle.o
+> make[1]: Entering directory 
+> `/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/src'
+> gcc -m64 -std=gnu99 -shared -L/usr/local/lib64 -o ROracle.so RS-DBI.o 
+> RS-Oracle.o -L/u04/app/oracle/product/11.2.0.3/dbhome_1/lib 
+> -L/u04/app/oracle/product/11.2.0.3/dbhome_1/network/lib -lclntst11 
+> -lnbeq11 -lnhost11 -lnus11 -lnldap11 -lldapclnt11 -lnsslb11 -lntcp11 
+> -lntcps11 -lnsslb11 -lntcp11 -lntns11 -ldl -lm -lpthread -lnsl -lirc 
+> -lipgo -lsvml -ldl -lm -L/usr/lib64/R/lib -lR
+> make[1]: Leaving directory `/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/src'
+> installing to /usr/lib64/R/library/ROracle/libs
+> ** R
+> ** inst
+> ** preparing package for lazy loading
+> Creating a generic function for 'format' from package 'base' in 
+> package 'ROracle'
+> ** help
+> *** installing help indices
+>   converting help for package 'ROracle'
+>     finding HTML links ... done
+>     DBIPreparedStatement-class              html
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/DBIPreparedStatement-class.Rd:17: 
+> missing file link 'dbPrepareStatement'
+>     OraConnection-class                     html
+>     OraDriver-class                         html
+>     OraObject-class                         html
+>     OraPreparedStatement-class              html
+>     OraResult-class                         html
+>     Oracle                                  html
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:90: missing 
+> file link 'dbRollback'
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:99: missing 
+> file link 'dbRollback'
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:102: missing 
+> file link 'dbGetQuery'
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:106: missing 
+> file link 'dbWriteTable'
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:128: missing 
+> file link 'dbUnloadDriver'
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:133: missing 
+> file link 'dbDisconnect'
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:139: missing 
+> file link 'dbGetQuery'
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:140: missing 
+> file link 'dbClearResult'
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:147: missing 
+> file link 'dbRollback'
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:154: missing 
+> file link 'dbListFields'
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:155: missing 
+> file link 'dbListConnections'
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:156: missing 
+> file link 'dbListResults'
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:157: missing 
+> file link 'dbGetException'
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:158: missing 
+> file link 'dbGetStatement'
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:159: missing 
+> file link 'dbHasCompleted'
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:160: missing 
+> file link 'dbGetRowCount'
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:161: missing 
+> file link 'dbGetRowsAffected'
+>     S4R                                     html
+>     dbCallProc-methods                      html
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbCallProc-methods.Rd:30: missing 
+> file link 'dbGetQuery'
+>     dbCommit-methods                        html
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbCommit-methods.Rd:31: 
+> missing file link 'dbGetQuery'
+>     dbConnect-methods                       html
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbConnect-methods.Rd:51: 
+> missing file link 'dbGetQuery'
+>     dbDataType-methods                      html
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbDataType-methods.Rd:32: missing 
+> file link 'isSQLKeyword'
+>     dbDriver-methods                        html
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbDriver-methods.Rd:38: 
+> missing file link 'dbGetQuery'
+>     dbGetInfo-methods                       html
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbGetInfo-methods.Rd:47: 
+> missing file link 'dbGetQuery'
+>     dbListTables-methods                    html
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbListTables-methods.Rd:36: 
+> missing file link 'dbColumnInfo'
+>     dbObjectId-class                        html
+>     dbPrepareStatement-methods              html
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbPrepareStatement-methods.Rd:86: 
+> missing file link 'dbClearResult'
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbPrepareStatement-methods.Rd:87: 
+> missing file link 'dbGetStatement'
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbPrepareStatement-methods.Rd:88: 
+> missing file link 'dbGetRowsAffected'
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbPrepareStatement-methods.Rd:109: 
+> missing file link 'dbGetQuery'
+>     dbReadTable-methods                     html
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbReadTable-methods.Rd:80: 
+> missing file link 'dbGetQuery'
+>     dbSendQuery-methods                     html
+>     dbSetDataMappings-methods               html
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbSetDataMappings-methods.Rd:34: 
+> missing file link 'dbColumnInfo'
+>     fetch-methods                           html
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/fetch-methods.Rd:44: 
+> missing file link 'dbGetQuery'
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/fetch-methods.Rd:45: 
+> missing file link 'dbClearResult'
+>     isIdCurrent                             html
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/isIdCurrent.Rd:34: 
+> missing file link 'dbGetQuery'
+>     make.db.names-methods                   html
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/make.db.names-methods.Rd:67: 
+> missing file link 'dbWriteTable'
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/make.db.names-methods.Rd:68: 
+> missing file link 'dbExistsTable'
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/make.db.names-methods.Rd:69: 
+> missing file link 'dbRemoveTable'
+>     oraParseConParams                       html
+>     oraSupport                              html
+>     safe.write                              html
+> Rd warning: 
+> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/safe.write.Rd:21: 
+> missing file link 'oraWriteTable'
+>     summary-methods                         html
+> ** building package indices ...
+> ** testing if installed package can be loaded
+> Error in dyn.load(file, DLLpath = DLLpath, ...) :
+>   unable to load shared object 
+> '/usr/lib64/R/library/ROracle/libs/ROracle.so':
+>   /usr/lib64/R/library/ROracle/libs/ROracle.so: undefined symbol: sqlprc
+> Error: loading failed
+> Execution halted
+> ERROR: loading failed
+> * removing '/usr/lib64/R/library/ROracle'
+>
+> As mentioned, I've been through the R forums for answers, but still 
+> get this error.
+>
+> I am unsure what to do next, and would much appreciate if anyone would 
+> provide some help with either the RODBC method or ROracle method to 
+> connect to my database.
+>
+> Thanks in advance,
+>
+> Stuart Uren
+> Database Administrator
+> Clinical Trials Research Unit
+> The University of Auckland
+> Auckland, New Zealand
+>
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+	[[alternative HTML version deleted]]
+
+
+
+From edd @end|ng |rom deb|@n@org  Wed Dec 21 03:54:20 2011
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Tue, 20 Dec 2011 20:54:20 -0600
+Subject: [R-sig-DB] Unable to get RODBC or ROracle to work on Linux
+In-Reply-To: <4EF14662.1070400@ctru.auckland.ac.nz>
+References: <4EF13604.1020308@ctru.auckland.ac.nz>
+	<4EF14662.1070400@ctru.auckland.ac.nz>
+Message-ID: <20209.19036.590445.570611@max.nulle.part>
+
+
+On 21 December 2011 at 15:37, Stuart Uren wrote:
+| Maybe someone could comment on the RODBC, however, that doesn't matter 
+| too much to me now that I have ROracle working.
+
+It's been a while, but I used to use ROBDC before we had dedicated drivers
+for PostgreSQL. 
+
+It seemed like you did the hard part: getting ODBC connectivity from your
+box.  Once you have the basic "ini" files set, and isql works, RODBC should
+follow.  
+
+I have been maintaining RODBC for Debian since 2003. For those builds, we
+have switched between iODBC and unixodbc, so either should work.  As you have
+a working installation, maybe all it takes is to make sure the right header
+files get picked up.  But in any event, ROracle may be more efficient.
+
+Dirk
+
+-- 
+"Outside of a dog, a book is a man's best friend. Inside of a dog, it is too
+dark to read." -- Groucho Marx
+
+
+
+From m@cqueen1 @end|ng |rom ||n|@gov  Thu Dec 22 19:24:23 2011
+From: m@cqueen1 @end|ng |rom ||n|@gov (MacQueen, Don)
+Date: Thu, 22 Dec 2011 10:24:23 -0800
+Subject: [R-sig-DB] Unable to get RODBC or ROracle to work on Linux
+In-Reply-To: <4EF14662.1070400@ctru.auckland.ac.nz>
+Message-ID: <CB18B4F0.82125%macqueen1@llnl.gov>
+
+Perhaps not relevant now that you have ROracle running, but RJDBC is
+another option that I have had success with.
+
+Especially with respect running the same queries from both RHEL and
+Macintosh clients.
+
+-Don
+
+--
+Don MacQueen
+
+Lawrence Livermore National Laboratory
+7000 East Ave., L-627
+Livermore, CA 94550
+925-423-1062
+
+
+
+
+
+On 12/20/11 6:37 PM, "Stuart Uren" <s.uren at ctru.auckland.ac.nz> wrote:
+
+>Ahh,... I just unzipped / untarred the ROracle_0.5-12.tar.gz file, and
+>read the inst/README.Oracle9 doc which suggests a fix to this error:
+>
+>Workaround
+>----------
+>    Add the libsqlplus (-lsqplus) library during ROracle configuration.
+>    Starting with version 0.5-4, you may specify the --enable-extralibs
+>    configuration argument:
+>
+>R CMD INSTALL--configure-args='--enable-extralibs' ROracle_0.5-4.tar.gz
+>
+>So,... I have tried this (substituting 0.5-12 for 0.5-4) and ROracle has
+>now installed without errors.
+>
+>I can now load the ROracle library, connect and run a query.
+>
+>Maybe someone could comment on the RODBC, however, that doesn't matter
+>too much to me now that I have ROracle working.
+>
+>I didn't think of looking in the .gz file, mainly because R
+>unzips/untars/installs for me.   Perhaps this item could be included in
+>this doc: http://cran.r-project.org/web/packages/ROracle/INSTALL
+>
+>Regards
+>
+>Stuart.
+>
+>
+>On 21/12/11 14:27, Stuart Uren wrote:
+>> Hi,
+>>
+>> First, my apologies for a lengthy email.
+>>
+>> I have been trying to get connectivity between R and Oracle over the
+>> past few days (I am new to R, but know Oracle and Linux).
+>>
+>> I have tried both RODBC and ROracle methods to connect, but having
+>> issues with both.
+>>
+>> Below is our environment, what I have done, and the issues to date.
+>> I would much appreciate any help on this, as I'm not sure what to do
+>>now.
+>>
+>> Our server:
+>> - RHEL 5.7 64-bit
+>> - Oracle 11.2.0.3 64-bit
+>> - R version 2.14.0 (2011-10-31) 64-bit  i.e. .Machine$sizeof.pointer =
+>>8.
+>>
+>> _RODBC_
+>>
+>> I have installed unixODBC-2.2.14, as I had issues with the standard
+>> RHEL 2.2.11.
+>>
+>> Also installed is the following Oracle 11.2.0.3 64-bit instant client
+>> software:
+>> - instantclient-basic-linux.x64-11.2.0.3.0
+>> - instantclient-odbc-linux.x64-11.2.0.3.0
+>> - instantclient-precomp-linux.x64-11.2.0.3.0
+>> - instantclient-sdk-linux.x64-11.2.0.3.0
+>> - instantclient-sqlplus-linux.x64-11.2.0.3.0
+>>
+>> With the unixODBC 2.2.11 rpm, I kept getting the error with isql:
+>> isql: symbol lookup error:
+>> /u04/app/oracle/product/11.2.0.3/dbhome_1/lib/libsqora.so.11.1:
+>> undefined symbol: SQLGetPrivateProfileStringW
+>>
+>> This was due to unixODBC 2.2.12+ not being certified on RHEL5 (see
+>> attachment bug_12691067.txt for details).
+>> After installing the 2.2.14 unixODBC, I can now connect to the local
+>> Oracle database with isql.
+>>
+>> So,... now I do the following as 'root':
+>> root at predict: export LD_LIBRARY_PATH=/opt/oracle-instantclient/P
+>> root at predict: export
+>>ORACLE_HOME=/u04/app/oracle/product/11.2.0.3/dbhome_1
+>> root at predict: export ORACLE_SID=PREDICT
+>> root at predict: export
+>>
+>>PATH=/u04/app/oracle/product/11.2.0.3/dbhome_1:/u04/app/oracle/product/11
+>>.2.0.3/dbhome_1/bin:/usr/kerberos/sbin:/usr/kerberos/bin:/usr/local/sbin:
+>>/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+>> root at predict: export
+>> TNS_ADMIN=/u04/app/oracle/product/11.2.0.3/dbhome_1/network/admin
+>>
+>> root at predict:/u05/db_downloads> R
+>>
+>> R version 2.14.0 (2011-10-31)
+>> ...
+>> ...
+>> ...
+>> >
+>> > Sys.getenv("ORACLE_SID")
+>> [1] "PREDICT"
+>> > Sys.getenv("ORACLE_HOME")
+>> [1] "/u04/app/oracle/product/11.2.0.3/dbhome_1"
+>> > Sys.getenv("LD_LIBRARY_PATH")
+>> [1]
+>>
+>>"/usr/lib64/R/lib:/usr/local/lib64:/usr/lib/jvm/jre/lib/amd64/server:/usr
+>>/lib/jvm/jre/lib/amd64:/usr/lib/jvm/java/lib/amd64:/usr/java/packages/lib
+>>/amd64:/lib:/usr/lib:/opt/oracle-instantclient/P:/usr/lib64/R/lib:/usr/lo
+>>cal/lib64:/usr/lib/jvm/jre/lib/amd64/server:/usr/lib/jvm/jre/lib/amd64:/u
+>>sr/lib/jvm/java/lib/amd64:/usr/java/packages/lib/amd64:/lib:/usr/lib"
+>> > Sys.getenv("TNS_ADMIN")
+>> [1] "/u04/app/oracle/product/11.2.0.3/dbhome_1/network/admin"
+>> > library(RODBC)
+>> > hdl <- odbcConnect('predict', '<user>', '<password>')
+>> /usr/lib64/R/bin/exec/R: symbol lookup error:
+>> /opt/oracle-instantclient/P/libsqora.so.11.1: undefined symbol:
+>> SQLGetPrivateProfileStringW
+>> root at predict:/u05/db_downloads>
+>>
+>> I noticed the LD_LIBRARY_PATH had my instant client directory appended
+>> to it,  so I tried updating to be at the start, but I still get the
+>> same error.  i.e. set to:
+>> >
+>>
+>>Sys.setenv(LD_LIBRARY_PATH="/opt/oracle-instantclient/P:/usr/lib64/R/lib:
+>>/usr/local/lib64:/usr/lib/jvm/jre/lib/amd64/server:/usr/lib/jvm/jre/lib/a
+>>md64:/usr/lib/jvm/java/lib/amd64:/usr/java/packages/lib/amd64:/lib:/usr/l
+>>ib")
+>>
+>> I find it strange that isql works, but ROracle gives the same error as
+>> though I'm running on the unixODBC 2.2.11.    Is there something else
+>> I need to configure in R to fix this?
+>>
+>>
+>>
+>> _ROracle_
+>>
+>> I now turn to trying to install the ROracle package, but am unable to
+>> get that to install.
+>>
+>> I have looked at this posting:
+>> http://www.mail-archive.com/r-help at r-project.org/msg121901.html
+>> ... and the ROracle install package at
+>> http://cran.r-project.org/web/packages/ROracle/INSTALL
+>>
+>> root at predict:/u05/db_downloads> R CMD INSTALL ROracle_0.5-12.tar.gz
+>> * installing to library '/usr/lib64/R/library'
+>> * installing *source* package 'ROracle' ...
+>> ** package 'ROracle' successfully unpacked and MD5 sums checked
+>> checking for gcc... gcc
+>> checking for C compiler default output... a.out
+>> checking whether the C compiler works... yes
+>> checking whether we are cross compiling... no
+>> checking for suffix of executables...
+>> checking for suffix of object files... o
+>> checking whether we are using the GNU C compiler... yes
+>> checking whether gcc accepts -g... yes
+>> checking for gcc option to accept ANSI C... none needed
+>> checking how to run the C preprocessor... gcc -E
+>> configure: creating ./config.status
+>> config.status: creating src/Makevars
+>> config.status: creating src/Makefile
+>> ** libs
+>> ** arch -
+>> R CMD COMPILE RS-DBI.c
+>> make[1]: Entering directory
+>> `/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/src'
+>> gcc -m64 -std=gnu99 -I/usr/include/R -DRS_ORA_SQLGLS_WORKAROUND
+>> -I/usr/local/include    -fpic  -O2 -g -pipe -Wall
+>> -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector
+>> --param=ssp-buffer-size=4 -m64 -mtune=generic -c RS-DBI.c -o RS-DBI.o
+>> make[1]: Leaving directory
+>>`/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/src'
+>> proc CODE=ANSI_C MODE=ORACLE INCLUDE=/usr/lib64/R/include \
+>>                 PARSE=NONE LINES=false PREFETCH=1 RS-Oracle.pc
+>>
+>> Pro*C/C++: Release 11.2.0.3.0 - Production on Wed Dec 21 13:59:21 2011
+>>
+>> Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights
+>> reserved.
+>>
+>> System default option values taken from:
+>> /u04/app/oracle/product/11.2.0.3/dbhome_1/precomp/admin/pcscfg.cfg
+>>
+>> R CMD COMPILE RS-Oracle.c
+>> make[1]: Entering directory
+>> `/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/src'
+>> gcc -m64 -std=gnu99 -I/usr/include/R -DRS_ORA_SQLGLS_WORKAROUND
+>> -I/usr/local/include    -fpic  -O2 -g -pipe -Wall
+>> -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector
+>> --param=ssp-buffer-size=4 -m64 -mtune=generic -c RS-Oracle.c -o
+>> RS-Oracle.o
+>> RS-Oracle.c: In function 'RS_Ora_varCharCpy':
+>> RS-Oracle.c:6726: warning: pointer targets in passing argument 1 of
+>> '__builtin___strcpy_chk' differ in signedness
+>> RS-Oracle.c:6726: warning: pointer targets in passing argument 1 of
+>> '__strcpy_ichk' differ in signedness
+>> RS-Oracle.c: At top level:
+>> RS-Oracle.c:114: warning: 'sqlstm' defined but not used
+>> make[1]: Leaving directory
+>>`/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/src'
+>> R CMD SHLIB -o ROracle.so RS-DBI.o RS-Oracle.o
+>> make[1]: Entering directory
+>> `/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/src'
+>> gcc -m64 -std=gnu99 -shared -L/usr/local/lib64 -o ROracle.so RS-DBI.o
+>> RS-Oracle.o -L/u04/app/oracle/product/11.2.0.3/dbhome_1/lib
+>> -L/u04/app/oracle/product/11.2.0.3/dbhome_1/network/lib -lclntst11
+>> -lnbeq11 -lnhost11 -lnus11 -lnldap11 -lldapclnt11 -lnsslb11 -lntcp11
+>> -lntcps11 -lnsslb11 -lntcp11 -lntns11 -ldl -lm -lpthread -lnsl -lirc
+>> -lipgo -lsvml -ldl -lm -L/usr/lib64/R/lib -lR
+>> make[1]: Leaving directory
+>>`/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/src'
+>> installing to /usr/lib64/R/library/ROracle/libs
+>> ** R
+>> ** inst
+>> ** preparing package for lazy loading
+>> Creating a generic function for 'format' from package 'base' in
+>> package 'ROracle'
+>> ** help
+>> *** installing help indices
+>>   converting help for package 'ROracle'
+>>     finding HTML links ... done
+>>     DBIPreparedStatement-class              html
+>> Rd warning:
+>>
+>>/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/DBIPreparedStatement-class.
+>>Rd:17:
+>> missing file link 'dbPrepareStatement'
+>>     OraConnection-class                     html
+>>     OraDriver-class                         html
+>>     OraObject-class                         html
+>>     OraPreparedStatement-class              html
+>>     OraResult-class                         html
+>>     Oracle                                  html
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:90: missing
+>> file link 'dbRollback'
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:99: missing
+>> file link 'dbRollback'
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:102: missing
+>> file link 'dbGetQuery'
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:106: missing
+>> file link 'dbWriteTable'
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:128: missing
+>> file link 'dbUnloadDriver'
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:133: missing
+>> file link 'dbDisconnect'
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:139: missing
+>> file link 'dbGetQuery'
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:140: missing
+>> file link 'dbClearResult'
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:147: missing
+>> file link 'dbRollback'
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:154: missing
+>> file link 'dbListFields'
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:155: missing
+>> file link 'dbListConnections'
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:156: missing
+>> file link 'dbListResults'
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:157: missing
+>> file link 'dbGetException'
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:158: missing
+>> file link 'dbGetStatement'
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:159: missing
+>> file link 'dbHasCompleted'
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:160: missing
+>> file link 'dbGetRowCount'
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/Oracle.Rd:161: missing
+>> file link 'dbGetRowsAffected'
+>>     S4R                                     html
+>>     dbCallProc-methods                      html
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbCallProc-methods.Rd:30:
+>>missing
+>> file link 'dbGetQuery'
+>>     dbCommit-methods                        html
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbCommit-methods.Rd:31:
+>> missing file link 'dbGetQuery'
+>>     dbConnect-methods                       html
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbConnect-methods.Rd:51:
+>> missing file link 'dbGetQuery'
+>>     dbDataType-methods                      html
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbDataType-methods.Rd:32:
+>>missing
+>> file link 'isSQLKeyword'
+>>     dbDriver-methods                        html
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbDriver-methods.Rd:38:
+>> missing file link 'dbGetQuery'
+>>     dbGetInfo-methods                       html
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbGetInfo-methods.Rd:47:
+>> missing file link 'dbGetQuery'
+>>     dbListTables-methods                    html
+>> Rd warning:
+>>
+>>/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbListTables-methods.Rd:36:
+>> missing file link 'dbColumnInfo'
+>>     dbObjectId-class                        html
+>>     dbPrepareStatement-methods              html
+>> Rd warning:
+>>
+>>/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbPrepareStatement-methods.
+>>Rd:86:
+>> missing file link 'dbClearResult'
+>> Rd warning:
+>>
+>>/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbPrepareStatement-methods.
+>>Rd:87:
+>> missing file link 'dbGetStatement'
+>> Rd warning:
+>>
+>>/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbPrepareStatement-methods.
+>>Rd:88:
+>> missing file link 'dbGetRowsAffected'
+>> Rd warning:
+>>
+>>/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbPrepareStatement-methods.
+>>Rd:109:
+>> missing file link 'dbGetQuery'
+>>     dbReadTable-methods                     html
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbReadTable-methods.Rd:80:
+>> missing file link 'dbGetQuery'
+>>     dbSendQuery-methods                     html
+>>     dbSetDataMappings-methods               html
+>> Rd warning:
+>>
+>>/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/dbSetDataMappings-methods.R
+>>d:34:
+>> missing file link 'dbColumnInfo'
+>>     fetch-methods                           html
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/fetch-methods.Rd:44:
+>> missing file link 'dbGetQuery'
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/fetch-methods.Rd:45:
+>> missing file link 'dbClearResult'
+>>     isIdCurrent                             html
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/isIdCurrent.Rd:34:
+>> missing file link 'dbGetQuery'
+>>     make.db.names-methods                   html
+>> Rd warning:
+>>
+>>/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/make.db.names-methods.Rd:67
+>>:
+>> missing file link 'dbWriteTable'
+>> Rd warning:
+>>
+>>/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/make.db.names-methods.Rd:68
+>>:
+>> missing file link 'dbExistsTable'
+>> Rd warning:
+>>
+>>/tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/make.db.names-methods.Rd:69
+>>:
+>> missing file link 'dbRemoveTable'
+>>     oraParseConParams                       html
+>>     oraSupport                              html
+>>     safe.write                              html
+>> Rd warning:
+>> /tmp/Rtmp50pvF6/R.INSTALL6324d87b/ROracle/man/safe.write.Rd:21:
+>> missing file link 'oraWriteTable'
+>>     summary-methods                         html
+>> ** building package indices ...
+>> ** testing if installed package can be loaded
+>> Error in dyn.load(file, DLLpath = DLLpath, ...) :
+>>   unable to load shared object
+>> '/usr/lib64/R/library/ROracle/libs/ROracle.so':
+>>   /usr/lib64/R/library/ROracle/libs/ROracle.so: undefined symbol: sqlprc
+>> Error: loading failed
+>> Execution halted
+>> ERROR: loading failed
+>> * removing '/usr/lib64/R/library/ROracle'
+>>
+>> As mentioned, I've been through the R forums for answers, but still
+>> get this error.
+>>
+>> I am unsure what to do next, and would much appreciate if anyone would
+>> provide some help with either the RODBC method or ROracle method to
+>> connect to my database.
+>>
+>> Thanks in advance,
+>>
+>> Stuart Uren
+>> Database Administrator
+>> Clinical Trials Research Unit
+>> The University of Auckland
+>> Auckland, New Zealand
+>>
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at r-project.org
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+>        [[alternative HTML version deleted]]
+>
+>_______________________________________________
+>R-sig-DB mailing list -- R Special Interest Group
+>R-sig-DB at r-project.org
+>https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+

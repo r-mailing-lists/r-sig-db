@@ -1,0 +1,535 @@
+From rikbr@dt m@iii@g oii xs4@ii@be  Wed Oct  6 22:54:13 2004
+From: rikbr@dt m@iii@g oii xs4@ii@be (rikbr@dt m@iii@g oii xs4@ii@be)
+Date: Wed, 6 Oct 2004 22:54:13 +0200 (CEST)
+Subject: [R-sig-DB] R MS-Sql database connection package
+Message-ID: <65240.82.146.104.179.1097096053.squirrel@82.146.104.179>
+
+Hello,
+
+we have a, for the moment, somewhat outdated R MS-SqlServer database
+connection package. It works with a not so recent version of freetds and used
+to compile under 1.x versions of R.
+We are now working on a upgrade of this package.
+- Is there anybody interested in collaborating on this subject.
+- What are the rules you need to fullfill to be accepted as a contributed
+package?
+
+Regards,
+
+Rik
+
+
+
+From tke|tt @end|ng |rom m@||@utex@@@edu  Wed Oct  6 23:50:53 2004
+From: tke|tt @end|ng |rom m@||@utex@@@edu (Timothy H. Keitt)
+Date: Wed, 06 Oct 2004 16:50:53 -0500
+Subject: [R-sig-DB] R MS-Sql database connection package
+In-Reply-To: <65240.82.146.104.179.1097096053.squirrel@82.146.104.179>
+References: <65240.82.146.104.179.1097096053.squirrel@82.146.104.179>
+Message-ID: <1097099453.26196.12.camel@workstation-3>
+
+I think the general preference is to subclass the DBI interface. See the
+DBI package.
+
+THK
+
+On Wed, 2004-10-06 at 15:54, rikbradt at xs4all.be wrote:
+> Hello,
+> 
+> we have a, for the moment, somewhat outdated R MS-SqlServer database
+> connection package. It works with a not so recent version of freetds and used
+> to compile under 1.x versions of R.
+> We are now working on a upgrade of this package.
+> - Is there anybody interested in collaborating on this subject.
+> - What are the rules you need to fullfill to be accepted as a contributed
+> package?
+> 
+> Regards,
+> 
+> Rik
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+-- 
+Timothy H. Keitt
+Section of Integrative Biology
+University of Texas at Austin
+http://www.keittlab.org/
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Thu Oct  7 08:53:52 2004
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Thu, 7 Oct 2004 07:53:52 +0100 (BST)
+Subject: [R-sig-DB] R MS-Sql database connection package
+In-Reply-To: <1097099453.26196.12.camel@workstation-3>
+Message-ID: <Pine.LNX.4.44.0410070746220.5471-100000@gannet.stats>
+
+On Wed, 6 Oct 2004, Timothy H. Keitt wrote:
+
+> I think the general preference is to subclass the DBI interface. See the
+> DBI package.
+
+I am not sure how `general' that preference is, but it is definitely not 
+part of the `rules'.
+
+The only rule for a package to be accepted on CRAN is that it passes `R
+CMD check' on the current and development versions of R.  That's a little 
+tricky where proprietary interfaces are concerned, but is workable as 
+packages such as ROracle show.
+
+Using the DBI common interface would be desirable if it suffices for your 
+purposes, but it is your choice.
+
+> 
+> THK
+> 
+> On Wed, 2004-10-06 at 15:54, rikbradt at xs4all.be wrote:
+> > Hello,
+> > 
+> > we have a, for the moment, somewhat outdated R MS-SqlServer database
+> > connection package. It works with a not so recent version of freetds and used
+> > to compile under 1.x versions of R.
+> > We are now working on a upgrade of this package.
+> > - Is there anybody interested in collaborating on this subject.
+> > - What are the rules you need to fullfill to be accepted as a contributed
+> > package?
+> > 
+> > Regards,
+> > 
+> > Rik
+> > 
+> > _______________________________________________
+> > R-sig-DB mailing list -- R Special Interest Group
+> > R-sig-DB at stat.math.ethz.ch
+> > https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> 
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From tke|tt @end|ng |rom m@||@utex@@@edu  Thu Oct  7 15:26:39 2004
+From: tke|tt @end|ng |rom m@||@utex@@@edu (Timothy H. Keitt)
+Date: Thu, 07 Oct 2004 08:26:39 -0500
+Subject: [R-sig-DB] R MS-Sql database connection package
+In-Reply-To: <Pine.LNX.4.44.0410070746220.5471-100000@gannet.stats>
+References: <Pine.LNX.4.44.0410070746220.5471-100000@gannet.stats>
+Message-ID: <1097155599.29260.6.camel@workstation-3>
+
+Brian's quite right -- there is no prohibition against non-DBI
+interfaces.
+
+T.
+
+
+On Thu, 2004-10-07 at 01:53, Prof Brian Ripley wrote:
+> On Wed, 6 Oct 2004, Timothy H. Keitt wrote:
+> 
+> > I think the general preference is to subclass the DBI interface. See the
+> > DBI package.
+> 
+> I am not sure how `general' that preference is, but it is definitely not 
+> part of the `rules'.
+> 
+> The only rule for a package to be accepted on CRAN is that it passes `R
+> CMD check' on the current and development versions of R.  That's a little 
+> tricky where proprietary interfaces are concerned, but is workable as 
+> packages such as ROracle show.
+> 
+> Using the DBI common interface would be desirable if it suffices for your 
+> purposes, but it is your choice.
+> 
+> > 
+> > THK
+> > 
+> > On Wed, 2004-10-06 at 15:54, rikbradt at xs4all.be wrote:
+> > > Hello,
+> > > 
+> > > we have a, for the moment, somewhat outdated R MS-SqlServer database
+> > > connection package. It works with a not so recent version of freetds and used
+> > > to compile under 1.x versions of R.
+> > > We are now working on a upgrade of this package.
+> > > - Is there anybody interested in collaborating on this subject.
+> > > - What are the rules you need to fullfill to be accepted as a contributed
+> > > package?
+> > > 
+> > > Regards,
+> > > 
+> > > Rik
+> > > 
+> > > _______________________________________________
+> > > R-sig-DB mailing list -- R Special Interest Group
+> > > R-sig-DB at stat.math.ethz.ch
+> > > https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> > 
+-- 
+Timothy H. Keitt
+Section of Integrative Biology
+University of Texas at Austin
+http://www.keittlab.org/
+
+
+
+From rikbr@dt m@iii@g oii xs4@ii@be  Thu Oct  7 18:50:36 2004
+From: rikbr@dt m@iii@g oii xs4@ii@be (rikbr@dt m@iii@g oii xs4@ii@be)
+Date: Thu, 7 Oct 2004 18:50:36 +0200 (CEST)
+Subject: [R-sig-DB] R MS-Sql database connection package
+Message-ID: <53361.212.123.24.116.1097167836.squirrel@212.123.24.116>
+
+Hello,
+
+I ran some extra tests today with our R MS-SqlServer database connection
+package. It appears the package still works with the most recent versions
+of freetds. The connection package was still working with R Version 1.9.1.
+It stopped working with R Version 2.0.0.
+
+I've pasted a log that gives you and idea of how this component works
+and where the error in the compilation under R Version 2.0.0 occurs.
+
+In case you want to review the code I'm willing to post/mail it to an
+approriate address. Within a few weeks we plan to start working on
+this code, so that we have a functional database component for R Version
+2.0.0. in the beginning of 2005.
+
+Regards,
+
+Rik
+
+----------------------- LOG -----------------------
+lt14008:/opt/R-1.9.1/bin # ./R CMD INSTALL
+--configure-args='--with-freetds-dir=/opt/freetds-0.62.4/'
+/usr/src/tgz/RDBLib_0.1-2.tar.gz
+* Installing *source* package 'RDBLib' ...
+creating cache ./config.cache
+checking how to run the C preprocessor... cc -E
+checking for dbinit in -lsybdb... no
+checking for tds_configs.h... no
+updating cache ./config.cache
+creating ./config.status
+creating src/Makevars
+** libs
+gcc -I/opt/R-1.9.1/lib/R/include -I/opt/freetds-0.62.4//include
+-I/usr/local/include -D__NO_MATH_INLINES -mieee-fp  -fPIC  -g -O2 -c
+RS-DBI.c -o RS-DBI.o
+gcc -I/opt/R-1.9.1/lib/R/include -I/opt/freetds-0.62.4//include
+-I/usr/local/include -D__NO_MATH_INLINES -mieee-fp  -fPIC  -g -O2 -c
+RS-DBLib.c -o RS-DBLib.o
+gcc -shared -L/usr/local/lib -o RDBLib.so RS-DBI.o RS-DBLib.o
+-L/opt/freetds-0.62.4//lib -lsybdb
+** R
+** help
+ >>> Building/Updating help pages for package 'RDBLib'
+     Formats: text html latex example
+  DBLib                             text    html    latex   example
+  S4R                               text    html    latex
+  SQLDataType                       text    html    latex   example
+  callProc                          text    html    latex
+  commit                            text    html    latex   example
+  dbApply.DBLibResultSet            text    html    latex   example
+  dbApply                           text    html    latex   example
+  dbConnect                         text    html    latex   example
+  dbExec                            text    html    latex   example
+  dbExecStatement                   text    html    latex   example
+  dbManager                         text    html    latex   example
+  describe                          text    html    latex   example
+  fetch                             text    html    latex   example
+  getManager                        text    html    latex   example
+  getNumRows                        text    html    latex   example
+  getTable                          text    html    latex   example
+  isIdCurrent                       text    html    latex   example
+  isSQLKeyword                      text    html    latex   example
+  load                              text    html    latex   example
+  make.SQL.names                    text    html    latex   example
+  metaData                          text    html    latex   example
+  methods.DBLib                     text    html    latex   example
+  quickSQL                          text    html    latex   example
+  setDataMappings                   text    html    latex   example
+  supportObjects                    text    html    latex
+* DONE (RDBLib)
+lt14008:/opt/R-1.9.1/bin # ./R
+
+R : Copyright 2004, The R Foundation for Statistical Computing
+Version 1.9.1  (2004-06-21), ISBN 3-900051-00-3
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for a HTML browser interface to help.
+Type 'q()' to quit R.
+
+WARNING: UTF-8 locales are not currently supported
+
+> library(RDBLib)
+Error in dyn.load(x, as.logical(local), as.logical(now)) :
+        unable to load shared library
+"/opt/R-1.9.1/lib/R/library/RDBLib/libs/RDBLib.so":
+  libsybdb.so.4: cannot open shared object file: No such file or directory
+Error in library(RDBLib) : .First.lib failed
+> q()
+Save workspace image? [y/n/c]: n
+lt14008:/opt/R-1.9.1/bin # export
+LD_LIBRARY_PATH=:/opt/freetds-0.62.4/lib:$LD_LIBRARY_PATH
+lt14008:/opt/R-1.9.1/bin # ./R
+
+R : Copyright 2004, The R Foundation for Statistical Computing
+Version 1.9.1  (2004-06-21), ISBN 3-900051-00-3
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for a HTML browser interface to help.
+Type 'q()' to quit R.
+
+WARNING: UTF-8 locales are not currently supported
+
+> library(RDBLib)
+> m2 <- DBLib()
+> dblib <- dbConnect(m2, server="servername", dbname="dbname",
+user="username", passwd="password")
+> Param <- "someparam"
+> sqlstr <- paste("SELECT * FROM sometable WHERE (Parameter =
+'",Param,"')", sep="")
+> rs <- dbExecStatement( dblib, sqlstr )
+> scale <- fetch(rs, n=-1)
+> scale
+...
+>
+
+
+
+
+lt14008:/opt/R-2.0.0/bin # ./R CMD INSTALL
+--configure-args='--with-freetds-dir=/opt/freetds-0.62.4/'
+/usr/src/tgz/RDBLib_0.1-2.tar.gz
+* Installing *source* package 'RDBLib' ...
+creating cache ./config.cache
+checking how to run the C preprocessor... cc -E
+checking for dbinit in -lsybdb... no
+checking for tds_configs.h... no
+updating cache ./config.cache
+creating ./config.status
+creating src/Makevars
+Error: Invalid DESCRIPTION file
+
+Malformed maintainer field.
+
+See the information on DESCRIPTION files in section 'Creating R
+packages' of the 'Writing R Extensions' manual.
+Execution halted
+ERROR: installing package DESCRIPTION failed
+lt14008:/opt/R-2.0.0/bin #
+----------------------- /LOG -----------------------
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Thu Oct  7 19:43:43 2004
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Thu, 7 Oct 2004 18:43:43 +0100 (BST)
+Subject: [R-sig-DB] R MS-Sql database connection package
+In-Reply-To: <53361.212.123.24.116.1097167836.squirrel@212.123.24.116>
+Message-ID: <Pine.LNX.4.44.0410071835420.25397-100000@gannet.stats>
+
+The message is pretty clear: your DESCRIPTION file is invalid.  I expect 
+it always was, but 2.0.0 has much better tests of validity, since it 
+relies of it a lot more.  I would guess R CMD check fails under 1.9.1 too.
+
+The R project has no expressed any need to another connection to SQL
+Server (RODBC works perfectly well), and has no resources to support such 
+an effort.  You seem to have the wrong end of the stick: CRAN will tell 
+you if your code fails the checks, but it is up to you to fix your own 
+errors.
+
+On Thu, 7 Oct 2004 rikbradt at xs4all.be wrote:
+
+> Hello,
+> 
+> I ran some extra tests today with our R MS-SqlServer database connection
+> package. It appears the package still works with the most recent versions
+> of freetds. The connection package was still working with R Version 1.9.1.
+> It stopped working with R Version 2.0.0.
+> 
+> I've pasted a log that gives you and idea of how this component works
+> and where the error in the compilation under R Version 2.0.0 occurs.
+> 
+> In case you want to review the code I'm willing to post/mail it to an
+> approriate address. Within a few weeks we plan to start working on
+> this code, so that we have a functional database component for R Version
+> 2.0.0. in the beginning of 2005.
+> 
+> Regards,
+> 
+> Rik
+> 
+> ----------------------- LOG -----------------------
+> lt14008:/opt/R-1.9.1/bin # ./R CMD INSTALL
+> --configure-args='--with-freetds-dir=/opt/freetds-0.62.4/'
+> /usr/src/tgz/RDBLib_0.1-2.tar.gz
+> * Installing *source* package 'RDBLib' ...
+> creating cache ./config.cache
+> checking how to run the C preprocessor... cc -E
+> checking for dbinit in -lsybdb... no
+> checking for tds_configs.h... no
+> updating cache ./config.cache
+> creating ./config.status
+> creating src/Makevars
+> ** libs
+> gcc -I/opt/R-1.9.1/lib/R/include -I/opt/freetds-0.62.4//include
+> -I/usr/local/include -D__NO_MATH_INLINES -mieee-fp  -fPIC  -g -O2 -c
+> RS-DBI.c -o RS-DBI.o
+> gcc -I/opt/R-1.9.1/lib/R/include -I/opt/freetds-0.62.4//include
+> -I/usr/local/include -D__NO_MATH_INLINES -mieee-fp  -fPIC  -g -O2 -c
+> RS-DBLib.c -o RS-DBLib.o
+> gcc -shared -L/usr/local/lib -o RDBLib.so RS-DBI.o RS-DBLib.o
+> -L/opt/freetds-0.62.4//lib -lsybdb
+> ** R
+> ** help
+>  >>> Building/Updating help pages for package 'RDBLib'
+>      Formats: text html latex example
+>   DBLib                             text    html    latex   example
+>   S4R                               text    html    latex
+>   SQLDataType                       text    html    latex   example
+>   callProc                          text    html    latex
+>   commit                            text    html    latex   example
+>   dbApply.DBLibResultSet            text    html    latex   example
+>   dbApply                           text    html    latex   example
+>   dbConnect                         text    html    latex   example
+>   dbExec                            text    html    latex   example
+>   dbExecStatement                   text    html    latex   example
+>   dbManager                         text    html    latex   example
+>   describe                          text    html    latex   example
+>   fetch                             text    html    latex   example
+>   getManager                        text    html    latex   example
+>   getNumRows                        text    html    latex   example
+>   getTable                          text    html    latex   example
+>   isIdCurrent                       text    html    latex   example
+>   isSQLKeyword                      text    html    latex   example
+>   load                              text    html    latex   example
+>   make.SQL.names                    text    html    latex   example
+>   metaData                          text    html    latex   example
+>   methods.DBLib                     text    html    latex   example
+>   quickSQL                          text    html    latex   example
+>   setDataMappings                   text    html    latex   example
+>   supportObjects                    text    html    latex
+> * DONE (RDBLib)
+> lt14008:/opt/R-1.9.1/bin # ./R
+> 
+> R : Copyright 2004, The R Foundation for Statistical Computing
+> Version 1.9.1  (2004-06-21), ISBN 3-900051-00-3
+> 
+> R is free software and comes with ABSOLUTELY NO WARRANTY.
+> You are welcome to redistribute it under certain conditions.
+> Type 'license()' or 'licence()' for distribution details.
+> 
+> R is a collaborative project with many contributors.
+> Type 'contributors()' for more information and
+> 'citation()' on how to cite R in publications.
+> 
+> Type 'demo()' for some demos, 'help()' for on-line help, or
+> 'help.start()' for a HTML browser interface to help.
+> Type 'q()' to quit R.
+> 
+> WARNING: UTF-8 locales are not currently supported
+> 
+> > library(RDBLib)
+> Error in dyn.load(x, as.logical(local), as.logical(now)) :
+>         unable to load shared library
+> "/opt/R-1.9.1/lib/R/library/RDBLib/libs/RDBLib.so":
+>   libsybdb.so.4: cannot open shared object file: No such file or directory
+> Error in library(RDBLib) : .First.lib failed
+> > q()
+> Save workspace image? [y/n/c]: n
+> lt14008:/opt/R-1.9.1/bin # export
+> LD_LIBRARY_PATH=:/opt/freetds-0.62.4/lib:$LD_LIBRARY_PATH
+> lt14008:/opt/R-1.9.1/bin # ./R
+> 
+> R : Copyright 2004, The R Foundation for Statistical Computing
+> Version 1.9.1  (2004-06-21), ISBN 3-900051-00-3
+> 
+> R is free software and comes with ABSOLUTELY NO WARRANTY.
+> You are welcome to redistribute it under certain conditions.
+> Type 'license()' or 'licence()' for distribution details.
+> 
+> R is a collaborative project with many contributors.
+> Type 'contributors()' for more information and
+> 'citation()' on how to cite R in publications.
+> 
+> Type 'demo()' for some demos, 'help()' for on-line help, or
+> 'help.start()' for a HTML browser interface to help.
+> Type 'q()' to quit R.
+> 
+> WARNING: UTF-8 locales are not currently supported
+> 
+> > library(RDBLib)
+> > m2 <- DBLib()
+> > dblib <- dbConnect(m2, server="servername", dbname="dbname",
+> user="username", passwd="password")
+> > Param <- "someparam"
+> > sqlstr <- paste("SELECT * FROM sometable WHERE (Parameter =
+> '",Param,"')", sep="")
+> > rs <- dbExecStatement( dblib, sqlstr )
+> > scale <- fetch(rs, n=-1)
+> > scale
+> ...
+> >
+> 
+> 
+> 
+> 
+> lt14008:/opt/R-2.0.0/bin # ./R CMD INSTALL
+> --configure-args='--with-freetds-dir=/opt/freetds-0.62.4/'
+> /usr/src/tgz/RDBLib_0.1-2.tar.gz
+> * Installing *source* package 'RDBLib' ...
+> creating cache ./config.cache
+> checking how to run the C preprocessor... cc -E
+> checking for dbinit in -lsybdb... no
+> checking for tds_configs.h... no
+> updating cache ./config.cache
+> creating ./config.status
+> creating src/Makevars
+> Error: Invalid DESCRIPTION file
+> 
+> Malformed maintainer field.
+> 
+> See the information on DESCRIPTION files in section 'Creating R
+> packages' of the 'Writing R Extensions' manual.
+> Execution halted
+> ERROR: installing package DESCRIPTION failed
+> lt14008:/opt/R-2.0.0/bin #
+> ----------------------- /LOG -----------------------
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> 
+> 
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+

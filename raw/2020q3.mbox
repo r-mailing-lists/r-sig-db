@@ -1,0 +1,67 @@
+From bog@@o@chr|@to|er @end|ng |rom gm@||@com  Mon Aug 31 17:18:46 2020
+From: bog@@o@chr|@to|er @end|ng |rom gm@||@com (Christofer Bogaso)
+Date: Mon, 31 Aug 2020 20:48:46 +0530
+Subject: [R-sig-DB] Connection to Oracle DB failing from R
+Message-ID: <CA+dpOJ=bRwDkPsB13S_XAQpxQCEH05EffNmWG2hszM-yCgVuPw@mail.gmail.com>
+
+Hi,
+
+I posted the same in general R-help, however advised to post the same
+in this forum as to deal with DB issues.
+
+
+I am trying to establish a connection to a Oracle DB from R and used below
+code which is failing every time I try -
+
+> library(RJDBC)
+Loading required package: DBI
+> jdbcDriver =JDBC("oracle.jdbc.OracleDriver",classPath="ojdbc5.jar")
+
+ *** caught segfault ***
+address 0x854961, cause 'memory not mapped'
+
+Traceback:
+ 1: .jinit(classPath)
+ 2: JDBC("oracle.jdbc.OracleDriver", classPath = "ojdbc5.jar")
+
+Possible actions:
+1: abort (with core dump, if enabled)
+2: normal R exit
+3: exit R without saving workspace
+4: exit R saving workspace
+Selection:
+
+
+Below is my session info -
+
+> sessionInfo()
+R version 4.0.2 (2020-06-22)
+Platform: x86_64-apple-darwin17.0 (64-bit)
+Running under: macOS Catalina 10.15.6
+
+Matrix products: default
+BLAS:
+ /Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRblas.dylib
+LAPACK:
+/Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRlapack.dylib
+
+locale:
+[1] C/UTF-8/C/C/C/C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] RJDBC_0.2-8  DBI_1.1.0    rJava_0.9-13
+
+loaded via a namespace (and not attached):
+[1] compiler_4.0.2
+
+I downloaded the JAR file from
+https://www.oracle.com/database/technologies/jdbcdriver-ucp-downloads.html
+
+Can you please help me to understand why it is failing?
+
+Many thanks,
+
+

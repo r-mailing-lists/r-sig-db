@@ -1,0 +1,181 @@
+From HDor@n @end|ng |rom @|r@org  Thu Apr  2 18:12:42 2020
+From: HDor@n @end|ng |rom @|r@org (Doran, Harold)
+Date: Thu, 2 Apr 2020 16:12:42 +0000
+Subject: [R-sig-DB] Use R to access multiple tables from stored procedure
+Message-ID: <BL0PR05MB481845AFE7BDD47B6CC82288CAC60@BL0PR05MB4818.namprd05.prod.outlook.com>
+
+My current familiarity is with RODBC and have many R functions that communicate with an internal DB to extract a single table using a stored procedure. A new stored procedure was written by a colleague that returns multiple tables and from the SO post below I understand that RODBC cannot be used to process multiple tables.
+
+https://stackoverflow.com/questions/41494419/how-to-read-multiple-result-sets-returned-from-a-sql-server-stored-procedure-in
+
+I am trying to learn which R packages allow me to communicate with a SQL Server DB and process multiple tables. I see there is the RMySQL, but that's a different animal than what I need.
+
+Can the list offer suggestions on which packages are best suited for this purpose? I see dplyr seems to offer this, but it doesn't seem that I can pass a sql query or execute a stored procedure in any functions from that package, but am not sure.
+
+Thank you,
+Harold
+
+
+
+
+	[[alternative HTML version deleted]]
+
+
+From HDor@n @end|ng |rom @|r@org  Fri Apr  3 13:00:34 2020
+From: HDor@n @end|ng |rom @|r@org (Doran, Harold)
+Date: Fri, 3 Apr 2020 11:00:34 +0000
+Subject: [R-sig-DB] Microsoft SQL and MARS
+Message-ID: <BL0PR05MB4818046E31F9A1B50ECA385ACAC70@BL0PR05MB4818.namprd05.prod.outlook.com>
+
+First, with apologies if this message has appeared multiple times. My company has an overly aggressive spam filter and I am not able to see if this message was previously posted.
+
+I need to call a stored procedure on a MS SQL server that returns two tables. I am unable to find a package or function that is designed to deal with multiple tables. I have found the dbNextResult() for RMySQL, but am looking for a comparable function for SQL Server.
+
+Am currently successfully able to query the server and return first result set table using DBI, RODBC, but not the second table.
+
+Thank you
+Harold
+
+
+	[[alternative HTML version deleted]]
+
+
+From @p@r|c|o2457 @end|ng |rom gm@||@com  Tue Apr 14 17:25:00 2020
+From: @p@r|c|o2457 @end|ng |rom gm@||@com (Luis Aparicio)
+Date: Tue, 14 Apr 2020 11:25:00 -0400
+Subject: [R-sig-DB] Tutorials?
+Message-ID: <CABSSfpfqrd0=MnKiyJeoM9GoFbvLtG7Y7CLjr2gOX8DLi6kaOg@mail.gmail.com>
+
+Dear colleagues,
+I've been working with "canned" software to construct my phylogenetic
+analysis.  I'd like to try working with R on this matter instead.  Does
+anyone know a tutorial or introductory site for using R to build
+phylogenetic trees that I can link to?  Thank very much in advance.
+
+-Luis
+
+	[[alternative HTML version deleted]]
+
+
+From jte||er|@@rproject @end|ng |rom gm@||@com  Wed Apr 15 15:32:49 2020
+From: jte||er|@@rproject @end|ng |rom gm@||@com (Juan Telleria Ruiz de Aguirre)
+Date: Wed, 15 Apr 2020 15:32:49 +0200
+Subject: [R-sig-DB] Tutorials?
+In-Reply-To: <CABSSfpfqrd0=MnKiyJeoM9GoFbvLtG7Y7CLjr2gOX8DLi6kaOg@mail.gmail.com>
+References: <CABSSfpfqrd0=MnKiyJeoM9GoFbvLtG7Y7CLjr2gOX8DLi6kaOg@mail.gmail.com>
+Message-ID: <CAJXDcw1BSA4mEPkm1argf5O_1bY-DwBj7QpW0XngaW9epx9aNg@mail.gmail.com>
+
+Here you have an intro :)
+
+https://cran.r-project.org/web/packages/phangorn/vignettes/Trees.pdf
+
+El martes, 14 de abril de 2020, Luis Aparicio <aparicio2457 at gmail.com>
+escribi?:
+
+> Dear colleagues,
+> I've been working with "canned" software to construct my phylogenetic
+> analysis.  I'd like to try working with R on this matter instead.  Does
+> anyone know a tutorial or introductory site for using R to build
+> phylogenetic trees that I can link to?  Thank very much in advance.
+>
+> -Luis
+>
+>         [[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+	[[alternative HTML version deleted]]
+
+
+From jte||er|@@rproject @end|ng |rom gm@||@com  Wed Apr 15 15:36:46 2020
+From: jte||er|@@rproject @end|ng |rom gm@||@com (Juan Telleria Ruiz de Aguirre)
+Date: Wed, 15 Apr 2020 15:36:46 +0200
+Subject: [R-sig-DB] Microsoft SQL and MARS
+In-Reply-To: <BL0PR05MB4818046E31F9A1B50ECA385ACAC70@BL0PR05MB4818.namprd05.prod.outlook.com>
+References: <BL0PR05MB4818046E31F9A1B50ECA385ACAC70@BL0PR05MB4818.namprd05.prod.outlook.com>
+Message-ID: <CAJXDcw3CgMbFfWGw_-uB_JHQeNn1H0kOKNDUABnV_O7savxSDw@mail.gmail.com>
+
+A good strategy would be to store the Stored Procedure Results into
+temporary tables, and afterwards, query both of those tables in different
+queries through SELECT statements.
+
+In odbc package that would mean calling two different dbGetQuery Statements
+with different SELECTs.
+
+Best,
+Juan
+
+El viernes, 3 de abril de 2020, Doran, Harold <HDoran at air.org> escribi?:
+
+> First, with apologies if this message has appeared multiple times. My
+> company has an overly aggressive spam filter and I am not able to see if
+> this message was previously posted.
+>
+> I need to call a stored procedure on a MS SQL server that returns two
+> tables. I am unable to find a package or function that is designed to deal
+> with multiple tables. I have found the dbNextResult() for RMySQL, but am
+> looking for a comparable function for SQL Server.
+>
+> Am currently successfully able to query the server and return first result
+> set table using DBI, RODBC, but not the second table.
+>
+> Thank you
+> Harold
+>
+>
+>         [[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+	[[alternative HTML version deleted]]
+
+
+From @p@r|c|o2457 @end|ng |rom gm@||@com  Wed Apr 15 15:39:44 2020
+From: @p@r|c|o2457 @end|ng |rom gm@||@com (Luis Aparicio)
+Date: Wed, 15 Apr 2020 09:39:44 -0400
+Subject: [R-sig-DB] Tutorials?
+In-Reply-To: <CAJXDcw1BSA4mEPkm1argf5O_1bY-DwBj7QpW0XngaW9epx9aNg@mail.gmail.com>
+References: <CABSSfpfqrd0=MnKiyJeoM9GoFbvLtG7Y7CLjr2gOX8DLi6kaOg@mail.gmail.com>
+ <CAJXDcw1BSA4mEPkm1argf5O_1bY-DwBj7QpW0XngaW9epx9aNg@mail.gmail.com>
+Message-ID: <CABSSfpd-LJAOGHGpaFU3GPFuVVC2nRMdNJQJr1FESwY6O3oPEw@mail.gmail.com>
+
+Awesome Juan, thanks!
+
+On Wed, Apr 15, 2020 at 9:32 AM Juan Telleria Ruiz de Aguirre <
+jtelleria.rproject at gmail.com> wrote:
+
+> Here you have an intro :)
+>
+> https://cran.r-project.org/web/packages/phangorn/vignettes/Trees.pdf
+>
+> El martes, 14 de abril de 2020, Luis Aparicio <aparicio2457 at gmail.com>
+> escribi?:
+>
+>> Dear colleagues,
+>> I've been working with "canned" software to construct my phylogenetic
+>> analysis.  I'd like to try working with R on this matter instead.  Does
+>> anyone know a tutorial or introductory site for using R to build
+>> phylogenetic trees that I can link to?  Thank very much in advance.
+>>
+>> -Luis
+>>
+>>         [[alternative HTML version deleted]]
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at r-project.org
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+>
+
+	[[alternative HTML version deleted]]
+
+

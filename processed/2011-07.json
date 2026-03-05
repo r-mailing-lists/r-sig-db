@@ -1,0 +1,67 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2011-07",
+  "messages": [
+    {
+      "id": "msg-8b4412e3a523",
+      "message_id": "<loom.20110701T045357-634@post.gmane.org>",
+      "from_name": "Richard Herron",
+      "from_email_hash": "f212f66376bae7f6deafcf7bc4d9e6e9fcbc266fdab38788e5b65d5c8bfcd9a4",
+      "date": "2011-07-01T03:05:56Z",
+      "subject": "[R-sig-DB] Stalled MySQL query with RMySQL in R 2.13.0 on Win 7 (but works with small number of rows)",
+      "subject_clean": "Stalled MySQL query with RMySQL in R 2.13.0 on Win 7 (but works with small number of rows)",
+      "in_reply_to": null,
+      "references": [
+        "<BANLkTi=drF9VkxTEvGDniFEyaLCfyCgH5w@mail.gmail.com>"
+      ],
+      "body_plain": "Richard Herron <richard.c.herron at ...> writes:\n\n> \n> I have a MySQL query that completes quickly in MySQL workbench (0.28 sec),\n> but stalls in R 2.13.0 using RMySQL. When the query stalls, I can break and\n> get the following\n> \n> > db <- dbConnect(dbDriver(\"MySQL\"), dbname = \"finance\", user = \"root\",\n> password = \"root\")\n> > temp <- dbGetQuery(db, query.compustat)\n> Warning messages:\n> 1: In mysqlFetch(res, n, ...) :\n>   RS-DBI driver warning: (error while fetching rows)\n> 2: In mysqlQuickSQL(conn, statement, ...) : pending rows\n> \n> But, if I limit myself to a much smaller query result, the query completes\n> just fine (my full query has about 1000 rows, which doesn't strike me as\n> particularly large). \n\nThe 1000 rows seemed fishy, so with some Googling I found a setting that limits \nworkbench queries to n rows (this tipped me off http://bugs.mysql.com/bug.php?\nid=49310). I haven't had this problem before and I'm not sure what I did to set \nn = 1000 since I clearly don't know enough MySQL to find that setting on my own \n:). This setting must pass through to the DBI interface, which significantly \nslowed my queries.",
+      "body_snippet": "Richard Herron <richard.c.herron at ...> writes:\n\n> \n> I have a MySQL query that completes quickly in MySQL workbench (0.28 sec),\n> but stalls in R 2.13.0 using RMySQL. When the query stalls, I can br",
+      "thread_id": "thread-8b4412e3a523",
+      "thread_depth": 0,
+      "month": "2011-07"
+    },
+    {
+      "id": "msg-f209571eea39",
+      "message_id": "<CAFxiOZVwtURrh_UMs-Mj4kc8VUgPk_0=mtsiQ7VY9PpuRzsf4w@mail.gmail.com>",
+      "from_name": "Henri Mone",
+      "from_email_hash": "23b5ff957ef8cd29cb908c5ed925e3e69759c58a81f5773d8270e1d9009edd22",
+      "date": "2011-07-14T12:57:40+02:00",
+      "subject": "[R-sig-DB] ODBC MySql DB: sqlQuery empty",
+      "subject_clean": "ODBC MySql DB: sqlQuery empty",
+      "in_reply_to": "<CAFxiOZXYpYsKZZwtDXJwSFpQqLG1GqhS8_=KSqj2t52mkBt33w@mail.gmail.com>",
+      "references": [
+        "<CAFxiOZXYpYsKZZwtDXJwSFpQqLG1GqhS8_=KSqj2t52mkBt33w@mail.gmail.com>"
+      ],
+      "body_plain": "Dear R Beginners, Experts and Users,\n\nI'm trying to connect to a MySQl database via Gnu R using the RODBC\ninterface. The conenction workes but I get an empty result string.\nGnu R and the MySql DB are running on a 64 bit server. I installed\nversion 5.1 of the mysql ODBC interface files [1]. My unixODBC setup\nfile is given in [2], the setup was tested with \"isql\" and works [3].\nIf I connect from GNU R to the database, an empty list of tables is\npresented and sqlQuery(t.con, \"show databases\") returns an empty list\n[4].\n\nWhat am I doing wrong I tried nearly everyting, but nothing seems to work.\n\nThanks,\nHenri\n\n\n\n---1: INSTALL mysqlOdbc libraries\n  $ wget http://dev.mysql.com/get/Downloads/Connector-ODBC/5.1/mysql-connector-odbc-5.1.8-linux-glibc2.3-x86-64bit.tar.gz/from/http://ftp.gwdg.de/pub/misc/mysql/\n  $ tar xvzf mysql-connector-odbc-5.1.8-linux-glibc2.3-x86-64bit.tar.gz\n\n\n\n\n---2: unixODBC setup\n$ more ~/.odbc.ini\n[MySQL-data]\nDescription     = MySQL test database\nTrace       = Off\nTraceFile   = stderr\nDriver      = /home/me/opt/mysql-connector-odbc/lib/libmyodbc5.so\nSetup       = /home/me/opt/mysql-connector-odbc/lib/libmyodbc3S.so\nSERVER      = 10.1.2.10\nUSER        = readOnlyUser\nPASSWORD    = secret\nPORT        = 3306\nDATABASE    = data\n\n\n---3: unixODBC test\n$ isql -v MySQL-data\n+---------------------------------------+\n| Connected!                            |\n|                                       |\n| sql-statement                         |\n| help [tablename]                      |\n| quit                                  |\n|                                       |\n+---------------------------------------+\nSQL> show databases;\n+-----------------------------------------------------------------+\n| Database                                                        |\n+-----------------------------------------------------------------+\n| information_schema                                              |\n|\n+-----------------------------------------------------------------+\nSQLRowCount returns 2\n2 rows fetched\n\n\n\n---4: GNU R TEST\n> library(RODBC)\n> odbcDataSources()\n                                       MySQL-data\n  \"/home/me/opt/mysql-connector-odbc/lib/libmyodbc5.so\"\n\n> t.con<-odbcConnect(\"MySQL-data\")\n> t.con\n RODBC Connection 1\n Details:\n   case=nochange\n   DSN=MySQL-data\n\n> sqlTables(t.con)  # no output\n\n> sqlQuery(t.con, \"show databases\")\n character(0)",
+      "body_snippet": "Dear R Beginners, Experts and Users,\n\nI'm trying to connect to a MySQl database via Gnu R using the RODBC\ninterface. The conenction workes but I get an empty result string.\nGnu R and the MySql DB are ",
+      "thread_id": "thread-f209571eea39",
+      "thread_depth": 0,
+      "month": "2011-07"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-8b4412e3a523",
+      "subject": "Stalled MySQL query with RMySQL in R 2.13.0 on Win 7 (but works with small number of rows)",
+      "message_count": 1,
+      "participants": [
+        "Richard Herron"
+      ],
+      "started": "2011-07-01T03:05:56+00:00",
+      "last_reply": "2011-07-01T03:05:56+00:00",
+      "root_message_id": "msg-8b4412e3a523"
+    },
+    {
+      "id": "thread-f209571eea39",
+      "subject": "ODBC MySql DB: sqlQuery empty",
+      "message_count": 1,
+      "participants": [
+        "Henri Mone"
+      ],
+      "started": "2011-07-14T12:57:40+02:00",
+      "last_reply": "2011-07-14T12:57:40+02:00",
+      "root_message_id": "msg-f209571eea39"
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2006-04",
+  "messages": [
+    {
+      "id": "msg-4f1019c105f1",
+      "message_id": "<BAY24-F177AD9C5D8D2AFBC3CB972F1C50@phx.gbl>",
+      "from_name": "Toad 2000",
+      "from_email_hash": "a6250d07e192d8425c46e26fe49308d2ee98cde3fb76a125aa0a26b848389f77",
+      "date": "2006-04-19T14:11:02+01:00",
+      "subject": "[R-sig-DB] Raster data and MySQL",
+      "subject_clean": "Raster data and MySQL",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi Folks,\n\nHope this isn't too far off topic + apologies for cross posting if you're on \nboth lists...\n\nI'm in the lucky(?) position of setting up an archive of geophysical \n(meteorological) data from scratch. R has been my working \nlanguage/environment for the last few years. I've had plenty of need for the \nmaptools + rgdal packages.  Ditto the RMySQL package but never inconjuction \nwith spatial analyses.  My worlds are about to collide.\n\nThe data come in two types: Station data (irregular grid, irregular times, \nlots of missing values) and Model output (regular grid, regular times, no \nmissing data).  The data come in hour after hour, day after day.\n\nTypical queries can be spatial (e.g. what did the rainfall over a given post \ncode area look like yesterday?), temporal (what were the houlry wind speeds \nat a specific point for last month?), or both (what was the mean temperature \nacross the UK last year).\n\nSo how best to store the data to facilitate such queries?  This is where I \nhope you can help! :)\n\nMy initial thoughts are to invoke the spatial capabilites of MySQL.  The \nstation data seem easy enough to store as POINT or MULTIPOINT and set up a \nspatial index and another on the time stamp.  Spatial queries can be \nperformed using a WKB (Well Known Binary - new to me;) representation of the \nregion of interest.\n\nI'm stuck on the model data.  I could break it down into points and proceed \nas above but this seems grossly inefficient.  I was hoping to find a RASTER \ndata type and store the grids in that.  Trouble is, I could be missing \nsomething, that I can't seem to find anything like one in MySQL.  Don't know \nabout Postgre or SQL sever.  I'm open to suggestions.\n\nYour hopefully, T\n\n_________________________________________________________________\n\n7.5 today! http://join.msn.com/messenger/overview",
+      "body_snippet": "Hi Folks,\n\nHope this isn't too far off topic + apologies for cross posting if you're on \nboth lists...\n\nI'm in the lucky(?) position of setting up an archive of geophysical \n(meteorological) data from",
+      "thread_id": "thread-4f1019c105f1",
+      "thread_depth": 0,
+      "month": "2006-04"
+    },
+    {
+      "id": "msg-69c1c89aac3d",
+      "message_id": "<Pine.LNX.4.44.0604191557260.4198-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "37a3c7637f7cdc3576966201a0fd58853d44abb21284a9eb85afffcb057c33b5",
+      "date": "2006-04-19T16:03:01+02:00",
+      "subject": "[R-sig-DB] [R-sig-Geo] Raster data and MySQL",
+      "subject_clean": "Raster data and MySQL",
+      "in_reply_to": "<BAY24-F177AD9C5D8D2AFBC3CB972F1C50@phx.gbl>",
+      "references": [],
+      "body_plain": "On Wed, 19 Apr 2006, Toad 2000 wrote:\n\n> Hi Folks,\n> \n> Hope this isn't too far off topic + apologies for cross posting if you're on \n> both lists...\n> \n> I'm in the lucky(?) position of setting up an archive of geophysical \n> (meteorological) data from scratch. R has been my working \n> language/environment for the last few years. I've had plenty of need for the \n> maptools + rgdal packages.  Ditto the RMySQL package but never inconjuction \n> with spatial analyses.  My worlds are about to collide.\n> \n> The data come in two types: Station data (irregular grid, irregular times, \n> lots of missing values) and Model output (regular grid, regular times, no \n> missing data).  The data come in hour after hour, day after day.\n> \n> Typical queries can be spatial (e.g. what did the rainfall over a given post \n> code area look like yesterday?), temporal (what were the houlry wind speeds \n> at a specific point for last month?), or both (what was the mean temperature \n> across the UK last year).\n> \n> So how best to store the data to facilitate such queries?  This is where I \n> hope you can help! :)\n\nCould you have a look at aRT? It has an R component, a database (typically \nMySQL) component, and uses Terralib as glue:\n\nhttp://www.est.ufpr.br/art/\n\nI think you can use RMySQL directly for non-spatial tasks too. Terralib \nhas well-developed spatial data types.\n\n> \n> My initial thoughts are to invoke the spatial capabilites of MySQL.  The \n> station data seem easy enough to store as POINT or MULTIPOINT and set up a \n> spatial index and another on the time stamp.  Spatial queries can be \n> performed using a WKB (Well Known Binary - new to me;) representation of the \n> region of interest.\n> \n> I'm stuck on the model data.  I could break it down into points and proceed \n> as above but this seems grossly inefficient.  I was hoping to find a RASTER \n> data type and store the grids in that.  Trouble is, I could be missing \n> something, that I can't seem to find anything like one in MySQL.  Don't know \n> about Postgre or SQL sever.  I'm open to suggestions.\n> \n> Your hopefully, T\n> \n> _________________________________________________________________\n> \n> 7.5 today! http://join.msn.com/messenger/overview\n> \n> _______________________________________________\n> R-sig-Geo mailing list\n> R-sig-Geo at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-geo\n> \n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand at nhh.no",
+      "body_snippet": "On Wed, 19 Apr 2006, Toad 2000 wrote:\n\n> Hi Folks,\n> \n> Hope this isn't too far off topic + apologies for cross posting if you're on \n> both lists...\n> \n> I'm in the lucky(?) position of setting up an",
+      "thread_id": "thread-4f1019c105f1",
+      "thread_depth": 1,
+      "month": "2006-04"
+    },
+    {
+      "id": "msg-04519ea68660",
+      "message_id": "<444648C3.3000906@vanderbilt.edu>",
+      "from_name": "Jeffrey Horner",
+      "from_email_hash": "77f9f3268effd48e70e790ba24e5db9767f6401d87fbba7ec6a16ee2e060daf2",
+      "date": "2006-04-19T09:27:15-05:00",
+      "subject": "[R-sig-DB] Raster data and MySQL",
+      "subject_clean": "Raster data and MySQL",
+      "in_reply_to": "<BAY24-F177AD9C5D8D2AFBC3CB972F1C50@phx.gbl>",
+      "references": [
+        "<BAY24-F177AD9C5D8D2AFBC3CB972F1C50@phx.gbl>"
+      ],
+      "body_plain": "Toad 2000 wrote:\n> Hi Folks,\n> \n> Hope this isn't too far off topic + apologies for cross posting if you're on \n> both lists...\n> \n> I'm in the lucky(?) position of setting up an archive of geophysical \n> (meteorological) data from scratch. R has been my working \n> language/environment for the last few years. I've had plenty of need for the \n> maptools + rgdal packages.  Ditto the RMySQL package but never inconjuction \n> with spatial analyses.  My worlds are about to collide.\n> \n> The data come in two types: Station data (irregular grid, irregular times, \n> lots of missing values) and Model output (regular grid, regular times, no \n> missing data).  The data come in hour after hour, day after day.\n> \n> Typical queries can be spatial (e.g. what did the rainfall over a given post \n> code area look like yesterday?), temporal (what were the houlry wind speeds \n> at a specific point for last month?), or both (what was the mean temperature \n> across the UK last year).\n> \n> So how best to store the data to facilitate such queries?  This is where I \n> hope you can help! :)\n> \n> My initial thoughts are to invoke the spatial capabilites of MySQL.  The \n> station data seem easy enough to store as POINT or MULTIPOINT and set up a \n> spatial index and another on the time stamp.  Spatial queries can be \n> performed using a WKB (Well Known Binary - new to me;) representation of the \n> region of interest.\n\nNeither RMySQL nor RODBC support BLOB types or any of the Spatial types. \nBLOB (binary large object) types are useful for storing any binary data, \nincluding raster images. Also, some of the comments here:\n\nhttp://dev.mysql.com/doc/refman/5.0/en/populating-spatial-columns.html\n\nsuggest that actually getting data into MySQL may be difficult.\n\nWhat's really needed is an update to the R DBI spec to support prepared \nstatements, placeholders, and of course BLOB types. I'm actually \nplanning an R module which will use BLOB types, but not the way a DBI \nspec would, so I'd be happy to consider helping write some of this after \nI get my hands dirty with the MySQL client apis.\n\n> \n> I'm stuck on the model data.  I could break it down into points and proceed \n> as above but this seems grossly inefficient.  I was hoping to find a RASTER \n> data type and store the grids in that.  Trouble is, I could be missing \n> something, that I can't seem to find anything like one in MySQL.  Don't know \n> about Postgre or SQL sever.  I'm open to suggestions.\n> \n> Your hopefully, T\n> \n> _________________________________________________________________\n> \n> 7.5 today! http://join.msn.com/messenger/overview\n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n\n-- \nJeffrey Horner       Computer Systems Analyst         School of Medicine\n615-322-8606         Department of Biostatistics   Vanderbilt University",
+      "body_snippet": "Toad 2000 wrote:\n> Hi Folks,\n> \n> Hope this isn't too far off topic + apologies for cross posting if you're on \n> both lists...\n> \n> I'm in the lucky(?) position of setting up an archive of geophysica",
+      "thread_id": "thread-4f1019c105f1",
+      "thread_depth": 1,
+      "month": "2006-04"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-4f1019c105f1",
+      "subject": "Raster data and MySQL",
+      "message_count": 3,
+      "participants": [
+        "Jeffrey Horner",
+        "Roger Bivand",
+        "Toad 2000"
+      ],
+      "started": "2006-04-19T14:11:02+01:00",
+      "last_reply": "2006-04-19T09:27:15-05:00",
+      "root_message_id": "msg-4f1019c105f1"
+    }
+  ]
+}

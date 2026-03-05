@@ -1,0 +1,187 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2013-11",
+  "messages": [
+    {
+      "id": "msg-4fb99be104da",
+      "message_id": "<CACT39NZ8Ta8U58P-ru_10raf7zNu02+tWNDNWiZ3gqjt7pgsqA@mail.gmail.com>",
+      "from_name": "Ray DiGiacomo, Jr.",
+      "from_email_hash": "f9030f0387752e59545868aa7567dbcca08d2103086527587132828273582275",
+      "date": "2013-11-18T11:12:57-08:00",
+      "subject": "[R-sig-DB] R and MongoDB (OC-RUG Webinar)",
+      "subject_clean": "R and MongoDB (OC-RUG Webinar)",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello r-sig-db mailing list,\n\nMarkus Schmidberger, the package maintainer for the \"rmongodb\" R package\nhas agreed to discuss the package via webinar on January 30, 2014.  His\npackage allows for the communication between R and MongoDB.\n\nFor more information on the rmongodb R package, please visit this site:\n\nhttp://cran.r-project.org/web/packages/rmongodb/index.html\n\nThis event is brought to you by The Orange County R User Group (OC-RUG).\n\nPlease note that in addition to attending from your laptop or desktop\ncomputer, you can also attend from a Wi-Fi connected iPhone, iPad, Android\nphone or Android tablet by installing the GoToMeeting App.\n\nThe webinar's registration page is below:\n\nhttps://www3.gotomeeting.com/register/287023934\n\nBest Regards,\n\nThe Orange County R User Group\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hello r-sig-db mailing list,\n\nMarkus Schmidberger, the package maintainer for the \"rmongodb\" R package\nhas agreed to discuss the package via webinar on January 30, 2014.  His\npackage allows for the co",
+      "thread_id": "thread-4fb99be104da",
+      "thread_depth": 0,
+      "month": "2013-11"
+    },
+    {
+      "id": "msg-658f33a5c3d8",
+      "message_id": "<001101cee5ff$5d88ca30$189a5e90$@incentive-investing.com>",
+      "from_name": "Chris",
+      "from_email_hash": "d2de9d8cd77e70a218d788bb6146f491de621a8aea8d3c689486e3f446fbefc9",
+      "date": "2013-11-20T15:46:58+01:00",
+      "subject": "[R-sig-DB] RODBC sqlSave appends rows from data frame in reverse order",
+      "subject_clean": "RODBC sqlSave appends rows from data frame in reverse order",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\n \n\nI append rows to a table in MySQL with sqlSave from RODBC package. The data\nframe that is saved is ordered by date ascending (first column) as is the\ntable in the DB. When I send the whole data frame at once, the data frame is\nappended in reverse order. That means the row with the newest date in the\ndata frame is the first row appended to the table, while the row with oldest\ndate will be last row in the table. OK, I thought that \"append\" just orders\nby date descending and that is why the reverse ordering happens. But when I\nsend each row of the data frame using a for-loop the result is the same: The\nfirst row send is the last row in the table, the second row send, is the\nsecond last row in the table.\n\nMy solution is to run the for loop from last to first row of the data frame\nbut I am looking for an explanation why append works like this and if it's\npossible to change this in some setting. \n\n \n\n#Send data frame completely (6 rows, 12 cols)\n\nsqlSave(con, df, tablename = table, rownames=FALSE, addPK=TRUE, append=TRUE,\nverbose=TRUE)\n\n \n\n# Send data frame row by row\n\nfor (a in 1:6) {\n\n      dfsend <- df[a,]\n\n      sqlSave(con, dfsend, tablename = table, rownames=FALSE, addPK=TRUE,\nappend=TRUE, verbose=TRUE) \n\n    }\n\n \n\n# \"solution\": Send data frame row by row, starting from last row of data\nframe\n\nfor (a in 6:1) {\n\n      dfsend <- df[a,]\n\n      sqlSave(con, dfsend, tablename = table, rownames=FALSE, addPK=TRUE,\nappend=TRUE, verbose=TRUE) \n\n    }\n\n \n\nThank you\n\nChris\n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi,\n\n \n\nI append rows to a table in MySQL with sqlSave from RODBC package. The data\nframe that is saved is ordered by date ascending (first column) as is the\ntable in the DB. When I send the whole dat",
+      "thread_id": "thread-658f33a5c3d8",
+      "thread_depth": 0,
+      "month": "2013-11"
+    },
+    {
+      "id": "msg-19de8f62a66a",
+      "message_id": "<8761rnhw0z.fsf@enricoschumann.net>",
+      "from_name": "Enrico Schumann",
+      "from_email_hash": "42e3fbcaa04e968726f4c1d1a69e34143bdbc62b403d112ba1d3712256bacb88",
+      "date": "2013-11-20T17:34:36+01:00",
+      "subject": "[R-sig-DB] RODBC sqlSave appends rows from data frame in reverse order",
+      "subject_clean": "RODBC sqlSave appends rows from data frame in reverse order",
+      "in_reply_to": "<001101cee5ff$5d88ca30$189a5e90$@incentive-investing.com> (Chris's message of \"Wed, 20 Nov 2013 15:46:58 +0100\")",
+      "references": [
+        "<001101cee5ff$5d88ca30$189a5e90$@incentive-investing.com>"
+      ],
+      "body_plain": "On Wed, 20 Nov 2013, \"Chris\" <cs at incentive-investing.com> writes:\n\n> Hi,\n>\n> I append rows to a table in MySQL with sqlSave from RODBC package. The data\n> frame that is saved is ordered by date ascending (first column) as is the\n> table in the DB. When I send the whole data frame at once, the data frame is\n> appended in reverse order. That means the row with the newest date in the\n> data frame is the first row appended to the table, while the row with oldest\n> date will be last row in the table. OK, I thought that \"append\" just orders\n> by date descending and that is why the reverse ordering happens. But when I\n> send each row of the data frame using a for-loop the result is the same: The\n> first row send is the last row in the table, the second row send, is the\n> second last row in the table.\n>\n> My solution is to run the for loop from last to first row of the data frame\n> but I am looking for an explanation why append works like this and if it's\n> possible to change this in some setting. \n>\n\nIn MySQL, you never have a guarantee in which order the rows will be\nretrieved unless you specify it (eg, \"SELECT * FROM table ORDER BY\ncolumn;\").\n\n[...]\n\n>\n> Thank you\n>\n> Chris\n>\n\n-- \nEnrico Schumann\nLucerne, Switzerland\nhttp://enricoschumann.net",
+      "body_snippet": "On Wed, 20 Nov 2013, \"Chris\" <cs at incentive-investing.com> writes:\n\n> Hi,\n>\n> I append rows to a table in MySQL with sqlSave from RODBC package. The data\n> frame that is saved is ordered by date asc",
+      "thread_id": "thread-658f33a5c3d8",
+      "thread_depth": 1,
+      "month": "2013-11"
+    },
+    {
+      "id": "msg-b85c8940d067",
+      "message_id": "<528CEEF6.9020004@stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2013-11-20T17:18:46Z",
+      "subject": "[R-sig-DB] RODBC sqlSave appends rows from data frame in reverse order",
+      "subject_clean": "RODBC sqlSave appends rows from data frame in reverse order",
+      "in_reply_to": "<8761rnhw0z.fsf@enricoschumann.net>",
+      "references": [
+        "<001101cee5ff$5d88ca30$189a5e90$@incentive-investing.com>",
+        "<8761rnhw0z.fsf@enricoschumann.net>"
+      ],
+      "body_plain": "On 20/11/2013 16:34, Enrico Schumann wrote:\n> On Wed, 20 Nov 2013, \"Chris\" <cs at incentive-investing.com> writes:\n>\n>> Hi,\n>>\n>> I append rows to a table in MySQL with sqlSave from RODBC package. The data\n>> frame that is saved is ordered by date ascending (first column) as is the\n>> table in the DB. When I send the whole data frame at once, the data frame is\n>> appended in reverse order. That means the row with the newest date in the\n>> data frame is the first row appended to the table, while the row with oldest\n>> date will be last row in the table. OK, I thought that \"append\" just orders\n>> by date descending and that is why the reverse ordering happens. But when I\n>> send each row of the data frame using a for-loop the result is the same: The\n>> first row send is the last row in the table, the second row send, is the\n>> second last row in the table.\n>>\n>> My solution is to run the for loop from last to first row of the data frame\n>> but I am looking for an explanation why append works like this and if it's\n>> possible to change this in some setting.\n>>\n>\n> In MySQL, you never have a guarantee in which order the rows will be\n> retrieved unless you specify it (eg, \"SELECT * FROM table ORDER BY\n> column;\").\n\nNor any other RDBMS: as the RODBC manual does say (on p.6).\n\n>\n> [...]\n>\n>>\n>> Thank you\n>>\n>> Chris\n>>\n>\n\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "On 20/11/2013 16:34, Enrico Schumann wrote:\n> On Wed, 20 Nov 2013, \"Chris\" <cs at incentive-investing.com> writes:\n>\n>> Hi,\n>>\n>> I append rows to a table in MySQL with sqlSave from RODBC package. The",
+      "thread_id": "thread-658f33a5c3d8",
+      "thread_depth": 2,
+      "month": "2013-11"
+    },
+    {
+      "id": "msg-f680533fb604",
+      "message_id": "<000401cee615$e0521320$a0f63960$@incentive-investing.com>",
+      "from_name": "Chris",
+      "from_email_hash": "d2de9d8cd77e70a218d788bb6146f491de621a8aea8d3c689486e3f446fbefc9",
+      "date": "2013-11-20T18:28:06+01:00",
+      "subject": "[R-sig-DB] RODBC sqlSave appends rows from data frame in reverse order",
+      "subject_clean": "RODBC sqlSave appends rows from data frame in reverse order",
+      "in_reply_to": "<528CEEF6.9020004@stats.ox.ac.uk>",
+      "references": [
+        "<001101cee5ff$5d88ca30$189a5e90$@incentive-investing.com>",
+        "<8761rnhw0z.fsf@enricoschumann.net>",
+        "<528CEEF6.9020004@stats.ox.ac.uk>"
+      ],
+      "body_plain": "Great, thank you all.\nI will always add \"order by\" when fetching data into da data frame and\nassume the rows in MySQL might not always be in right order\n\n-----Urspr?ngliche Nachricht-----\nVon: Prof Brian Ripley [mailto:ripley at stats.ox.ac.uk] \nGesendet: Mittwoch, 20. November 2013 18:19\nAn: Enrico Schumann; Chris\nCc: r-sig-db at r-project.org\nBetreff: Re: [R-sig-DB] RODBC sqlSave appends rows from data frame in\nreverse order\n\nOn 20/11/2013 16:34, Enrico Schumann wrote:\n> On Wed, 20 Nov 2013, \"Chris\" <cs at incentive-investing.com> writes:\n>\n>> Hi,\n>>\n>> I append rows to a table in MySQL with sqlSave from RODBC package. \n>> The data frame that is saved is ordered by date ascending (first \n>> column) as is the table in the DB. When I send the whole data frame \n>> at once, the data frame is appended in reverse order. That means the \n>> row with the newest date in the data frame is the first row appended \n>> to the table, while the row with oldest date will be last row in the \n>> table. OK, I thought that \"append\" just orders by date descending and \n>> that is why the reverse ordering happens. But when I send each row of \n>> the data frame using a for-loop the result is the same: The first row \n>> send is the last row in the table, the second row send, is the second\nlast row in the table.\n>>\n>> My solution is to run the for loop from last to first row of the data \n>> frame but I am looking for an explanation why append works like this \n>> and if it's possible to change this in some setting.\n>>\n>\n> In MySQL, you never have a guarantee in which order the rows will be \n> retrieved unless you specify it (eg, \"SELECT * FROM table ORDER BY \n> column;\").\n\nNor any other RDBMS: as the RODBC manual does say (on p.6).\n\n>\n> [...]\n>\n>>\n>> Thank you\n>>\n>> Chris\n>>\n>\n\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "Great, thank you all.\nI will always add \"order by\" when fetching data into da data frame and\nassume the rows in MySQL might not always be in right order\n\n-----Urspr?ngliche Nachricht-----\nVon: Prof Br",
+      "thread_id": "thread-658f33a5c3d8",
+      "thread_depth": 3,
+      "month": "2013-11"
+    },
+    {
+      "id": "msg-4285ca1e4be6",
+      "message_id": "<5294D40F.4000404@uni-konstanz.de>",
+      "from_name": "Peter Meißner",
+      "from_email_hash": "916c324f138fb8e50073d1cfd85e802ba3768b3eb792d1419b0763709a9863e4",
+      "date": "2013-11-26T18:02:07+01:00",
+      "subject": "[R-sig-DB] RODBC / MySQL magical limit of 32 Kbyte",
+      "subject_clean": "RODBC / MySQL magical limit of 32 Kbyte",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear listeners,\n\nI try to use a MySQL database (with RODBC) for storing files. Above a \nfile size of 32 KB I seem to hit a wall and the code below that serves \nme well otherwise fails to store and retrieve the whole file - only \nparts come back (although it seems that the whole file was stored in the \ndatabase).\n\nIs this normal? Does somebody have an idea if this is database related \nor due to R or RODBC or if my code just is nuts?\n\nAny suggestions for where to look for for a solution are more than welcome.\n\nBest, Peter\n\n\nSystem:\nR version         2.15.3 (2013-03-01) -- \"Security Blanket\"\nPlatform:         x86_64-w64-mingw32/x64 (64-bit)\nDBMS Version:    \"5.6.13\"\nDriver_ODBC_Ver: \"03.51\"\nDriver Name:     \"myodbc5w.dll\"\nDriver Version:  \"05.02.0005\"\n\nSQL ot create the table:\nCREATE TABLE files (id INTEGER AUTO_INCREMENT, file longtext, PRIMARY \nKEY (id));\n\n\nCODE:\n\n# define file for upload\n     fileIn  <- \"Hallo1.docx\"\n\n# define name of file to store data in\n     fileOut <- \"Hallo1Copy.docx\"\n\n# read in file\n     dataIn <- readBin(fileIn, what=\"raw\", n=file.info(fileIn)$size)\n\n# collapse string\n     dataInString <- paste(dataIn,collapse=\"\")\n\n# loading package\n     require(RODBC)\n\n# establishing connection\n     con <- odbcConnect(\"MyDatabase\",rows_at_time = 1, believeNRows = FALSE)\n\n# uploading data to column file in table files\n     dataDBString <- dataInString\n     sql <- paste0(\"INSERT INTO files (file) VALUES ('\",dataDBString,\"') ;\")\n     sqlQuery(con, sql)\n\n# downloading data again\n     res <- sqlQuery(con,\n         \"SELECT file FROM files WHERE id = (SELECT max(id) FROM files) ;\",\n         stringsAsFactors=F, rows_at_time=1,\n         as.is=T)\n     dataOutString <- res$file\n\n# closing connection\nodbcClose(con)\n\n# splitting data\ndataOut <- substring(   dataOutString,\n                         seq(1, nchar(dataOutString), 2),\n                         seq(2, nchar(dataOutString), 2))\n\n# checking how many bytes of dataIn and dataOut are identical\n# --> there seems to be a magical wall above 32813 bytes (665626 characters)\nprint(table(dataIn==dataOut))\n\n# write to file and check if file works\nwriteBin(as.raw(as.hexmode(dataOut)) , fileOut)\nbrowseURL(fileOut)",
+      "body_snippet": "Dear listeners,\n\nI try to use a MySQL database (with RODBC) for storing files. Above a \nfile size of 32 KB I seem to hit a wall and the code below that serves \nme well otherwise fails to store and ret",
+      "thread_id": "thread-4285ca1e4be6",
+      "thread_depth": 0,
+      "month": "2013-11"
+    },
+    {
+      "id": "msg-d0faa152f97c",
+      "message_id": "<001401ceeb55$7ad4b170$707e1450$@gmail.com>",
+      "from_name": "Edward Vanden Berghe",
+      "from_email_hash": "88a2ffe75b43f83da92d0218e53ec05b060e4ca314f3655262747c72299e40a5",
+      "date": "2013-11-27T10:45:58+01:00",
+      "subject": "[R-sig-DB] RODBC / MySQL magical limit of 32 Kbyte",
+      "subject_clean": "RODBC / MySQL magical limit of 32 Kbyte",
+      "in_reply_to": "<5294D40F.4000404@uni-konstanz.de>",
+      "references": [
+        "<5294D40F.4000404@uni-konstanz.de>"
+      ],
+      "body_plain": "Hi Peter,\n\nI've had similar problems, with information that got truncated through an RODBC connection - on Windows 64 bits, with RODBC on a PostgreSQL database, with large PostGIS entries. Unfortunately I can't replicate the problem now as I moved on to Ubuntu now. For me the solution was to go to DBI/RPostgreSQL. \n\nDid you try DBI? Even if you want to stick with RODBC in the future, it might assist in isolating the problem.\n\nCheers,\n\nEdward\n\n-----Original Message-----\nFrom: r-sig-db-bounces at r-project.org [mailto:r-sig-db-bounces at r-project.org] On Behalf Of Peter Mei?ner\nSent: 26 November 2013 18:02\nTo: r-sig-db at r-project.org\nSubject: [R-sig-DB] RODBC / MySQL magical limit of 32 Kbyte\n\nDear listeners,\n\nI try to use a MySQL database (with RODBC) for storing files. Above a file size of 32 KB I seem to hit a wall and the code below that serves me well otherwise fails to store and retrieve the whole file - only parts come back (although it seems that the whole file was stored in the database).\n\nIs this normal? Does somebody have an idea if this is database related or due to R or RODBC or if my code just is nuts?\n\nAny suggestions for where to look for for a solution are more than welcome.\n\nBest, Peter\n\n\nSystem:\nR version         2.15.3 (2013-03-01) -- \"Security Blanket\"\nPlatform:         x86_64-w64-mingw32/x64 (64-bit)\nDBMS Version:    \"5.6.13\"\nDriver_ODBC_Ver: \"03.51\"\nDriver Name:     \"myodbc5w.dll\"\nDriver Version:  \"05.02.0005\"\n\nSQL ot create the table:\nCREATE TABLE files (id INTEGER AUTO_INCREMENT, file longtext, PRIMARY KEY (id));\n\n\nCODE:\n\n# define file for upload\n     fileIn  <- \"Hallo1.docx\"\n\n# define name of file to store data in\n     fileOut <- \"Hallo1Copy.docx\"\n\n# read in file\n     dataIn <- readBin(fileIn, what=\"raw\", n=file.info(fileIn)$size)\n\n# collapse string\n     dataInString <- paste(dataIn,collapse=\"\")\n\n# loading package\n     require(RODBC)\n\n# establishing connection\n     con <- odbcConnect(\"MyDatabase\",rows_at_time = 1, believeNRows = FALSE)\n\n# uploading data to column file in table files\n     dataDBString <- dataInString\n     sql <- paste0(\"INSERT INTO files (file) VALUES ('\",dataDBString,\"') ;\")\n     sqlQuery(con, sql)\n\n# downloading data again\n     res <- sqlQuery(con,\n         \"SELECT file FROM files WHERE id = (SELECT max(id) FROM files) ;\",\n         stringsAsFactors=F, rows_at_time=1,\n         as.is=T)\n     dataOutString <- res$file\n\n# closing connection\nodbcClose(con)\n\n# splitting data\ndataOut <- substring(   dataOutString,\n                         seq(1, nchar(dataOutString), 2),\n                         seq(2, nchar(dataOutString), 2))\n\n# checking how many bytes of dataIn and dataOut are identical\n# --> there seems to be a magical wall above 32813 bytes (665626 characters)\nprint(table(dataIn==dataOut))\n\n# write to file and check if file works\nwriteBin(as.raw(as.hexmode(dataOut)) , fileOut)\nbrowseURL(fileOut)\n\n_______________________________________________\nR-sig-DB mailing list -- R Special Interest Group\nR-sig-DB at r-project.org\nhttps://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "Hi Peter,\n\nI've had similar problems, with information that got truncated through an RODBC connection - on Windows 64 bits, with RODBC on a PostgreSQL database, with large PostGIS entries. Unfortunate",
+      "thread_id": "thread-4285ca1e4be6",
+      "thread_depth": 1,
+      "month": "2013-11"
+    },
+    {
+      "id": "msg-3d54cf751a46",
+      "message_id": "<5296030C.9050708@uni-konstanz.de>",
+      "from_name": "Peter Meißner",
+      "from_email_hash": "916c324f138fb8e50073d1cfd85e802ba3768b3eb792d1419b0763709a9863e4",
+      "date": "2013-11-27T15:34:52+01:00",
+      "subject": "[R-sig-DB] RODBC / MySQL magical limit of 32 Kbyte",
+      "subject_clean": "RODBC / MySQL magical limit of 32 Kbyte",
+      "in_reply_to": "<001401ceeb55$7ad4b170$707e1450$@gmail.com>",
+      "references": [
+        "<5294D40F.4000404@uni-konstanz.de>",
+        "<001401ceeb55$7ad4b170$707e1450$@gmail.com>"
+      ],
+      "body_plain": "Thanks for the reply,\n\nI think I found the problem: There seems to be a \"sanity check\" when \ndownloading information:\n\nif (datalen > 65535) datalen = 65535\n\nIf I understand this right, it just truncates each and every download of \ninformation above 65535.\n\nSo the problem was(is) package related and might be dealt with by \nrecompiling the source:\n\ndownload source;\nunzip it;\nRStudio->create project->from existing;\nopen src/RODBC.c;\nchange \"if (datalen > 65535) datalen = 65535\"\nto \"/* if (datalen > 65535) datalen = 65535 */\");\nbuild binary and than install this binary)\n\nso far it works without problems.\n\nBest, Peter\n\n\nPS.: Now that I have learnt to compile packages I might also try to get \nRMySQL running.\n\n\nAm 27.11.2013 10:45, schrieb Edward Vanden Berghe:\n> Hi Peter,\n>\n> I've had similar problems, with information that got truncated through an RODBC connection - on Windows 64 bits, with RODBC on a PostgreSQL database, with large PostGIS entries. Unfortunately I can't replicate the problem now as I moved on to Ubuntu now. For me the solution was to go to DBI/RPostgreSQL.\n>\n> Did you try DBI? Even if you want to stick with RODBC in the future, it might assist in isolating the problem.\n>\n> Cheers,\n>\n> Edward\n>\n> -----Original Message-----\n> From: r-sig-db-bounces at r-project.org [mailto:r-sig-db-bounces at r-project.org] On Behalf Of Peter Mei?ner\n> Sent: 26 November 2013 18:02\n> To: r-sig-db at r-project.org\n> Subject: [R-sig-DB] RODBC / MySQL magical limit of 32 Kbyte\n>\n> Dear listeners,\n>\n> I try to use a MySQL database (with RODBC) for storing files. Above a file size of 32 KB I seem to hit a wall and the code below that serves me well otherwise fails to store and retrieve the whole file - only parts come back (although it seems that the whole file was stored in the database).\n>\n> Is this normal? Does somebody have an idea if this is database related or due to R or RODBC or if my code just is nuts?\n>\n> Any suggestions for where to look for for a solution are more than welcome.\n>\n> Best, Peter\n>\n>\n> System:\n> R version         2.15.3 (2013-03-01) -- \"Security Blanket\"\n> Platform:         x86_64-w64-mingw32/x64 (64-bit)\n> DBMS Version:    \"5.6.13\"\n> Driver_ODBC_Ver: \"03.51\"\n> Driver Name:     \"myodbc5w.dll\"\n> Driver Version:  \"05.02.0005\"\n>\n> SQL ot create the table:\n> CREATE TABLE files (id INTEGER AUTO_INCREMENT, file longtext, PRIMARY KEY (id));\n>\n>\n> CODE:\n>\n> # define file for upload\n>       fileIn  <- \"Hallo1.docx\"\n>\n> # define name of file to store data in\n>       fileOut <- \"Hallo1Copy.docx\"\n>\n> # read in file\n>       dataIn <- readBin(fileIn, what=\"raw\", n=file.info(fileIn)$size)\n>\n> # collapse string\n>       dataInString <- paste(dataIn,collapse=\"\")\n>\n> # loading package\n>       require(RODBC)\n>\n> # establishing connection\n>       con <- odbcConnect(\"MyDatabase\",rows_at_time = 1, believeNRows = FALSE)\n>\n> # uploading data to column file in table files\n>       dataDBString <- dataInString\n>       sql <- paste0(\"INSERT INTO files (file) VALUES ('\",dataDBString,\"') ;\")\n>       sqlQuery(con, sql)\n>\n> # downloading data again\n>       res <- sqlQuery(con,\n>           \"SELECT file FROM files WHERE id = (SELECT max(id) FROM files) ;\",\n>           stringsAsFactors=F, rows_at_time=1,\n>           as.is=T)\n>       dataOutString <- res$file\n>\n> # closing connection\n> odbcClose(con)\n>\n> # splitting data\n> dataOut <- substring(   dataOutString,\n>                           seq(1, nchar(dataOutString), 2),\n>                           seq(2, nchar(dataOutString), 2))\n>\n> # checking how many bytes of dataIn and dataOut are identical\n> # --> there seems to be a magical wall above 32813 bytes (665626 characters)\n> print(table(dataIn==dataOut))\n>\n> # write to file and check if file works\n> writeBin(as.raw(as.hexmode(dataOut)) , fileOut)\n> browseURL(fileOut)\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n-- \nPeter Mei?ner\nWorkgroup 'Comparative Parliamentary Politics'\nDepartment of Politics and Administration\nUniversity of Konstanz\nBox 216\n78457 Konstanz\nGermany\n\n+49 7531 88 5665\nhttp://www.polver.uni-konstanz.de/sieberer/home/",
+      "body_snippet": "Thanks for the reply,\n\nI think I found the problem: There seems to be a \"sanity check\" when \ndownloading information:\n\nif (datalen > 65535) datalen = 65535\n\nIf I understand this right, it just truncat",
+      "thread_id": "thread-4285ca1e4be6",
+      "thread_depth": 2,
+      "month": "2013-11"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-4fb99be104da",
+      "subject": "R and MongoDB (OC-RUG Webinar)",
+      "message_count": 1,
+      "participants": [
+        "Ray DiGiacomo, Jr."
+      ],
+      "started": "2013-11-18T11:12:57-08:00",
+      "last_reply": "2013-11-18T11:12:57-08:00",
+      "root_message_id": "msg-4fb99be104da"
+    },
+    {
+      "id": "thread-658f33a5c3d8",
+      "subject": "RODBC sqlSave appends rows from data frame in reverse order",
+      "message_count": 4,
+      "participants": [
+        "Chris",
+        "Enrico Schumann",
+        "Prof Brian Ripley"
+      ],
+      "started": "2013-11-20T15:46:58+01:00",
+      "last_reply": "2013-11-20T18:28:06+01:00",
+      "root_message_id": "msg-658f33a5c3d8"
+    },
+    {
+      "id": "thread-4285ca1e4be6",
+      "subject": "RODBC / MySQL magical limit of 32 Kbyte",
+      "message_count": 3,
+      "participants": [
+        "Edward Vanden Berghe",
+        "Peter Meißner"
+      ],
+      "started": "2013-11-26T18:02:07+01:00",
+      "last_reply": "2013-11-27T15:34:52+01:00",
+      "root_message_id": "msg-4285ca1e4be6"
+    }
+  ]
+}

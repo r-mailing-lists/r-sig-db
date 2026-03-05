@@ -1,0 +1,18 @@
+From w@obl@k @ending from wp@pl  Sat Nov  3 11:33:52 2018
+From: w@obl@k @ending from wp@pl (=?UTF-8?Q?w=2Eoblak=40wp=2Epl?=)
+Date: Sat, 03 Nov 2018 11:33:52 +0100
+Subject: [R-sig-DB] =?utf-8?q?trusted_connection_with_DBI?=
+Message-ID: <eec86ad43446445fadcc2e0ef7212516@grupawp.pl>
+
+Hello,  I have a question about DBI package.    Why  DBI::dbConnect(conn, trusted_connection = T)  works the same as  DBI::dbConnect(conn, trusted_connection = F  or  DBI::dbConnect(conn, trusted_connection = NA  ?  This code will return connection via windows authentication. If I
+want not to use windows authentication then I must ommit the paramter  trusted_connection . It is hard to steer in my scripts cuz I must write a wrapper like this:  function ( drv ,  trusted_connection ,   # the rest of params) {
+   if ( trusted_connection )   {
+    DBI :: dbConnect ( conn ,  trusted_connection  =  T ,   # the rest of params)
+   }   else   {
+    DBI :: dbConnect ( conn ,   # the rest of params)
+   }
+ }  Happy Coding,  Wojtek
+
+	[[alternative HTML version deleted]]
+
+

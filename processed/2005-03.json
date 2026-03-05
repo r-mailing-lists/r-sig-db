@@ -1,0 +1,121 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2005-03",
+  "messages": [
+    {
+      "id": "msg-60ccaae0baa6",
+      "message_id": "<200503081652.14760.Pascal.Niklaus@unibas.ch>",
+      "from_name": "Pascal A. Niklaus",
+      "from_email_hash": "c4c4a5fcfa07b3abbbe86f17fdc378aea12a39973f27f7db698b0bd8357ca0ef",
+      "date": "2005-03-08T16:52:14+01:00",
+      "subject": "[R-sig-DB] last_insert_id() problem",
+      "subject_clean": "last_insert_id() problem",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi all,\n\nI am trying to insert a row into a table and then to get the value of an \nauto_increment field back. From the mysql command line, this looks like this:\n\nmysql> insert into results set fileid='abc';\nQuery OK, 1 row affected (0.00 sec)\n\nmysql> select last_insert_id();\n+------------------+\n| last_insert_id() |\n+------------------+\n|               12 |\n+------------------+\n1 row in set (0.00 sec)\n\nHowever, I cannot successfully translate this into R. I tried:\n  \n  dbSendQuery(con,paste(\"insert into results set userID=\",userID,sep=\"\") )\n  id <- dbGetQuery(con, \"select LAST_INSERT_ID() AS I\");\n      \nHowever, while a new row of data is inserted, id always returns 0. I wonder \nwhether this is because dbSendQuery is not the appropriate method to simply \nexecute a command, but I could not find an alternative.\n\nThanks for your help\n\nPascal\n\n-- \nPascal A. Niklaus\nInstitute of Botany\nUniversity of Basel\nSch?nbeinstrasse 6\nCH-4056 Basel / Switzerland\n\nph. +41 61 267 3506\nfax +41 61 267 3504\n\nGPG public key: http://www.bot.unibas.ch/~pascal/pascal_niklaus.key\n\nPlease avoid sending me Word or PowerPoint attachments.\nSee http://www.fsf.org/philosophy/no-word-attachments.html",
+      "body_snippet": "Hi all,\n\nI am trying to insert a row into a table and then to get the value of an \nauto_increment field back. From the mysql command line, this looks like this:\n\nmysql> insert into results set fileid=",
+      "thread_id": "thread-60ccaae0baa6",
+      "thread_depth": 0,
+      "month": "2005-03"
+    },
+    {
+      "id": "msg-f76b7e600ddd",
+      "message_id": "<Pine.LNX.4.61.0503081556210.31283@gannet.stats>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2005-03-08T15:57:05Z",
+      "subject": "[R-sig-DB] last_insert_id() problem",
+      "subject_clean": "last_insert_id() problem",
+      "in_reply_to": "<200503081652.14760.Pascal.Niklaus@unibas.ch>",
+      "references": [
+        "<200503081652.14760.Pascal.Niklaus@unibas.ch>"
+      ],
+      "body_plain": "Which R package ...?  Please read the R posting guide ....\n\nOn Tue, 8 Mar 2005, Pascal A. Niklaus wrote:\n\n> Hi all,\n>\n> I am trying to insert a row into a table and then to get the value of an\n> auto_increment field back. From the mysql command line, this looks like this:\n>\n> mysql> insert into results set fileid='abc';\n> Query OK, 1 row affected (0.00 sec)\n>\n> mysql> select last_insert_id();\n> +------------------+\n> | last_insert_id() |\n> +------------------+\n> |               12 |\n> +------------------+\n> 1 row in set (0.00 sec)\n>\n> However, I cannot successfully translate this into R. I tried:\n>\n>  dbSendQuery(con,paste(\"insert into results set userID=\",userID,sep=\"\") )\n>  id <- dbGetQuery(con, \"select LAST_INSERT_ID() AS I\");\n>\n> However, while a new row of data is inserted, id always returns 0. I wonder\n> whether this is because dbSendQuery is not the appropriate method to simply\n> execute a command, but I could not find an alternative.\n>\n> Thanks for your help\n>\n> Pascal\n>\n> -- \n> Pascal A. Niklaus\n> Institute of Botany\n> University of Basel\n> Sch?nbeinstrasse 6\n> CH-4056 Basel / Switzerland\n>\n> ph. +41 61 267 3506\n> fax +41 61 267 3504\n>\n> GPG public key: http://www.bot.unibas.ch/~pascal/pascal_niklaus.key\n>\n> Please avoid sending me Word or PowerPoint attachments.\n> See http://www.fsf.org/philosophy/no-word-attachments.html\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n>\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "Which R package ...?  Please read the R posting guide ....\n\nOn Tue, 8 Mar 2005, Pascal A. Niklaus wrote:\n\n> Hi all,\n>\n> I am trying to insert a row into a table and then to get the value of an\n> auto_",
+      "thread_id": "thread-60ccaae0baa6",
+      "thread_depth": 1,
+      "month": "2005-03"
+    },
+    {
+      "id": "msg-479a5891fce8",
+      "message_id": "<20050308121049.A8968@jessie.research.bell-labs.com>",
+      "from_name": "David James",
+      "from_email_hash": "50db14ff16dfd88fa0516d6b3379e8ac0537ba1ef3b84fa4345e8a2fec6698f9",
+      "date": "2005-03-08T12:10:49-05:00",
+      "subject": "[R-sig-DB] last_insert_id() problem",
+      "subject_clean": "last_insert_id() problem",
+      "in_reply_to": "<200503081652.14760.Pascal.Niklaus@unibas.ch>; from Pascal.Niklaus@unibas.ch on Tue, Mar 08, 2005 at 04:52:14PM +0100",
+      "references": [
+        "<200503081652.14760.Pascal.Niklaus@unibas.ch>"
+      ],
+      "body_plain": "Pascal A. Niklaus wrote:\n> Hi all,\n> \n> I am trying to insert a row into a table and then to get the value of an \n> auto_increment field back. From the mysql command line, this looks like this:\n> \n> mysql> insert into results set fileid='abc';\n> Query OK, 1 row affected (0.00 sec)\n> \n> mysql> select last_insert_id();\n> +------------------+\n> | last_insert_id() |\n> +------------------+\n> |               12 |\n> +------------------+\n> 1 row in set (0.00 sec)\n> \n> However, I cannot successfully translate this into R. I tried:\n>   \n>   dbSendQuery(con,paste(\"insert into results set userID=\",userID,sep=\"\") )\n>   id <- dbGetQuery(con, \"select LAST_INSERT_ID() AS I\");\n>       \n> However, while a new row of data is inserted, id always returns 0. I wonder \n> whether this is because dbSendQuery is not the appropriate method to simply \n> execute a command, but I could not find an alternative.\n> \n> Thanks for your help\n> \n> Pascal\n> \n> -- \n> Pascal A. Niklaus\n> Institute of Botany\n> University of Basel\n> Sch?nbeinstrasse 6\n> CH-4056 Basel / Switzerland\n> \n> ph. +41 61 267 3506\n> fax +41 61 267 3504\n> \n> GPG public key: http://www.bot.unibas.ch/~pascal/pascal_niklaus.key\n> \n> Please avoid sending me Word or PowerPoint attachments.\n> See http://www.fsf.org/philosophy/no-word-attachments.html\n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\nHi Pascal,\n\nIn this case you should be using dbGetQuery() instead of dbSendQuery(), \nsince you don't require the result set object that dbSendQuery() \nreturns. (You could dbSendQuery(), but then make sure you\ndbClearResult() before requesting the LAST_INSERT_ID()). \n\nExample:\n\nmysql> describe tmp_foo;\n+-------+----------------------+------+-----+---------+----------------+\n| Field | Type                 | Null | Key | Default | Extra          |\n+-------+----------------------+------+-----+---------+----------------+\n| i     | smallint(5) unsigned |      | PRI | NULL    | auto_increment |\n| txt   | char(3)              | YES  |     | NULL    |                |\n+-------+----------------------+------+-----+---------+----------------+\n2 rows in set (0.01 sec)\n\nfrom R\n\n> dbGetQuery(con, \"insert into tmp_foo set txt = 'y'\")\nNULL\n\n> dbGetQuery(con, \"select LAST_INSERT_ID() as I\")\n  I\n1 9\n\nRegards,\n\n--\nDavid",
+      "body_snippet": "Pascal A. Niklaus wrote:\n> Hi all,\n> \n> I am trying to insert a row into a table and then to get the value of an \n> auto_increment field back. From the mysql command line, this looks like this:\n> \n> m",
+      "thread_id": "thread-60ccaae0baa6",
+      "thread_depth": 1,
+      "month": "2005-03"
+    },
+    {
+      "id": "msg-ecb2c7c02a7e",
+      "message_id": "<1110305807.422dec0f2cc5c@webmail.unibas.ch>",
+      "from_name": "P@sc@i@Niki@us m@iii@g oii u@ib@s@ch",
+      "from_email_hash": "6ac9609242d497ae82854a33e7eae0f2fd4441c31f0d72c3fc949b263b00c765",
+      "date": "2005-03-08T19:16:47+01:00",
+      "subject": "[R-sig-DB] last_insert_id() problem",
+      "subject_clean": "last_insert_id() problem",
+      "in_reply_to": "<20050308121049.A8968@jessie.research.bell-labs.com>",
+      "references": [
+        "<200503081652.14760.Pascal.Niklaus@unibas.ch>",
+        "<20050308121049.A8968@jessie.research.bell-labs.com>"
+      ],
+      "body_plain": "Thanks, this now works perfectly.\n\nPascal",
+      "body_snippet": "Thanks, this now works perfectly.\n\nPascal",
+      "thread_id": "thread-60ccaae0baa6",
+      "thread_depth": 2,
+      "month": "2005-03"
+    },
+    {
+      "id": "msg-05cd7021f3b5",
+      "message_id": "<BAY104-DAV11E92A40B4DD5E66F4E17DAA530@phx.gbl>",
+      "from_name": "Jing Zhou",
+      "from_email_hash": "faea3171a714d6bdd9ad1e5f96d322dc16c7e2b9b6e86a734f9b1ca5a06c673d",
+      "date": "2005-03-11T16:34:53-05:00",
+      "subject": "[R-sig-DB] ROracle didn't work properly in such setting",
+      "subject_clean": "ROracle didn't work properly in such setting",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I have encountered *many* problems when using ROracle functions, including\nthe same problem with the one listed below (but I had such problem when\nusing dbExistsTable() instead of dbListTables).\n\nMy settings:\nROracle      \"0.5-5\"\nDBI            \"0.1-8\"\nOracle9i Enterprise Edition Release 9.2.0.6.0 - 64bit Production\nJServer Release 9.2.0.6.0 - Production\nLinux\n\nI am wondering whether or not ROracle *can* work in such settings.\n\n-Jing\n\n----------------------------------------------------------------------------\n----\n\nHi,\n \nI just installed ROracle under R1.8.1 alpha. There is a funny error in\ndbListTables(). When you run dbListTables just after establishing a\nconnection it fails at oraQuickSQL(conn, \"select table_name from\nall_tables\")[, 1], see below. However if you execute oraQuickSQL(conn,\n\"select table_name from all_tables\")[, 1] from the prompt it will work\nfine and, moreover, the dbListTables() will work fine after that too.\n \n> library(\"DBI\"); library(\"ROracle\")\n> con <- dbConnect(dbDriver(\"Oracle\"), user=\"...\")\n> dbListTables(con)\nError in oraQuickSQL(conn, \"select table_name from all_tables\")[, 1] : \n incorrect number of dimensions\n> oraQuickSQL(conn, \"select table_name from all_tables\")[, 1]\nError in .class1(object) : Object \"conn\" not found\n> oraQuickSQL(con, \"select table_name from all_tables\")[, 1]\n*** works fine:output flushed ***\n> dbListTables(con)\n*** works fine:output flushed ***\n \n \nAny clue?\n \nThanks,\nVadim\n \n\n \n> version\n         _                \nplatform i686-pc-linux-gnu\narch     i686             \nos       linux-gnu        \nsystem   i686, linux-gnu  \nstatus   alpha            \nmajor    1                \nminor    8.1              \nyear     2003             \nmonth    11               \nday      05               \nlanguage R",
+      "body_snippet": "I have encountered *many* problems when using ROracle functions, including\nthe same problem with the one listed below (but I had such problem when\nusing dbExistsTable() instead of dbListTables).\n\nMy s",
+      "thread_id": "thread-05cd7021f3b5",
+      "thread_depth": 0,
+      "month": "2005-03"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-60ccaae0baa6",
+      "subject": "last_insert_id() problem",
+      "message_count": 4,
+      "participants": [
+        "David James",
+        "P@sc@i@Niki@us m@iii@g oii u@ib@s@ch",
+        "Pascal A. Niklaus",
+        "Prof Brian Ripley"
+      ],
+      "started": "2005-03-08T16:52:14+01:00",
+      "last_reply": "2005-03-08T19:16:47+01:00",
+      "root_message_id": "msg-60ccaae0baa6"
+    },
+    {
+      "id": "thread-05cd7021f3b5",
+      "subject": "ROracle didn't work properly in such setting",
+      "message_count": 1,
+      "participants": [
+        "Jing Zhou"
+      ],
+      "started": "2005-03-11T16:34:53-05:00",
+      "last_reply": "2005-03-11T16:34:53-05:00",
+      "root_message_id": "msg-05cd7021f3b5"
+    }
+  ]
+}

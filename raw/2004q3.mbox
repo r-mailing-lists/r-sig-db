@@ -1,0 +1,346 @@
+From vkhur@n@ @end|ng |rom m@||@nm|@@h@w@||@edu  Tue Jul  6 23:42:22 2004
+From: vkhur@n@ @end|ng |rom m@||@nm|@@h@w@||@edu (Vikram Khurana)
+Date: Tue, 6 Jul 2004 11:42:22 -1000
+Subject: [R-sig-DB] ROracle returning zero rows
+Message-ID: <005201c463a2$21da6870$d5a410ac@swfc2.nmfs.gov>
+
+Hi,
+
+I have ROracle 0.5-5 and DBI 0.1-8 installed on RH 7.3 machine trying to
+access Oracle 8.1.7 
+Other config:
+Gcc 2.96
+R 1.9.1 patched
+
+
+I can get to Oracle using sqlplus & retrieve the data from the table "test".
+However when I try doing the same using ROracle I get the following
+
+> library("ROracle")
+> ora = Oracle()
+> con <-oraNewConnection(ora,username="user",password="pwd",
+dbname="database SID")
+> dbGetQuery(con,"select * from test where rownum<9")
+[1] VESSEL_CODE   CRUISE_NUMBER EVENT_YEAR    EVENT_MONTH   EVENT_DAY
+[6] MIN_OCTANT    MAX_OCTANT
+<0 rows> (or 0-length row.names)
+> dbListTables(con)
+character(0)
+
+When I do a dbGetQuery, I get just the column names of the table show up &
+no data. There are 1000+ rows in this table in the database.
+When I do a dbListTables, I get no results, which is not true
+
+What is the issue here? Am I doing something wrong?
+
+I have googled on it & found another person with the same problem, but no
+solution.
+
+Thanks for your time,
+Vikram
+
+
+
+From dj @end|ng |rom re@e@rch@be||-|@b@@com  Wed Jul  7 14:25:21 2004
+From: dj @end|ng |rom re@e@rch@be||-|@b@@com (David James)
+Date: Wed, 7 Jul 2004 08:25:21 -0400
+Subject: [R-sig-DB] ROracle returning zero rows
+In-Reply-To: <005201c463a2$21da6870$d5a410ac@swfc2.nmfs.gov>;
+	from vkhurana@mail.nmfs.hawaii.edu on Tue, Jul 06, 2004 at
+	11:42:22AM -1000
+References: <005201c463a2$21da6870$d5a410ac@swfc2.nmfs.gov>
+Message-ID: <20040707082521.A24999@jessie.research.bell-labs.com>
+
+
+Hi Vikram,
+
+I've had several reports of the same problem -- all running
+Oracle 9 from Linux.  AFAIK this problem does not occur on
+other platforms or other Oracle versions.  Unfortunately, I
+my setup is is different.
+
+--
+David
+
+Vikram Khurana wrote:
+> Hi,
+> 
+> I have ROracle 0.5-5 and DBI 0.1-8 installed on RH 7.3 machine trying to
+> access Oracle 8.1.7 
+> Other config:
+> Gcc 2.96
+> R 1.9.1 patched
+> 
+> 
+> I can get to Oracle using sqlplus & retrieve the data from the table "test".
+> However when I try doing the same using ROracle I get the following
+> 
+> > library("ROracle")
+> > ora = Oracle()
+> > con <-oraNewConnection(ora,username="user",password="pwd",
+> dbname="database SID")
+> > dbGetQuery(con,"select * from test where rownum<9")
+> [1] VESSEL_CODE   CRUISE_NUMBER EVENT_YEAR    EVENT_MONTH   EVENT_DAY
+> [6] MIN_OCTANT    MAX_OCTANT
+> <0 rows> (or 0-length row.names)
+> > dbListTables(con)
+> character(0)
+> 
+> When I do a dbGetQuery, I get just the column names of the table show up &
+> no data. There are 1000+ rows in this table in the database.
+> When I do a dbListTables, I get no results, which is not true
+> 
+> What is the issue here? Am I doing something wrong?
+> 
+> I have googled on it & found another person with the same problem, but no
+> solution.
+> 
+> Thanks for your time,
+> Vikram
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://www.stat.math.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From joe@@pe|g|e @end|ng |rom jk|h@u@  Wed Jul  7 17:23:02 2004
+From: joe@@pe|g|e @end|ng |rom jk|h@u@ (joseph speigle)
+Date: Wed, 7 Jul 2004 10:23:02 -0500
+Subject: [R-sig-DB] sending patches to maintenair and general installation
+	issues
+In-Reply-To: <mailman.152.1089215568.2835.r-sig-db@stat.math.ethz.ch>;
+	from r-sig-db-request@stat.math.ethz.ch on Wed, Jul 07, 2004 at
+	05:52:48PM +0200
+References: <mailman.152.1089215568.2835.r-sig-db@stat.math.ethz.ch>
+Message-ID: <20040707102302.C30854@hovey.hoveymotorcars.com>
+
+hello list,
+I am writing about the Rdbi.pgsql package by following this link from personal mail with the sourceforge maintener, thk from users.sourceforge
+I hope you can help me with the installation.  I can't find a makefile in the download from sourceforge.  Also, there are no instructions.  I downloaded from 
+http://sourceforge.net/projects/rdbi/
+.  I can run configure but that's it.  It substitutes its variables in Makevars but there is no makefile.  It doesn't mention linking against the R libraries, or installation instructions like where to put the module, if it's a dynamic module or not.  
+(these may be in the docs but let me finish)
+Secondly, if I wanted to write  up this deficiency and submit patches in the future if and when I start working on the project, what would be the way to do that and who should I contact?  Is the project being maintained, and if so, who is primarily in charge?
+
+joesp
+
+
+
+From ro@@|n| @end|ng |rom b||ndg|obe@net  Wed Jul  7 18:59:54 2004
+From: ro@@|n| @end|ng |rom b||ndg|obe@net (A.J. Rossini)
+Date: Wed, 07 Jul 2004 09:59:54 -0700
+Subject: [R-sig-DB] sending patches to maintenair and general
+	installation issues
+In-Reply-To: <20040707102302.C30854@hovey.hoveymotorcars.com> (joseph
+	speigle's message of "Wed, 7 Jul 2004 10:23:02 -0500")
+References: <mailman.152.1089215568.2835.r-sig-db@stat.math.ethz.ch>
+	<20040707102302.C30854@hovey.hoveymotorcars.com>
+Message-ID: <858ydvoir9.fsf@servant.blindglobe.net>
+
+
+For that particular package, I think that we've got an updated version
+with a few patches available from the Bioconductor project,
+
+     http://www.bioconductor.org/
+
+since it is used for some of the annotation packages.
+
+
+
+joseph speigle <joe.speigle at jklh.us> writes:
+
+> hello list, I am writing about the Rdbi.pgsql package by following
+> this link from personal mail with the sourceforge maintener, thk from
+> users.sourceforge I hope you can help me with the installation.  I
+> can't find a makefile in the download from sourceforge.  Also, there
+> are no instructions.  I downloaded from
+> http://sourceforge.net/projects/rdbi/ .  I can run configure but
+> that's it.  It substitutes its variables in Makevars but there is no
+> makefile.  It doesn't mention linking against the R libraries, or
+> installation instructions like where to put the module, if it's a
+> dynamic module or not.  (these may be in the docs but let me finish)
+> Secondly, if I wanted to write up this deficiency and submit patches
+> in the future if and when I start working on the project, what would
+> be the way to do that and who should I contact?  Is the project being
+> maintained, and if so, who is primarily in charge?
+>
+> joesp
+>
+> _______________________________________________ R-sig-DB mailing list
+> -- R Special Interest Group R-sig-DB at stat.math.ethz.ch
+> https://www.stat.math.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Anthony Rossini			    Research Associate Professor
+rossini at u.washington.edu            http://www.analytics.washington.edu/ 
+Biomedical and Health Informatics   University of Washington
+Biostatistics, SCHARP/HVTN          Fred Hutchinson Cancer Research Center
+UW (Tu/Th/F): 206-616-7630 FAX=206-543-3461 | Voicemail is unreliable
+FHCRC  (M/W): 206-667-7025 FAX=206-667-4812 | use Email
+
+CONFIDENTIALITY NOTICE: This e-mail message and any attachme...{{dropped}}
+
+
+
+From j|mmc|ough||n @end|ng |rom e@rth||nk@net  Fri Jul 23 19:08:44 2004
+From: j|mmc|ough||n @end|ng |rom e@rth||nk@net (Jim McLoughlin)
+Date: Fri, 23 Jul 2004 10:08:44 -0700
+Subject: [R-sig-DB] best way to access PgSQL from R?
+Message-ID: <F42A4811-DCCA-11D8-A12F-000393B2DF14@earthlink.net>
+
+Hi,
+
+I'm having a problem with R.app on OSX, where it crashes when I invoke  
+dbDisconnect(<myPgSQLconnection>).  This may not be a DBI specific  
+problem, but I wanted to make sure I was using the right database  
+packages to try and isolate why R is crashing.
+
+ From what I've read, DBI does not yet support a PostgresSQL driver, so  
+the latest driver is in the Rdbi and Rdbi.PgSQL modules, correct?
+
+This is how I have been accessing PgSQL:
+
+library("chron") #needed for date columns
+library("Rdbi")
+library("Rdbi.PgSQL")
+
+pcon <-  
+dbConnect(PgSQL(),host="localhost",dbname="test",user="postgres",passwor 
+d="<mypassword>")
+
+dbListTables(pcon)  #works fine, as do other SQL operations
+
+dbDisconnect(pcon) #causes R to pause, then crash
+
+Can someone confirm whether this is the most up-to-date way to access  
+PostgresSQL databases (I'm running PostgresSQL 7.4.2)?
+
+thanks,
+
+Jim M
+
+
+
+From tke|tt @end|ng |rom m@||@utex@@@edu  Fri Jul 23 19:38:12 2004
+From: tke|tt @end|ng |rom m@||@utex@@@edu (Timothy H. Keitt)
+Date: Fri, 23 Jul 2004 12:38:12 -0500
+Subject: [R-sig-DB] best way to access PgSQL from R?
+In-Reply-To: <F42A4811-DCCA-11D8-A12F-000393B2DF14@earthlink.net>
+References: <F42A4811-DCCA-11D8-A12F-000393B2DF14@earthlink.net>
+Message-ID: <1090604292.5324.28.camel@workstation-3>
+
+There was a bug in Rdbi.PgSQL that caused a segfault on releasing the
+connection. The C-code returns NULL instead of SEXP. That's not allowed,
+but is undocumented (at least at the time).
+
+T.
+
+On Fri, 2004-07-23 at 12:08, Jim McLoughlin wrote:
+> Hi,
+> 
+> I'm having a problem with R.app on OSX, where it crashes when I invoke  
+> dbDisconnect(<myPgSQLconnection>).  This may not be a DBI specific  
+> problem, but I wanted to make sure I was using the right database  
+> packages to try and isolate why R is crashing.
+> 
+>  From what I've read, DBI does not yet support a PostgresSQL driver, so  
+> the latest driver is in the Rdbi and Rdbi.PgSQL modules, correct?
+> 
+> This is how I have been accessing PgSQL:
+> 
+> library("chron") #needed for date columns
+> library("Rdbi")
+> library("Rdbi.PgSQL")
+> 
+> pcon <-  
+> dbConnect(PgSQL(),host="localhost",dbname="test",user="postgres",passwor 
+> d="<mypassword>")
+> 
+> dbListTables(pcon)  #works fine, as do other SQL operations
+> 
+> dbDisconnect(pcon) #causes R to pause, then crash
+> 
+> Can someone confirm whether this is the most up-to-date way to access  
+> PostgresSQL databases (I'm running PostgresSQL 7.4.2)?
+> 
+> thanks,
+> 
+> Jim M
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://www.stat.math.ethz.ch/mailman/listinfo/r-sig-db
+-- 
+Timothy H. Keitt
+Section of Integrative Biology
+University of Texas at Austin
+http://www.keittlab.org/
+
+
+
+From m@|| @end|ng |rom joeconw@y@com  Fri Jul 23 19:57:44 2004
+From: m@|| @end|ng |rom joeconw@y@com (Joe Conway)
+Date: Fri, 23 Jul 2004 10:57:44 -0700
+Subject: [R-sig-DB] best way to access PgSQL from R?
+In-Reply-To: <F42A4811-DCCA-11D8-A12F-000393B2DF14@earthlink.net>
+References: <F42A4811-DCCA-11D8-A12F-000393B2DF14@earthlink.net>
+Message-ID: <41015198.2010706@joeconway.com>
+
+Jim McLoughlin wrote:
+>  From what I've read, DBI does not yet support a PostgresSQL driver, so  
+> the latest driver is in the Rdbi and Rdbi.PgSQL modules, correct?
+
+I believe there is a slightly updated version available as part of the 
+Bioconductor project; see:
+http://www.bioconductor.org/repository/release1.4/package/html/RdbiPgSQL.html
+
+Not sure if it solves your particular issue though.
+
+HTH,
+
+Joe
+
+
+
+From j|mmc|ough||n @end|ng |rom e@rth||nk@net  Fri Jul 23 20:09:20 2004
+From: j|mmc|ough||n @end|ng |rom e@rth||nk@net (Jim McLoughlin)
+Date: Fri, 23 Jul 2004 11:09:20 -0700
+Subject: [R-sig-DB] best way to access PgSQL from R?
+In-Reply-To: <41015198.2010706@joeconway.com>
+References: <F42A4811-DCCA-11D8-A12F-000393B2DF14@earthlink.net>
+	<41015198.2010706@joeconway.com>
+Message-ID: <6B6E1004-DCD3-11D8-A12F-000393B2DF14@earthlink.net>
+
+Thanks, this fixed everything.
+
+I was previously using the Rdbi and Rdbi.PgSQL packages from  
+sourceforge (version 0.1.2)
+
+cheers,
+
+Jim
+
+On Jul 23, 2004, at 10:57 AM, Joe Conway wrote:
+
+> Jim McLoughlin wrote:
+>>  From what I've read, DBI does not yet support a PostgresSQL driver,  
+>> so  the latest driver is in the Rdbi and Rdbi.PgSQL modules, correct?
+>
+> I believe there is a slightly updated version available as part of the  
+> Bioconductor project; see:
+> http://www.bioconductor.org/repository/release1.4/package/html/ 
+> RdbiPgSQL.html
+>
+> Not sure if it solves your particular issue though.
+>
+> HTH,
+>
+> Joe
+>
+
+
+

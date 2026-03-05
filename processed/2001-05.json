@@ -1,0 +1,55 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2001-05",
+  "messages": [
+    {
+      "id": "msg-3144329cca17",
+      "message_id": "<20010504192405.L10907@jessie.research.bell-labs.com>",
+      "from_name": "Duncan Temple Lang",
+      "from_email_hash": "0ed616488d7b3e92e90a24539e959057ce8d8438655fea3f309b8d4d1253ceaf",
+      "date": "2001-05-04T19:24:05-04:00",
+      "subject": "[R-sig-DB] Re: RS-DBI using embedded Perl DBI",
+      "subject_clean": "RS-DBI using embedded Perl DBI",
+      "in_reply_to": "<010401c0d4ea$14486b20$0201a8c0@me>; from jake@agere.com on Fri, May 04, 2001 at 06:32:18PM -0400",
+      "references": [
+        "<010401c0d4ea$14486b20$0201a8c0@me>"
+      ],
+      "body_plain": "On Fri, May 04, 2001 at 06:32:18PM -0400, T Jake Luciani wrote:\n> All,\n> \n> I've attached my implementation of David James RS-DBI interface using Perl DBI  (R Package).  I've found it to be quite quick.  The nice thing is you can connect to any database perl can.\n> \n> The only big difference in S code is, you now have to specify the type of database your connecting to as well as host and port if applicable.  \n> \n\nGreat. Saikat, David and I did the same sort of thing with JDBC.  It\nis a good idea to leverage the existing code for the various\ndatabases.  In S-JDBC interface, we were using the SJava package to\nactually make the connection to Java. You appear to be using direct C\ncode to connect to Perl rather than the RSPerl package which provides\na way for embedding Perl in R. I do recognize some of the code that\nseems to be taken from that package, so perhaps you are using it but I\ndon't thing directly, if it all.  You might find that using that\npackage simplifies the code a bit and makes it easier for others to\nexperiment with.\n\n> I've only tested this with Oracle. An example is:\n> \n> library(RSPerlDBI)\n> ora <- dbManager(\"PerlDBI\")\n> con <- dbConnect(ora, user = \"query\", password = \"query\", dbname = \"rduxu\",dbtype = \"Oracle\")\n> result <- quickSQL(con, \"select * from ALL_TABLES\")   \n> \n> Unfortunetly if theres any Perl DBI errors it kills R.  Any ideas Duncan?\n> \n\nYep. The problem is that some errors in Perl jumps straight to exit()\nand _exit() rather than signalling an exception and returning control\nto the caller, in this case the C code invoked from R.  The RSPerl\npackage has the same difficulty and I haven't found time to fix it\nyet. A simple solution is to provide an alternative implementation of\nPerl's fatal error handler routine. Then, when one links against the\nPerl library to create RSPerlDBI.so, the routine in your C code will\nbe linked and used. This can be a bit tricky at times depending on\nlinkers, how Perl was compiled, etc. But, if your routine is called,\nthen it should throw and S error and the execution stack will return.\nThat's the basic approach I use in embedding unless I have more\nspecific needs.\n\n\nBTW, I am on the r-sig-db mailing list, so there's no need mail me\nseparately.\n\n> Feel free to make suggestions, etc...\n> \n> Thanks,\n> \n> Jake\n> \n> -------------------------\n> T Jake Luciani\n> Software Developer\n> Optoelectronics Unit\n> Agere Systems\n> jake at agere.com\n> \n> \n\n\n\n-- \n_______________________________________________________________\n\nDuncan Temple Lang                duncan at research.bell-labs.com\nBell Labs, Lucent Technologies    office: (908)582-3217\n700 Mountain Avenue, Room 2C-259  fax:    (908)582-3340\nMurray Hill, NJ  07974-2070       \n         http://cm.bell-labs.com/stat/duncan",
+      "body_snippet": "On Fri, May 04, 2001 at 06:32:18PM -0400, T Jake Luciani wrote:\n> All,\n> \n> I've attached my implementation of David James RS-DBI interface using Perl DBI  (R Package).  I've found it to be quite quic",
+      "thread_id": "thread-3144329cca17",
+      "thread_depth": 0,
+      "month": "2001-05"
+    },
+    {
+      "id": "msg-ebec4fa0ae86",
+      "message_id": "<Pine.GSO.4.31.0105050719150.21471-100000@auk.stats>",
+      "from_name": "Prof Brian D Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2001-05-05T07:22:46+01:00",
+      "subject": "[R-sig-DB] Re: RS-DBI using embedded Perl DBI",
+      "subject_clean": "RS-DBI using embedded Perl DBI",
+      "in_reply_to": "<20010504192405.L10907@jessie.research.bell-labs.com>",
+      "references": [],
+      "body_plain": "> On Fri, May 04, 2001 at 06:32:18PM -0400, T Jake Luciani wrote:\n\n> >\n> > I've attached my implementation of David James RS-DBI interface using Perl\nDBI  (R Package).  I've found it to be quite quick.  The nice thing is you can\nconnect to any database perl can.\n\nThis hasn't gone to the list as it is too big.  There is a 40K limit\non the list and more needs approval.  Could you put the actual code\nsomewhere and send just the message please?\n\nBrian\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272860 (secr)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "> On Fri, May 04, 2001 at 06:32:18PM -0400, T Jake Luciani wrote:\n\n> >\n> > I've attached my implementation of David James RS-DBI interface using Perl\nDBI  (R Package).  I've found it to be quite quick",
+      "thread_id": "thread-3144329cca17",
+      "thread_depth": 1,
+      "month": "2001-05"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-3144329cca17",
+      "subject": "RS-DBI using embedded Perl DBI",
+      "message_count": 2,
+      "participants": [
+        "Duncan Temple Lang",
+        "Prof Brian D Ripley"
+      ],
+      "started": "2001-05-04T19:24:05-04:00",
+      "last_reply": "2001-05-05T07:22:46+01:00",
+      "root_message_id": "msg-3144329cca17"
+    }
+  ]
+}

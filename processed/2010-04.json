@@ -1,0 +1,305 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2010-04",
+  "messages": [
+    {
+      "id": "msg-8c76d2454117",
+      "message_id": "<z2n924bb5e21004010725ud7560cf6ne59491b7be4f929f@mail.gmail.com>",
+      "from_name": "Harlan Harris",
+      "from_email_hash": "611206558041b3ccc178bb02493ee676170bbca58f0ab8c485d465fae70db625",
+      "date": "2010-04-01T10:25:24-04:00",
+      "subject": "[R-sig-DB] RODBC:sqlQuery() choking on null date in Oracle database",
+      "subject_clean": "RODBC:sqlQuery() choking on null date in Oracle database",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello,\n\nI'm running R 2.10.1, RODBC 13.1, Actual Technologies ODBC, etc., to connect\nto an Oracle 10g database. Ran across a problem today where a query was\ncrashing because of a null value in the database. The column is of type\nDate, and is allowed to be null.\n\nWhen I query this field, I get the following error:\n\nError in charToDate(x) :\n  character string is not in a standard unambiguous format\n\nI traced it to this block of code in the function sqlGetResults():\n\n        for (i in seq_len(cols)) {\n            if (is.character(data[[i]]) && nchar(enc))\n                data[[i]] <- iconv(data[[i]], from = enc)\n            if (as.is[i] || is.list(data[[i]]))\n                next\n            if (is.numeric(data[[i]]))\n                next\n            if (cData$type[i] == \"date\")\n                data[[i]] <- as.Date(data[[i]])\n            else if (cData$type[i] == \"timestamp\")\n                data[[i]] <- as.POSIXct(data[[i]])\n            else data[[i]] <- type.convert(as.character(data[[i]]),\n                as.is = !stringsAsFactors, dec = dec)\n        }\n\nIn this case, data[[i]][1] is of type character, str_length 0. Indeed, that\ndata type causes as.Date to throw an error.\n\n> as.Date(\"\")\nError during wrapup: character string is not in a standard unambiguous\nformat\n\nThis should not happen. The correct behavior is for zero-length dates to be\nconverted into as.Date(NA), I think.\n\n(That is, it's OK if as.Date() throws an error, but it is definitely not OK\nthat RODBC allows correctly-formed data to throw an error!)\n\nNull fields of non-Date types (character, integer) seem to work fine.\n\nIs there a workaround?\n\nThank you!\n\n -Harlan\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hello,\n\nI'm running R 2.10.1, RODBC 13.1, Actual Technologies ODBC, etc., to connect\nto an Oracle 10g database. Ran across a problem today where a query was\ncrashing because of a null value in the dat",
+      "thread_id": "thread-8c76d2454117",
+      "thread_depth": 0,
+      "month": "2010-04"
+    },
+    {
+      "id": "msg-d7aff30c3be8",
+      "message_id": "<A4999DB9-6727-440A-B21E-ED0C162953F3@me.com>",
+      "from_name": "Marc Schwartz",
+      "from_email_hash": "040b2d09159b27cfd2853bc2dbb476bd637811586f307d9583c9ef7f806f3692",
+      "date": "2010-04-01T11:39:17-05:00",
+      "subject": "[R-sig-DB] RODBC:sqlQuery() choking on null date in Oracle database",
+      "subject_clean": "RODBC:sqlQuery() choking on null date in Oracle database",
+      "in_reply_to": "<z2n924bb5e21004010725ud7560cf6ne59491b7be4f929f@mail.gmail.com>",
+      "references": [
+        "<z2n924bb5e21004010725ud7560cf6ne59491b7be4f929f@mail.gmail.com>"
+      ],
+      "body_plain": "On Apr 1, 2010, at 9:25 AM, Harlan Harris wrote:\n\n> Hello,\n> \n> I'm running R 2.10.1, RODBC 13.1, Actual Technologies ODBC, etc., to connect\n> to an Oracle 10g database. Ran across a problem today where a query was\n> crashing because of a null value in the database. The column is of type\n> Date, and is allowed to be null.\n> \n> When I query this field, I get the following error:\n> \n> Error in charToDate(x) :\n>  character string is not in a standard unambiguous format\n> \n> I traced it to this block of code in the function sqlGetResults():\n> \n>        for (i in seq_len(cols)) {\n>            if (is.character(data[[i]]) && nchar(enc))\n>                data[[i]] <- iconv(data[[i]], from = enc)\n>            if (as.is[i] || is.list(data[[i]]))\n>                next\n>            if (is.numeric(data[[i]]))\n>                next\n>            if (cData$type[i] == \"date\")\n>                data[[i]] <- as.Date(data[[i]])\n>            else if (cData$type[i] == \"timestamp\")\n>                data[[i]] <- as.POSIXct(data[[i]])\n>            else data[[i]] <- type.convert(as.character(data[[i]]),\n>                as.is = !stringsAsFactors, dec = dec)\n>        }\n> \n> In this case, data[[i]][1] is of type character, str_length 0. Indeed, that\n> data type causes as.Date to throw an error.\n> \n>> as.Date(\"\")\n> Error during wrapup: character string is not in a standard unambiguous\n> format\n> \n> This should not happen. The correct behavior is for zero-length dates to be\n> converted into as.Date(NA), I think.\n> \n> (That is, it's OK if as.Date() throws an error, but it is definitely not OK\n> that RODBC allows correctly-formed data to throw an error!)\n> \n> Null fields of non-Date types (character, integer) seem to work fine.\n> \n> Is there a workaround?\n> \n> Thank you!\n> \n> -Harlan\n\n\nI can certainly replicate the error with as.Date():\n\nR version 2.10.1 Patched (2010-03-10 r51274)\n\n32 bit on OSX 10.6.3\n\n> as.Date(\"\")\nError in charToDate(x) : \n  character string is not in a standard unambiguous format\n\nHowever, also using the AT ODBC driver for Oracle 11G, along with RODBC 1.3-1, I cannot replicate the problem that you are having with blank dates. Such empty dates in my queries come back as NAs and have for quite some time. Without tracking through code, it would be reasonable to presume that blank dates are being converted to NA's before the loop above is encountered, for example in the call to odbcFetchRows(). \n\nAs an additional thought, if you are calling a lower level query function directly and have modified any of the defaults for arguments such as nullstring or na.strings, that could obviously have an effect as well.\n\nThere have been some \"quirky\" things occurring with Oracle and ODBC connections of late and I would recommend that you try both connecting to Oracle and subsequent queries using the general form:\n\ndb <- odbcConnect(dsn, uid = \"XXXXX\", pwd = \"XXXX\",\n                  case = \"toupper\", rows_at_time = 1)\n\nsqlQuery(db, Query, rows_at_time = 1)  \n\n\nThe key above is the use of \"rows_at_time = 1\". It would appear that at least some ODBC drivers have trouble with the default value of 100, which can cause unpredictable results in the query. I have had this issue on my system, not with dates, but with getting inconsistent numbers of rows coming back.\n\nSee if that might help.  Needless to say, this date related issue would have been reported a long time ago by others if there were a chronic problem in RODBC itself. \n\nFinally, given our prior exchange, I also presume that you are not using the beta 64 bit AT driver and are using the release 32 bit version as I do? If the former and none of the above is helpful, then you should consider reporting a bug to AT.\n\nMarc Schwartz",
+      "body_snippet": "On Apr 1, 2010, at 9:25 AM, Harlan Harris wrote:\n\n> Hello,\n> \n> I'm running R 2.10.1, RODBC 13.1, Actual Technologies ODBC, etc., to connect\n> to an Oracle 10g database. Ran across a problem today whe",
+      "thread_id": "thread-8c76d2454117",
+      "thread_depth": 1,
+      "month": "2010-04"
+    },
+    {
+      "id": "msg-d21e9ea87133",
+      "message_id": "<5C57984CA179A247803E12AAB0F7ABA66AE8E0BFFE@adorsmail01.ors.local>",
+      "from_name": "Daniele Amberti",
+      "from_email_hash": "9e22dc2d370adad3b1b4d2871df86869a9d5b577d709d6cf9e0b5078ef1ae990",
+      "date": "2010-04-02T10:37:24+02:00",
+      "subject": "[R-sig-DB] How to save a model in DB and retrieve It",
+      "subject_clean": "How to save a model in DB and retrieve It",
+      "in_reply_to": "<mailman.17.1270116006.6468.r-help@r-project.org>",
+      "references": [
+        "<mailman.17.1270116006.6468.r-help@r-project.org>"
+      ],
+      "body_plain": "I'm wondering how to save an object (models like lm, loess, etc) in a DB to retrieve and use it afterwards, an example:\n\nwind_ms <- abs(rnorm(24*30)*4+8)\nair_kgm3 <- rnorm(24*30, 0.1)*0.1 + 1.1\nwind_dg <- rnorm(24*30) * 360/7\nms <- c(0:25)\nkw_mm92 <- c(0,0,0,20,94,205,391,645,979,1375,1795,2000,2040)\nkw_mm92 <- c(kw_mm92, rep(2050, length(ms)-length(kw_mm92)))\nmodelspline <- splinefun(ms, kw_mm92)\nkw <- abs(modelspline(wind_ms) - (wind_dg)*2 + (air_kgm3 - 1.15)*300 + rnorm(length(wind_ms))*10)\n#plot(wind_ms, kw)\nwindDat <- data.frame(kw, wind_ms, air_kgm3, wind_dg)\nwindDat[windDat$wind_ms < 3, 'kw'] <- 0\nmodel <- loess(kw ~ wind_ms + air_kgm3 + wind_dg, data = windDat, enp.target = 10*5*3) #, span = 0.1)\n\nmodX <- serialize(model, connection = NULL, ascii = T)\n\nChannel <- odbcConnect(\"someSysDSN; UID=aUid; PWD=aPwd\")\nsqlQuery(Channel,\npaste(\n\"INSERT INTO GRT.GeneratorsModels\n           ([cGeneratorID]\n           ,[tModel]\n   VALUES\n           (1,\",\n           paste(\"'\", gsub(\"'\", \"''\", rawToChar(modX)), \"'\", sep = ''),\n           \")\", sep = \"\") )\n# Up to this it is working correctly,\n# in DB I have the \"modX\" variable\n# Problem arise retrieving data and 64kb limit:\n  strQ <- \"\n    SELECT  CONVERT(varchar(max), tModel) AS tModel\n    FROM    GRT.GeneratorsModels\n    WHERE   (cGeneratorID = 1)\n    \"\nx <- sqlQuery(Channel, strQ, stringsAsFactors = F, believeNRows = FALSE)\nx <- sqlQuery(Channel, strQ, stringsAsFactors = F, believeNRows = FALSE) #read error\n\n\n\nAbove code is working for simplier models that have a shorter representation in variable \"modX\".\nAny advice on how to store and retieve this kind of objects?\nThanks\nDaniele\n\n\nORS Srl\n\nVia Agostino Morando 1/3 12060 Roddi (Cn) - Italy\nTel. +39 0173 620211\nFax. +39 0173 620299 / +39 0173 433111\nWeb Site www.ors.it\n\n------------------------------------------------------------------------------------------------------------------------\nQualsiasi utilizzo non autorizzato del presente messaggio e dei suoi allegati ? vietato e potrebbe costituire reato.\nSe lei avesse ricevuto erroneamente questo messaggio, Le saremmo grati se provvedesse alla distruzione dello stesso\ne degli eventuali allegati.\nOpinioni, conclusioni o altre informazioni riportate nella e-mail, che non siano relative alle attivit? e/o\nalla missione aziendale di O.R.S. Srl si intendono non  attribuibili alla societ? stessa, n? la impegnano in alcun modo.",
+      "body_snippet": "I'm wondering how to save an object (models like lm, loess, etc) in a DB to retrieve and use it afterwards, an example:\n\nwind_ms <- abs(rnorm(24*30)*4+8)\nair_kgm3 <- rnorm(24*30, 0.1)*0.1 + 1.1\nwind_d",
+      "thread_id": "thread-d21e9ea87133",
+      "thread_depth": 0,
+      "month": "2010-04"
+    },
+    {
+      "id": "msg-c78afd15e2f7",
+      "message_id": "<B37C0A15B8FB3C468B5BC7EBC7DA14CC62FF740A8C@LP-EXMBVS10.CO.IHC.COM>",
+      "from_name": "Greg Snow",
+      "from_email_hash": "bf870258d4de356e57d33183d7c50a218eaebd7c22ab3fb83d831ff6218da531",
+      "date": "2010-04-02T11:12:40-06:00",
+      "subject": "[R-sig-DB] How to save a model in DB and retrieve It",
+      "subject_clean": "How to save a model in DB and retrieve It",
+      "in_reply_to": "<5C57984CA179A247803E12AAB0F7ABA66AE8E0BFFE@adorsmail01.ors.local>",
+      "references": [
+        "<mailman.17.1270116006.6468.r-help@r-project.org>",
+        "<5C57984CA179A247803E12AAB0F7ABA66AE8E0BFFE@adorsmail01.ors.local>"
+      ],
+      "body_plain": "Look at the serialize function, it may accomplish what you want.\n\n-- \nGregory (Greg) L. Snow Ph.D.\nStatistical Data Center\nIntermountain Healthcare\ngreg.snow at imail.org\n801.408.8111\n\n\n> -----Original Message-----\n> From: r-help-bounces at r-project.org [mailto:r-help-bounces at r-\n> project.org] On Behalf Of Daniele Amberti\n> Sent: Friday, April 02, 2010 2:37 AM\n> To: r-help at r-project.org; r-sig-db at stat.math.ethz.ch\n> Subject: [R] How to save a model in DB and retrieve It\n> \n> I'm wondering how to save an object (models like lm, loess, etc) in a\n> DB to retrieve and use it afterwards, an example:\n> \n> wind_ms <- abs(rnorm(24*30)*4+8)\n> air_kgm3 <- rnorm(24*30, 0.1)*0.1 + 1.1\n> wind_dg <- rnorm(24*30) * 360/7\n> ms <- c(0:25)\n> kw_mm92 <- c(0,0,0,20,94,205,391,645,979,1375,1795,2000,2040)\n> kw_mm92 <- c(kw_mm92, rep(2050, length(ms)-length(kw_mm92)))\n> modelspline <- splinefun(ms, kw_mm92)\n> kw <- abs(modelspline(wind_ms) - (wind_dg)*2 + (air_kgm3 - 1.15)*300 +\n> rnorm(length(wind_ms))*10)\n> #plot(wind_ms, kw)\n> windDat <- data.frame(kw, wind_ms, air_kgm3, wind_dg)\n> windDat[windDat$wind_ms < 3, 'kw'] <- 0\n> model <- loess(kw ~ wind_ms + air_kgm3 + wind_dg, data = windDat,\n> enp.target = 10*5*3) #, span = 0.1)\n> \n> modX <- serialize(model, connection = NULL, ascii = T)\n> \n> Channel <- odbcConnect(\"someSysDSN; UID=aUid; PWD=aPwd\")\n> sqlQuery(Channel,\n> paste(\n> \"INSERT INTO GRT.GeneratorsModels\n>            ([cGeneratorID]\n>            ,[tModel]\n>    VALUES\n>            (1,\",\n>            paste(\"'\", gsub(\"'\", \"''\", rawToChar(modX)), \"'\", sep = ''),\n>            \")\", sep = \"\") )\n> # Up to this it is working correctly,\n> # in DB I have the \"modX\" variable\n> # Problem arise retrieving data and 64kb limit:\n>   strQ <- \"\n>     SELECT  CONVERT(varchar(max), tModel) AS tModel\n>     FROM    GRT.GeneratorsModels\n>     WHERE   (cGeneratorID = 1)\n>     \"\n> x <- sqlQuery(Channel, strQ, stringsAsFactors = F, believeNRows =\n> FALSE)\n> x <- sqlQuery(Channel, strQ, stringsAsFactors = F, believeNRows =\n> FALSE) #read error\n> \n> \n> \n> Above code is working for simplier models that have a shorter\n> representation in variable \"modX\".\n> Any advice on how to store and retieve this kind of objects?\n> Thanks\n> Daniele\n> \n> \n> ORS Srl\n> \n> Via Agostino Morando 1/3 12060 Roddi (Cn) - Italy\n> Tel. +39 0173 620211\n> Fax. +39 0173 620299 / +39 0173 433111\n> Web Site www.ors.it\n> \n> -----------------------------------------------------------------------\n> -------------------------------------------------\n> Qualsiasi utilizzo non autorizzato del presente messaggio e dei suoi\n> allegati ? vietato e potrebbe costituire reato.\n> Se lei avesse ricevuto erroneamente questo messaggio, Le saremmo grati\n> se provvedesse alla distruzione dello stesso\n> e degli eventuali allegati.\n> Opinioni, conclusioni o altre informazioni riportate nella e-mail, che\n> non siano relative alle attivit? e/o\n> alla missione aziendale di O.R.S. Srl si intendono non  attribuibili\n> alla societ? stessa, n? la impegnano in alcun modo.\n> ______________________________________________\n> R-help at r-project.org mailing list\n> https://stat.ethz.ch/mailman/listinfo/r-help\n> PLEASE do read the posting guide http://www.R-project.org/posting-\n> guide.html\n> and provide commented, minimal, self-contained, reproducible code.",
+      "body_snippet": "Look at the serialize function, it may accomplish what you want.\n\n-- \nGregory (Greg) L. Snow Ph.D.\nStatistical Data Center\nIntermountain Healthcare\ngreg.snow at imail.org\n801.408.8111\n\n\n> -----Origina",
+      "thread_id": "thread-d21e9ea87133",
+      "thread_depth": 1,
+      "month": "2010-04"
+    },
+    {
+      "id": "msg-5b97e983c595",
+      "message_id": "<4BB6576F.3010501@joeconway.com>",
+      "from_name": "Joe Conway",
+      "from_email_hash": "0949eac547cfdb5b4f8da255f732c1e0eefbdbedd75144220d850557442c3d4d",
+      "date": "2010-04-02T13:45:35-07:00",
+      "subject": "[R-sig-DB] How to save a model in DB and retrieve It",
+      "subject_clean": "How to save a model in DB and retrieve It",
+      "in_reply_to": "<5C57984CA179A247803E12AAB0F7ABA66AE8E0BFFE@adorsmail01.ors.local>",
+      "references": [
+        "<mailman.17.1270116006.6468.r-help@r-project.org>",
+        "<5C57984CA179A247803E12AAB0F7ABA66AE8E0BFFE@adorsmail01.ors.local>"
+      ],
+      "body_plain": "On 04/02/2010 01:37 AM, Daniele Amberti wrote:\n> I'm wondering how to save an object (models like lm, loess, etc) in a DB to retrieve and use it afterwards, an example:\n\n> # Up to this it is working correctly,\n> # in DB I have the \"modX\" variable\n> # Problem arise retrieving data and 64kb limit:\n\n> Above code is working for simplier models that have a shorter representation in variable \"modX\".\n> Any advice on how to store and retieve this kind of objects?\n\nYou can mostly do what you want with PL/R and PostgreSQL\n(see http://www.joeconway.com)\n\nFor example:\n\n8<------------------------------\nCREATE OR REPLACE FUNCTION get_model() RETURNS bytea AS $$\n  wind_ms <- abs(rnorm(24*30)*4+8)\n  air_kgm3 <- rnorm(24*30, 0.1)*0.1 + 1.1\n  wind_dg <- rnorm(24*30) * 360/7\n  ms <- c(0:25)\n  kw_mm92 <- c(0,0,0,20,94,205,391,645,979,1375,1795,2000,2040)\n  kw_mm92 <- c(kw_mm92, rep(2050, length(ms)-length(kw_mm92)))\n  modelspline <- splinefun(ms, kw_mm92)\n  kw <- abs(modelspline(wind_ms)\n        - (wind_dg)*2 + (air_kgm3 - 1.15)*300\n        + rnorm(length(wind_ms))*10)\n  windDat <- data.frame(kw, wind_ms, air_kgm3, wind_dg)\n  windDat[windDat$wind_ms < 3, 'kw'] <- 0\n  model <- loess(kw ~ wind_ms + air_kgm3 + wind_dg,\n                 data = windDat, enp.target = 10*5*3) #, span = 0.1)\n  return(model)\n$$ LANGUAGE plr;\n\n\nCREATE OR REPLACE FUNCTION extract_fitted(bytea) RETURNS SETOF float8 AS $$\n  return(arg1$fitted)\n$$ LANGUAGE plr;\n8<------------------------------\n\nselect length(get_model());\n length\n--------\n 219361\n(1 row)\n\nselect * from extract_fitted(get_model());\n   extract_fitted\n---------------------\n    429.108839675228\n    994.109512291517\n    858.011203975038\n[...]\n     349.87845982039\n     884.26297556709\n    155.996698202327\n    117.920754039095\n(720 rows)\n8<------------------------------\n\n\nHowever while working up this example I discovered a bug in PL/R. In the\n*next* release you will be able to do the following, which with the\ncurrent release does not quite work:\n\n8<------------------------------\nCREATE TABLE model_store (id int primary key, model bytea);\nINSERT INTO model_store VALUES (1, get_model()), (2, get_model()), (3,\nget_model());\n\nselect *\n from extract_fitted((select model from model_store where id = 1));\n   extract_fitted\n---------------------\n   -29.4074157828657\n    -3.7532027827115\n    803.524262857045\n[...]\n    1463.03742124991\n    2051.01939505223\n    13.4600408221842\n(720 rows)\n8<------------------------------\n\nJoe\n\n\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: signature.asc\nType: application/pgp-signature\nSize: 899 bytes\nDesc: OpenPGP digital signature\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20100402/664f491f/attachment.sig>",
+      "body_snippet": "On 04/02/2010 01:37 AM, Daniele Amberti wrote:\n> I'm wondering how to save an object (models like lm, loess, etc) in a DB to retrieve and use it afterwards, an example:\n\n> # Up to this it is working c",
+      "thread_id": "thread-d21e9ea87133",
+      "thread_depth": 1,
+      "month": "2010-04"
+    },
+    {
+      "id": "msg-712f368b09bc",
+      "message_id": "<s2pe8e755251004021356w52d241bcn52f6921f48e68470@mail.gmail.com>",
+      "from_name": "Jeff Ryan",
+      "from_email_hash": "95878a047996a0737b4b4d2ed91b77929627ecf12d574b471a1c5fdc0d35066c",
+      "date": "2010-04-02T15:56:35-05:00",
+      "subject": "[R-sig-DB] How to save a model in DB and retrieve It",
+      "subject_clean": "How to save a model in DB and retrieve It",
+      "in_reply_to": "<5C57984CA179A247803E12AAB0F7ABA66AE8E0BFFE@adorsmail01.ors.local>",
+      "references": [
+        "<mailman.17.1270116006.6468.r-help@r-project.org>",
+        "<5C57984CA179A247803E12AAB0F7ABA66AE8E0BFFE@adorsmail01.ors.local>"
+      ],
+      "body_plain": "A very simple option, since you're only looking to efficiently store\nand retrieve, is something like a key-value store.\n\nThere is a new rredis (redis) package on CRAN, as well as the\nRBerkeley (Oracle Berkeley DB) package.\n\nRBerkeley is as simple as db_put() and db_get() calls where you\nspecify a key and serialize/unserialize the object before and after.\n\nCaveat to RBerkeley is that it is only functional on *nix until\nsomeone contributes a Windows version or insight on what I need to do\nto make that work (issue is that Berkeley DB can't be compiled easily\nusing the R version of mingw to compile).  The package code is likely\nto work for windows if you can manage to get the db headers/libs\ninstalled with the R toolchain.\n\nHTH\nJeff\n\nOn Fri, Apr 2, 2010 at 3:37 AM, Daniele Amberti <daniele.amberti at ors.it> wrote:\n> I'm wondering how to save an object (models like lm, loess, etc) in a DB to retrieve and use it afterwards, an example:\n>\n> wind_ms <- abs(rnorm(24*30)*4+8)\n> air_kgm3 <- rnorm(24*30, 0.1)*0.1 + 1.1\n> wind_dg <- rnorm(24*30) * 360/7\n> ms <- c(0:25)\n> kw_mm92 <- c(0,0,0,20,94,205,391,645,979,1375,1795,2000,2040)\n> kw_mm92 <- c(kw_mm92, rep(2050, length(ms)-length(kw_mm92)))\n> modelspline <- splinefun(ms, kw_mm92)\n> kw <- abs(modelspline(wind_ms) - (wind_dg)*2 + (air_kgm3 - 1.15)*300 + rnorm(length(wind_ms))*10)\n> #plot(wind_ms, kw)\n> windDat <- data.frame(kw, wind_ms, air_kgm3, wind_dg)\n> windDat[windDat$wind_ms < 3, 'kw'] <- 0\n> model <- loess(kw ~ wind_ms + air_kgm3 + wind_dg, data = windDat, enp.target = 10*5*3) #, span = 0.1)\n>\n> modX <- serialize(model, connection = NULL, ascii = T)\n>\n> Channel <- odbcConnect(\"someSysDSN; UID=aUid; PWD=aPwd\")\n> sqlQuery(Channel,\n> paste(\n> \"INSERT INTO GRT.GeneratorsModels\n> ? ? ? ? ? ([cGeneratorID]\n> ? ? ? ? ? ,[tModel]\n> ? VALUES\n> ? ? ? ? ? (1,\",\n> ? ? ? ? ? paste(\"'\", gsub(\"'\", \"''\", rawToChar(modX)), \"'\", sep = ''),\n> ? ? ? ? ? \")\", sep = \"\") )\n> # Up to this it is working correctly,\n> # in DB I have the \"modX\" variable\n> # Problem arise retrieving data and 64kb limit:\n> ?strQ <- \"\n> ? ?SELECT ?CONVERT(varchar(max), tModel) AS tModel\n> ? ?FROM ? ?GRT.GeneratorsModels\n> ? ?WHERE ? (cGeneratorID = 1)\n> ? ?\"\n> x <- sqlQuery(Channel, strQ, stringsAsFactors = F, believeNRows = FALSE)\n> x <- sqlQuery(Channel, strQ, stringsAsFactors = F, believeNRows = FALSE) #read error\n>\n>\n>\n> Above code is working for simplier models that have a shorter representation in variable \"modX\".\n> Any advice on how to store and retieve this kind of objects?\n> Thanks\n> Daniele\n>\n>\n> ORS Srl\n>\n> Via Agostino Morando 1/3 12060 Roddi (Cn) - Italy\n> Tel. +39 0173 620211\n> Fax. +39 0173 620299 / +39 0173 433111\n> Web Site www.ors.it\n>\n> ------------------------------------------------------------------------------------------------------------------------\n> Qualsiasi utilizzo non autorizzato del presente messaggio e dei suoi allegati ? vietato e potrebbe costituire reato.\n> Se lei avesse ricevuto erroneamente questo messaggio, Le saremmo grati se provvedesse alla distruzione dello stesso\n> e degli eventuali allegati.\n> Opinioni, conclusioni o altre informazioni riportate nella e-mail, che non siano relative alle attivit? e/o\n> alla missione aziendale di O.R.S. Srl si intendono non ?attribuibili alla societ? stessa, n? la impegnano in alcun modo.\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n\n\n-- \nJeffrey Ryan\njeffrey.ryan at insightalgo.com\n\nia: insight algorithmics\nwww.insightalgo.com",
+      "body_snippet": "A very simple option, since you're only looking to efficiently store\nand retrieve, is something like a key-value store.\n\nThere is a new rredis (redis) package on CRAN, as well as the\nRBerkeley (Oracle",
+      "thread_id": "thread-d21e9ea87133",
+      "thread_depth": 1,
+      "month": "2010-04"
+    },
+    {
+      "id": "msg-93962ddb3005",
+      "message_id": "<4BB682C9.4030908@joeconway.com>",
+      "from_name": "Joe Conway",
+      "from_email_hash": "0949eac547cfdb5b4f8da255f732c1e0eefbdbedd75144220d850557442c3d4d",
+      "date": "2010-04-02T16:50:33-07:00",
+      "subject": "[R-sig-DB] How to save a model in DB and retrieve It",
+      "subject_clean": "How to save a model in DB and retrieve It",
+      "in_reply_to": "<4BB6576F.3010501@joeconway.com>",
+      "references": [
+        "<mailman.17.1270116006.6468.r-help@r-project.org>",
+        "<5C57984CA179A247803E12AAB0F7ABA66AE8E0BFFE@adorsmail01.ors.local>",
+        "<4BB6576F.3010501@joeconway.com>"
+      ],
+      "body_plain": "On 04/02/2010 01:45 PM, Joe Conway wrote:\n\n> However while working up this example I discovered a bug in PL/R. In the\n> *next* release you will be able to do the following, which with the\n> current release does not quite work:\n\nFWIW, I released a new tarball with the fix for this issue. See:\nhttp://www.joeconway.com/plr/plr-8.3.0.10.tar.gz\n\nJoe\n\n\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: signature.asc\nType: application/pgp-signature\nSize: 899 bytes\nDesc: OpenPGP digital signature\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20100402/00d3d61b/attachment.sig>",
+      "body_snippet": "On 04/02/2010 01:45 PM, Joe Conway wrote:\n\n> However while working up this example I discovered a bug in PL/R. In the\n> *next* release you will be able to do the following, which with the\n> current re",
+      "thread_id": "thread-d21e9ea87133",
+      "thread_depth": 2,
+      "month": "2010-04"
+    },
+    {
+      "id": "msg-6e21d5c47659",
+      "message_id": "<4BC4984A.8090404@ipec.co.uk>",
+      "from_name": "james",
+      "from_email_hash": "80430f8df63d1696a9e278165b6738c4ab3999c4fad09c7a9b04513b1579857e",
+      "date": "2010-04-13T17:14:02+01:00",
+      "subject": "[R-sig-DB] [RPostgreSQL]  Fails to Load",
+      "subject_clean": "[RPostgreSQL]  Fails to Load",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Reposting a message I posted on the R-help list.\n\n|Hi List,\n| \n| Running R 2.10.1 on a fresh install of Windows 7. I get the following \n| error when loading the RPostgreSQL package.\n| \n| \n|  >library(RPostgreSQL)\n| Loading required package: DBI\n| Error in inDL(x, as.logical(local), as.logical(now), ...) :\n|   unable to load shared library \n| 'C:/Users/james/Documents/R/win-library/2.10/RPostgreSQL/libs/RPostgreSQL.dll':\n|   LoadLibrary failure:  The specified module could not be found.\n| \n| Error: package/namespace load failed for 'RPostgreSQL'\n| \n| \n| I have reinstalled the RPostgreSQL package from several different \n| mirrors and reinstalled R, and the error remains. I know that \n| RPostgreSQL depends on libpq.dll and others, so I downloaded and \n| installed Postgres, then copied the contents of PostgreSQL\\8.4\\lib to \n| the RPostgreSQL library \n| (C:/Users/james/Documents/R/win-library/2.10/RPostgreSQL/libs/)\n| \n| Regards,\n| James Hargreaves",
+      "body_snippet": "Reposting a message I posted on the R-help list.\n\n|Hi List,\n| \n| Running R 2.10.1 on a fresh install of Windows 7. I get the following \n| error when loading the RPostgreSQL package.\n| \n| \n|  >library(",
+      "thread_id": "thread-6e21d5c47659",
+      "thread_depth": 0,
+      "month": "2010-04"
+    },
+    {
+      "id": "msg-c65b8aa8e27c",
+      "message_id": "<n2q971536df1004131131zd3b76e4ak356fa220c24c079a@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2010-04-13T14:31:55-04:00",
+      "subject": "[R-sig-DB] [RPostgreSQL] Fails to Load",
+      "subject_clean": "[RPostgreSQL] Fails to Load",
+      "in_reply_to": "<4BC4984A.8090404@ipec.co.uk>",
+      "references": [
+        "<4BC4984A.8090404@ipec.co.uk>"
+      ],
+      "body_plain": "1. Use dependencywalker at dependencywalker.com to find out where\nRPostgreSQL.dll is looking for the other dll's.\n\n2. There is also the RpgSQL package on CRAN which uses JDBC.  See the\nINSTALL file in that package for more info:\n\nhttp://cran.r-project.org/web/packages/RpgSQL/INSTALL\nhttp://cran.r-project.org/web/packages/RpgSQL/index.html\n\nOn Tue, Apr 13, 2010 at 12:14 PM, james <james at ipec.co.uk> wrote:\n> Reposting a message I posted on the R-help list.\n>\n> |Hi List,\n> | | Running R 2.10.1 on a fresh install of Windows 7. I get the following |\n> error when loading the RPostgreSQL package.\n> | | | ?>library(RPostgreSQL)\n> | Loading required package: DBI\n> | Error in inDL(x, as.logical(local), as.logical(now), ...) :\n> | ? unable to load shared library |\n> 'C:/Users/james/Documents/R/win-library/2.10/RPostgreSQL/libs/RPostgreSQL.dll':\n> | ? LoadLibrary failure: ?The specified module could not be found.\n> | | Error: package/namespace load failed for 'RPostgreSQL'\n> | | | I have reinstalled the RPostgreSQL package from several different |\n> mirrors and reinstalled R, and the error remains. I know that | RPostgreSQL\n> depends on libpq.dll and others, so I downloaded and | installed Postgres,\n> then copied the contents of PostgreSQL\\8.4\\lib to | the RPostgreSQL library\n> | (C:/Users/james/Documents/R/win-library/2.10/RPostgreSQL/libs/)\n> | | Regards,\n> | James Hargreaves\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "1. Use dependencywalker at dependencywalker.com to find out where\nRPostgreSQL.dll is looking for the other dll's.\n\n2. There is also the RpgSQL package on CRAN which uses JDBC.  See the\nINSTALL file in",
+      "thread_id": "thread-6e21d5c47659",
+      "thread_depth": 1,
+      "month": "2010-04"
+    },
+    {
+      "id": "msg-035d32603054",
+      "message_id": "<3707EB49-AC2E-40C8-8E75-33FABE70821F@neiltiffin.com>",
+      "from_name": "Neil Tiffin",
+      "from_email_hash": "02caa571c9273bbe0611b9c1c0bcdd4cd3e05d030ae04cda746228553f04aab5",
+      "date": "2010-04-13T18:59:42-05:00",
+      "subject": "[R-sig-DB] [RPostgreSQL] Fails to Load",
+      "subject_clean": "[RPostgreSQL] Fails to Load",
+      "in_reply_to": "<n2q971536df1004131131zd3b76e4ak356fa220c24c079a@mail.gmail.com>",
+      "references": [
+        "<4BC4984A.8090404@ipec.co.uk>",
+        "<n2q971536df1004131131zd3b76e4ak356fa220c24c079a@mail.gmail.com>"
+      ],
+      "body_plain": "It appears to me that it is looking for the dependency DBI.  When you installed RPostgreSQL did you check the box (at least on Mac) to install all dependencies?  Is DBI installed?\n\nOn Apr 13, 2010, at 1:31 PM, Gabor Grothendieck wrote:\n\n> 1. Use dependencywalker at dependencywalker.com to find out where\n> RPostgreSQL.dll is looking for the other dll's.\n> \n> 2. There is also the RpgSQL package on CRAN which uses JDBC.  See the\n> INSTALL file in that package for more info:\n> \n> http://cran.r-project.org/web/packages/RpgSQL/INSTALL\n> http://cran.r-project.org/web/packages/RpgSQL/index.html\n> \n> On Tue, Apr 13, 2010 at 12:14 PM, james <james at ipec.co.uk> wrote:\n>> Reposting a message I posted on the R-help list.\n>> \n>> |Hi List,\n>> | | Running R 2.10.1 on a fresh install of Windows 7. I get the following |\n>> error when loading the RPostgreSQL package.\n>> | | |  >library(RPostgreSQL)\n>> | Loading required package: DBI\n>> | Error in inDL(x, as.logical(local), as.logical(now), ...) :\n>> |   unable to load shared library |\n>> 'C:/Users/james/Documents/R/win-library/2.10/RPostgreSQL/libs/RPostgreSQL.dll':\n>> |   LoadLibrary failure:  The specified module could not be found.\n>> | | Error: package/namespace load failed for 'RPostgreSQL'\n>> | | | I have reinstalled the RPostgreSQL package from several different |\n>> mirrors and reinstalled R, and the error remains. I know that | RPostgreSQL\n>> depends on libpq.dll and others, so I downloaded and | installed Postgres,\n>> then copied the contents of PostgreSQL\\8.4\\lib to | the RPostgreSQL library\n>> | (C:/Users/james/Documents/R/win-library/2.10/RPostgreSQL/libs/)\n>> | | Regards,\n>> | James Hargreaves\n>> \n>> _______________________________________________\n>> R-sig-DB mailing list -- R Special Interest Group\n>> R-sig-DB at stat.math.ethz.ch\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>> \n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "It appears to me that it is looking for the dependency DBI.  When you installed RPostgreSQL did you check the box (at least on Mac) to install all dependencies?  Is DBI installed?\n\nOn Apr 13, 2010, at",
+      "thread_id": "thread-6e21d5c47659",
+      "thread_depth": 2,
+      "month": "2010-04"
+    },
+    {
+      "id": "msg-1bd3750e0352",
+      "message_id": "<19397.4266.44067.356433@ron.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2010-04-13T19:47:38-05:00",
+      "subject": "[R-sig-DB] [RPostgreSQL] Fails to Load",
+      "subject_clean": "[RPostgreSQL] Fails to Load",
+      "in_reply_to": "<3707EB49-AC2E-40C8-8E75-33FABE70821F@neiltiffin.com>",
+      "references": [
+        "<4BC4984A.8090404@ipec.co.uk>",
+        "<n2q971536df1004131131zd3b76e4ak356fa220c24c079a@mail.gmail.com>",
+        "<3707EB49-AC2E-40C8-8E75-33FABE70821F@neiltiffin.com>"
+      ],
+      "body_plain": "On 13 April 2010 at 18:59, Neil Tiffin wrote:\n| It appears to me that it is looking for the dependency DBI.  When you installed RPostgreSQL did you check the box (at least on Mac) to install all dependencies?  Is DBI installed?\n\nI think I disagree\n\n| >> 'C:/Users/james/Documents/R/win-library/2.10/RPostgreSQL/libs/RPostgreSQL.dll':\n| >> |   LoadLibrary failure:  The specified module could not be found.\n\nIt fails to load the dll for the package.  As I told James when he first\nposted to r-help, he should try to added the Postgresql binary directory to\nthe path.\n\nDirk\n\n| \n| On Apr 13, 2010, at 1:31 PM, Gabor Grothendieck wrote:\n| \n| > 1. Use dependencywalker at dependencywalker.com to find out where\n| > RPostgreSQL.dll is looking for the other dll's.\n| > \n| > 2. There is also the RpgSQL package on CRAN which uses JDBC.  See the\n| > INSTALL file in that package for more info:\n| > \n| > http://cran.r-project.org/web/packages/RpgSQL/INSTALL\n| > http://cran.r-project.org/web/packages/RpgSQL/index.html\n| > \n| > On Tue, Apr 13, 2010 at 12:14 PM, james <james at ipec.co.uk> wrote:\n| >> Reposting a message I posted on the R-help list.\n| >> \n| >> |Hi List,\n| >> | | Running R 2.10.1 on a fresh install of Windows 7. I get the following |\n| >> error when loading the RPostgreSQL package.\n| >> | | |  >library(RPostgreSQL)\n| >> | Loading required package: DBI\n| >> | Error in inDL(x, as.logical(local), as.logical(now), ...) :\n| >> |   unable to load shared library |\n| >> 'C:/Users/james/Documents/R/win-library/2.10/RPostgreSQL/libs/RPostgreSQL.dll':\n| >> |   LoadLibrary failure:  The specified module could not be found.\n| >> | | Error: package/namespace load failed for 'RPostgreSQL'\n| >> | | | I have reinstalled the RPostgreSQL package from several different |\n| >> mirrors and reinstalled R, and the error remains. I know that | RPostgreSQL\n| >> depends on libpq.dll and others, so I downloaded and | installed Postgres,\n| >> then copied the contents of PostgreSQL\\8.4\\lib to | the RPostgreSQL library\n| >> | (C:/Users/james/Documents/R/win-library/2.10/RPostgreSQL/libs/)\n| >> | | Regards,\n| >> | James Hargreaves\n| >> \n| >> _______________________________________________\n| >> R-sig-DB mailing list -- R Special Interest Group\n| >> R-sig-DB at stat.math.ethz.ch\n| >> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n| >> \n| > \n| > _______________________________________________\n| > R-sig-DB mailing list -- R Special Interest Group\n| > R-sig-DB at stat.math.ethz.ch\n| > https://stat.ethz.ch/mailman/listinfo/r-sig-db\n| \n| _______________________________________________\n| R-sig-DB mailing list -- R Special Interest Group\n| R-sig-DB at stat.math.ethz.ch\n| https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n-- \n  Registration is open for the 2nd International conference R / Finance 2010\n  See http://www.RinFinance.com for details, and see you in Chicago in April!",
+      "body_snippet": "On 13 April 2010 at 18:59, Neil Tiffin wrote:\n| It appears to me that it is looking for the dependency DBI.  When you installed RPostgreSQL did you check the box (at least on Mac) to install all depen",
+      "thread_id": "thread-6e21d5c47659",
+      "thread_depth": 3,
+      "month": "2010-04"
+    },
+    {
+      "id": "msg-125c93a974c7",
+      "message_id": "<BB78ECAC-B699-4BEE-8973-E0571506A385@neiltiffin.com>",
+      "from_name": "Neil Tiffin",
+      "from_email_hash": "02caa571c9273bbe0611b9c1c0bcdd4cd3e05d030ae04cda746228553f04aab5",
+      "date": "2010-04-14T07:02:52-05:00",
+      "subject": "[R-sig-DB] [RPostgreSQL] Fails to Load",
+      "subject_clean": "[RPostgreSQL] Fails to Load",
+      "in_reply_to": "<19397.4266.44067.356433@ron.nulle.part>",
+      "references": [
+        "<4BC4984A.8090404@ipec.co.uk>",
+        "<n2q971536df1004131131zd3b76e4ak356fa220c24c079a@mail.gmail.com>",
+        "<3707EB49-AC2E-40C8-8E75-33FABE70821F@neiltiffin.com>",
+        "<19397.4266.44067.356433@ron.nulle.part>"
+      ],
+      "body_plain": "Sorry, I did not see your reply on r-help and way too much going on.  Thanks for the clarification.\n\nOn Apr 13, 2010, at 7:47 PM, Dirk Eddelbuettel wrote:\n\n> \n> On 13 April 2010 at 18:59, Neil Tiffin wrote:\n> | It appears to me that it is looking for the dependency DBI.  When you installed RPostgreSQL did you check the box (at least on Mac) to install all dependencies?  Is DBI installed?\n> \n> I think I disagree\n> \n> | >> 'C:/Users/james/Documents/R/win-library/2.10/RPostgreSQL/libs/RPostgreSQL.dll':\n> | >> |   LoadLibrary failure:  The specified module could not be found.\n> \n> It fails to load the dll for the package.  As I told James when he first\n> posted to r-help, he should try to added the Postgresql binary directory to\n> the path.\n> \n> Dirk\n> \n> | \n> | On Apr 13, 2010, at 1:31 PM, Gabor Grothendieck wrote:\n> | \n> | > 1. Use dependencywalker at dependencywalker.com to find out where\n> | > RPostgreSQL.dll is looking for the other dll's.\n> | > \n> | > 2. There is also the RpgSQL package on CRAN which uses JDBC.  See the\n> | > INSTALL file in that package for more info:\n> | > \n> | > http://cran.r-project.org/web/packages/RpgSQL/INSTALL\n> | > http://cran.r-project.org/web/packages/RpgSQL/index.html\n> | > \n> | > On Tue, Apr 13, 2010 at 12:14 PM, james <james at ipec.co.uk> wrote:\n> | >> Reposting a message I posted on the R-help list.\n> | >> \n> | >> |Hi List,\n> | >> | | Running R 2.10.1 on a fresh install of Windows 7. I get the following |\n> | >> error when loading the RPostgreSQL package.\n> | >> | | |  >library(RPostgreSQL)\n> | >> | Loading required package: DBI\n> | >> | Error in inDL(x, as.logical(local), as.logical(now), ...) :\n> | >> |   unable to load shared library |\n> | >> 'C:/Users/james/Documents/R/win-library/2.10/RPostgreSQL/libs/RPostgreSQL.dll':\n> | >> |   LoadLibrary failure:  The specified module could not be found.\n> | >> | | Error: package/namespace load failed for 'RPostgreSQL'\n> | >> | | | I have reinstalled the RPostgreSQL package from several different |\n> | >> mirrors and reinstalled R, and the error remains. I know that | RPostgreSQL\n> | >> depends on libpq.dll and others, so I downloaded and | installed Postgres,\n> | >> then copied the contents of PostgreSQL\\8.4\\lib to | the RPostgreSQL library\n> | >> | (C:/Users/james/Documents/R/win-library/2.10/RPostgreSQL/libs/)\n> | >> | | Regards,\n> | >> | James Hargreaves\n> | >> \n> | >> _______________________________________________\n> | >> R-sig-DB mailing list -- R Special Interest Group\n> | >> R-sig-DB at stat.math.ethz.ch\n> | >> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n> | >> \n> | > \n> | > _______________________________________________\n> | > R-sig-DB mailing list -- R Special Interest Group\n> | > R-sig-DB at stat.math.ethz.ch\n> | > https://stat.ethz.ch/mailman/listinfo/r-sig-db\n> | \n> | _______________________________________________\n> | R-sig-DB mailing list -- R Special Interest Group\n> | R-sig-DB at stat.math.ethz.ch\n> | https://stat.ethz.ch/mailman/listinfo/r-sig-db\n> \n> -- \n>  Registration is open for the 2nd International conference R / Finance 2010\n>  See http://www.RinFinance.com for details, and see you in Chicago in April!",
+      "body_snippet": "Sorry, I did not see your reply on r-help and way too much going on.  Thanks for the clarification.\n\nOn Apr 13, 2010, at 7:47 PM, Dirk Eddelbuettel wrote:\n\n> \n> On 13 April 2010 at 18:59, Neil Tiffin ",
+      "thread_id": "thread-6e21d5c47659",
+      "thread_depth": 4,
+      "month": "2010-04"
+    },
+    {
+      "id": "msg-bb06ad8ca3dc",
+      "message_id": "<m2m8ed68eed1004240139vf01a94ecj5330d340c71933c7@mail.gmail.com>",
+      "from_name": "Sean O'Riordain",
+      "from_email_hash": "d18631f6661da4deeaa90b92231c34f3f14fafbbc9231a0242073f8c21ec5e89",
+      "date": "2010-04-24T09:39:47+01:00",
+      "subject": "[R-sig-DB] RODBC connection to Oracle on 64-bit RHEL box failing",
+      "subject_clean": "RODBC connection to Oracle on 64-bit RHEL box failing",
+      "in_reply_to": "<924bb5e21003240802g554958e9h61e40bb7c5f957ab@mail.gmail.com>",
+      "references": [
+        "<924bb5e21003231247qf510cdaq70bb23f21d296b43@mail.gmail.com>",
+        "<C6DFDC86-7D92-4632-AA52-3D50DC4D520D@me.com>",
+        "<924bb5e21003240721y5e1818b2q66bba282e19a2858@mail.gmail.com>",
+        "<3758523A-6CAC-48B7-9DDB-FB2051CA94D6@me.com>",
+        "<924bb5e21003240802g554958e9h61e40bb7c5f957ab@mail.gmail.com>"
+      ],
+      "body_plain": "Have you considered using RJDBC instead of ODBC?  I don't know about\nthe relative performance - but I've no problems using jdbc from 64-bit\nubuntu to oracle on 32/64 bit redhat.\n\nIn the past I gave up on using odbc due to the difficulty in setting\nit up... jdbc is a piece of cake by comparison and doesn't require\nsystem changes only a local copy of the ojdbc14.jar (from memory) to\nbe accessible.\n\ncheers,\nSean\n\n\nOn Wed, Mar 24, 2010 at 4:02 PM, Harlan Harris <harlan at harris.name> wrote:\n> On Wed, Mar 24, 2010 at 10:53 AM, Marc Schwartz <marc_schwartz at me.com>wrote:\n>\n>> Interesting. Monroe is the guy that I had communicated with last year on\n>> this point. Presumably either they were not yet ready to announce anything\n>> and/or it was still on their TODO list.\n>>\n>> Can the 64 bit driver co-exist with the 32 bit driver or is it a choice of\n>> one or the other? In other words, can I create 32 bit and 64 bit DSN's\n>> separately, so that I can use either 32 bit or 64 bit R as I may need\n>> interchangeably?\n>>\n>\n> I have no idea! :)\n>\n>\n>> I would certainly never speak for Prof. Ripley, but I can tell you that\n>> during my 8+ years of using R, whether it be via onlist postings or my\n>> periodic offlist communications with him, I have never had a reason to doubt\n>> his availability or responsiveness when it comes to anything R related,\n>> whether that be 'base R' as a member of R Core, or the other packages that\n>> he maintains. That experience includes both day and night for any given time\n>> zone...\n>>\n>\n> In theory I agree, but if (heaven forbid) Prof. Ripley were hit by a bus,\n> this could never get fixed. That's not true for R as a whole (see that\n> interesting article in a recent R Journal), but it is true for a number of\n> non-core packages... And Oracle is not very high on the list of databases\n> used by R's core user base!\n>\n>\n>> I checked the archives and at least recently, don't see a post here from\n>> David after late 2008, but I would not hesitate to send him an e-mail\n>> directly, which appears to be daj025 at gmail.com or dj at bell-labs.com.\n>>\n>\n> Ah, thanks, will do.\n>\n> ?-Harlan\n>\n>\n>>\n>>\n>> Marc\n>>\n>>\n>\n> ? ? ? ?[[alternative HTML version deleted]]\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "Have you considered using RJDBC instead of ODBC?  I don't know about\nthe relative performance - but I've no problems using jdbc from 64-bit\nubuntu to oracle on 32/64 bit redhat.\n\nIn the past I gave up",
+      "thread_id": "thread-bb06ad8ca3dc",
+      "thread_depth": 0,
+      "month": "2010-04"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-8c76d2454117",
+      "subject": "RODBC:sqlQuery() choking on null date in Oracle database",
+      "message_count": 2,
+      "participants": [
+        "Harlan Harris",
+        "Marc Schwartz"
+      ],
+      "started": "2010-04-01T10:25:24-04:00",
+      "last_reply": "2010-04-01T11:39:17-05:00",
+      "root_message_id": "msg-8c76d2454117"
+    },
+    {
+      "id": "thread-d21e9ea87133",
+      "subject": "How to save a model in DB and retrieve It",
+      "message_count": 5,
+      "participants": [
+        "Daniele Amberti",
+        "Greg Snow",
+        "Jeff Ryan",
+        "Joe Conway"
+      ],
+      "started": "2010-04-02T10:37:24+02:00",
+      "last_reply": "2010-04-02T16:50:33-07:00",
+      "root_message_id": "msg-d21e9ea87133"
+    },
+    {
+      "id": "thread-6e21d5c47659",
+      "subject": "[RPostgreSQL]  Fails to Load",
+      "message_count": 5,
+      "participants": [
+        "Dirk Eddelbuettel",
+        "Gabor Grothendieck",
+        "Neil Tiffin",
+        "james"
+      ],
+      "started": "2010-04-13T17:14:02+01:00",
+      "last_reply": "2010-04-14T07:02:52-05:00",
+      "root_message_id": "msg-6e21d5c47659"
+    },
+    {
+      "id": "thread-bb06ad8ca3dc",
+      "subject": "RODBC connection to Oracle on 64-bit RHEL box failing",
+      "message_count": 1,
+      "participants": [
+        "Sean O'Riordain"
+      ],
+      "started": "2010-04-24T09:39:47+01:00",
+      "last_reply": "2010-04-24T09:39:47+01:00",
+      "root_message_id": "msg-bb06ad8ca3dc"
+    }
+  ]
+}

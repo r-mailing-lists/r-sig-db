@@ -1,0 +1,205 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2008-09",
+  "messages": [
+    {
+      "id": "msg-465a1fcdb2be",
+      "message_id": "<48BD62E1.701@vanderbilt.edu>",
+      "from_name": "Jeffrey Horner",
+      "from_email_hash": "77f9f3268effd48e70e790ba24e5db9767f6401d87fbba7ec6a16ee2e060daf2",
+      "date": "2008-09-02T10:59:29-05:00",
+      "subject": "[R-sig-DB] RMySQL still treats timestamp as character?",
+      "subject_clean": "RMySQL still treats timestamp as character?",
+      "in_reply_to": "<alpine.LFD.1.10.0808311550500.2427@gannet.stats.ox.ac.uk>",
+      "references": [
+        "<16138588-D629-4155-A40E-073A5F66363D@gmail.com>",
+        "<alpine.LFD.1.10.0808311550500.2427@gannet.stats.ox.ac.uk>"
+      ],
+      "body_plain": "Prof Brian Ripley wrote on 08/31/2008 09:54 AM:\n> On Sat, 30 Aug 2008, Alexy Khrabrov wrote:\n> \n>> Greetings -- downloaded RMySQL 0.6.0, and on a table with timestamps \n>> it gets them over as character.  Found an email in this group from \n>> 2006, about switching to RODBC, did that, got lovely floats...  Any \n>> progress on that for RMySQL proper?\n> \n> You need to ask the maintainer (see the posting guide).  But my \n> understanding is that RMySQL is not actively maintained (and has not be \n> changed for 15 months).\n\nYes, and I have patches still laying around to fix memory leaks.\n\nDavid, would you like me to take over as maintainer maintainer?\n\nJeff\n\n> \n> What is the difficulty in converting the character vector you get to a\n> POSIXct or Date class?\n> \n\n\n-- \nhttp://biostat.mc.vanderbilt.edu/JeffreyHorner",
+      "body_snippet": "Prof Brian Ripley wrote on 08/31/2008 09:54 AM:\n> On Sat, 30 Aug 2008, Alexy Khrabrov wrote:\n> \n>> Greetings -- downloaded RMySQL 0.6.0, and on a table with timestamps \n>> it gets them over as charact",
+      "thread_id": "thread-465a1fcdb2be",
+      "thread_depth": 0,
+      "month": "2008-09"
+    },
+    {
+      "id": "msg-ce35af82b7f9",
+      "message_id": "<74c69e370809021230g36a4e4e4kcab5f4455f995c97@mail.gmail.com>",
+      "from_name": "David James",
+      "from_email_hash": "5a98c7bb5df85f08e6bfd2fddc1835f5d02f0963da6236b12659868f2772176d",
+      "date": "2008-09-02T15:30:44-04:00",
+      "subject": "[R-sig-DB] RMySQL still treats timestamp as character?",
+      "subject_clean": "RMySQL still treats timestamp as character?",
+      "in_reply_to": "<16138588-D629-4155-A40E-073A5F66363D@gmail.com>",
+      "references": [
+        "<16138588-D629-4155-A40E-073A5F66363D@gmail.com>"
+      ],
+      "body_plain": "Hi Alexy,\n\nDates in MySQL (and other databases) may span outside the range of\ncurrently supported\nPOSIX implementations (ie., under 32-bits), thus the character\nrepresentation is known\nto work regardless of the dates themselves, e.g., before the Unix epoch.\n\nRegards,\n\n--\nDavid,\n\nOn Sat, Aug 30, 2008 at 1:09 AM, Alexy Khrabrov <deliverable at gmail.com> wrote:\n> Greetings -- downloaded RMySQL 0.6.0, and on a table with timestamps it gets\n> them over as character.  Found an email in this group from 2006, about\n> switching to RODBC, did that, got lovely floats...  Any progress on that for\n> RMySQL proper?\n>\n> Cheers,\n> Alexy\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "Hi Alexy,\n\nDates in MySQL (and other databases) may span outside the range of\ncurrently supported\nPOSIX implementations (ie., under 32-bits), thus the character\nrepresentation is known\nto work regardl",
+      "thread_id": "thread-ce35af82b7f9",
+      "thread_depth": 0,
+      "month": "2008-09"
+    },
+    {
+      "id": "msg-5997f5ed3884",
+      "message_id": "<alpine.LFD.1.10.0809030804400.4144@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2008-09-03T08:09:00+01:00",
+      "subject": "[R-sig-DB] RMySQL still treats timestamp as character?",
+      "subject_clean": "RMySQL still treats timestamp as character?",
+      "in_reply_to": "<74c69e370809021230g36a4e4e4kcab5f4455f995c97@mail.gmail.com>",
+      "references": [
+        "<16138588-D629-4155-A40E-073A5F66363D@gmail.com>",
+        "<74c69e370809021230g36a4e4e4kcab5f4455f995c97@mail.gmail.com>"
+      ],
+      "body_plain": "On Tue, 2 Sep 2008, David James wrote:\n\n> Hi Alexy,\n>\n> Dates in MySQL (and other databases) may span outside the range of\n> currently supported\n> POSIX implementations (ie., under 32-bits), thus the character\n> representation is known\n> to work regardless of the dates themselves, e.g., before the Unix epoch.\n\nPossibly, but R uses doubles for datetimes, unlike POSIX, and also has a \nclasss for dates.  (Datetimes prior to 1850 are very dubious anyway, as \nthere were no timezones.)  In other words, R's date and datetime classes \nare known to work as accurately as character representations.\n\n>\n> Regards,\n>\n> --\n> David,\n>\n> On Sat, Aug 30, 2008 at 1:09 AM, Alexy Khrabrov <deliverable at gmail.com> wrote:\n>> Greetings -- downloaded RMySQL 0.6.0, and on a table with timestamps it gets\n>> them over as character.  Found an email in this group from 2006, about\n>> switching to RODBC, did that, got lovely floats...  Any progress on that for\n>> RMySQL proper?\n>>\n>> Cheers,\n>> Alexy\n>>\n>> _______________________________________________\n>> R-sig-DB mailing list -- R Special Interest Group\n>> R-sig-DB at stat.math.ethz.ch\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>>\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "On Tue, 2 Sep 2008, David James wrote:\n\n> Hi Alexy,\n>\n> Dates in MySQL (and other databases) may span outside the range of\n> currently supported\n> POSIX implementations (ie., under 32-bits), thus the ",
+      "thread_id": "thread-ce35af82b7f9",
+      "thread_depth": 1,
+      "month": "2008-09"
+    },
+    {
+      "id": "msg-976d7834a0df",
+      "message_id": "<1399F1772C396448B3A9C851C2358CB809018F78EC@RosasJG01.Rosas.local>",
+      "from_name": "Hebbertt de Farias Soares",
+      "from_email_hash": "b4fb3efb1bdf5e89d5375b28a115754d232b5199daea3393a9e51b7ea0db71ff",
+      "date": "2008-09-05T11:13:19-03:00",
+      "subject": "[R-sig-DB] Data manipulation: transforming SQL query in an appropriate dataframe",
+      "subject_clean": "Data manipulation: transforming SQL query in an appropriate dataframe",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear list,\n\nI am a beginner with R and I have  a question which may sound stupid: How can I transform my SQL query into an appropriate dataframe?\n\nI've looking around, and haven't found any solution.\n\nMy return data is stored in a SQL database. When I query it, it  gives me the following output:\nId            Fund                     Return                 Period\n1             Fund01                0,5                         may/08\n2             Fund01                0,4                         june/08\n3             Fund 02               -0,3                        may/08\n4             Fund02                -0,4                        june/2008\n\nHowever this data is not suitable for analysis. I would like to transform it to a format like:\n\nPeriod                  Fund01                Fund02\nMay/08                0,5                         0,4\nJune/08               -0,3                        -0,4\n\nIs it possible to do this with R? Could you please recommend me references or packages which are useful for handling this kind of data?\n\nThank you very much for your time.\n\nRegards,\n\nHebbertt\n\n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Dear list,\n\nI am a beginner with R and I have  a question which may sound stupid: How can I transform my SQL query into an appropriate dataframe?\n\nI've looking around, and haven't found any solution.\n",
+      "thread_id": "thread-976d7834a0df",
+      "thread_depth": 0,
+      "month": "2008-09"
+    },
+    {
+      "id": "msg-b1e912aff148",
+      "message_id": "<971536df0809050739l74394b65h224e5675883657a8@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2008-09-05T10:39:37-04:00",
+      "subject": "[R-sig-DB] Data manipulation: transforming SQL query in an appropriate dataframe",
+      "subject_clean": "Data manipulation: transforming SQL query in an appropriate dataframe",
+      "in_reply_to": "<1399F1772C396448B3A9C851C2358CB809018F78EC@RosasJG01.Rosas.local>",
+      "references": [
+        "<1399F1772C396448B3A9C851C2358CB809018F78EC@RosasJG01.Rosas.local>"
+      ],
+      "body_plain": "Correcting the inconsistencies in the data, try this\n(and also see ?reshape and the reshape package for\nother approaches):\n\nDF <- structure(list(Id = 1:4, Fund = structure(c(1L, 1L, 2L, 2L),\n.Label = c(\"Fund01\",\n\"Fund02\"), class = \"factor\"), Return = c(0.5, 0.4, -0.3, -0.4\n), Period = structure(c(2L, 1L, 2L, 1L), .Label = c(\"june/08\",\n\"may/08\"), class = \"factor\")), .Names = c(\"Id\", \"Fund\", \"Return\",\n\"Period\"), class = \"data.frame\", row.names = c(NA, -4L))\nDF\n\ntapply(DF$Return, DF[c(2, 4)], c)\n\n\nOn Fri, Sep 5, 2008 at 10:13 AM, Hebbertt de Farias Soares\n<hebbertt.soares at rosasoffice.com> wrote:\n> Dear list,\n>\n> I am a beginner with R and I have  a question which may sound stupid: How can I transform my SQL query into an appropriate dataframe?\n>\n> I've looking around, and haven't found any solution.\n>\n> My return data is stored in a SQL database. When I query it, it  gives me the following output:\n> Id            Fund                     Return                 Period\n> 1             Fund01                0,5                         may/08\n> 2             Fund01                0,4                         june/08\n> 3             Fund 02               -0,3                        may/08\n> 4             Fund02                -0,4                        june/2008\n>\n> However this data is not suitable for analysis. I would like to transform it to a format like:\n>\n> Period                  Fund01                Fund02\n> May/08                0,5                         0,4\n> June/08               -0,3                        -0,4\n>\n> Is it possible to do this with R? Could you please recommend me references or packages which are useful for handling this kind of data?\n>\n> Thank you very much for your time.\n>\n> Regards,\n>\n> Hebbertt\n>\n>\n>\n>        [[alternative HTML version deleted]]\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "Correcting the inconsistencies in the data, try this\n(and also see ?reshape and the reshape package for\nother approaches):\n\nDF <- structure(list(Id = 1:4, Fund = structure(c(1L, 1L, 2L, 2L),\n.Label = ",
+      "thread_id": "thread-976d7834a0df",
+      "thread_depth": 1,
+      "month": "2008-09"
+    },
+    {
+      "id": "msg-8603f05d659b",
+      "message_id": "<OF648A29F7.8B8E519D-ON852574BB.00531798-852574BB.005A4685@fws.gov>",
+      "from_name": "M@rk_Otto m@iii@g oii iws@gov",
+      "from_email_hash": "cdad2166dc65cda88968e3889c4b3281744d7a1d33f10f9bcdc311594614eea1",
+      "date": "2008-09-05T12:26:06-04:00",
+      "subject": "[R-sig-DB] Data manipulation: transforming SQL query in an\tappropriate dataframe",
+      "subject_clean": "Data manipulation: transforming SQL query in an\tappropriate dataframe",
+      "in_reply_to": "<971536df0809050739l74394b65h224e5675883657a8@mail.gmail.com>",
+      "references": [],
+      "body_plain": "Here are three ways of handling the problem of taking values of a variable \nand making them columns of another table.  Let the original data be \nOldTable.  Note I had to clean up your example a little bit.\n\nfh<-textConnection(\"Id            Fund                  Return  Period\n1             Fund01                0,5                         may/08\n2             Fund01                0,4                         june/08\n3             Fund02               -0,3                        may/08\n4             Fund02                -0,4                        june/08\n\")\n\nOldTable<-read.table(fh,header=T,dec=\",\",sep=\"\",row.names=\"Id\")\n\n\n1. Use reshape in R.  This is used with longitudinal data, so you have to \nlook closely at the manual page to get what you need out of it.\n\n \nNewTable<-reshape(OldTable,idvar=\"Period\",v.names='Return',timevar='Fund',direction=\"wide\")\n\n2. I you can to the data rearranging in your database.  SQL is not great \nat converting values of variables to columns.  It is great at doing lots \nof manipulations on large amounts of data better than R and without the \nmemory worries.  For this reshaping, you can use pivot tables to do this \nin a straight forward way in Excel or MS Access. \n\nHere we let OldTable be a table in the database too. So, make a view in \nthe database:\n\n  create view WhatIWantMyRTableToBeView as \n  select Period,Fund01,Fund02\n   from (\n    select Period,Return as Fund01\n     from OldTable\n     where Fund='Fund01'\n   ) as f1 inner join (\n    select Period,Return as Fund02\n     from OldTable\n     where Fund=in('Fund02','Fund 02')\n   ) as f1 on(f1.Period=f2=Period)\n   order by Period;\n \nThen, you can then read in the data to R using the RODBC or other database \npackage such as RSQLite\n\n  library(RODBC)\n  dbh<-odbcConnect(\"<path>/<database name>\")\n  NewTable<-sqlFetch(dbh,\"WhatIWantMyRTableToBeView\")\n\nor with an SQL query in R. \n\n NewTable<-sqlQuery(dbh,\"\n  select Period,Fund01,Fund02\n   from (\n    select Period,Return as Fund01\n     from OldTable\n     where Fund='Fund01'\n   ) as f1 inner join (\n    select Period,Return as Fund02\n     from OldTable\n     where Fund=in('Fund02','Fund 02')\n   ) as f1 on(f1.Period=f2=Period)\n   order by Period;\n \")\n\n3. These could be done all in R with a merge:\n\n fund1<-OldTable[OldTable$Fund==\"Fund01\",]\n fund1<-dataframe(Period=fund1$Period,Fund01=fund1$Fund)\n fund2<-OldTable[OldTable$Fund%in%c(\"Fund02\",\"Fund 02\"),]\n fund2<-dataframe(Period=fund2$Period,Fund02=fund2$Fund)\n NewTable<-merge(fund1,fund2)  # merge keys on the variables common to \nboth datasets.\n\nI haven't run the last two parts, so you may need to tweak the code. \nOthers on this list are more knowledgeable on these matters. \n\nMark\n \n\n\nMark Otto, Biometrician \nU. S. Fish and Wildlife Service \nPatuxent Wildlife Research Center\n11510 American Holly Dr\nLaurel MD  20708-4002\n\n\n\n\n\"Gabor Grothendieck\" <ggrothendieck at gmail.com> \nSent by: r-sig-db-bounces at stat.math.ethz.ch\n09/05/2008 10:39 AM\n\nTo\n\"Hebbertt de Farias Soares\" <hebbertt.soares at rosasoffice.com>\ncc\n\"r-sig-db at stat.math.ethz.ch\" <r-sig-db at stat.math.ethz.ch>\nSubject\nRe: [R-sig-DB] Data manipulation: transforming SQL query in an appropriate \ndataframe\n\n\n\n\n\n\nCorrecting the inconsistencies in the data, try this\n(and also see ?reshape and the reshape package for\nother approaches):\n\nDF <- structure(list(Id = 1:4, Fund = structure(c(1L, 1L, 2L, 2L),\n.Label = c(\"Fund01\",\n\"Fund02\"), class = \"factor\"), Return = c(0.5, 0.4, -0.3, -0.4\n), Period = structure(c(2L, 1L, 2L, 1L), .Label = c(\"june/08\",\n\"may/08\"), class = \"factor\")), .Names = c(\"Id\", \"Fund\", \"Return\",\n\"Period\"), class = \"data.frame\", row.names = c(NA, -4L))\nDF\n\ntapply(DF$Return, DF[c(2, 4)], c)\n\n\nOn Fri, Sep 5, 2008 at 10:13 AM, Hebbertt de Farias Soares\n<hebbertt.soares at rosasoffice.com> wrote:\n> Dear list,\n>\n> I am a beginner with R and I have  a question which may sound stupid: \nHow can I transform my SQL query into an appropriate dataframe?\n>\n> I've looking around, and haven't found any solution.\n>\n> My return data is stored in a SQL database. When I query it, it  gives \nme the following output:\n> Id            Fund                     Return                 Period\n> 1             Fund01                0,5                         may/08\n> 2             Fund01                0,4                         june/08\n> 3             Fund 02               -0,3                        may/08\n> 4             Fund02                -0,4 june/2008\n>\n> However this data is not suitable for analysis. I would like to \ntransform it to a format like:\n\n> Period                  Fund01                Fund02\n> May/08                0,5                         0,4\n> June/08               -0,3                        -0,4\n>\n> Is it possible to do this with R? Could you please recommend me \nreferences or packages which are useful for handling this kind of data?\n>\n> Thank you very much for your time.\n>\n> Regards,\n>\n> Hebbertt\n>\n>\n>\n>        [[alternative HTML version deleted]]\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n_______________________________________________\nR-sig-DB mailing list -- R Special Interest Group\nR-sig-DB at stat.math.ethz.ch\nhttps://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Here are three ways of handling the problem of taking values of a variable \nand making them columns of another table.  Let the original data be \nOldTable.  Note I had to clean up your example a little",
+      "thread_id": "thread-976d7834a0df",
+      "thread_depth": 2,
+      "month": "2008-09"
+    },
+    {
+      "id": "msg-a0344e148d31",
+      "message_id": "<1F4F3D28-5A0D-43F9-AF77-119DEC78B103@gmail.com>",
+      "from_name": "Alexy Khrabrov",
+      "from_email_hash": "e87f57bc3aa14713fdd3d12a916a0b11f5e7c821c49dfb839440c912c0324549",
+      "date": "2008-09-16T21:44:16-04:00",
+      "subject": "[R-sig-DB] RJDBC and JDBC-ODBC bridge read remote Excel!",
+      "subject_clean": "RJDBC and JDBC-ODBC bridge read remote Excel!",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Greetings -- just wanted to report that this combination really works  \nto access Windows ODBC sources from a remote Mac; in particular, from  \na Mac inside whose VMWare Fusion a Windows runs!\n\nI've got a JDBC-ODBC bridge from Easysoft.com, it's a commercial  \nversion with free trial (I just wanted a proof of concept, am not  \naffiliated with it).  Created an ODBC source out of an Excel  \nworkbook.  Easysoft starts a web server to configure the bridge on  \nWindows, and even serve the EJOB.jar to the clients.  Got that from  \nthe enclosing Mac, and connected with RJDBC!\n\n > jdrv <- JDBC(\"easysoft.sql.jobDriver\",\"/path/to/EJOB.jar\")\n > jcon <- dbConnect(jdrv,\"jdbc:easysoft://192.168.1.101:8831/ \nodbcsourcename\")\n > dbListTables(jcon)\n[1] \"stok#summary$\"\n > dbListFields(jcon,\"stok#summary$\")\n[1] \"files\" \"lines\" \"words\" \"chars\" \"name\"\n\nI'm pondering various ways to use Excel alongside with R to visualize  \nand grasp the data.  Alas, ODBC usage locks the Excel file from  \nediting.  Another way is going through a mediating SQL database.  It  \nwould be useful to see a view of a data frame in Excel with its grid  \nand scrolling.\n\nIn any case, here's another solution to read Excel spreadsheets from  \nMac or another Unix/Linux.\n\nCheers,\nAlexy",
+      "body_snippet": "Greetings -- just wanted to report that this combination really works  \nto access Windows ODBC sources from a remote Mac; in particular, from  \na Mac inside whose VMWare Fusion a Windows runs!\n\nI've g",
+      "thread_id": "thread-a0344e148d31",
+      "thread_depth": 0,
+      "month": "2008-09"
+    },
+    {
+      "id": "msg-3dea2fa20dea",
+      "message_id": "<c8e8cd3d0809170934k716996a3r5037a7410c98d89c@mail.gmail.com>",
+      "from_name": "christophe dutang",
+      "from_email_hash": "767bf2adf77e65292b8430dca3a919b5d13bfe88f6d0d99b1ed60c492fa2779b",
+      "date": "2008-09-17T18:34:09+02:00",
+      "subject": "[R-sig-DB] how to deal with big database in R",
+      "subject_clean": "how to deal with big database in R",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\nFor the first time, I really face the problem of large data sets in R and I\nneed some help/advice on this subject.\n\nI have large datasets on an Oracle server (at least one million records) and\nI have the following questions:\n- is the package DBI very efficient when dealing with Oracle? Does the\nefficiency of the system depends only on oracle and not on R?\n- is it easy to deal with multiple tables from R? and to cross tabulate\nthose big tables into few ones that can be then used in R ? (typically for a\nGLM analysis)\n- is it possible to have concurrent access to a database from different R\nsessions? does it rely on entirely on Oracle functionnalities?\n- when a SQL request is made in R, is there something else than the request\nhimself and the result allocating in R ? I mean, is all the data treatment\nthe job of the Oracle server?\nhow to solve the issue if after cross tabulate (and the size decrease of\ndatasets), the result is still too big to work with R? Do we need to use the\n'biglm' package?\n\nSome questions will probably be obvious for this mailing list, but I would\nlike to have a clear point of view.\n\nThanks in advance\n\nKind regards\n\nChristophe Dutang\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi,\n\nFor the first time, I really face the problem of large data sets in R and I\nneed some help/advice on this subject.\n\nI have large datasets on an Oracle server (at least one million records) and\nI ",
+      "thread_id": "thread-3dea2fa20dea",
+      "thread_depth": 0,
+      "month": "2008-09"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-465a1fcdb2be",
+      "subject": "RMySQL still treats timestamp as character?",
+      "message_count": 1,
+      "participants": [
+        "Jeffrey Horner"
+      ],
+      "started": "2008-09-02T10:59:29-05:00",
+      "last_reply": "2008-09-02T10:59:29-05:00",
+      "root_message_id": "msg-465a1fcdb2be"
+    },
+    {
+      "id": "thread-ce35af82b7f9",
+      "subject": "RMySQL still treats timestamp as character?",
+      "message_count": 2,
+      "participants": [
+        "David James",
+        "Prof Brian Ripley"
+      ],
+      "started": "2008-09-02T15:30:44-04:00",
+      "last_reply": "2008-09-03T08:09:00+01:00",
+      "root_message_id": "msg-ce35af82b7f9"
+    },
+    {
+      "id": "thread-976d7834a0df",
+      "subject": "Data manipulation: transforming SQL query in an appropriate dataframe",
+      "message_count": 3,
+      "participants": [
+        "Gabor Grothendieck",
+        "Hebbertt de Farias Soares",
+        "M@rk_Otto m@iii@g oii iws@gov"
+      ],
+      "started": "2008-09-05T11:13:19-03:00",
+      "last_reply": "2008-09-05T12:26:06-04:00",
+      "root_message_id": "msg-976d7834a0df"
+    },
+    {
+      "id": "thread-a0344e148d31",
+      "subject": "RJDBC and JDBC-ODBC bridge read remote Excel!",
+      "message_count": 1,
+      "participants": [
+        "Alexy Khrabrov"
+      ],
+      "started": "2008-09-16T21:44:16-04:00",
+      "last_reply": "2008-09-16T21:44:16-04:00",
+      "root_message_id": "msg-a0344e148d31"
+    },
+    {
+      "id": "thread-3dea2fa20dea",
+      "subject": "how to deal with big database in R",
+      "message_count": 1,
+      "participants": [
+        "christophe dutang"
+      ],
+      "started": "2008-09-17T18:34:09+02:00",
+      "last_reply": "2008-09-17T18:34:09+02:00",
+      "root_message_id": "msg-3dea2fa20dea"
+    }
+  ]
+}

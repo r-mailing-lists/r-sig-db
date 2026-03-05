@@ -1,0 +1,1016 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2010-11",
+  "messages": [
+    {
+      "id": "msg-fbe076493b7e",
+      "message_id": "<AANLkTin5Pa8uNHHfzhVgzGnaw-ymMXaR3=pe95P6+aGq@mail.gmail.com>",
+      "from_name": "Xiaobo Gu",
+      "from_email_hash": "176108762e20fc40c0ea5782a4cf2388d4cba8cdadb1f5a5481fccf34141e262",
+      "date": "2010-11-01T10:17:07+08:00",
+      "subject": "[R-sig-DB] Data type error with RpgSQL on Windows XP SP3 32bit",
+      "subject_clean": "Data type error with RpgSQL on Windows XP SP3 32bit",
+      "in_reply_to": "<19661.41720.845742.291601@max.nulle.part>",
+      "references": [
+        "<AANLkTik8nwN1qJFByPTspUtLj-bD9D-jqZ7xteuOTGHV@mail.gmail.com>",
+        "<19661.28312.520318.108726@max.nulle.part>",
+        "<AANLkTikvdrTknS4Gju7kwH__o-tK8fEWQBF+AWGm0PWS@mail.gmail.com>",
+        "<19661.41720.845742.291601@max.nulle.part>"
+      ],
+      "body_plain": "Hi,\nWhat's the versions for all the related components, R, DBI, rJava,RJDBC,\nRpgSQL, PostgreSQL JDBC?\n\nRegards,\n\nXiaobo Gu\n\n\nOn Mon, Nov 1, 2010 at 1:10 AM, Dirk Eddelbuettel <edd at debian.org> wrote:\n\n>\n> On 31 October 2010 at 13:03, Gabor Grothendieck wrote:\n> | On Sun, Oct 31, 2010 at 9:26 AM, Dirk Eddelbuettel <edd at debian.org>\n> wrote:\n> | > Try casting the (SQL) date to (SQL) character, you can probably load\n> the\n> | > character into R and parse again as an (R) Date.\n> | >\n> |\n> | RpgSQL directly supports Date type.  It should not be necessary to\n> | convert it to a character.\n>\n> Thanks for the clarification.  I didn't mean to imply that RpgSQL didn't\n> have\n> this feature and was just trying to help the OP with an alternate approach.\n>\n> Dirk\n>\n> --\n> Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi,\nWhat's the versions for all the related components, R, DBI, rJava,RJDBC,\nRpgSQL, PostgreSQL JDBC?\n\nRegards,\n\nXiaobo Gu\n\n\nOn Mon, Nov 1, 2010 at 1:10 AM, Dirk Eddelbuettel <edd at debian.org> wrote",
+      "thread_id": "thread-fbe076493b7e",
+      "thread_depth": 0,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-ccc7eca2bbb5",
+      "message_id": "<19B29F5A-BEC4-4EBB-BCE2-9251386D6EC8@kenroku.kanazawa-u.ac.jp>",
+      "from_name": "Tomoaki NISHIYAMA",
+      "from_email_hash": "32104f251c35465c7b064ecaf7558a62b44d8fb01218b8a85e1f2cd3278271b5",
+      "date": "2010-11-01T14:42:56+09:00",
+      "subject": "[R-sig-DB] Data type error with RpgSQL on Windows XP SP3 32bit",
+      "subject_clean": "Data type error with RpgSQL on Windows XP SP3 32bit",
+      "in_reply_to": "<AANLkTim1iv3wqXKJPEDTYHTUHgq=fN1LWevWQhHOwtcd@mail.gmail.com>",
+      "references": [
+        "<AANLkTik8nwN1qJFByPTspUtLj-bD9D-jqZ7xteuOTGHV@mail.gmail.com>",
+        "<19661.28312.520318.108726@max.nulle.part>",
+        "<AANLkTikvdrTknS4Gju7kwH__o-tK8fEWQBF+AWGm0PWS@mail.gmail.com>",
+        "<19661.41720.845742.291601@max.nulle.part>",
+        "<AANLkTin5Pa8uNHHfzhVgzGnaw-ymMXaR3=pe95P6+aGq@mail.gmail.com>",
+        "<AANLkTim1iv3wqXKJPEDTYHTUHgq=fN1LWevWQhHOwtcd@mail.gmail.com>"
+      ],
+      "body_plain": "Hi,\n\nWhile the code presented by Gabor Grothendieck works fine.\n\n > options(RpgSQL.password = \"\", RpgSQL.dbname = \"testdb\",  \nRpgSLQ.user=\"testuser\")\n > con <- dbConnect(pgSQL())\n > ct <- 'CREATE TABLE DF (\"a\" INTEGER, \"b\" VARCHAR(255), \"c\"  \nDATE,\"d\" DOUBLE PRECISION)'\n > dbSendUpdate(con, ct)\n > DF <- data.frame(a = 1L, b = \"Hello\", c = Sys.Date(), d = 32)\n > dbSendUpdate(con, \"insert into DF values(1, 'Hello', to_date \n('2000-01-01', 'YYYY-MM-DD'), 32)\")\n > res <- dbGetQuery(con, \"select * from DF\")\n > res\n   a     b          c  d\n1 1 Hello 2000-01-01 32\n\n\nI found that when the database contain NULL value for the date field:\n(This is prepared with psql)\n\ntestdb=# insert into df values ('2', 'bye', NULL,'48');\nINSERT 0 1\ntestdb=# select * from df;\n  a |   b   |     c      | d\n---+-------+------------+----\n  1 | Hello | 2000-01-01 | 32\n  2 | bye   |            | 48\n(2 rows)\n\nThen, the original error (by Xiaobo Gu) could be reproduced.\n\n > res <- dbGetQuery(con, \"select * from DF\")\nError in as.Date.default(.jcall(res at jr, \"S\", \"getString\", i)) :\n   do not know how to convert '.jcall(res at jr, \"S\", \"getString\", i)'  \nto class \"Date\"\n\nSo, I guess there is some record with the c field having NULL value.\n-- \nTomoaki NISHIYAMA\n\nAdvanced Science Research Center,\nKanazawa University,\n13-1 Takara-machi,\nKanazawa, 920-0934, Japan",
+      "body_snippet": "Hi,\n\nWhile the code presented by Gabor Grothendieck works fine.\n\n > options(RpgSQL.password = \"\", RpgSQL.dbname = \"testdb\",  \nRpgSLQ.user=\"testuser\")\n > con <- dbConnect(pgSQL())\n > ct <- 'CREATE TABL",
+      "thread_id": "thread-ccc7eca2bbb5",
+      "thread_depth": 0,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-f17b0d38a502",
+      "message_id": "<AANLkTintR2PSvm0CHnt0gypSrmH3QCzZ_ni6hBqUkELU@mail.gmail.com>",
+      "from_name": "Xiaobo Gu",
+      "from_email_hash": "176108762e20fc40c0ea5782a4cf2388d4cba8cdadb1f5a5481fccf34141e262",
+      "date": "2010-11-01T15:46:28+08:00",
+      "subject": "[R-sig-DB] Data type error with RpgSQL on Windows XP SP3 32bit",
+      "subject_clean": "Data type error with RpgSQL on Windows XP SP3 32bit",
+      "in_reply_to": "<AANLkTim1iv3wqXKJPEDTYHTUHgq=fN1LWevWQhHOwtcd@mail.gmail.com>",
+      "references": [
+        "<AANLkTik8nwN1qJFByPTspUtLj-bD9D-jqZ7xteuOTGHV@mail.gmail.com>",
+        "<19661.28312.520318.108726@max.nulle.part>",
+        "<AANLkTikvdrTknS4Gju7kwH__o-tK8fEWQBF+AWGm0PWS@mail.gmail.com>",
+        "<19661.41720.845742.291601@max.nulle.part>",
+        "<AANLkTin5Pa8uNHHfzhVgzGnaw-ymMXaR3=pe95P6+aGq@mail.gmail.com>",
+        "<AANLkTim1iv3wqXKJPEDTYHTUHgq=fN1LWevWQhHOwtcd@mail.gmail.com>"
+      ],
+      "body_plain": "It works too, but the original problem still occurs.\n\ncon <- dbConnect(pgSQL(classPath=\"D:\\\\rtemp\\\\postgresql-8.4-702.jdbc4.zip\"))\n> ct <- 'CREATE TABLE DF (\"a\" INTEGER, \"b\" VARCHAR(255), \"c\" DATE,\"d\" DOUBLE\nPRECISION)'\n>  dbSendUpdate(con, ct)\n>\n> DF <- data.frame(a = 1L, b = \"Hello\", c = Sys.Date(), d = 32)\n> dbSendUpdate(con, \"insert into DF values(1, 'Hello', to_date('2000-01-01',\n'YYYY-MM-DD'), 32)\")\n> res <- dbGetQuery(con, \"select * from DF\")\n> res\n  a     b          c  d\n1 1 Hello 2000-01-01 32\n> str(res)\n'data.frame': 1 obs. of  4 variables:\n $ a: num 1\n $ b: Factor w/ 1 level \"Hello\": 1\n $ c:Class 'Date'  num 10957\n $ d: num 32\n>\n\nOn Mon, Nov 1, 2010 at 10:33 AM, Gabor Grothendieck <ggrothendieck at gmail.com\n> wrote:\n\n> On Sun, Oct 31, 2010 at 10:17 PM, Xiaobo Gu <guxiaobo1982 at gmail.com>\n> wrote:\n> > Hi,\n> > What's the versions for all the related components, R, DBI, rJava,RJDBC,\n> > RpgSQL, PostgreSQL JDBC?\n> >\n>\n> I am using the most recent versions of all packages and R 2.11.1\n> Patched on Windows Vista:\n>\n> > packageDescription(\"RJDBC\")$Version\n> [1] \"0.1-5\"\n> > packageDescription(\"DBI\")$Version\n> [1] \"0.2-5\"\n> > packageDescription(\"rJava\")$Version\n> [1] \"0.8-7\"\n> > packageDescription(\"RpgSQL\")$Version\n> [1] \"0.1-3.2\"\n> > R.version.string\n> [1] \"R version 2.11.1 Patched (2010-05-31 r52167)\"\n> > win.version()\n> [1] \"Windows Vista (build 6002) Service Pack 2\"\n>\n> The Windows binary of rJava seems currently not to be available on CRAN:\n> http://cran.r-project.org/web/packages/rJava/index.html\n> but you can build it yourself or get it from R-Forge.\n>\n> Did you try running the reproducible example in my email?  Did it work for\n> you?\n>\n> --\n> Statistics & Software Consulting\n> GKX Group, GKX Associates Inc.\n> tel: 1-877-GKX-GROUP\n> email: ggrothendieck at gmail.com\n>\n\n\n\nOn Mon, Nov 1, 2010 at 10:33 AM, Gabor Grothendieck <ggrothendieck at gmail.com\n> wrote:\n\n> On Sun, Oct 31, 2010 at 10:17 PM, Xiaobo Gu <guxiaobo1982 at gmail.com>\n> wrote:\n> > Hi,\n> > What's the versions for all the related components, R, DBI, rJava,RJDBC,\n> > RpgSQL, PostgreSQL JDBC?\n> >\n>\n> I am using the most recent versions of all packages and R 2.11.1\n> Patched on Windows Vista:\n>\n> > packageDescription(\"RJDBC\")$Version\n> [1] \"0.1-5\"\n> > packageDescription(\"DBI\")$Version\n> [1] \"0.2-5\"\n> > packageDescription(\"rJava\")$Version\n> [1] \"0.8-7\"\n> > packageDescription(\"RpgSQL\")$Version\n> [1] \"0.1-3.2\"\n> > R.version.string\n> [1] \"R version 2.11.1 Patched (2010-05-31 r52167)\"\n> > win.version()\n> [1] \"Windows Vista (build 6002) Service Pack 2\"\n>\n> The Windows binary of rJava seems currently not to be available on CRAN:\n> http://cran.r-project.org/web/packages/rJava/index.html\n> but you can build it yourself or get it from R-Forge.\n>\n> Did you try running the reproducible example in my email?  Did it work for\n> you?\n>\n> --\n> Statistics & Software Consulting\n> GKX Group, GKX Associates Inc.\n> tel: 1-877-GKX-GROUP\n> email: ggrothendieck at gmail.com\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "It works too, but the original problem still occurs.\n\ncon <- dbConnect(pgSQL(classPath=\"D:\\\\rtemp\\\\postgresql-8.4-702.jdbc4.zip\"))\n> ct <- 'CREATE TABLE DF (\"a\" INTEGER, \"b\" VARCHAR(255), \"c\" DATE,\"d\"",
+      "thread_id": "thread-f17b0d38a502",
+      "thread_depth": 0,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-a8da181fcd36",
+      "message_id": "<AANLkTinzKTE76Ee11pkeX-zK8axXSAL5iir6K6XMKtLn@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2010-11-01T08:11:24-04:00",
+      "subject": "[R-sig-DB] Data type error with RpgSQL on Windows XP SP3 32bit",
+      "subject_clean": "Data type error with RpgSQL on Windows XP SP3 32bit",
+      "in_reply_to": "<19B29F5A-BEC4-4EBB-BCE2-9251386D6EC8@kenroku.kanazawa-u.ac.jp>",
+      "references": [
+        "<AANLkTik8nwN1qJFByPTspUtLj-bD9D-jqZ7xteuOTGHV@mail.gmail.com>",
+        "<19661.28312.520318.108726@max.nulle.part>",
+        "<AANLkTikvdrTknS4Gju7kwH__o-tK8fEWQBF+AWGm0PWS@mail.gmail.com>",
+        "<19661.41720.845742.291601@max.nulle.part>",
+        "<AANLkTin5Pa8uNHHfzhVgzGnaw-ymMXaR3=pe95P6+aGq@mail.gmail.com>",
+        "<AANLkTim1iv3wqXKJPEDTYHTUHgq=fN1LWevWQhHOwtcd@mail.gmail.com>",
+        "<19B29F5A-BEC4-4EBB-BCE2-9251386D6EC8@kenroku.kanazawa-u.ac.jp>"
+      ],
+      "body_plain": "On Mon, Nov 1, 2010 at 1:42 AM, Tomoaki NISHIYAMA\n<tomoakin at kenroku.kanazawa-u.ac.jp> wrote:\n> Hi,\n>\n> While the code presented by Gabor Grothendieck works fine.\n>\n>> options(RpgSQL.password = \"\", RpgSQL.dbname = \"testdb\",\n>> RpgSLQ.user=\"testuser\")\n>> con <- dbConnect(pgSQL())\n>> ct <- 'CREATE TABLE DF (\"a\" INTEGER, \"b\" VARCHAR(255), \"c\" DATE,\"d\" DOUBLE\n>> PRECISION)'\n>> dbSendUpdate(con, ct)\n>> DF <- data.frame(a = 1L, b = \"Hello\", c = Sys.Date(), d = 32)\n>> dbSendUpdate(con, \"insert into DF values(1, 'Hello', to_date('2000-01-01',\n>> 'YYYY-MM-DD'), 32)\")\n>> res <- dbGetQuery(con, \"select * from DF\")\n>> res\n> ?a ? ? b ? ? ? ? ?c ?d\n> 1 1 Hello 2000-01-01 32\n>\n>\n> I found that when the database contain NULL value for the date field:\n> (This is prepared with psql)\n>\n> testdb=# insert into df values ('2', 'bye', NULL,'48');\n> INSERT 0 1\n> testdb=# select * from df;\n> ?a | ? b ? | ? ? c ? ? ?| d\n> ---+-------+------------+----\n> ?1 | Hello | 2000-01-01 | 32\n> ?2 | bye ? | ? ? ? ? ? ?| 48\n> (2 rows)\n>\n> Then, the original error (by Xiaobo Gu) could be reproduced.\n>\n>> res <- dbGetQuery(con, \"select * from DF\")\n> Error in as.Date.default(.jcall(res at jr, \"S\", \"getString\", i)) :\n> ?do not know how to convert '.jcall(res at jr, \"S\", \"getString\", i)' to class\n> \"Date\"\n>\n> So, I guess there is some record with the c field having NULL value.\n\nThanks.  I was able to reproduce the problem using your observation:\n\n> library(RpgSQL)\n> con <- dbConnect(pgSQL())\n> ct <- 'CREATE TABLE DF (\"a\" INTEGER, \"b\" VARCHAR(255), \"c\" DATE,\"d\" DOUBLE PRECISION)'\n> dbSendUpdate(con, ct)\n> dbSendUpdate(con, \"insert into DF values(1, 'Hello', to_date('2000-01-01', 'YYYY-MM-DD'), 32)\")\n> dbSendUpdate(con, \"insert into DF values(2, 'World', Null, 33)\")\n> res <- dbGetQuery(con, \"select * from DF\")\nError in as.Date.default(.jcall(res at jr, \"S\", \"getString\", i)) :\n  do not know how to convert '.jcall(res at jr, \"S\", \"getString\", i)' to\nclass \"Date\"\n\nI will look into this.\n\n-- \nStatistics & Software Consulting\nGKX Group, GKX Associates Inc.\ntel: 1-877-GKX-GROUP\nemail: ggrothendieck at gmail.com",
+      "body_snippet": "On Mon, Nov 1, 2010 at 1:42 AM, Tomoaki NISHIYAMA\n<tomoakin at kenroku.kanazawa-u.ac.jp> wrote:\n> Hi,\n>\n> While the code presented by Gabor Grothendieck works fine.\n>\n>> options(RpgSQL.password = \"\", ",
+      "thread_id": "thread-ccc7eca2bbb5",
+      "thread_depth": 1,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-5f210430a339",
+      "message_id": "<AANLkTikRep6E=_JxEyNnQccQeFz+0jSvnsmvd-=g8gG1@mail.gmail.com>",
+      "from_name": "Xiaobo Gu",
+      "from_email_hash": "176108762e20fc40c0ea5782a4cf2388d4cba8cdadb1f5a5481fccf34141e262",
+      "date": "2010-11-01T20:17:07+08:00",
+      "subject": "[R-sig-DB] R-sig-DB Digest, Vol 73, Issue 2",
+      "subject_clean": "R-sig-DB Digest, Vol 73, Issue 2",
+      "in_reply_to": "<mailman.11.1288609206.16331.r-sig-db@stat.math.ethz.ch>",
+      "references": [
+        "<mailman.11.1288609206.16331.r-sig-db@stat.math.ethz.ch>"
+      ],
+      "body_plain": "Hi Tomoaki NISHIYAMA\n\nYou are right, we have NULL in the c column, and  dbGetQuery works fine with\nnone NULL columns .\n\nXiaobo\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi Tomoaki NISHIYAMA\n\nYou are right, we have NULL in the c column, and  dbGetQuery works fine with\nnone NULL columns .\n\nXiaobo\n\n\t[[alternative HTML version deleted]]",
+      "thread_id": "thread-5f210430a339",
+      "thread_depth": 0,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-b56b82b6b872",
+      "message_id": "<003d01cb79c5$bf49e3c0$3dddab40$@com>",
+      "from_name": "Xiaobo Gu",
+      "from_email_hash": "176108762e20fc40c0ea5782a4cf2388d4cba8cdadb1f5a5481fccf34141e262",
+      "date": "2010-11-01T21:07:27+08:00",
+      "subject": "[R-sig-DB] Does RpgSQL implement dbHasCompleted function?",
+      "subject_clean": "Does RpgSQL implement dbHasCompleted function?",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\n     I write the following the code to retrieve very large result set and do some other processing by chunk, but the error message shows there is not an implementation for pgSQLResult for dbHasCompleted function.\n\n \n\nCan you package mantainers implement it for me please?\n\n \n\n \n\nunable to find an inherited method for function \"dbHasCompleted\", for signature \"pgSQLResult\"\n\n \n\n \n\n     while(!dbHasCompleted(res)){\n\n        \n\n         data1 <- fetch(res, next.rows)\n\n#other processing with data1\n\n     }\n\n \n\n \n\n \n\nXiaobo.Gu\n\n \n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi,\n\n     I write the following the code to retrieve very large result set and do some other processing by chunk, but the error message shows there is not an implementation for pgSQLResult for dbHasCo",
+      "thread_id": "thread-b56b82b6b872",
+      "thread_depth": 0,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-4ede606db59d",
+      "message_id": "<AANLkTimqqbizfmD9c5zp3Gp=GoQgu5OS5qyf2WxR=NKR@mail.gmail.com>",
+      "from_name": "Xiaobo Gu",
+      "from_email_hash": "176108762e20fc40c0ea5782a4cf2388d4cba8cdadb1f5a5481fccf34141e262",
+      "date": "2010-11-05T20:28:09+08:00",
+      "subject": "[R-sig-DB] dbClearResult function error in package RpgSQL",
+      "subject_clean": "dbClearResult function error in package RpgSQL",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\nWhen I call the  dbClearResult(res) in package RpgSQL, the following  error\nmessage occurs:\n\nError is(object, Cl) : no function \"jcall\"\n\nNote: the above error message is translated from Simplified Chinese.\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi,\n\nWhen I call the  dbClearResult(res) in package RpgSQL, the following  error\nmessage occurs:\n\nError is(object, Cl) : no function \"jcall\"\n\nNote: the above error message is translated from Simplifie",
+      "thread_id": "thread-4ede606db59d",
+      "thread_depth": 0,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-22c700553854",
+      "message_id": "<AANLkTin69P_qDmiwGvAom18nubbZgLa67x3Zz3bzT8F6@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2010-11-05T09:57:48-04:00",
+      "subject": "[R-sig-DB] dbClearResult function error in package RpgSQL",
+      "subject_clean": "dbClearResult function error in package RpgSQL",
+      "in_reply_to": "<AANLkTimqqbizfmD9c5zp3Gp=GoQgu5OS5qyf2WxR=NKR@mail.gmail.com>",
+      "references": [
+        "<AANLkTimqqbizfmD9c5zp3Gp=GoQgu5OS5qyf2WxR=NKR@mail.gmail.com>"
+      ],
+      "body_plain": "Hi, RpgSQL is a thin layer over RJDBC and so only supports its\nfunctions.  dbClearResults and hasCompleted seem not to be currently\nsupported by RJDBC (I grep'd through its source code and do not see\nthem mentioned) but perhaps it will in the future.  If RJDBC does\nsupport them in the future then RpgSQL should automatically inherit\nthem.\n\nOn Fri, Nov 5, 2010 at 8:28 AM, Xiaobo Gu <guxiaobo1982 at gmail.com> wrote:\n> Hi,\n>\n> When I call the ?dbClearResult(res) in package RpgSQL, the following ?error\n> message occurs:\n>\n> Error is(object, Cl) : no function \"jcall\"\n>\n> Note: the above error message is translated from Simplified Chinese.\n>\n> ? ? ? ?[[alternative HTML version deleted]]\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n\n\n-- \nStatistics & Software Consulting\nGKX Group, GKX Associates Inc.\ntel: 1-877-GKX-GROUP\nemail: ggrothendieck at gmail.com",
+      "body_snippet": "Hi, RpgSQL is a thin layer over RJDBC and so only supports its\nfunctions.  dbClearResults and hasCompleted seem not to be currently\nsupported by RJDBC (I grep'd through its source code and do not see\n",
+      "thread_id": "thread-4ede606db59d",
+      "thread_depth": 1,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-aac5f26cd6c7",
+      "message_id": "<1288986856.6010.1403827081@webmail.messagingengine.com>",
+      "from_name": "Jan Theodore Galkowski",
+      "from_email_hash": "e1ab9ca9fe2042cb7e8bd6c9a6eee0f6b814228a8a8becda1f8b64d6c27756eb",
+      "date": "2010-11-05T19:54:16Z",
+      "subject": "[R-sig-DB] connecting to remote database using RMySQL, from WinXP Pro",
+      "subject_clean": "connecting to remote database using RMySQL, from WinXP Pro",
+      "in_reply_to": "<1288985551.1684.1403823987@webmail.messagingengine.com>",
+      "references": [
+        "<1288983872.29111.1403819539@webmail.messagingengine.com>",
+        "<AANLkTinOtoy6hMcSJDJ2ROB-5w3nZdsj-4wh9-MCDgCN@mail.gmail.com>",
+        "<1288985551.1684.1403823987@webmail.messagingengine.com>"
+      ],
+      "body_plain": "(Sorry, cross-posted from R-Help to more appropriate venue.)\n\nOn Fri, 05 Nov 2010 19:32 +0000, \"Jan Theodore Galkowski\"\n<bayesianlogic at acm.org> wrote:\n\nYes, what happens when I do that is:\n\nR version 2.11.1 (2010-05-31)\nCopyright (C) 2010 The R Foundation for Statistical Computing\nISBN 3-900051-07-0\n[snip]\n> Sys.getenv(\"MYSQL_USER\")\nMYSQL_USER\n\"mf1\"\n> # As an example. Other env vars are defined.\n> library(RMySQL)\nLoading required package: DBI\nError : .onLoad failed in loadNamespace() for 'RMySQL', details:\ncall: utils::readRegistry(\"SOFTWARE\\\\MySQL AB\", hive = \"HLM\",\nmaxdepth = 2)\nerror: Registry key 'SOFTWARE\\MySQL AB' not found\nError: package/namespace load failed for 'RMySQL'\n>\n\nI don't even get to do anything more.\n\n - Jan\n\n\nOn Fri, 05 Nov 2010 17:14 -0200, \"Henrique Dallazuanna\"\n<wwwhsd at gmail.com> wrote:\n\n  library(RMySQL)\n  conn <- dbConnect(MySQL(), user = 'user', password =\n  'password', host = '[1]your_host.com')\n  Look at [2]http://biostat.mc.vanderbilt.edu/RMySQL for more\n  information\n\nOn Fri, Nov 5, 2010 at 5:04 PM, Jan Theodore Galkowski\n<[3]bayesianlogic at acm.org> wrote:\n\n  Apologies if this is the wrong place to ask.  I'm not aware of\n  a\n  mail list devoted to database interfaces.  Please direct me if\n  so.\n  I am trying to use TSMySQL. It loads RMySQL, and apparent the\n  CRAN version has an .onLoad script which seeks out the local\n  MySQL server.  If that fails, the package fails to load.\n  Thing is, I'm trying to access a MySQL database on a remote\n  machine for which I have authorized access. Anyone know how to\n  do\n  this, or suggest where I can find out?\n  Thanks.  I have successfully accessed remote databases using\n  RODBC.  Is that how I need to go?\n   - Jan\n\n\n\n[snip]\n\nReferences\n\n1. http://your_host.com/\n2. http://biostat.mc.vanderbilt.edu/RMySQL\n3. mailto:bayesianlogic at acm.org\n--\n  Jan Theodore Galkowski  (o?)\n\n  607.239.1834 [mobile]\n  607.239.1834 [home]\n  617.444.4995 [work]\n\n bayesianlogic at acm.org\n http://www.linkedin.com/in/deepdevelopment\n\n\n \"Eppur si muove.\" --Galilei\n\n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "(Sorry, cross-posted from R-Help to more appropriate venue.)\n\nOn Fri, 05 Nov 2010 19:32 +0000, \"Jan Theodore Galkowski\"\n<bayesianlogic at acm.org> wrote:\n\nYes, what happens when I do that is:\n\nR versi",
+      "thread_id": "thread-aac5f26cd6c7",
+      "thread_depth": 0,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-2f5c13e06936",
+      "message_id": "<36705200-2C8C-48B0-8159-897B6872182C@kenroku.kanazawa-u.ac.jp>",
+      "from_name": "Tomoaki NISHIYAMA",
+      "from_email_hash": "32104f251c35465c7b064ecaf7558a62b44d8fb01218b8a85e1f2cd3278271b5",
+      "date": "2010-11-06T09:54:34+09:00",
+      "subject": "[R-sig-DB] connecting to remote database using RMySQL, from WinXP Pro",
+      "subject_clean": "connecting to remote database using RMySQL, from WinXP Pro",
+      "in_reply_to": "<1288986856.6010.1403827081@webmail.messagingengine.com>",
+      "references": [
+        "<1288983872.29111.1403819539@webmail.messagingengine.com>",
+        "<AANLkTinOtoy6hMcSJDJ2ROB-5w3nZdsj-4wh9-MCDgCN@mail.gmail.com>",
+        "<1288985551.1684.1403823987@webmail.messagingengine.com>",
+        "<1288986856.6010.1403827081@webmail.messagingengine.com>"
+      ],
+      "body_plain": "Hi,\n\nDid you exactly follow http://biostat.mc.vanderbilt.edu/wiki/Main/RMySQL\n?\nespecially MYSQL_HOMEE environmental variable and\nMySQL client library install path?\n\nIf you followed the instruction you would have shown\nSys.getenv('MYSQL_HOME')\ninstead of Sys.getenv(\"MYSQL_USER\")\nSee, the difference of HOME and USER.\n\nThe message says the R couldn't find MySQL library and the\nlocation will be directed by MYSQL_HOME.\n-- \nTomoaki NISHIYAMA\n\nAdvanced Science Research Center,\nKanazawa University,\n13-1 Takara-machi,\nKanazawa, 920-0934, Japan\n\n\nOn 2010/11/06, at 4:54, Jan Theodore Galkowski wrote:\n\n> (Sorry, cross-posted from R-Help to more appropriate venue.)\n>\n> On Fri, 05 Nov 2010 19:32 +0000, \"Jan Theodore Galkowski\"\n> <bayesianlogic at acm.org> wrote:\n>\n> Yes, what happens when I do that is:\n>\n> R version 2.11.1 (2010-05-31)\n> Copyright (C) 2010 The R Foundation for Statistical Computing\n> ISBN 3-900051-07-0\n> [snip]\n>> Sys.getenv(\"MYSQL_USER\")\n> MYSQL_USER\n> \"mf1\"\n>> # As an example. Other env vars are defined.\n>> library(RMySQL)\n> Loading required package: DBI\n> Error : .onLoad failed in loadNamespace() for 'RMySQL', details:\n> call: utils::readRegistry(\"SOFTWARE\\\\MySQL AB\", hive = \"HLM\",\n> maxdepth = 2)\n> error: Registry key 'SOFTWARE\\MySQL AB' not found\n> Error: package/namespace load failed for 'RMySQL'\n>>\n>\n> I don't even get to do anything more.\n>\n>  - Jan\n>\n>\n> On Fri, 05 Nov 2010 17:14 -0200, \"Henrique Dallazuanna\"\n> <wwwhsd at gmail.com> wrote:\n>\n>   library(RMySQL)\n>   conn <- dbConnect(MySQL(), user = 'user', password =\n>   'password', host = '[1]your_host.com')\n>   Look at [2]http://biostat.mc.vanderbilt.edu/RMySQL for more\n>   information\n>\n> On Fri, Nov 5, 2010 at 5:04 PM, Jan Theodore Galkowski\n> <[3]bayesianlogic at acm.org> wrote:\n>\n>   Apologies if this is the wrong place to ask.  I'm not aware of\n>   a\n>   mail list devoted to database interfaces.  Please direct me if\n>   so.\n>   I am trying to use TSMySQL. It loads RMySQL, and apparent the\n>   CRAN version has an .onLoad script which seeks out the local\n>   MySQL server.  If that fails, the package fails to load.\n>   Thing is, I'm trying to access a MySQL database on a remote\n>   machine for which I have authorized access. Anyone know how to\n>   do\n>   this, or suggest where I can find out?\n>   Thanks.  I have successfully accessed remote databases using\n>   RODBC.  Is that how I need to go?\n>    - Jan\n>\n>\n>\n> [snip]\n>\n> References\n>\n> 1. http://your_host.com/\n> 2. http://biostat.mc.vanderbilt.edu/RMySQL\n> 3. mailto:bayesianlogic at acm.org\n> --\n>   Jan Theodore Galkowski  (o?)\n>\n>   607.239.1834 [mobile]\n>   607.239.1834 [home]\n>   617.444.4995 [work]\n>\n>  bayesianlogic at acm.org\n>  http://www.linkedin.com/in/deepdevelopment\n>\n>\n>  \"Eppur si muove.\" --Galilei\n>\n>\n>\n> \t[[alternative HTML version deleted]]\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "Hi,\n\nDid you exactly follow http://biostat.mc.vanderbilt.edu/wiki/Main/RMySQL\n?\nespecially MYSQL_HOMEE environmental variable and\nMySQL client library install path?\n\nIf you followed the instruction yo",
+      "thread_id": "thread-aac5f26cd6c7",
+      "thread_depth": 1,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-aa9f00077699",
+      "message_id": "<000c01cb7d5c$47d70c10$d7852430$@com>",
+      "from_name": "Xiaobo Gu",
+      "from_email_hash": "176108762e20fc40c0ea5782a4cf2388d4cba8cdadb1f5a5481fccf34141e262",
+      "date": "2010-11-06T10:42:34+08:00",
+      "subject": "[R-sig-DB] dbClearResult function error in package RpgSQL",
+      "subject_clean": "dbClearResult function error in package RpgSQL",
+      "in_reply_to": "<AANLkTin69P_qDmiwGvAom18nubbZgLa67x3Zz3bzT8F6@mail.gmail.com>",
+      "references": [
+        "<AANLkTimqqbizfmD9c5zp3Gp=GoQgu5OS5qyf2WxR=NKR@mail.gmail.com>",
+        "<AANLkTin69P_qDmiwGvAom18nubbZgLa67x3Zz3bzT8F6@mail.gmail.com>"
+      ],
+      "body_plain": "I see, then I'll avoid using them now, what about the NULL problem with dbGetQuery, is there any good news?\n\nXiaobo.Gu\n\n>>-----Original Message-----\n>>From: Gabor Grothendieck [mailto:ggrothendieck at gmail.com]\n>>Sent: Friday, November 05, 2010 9:58 PM\n>>To: Xiaobo Gu\n>>Cc: r-sig-db at stat.math.ethz.ch\n>>Subject: Re: [R-sig-DB] dbClearResult function error in package RpgSQL\n>>\n>>Hi, RpgSQL is a thin layer over RJDBC and so only supports its\n>>functions.  dbClearResults and hasCompleted seem not to be currently\n>>supported by RJDBC (I grep'd through its source code and do not see\n>>them mentioned) but perhaps it will in the future.  If RJDBC does\n>>support them in the future then RpgSQL should automatically inherit\n>>them.\n>>\n>>On Fri, Nov 5, 2010 at 8:28 AM, Xiaobo Gu <guxiaobo1982 at gmail.com> wrote:\n>>> Hi,\n>>>\n>>> When I call the  dbClearResult(res) in package RpgSQL, the following  error\n>>> message occurs:\n>>>\n>>> Error is(object, Cl) : no function \"jcall\"\n>>>\n>>> Note: the above error message is translated from Simplified Chinese.\n>>>\n>>>        [[alternative HTML version deleted]]\n>>>\n>>> _______________________________________________\n>>> R-sig-DB mailing list -- R Special Interest Group\n>>> R-sig-DB at stat.math.ethz.ch\n>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>>>\n>>\n>>\n>>\n>>--\n>>Statistics & Software Consulting\n>>GKX Group, GKX Associates Inc.\n>>tel: 1-877-GKX-GROUP\n>>email: ggrothendieck at gmail.com",
+      "body_snippet": "I see, then I'll avoid using them now, what about the NULL problem with dbGetQuery, is there any good news?\n\nXiaobo.Gu\n\n>>-----Original Message-----\n>>From: Gabor Grothendieck [mailto:ggrothendieck at",
+      "thread_id": "thread-4ede606db59d",
+      "thread_depth": 2,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-27dc458d3b61",
+      "message_id": "<AANLkTi=x8LNmX9n9mj=oRc+F=Yo=5vJSP2esgvfU2muo@mail.gmail.com>",
+      "from_name": "Xiaobo Gu",
+      "from_email_hash": "176108762e20fc40c0ea5782a4cf2388d4cba8cdadb1f5a5481fccf34141e262",
+      "date": "2010-11-06T11:11:50+08:00",
+      "subject": "[R-sig-DB] Data type error with RpgSQL on Windows XP SP3 32bit",
+      "subject_clean": "Data type error with RpgSQL on Windows XP SP3 32bit",
+      "in_reply_to": "<AANLkTintR2PSvm0CHnt0gypSrmH3QCzZ_ni6hBqUkELU@mail.gmail.com>",
+      "references": [
+        "<AANLkTik8nwN1qJFByPTspUtLj-bD9D-jqZ7xteuOTGHV@mail.gmail.com>",
+        "<19661.28312.520318.108726@max.nulle.part>",
+        "<AANLkTikvdrTknS4Gju7kwH__o-tK8fEWQBF+AWGm0PWS@mail.gmail.com>",
+        "<19661.41720.845742.291601@max.nulle.part>",
+        "<AANLkTin5Pa8uNHHfzhVgzGnaw-ymMXaR3=pe95P6+aGq@mail.gmail.com>",
+        "<AANLkTim1iv3wqXKJPEDTYHTUHgq=fN1LWevWQhHOwtcd@mail.gmail.com>",
+        "<AANLkTintR2PSvm0CHnt0gypSrmH3QCzZ_ni6hBqUkELU@mail.gmail.com>"
+      ],
+      "body_plain": "Hi,\nThe fetch function in RpgSQL can't handle date column with NULL too,\nbut it can handle integer, character, timestamp, time, and numeric\ncolumns with NULLs.\n\nXiaobo\n\nOn Mon, Nov 1, 2010 at 3:46 PM, Xiaobo Gu <guxiaobo1982 at gmail.com> wrote:\n> It works too, but the original problem still occurs.\n>\n> con <- dbConnect(pgSQL(classPath=\"D:\\\\rtemp\\\\postgresql-8.4-702.jdbc4.zip\"))\n>> ct <- 'CREATE TABLE DF (\"a\" INTEGER, \"b\" VARCHAR(255), \"c\" DATE,\"d\" DOUBLE\n>> PRECISION)'\n>>? dbSendUpdate(con, ct)\n>>\n>> DF <- data.frame(a = 1L, b = \"Hello\", c = Sys.Date(), d = 32)\n>> dbSendUpdate(con, \"insert into DF values(1, 'Hello', to_date('2000-01-01',\n>> 'YYYY-MM-DD'), 32)\")\n>> res <- dbGetQuery(con, \"select * from DF\")\n>> res\n> ? a???? b????????? c? d\n> 1 1 Hello 2000-01-01 32\n>> str(res)\n> 'data.frame':?1 obs. of? 4 variables:\n> ?$ a: num 1\n> ?$ b: Factor w/ 1 level \"Hello\": 1\n> ?$ c:Class 'Date'? num 10957\n> ?$ d: num 32\n>>\n>\n> On Mon, Nov 1, 2010 at 10:33 AM, Gabor Grothendieck\n> <ggrothendieck at gmail.com> wrote:\n>>\n>> On Sun, Oct 31, 2010 at 10:17 PM, Xiaobo Gu <guxiaobo1982 at gmail.com>\n>> wrote:\n>> > Hi,\n>> > What's the versions for all the related components, R, DBI, rJava,RJDBC,\n>> > RpgSQL, PostgreSQL JDBC?\n>> >\n>>\n>> I am using the most recent versions of all packages and R 2.11.1\n>> Patched on Windows Vista:\n>>\n>> > packageDescription(\"RJDBC\")$Version\n>> [1] \"0.1-5\"\n>> > packageDescription(\"DBI\")$Version\n>> [1] \"0.2-5\"\n>> > packageDescription(\"rJava\")$Version\n>> [1] \"0.8-7\"\n>> > packageDescription(\"RpgSQL\")$Version\n>> [1] \"0.1-3.2\"\n>> > R.version.string\n>> [1] \"R version 2.11.1 Patched (2010-05-31 r52167)\"\n>> > win.version()\n>> [1] \"Windows Vista (build 6002) Service Pack 2\"\n>>\n>> The Windows binary of rJava seems currently not to be available on CRAN:\n>> http://cran.r-project.org/web/packages/rJava/index.html\n>> but you can build it yourself or get it from R-Forge.\n>>\n>> Did you try running the reproducible example in my email? ?Did it work for\n>> you?\n>>\n>> --\n>> Statistics & Software Consulting\n>> GKX Group, GKX Associates Inc.\n>> tel: 1-877-GKX-GROUP\n>> email: ggrothendieck at gmail.com\n>\n>\n>\n> On Mon, Nov 1, 2010 at 10:33 AM, Gabor Grothendieck\n> <ggrothendieck at gmail.com> wrote:\n>>\n>> On Sun, Oct 31, 2010 at 10:17 PM, Xiaobo Gu <guxiaobo1982 at gmail.com>\n>> wrote:\n>> > Hi,\n>> > What's the versions for all the related components, R, DBI, rJava,RJDBC,\n>> > RpgSQL, PostgreSQL JDBC?\n>> >\n>>\n>> I am using the most recent versions of all packages and R 2.11.1\n>> Patched on Windows Vista:\n>>\n>> > packageDescription(\"RJDBC\")$Version\n>> [1] \"0.1-5\"\n>> > packageDescription(\"DBI\")$Version\n>> [1] \"0.2-5\"\n>> > packageDescription(\"rJava\")$Version\n>> [1] \"0.8-7\"\n>> > packageDescription(\"RpgSQL\")$Version\n>> [1] \"0.1-3.2\"\n>> > R.version.string\n>> [1] \"R version 2.11.1 Patched (2010-05-31 r52167)\"\n>> > win.version()\n>> [1] \"Windows Vista (build 6002) Service Pack 2\"\n>>\n>> The Windows binary of rJava seems currently not to be available on CRAN:\n>> http://cran.r-project.org/web/packages/rJava/index.html\n>> but you can build it yourself or get it from R-Forge.\n>>\n>> Did you try running the reproducible example in my email? ?Did it work for\n>> you?\n>>\n>> --\n>> Statistics & Software Consulting\n>> GKX Group, GKX Associates Inc.\n>> tel: 1-877-GKX-GROUP\n>> email: ggrothendieck at gmail.com\n>\n>",
+      "body_snippet": "Hi,\nThe fetch function in RpgSQL can't handle date column with NULL too,\nbut it can handle integer, character, timestamp, time, and numeric\ncolumns with NULLs.\n\nXiaobo\n\nOn Mon, Nov 1, 2010 at 3:46 PM,",
+      "thread_id": "thread-f17b0d38a502",
+      "thread_depth": 1,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-571788eaafbf",
+      "message_id": "<4CD62AC9.5090205@structuremonitoring.com>",
+      "from_name": "Spencer Graves",
+      "from_email_hash": "74d65542d39045b8f519f051690253c45d7423bc83fbcf361d3e6c7f58751916",
+      "date": "2010-11-06T21:27:53-07:00",
+      "subject": "[R-sig-DB] Installing RMySQL under CentOS 5.5 version of Linux?",
+      "subject_clean": "Installing RMySQL under CentOS 5.5 version of Linux?",
+      "in_reply_to": "<152CB81C-1198-451E-BDAF-347A86DBCAA1@kenroku.kanazawa-u.ac.jp>",
+      "references": [
+        "<4CC783FE.5080004@structuremonitoring.com>",
+        "<152CB81C-1198-451E-BDAF-347A86DBCAA1@kenroku.kanazawa-u.ac.jp>"
+      ],
+      "body_plain": "Thanks very much to Tomoaki, Dirk, Jeremy, Sean, Jack, and all \nwho responded to my earlier questions.  I fixed the CentOS problems by \nreplacing it with Fedora.\n\n\n       Now I have a different problem:  I'm trying to load just over 35 \nMB per day, 1 GB per month, into a MySQL database, and the time to load \na file of 5 one-second observation is roughly 0.1*N^(1/6) seconds, where \nN = the cumulative number of files loaded to that point.  Since 2^(1/6) \n= 1.12, each time the size of the database doubles, the time to load an \nobservation (or a file) increases by 12 percent.  The load time started \nat 90 ms per file.  Now it's closer to 1 second per file.  The size of \nthe file will double roughly 6 more times before I'm done with this \nproject, by which time the load time will be closer to 2 seconds per \nfile -- if something else doesn't break before then.  I don't think the \nproblem is with R, because I've restarted R several times, and the total \nmemory in use has not gone much over 400 MB = 12 percent of the 3.2 GB \navailable on this computer;  it's running nothing else at the moment.\n\n\n       Is it normal for the load time to increase with the size of the \ntable like this?  Should I specify an index for each table?  I did not.  \nI understood from the documentation that it would take the first \nvariable as the index under certain circumstances.\n\n\n       Is this peculiar to MySQL?  Might I have the same problem with \npostgreSQL?\n\n\n       What do people usually do to work around problems like this?\n\n\n       Thanks for your help.\n       Best Wishes,\n       Spencer\n\n\nOn 10/26/2010 7:13 PM, Tomoaki NISHIYAMA wrote:\n> Hi,\n>\n> Did you install mysql-devel package?\n> On CentOS\n> # yum install mysql-devel\n> as root. That should install the library and headers required for\n> MySQL client development.\n>\n> Provided R is well installed as user application\n> just\n> $ R CMD INSTALL RMySQL_0.7-5.tar.gz\n> after downloading works.\n> If it is common application, perhaps you need to\n> do it as root again.\n> -- Tomoaki NISHIYAMA\n>\n> Advanced Science Research Center,\n> Kanazawa University,\n> 13-1 Takara-machi,\n> Kanazawa, 920-0934, Japan\n>\n>\n> On 2010/10/27, at 10:44, Spencer Graves wrote:\n>\n>> Hello:\n>>\n>>\n>>       I'm not very unixed, and I'm trying to install RMySQL under \n>> CentOS 5.5 version of Linux.  I'm having trouble parsing the \n>> installation instructions, e.g., at \n>> \"http://cran.fhcrc.org/web/packages/RMySQL/INSTALL\".  Any suggestions?\n>>\n>>\n>>       Thanks,\n>>       Spencer\n>>\n>> _______________________________________________\n>> R-sig-DB mailing list -- R Special Interest Group\n>> R-sig-DB at stat.math.ethz.ch\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>>\n>\n>",
+      "body_snippet": "Thanks very much to Tomoaki, Dirk, Jeremy, Sean, Jack, and all \nwho responded to my earlier questions.  I fixed the CentOS problems by \nreplacing it with Fedora.\n\n\n       Now I have a different proble",
+      "thread_id": "thread-571788eaafbf",
+      "thread_depth": 0,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-566d18e70ec7",
+      "message_id": "<25881C42-50DB-4DF9-8400-78F292B0D5FA@kenroku.kanazawa-u.ac.jp>",
+      "from_name": "Tomoaki NISHIYAMA",
+      "from_email_hash": "32104f251c35465c7b064ecaf7558a62b44d8fb01218b8a85e1f2cd3278271b5",
+      "date": "2010-11-13T14:31:18+09:00",
+      "subject": "[R-sig-DB] Proposal of dbQuoteIdentifier for DBI specification",
+      "subject_clean": "Proposal of dbQuoteIdentifier for DBI specification",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello all,\n\nWe changed that the SQL identifiers be quoted instead of mangling in\nRPostgreSQL.  This allows proper distinction of capital and small  \nletters\nand make it possible to use the name as is what is defined in R world.\n\nThis was applied uniformly to tablename argument for\ndbWriteTable(), dbExistsTable(), dbReadTable(), and dbRemoveTable()\nfunctions.\n\nHowever, this makes difficulty in schema usage, as now '.' (period)\nis allowed as a part of tablename and cannot be regarded as a\nseparator. To allow construction of schema.table structure like\n\"s.che.ma\".\"ta.ble\", passing a vector c('s.che.ma', 'ta.ble')\ninstead of string will be perhaps helpful.\nEach element of the vector will be quoted and thereafter connected  \nwith '.'.\n\nI am aware that RSQLite had similar discussion for mangling / quoting\nabout one year ago\nhttps://stat.ethz.ch/pipermail/r-sig-db/2009q4/000753.html\nbut haven't found what the decision and what the future direction is.\n\nIn addition while identifier quoting for Postgresql is simple,\nthat looks different in MySQL that it is quote with back quote'`'\nrather than double quote and double quote works only under ANSI_QUOTES\noption.  So, if quoting rule is different among backends,\nperhaps it is worth to define dbQuoteIdentifier(con, name)\nas a common way to quote an identifier.\nPerl DBI has quote_identifier and have two forms of synopsis\n  $sql = $dbh->quote_identifier( $name );\n  $sql = $dbh->quote_identifier( $catalog, $schema, $table, \\%attr );\nhttp://search.cpan.org/~timb/DBI/DBI.pm#quote_identifier\nThe example given there is interesting that\n$id = $dbh->quote_identifier( 'link', 'schema', 'table' );\nshould produce \"schema\".\"table\"@\"link\" for oracle.\n\nSo, my proposal is that dbQuoteIdentifier() is defined similary that\nwith a single string argument that should be quoted.\nFor a vector argument two multiple strings, the two strings is  \ninterpreted\nas schema and tablename, and each element are quoted and concatenated  \naccording\nto the backend specification.\nFor a vector argument with three elements, the elements are  \ninterpreted as\ndbname, schema, and tablename. Each element are quoted and  \nconcatenated using\nthe rule appropriate for the back-end database management system.\n\nI think quote everything is the right way to go,\nand quoting should be made easier.\n\nBest wishes.\n-- \nTomoaki NISHIYAMA\n\nAdvanced Science Research Center,\nKanazawa University,\n13-1 Takara-machi,\nKanazawa, 920-0934, Japan",
+      "body_snippet": "Hello all,\n\nWe changed that the SQL identifiers be quoted instead of mangling in\nRPostgreSQL.  This allows proper distinction of capital and small  \nletters\nand make it possible to use the name as is ",
+      "thread_id": "thread-566d18e70ec7",
+      "thread_depth": 0,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-f950fa199d1d",
+      "message_id": "<AANLkTimb7yrr+mmaR6bu=vBO8Ftx_MaU-csJoxNzxj02@mail.gmail.com>",
+      "from_name": "Xiaobo Gu",
+      "from_email_hash": "176108762e20fc40c0ea5782a4cf2388d4cba8cdadb1f5a5481fccf34141e262",
+      "date": "2010-11-14T12:28:33+08:00",
+      "subject": "[R-sig-DB] character to factor transform in package RpgSQL",
+      "subject_clean": "character to factor transform in package RpgSQL",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\nI have looked at the source code of package RpgSQL, it seems the fetch\nfunction does not transform character column into factors, but when I\nuse the class function to test the result data frame of function\nfetch, it all tells factor, can you help identify which part of the\nfunction doing the transformation, in our usage we want to keep some\ncharacter column just as characters, bellowing is the source code of\nfunction fetch in package RpgSQL.\n\nRegards,\n\nXiaobo Gu\n\nsetMethod(\"fetch\", signature(res=\"pgSQLResult\", n=\"numeric\"),\ndef=function(res, n, ...) {\n  cols <- .jcall(res at md, \"I\", \"getColumnCount\")\n  if (cols < 1) return(NULL)\n  l <- list()\n  for (i in 1:cols) {\n    ct <- .jcall(res at md, \"I\", \"getColumnType\", i)\n    l[[i]] <- if (ct == -5 | ct ==-6 | (ct >= 2 & ct <= 8)) {\n           numeric()\n       } else if (ct == 91) {\n           structure(numeric(), class = \"Date\")\n       } else if (ct == 93) {\n           structure(numeric(), class = class(Sys.time()))\n       } else character()\n    names(l)[i] <- .jcall(res at md, \"S\", \"getColumnName\", i)\n  }\n\n  j <- 0\n  while (.jcall(res at jr, \"Z\", \"next\")) {\n    j <- j + 1\n    for (i in 1:cols) {\n      l[[i]][j] <- if (is.numeric(l[[i]])) {\n          l[[i]][j] <- .jcall(res at jr, \"D\", \"getDouble\", i)\n      } else if (inherits(l[[i]], \"Date\")) {\n        tentativeDate <- .jcall(res at jr, \"S\", \"getString\", i)\n\t    if (length(tentativeDate) == 0 || tentativeDate == \"0001-01-01\nBC\") tentativeDate <- NA\n        l[[i]][j] <- as.Date(tentativeDate)\n      } else {\n        a <- .jcall(res at jr, \"S\", \"getString\", i)\n        l[[i]][j] <- if (is.null(a)) NA else a\n      }\n    }\n    if (n > 0 && j >= n) break\n  }\n  if (j)\n    as.data.frame(l, row.names=1:j)\n  else\n    as.data.frame(l)\n})",
+      "body_snippet": "Hi,\nI have looked at the source code of package RpgSQL, it seems the fetch\nfunction does not transform character column into factors, but when I\nuse the class function to test the result data frame of",
+      "thread_id": "thread-f950fa199d1d",
+      "thread_depth": 0,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-0345402f2673",
+      "message_id": "<AANLkTim4UkFw2vDKnyK8bUO4=Jwq1ZGH8DHMypKv+nYR@mail.gmail.com>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2010-11-13T20:52:17-08:00",
+      "subject": "[R-sig-DB] character to factor transform in package RpgSQL",
+      "subject_clean": "character to factor transform in package RpgSQL",
+      "in_reply_to": "<AANLkTimb7yrr+mmaR6bu=vBO8Ftx_MaU-csJoxNzxj02@mail.gmail.com>",
+      "references": [
+        "<AANLkTimb7yrr+mmaR6bu=vBO8Ftx_MaU-csJoxNzxj02@mail.gmail.com>"
+      ],
+      "body_plain": "Hi,\n\nOn Sat, Nov 13, 2010 at 8:28 PM, Xiaobo Gu <guxiaobo1982 at gmail.com> wrote:\n> Hi,\n> I have looked at the source code of package RpgSQL, it seems the fetch\n> function does not transform character column into factors, but when I\n> use the class function to test the result data frame of function\n> fetch, it all tells factor, can you help identify which part of the\n> function doing the transformation, in our usage we want to keep some\n> character column just as characters, bellowing is the source code of\n> function fetch in package RpgSQL.\n\nA guess is that you are seeing the default behavior of data.frame (and\nlikely also as.data.frame) in transforming character vectors into\nfactors.\n\nSo I would suggest experimenting with this last bit:\n> ?if (j)\n> ? ?as.data.frame(l, row.names=1:j)\n> ?else\n> ? ?as.data.frame(l)\n> })\n\nFor example:\n\n    > sapply(as.data.frame(letters[1:3]), class)\n    letters[1:3]\n        \"factor\"\n    > sapply(as.data.frame(letters[1:3], stringsAsFactors=FALSE), class)\n    letters[1:3]\n     \"character\"\n\n\n+ seth\n\n\n-- \nSeth Falcon | @sfalcon | http://userprimary.net/",
+      "body_snippet": "Hi,\n\nOn Sat, Nov 13, 2010 at 8:28 PM, Xiaobo Gu <guxiaobo1982 at gmail.com> wrote:\n> Hi,\n> I have looked at the source code of package RpgSQL, it seems the fetch\n> function does not transform characte",
+      "thread_id": "thread-f950fa199d1d",
+      "thread_depth": 1,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-2d211e1b4b0f",
+      "message_id": "<AANLkTinZtgTe2JMTtQLRpwZ0z9eY2LSUjLd0rq_5Xxt+@mail.gmail.com>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2010-11-13T21:24:02-08:00",
+      "subject": "[R-sig-DB] Proposal of dbQuoteIdentifier for DBI specification",
+      "subject_clean": "Proposal of dbQuoteIdentifier for DBI specification",
+      "in_reply_to": "<25881C42-50DB-4DF9-8400-78F292B0D5FA@kenroku.kanazawa-u.ac.jp>",
+      "references": [
+        "<25881C42-50DB-4DF9-8400-78F292B0D5FA@kenroku.kanazawa-u.ac.jp>"
+      ],
+      "body_plain": "Hi there,\n\nOn Fri, Nov 12, 2010 at 9:31 PM, Tomoaki NISHIYAMA\n<tomoakin at kenroku.kanazawa-u.ac.jp> wrote:\n> We changed that the SQL identifiers be quoted instead of mangling in\n> RPostgreSQL. ?This allows proper distinction of capital and small letters\n> and make it possible to use the name as is what is defined in R world.\n>\n> This was applied uniformly to tablename argument for\n> dbWriteTable(), dbExistsTable(), dbReadTable(), and dbRemoveTable()\n> functions.\n>\n> However, this makes difficulty in schema usage, as now '.' (period)\n> is allowed as a part of tablename and cannot be regarded as a\n> separator. To allow construction of schema.table structure like\n> \"s.che.ma\".\"ta.ble\", passing a vector c('s.che.ma', 'ta.ble')\n> instead of string will be perhaps helpful.\n> Each element of the vector will be quoted and thereafter connected with '.'.\n>\n> I am aware that RSQLite had similar discussion for mangling / quoting\n> about one year ago\n> https://stat.ethz.ch/pipermail/r-sig-db/2009q4/000753.html\n> but haven't found what the decision and what the future direction\n> is.\n\nA change was made to the make.db.names.default function in the DBI\npackage to quote (using \") if the allow.keywords argument is set to\nFALSE.  This was announced here:\n\n    https://stat.ethz.ch/pipermail/r-sig-db/2009q4/000769.html\n    https://stat.ethz.ch/pipermail/r-sig-db/2009q4/000770.html\n\n> In addition while identifier quoting for Postgresql is simple,\n> that looks different in MySQL that it is quote with back quote'`'\n> rather than double quote and double quote works only under ANSI_QUOTES\n> option. ?So, if quoting rule is different among backends,\n> perhaps it is worth to define dbQuoteIdentifier(con, name)\n> as a common way to quote an identifier.\n> Perl DBI has quote_identifier and have two forms of synopsis\n> ?$sql = $dbh->quote_identifier( $name );\n> ?$sql = $dbh->quote_identifier( $catalog, $schema, $table, \\%attr );\n> http://search.cpan.org/~timb/DBI/DBI.pm#quote_identifier\n> The example given there is interesting that\n> $id = $dbh->quote_identifier( 'link', 'schema', 'table' );\n> should produce \"schema\".\"table\"@\"link\" for oracle.\n>\n> So, my proposal is that dbQuoteIdentifier() is defined similary that\n> with a single string argument that should be quoted.\n> For a vector argument two multiple strings, the two strings is interpreted\n> as schema and tablename, and each element are quoted and concatenated\n> according\n> to the backend specification.\n> For a vector argument with three elements, the elements are interpreted as\n> dbname, schema, and tablename. Each element are quoted and concatenated\n> using\n> the rule appropriate for the back-end database management system.\n>\n> I think quote everything is the right way to go,\n> and quoting should be made easier.\n\nI think I agree that quoting everything is a reasonable approach.\nHaving a means to determine the correct quote character based on the\nbackend and its current settings seems valuable.  I would support a\npatch along those lines.  Care should be taken so that extra layers of\nfunction calls are not added to every db operation to determine and\napply quoting (IMO).\n\nSo I'm generally in favor of something along the lines of\ndbQuoteIdentifier.  However, I don't like the semantics you have\nproposed for the behavior of dbQuoteIdentifier in terms of the return\nvalue for vectors based on length.  Such a function should do what it\nsays, quote identifiers.  Having a separate function to deal with\ndbname, schema, and tablename concatenation might be useful, but that\nfeels like something to handle separately.\n\n+ seth\n\n\n\n-- \nSeth Falcon | @sfalcon | http://userprimary.net/",
+      "body_snippet": "Hi there,\n\nOn Fri, Nov 12, 2010 at 9:31 PM, Tomoaki NISHIYAMA\n<tomoakin at kenroku.kanazawa-u.ac.jp> wrote:\n> We changed that the SQL identifiers be quoted instead of mangling in\n> RPostgreSQL. ?This ",
+      "thread_id": "thread-566d18e70ec7",
+      "thread_depth": 1,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-19b06a9b9aa0",
+      "message_id": "<AANLkTin1dumsw0R9EUN+S1k2zJywC=VStimGfPUpDsGV@mail.gmail.com>",
+      "from_name": "Xiaobo Gu",
+      "from_email_hash": "176108762e20fc40c0ea5782a4cf2388d4cba8cdadb1f5a5481fccf34141e262",
+      "date": "2010-11-14T19:59:34+08:00",
+      "subject": "[R-sig-DB] character to factor transform in package RpgSQL",
+      "subject_clean": "character to factor transform in package RpgSQL",
+      "in_reply_to": "<AANLkTim4UkFw2vDKnyK8bUO4=Jwq1ZGH8DHMypKv+nYR@mail.gmail.com>",
+      "references": [
+        "<AANLkTimb7yrr+mmaR6bu=vBO8Ftx_MaU-csJoxNzxj02@mail.gmail.com>",
+        "<AANLkTim4UkFw2vDKnyK8bUO4=Jwq1ZGH8DHMypKv+nYR@mail.gmail.com>"
+      ],
+      "body_plain": "Hi Seth,\nYou are right, I have change the fetch function to this:\n\n\nsetMethod(\"fetch\", signature(res=\"pgSQLResult\", n=\"numeric\"),\ndef=function(res, n, stringsAsFactors = TRUE, ...) {\n  cols <- .jcall(res at md, \"I\", \"getColumnCount\")\n  if (cols < 1) return(NULL)\n  l <- list()\n  for (i in 1:cols) {\n    ct <- .jcall(res at md, \"I\", \"getColumnType\", i)\n    l[[i]] <- if (ct == -5 | ct ==-6 | (ct >= 2 & ct <= 8)) {\n           numeric()\n       } else if (ct == 91) {\n           structure(numeric(), class = \"Date\")\n       } else if (ct == 93) {\n           structure(numeric(), class = class(Sys.time()))\n       } else character()\n    names(l)[i] <- .jcall(res at md, \"S\", \"getColumnName\", i)\n  }\n\n  j <- 0\n  while (.jcall(res at jr, \"Z\", \"next\")) {\n    j <- j + 1\n    for (i in 1:cols) {\n      l[[i]][j] <- if (is.numeric(l[[i]])) {\n          l[[i]][j] <- .jcall(res at jr, \"D\", \"getDouble\", i)\n      } else if (inherits(l[[i]], \"Date\")) {\n        tentativeDate <- .jcall(res at jr, \"S\", \"getString\", i)\n\t    if (length(tentativeDate) == 0 || tentativeDate == \"0001-01-01\nBC\") tentativeDate <- NA\n        l[[i]][j] <- as.Date(tentativeDate)\n      } else {\n        a <- .jcall(res at jr, \"S\", \"getString\", i)\n        l[[i]][j] <- if (is.null(a)) NA else a\n      }\n    }\n    if (n > 0 && j >= n) break\n  }\n  if (j)\n    as.data.frame(l, row.names=1:j, stringsAsFactors = stringsAsFactors )\n  else\n    as.data.frame(l, stringsAsFactors = stringsAsFactors)\n})\n\n\nOn Sun, Nov 14, 2010 at 12:52 PM, Seth Falcon <seth at userprimary.net> wrote:\n> Hi,\n>\n> On Sat, Nov 13, 2010 at 8:28 PM, Xiaobo Gu <guxiaobo1982 at gmail.com> wrote:\n>> Hi,\n>> I have looked at the source code of package RpgSQL, it seems the fetch\n>> function does not transform character column into factors, but when I\n>> use the class function to test the result data frame of function\n>> fetch, it all tells factor, can you help identify which part of the\n>> function doing the transformation, in our usage we want to keep some\n>> character column just as characters, bellowing is the source code of\n>> function fetch in package RpgSQL.\n>\n> A guess is that you are seeing the default behavior of data.frame (and\n> likely also as.data.frame) in transforming character vectors into\n> factors.\n>\n> So I would suggest experimenting with this last bit:\n>> ?if (j)\n>> ? ?as.data.frame(l, row.names=1:j)\n>> ?else\n>> ? ?as.data.frame(l)\n>> })\n>\n> For example:\n>\n> ? ?> sapply(as.data.frame(letters[1:3]), class)\n> ? ?letters[1:3]\n> ? ? ? ?\"factor\"\n> ? ?> sapply(as.data.frame(letters[1:3], stringsAsFactors=FALSE), class)\n> ? ?letters[1:3]\n> ? ? \"character\"\n>\n>\n> + seth\n>\n>\n> --\n> Seth Falcon | @sfalcon | http://userprimary.net/\n>",
+      "body_snippet": "Hi Seth,\nYou are right, I have change the fetch function to this:\n\n\nsetMethod(\"fetch\", signature(res=\"pgSQLResult\", n=\"numeric\"),\ndef=function(res, n, stringsAsFactors = TRUE, ...) {\n  cols <- .jcall(",
+      "thread_id": "thread-f950fa199d1d",
+      "thread_depth": 2,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-03164d8ffa92",
+      "message_id": "<2C554429-ED30-45CE-9159-09C82A770042@kenroku.kanazawa-u.ac.jp>",
+      "from_name": "Tomoaki NISHIYAMA",
+      "from_email_hash": "32104f251c35465c7b064ecaf7558a62b44d8fb01218b8a85e1f2cd3278271b5",
+      "date": "2010-11-15T19:35:03+09:00",
+      "subject": "[R-sig-DB] Proposal of dbQuoteIdentifier for DBI specification",
+      "subject_clean": "Proposal of dbQuoteIdentifier for DBI specification",
+      "in_reply_to": "<AANLkTinZtgTe2JMTtQLRpwZ0z9eY2LSUjLd0rq_5Xxt+@mail.gmail.com>",
+      "references": [
+        "<25881C42-50DB-4DF9-8400-78F292B0D5FA@kenroku.kanazawa-u.ac.jp>",
+        "<AANLkTinZtgTe2JMTtQLRpwZ0z9eY2LSUjLd0rq_5Xxt+@mail.gmail.com>"
+      ],
+      "body_plain": "Hi,\n\nThanks for comments.\n\n> However, I don't like the semantics you have\n> proposed for the behavior of dbQuoteIdentifier in terms of the return\n> value for vectors based on length.  Such a function should do what it\n> says, quote identifiers.  Having a separate function to deal with\n> dbname, schema, and tablename concatenation might be useful, but that\n> feels like something to handle separately.\n\nOk, that was just following Perl example. But, we can give different\nname like dbConstructTableReference(name) for a polymorphic one.\n\nThe utilization is constuction of SQL from name object that is used to\ncreate the table through dbWriteTable(con, name, dataframe)\nlike paste('SELECT * from', dbConstructTableReference(con, name),  \n'LIMIT 10')\ndbQuoteIdentifier may still have value for constructing quoted column  \nname.\n\n>> dbWriteTable(), dbExistsTable(), dbReadTable(), and dbRemoveTable()\n\nHave just a single name argument, and its difficult to unambiguously\ndetermine the schema if the user wants to specify a schema or the\ntable name contains periods (which is allowed in PostgreSQL but not  \nallowed in MySQL).\nSo, in fact, I intend to extend these functions to work with vector\nfor the name argument to specify a set like c('database', 'schema',  \n'table').\n\nSurely, there could a different decision to make additional arguments  \nlike\ndbWriteTable(con, name, dataframe, schema='schema', database='dbname')\nand\ndbConstructTableReference(con, name, schema='schema', database='dbname')\n\nI'm more than happy if you have a better name.\nI like it be shorter.  But, the tradition here seems to write in full.\n\n> Care should be taken so that extra layers of\n> function calls are not added to every db operation to determine and\n> apply quoting (IMO).\n\n\nI think that the call for table name construction function\ninternally to dbWriteTable etc. will not significantly impact the  \nperformance,\nas the number executed is much lower compared with actual INSERT/ \nRETRIEVE\noperation.\nSo, I think user should not required to explicitly write these\nfunction when calling dbWriteTable, but better be done automatically\nby the library.\n\nFor dbSendQuery and dbGetQeury, these function do not automatically  \napply,\nand if the programmer can write the name directly, it should work\nwithout the overhead for the quoting.  But, if its constructing from a\nvariable the content is determined at runtime, perhaps its best\nto call the quoting function to ensure that the SQL is not malformed\nby any special character within the variable.\n\n-- \nTomoaki NISHIYAMA\n\nAdvanced Science Research Center,\nKanazawa University,\n13-1 Takara-machi,\nKanazawa, 920-0934, Japan",
+      "body_snippet": "Hi,\n\nThanks for comments.\n\n> However, I don't like the semantics you have\n> proposed for the behavior of dbQuoteIdentifier in terms of the return\n> value for vectors based on length.  Such a function ",
+      "thread_id": "thread-566d18e70ec7",
+      "thread_depth": 2,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-5ddb92fc3e57",
+      "message_id": "<AANLkTimPwNn2n=n=yV3RTmM532Nx6-q52sFR-0zkxeQU@mail.gmail.com>",
+      "from_name": "Harlan Harris",
+      "from_email_hash": "611206558041b3ccc178bb02493ee676170bbca58f0ab8c485d465fae70db625",
+      "date": "2010-11-18T12:15:37-05:00",
+      "subject": "[R-sig-DB] RODBC with Oracle and 64-bit Linux (encore)",
+      "subject_clean": "RODBC with Oracle and 64-bit Linux (encore)",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi all,\n\nI'm trying again to get the R<->Oracle toolchain to work on 64-bit Linux\n(CentOS 5/RHEL 5). As previously established, it's nearly impossible,\nalthough I'm awfully close now and just need one bit of help.\n\nHere's what works:\n\nI installed the 64-bit Oracle Instant Client Basic and ODBC rpms (version\n11.2.0.2.0).\nexport ORACLE_HOME=/usr/lib/oracle/11.2/client64/\nexport LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib\nexport TNS_ADMIN=/etc/oracle\nset up /etc/oracle/tnsname.ora\n\nThe version of unixODBC that's installed on Redhat 5 is 2.2.11. That version\nis old and doesn't work with 64-bit Oracle Instant Client. Both Oracle and\nRedhat are aware of this and stubbornly refuse to fix it. Therefore I\ninstalled easysoft's ODBC Oracle driver. Note that this costs something like\n$2000 to license, but if you've got Oracle, you can probably pay for it.\n\nThe easysoft driver installs to /usr/local/easysoft. It includes unixODBC\n2.2.12. (I uninstalled the factor 2.2.11 version)\n\nI confirmed that it was properly configured and working by running\n/usr/local/easysoft/unixODBC/bin/isql and querying my database. Username and\npassword are in /etc/odbc.ini.\n\nI symlinked /usr/local/easysoft/unixODBC/lib, /include, and /bin to\n/usr/local/lib, /include and /bin, respectively.\n\nNow I install RODBC from source. It seems to work, finding sql.h, sqlext.h,\nand -lodbc.\n\n> library(RODBC)\n> hdl <- odbcConnect('ORACLE')\n> sqlQuery(hdl, 'select * from catalog.program where rownum < 10')\nError in odbcQuery(channel, query, rows_at_time) :\n  Calloc could not allocate (-1 of 22816) memory\n\n\nSo close! What am I missing?\n\nThanks!\n\n -Harlan\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi all,\n\nI'm trying again to get the R<->Oracle toolchain to work on 64-bit Linux\n(CentOS 5/RHEL 5). As previously established, it's nearly impossible,\nalthough I'm awfully close now and just need one",
+      "thread_id": "thread-5ddb92fc3e57",
+      "thread_depth": 0,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-d83f52fc05e6",
+      "message_id": "<882EC066-31E7-4E4A-9CE2-349356359429@me.com>",
+      "from_name": "Marc Schwartz",
+      "from_email_hash": "040b2d09159b27cfd2853bc2dbb476bd637811586f307d9583c9ef7f806f3692",
+      "date": "2010-11-18T11:26:15-06:00",
+      "subject": "[R-sig-DB] RODBC with Oracle and 64-bit Linux (encore)",
+      "subject_clean": "RODBC with Oracle and 64-bit Linux (encore)",
+      "in_reply_to": "<AANLkTimPwNn2n=n=yV3RTmM532Nx6-q52sFR-0zkxeQU@mail.gmail.com>",
+      "references": [
+        "<AANLkTimPwNn2n=n=yV3RTmM532Nx6-q52sFR-0zkxeQU@mail.gmail.com>"
+      ],
+      "body_plain": "On Nov 18, 2010, at 11:15 AM, Harlan Harris wrote:\n\n> Hi all,\n> \n> I'm trying again to get the R<->Oracle toolchain to work on 64-bit Linux\n> (CentOS 5/RHEL 5). As previously established, it's nearly impossible,\n> although I'm awfully close now and just need one bit of help.\n> \n> Here's what works:\n> \n> I installed the 64-bit Oracle Instant Client Basic and ODBC rpms (version\n> 11.2.0.2.0).\n> export ORACLE_HOME=/usr/lib/oracle/11.2/client64/\n> export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib\n> export TNS_ADMIN=/etc/oracle\n> set up /etc/oracle/tnsname.ora\n> \n> The version of unixODBC that's installed on Redhat 5 is 2.2.11. That version\n> is old and doesn't work with 64-bit Oracle Instant Client. Both Oracle and\n> Redhat are aware of this and stubbornly refuse to fix it. Therefore I\n> installed easysoft's ODBC Oracle driver. Note that this costs something like\n> $2000 to license, but if you've got Oracle, you can probably pay for it.\n> \n> The easysoft driver installs to /usr/local/easysoft. It includes unixODBC\n> 2.2.12. (I uninstalled the factor 2.2.11 version)\n> \n> I confirmed that it was properly configured and working by running\n> /usr/local/easysoft/unixODBC/bin/isql and querying my database. Username and\n> password are in /etc/odbc.ini.\n> \n> I symlinked /usr/local/easysoft/unixODBC/lib, /include, and /bin to\n> /usr/local/lib, /include and /bin, respectively.\n> \n> Now I install RODBC from source. It seems to work, finding sql.h, sqlext.h,\n> and -lodbc.\n> \n>> library(RODBC)\n>> hdl <- odbcConnect('ORACLE')\n>> sqlQuery(hdl, 'select * from catalog.program where rownum < 10')\n> Error in odbcQuery(channel, query, rows_at_time) :\n>  Calloc could not allocate (-1 of 22816) memory\n> \n> \n> So close! What am I missing?\n> \n> Thanks!\n> \n> -Harlan\n\n\nHarlan, glad to see some progress, albeit at a notable cost.\n\nTry using 'rows_at_time = 1' in the calls to both odbcConnect() and sqlQuery().\n\nI have found the need to use that setting, rather than the default 100, in order to successfully retrieve data from our Oracle server on OSX.\n\nThe smaller value may also help to workaround the memory allocation issue, presuming that something more subtle is not going on.\n\nHTH,\n\nMarc Schwartz",
+      "body_snippet": "On Nov 18, 2010, at 11:15 AM, Harlan Harris wrote:\n\n> Hi all,\n> \n> I'm trying again to get the R<->Oracle toolchain to work on 64-bit Linux\n> (CentOS 5/RHEL 5). As previously established, it's nearly ",
+      "thread_id": "thread-5ddb92fc3e57",
+      "thread_depth": 1,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-6dcc5dcc2f5a",
+      "message_id": "<AANLkTimzN+kNscZ35wjypatx_8VgvwUS6Gsy0LMJLAJ7@mail.gmail.com>",
+      "from_name": "Harlan Harris",
+      "from_email_hash": "611206558041b3ccc178bb02493ee676170bbca58f0ab8c485d465fae70db625",
+      "date": "2010-11-18T12:29:59-05:00",
+      "subject": "[R-sig-DB] RODBC with Oracle and 64-bit Linux (encore)",
+      "subject_clean": "RODBC with Oracle and 64-bit Linux (encore)",
+      "in_reply_to": "<882EC066-31E7-4E4A-9CE2-349356359429@me.com>",
+      "references": [
+        "<AANLkTimPwNn2n=n=yV3RTmM532Nx6-q52sFR-0zkxeQU@mail.gmail.com>",
+        "<882EC066-31E7-4E4A-9CE2-349356359429@me.com>"
+      ],
+      "body_plain": "Quick response -- thanks! Nope, doesn't help.\n\n>  library(RODBC)\n> hdl <- odbcConnect('ORACLE', rows_at_time=1)\n> sqlQuery(hdl, 'select * from catalog.program where rownum < 10',\nrows_at_time=1)\nError in odbcQuery(channel, query, rows_at_time) :\n  Calloc could not allocate (-1 of 22816) memory\n\n -Harlan\n\nOn Thu, Nov 18, 2010 at 12:26 PM, Marc Schwartz <marc_schwartz at me.com>wrote:\n\n> On Nov 18, 2010, at 11:15 AM, Harlan Harris wrote:\n>\n> > Hi all,\n> >\n> > I'm trying again to get the R<->Oracle toolchain to work on 64-bit Linux\n> > (CentOS 5/RHEL 5). As previously established, it's nearly impossible,\n> > although I'm awfully close now and just need one bit of help.\n> >\n> > Here's what works:\n> >\n> > I installed the 64-bit Oracle Instant Client Basic and ODBC rpms (version\n> > 11.2.0.2.0).\n> > export ORACLE_HOME=/usr/lib/oracle/11.2/client64/\n> > export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib\n> > export TNS_ADMIN=/etc/oracle\n> > set up /etc/oracle/tnsname.ora\n> >\n> > The version of unixODBC that's installed on Redhat 5 is 2.2.11. That\n> version\n> > is old and doesn't work with 64-bit Oracle Instant Client. Both Oracle\n> and\n> > Redhat are aware of this and stubbornly refuse to fix it. Therefore I\n> > installed easysoft's ODBC Oracle driver. Note that this costs something\n> like\n> > $2000 to license, but if you've got Oracle, you can probably pay for it.\n> >\n> > The easysoft driver installs to /usr/local/easysoft. It includes unixODBC\n> > 2.2.12. (I uninstalled the factor 2.2.11 version)\n> >\n> > I confirmed that it was properly configured and working by running\n> > /usr/local/easysoft/unixODBC/bin/isql and querying my database. Username\n> and\n> > password are in /etc/odbc.ini.\n> >\n> > I symlinked /usr/local/easysoft/unixODBC/lib, /include, and /bin to\n> > /usr/local/lib, /include and /bin, respectively.\n> >\n> > Now I install RODBC from source. It seems to work, finding sql.h,\n> sqlext.h,\n> > and -lodbc.\n> >\n> >> library(RODBC)\n> >> hdl <- odbcConnect('ORACLE')\n> >> sqlQuery(hdl, 'select * from catalog.program where rownum < 10')\n> > Error in odbcQuery(channel, query, rows_at_time) :\n> >  Calloc could not allocate (-1 of 22816) memory\n> >\n> >\n> > So close! What am I missing?\n> >\n> > Thanks!\n> >\n> > -Harlan\n>\n>\n> Harlan, glad to see some progress, albeit at a notable cost.\n>\n> Try using 'rows_at_time = 1' in the calls to both odbcConnect() and\n> sqlQuery().\n>\n> I have found the need to use that setting, rather than the default 100, in\n> order to successfully retrieve data from our Oracle server on OSX.\n>\n> The smaller value may also help to workaround the memory allocation issue,\n> presuming that something more subtle is not going on.\n>\n> HTH,\n>\n> Marc Schwartz\n>\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Quick response -- thanks! Nope, doesn't help.\n\n>  library(RODBC)\n> hdl <- odbcConnect('ORACLE', rows_at_time=1)\n> sqlQuery(hdl, 'select * from catalog.program where rownum < 10',\nrows_at_time=1)\nError",
+      "thread_id": "thread-5ddb92fc3e57",
+      "thread_depth": 2,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-d848cb50d475",
+      "message_id": "<789BC982-849A-4849-99B3-CB708108EC13@me.com>",
+      "from_name": "Marc Schwartz",
+      "from_email_hash": "040b2d09159b27cfd2853bc2dbb476bd637811586f307d9583c9ef7f806f3692",
+      "date": "2010-11-18T11:52:30-06:00",
+      "subject": "[R-sig-DB] RODBC with Oracle and 64-bit Linux (encore)",
+      "subject_clean": "RODBC with Oracle and 64-bit Linux (encore)",
+      "in_reply_to": "<AANLkTimzN+kNscZ35wjypatx_8VgvwUS6Gsy0LMJLAJ7@mail.gmail.com>",
+      "references": [
+        "<AANLkTimPwNn2n=n=yV3RTmM532Nx6-q52sFR-0zkxeQU@mail.gmail.com>",
+        "<882EC066-31E7-4E4A-9CE2-349356359429@me.com>",
+        "<AANLkTimzN+kNscZ35wjypatx_8VgvwUS6Gsy0LMJLAJ7@mail.gmail.com>"
+      ],
+      "body_plain": "OK.  What is interesting, albeit, it may be a red herring, is the -1 in the error message. Is that an indication of an integer wrap around or something more subtle?\n\nPlease be sure that you are running 64 bit R. Check the result of:\n\n  .Machine$sizeof.pointer\n\nIt should return 8 if you are running 64 bit R. If it returns 4, you are running 32 bit R, which would conflict with the rest of the 64 bit tool chain.\n\nIf by chance you are running 32 bit R, you will need to install 64 bit R and reinstall your CRAN packages, including RODBC, since any C/FORTRAN code would be compiled as 32 bit programs.\n\nCan you also perhaps try a query that should result in a small result set? Perhaps a single column from a single row?\n\n\nMarc\n\nOn Nov 18, 2010, at 11:29 AM, Harlan Harris wrote:\n\n> Quick response -- thanks! Nope, doesn't help.\n> \n> >  library(RODBC)\n> > hdl <- odbcConnect('ORACLE', rows_at_time=1)\n> > sqlQuery(hdl, 'select * from catalog.program where rownum < 10', rows_at_time=1)\n> Error in odbcQuery(channel, query, rows_at_time) : \n>   Calloc could not allocate (-1 of 22816) memory\n> \n>  -Harlan\n> \n> On Thu, Nov 18, 2010 at 12:26 PM, Marc Schwartz <marc_schwartz at me.com> wrote:\n> On Nov 18, 2010, at 11:15 AM, Harlan Harris wrote:\n> \n> > Hi all,\n> >\n> > I'm trying again to get the R<->Oracle toolchain to work on 64-bit Linux\n> > (CentOS 5/RHEL 5). As previously established, it's nearly impossible,\n> > although I'm awfully close now and just need one bit of help.\n> >\n> > Here's what works:\n> >\n> > I installed the 64-bit Oracle Instant Client Basic and ODBC rpms (version\n> > 11.2.0.2.0).\n> > export ORACLE_HOME=/usr/lib/oracle/11.2/client64/\n> > export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib\n> > export TNS_ADMIN=/etc/oracle\n> > set up /etc/oracle/tnsname.ora\n> >\n> > The version of unixODBC that's installed on Redhat 5 is 2.2.11. That version\n> > is old and doesn't work with 64-bit Oracle Instant Client. Both Oracle and\n> > Redhat are aware of this and stubbornly refuse to fix it. Therefore I\n> > installed easysoft's ODBC Oracle driver. Note that this costs something like\n> > $2000 to license, but if you've got Oracle, you can probably pay for it.\n> >\n> > The easysoft driver installs to /usr/local/easysoft. It includes unixODBC\n> > 2.2.12. (I uninstalled the factor 2.2.11 version)\n> >\n> > I confirmed that it was properly configured and working by running\n> > /usr/local/easysoft/unixODBC/bin/isql and querying my database. Username and\n> > password are in /etc/odbc.ini.\n> >\n> > I symlinked /usr/local/easysoft/unixODBC/lib, /include, and /bin to\n> > /usr/local/lib, /include and /bin, respectively.\n> >\n> > Now I install RODBC from source. It seems to work, finding sql.h, sqlext.h,\n> > and -lodbc.\n> >\n> >> library(RODBC)\n> >> hdl <- odbcConnect('ORACLE')\n> >> sqlQuery(hdl, 'select * from catalog.program where rownum < 10')\n> > Error in odbcQuery(channel, query, rows_at_time) :\n> >  Calloc could not allocate (-1 of 22816) memory\n> >\n> >\n> > So close! What am I missing?\n> >\n> > Thanks!\n> >\n> > -Harlan\n> \n> \n> Harlan, glad to see some progress, albeit at a notable cost.\n> \n> Try using 'rows_at_time = 1' in the calls to both odbcConnect() and sqlQuery().\n> \n> I have found the need to use that setting, rather than the default 100, in order to successfully retrieve data from our Oracle server on OSX.\n> \n> The smaller value may also help to workaround the memory allocation issue, presuming that something more subtle is not going on.\n> \n> HTH,\n> \n> Marc Schwartz\n> \n> \n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "OK.  What is interesting, albeit, it may be a red herring, is the -1 in the error message. Is that an indication of an integer wrap around or something more subtle?\n\nPlease be sure that you are runnin",
+      "thread_id": "thread-5ddb92fc3e57",
+      "thread_depth": 3,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-25d4b1702d79",
+      "message_id": "<AANLkTinDeYzMQXpVYsn=Z1j04FNp=A8CW7e=6uki533P@mail.gmail.com>",
+      "from_name": "Harlan Harris",
+      "from_email_hash": "611206558041b3ccc178bb02493ee676170bbca58f0ab8c485d465fae70db625",
+      "date": "2010-11-18T13:03:03-05:00",
+      "subject": "[R-sig-DB] RODBC with Oracle and 64-bit Linux (encore)",
+      "subject_clean": "RODBC with Oracle and 64-bit Linux (encore)",
+      "in_reply_to": "<789BC982-849A-4849-99B3-CB708108EC13@me.com>",
+      "references": [
+        "<AANLkTimPwNn2n=n=yV3RTmM532Nx6-q52sFR-0zkxeQU@mail.gmail.com>",
+        "<882EC066-31E7-4E4A-9CE2-349356359429@me.com>",
+        "<AANLkTimzN+kNscZ35wjypatx_8VgvwUS6Gsy0LMJLAJ7@mail.gmail.com>",
+        "<789BC982-849A-4849-99B3-CB708108EC13@me.com>"
+      ],
+      "body_plain": "I wondered about the -1 too...\n\nBut nope, neither of these suggestions work...\n\n> .Machine$sizeof.pointer\n[1] 8\n> hdl <- odbcConnect('ORACLE', rows_at_time=1)> sqlQuery(hdl, 'select name\nfrom catalog.program where rownum < 2', rows_at_time=1, as.is=TRUE)\nError in odbcQuery(channel, query, rows_at_time) :\n  Calloc could not allocate (-1 of 22816) memory\n\n -Harlan\n\nOn Thu, Nov 18, 2010 at 12:52 PM, Marc Schwartz <marc_schwartz at me.com>wrote:\n\n> OK.  What is interesting, albeit, it may be a red herring, is the -1 in the\n> error message. Is that an indication of an integer wrap around or something\n> more subtle?\n>\n> Please be sure that you are running 64 bit R. Check the result of:\n>\n>   .Machine$sizeof.pointer\n>\n> It should return 8 if you are running 64 bit R. If it returns 4, you are\n> running 32 bit R, which would conflict with the rest of the 64 bit tool\n> chain.\n>\n> If by chance you are running 32 bit R, you will need to install 64 bit R\n> and reinstall your CRAN packages, including RODBC, since any C/FORTRAN code\n> would be compiled as 32 bit programs.\n>\n> Can you also perhaps try a query that should result in a small result set?\n> Perhaps a single column from a single row?\n>\n>\n> Marc\n>\n> On Nov 18, 2010, at 11:29 AM, Harlan Harris wrote:\n>\n> Quick response -- thanks! Nope, doesn't help.\n>\n> >  library(RODBC)\n> > hdl <- odbcConnect('ORACLE', rows_at_time=1)\n> > sqlQuery(hdl, 'select * from catalog.program where rownum < 10',\n> rows_at_time=1)\n> Error in odbcQuery(channel, query, rows_at_time) :\n>   Calloc could not allocate (-1 of 22816) memory\n>\n>  -Harlan\n>\n> On Thu, Nov 18, 2010 at 12:26 PM, Marc Schwartz <marc_schwartz at me.com>wrote:\n>\n>> On Nov 18, 2010, at 11:15 AM, Harlan Harris wrote:\n>>\n>> > Hi all,\n>> >\n>> > I'm trying again to get the R<->Oracle toolchain to work on 64-bit Linux\n>> > (CentOS 5/RHEL 5). As previously established, it's nearly impossible,\n>> > although I'm awfully close now and just need one bit of help.\n>> >\n>> > Here's what works:\n>> >\n>> > I installed the 64-bit Oracle Instant Client Basic and ODBC rpms\n>> (version\n>> > 11.2.0.2.0).\n>> > export ORACLE_HOME=/usr/lib/oracle/11.2/client64/\n>> > export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib\n>> > export TNS_ADMIN=/etc/oracle\n>> > set up /etc/oracle/tnsname.ora\n>> >\n>> > The version of unixODBC that's installed on Redhat 5 is 2.2.11. That\n>> version\n>> > is old and doesn't work with 64-bit Oracle Instant Client. Both Oracle\n>> and\n>> > Redhat are aware of this and stubbornly refuse to fix it. Therefore I\n>> > installed easysoft's ODBC Oracle driver. Note that this costs something\n>> like\n>> > $2000 to license, but if you've got Oracle, you can probably pay for it.\n>> >\n>> > The easysoft driver installs to /usr/local/easysoft. It includes\n>> unixODBC\n>> > 2.2.12. (I uninstalled the factor 2.2.11 version)\n>> >\n>> > I confirmed that it was properly configured and working by running\n>> > /usr/local/easysoft/unixODBC/bin/isql and querying my database. Username\n>> and\n>> > password are in /etc/odbc.ini.\n>> >\n>> > I symlinked /usr/local/easysoft/unixODBC/lib, /include, and /bin to\n>> > /usr/local/lib, /include and /bin, respectively.\n>> >\n>> > Now I install RODBC from source. It seems to work, finding sql.h,\n>> sqlext.h,\n>> > and -lodbc.\n>> >\n>> >> library(RODBC)\n>> >> hdl <- odbcConnect('ORACLE')\n>> >> sqlQuery(hdl, 'select * from catalog.program where rownum < 10')\n>> > Error in odbcQuery(channel, query, rows_at_time) :\n>> >  Calloc could not allocate (-1 of 22816) memory\n>> >\n>> >\n>> > So close! What am I missing?\n>> >\n>> > Thanks!\n>> >\n>> > -Harlan\n>>\n>>\n>> Harlan, glad to see some progress, albeit at a notable cost.\n>>\n>> Try using 'rows_at_time = 1' in the calls to both odbcConnect() and\n>> sqlQuery().\n>>\n>> I have found the need to use that setting, rather than the default 100, in\n>> order to successfully retrieve data from our Oracle server on OSX.\n>>\n>> The smaller value may also help to workaround the memory allocation issue,\n>> presuming that something more subtle is not going on.\n>>\n>> HTH,\n>>\n>> Marc Schwartz\n>>\n>>\n>\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "I wondered about the -1 too...\n\nBut nope, neither of these suggestions work...\n\n> .Machine$sizeof.pointer\n[1] 8\n> hdl <- odbcConnect('ORACLE', rows_at_time=1)> sqlQuery(hdl, 'select name\nfrom catalog.",
+      "thread_id": "thread-5ddb92fc3e57",
+      "thread_depth": 4,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-664cb2515b67",
+      "message_id": "<7E28F693-D990-4436-B83A-28D737D38318@me.com>",
+      "from_name": "Marc Schwartz",
+      "from_email_hash": "040b2d09159b27cfd2853bc2dbb476bd637811586f307d9583c9ef7f806f3692",
+      "date": "2010-11-18T12:13:36-06:00",
+      "subject": "[R-sig-DB] RODBC with Oracle and 64-bit Linux (encore)",
+      "subject_clean": "RODBC with Oracle and 64-bit Linux (encore)",
+      "in_reply_to": "<AANLkTinDeYzMQXpVYsn=Z1j04FNp=A8CW7e=6uki533P@mail.gmail.com>",
+      "references": [
+        "<AANLkTimPwNn2n=n=yV3RTmM532Nx6-q52sFR-0zkxeQU@mail.gmail.com>",
+        "<882EC066-31E7-4E4A-9CE2-349356359429@me.com>",
+        "<AANLkTimzN+kNscZ35wjypatx_8VgvwUS6Gsy0LMJLAJ7@mail.gmail.com>",
+        "<789BC982-849A-4849-99B3-CB708108EC13@me.com>",
+        "<AANLkTinDeYzMQXpVYsn=Z1j04FNp=A8CW7e=6uki533P@mail.gmail.com>"
+      ],
+      "body_plain": "OK....the more I think about this, the more I believe that there is an integer overflow problem. This may yet be an indication of a 32/64 bit conflict someplace.\n\nThe question then is where and why.\n\nWhich version of R are you running? Provide the output of:\n\n  sessionInfo()\n\nMarc\n\nOn Nov 18, 2010, at 12:03 PM, Harlan Harris wrote:\n\n> I wondered about the -1 too...\n> \n> But nope, neither of these suggestions work...\n> \n> > .Machine$sizeof.pointer\n> [1] 8\n> > hdl <- odbcConnect('ORACLE', rows_at_time=1)> sqlQuery(hdl, 'select name from catalog.program where rownum < 2', rows_at_time=1, as.is=TRUE)\n> Error in odbcQuery(channel, query, rows_at_time) : \n>   Calloc could not allocate (-1 of 22816) memory\n> \n>  -Harlan\n> \n> On Thu, Nov 18, 2010 at 12:52 PM, Marc Schwartz <marc_schwartz at me.com> wrote:\n> OK.  What is interesting, albeit, it may be a red herring, is the -1 in the error message. Is that an indication of an integer wrap around or something more subtle?\n> \n> Please be sure that you are running 64 bit R. Check the result of:\n> \n>   .Machine$sizeof.pointer\n> \n> It should return 8 if you are running 64 bit R. If it returns 4, you are running 32 bit R, which would conflict with the rest of the 64 bit tool chain.\n> \n> If by chance you are running 32 bit R, you will need to install 64 bit R and reinstall your CRAN packages, including RODBC, since any C/FORTRAN code would be compiled as 32 bit programs.\n> \n> Can you also perhaps try a query that should result in a small result set? Perhaps a single column from a single row?\n> \n> \n> Marc\n> \n> On Nov 18, 2010, at 11:29 AM, Harlan Harris wrote:\n> \n>> Quick response -- thanks! Nope, doesn't help.\n>> \n>> >  library(RODBC)\n>> > hdl <- odbcConnect('ORACLE', rows_at_time=1)\n>> > sqlQuery(hdl, 'select * from catalog.program where rownum < 10', rows_at_time=1)\n>> Error in odbcQuery(channel, query, rows_at_time) : \n>>   Calloc could not allocate (-1 of 22816) memory\n>> \n>>  -Harlan\n>> \n>> On Thu, Nov 18, 2010 at 12:26 PM, Marc Schwartz <marc_schwartz at me.com> wrote:\n>> On Nov 18, 2010, at 11:15 AM, Harlan Harris wrote:\n>> \n>> > Hi all,\n>> >\n>> > I'm trying again to get the R<->Oracle toolchain to work on 64-bit Linux\n>> > (CentOS 5/RHEL 5). As previously established, it's nearly impossible,\n>> > although I'm awfully close now and just need one bit of help.\n>> >\n>> > Here's what works:\n>> >\n>> > I installed the 64-bit Oracle Instant Client Basic and ODBC rpms (version\n>> > 11.2.0.2.0).\n>> > export ORACLE_HOME=/usr/lib/oracle/11.2/client64/\n>> > export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib\n>> > export TNS_ADMIN=/etc/oracle\n>> > set up /etc/oracle/tnsname.ora\n>> >\n>> > The version of unixODBC that's installed on Redhat 5 is 2.2.11. That version\n>> > is old and doesn't work with 64-bit Oracle Instant Client. Both Oracle and\n>> > Redhat are aware of this and stubbornly refuse to fix it. Therefore I\n>> > installed easysoft's ODBC Oracle driver. Note that this costs something like\n>> > $2000 to license, but if you've got Oracle, you can probably pay for it.\n>> >\n>> > The easysoft driver installs to /usr/local/easysoft. It includes unixODBC\n>> > 2.2.12. (I uninstalled the factor 2.2.11 version)\n>> >\n>> > I confirmed that it was properly configured and working by running\n>> > /usr/local/easysoft/unixODBC/bin/isql and querying my database. Username and\n>> > password are in /etc/odbc.ini.\n>> >\n>> > I symlinked /usr/local/easysoft/unixODBC/lib, /include, and /bin to\n>> > /usr/local/lib, /include and /bin, respectively.\n>> >\n>> > Now I install RODBC from source. It seems to work, finding sql.h, sqlext.h,\n>> > and -lodbc.\n>> >\n>> >> library(RODBC)\n>> >> hdl <- odbcConnect('ORACLE')\n>> >> sqlQuery(hdl, 'select * from catalog.program where rownum < 10')\n>> > Error in odbcQuery(channel, query, rows_at_time) :\n>> >  Calloc could not allocate (-1 of 22816) memory\n>> >\n>> >\n>> > So close! What am I missing?\n>> >\n>> > Thanks!\n>> >\n>> > -Harlan\n>> \n>> \n>> Harlan, glad to see some progress, albeit at a notable cost.\n>> \n>> Try using 'rows_at_time = 1' in the calls to both odbcConnect() and sqlQuery().\n>> \n>> I have found the need to use that setting, rather than the default 100, in order to successfully retrieve data from our Oracle server on OSX.\n>> \n>> The smaller value may also help to workaround the memory allocation issue, presuming that something more subtle is not going on.\n>> \n>> HTH,\n>> \n>> Marc Schwartz\n>> \n>> \n> \n>",
+      "body_snippet": "OK....the more I think about this, the more I believe that there is an integer overflow problem. This may yet be an indication of a 32/64 bit conflict someplace.\n\nThe question then is where and why.\n\n",
+      "thread_id": "thread-5ddb92fc3e57",
+      "thread_depth": 5,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-6c4ea3ed3f1d",
+      "message_id": "<AANLkTin90uqBEt3FQRX-UUMNW8O2ziHi7saUr9-SkmmN@mail.gmail.com>",
+      "from_name": "Harlan Harris",
+      "from_email_hash": "611206558041b3ccc178bb02493ee676170bbca58f0ab8c485d465fae70db625",
+      "date": "2010-11-18T13:23:05-05:00",
+      "subject": "[R-sig-DB] RODBC with Oracle and 64-bit Linux (encore)",
+      "subject_clean": "RODBC with Oracle and 64-bit Linux (encore)",
+      "in_reply_to": "<7E28F693-D990-4436-B83A-28D737D38318@me.com>",
+      "references": [
+        "<AANLkTimPwNn2n=n=yV3RTmM532Nx6-q52sFR-0zkxeQU@mail.gmail.com>",
+        "<882EC066-31E7-4E4A-9CE2-349356359429@me.com>",
+        "<AANLkTimzN+kNscZ35wjypatx_8VgvwUS6Gsy0LMJLAJ7@mail.gmail.com>",
+        "<789BC982-849A-4849-99B3-CB708108EC13@me.com>",
+        "<AANLkTinDeYzMQXpVYsn=Z1j04FNp=A8CW7e=6uki533P@mail.gmail.com>",
+        "<7E28F693-D990-4436-B83A-28D737D38318@me.com>"
+      ],
+      "body_plain": "This is the version of R you get by \"yum install R\" in CentOS 5 from EPEL.\nHere you are:\n\n> sessionInfo()\nR version 2.11.1 (2010-05-31)\nx86_64-redhat-linux-gnu\n\nlocale:\n [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C\n [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8\n [5] LC_MONETARY=C              LC_MESSAGES=en_US.UTF-8\n [7] LC_PAPER=en_US.UTF-8       LC_NAME=C\n [9] LC_ADDRESS=C               LC_TELEPHONE=C\n[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C\n\nattached base packages:\n[1] stats     graphics  grDevices utils     datasets  methods   base\n\nother attached packages:\n[1] RODBC_1.3-2\n\nloaded via a namespace (and not attached):\n[1] tools_2.11.1\n\n -Harlan\n\n\nOn Thu, Nov 18, 2010 at 1:13 PM, Marc Schwartz <marc_schwartz at me.com> wrote:\n\n> OK....the more I think about this, the more I believe that there is an\n> integer overflow problem. This may yet be an indication of a 32/64 bit\n> conflict someplace.\n>\n> The question then is where and why.\n>\n> Which version of R are you running? Provide the output of:\n>\n>  sessionInfo()\n>\n> Marc\n>\n> On Nov 18, 2010, at 12:03 PM, Harlan Harris wrote:\n>\n> > I wondered about the -1 too...\n> >\n> > But nope, neither of these suggestions work...\n> >\n> > > .Machine$sizeof.pointer\n> > [1] 8\n> > > hdl <- odbcConnect('ORACLE', rows_at_time=1)> sqlQuery(hdl, 'select\n> name from catalog.program where rownum < 2', rows_at_time=1, as.is=TRUE)\n> > Error in odbcQuery(channel, query, rows_at_time) :\n> >   Calloc could not allocate (-1 of 22816) memory\n> >\n> >  -Harlan\n> >\n> > On Thu, Nov 18, 2010 at 12:52 PM, Marc Schwartz <marc_schwartz at me.com>\n> wrote:\n> > OK.  What is interesting, albeit, it may be a red herring, is the -1 in\n> the error message. Is that an indication of an integer wrap around or\n> something more subtle?\n> >\n> > Please be sure that you are running 64 bit R. Check the result of:\n> >\n> >   .Machine$sizeof.pointer\n> >\n> > It should return 8 if you are running 64 bit R. If it returns 4, you are\n> running 32 bit R, which would conflict with the rest of the 64 bit tool\n> chain.\n> >\n> > If by chance you are running 32 bit R, you will need to install 64 bit R\n> and reinstall your CRAN packages, including RODBC, since any C/FORTRAN code\n> would be compiled as 32 bit programs.\n> >\n> > Can you also perhaps try a query that should result in a small result\n> set? Perhaps a single column from a single row?\n> >\n> >\n> > Marc\n> >\n> > On Nov 18, 2010, at 11:29 AM, Harlan Harris wrote:\n> >\n> >> Quick response -- thanks! Nope, doesn't help.\n> >>\n> >> >  library(RODBC)\n> >> > hdl <- odbcConnect('ORACLE', rows_at_time=1)\n> >> > sqlQuery(hdl, 'select * from catalog.program where rownum < 10',\n> rows_at_time=1)\n> >> Error in odbcQuery(channel, query, rows_at_time) :\n> >>   Calloc could not allocate (-1 of 22816) memory\n> >>\n> >>  -Harlan\n> >>\n> >> On Thu, Nov 18, 2010 at 12:26 PM, Marc Schwartz <marc_schwartz at me.com>\n> wrote:\n> >> On Nov 18, 2010, at 11:15 AM, Harlan Harris wrote:\n> >>\n> >> > Hi all,\n> >> >\n> >> > I'm trying again to get the R<->Oracle toolchain to work on 64-bit\n> Linux\n> >> > (CentOS 5/RHEL 5). As previously established, it's nearly impossible,\n> >> > although I'm awfully close now and just need one bit of help.\n> >> >\n> >> > Here's what works:\n> >> >\n> >> > I installed the 64-bit Oracle Instant Client Basic and ODBC rpms\n> (version\n> >> > 11.2.0.2.0).\n> >> > export ORACLE_HOME=/usr/lib/oracle/11.2/client64/\n> >> > export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib\n> >> > export TNS_ADMIN=/etc/oracle\n> >> > set up /etc/oracle/tnsname.ora\n> >> >\n> >> > The version of unixODBC that's installed on Redhat 5 is 2.2.11. That\n> version\n> >> > is old and doesn't work with 64-bit Oracle Instant Client. Both Oracle\n> and\n> >> > Redhat are aware of this and stubbornly refuse to fix it. Therefore I\n> >> > installed easysoft's ODBC Oracle driver. Note that this costs\n> something like\n> >> > $2000 to license, but if you've got Oracle, you can probably pay for\n> it.\n> >> >\n> >> > The easysoft driver installs to /usr/local/easysoft. It includes\n> unixODBC\n> >> > 2.2.12. (I uninstalled the factor 2.2.11 version)\n> >> >\n> >> > I confirmed that it was properly configured and working by running\n> >> > /usr/local/easysoft/unixODBC/bin/isql and querying my database.\n> Username and\n> >> > password are in /etc/odbc.ini.\n> >> >\n> >> > I symlinked /usr/local/easysoft/unixODBC/lib, /include, and /bin to\n> >> > /usr/local/lib, /include and /bin, respectively.\n> >> >\n> >> > Now I install RODBC from source. It seems to work, finding sql.h,\n> sqlext.h,\n> >> > and -lodbc.\n> >> >\n> >> >> library(RODBC)\n> >> >> hdl <- odbcConnect('ORACLE')\n> >> >> sqlQuery(hdl, 'select * from catalog.program where rownum < 10')\n> >> > Error in odbcQuery(channel, query, rows_at_time) :\n> >> >  Calloc could not allocate (-1 of 22816) memory\n> >> >\n> >> >\n> >> > So close! What am I missing?\n> >> >\n> >> > Thanks!\n> >> >\n> >> > -Harlan\n> >>\n> >>\n> >> Harlan, glad to see some progress, albeit at a notable cost.\n> >>\n> >> Try using 'rows_at_time = 1' in the calls to both odbcConnect() and\n> sqlQuery().\n> >>\n> >> I have found the need to use that setting, rather than the default 100,\n> in order to successfully retrieve data from our Oracle server on OSX.\n> >>\n> >> The smaller value may also help to workaround the memory allocation\n> issue, presuming that something more subtle is not going on.\n> >>\n> >> HTH,\n> >>\n> >> Marc Schwartz\n> >>\n> >>\n> >\n> >\n>\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "This is the version of R you get by \"yum install R\" in CentOS 5 from EPEL.\nHere you are:\n\n> sessionInfo()\nR version 2.11.1 (2010-05-31)\nx86_64-redhat-linux-gnu\n\nlocale:\n [1] LC_CTYPE=en_US.UTF-8      ",
+      "thread_id": "thread-5ddb92fc3e57",
+      "thread_depth": 6,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-593be5b69245",
+      "message_id": "<8D184B68-29BB-49CC-9E9B-177678B33D86@me.com>",
+      "from_name": "Marc Schwartz",
+      "from_email_hash": "040b2d09159b27cfd2853bc2dbb476bd637811586f307d9583c9ef7f806f3692",
+      "date": "2010-11-18T12:37:56-06:00",
+      "subject": "[R-sig-DB] RODBC with Oracle and 64-bit Linux (encore)",
+      "subject_clean": "RODBC with Oracle and 64-bit Linux (encore)",
+      "in_reply_to": "<AANLkTin90uqBEt3FQRX-UUMNW8O2ziHi7saUr9-SkmmN@mail.gmail.com>",
+      "references": [
+        "<AANLkTimPwNn2n=n=yV3RTmM532Nx6-q52sFR-0zkxeQU@mail.gmail.com>",
+        "<882EC066-31E7-4E4A-9CE2-349356359429@me.com>",
+        "<AANLkTimzN+kNscZ35wjypatx_8VgvwUS6Gsy0LMJLAJ7@mail.gmail.com>",
+        "<789BC982-849A-4849-99B3-CB708108EC13@me.com>",
+        "<AANLkTinDeYzMQXpVYsn=Z1j04FNp=A8CW7e=6uki533P@mail.gmail.com>",
+        "<7E28F693-D990-4436-B83A-28D737D38318@me.com>",
+        "<AANLkTin90uqBEt3FQRX-UUMNW8O2ziHi7saUr9-SkmmN@mail.gmail.com>"
+      ],
+      "body_plain": "OK.  Looks like 2.12.0 is now available, but not yet in the yum update mirror pipeline. I think that Tom was just in the process of making that available, so it may take a bit before the mirrors pick it up.\n\nYou can download the RPM directly from here:\n\n  http://download.fedora.redhat.com/pub/epel/5/x86_64/repoview/R.html\n\nand then install via the CLI, if you are comfortable doing that.\n\nIt would be prudent to be sure that any issues here are not related to something that has been fixed since 2.11.1 was released.\n\nShort of that, we may have to wait for Prof. Ripley to offer some comments, since he will be more intimately familiar with the low level issues in RODBC.\n\nMarc\n\n\nOn Nov 18, 2010, at 12:23 PM, Harlan Harris wrote:\n\n> This is the version of R you get by \"yum install R\" in CentOS 5 from EPEL. Here you are:\n> \n> > sessionInfo()\n> R version 2.11.1 (2010-05-31) \n> x86_64-redhat-linux-gnu \n> \n> locale:\n>  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              \n>  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    \n>  [5] LC_MONETARY=C              LC_MESSAGES=en_US.UTF-8   \n>  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 \n>  [9] LC_ADDRESS=C               LC_TELEPHONE=C            \n> [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       \n> \n> attached base packages:\n> [1] stats     graphics  grDevices utils     datasets  methods   base     \n> \n> other attached packages:\n> [1] RODBC_1.3-2\n> \n> loaded via a namespace (and not attached):\n> [1] tools_2.11.1\n> \n>  -Harlan\n> \n> \n> On Thu, Nov 18, 2010 at 1:13 PM, Marc Schwartz <marc_schwartz at me.com> wrote:\n> OK....the more I think about this, the more I believe that there is an integer overflow problem. This may yet be an indication of a 32/64 bit conflict someplace.\n> \n> The question then is where and why.\n> \n> Which version of R are you running? Provide the output of:\n> \n>  sessionInfo()\n> \n> Marc\n> \n> On Nov 18, 2010, at 12:03 PM, Harlan Harris wrote:\n> \n> > I wondered about the -1 too...\n> >\n> > But nope, neither of these suggestions work...\n> >\n> > > .Machine$sizeof.pointer\n> > [1] 8\n> > > hdl <- odbcConnect('ORACLE', rows_at_time=1)> sqlQuery(hdl, 'select name from catalog.program where rownum < 2', rows_at_time=1, as.is=TRUE)\n> > Error in odbcQuery(channel, query, rows_at_time) :\n> >   Calloc could not allocate (-1 of 22816) memory\n> >\n> >  -Harlan\n> >\n> > On Thu, Nov 18, 2010 at 12:52 PM, Marc Schwartz <marc_schwartz at me.com> wrote:\n> > OK.  What is interesting, albeit, it may be a red herring, is the -1 in the error message. Is that an indication of an integer wrap around or something more subtle?\n> >\n> > Please be sure that you are running 64 bit R. Check the result of:\n> >\n> >   .Machine$sizeof.pointer\n> >\n> > It should return 8 if you are running 64 bit R. If it returns 4, you are running 32 bit R, which would conflict with the rest of the 64 bit tool chain.\n> >\n> > If by chance you are running 32 bit R, you will need to install 64 bit R and reinstall your CRAN packages, including RODBC, since any C/FORTRAN code would be compiled as 32 bit programs.\n> >\n> > Can you also perhaps try a query that should result in a small result set? Perhaps a single column from a single row?\n> >\n> >\n> > Marc\n> >\n> > On Nov 18, 2010, at 11:29 AM, Harlan Harris wrote:\n> >\n> >> Quick response -- thanks! Nope, doesn't help.\n> >>\n> >> >  library(RODBC)\n> >> > hdl <- odbcConnect('ORACLE', rows_at_time=1)\n> >> > sqlQuery(hdl, 'select * from catalog.program where rownum < 10', rows_at_time=1)\n> >> Error in odbcQuery(channel, query, rows_at_time) :\n> >>   Calloc could not allocate (-1 of 22816) memory\n> >>\n> >>  -Harlan\n> >>\n> >> On Thu, Nov 18, 2010 at 12:26 PM, Marc Schwartz <marc_schwartz at me.com> wrote:\n> >> On Nov 18, 2010, at 11:15 AM, Harlan Harris wrote:\n> >>\n> >> > Hi all,\n> >> >\n> >> > I'm trying again to get the R<->Oracle toolchain to work on 64-bit Linux\n> >> > (CentOS 5/RHEL 5). As previously established, it's nearly impossible,\n> >> > although I'm awfully close now and just need one bit of help.\n> >> >\n> >> > Here's what works:\n> >> >\n> >> > I installed the 64-bit Oracle Instant Client Basic and ODBC rpms (version\n> >> > 11.2.0.2.0).\n> >> > export ORACLE_HOME=/usr/lib/oracle/11.2/client64/\n> >> > export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib\n> >> > export TNS_ADMIN=/etc/oracle\n> >> > set up /etc/oracle/tnsname.ora\n> >> >\n> >> > The version of unixODBC that's installed on Redhat 5 is 2.2.11. That version\n> >> > is old and doesn't work with 64-bit Oracle Instant Client. Both Oracle and\n> >> > Redhat are aware of this and stubbornly refuse to fix it. Therefore I\n> >> > installed easysoft's ODBC Oracle driver. Note that this costs something like\n> >> > $2000 to license, but if you've got Oracle, you can probably pay for it.\n> >> >\n> >> > The easysoft driver installs to /usr/local/easysoft. It includes unixODBC\n> >> > 2.2.12. (I uninstalled the factor 2.2.11 version)\n> >> >\n> >> > I confirmed that it was properly configured and working by running\n> >> > /usr/local/easysoft/unixODBC/bin/isql and querying my database. Username and\n> >> > password are in /etc/odbc.ini.\n> >> >\n> >> > I symlinked /usr/local/easysoft/unixODBC/lib, /include, and /bin to\n> >> > /usr/local/lib, /include and /bin, respectively.\n> >> >\n> >> > Now I install RODBC from source. It seems to work, finding sql.h, sqlext.h,\n> >> > and -lodbc.\n> >> >\n> >> >> library(RODBC)\n> >> >> hdl <- odbcConnect('ORACLE')\n> >> >> sqlQuery(hdl, 'select * from catalog.program where rownum < 10')\n> >> > Error in odbcQuery(channel, query, rows_at_time) :\n> >> >  Calloc could not allocate (-1 of 22816) memory\n> >> >\n> >> >\n> >> > So close! What am I missing?\n> >> >\n> >> > Thanks!\n> >> >\n> >> > -Harlan\n> >>\n> >>\n> >> Harlan, glad to see some progress, albeit at a notable cost.\n> >>\n> >> Try using 'rows_at_time = 1' in the calls to both odbcConnect() and sqlQuery().\n> >>\n> >> I have found the need to use that setting, rather than the default 100, in order to successfully retrieve data from our Oracle server on OSX.\n> >>\n> >> The smaller value may also help to workaround the memory allocation issue, presuming that something more subtle is not going on.\n> >>\n> >> HTH,\n> >>\n> >> Marc Schwartz\n> >>\n> >>\n> >\n> >\n> \n> \n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "OK.  Looks like 2.12.0 is now available, but not yet in the yum update mirror pipeline. I think that Tom was just in the process of making that available, so it may take a bit before the mirrors pick ",
+      "thread_id": "thread-5ddb92fc3e57",
+      "thread_depth": 7,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-f4a67eb2a6d6",
+      "message_id": "<alpine.LFD.2.00.1011181832340.3397@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2010-11-18T18:40:11Z",
+      "subject": "[R-sig-DB] RODBC with Oracle and 64-bit Linux (encore)",
+      "subject_clean": "RODBC with Oracle and 64-bit Linux (encore)",
+      "in_reply_to": "<AANLkTin90uqBEt3FQRX-UUMNW8O2ziHi7saUr9-SkmmN@mail.gmail.com>",
+      "references": [
+        "<AANLkTimPwNn2n=n=yV3RTmM532Nx6-q52sFR-0zkxeQU@mail.gmail.com>",
+        "<882EC066-31E7-4E4A-9CE2-349356359429@me.com>",
+        "<AANLkTimzN+kNscZ35wjypatx_8VgvwUS6Gsy0LMJLAJ7@mail.gmail.com>",
+        "<789BC982-849A-4849-99B3-CB708108EC13@me.com>",
+        "<AANLkTinDeYzMQXpVYsn=Z1j04FNp=A8CW7e=6uki533P@mail.gmail.com>",
+        "<7E28F693-D990-4436-B83A-28D737D38318@me.com>",
+        "<AANLkTin90uqBEt3FQRX-UUMNW8O2ziHi7saUr9-SkmmN@mail.gmail.com>"
+      ],
+      "body_plain": "One thing I don't see being tried:\n\n?odbcConnect says\n\nbelieveNRows: logical.  Is the number of rows returned by the ODBC\n           connection believable?  Not true for some Oracle and Sybase\n           drivers, apparently, nor for Actual Technologies' SQLite\n           driver for Mac OS X.\n\nGiven the hint about Oracle, it looks worth a try, although I think \nthe usual indication is claiming zero rows are available when a \npositive number are.\n\nYou can run R under a debugger to find out exactly what is going \nwrong.\n\nOn Thu, 18 Nov 2010, Harlan Harris wrote:\n\n> This is the version of R you get by \"yum install R\" in CentOS 5 from EPEL.\n> Here you are:\n>\n>> sessionInfo()\n> R version 2.11.1 (2010-05-31)\n> x86_64-redhat-linux-gnu\n>\n> locale:\n> [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C\n> [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8\n> [5] LC_MONETARY=C              LC_MESSAGES=en_US.UTF-8\n> [7] LC_PAPER=en_US.UTF-8       LC_NAME=C\n> [9] LC_ADDRESS=C               LC_TELEPHONE=C\n> [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C\n>\n> attached base packages:\n> [1] stats     graphics  grDevices utils     datasets  methods   base\n>\n> other attached packages:\n> [1] RODBC_1.3-2\n>\n> loaded via a namespace (and not attached):\n> [1] tools_2.11.1\n>\n> -Harlan\n>\n>\n> On Thu, Nov 18, 2010 at 1:13 PM, Marc Schwartz <marc_schwartz at me.com> wrote:\n>\n>> OK....the more I think about this, the more I believe that there is an\n>> integer overflow problem. This may yet be an indication of a 32/64 bit\n>> conflict someplace.\n>>\n>> The question then is where and why.\n>>\n>> Which version of R are you running? Provide the output of:\n>>\n>>  sessionInfo()\n>>\n>> Marc\n>>\n>> On Nov 18, 2010, at 12:03 PM, Harlan Harris wrote:\n>>\n>>> I wondered about the -1 too...\n>>>\n>>> But nope, neither of these suggestions work...\n>>>\n>>>> .Machine$sizeof.pointer\n>>> [1] 8\n>>>> hdl <- odbcConnect('ORACLE', rows_at_time=1)> sqlQuery(hdl, 'select\n>> name from catalog.program where rownum < 2', rows_at_time=1, as.is=TRUE)\n>>> Error in odbcQuery(channel, query, rows_at_time) :\n>>>   Calloc could not allocate (-1 of 22816) memory\n>>>\n>>>  -Harlan\n>>>\n>>> On Thu, Nov 18, 2010 at 12:52 PM, Marc Schwartz <marc_schwartz at me.com>\n>> wrote:\n>>> OK.  What is interesting, albeit, it may be a red herring, is the -1 in\n>> the error message. Is that an indication of an integer wrap around or\n>> something more subtle?\n>>>\n>>> Please be sure that you are running 64 bit R. Check the result of:\n>>>\n>>>   .Machine$sizeof.pointer\n>>>\n>>> It should return 8 if you are running 64 bit R. If it returns 4, you are\n>> running 32 bit R, which would conflict with the rest of the 64 bit tool\n>> chain.\n>>>\n>>> If by chance you are running 32 bit R, you will need to install 64 bit R\n>> and reinstall your CRAN packages, including RODBC, since any C/FORTRAN code\n>> would be compiled as 32 bit programs.\n>>>\n>>> Can you also perhaps try a query that should result in a small result\n>> set? Perhaps a single column from a single row?\n>>>\n>>>\n>>> Marc\n>>>\n>>> On Nov 18, 2010, at 11:29 AM, Harlan Harris wrote:\n>>>\n>>>> Quick response -- thanks! Nope, doesn't help.\n>>>>\n>>>>>  library(RODBC)\n>>>>> hdl <- odbcConnect('ORACLE', rows_at_time=1)\n>>>>> sqlQuery(hdl, 'select * from catalog.program where rownum < 10',\n>> rows_at_time=1)\n>>>> Error in odbcQuery(channel, query, rows_at_time) :\n>>>>   Calloc could not allocate (-1 of 22816) memory\n>>>>\n>>>>  -Harlan\n>>>>\n>>>> On Thu, Nov 18, 2010 at 12:26 PM, Marc Schwartz <marc_schwartz at me.com>\n>> wrote:\n>>>> On Nov 18, 2010, at 11:15 AM, Harlan Harris wrote:\n>>>>\n>>>>> Hi all,\n>>>>>\n>>>>> I'm trying again to get the R<->Oracle toolchain to work on 64-bit\n>> Linux\n>>>>> (CentOS 5/RHEL 5). As previously established, it's nearly impossible,\n>>>>> although I'm awfully close now and just need one bit of help.\n>>>>>\n>>>>> Here's what works:\n>>>>>\n>>>>> I installed the 64-bit Oracle Instant Client Basic and ODBC rpms\n>> (version\n>>>>> 11.2.0.2.0).\n>>>>> export ORACLE_HOME=/usr/lib/oracle/11.2/client64/\n>>>>> export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib\n>>>>> export TNS_ADMIN=/etc/oracle\n>>>>> set up /etc/oracle/tnsname.ora\n>>>>>\n>>>>> The version of unixODBC that's installed on Redhat 5 is 2.2.11. That\n>> version\n>>>>> is old and doesn't work with 64-bit Oracle Instant Client. Both Oracle\n>> and\n>>>>> Redhat are aware of this and stubbornly refuse to fix it. Therefore I\n>>>>> installed easysoft's ODBC Oracle driver. Note that this costs\n>> something like\n>>>>> $2000 to license, but if you've got Oracle, you can probably pay for\n>> it.\n>>>>>\n>>>>> The easysoft driver installs to /usr/local/easysoft. It includes\n>> unixODBC\n>>>>> 2.2.12. (I uninstalled the factor 2.2.11 version)\n>>>>>\n>>>>> I confirmed that it was properly configured and working by running\n>>>>> /usr/local/easysoft/unixODBC/bin/isql and querying my database.\n>> Username and\n>>>>> password are in /etc/odbc.ini.\n>>>>>\n>>>>> I symlinked /usr/local/easysoft/unixODBC/lib, /include, and /bin to\n>>>>> /usr/local/lib, /include and /bin, respectively.\n>>>>>\n>>>>> Now I install RODBC from source. It seems to work, finding sql.h,\n>> sqlext.h,\n>>>>> and -lodbc.\n>>>>>\n>>>>>> library(RODBC)\n>>>>>> hdl <- odbcConnect('ORACLE')\n>>>>>> sqlQuery(hdl, 'select * from catalog.program where rownum < 10')\n>>>>> Error in odbcQuery(channel, query, rows_at_time) :\n>>>>>  Calloc could not allocate (-1 of 22816) memory\n>>>>>\n>>>>>\n>>>>> So close! What am I missing?\n>>>>>\n>>>>> Thanks!\n>>>>>\n>>>>> -Harlan\n>>>>\n>>>>\n>>>> Harlan, glad to see some progress, albeit at a notable cost.\n>>>>\n>>>> Try using 'rows_at_time = 1' in the calls to both odbcConnect() and\n>> sqlQuery().\n>>>>\n>>>> I have found the need to use that setting, rather than the default 100,\n>> in order to successfully retrieve data from our Oracle server on OSX.\n>>>>\n>>>> The smaller value may also help to workaround the memory allocation\n>> issue, presuming that something more subtle is not going on.\n>>>>\n>>>> HTH,\n>>>>\n>>>> Marc Schwartz\n>>>>\n>>>>\n>>>\n>>>\n>>\n>>\n>\n> \t[[alternative HTML version deleted]]\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "One thing I don't see being tried:\n\n?odbcConnect says\n\nbelieveNRows: logical.  Is the number of rows returned by the ODBC\n           connection believable?  Not true for some Oracle and Sybase\n       ",
+      "thread_id": "thread-5ddb92fc3e57",
+      "thread_depth": 7,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-7feca6cbf0fd",
+      "message_id": "<AANLkTimWrRsz4f7n8C0XAdKuTp09VFdV2vs2Ss06Hwx=@mail.gmail.com>",
+      "from_name": "Harlan Harris",
+      "from_email_hash": "611206558041b3ccc178bb02493ee676170bbca58f0ab8c485d465fae70db625",
+      "date": "2010-11-18T13:47:11-05:00",
+      "subject": "[R-sig-DB] RODBC with Oracle and 64-bit Linux (encore)",
+      "subject_clean": "RODBC with Oracle and 64-bit Linux (encore)",
+      "in_reply_to": "<alpine.LFD.2.00.1011181832340.3397@gannet.stats.ox.ac.uk>",
+      "references": [
+        "<AANLkTimPwNn2n=n=yV3RTmM532Nx6-q52sFR-0zkxeQU@mail.gmail.com>",
+        "<882EC066-31E7-4E4A-9CE2-349356359429@me.com>",
+        "<AANLkTimzN+kNscZ35wjypatx_8VgvwUS6Gsy0LMJLAJ7@mail.gmail.com>",
+        "<789BC982-849A-4849-99B3-CB708108EC13@me.com>",
+        "<AANLkTinDeYzMQXpVYsn=Z1j04FNp=A8CW7e=6uki533P@mail.gmail.com>",
+        "<7E28F693-D990-4436-B83A-28D737D38318@me.com>",
+        "<AANLkTin90uqBEt3FQRX-UUMNW8O2ziHi7saUr9-SkmmN@mail.gmail.com>",
+        "<alpine.LFD.2.00.1011181832340.3397@gannet.stats.ox.ac.uk>"
+      ],
+      "body_plain": "Thanks Marc and Prof. Ripley.\n\nThe believeNRows option doesn't help. I'll try installing the newest R\nversion and see if that helps.\n\nWould I have to compile R with debugging symbols enabled to use the\ndebugger? Never done that...\n\n -Harlan\n\nOn Thu, Nov 18, 2010 at 1:40 PM, Prof Brian Ripley <ripley at stats.ox.ac.uk>wrote:\n\n> One thing I don't see being tried:\n>\n> ?odbcConnect says\n>\n> believeNRows: logical.  Is the number of rows returned by the ODBC\n>          connection believable?  Not true for some Oracle and Sybase\n>          drivers, apparently, nor for Actual Technologies' SQLite\n>          driver for Mac OS X.\n>\n> Given the hint about Oracle, it looks worth a try, although I think the\n> usual indication is claiming zero rows are available when a positive number\n> are.\n>\n> You can run R under a debugger to find out exactly what is going wrong.\n>\n>\n> On Thu, 18 Nov 2010, Harlan Harris wrote:\n>\n>  This is the version of R you get by \"yum install R\" in CentOS 5 from EPEL.\n>> Here you are:\n>>\n>>  sessionInfo()\n>>>\n>> R version 2.11.1 (2010-05-31)\n>> x86_64-redhat-linux-gnu\n>>\n>> locale:\n>> [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C\n>> [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8\n>> [5] LC_MONETARY=C              LC_MESSAGES=en_US.UTF-8\n>> [7] LC_PAPER=en_US.UTF-8       LC_NAME=C\n>> [9] LC_ADDRESS=C               LC_TELEPHONE=C\n>> [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C\n>>\n>> attached base packages:\n>> [1] stats     graphics  grDevices utils     datasets  methods   base\n>>\n>> other attached packages:\n>> [1] RODBC_1.3-2\n>>\n>> loaded via a namespace (and not attached):\n>> [1] tools_2.11.1\n>>\n>> -Harlan\n>>\n>>\n>> On Thu, Nov 18, 2010 at 1:13 PM, Marc Schwartz <marc_schwartz at me.com>\n>> wrote:\n>>\n>>  OK....the more I think about this, the more I believe that there is an\n>>> integer overflow problem. This may yet be an indication of a 32/64 bit\n>>> conflict someplace.\n>>>\n>>> The question then is where and why.\n>>>\n>>> Which version of R are you running? Provide the output of:\n>>>\n>>>  sessionInfo()\n>>>\n>>> Marc\n>>>\n>>> On Nov 18, 2010, at 12:03 PM, Harlan Harris wrote:\n>>>\n>>>  I wondered about the -1 too...\n>>>>\n>>>> But nope, neither of these suggestions work...\n>>>>\n>>>>  .Machine$sizeof.pointer\n>>>>>\n>>>> [1] 8\n>>>>\n>>>>> hdl <- odbcConnect('ORACLE', rows_at_time=1)> sqlQuery(hdl, 'select\n>>>>>\n>>>> name from catalog.program where rownum < 2', rows_at_time=1, as.is\n>>> =TRUE)\n>>>\n>>>> Error in odbcQuery(channel, query, rows_at_time) :\n>>>>  Calloc could not allocate (-1 of 22816) memory\n>>>>\n>>>>  -Harlan\n>>>>\n>>>> On Thu, Nov 18, 2010 at 12:52 PM, Marc Schwartz <marc_schwartz at me.com>\n>>>>\n>>> wrote:\n>>>\n>>>> OK.  What is interesting, albeit, it may be a red herring, is the -1 in\n>>>>\n>>> the error message. Is that an indication of an integer wrap around or\n>>> something more subtle?\n>>>\n>>>>\n>>>> Please be sure that you are running 64 bit R. Check the result of:\n>>>>\n>>>>  .Machine$sizeof.pointer\n>>>>\n>>>> It should return 8 if you are running 64 bit R. If it returns 4, you are\n>>>>\n>>> running 32 bit R, which would conflict with the rest of the 64 bit tool\n>>> chain.\n>>>\n>>>>\n>>>> If by chance you are running 32 bit R, you will need to install 64 bit R\n>>>>\n>>> and reinstall your CRAN packages, including RODBC, since any C/FORTRAN\n>>> code\n>>> would be compiled as 32 bit programs.\n>>>\n>>>>\n>>>> Can you also perhaps try a query that should result in a small result\n>>>>\n>>> set? Perhaps a single column from a single row?\n>>>\n>>>>\n>>>>\n>>>> Marc\n>>>>\n>>>> On Nov 18, 2010, at 11:29 AM, Harlan Harris wrote:\n>>>>\n>>>>  Quick response -- thanks! Nope, doesn't help.\n>>>>>\n>>>>>   library(RODBC)\n>>>>>> hdl <- odbcConnect('ORACLE', rows_at_time=1)\n>>>>>> sqlQuery(hdl, 'select * from catalog.program where rownum < 10',\n>>>>>>\n>>>>> rows_at_time=1)\n>>>\n>>>> Error in odbcQuery(channel, query, rows_at_time) :\n>>>>>  Calloc could not allocate (-1 of 22816) memory\n>>>>>\n>>>>>  -Harlan\n>>>>>\n>>>>> On Thu, Nov 18, 2010 at 12:26 PM, Marc Schwartz <marc_schwartz at me.com>\n>>>>>\n>>>> wrote:\n>>>\n>>>> On Nov 18, 2010, at 11:15 AM, Harlan Harris wrote:\n>>>>>\n>>>>>  Hi all,\n>>>>>>\n>>>>>> I'm trying again to get the R<->Oracle toolchain to work on 64-bit\n>>>>>>\n>>>>> Linux\n>>>\n>>>> (CentOS 5/RHEL 5). As previously established, it's nearly impossible,\n>>>>>> although I'm awfully close now and just need one bit of help.\n>>>>>>\n>>>>>> Here's what works:\n>>>>>>\n>>>>>> I installed the 64-bit Oracle Instant Client Basic and ODBC rpms\n>>>>>>\n>>>>> (version\n>>>\n>>>> 11.2.0.2.0).\n>>>>>> export ORACLE_HOME=/usr/lib/oracle/11.2/client64/\n>>>>>> export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib\n>>>>>> export TNS_ADMIN=/etc/oracle\n>>>>>> set up /etc/oracle/tnsname.ora\n>>>>>>\n>>>>>> The version of unixODBC that's installed on Redhat 5 is 2.2.11. That\n>>>>>>\n>>>>> version\n>>>\n>>>> is old and doesn't work with 64-bit Oracle Instant Client. Both Oracle\n>>>>>>\n>>>>> and\n>>>\n>>>> Redhat are aware of this and stubbornly refuse to fix it. Therefore I\n>>>>>> installed easysoft's ODBC Oracle driver. Note that this costs\n>>>>>>\n>>>>> something like\n>>>\n>>>> $2000 to license, but if you've got Oracle, you can probably pay for\n>>>>>>\n>>>>> it.\n>>>\n>>>>\n>>>>>> The easysoft driver installs to /usr/local/easysoft. It includes\n>>>>>>\n>>>>> unixODBC\n>>>\n>>>> 2.2.12. (I uninstalled the factor 2.2.11 version)\n>>>>>>\n>>>>>> I confirmed that it was properly configured and working by running\n>>>>>> /usr/local/easysoft/unixODBC/bin/isql and querying my database.\n>>>>>>\n>>>>> Username and\n>>>\n>>>> password are in /etc/odbc.ini.\n>>>>>>\n>>>>>> I symlinked /usr/local/easysoft/unixODBC/lib, /include, and /bin to\n>>>>>> /usr/local/lib, /include and /bin, respectively.\n>>>>>>\n>>>>>> Now I install RODBC from source. It seems to work, finding sql.h,\n>>>>>>\n>>>>> sqlext.h,\n>>>\n>>>> and -lodbc.\n>>>>>>\n>>>>>>  library(RODBC)\n>>>>>>> hdl <- odbcConnect('ORACLE')\n>>>>>>> sqlQuery(hdl, 'select * from catalog.program where rownum < 10')\n>>>>>>>\n>>>>>> Error in odbcQuery(channel, query, rows_at_time) :\n>>>>>>  Calloc could not allocate (-1 of 22816) memory\n>>>>>>\n>>>>>>\n>>>>>> So close! What am I missing?\n>>>>>>\n>>>>>> Thanks!\n>>>>>>\n>>>>>> -Harlan\n>>>>>>\n>>>>>\n>>>>>\n>>>>> Harlan, glad to see some progress, albeit at a notable cost.\n>>>>>\n>>>>> Try using 'rows_at_time = 1' in the calls to both odbcConnect() and\n>>>>>\n>>>> sqlQuery().\n>>>\n>>>>\n>>>>> I have found the need to use that setting, rather than the default 100,\n>>>>>\n>>>> in order to successfully retrieve data from our Oracle server on OSX.\n>>>\n>>>>\n>>>>> The smaller value may also help to workaround the memory allocation\n>>>>>\n>>>> issue, presuming that something more subtle is not going on.\n>>>\n>>>>\n>>>>> HTH,\n>>>>>\n>>>>> Marc Schwartz\n>>>>>\n>>>>>\n>>>>>\n>>>>\n>>>>\n>>>\n>>>\n>>        [[alternative HTML version deleted]]\n>>\n>> _______________________________________________\n>> R-sig-DB mailing list -- R Special Interest Group\n>> R-sig-DB at stat.math.ethz.ch\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>>\n>>\n> --\n> Brian D. Ripley,                  ripley at stats.ox.ac.uk\n> Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/<http://www.stats.ox.ac.uk/%7Eripley/>\n> University of Oxford,             Tel:  +44 1865 272861 (self)\n> 1 South Parks Road,                     +44 1865 272866 (PA)\n> Oxford OX1 3TG, UK                Fax:  +44 1865 272595\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Thanks Marc and Prof. Ripley.\n\nThe believeNRows option doesn't help. I'll try installing the newest R\nversion and see if that helps.\n\nWould I have to compile R with debugging symbols enabled to use th",
+      "thread_id": "thread-5ddb92fc3e57",
+      "thread_depth": 8,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-184da8486013",
+      "message_id": "<AANLkTinC2Bq_FgF6tz8ky2JNHXrD286OhyL2BdSWhyfY@mail.gmail.com>",
+      "from_name": "Harlan Harris",
+      "from_email_hash": "611206558041b3ccc178bb02493ee676170bbca58f0ab8c485d465fae70db625",
+      "date": "2010-11-22T13:04:21-05:00",
+      "subject": "[R-sig-DB] RODBC with Oracle and 64-bit Linux (encore)",
+      "subject_clean": "RODBC with Oracle and 64-bit Linux (encore)",
+      "in_reply_to": "<AANLkTimWrRsz4f7n8C0XAdKuTp09VFdV2vs2Ss06Hwx=@mail.gmail.com>",
+      "references": [
+        "<AANLkTimPwNn2n=n=yV3RTmM532Nx6-q52sFR-0zkxeQU@mail.gmail.com>",
+        "<882EC066-31E7-4E4A-9CE2-349356359429@me.com>",
+        "<AANLkTimzN+kNscZ35wjypatx_8VgvwUS6Gsy0LMJLAJ7@mail.gmail.com>",
+        "<789BC982-849A-4849-99B3-CB708108EC13@me.com>",
+        "<AANLkTinDeYzMQXpVYsn=Z1j04FNp=A8CW7e=6uki533P@mail.gmail.com>",
+        "<7E28F693-D990-4436-B83A-28D737D38318@me.com>",
+        "<AANLkTin90uqBEt3FQRX-UUMNW8O2ziHi7saUr9-SkmmN@mail.gmail.com>",
+        "<alpine.LFD.2.00.1011181832340.3397@gannet.stats.ox.ac.uk>",
+        "<AANLkTimWrRsz4f7n8C0XAdKuTp09VFdV2vs2Ss06Hwx=@mail.gmail.com>"
+      ],
+      "body_plain": "Looping R-Sig-DB back in for posterity...\n\nWe did manage to get this to work! The answer is that Easysoft offers two\nversions of their driver. The version you get by default from their web\nsite, \"odbc-oracle-3.2.26-linux-x86-64-ul64\", is a 64-bit driver with 64-bit\nSQLLEN and SQLULEN values. That causes (for reasons I don't fully\nunderstand) problems with the integration with RODBC. You can request from\nEasysoft a driver called \"odbc-oracle-3.2.26-linux-x86-64\" which is a 64-bit\ndriver with 32-bit values for those constants. That driver works (modulo an\nissue with Oracle timestamp types, which can be dealt with by as.is=TRUE).\n\n -Harlan\n\nOn Thu, Nov 18, 2010 at 1:47 PM, Harlan Harris <harlan at harris.name> wrote:\n\n> Thanks Marc and Prof. Ripley.\n>\n> The believeNRows option doesn't help. I'll try installing the newest R\n> version and see if that helps.\n>\n> Would I have to compile R with debugging symbols enabled to use the\n> debugger? Never done that...\n>\n>  -Harlan\n>\n>\n> On Thu, Nov 18, 2010 at 1:40 PM, Prof Brian Ripley <ripley at stats.ox.ac.uk>wrote:\n>\n>> One thing I don't see being tried:\n>>\n>> ?odbcConnect says\n>>\n>> believeNRows: logical.  Is the number of rows returned by the ODBC\n>>          connection believable?  Not true for some Oracle and Sybase\n>>          drivers, apparently, nor for Actual Technologies' SQLite\n>>          driver for Mac OS X.\n>>\n>> Given the hint about Oracle, it looks worth a try, although I think the\n>> usual indication is claiming zero rows are available when a positive number\n>> are.\n>>\n>> You can run R under a debugger to find out exactly what is going wrong.\n>>\n>>\n>> On Thu, 18 Nov 2010, Harlan Harris wrote:\n>>\n>>  This is the version of R you get by \"yum install R\" in CentOS 5 from\n>>> EPEL.\n>>> Here you are:\n>>>\n>>>  sessionInfo()\n>>>>\n>>> R version 2.11.1 (2010-05-31)\n>>> x86_64-redhat-linux-gnu\n>>>\n>>> locale:\n>>> [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C\n>>> [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8\n>>> [5] LC_MONETARY=C              LC_MESSAGES=en_US.UTF-8\n>>> [7] LC_PAPER=en_US.UTF-8       LC_NAME=C\n>>> [9] LC_ADDRESS=C               LC_TELEPHONE=C\n>>> [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C\n>>>\n>>> attached base packages:\n>>> [1] stats     graphics  grDevices utils     datasets  methods   base\n>>>\n>>> other attached packages:\n>>> [1] RODBC_1.3-2\n>>>\n>>> loaded via a namespace (and not attached):\n>>> [1] tools_2.11.1\n>>>\n>>> -Harlan\n>>>\n>>>\n>>> On Thu, Nov 18, 2010 at 1:13 PM, Marc Schwartz <marc_schwartz at me.com>\n>>> wrote:\n>>>\n>>>  OK....the more I think about this, the more I believe that there is an\n>>>> integer overflow problem. This may yet be an indication of a 32/64 bit\n>>>> conflict someplace.\n>>>>\n>>>> The question then is where and why.\n>>>>\n>>>> Which version of R are you running? Provide the output of:\n>>>>\n>>>>  sessionInfo()\n>>>>\n>>>> Marc\n>>>>\n>>>> On Nov 18, 2010, at 12:03 PM, Harlan Harris wrote:\n>>>>\n>>>>  I wondered about the -1 too...\n>>>>>\n>>>>> But nope, neither of these suggestions work...\n>>>>>\n>>>>>  .Machine$sizeof.pointer\n>>>>>>\n>>>>> [1] 8\n>>>>>\n>>>>>> hdl <- odbcConnect('ORACLE', rows_at_time=1)> sqlQuery(hdl, 'select\n>>>>>>\n>>>>> name from catalog.program where rownum < 2', rows_at_time=1, as.is\n>>>> =TRUE)\n>>>>\n>>>>> Error in odbcQuery(channel, query, rows_at_time) :\n>>>>>  Calloc could not allocate (-1 of 22816) memory\n>>>>>\n>>>>>  -Harlan\n>>>>>\n>>>>> On Thu, Nov 18, 2010 at 12:52 PM, Marc Schwartz <marc_schwartz at me.com>\n>>>>>\n>>>> wrote:\n>>>>\n>>>>> OK.  What is interesting, albeit, it may be a red herring, is the -1 in\n>>>>>\n>>>> the error message. Is that an indication of an integer wrap around or\n>>>> something more subtle?\n>>>>\n>>>>>\n>>>>> Please be sure that you are running 64 bit R. Check the result of:\n>>>>>\n>>>>>  .Machine$sizeof.pointer\n>>>>>\n>>>>> It should return 8 if you are running 64 bit R. If it returns 4, you\n>>>>> are\n>>>>>\n>>>> running 32 bit R, which would conflict with the rest of the 64 bit tool\n>>>> chain.\n>>>>\n>>>>>\n>>>>> If by chance you are running 32 bit R, you will need to install 64 bit\n>>>>> R\n>>>>>\n>>>> and reinstall your CRAN packages, including RODBC, since any C/FORTRAN\n>>>> code\n>>>> would be compiled as 32 bit programs.\n>>>>\n>>>>>\n>>>>> Can you also perhaps try a query that should result in a small result\n>>>>>\n>>>> set? Perhaps a single column from a single row?\n>>>>\n>>>>>\n>>>>>\n>>>>> Marc\n>>>>>\n>>>>> On Nov 18, 2010, at 11:29 AM, Harlan Harris wrote:\n>>>>>\n>>>>>  Quick response -- thanks! Nope, doesn't help.\n>>>>>>\n>>>>>>   library(RODBC)\n>>>>>>> hdl <- odbcConnect('ORACLE', rows_at_time=1)\n>>>>>>> sqlQuery(hdl, 'select * from catalog.program where rownum < 10',\n>>>>>>>\n>>>>>> rows_at_time=1)\n>>>>\n>>>>> Error in odbcQuery(channel, query, rows_at_time) :\n>>>>>>  Calloc could not allocate (-1 of 22816) memory\n>>>>>>\n>>>>>>  -Harlan\n>>>>>>\n>>>>>> On Thu, Nov 18, 2010 at 12:26 PM, Marc Schwartz <marc_schwartz at me.com\n>>>>>> >\n>>>>>>\n>>>>> wrote:\n>>>>\n>>>>> On Nov 18, 2010, at 11:15 AM, Harlan Harris wrote:\n>>>>>>\n>>>>>>  Hi all,\n>>>>>>>\n>>>>>>> I'm trying again to get the R<->Oracle toolchain to work on 64-bit\n>>>>>>>\n>>>>>> Linux\n>>>>\n>>>>> (CentOS 5/RHEL 5). As previously established, it's nearly impossible,\n>>>>>>> although I'm awfully close now and just need one bit of help.\n>>>>>>>\n>>>>>>> Here's what works:\n>>>>>>>\n>>>>>>> I installed the 64-bit Oracle Instant Client Basic and ODBC rpms\n>>>>>>>\n>>>>>> (version\n>>>>\n>>>>> 11.2.0.2.0).\n>>>>>>> export ORACLE_HOME=/usr/lib/oracle/11.2/client64/\n>>>>>>> export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib\n>>>>>>> export TNS_ADMIN=/etc/oracle\n>>>>>>> set up /etc/oracle/tnsname.ora\n>>>>>>>\n>>>>>>> The version of unixODBC that's installed on Redhat 5 is 2.2.11. That\n>>>>>>>\n>>>>>> version\n>>>>\n>>>>> is old and doesn't work with 64-bit Oracle Instant Client. Both Oracle\n>>>>>>>\n>>>>>> and\n>>>>\n>>>>> Redhat are aware of this and stubbornly refuse to fix it. Therefore I\n>>>>>>> installed easysoft's ODBC Oracle driver. Note that this costs\n>>>>>>>\n>>>>>> something like\n>>>>\n>>>>> $2000 to license, but if you've got Oracle, you can probably pay for\n>>>>>>>\n>>>>>> it.\n>>>>\n>>>>>\n>>>>>>> The easysoft driver installs to /usr/local/easysoft. It includes\n>>>>>>>\n>>>>>> unixODBC\n>>>>\n>>>>> 2.2.12. (I uninstalled the factor 2.2.11 version)\n>>>>>>>\n>>>>>>> I confirmed that it was properly configured and working by running\n>>>>>>> /usr/local/easysoft/unixODBC/bin/isql and querying my database.\n>>>>>>>\n>>>>>> Username and\n>>>>\n>>>>> password are in /etc/odbc.ini.\n>>>>>>>\n>>>>>>> I symlinked /usr/local/easysoft/unixODBC/lib, /include, and /bin to\n>>>>>>> /usr/local/lib, /include and /bin, respectively.\n>>>>>>>\n>>>>>>> Now I install RODBC from source. It seems to work, finding sql.h,\n>>>>>>>\n>>>>>> sqlext.h,\n>>>>\n>>>>> and -lodbc.\n>>>>>>>\n>>>>>>>  library(RODBC)\n>>>>>>>> hdl <- odbcConnect('ORACLE')\n>>>>>>>> sqlQuery(hdl, 'select * from catalog.program where rownum < 10')\n>>>>>>>>\n>>>>>>> Error in odbcQuery(channel, query, rows_at_time) :\n>>>>>>>  Calloc could not allocate (-1 of 22816) memory\n>>>>>>>\n>>>>>>>\n>>>>>>> So close! What am I missing?\n>>>>>>>\n>>>>>>> Thanks!\n>>>>>>>\n>>>>>>> -Harlan\n>>>>>>>\n>>>>>>\n>>>>>>\n>>>>>> Harlan, glad to see some progress, albeit at a notable cost.\n>>>>>>\n>>>>>> Try using 'rows_at_time = 1' in the calls to both odbcConnect() and\n>>>>>>\n>>>>> sqlQuery().\n>>>>\n>>>>>\n>>>>>> I have found the need to use that setting, rather than the default\n>>>>>> 100,\n>>>>>>\n>>>>> in order to successfully retrieve data from our Oracle server on OSX.\n>>>>\n>>>>>\n>>>>>> The smaller value may also help to workaround the memory allocation\n>>>>>>\n>>>>> issue, presuming that something more subtle is not going on.\n>>>>\n>>>>>\n>>>>>> HTH,\n>>>>>>\n>>>>>> Marc Schwartz\n>>>>>>\n>>>>>>\n>>>>>>\n>>>>>\n>>>>>\n>>>>\n>>>>\n>>>        [[alternative HTML version deleted]]\n>>>\n>>> _______________________________________________\n>>> R-sig-DB mailing list -- R Special Interest Group\n>>> R-sig-DB at stat.math.ethz.ch\n>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>>>\n>>>\n>> --\n>> Brian D. Ripley,                  ripley at stats.ox.ac.uk\n>> Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/<http://www.stats.ox.ac.uk/%7Eripley/>\n>> University of Oxford,             Tel:  +44 1865 272861 (self)\n>> 1 South Parks Road,                     +44 1865 272866 (PA)\n>> Oxford OX1 3TG, UK                Fax:  +44 1865 272595\n>>\n>\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Looping R-Sig-DB back in for posterity...\n\nWe did manage to get this to work! The answer is that Easysoft offers two\nversions of their driver. The version you get by default from their web\nsite, \"odbc",
+      "thread_id": "thread-5ddb92fc3e57",
+      "thread_depth": 9,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-a3ba88e42936",
+      "message_id": "<4CEEA7B6.1090608@structuremonitoring.com>",
+      "from_name": "Spencer Graves",
+      "from_email_hash": "74d65542d39045b8f519f051690253c45d7423bc83fbcf361d3e6c7f58751916",
+      "date": "2010-11-25T10:15:18-08:00",
+      "subject": "[R-sig-DB] Error compiling RMySQL under Vista_x64",
+      "subject_clean": "Error compiling RMySQL under Vista_x64",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello:\n\n\n       I get \"x86_64-w64-mingw32-gcc: not found\" from \"R CMD check \nRMySQL_0.7-5.tar.gz\" under Vista_x64 immediately after downloading and \ninstalling Rtools212.exe.\n\n\n       How should I solve this problem?\n\n\n       Thanks,\n       Spencer\np.s.  Below please find \"00install.out\" from \"R CMD check \nRMySQL_0.7-5.tar.gz\".\n\n\n#############################\n\n* installing *source* package 'RMySQL' ...\n\nchecking for $MYSQL_HOME... C:/PROGRA~2/MySQL/MYSQLS~1.1/\ncygwin warning:\n   MS-DOS style path detected: C:/PROGRA~2/MySQL/MYSQLS~1.1/\n   Preferred POSIX equivalent is: /cygdrive/c/PROGRA~2/MySQL/MYSQLS~1.1/\n   CYGWIN environment variable option \"nodosfilewarning\" turns off this \nwarning.\n   Consult the user's guide for more details about POSIX paths:\n     http://cygwin.com/cygwin-ug-net/using.html#using-pathnames\n** libs\n\nWarning: this package has a non-empty 'configure.win' file,\n\nso building only the main architecture\n\n\n\ncygwin warning:\n   MS-DOS style path detected: C:/Users/sgraves/R/R-212~1.0/etc/x64/Makeconf\n   Preferred POSIX equivalent is: \n/cygdrive/c/Users/sgraves/R/R-212~1.0/etc/x64/Makeconf\n   CYGWIN environment variable option \"nodosfilewarning\" turns off this \nwarning.\n   Consult the user's guide for more details about POSIX paths:\n     http://cygwin.com/cygwin-ug-net/using.html#using-pathnames\nx86_64-w64-mingw32-gcc -I\"C:/Users/sgraves/R/R-212~1.0/include\" \n-I\"C:/PROGRA~2/MySQL/MYSQLS~1.1/\"/include        -O2 -Wall  -std=gnu99 \n-c RS-DBI.c -o RS-DBI.o\nx86_64-w64-mingw32-gcc: not found\nmake: *** [RS-DBI.o] Error 127\nERROR: compilation failed for package 'RMySQL'\n\n* removing 'C:/Users/sgraves/Rpkgs/RMySQL/RMySQL.Rcheck/RMySQL'",
+      "body_snippet": "Hello:\n\n\n       I get \"x86_64-w64-mingw32-gcc: not found\" from \"R CMD check \nRMySQL_0.7-5.tar.gz\" under Vista_x64 immediately after downloading and \ninstalling Rtools212.exe.\n\n\n       How should I sol",
+      "thread_id": "thread-a3ba88e42936",
+      "thread_depth": 0,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-52e1fbade8f9",
+      "message_id": "<000301cb8d80$1af0a560$50d1f020$@gmail.com>",
+      "from_name": "Xiaobo Gu",
+      "from_email_hash": "176108762e20fc40c0ea5782a4cf2388d4cba8cdadb1f5a5481fccf34141e262",
+      "date": "2010-11-26T23:39:11+08:00",
+      "subject": "[R-sig-DB] FW: R encoding question",
+      "subject_clean": "R encoding question",
+      "in_reply_to": "<AANLkTimAwLDLce96-RGuig7xqYeNPk5HJpLWUyJmeA2c@mail.gmail.com>",
+      "references": [
+        "<AANLkTimAwLDLce96-RGuig7xqYeNPk5HJpLWUyJmeA2c@mail.gmail.com>"
+      ],
+      "body_plain": "Xiaobo.Gu\n\n-----Original Message-----\nFrom: Xiaobo Gu [mailto:guxiaobo1982 at gmail.com] \nSent: Wednesday, November 24, 2010 10:19 PM\nTo: r-help at r-project.org\nSubject: R encoding question\n\nHi,\n I am using RpgSQL to retrieve data from a PostgreSQL database wich is with\nencoding UTF8, and I have some Chinese character in one of the columns,\nunfortunately R can't show it correctly.\n\n> df <- dbGetQuery(con, \"select * from test\") df\n  a            b\n1 1 ????\\xa2\n2 2   ?? EURO\\xa1\n\nI see the following option, do I need to change the encoding option to show\nthe corresponding texts? In my case how to set?\n\n$encoding\n[1] \"native.enc\"\n\nThanks,\nXiaobo Gu",
+      "body_snippet": "Xiaobo.Gu\n\n-----Original Message-----\nFrom: Xiaobo Gu [mailto:guxiaobo1982 at gmail.com] \nSent: Wednesday, November 24, 2010 10:19 PM\nTo: r-help at r-project.org\nSubject: R encoding question\n\nHi,\n I a",
+      "thread_id": "thread-52e1fbade8f9",
+      "thread_depth": 0,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-9c678468c366",
+      "message_id": "<4cefe6bf.16958e0a.5ade.ffff9617@mx.google.com>",
+      "from_name": "Santosh Srinivas",
+      "from_email_hash": "4b6e8cb296644422afba688b6fd0492c9d05cea0a8c2c4638454fae26f0af51c",
+      "date": "2010-11-26T22:26:25+05:30",
+      "subject": "[R-sig-DB] RQuantLib for Win 7 64 Bit",
+      "subject_clean": "RQuantLib for Win 7 64 Bit",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello R-Group,\n\nI am trying out some of my 32 Bit code on a new Win 7 64 bit installation.\nUnfortunately, I do not have the binary for RQuantLib which I believe is not\nreadily available.\n\nCould someone who has RQuantLib running on Win 7 64 bit send me a compiled\nbinary or instructions of how to get it one?\n\nThanks for your patience with a R newbie.\n\nThank you.",
+      "body_snippet": "Hello R-Group,\n\nI am trying out some of my 32 Bit code on a new Win 7 64 bit installation.\nUnfortunately, I do not have the binary for RQuantLib which I believe is not\nreadily available.\n\nCould someon",
+      "thread_id": "thread-9c678468c366",
+      "thread_depth": 0,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-96cad7daf8e8",
+      "message_id": "<4CEFF731.2080605@structuremonitoring.com>",
+      "from_name": "Spencer Graves",
+      "from_email_hash": "74d65542d39045b8f519f051690253c45d7423bc83fbcf361d3e6c7f58751916",
+      "date": "2010-11-26T10:06:41-08:00",
+      "subject": "[R-sig-DB] R Tools & Vista_x64:  Problem compiling RMySQL?",
+      "subject_clean": "R Tools & Vista_x64:  Problem compiling RMySQL?",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello:\n\n\n\t  What do I need to do to compile R packages (especially RMySQL) for \nthe 64-bit version of R 2.12.0 under Vista_x64?\n\n\n\t  I upgraded to \"Rtools212.exe\" yesterday but immediately got errors \nfrom \"R CMD check RMySQL_0.7-5.tar.gz\".  After the first error, I \ninstalled it a second time, then got \"undefined reference to\" roughly 50 \ndifferent names beginning \"mysql_\";  copied below.  I see two possible \nsources for this problem:\n\n\n\t\t    (1) RTools212 may not be installed properly.\n\n\n\t\t    (2) RMySQL may be incompatible with R x64 2.12.0, especially with \na 32-bit version of MySQL.\n\n\n\t  NOTE:  RMySQL worked with R2.11.1 (and MySQL 5.1.50-community server) \nbefore I installed R2.12.0.  I'm reasonably sure that my local \ninstallation of MySQL is only 32-bit.\n\n\n\t  What do you suggest?  I use the 32-bit version of R2.12.0?\n\n\n\t  Thanks,\n\t  Spencer\n#####################################\n* installing *source* package 'RMySQL' ...\nchecking for $MYSQL_HOME... C:/PROGRA~2/MySQL/MYSQLS~1.1/\ncygwin warning:\n   MS-DOS style path detected: C:/PROGRA~2/MySQL/MYSQLS~1.1/\n   Preferred POSIX equivalent is: /cygdrive/c/PROGRA~2/MySQL/MYSQLS~1.1/\n   CYGWIN environment variable option \"nodosfilewarning\" turns off this \nwarning.\n   Consult the user's guide for more details about POSIX paths:\n     http://cygwin.com/cygwin-ug-net/using.html#using-pathnames\n** libs\nWarning: this package has a non-empty 'configure.win' file,\nso building only the main architecture\n\ncygwin warning:\n   MS-DOS style path detected: C:/Users/sgraves/R/R-212~1.0/etc/x64/Makeconf\n   Preferred POSIX equivalent is: \n/cygdrive/c/Users/sgraves/R/R-212~1.0/etc/x64/Makeconf\n   CYGWIN environment variable option \"nodosfilewarning\" turns off this \nwarning.\n   Consult the user's guide for more details about POSIX paths:\n     http://cygwin.com/cygwin-ug-net/using.html#using-pathnames\nx86_64-w64-mingw32-gcc -I\"C:/Users/sgraves/R/R-212~1.0/include\" \n-I\"C:/PROGRA~2/MySQL/MYSQLS~1.1/\"/include        -O2 -Wall  -std=gnu99 \n-c RS-DBI.c -o RS-DBI.o\nx86_64-w64-mingw32-gcc -I\"C:/Users/sgraves/R/R-212~1.0/include\" \n-I\"C:/PROGRA~2/MySQL/MYSQLS~1.1/\"/include        -O2 -Wall  -std=gnu99 \n-c RS-MySQL.c -o RS-MySQL.o\nx86_64-w64-mingw32-gcc -shared -s -static-libgcc -o RMySQL.dll tmp.def \nRS-DBI.o RS-MySQL.o C:/PROGRA~2/MySQL/MYSQLS~1.1//bin/libmySQL.dll \n-LC:/Users/sgraves/R/R-212~1.0/bin/x64 -lR\nRS-MySQL.o:RS-MySQL.c:(.text+0xb0): undefined reference to \n`mysql_more_results'\nRS-MySQL.o:RS-MySQL.c:(.text+0x2c6): undefined reference to `mysql_init'\nRS-MySQL.o:RS-MySQL.c:(.text+0x2d9): undefined reference to `mysql_options'\nRS-MySQL.o:RS-MySQL.c:(.text+0x2ef): undefined reference to `mysql_options'\nRS-MySQL.o:RS-MySQL.c:(.text+0x305): undefined reference to `mysql_options'\nRS-MySQL.o:RS-MySQL.c:(.text+0x338): undefined reference to \n`mysql_real_connect'\nRS-MySQL.o:RS-MySQL.c:(.text+0x399): undefined reference to `mysql_close'\nRS-MySQL.o:RS-MySQL.c:(.text+0x3d1): undefined reference to `mysql_error'\nRS-MySQL.o:RS-MySQL.c:(.text+0x7a2): undefined reference to `mysql_close'\nRS-MySQL.o:RS-MySQL.c:(.text+0x80f): undefined reference to \n`mysql_fetch_fields'\nRS-MySQL.o:RS-MySQL.c:(.text+0x823): undefined reference to \n`mysql_field_count'\nRS-MySQL.o:RS-MySQL.c:(.text+0xae7): undefined reference to \n`mysql_next_result'\nRS-MySQL.o:RS-MySQL.c:(.text+0xb0b): undefined reference to \n`mysql_use_result'\nRS-MySQL.o:RS-MySQL.c:(.text+0xb16): undefined reference to \n`mysql_field_count'\nRS-MySQL.o:RS-MySQL.c:(.text+0xbff): undefined reference to \n`mysql_affected_rows'\nRS-MySQL.o:RS-MySQL.c:(.text+0xd27): undefined reference to \n`mysql_fetch_row'\nRS-MySQL.o:RS-MySQL.c:(.text+0xd3d): undefined reference to \n`mysql_fetch_lengths'\nRS-MySQL.o:RS-MySQL.c:(.text+0xf2e): undefined reference to `mysql_errno'\nRS-MySQL.o:RS-MySQL.c:(.text+0x1093): undefined reference to `mysql_errno'\nRS-MySQL.o:RS-MySQL.c:(.text+0x109e): undefined reference to `mysql_error'\nRS-MySQL.o:RS-MySQL.c:(.text+0x1114): undefined reference to \n`mysql_fetch_row'\nRS-MySQL.o:RS-MySQL.c:(.text+0x1121): undefined reference to \n`mysql_free_result'\nRS-MySQL.o:RS-MySQL.c:(.text+0x11f0): undefined reference to `mysql_query'\nRS-MySQL.o:RS-MySQL.c:(.text+0x1200): undefined reference to \n`mysql_use_result'\nRS-MySQL.o:RS-MySQL.c:(.text+0x120b): undefined reference to \n`mysql_field_count'\nRS-MySQL.o:RS-MySQL.c:(.text+0x128f): undefined reference to `mysql_query'\nRS-MySQL.o:RS-MySQL.c:(.text+0x12ac): undefined reference to `mysql_error'\nRS-MySQL.o:RS-MySQL.c:(.text+0x133c): undefined reference to \n`mysql_affected_rows'\nRS-MySQL.o:RS-MySQL.c:(.text+0x1539): undefined reference to \n`mysql_get_client_info'\nRS-MySQL.o:RS-MySQL.c:(.text+0x172d): undefined reference to \n`mysql_get_host_info'\nRS-MySQL.o:RS-MySQL.c:(.text+0x174b): undefined reference to \n`mysql_get_server_info'\nRS-MySQL.o:RS-MySQL.c:(.text+0x176d): undefined reference to \n`mysql_get_proto_info'\nRS-MySQL.o:RS-MySQL.c:(.text+0x177c): undefined reference to \n`mysql_thread_id'\nRS-MySQL.o:RS-MySQL.c:(.text+0x23db): undefined reference to \n`mysql_fetch_row'\nRS-MySQL.o:RS-MySQL.c:(.text+0x23fd): undefined reference to `mysql_errno'\nRS-MySQL.o:RS-MySQL.c:(.text+0x252a): undefined reference to \n`mysql_fetch_lengths'\nRS-MySQL.o:RS-MySQL.c:(.text+0x28fd): undefined reference to \n`mysql_insert_id'\nRS-MySQL.o:RS-MySQL.c:(.text+0x29cd): undefined reference to \n`mysql_real_escape_string'\nRS-MySQL.o:RS-MySQL.c:(.text+0x2a7a): undefined reference to \n`mysql_get_client_info'\nRS-MySQL.o:RS-MySQL.c:(.text+0x2ab8): undefined reference to \n`mysql_get_client_version'\nRS-MySQL.o:RS-MySQL.c:(.text+0x2afc): undefined reference to \n`mysql_server_init'\nRS-MySQL.o:RS-MySQL.c:(.text+0x2b01): undefined reference to \n`mysql_get_client_version'\nRS-MySQL.o:RS-MySQL.c:(.text+0x2b29): undefined reference to \n`mysql_get_client_info'\nRS-MySQL.o:RS-MySQL.c:(.text+0x2b69): undefined reference to \n`mysql_server_end'\ncollect2: ld returned 1 exit status\nERROR: compilation failed for package 'RMySQL'\n* removing 'C:/Users/sgraves/Rpkgs/RMySQL/RMySQL.Rcheck/RMySQL'",
+      "body_snippet": "Hello:\n\n\n\t  What do I need to do to compile R packages (especially RMySQL) for \nthe 64-bit version of R 2.12.0 under Vista_x64?\n\n\n\t  I upgraded to \"Rtools212.exe\" yesterday but immediately got errors ",
+      "thread_id": "thread-96cad7daf8e8",
+      "thread_depth": 0,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-c956a35d0f26",
+      "message_id": "<4CF00686.7080601@gmail.com>",
+      "from_name": "Duncan Murdoch",
+      "from_email_hash": "f9a415d339fb179db05d60d3dad3c3f8a3545457db293eaaaa76ffc7f4ce0713",
+      "date": "2010-11-26T14:12:06-05:00",
+      "subject": "[R-sig-DB] [Rd] R Tools & Vista_x64: Problem compiling RMySQL?",
+      "subject_clean": "R Tools & Vista_x64: Problem compiling RMySQL?",
+      "in_reply_to": "<4CEFF731.2080605@structuremonitoring.com>",
+      "references": [
+        "<4CEFF731.2080605@structuremonitoring.com>"
+      ],
+      "body_plain": "On 26/11/2010 1:06 PM, Spencer Graves wrote:\n> Hello:\n>\n>\n> \t  What do I need to do to compile R packages (especially RMySQL) for\n> the 64-bit version of R 2.12.0 under Vista_x64?\n\nThe symptoms you're seeing are because the linker can't functions in\n\nlibmySQL.dll\n\nwhich it is looking for in the somewhat strange path\n\nC:/PROGRA~2/MySQL/MYSQLS~1.1//bin/libmySQL.dll\n\n\nDoes that file exist?  Is it a 64 bit dll, compatible with MinGW?  Is it \ncompiled under the same convention as R, where no underscores are used \nin external names?  (The latter two questions can probably be answered \nby looking at \"objdump -x libmySQL.dll\".  objdump.exe is distributed as \npart of the MinGW distribution in Rtools.)\n\nDuncan Murdoch\n\n>\n> \tI upgraded to \"Rtools212.exe\" yesterday but immediately got errors\n> from \"R CMD check RMySQL_0.7-5.tar.gz\".  After the first error, I\n> installed it a second time, then got \"undefined reference to\" roughly 50\n> different names beginning \"mysql_\";  copied below.  I see two possible\n> sources for this problem:\n>\n>\n> \t\t    (1) RTools212 may not be installed properly.\n>\n>\n> \t\t    (2) RMySQL may be incompatible with R x64 2.12.0, especially with\n> a 32-bit version of MySQL.\n>\n>\n> \t  NOTE:  RMySQL worked with R2.11.1 (and MySQL 5.1.50-community server)\n> before I installed R2.12.0.  I'm reasonably sure that my local\n> installation of MySQL is only 32-bit.\n>\n>\n> \t  What do you suggest?  I use the 32-bit version of R2.12.0?\n>\n>\n> \t  Thanks,\n> \t  Spencer\n> #####################################\n> * installing *source* package 'RMySQL' ...\n> checking for $MYSQL_HOME... C:/PROGRA~2/MySQL/MYSQLS~1.1/\n> cygwin warning:\n>     MS-DOS style path detected: C:/PROGRA~2/MySQL/MYSQLS~1.1/\n>     Preferred POSIX equivalent is: /cygdrive/c/PROGRA~2/MySQL/MYSQLS~1.1/\n>     CYGWIN environment variable option \"nodosfilewarning\" turns off this\n> warning.\n>     Consult the user's guide for more details about POSIX paths:\n>       http://cygwin.com/cygwin-ug-net/using.html#using-pathnames\n> ** libs\n> Warning: this package has a non-empty 'configure.win' file,\n> so building only the main architecture\n>\n> cygwin warning:\n>     MS-DOS style path detected: C:/Users/sgraves/R/R-212~1.0/etc/x64/Makeconf\n>     Preferred POSIX equivalent is:\n> /cygdrive/c/Users/sgraves/R/R-212~1.0/etc/x64/Makeconf\n>     CYGWIN environment variable option \"nodosfilewarning\" turns off this\n> warning.\n>     Consult the user's guide for more details about POSIX paths:\n>       http://cygwin.com/cygwin-ug-net/using.html#using-pathnames\n> x86_64-w64-mingw32-gcc -I\"C:/Users/sgraves/R/R-212~1.0/include\"\n> -I\"C:/PROGRA~2/MySQL/MYSQLS~1.1/\"/include        -O2 -Wall  -std=gnu99\n> -c RS-DBI.c -o RS-DBI.o\n> x86_64-w64-mingw32-gcc -I\"C:/Users/sgraves/R/R-212~1.0/include\"\n> -I\"C:/PROGRA~2/MySQL/MYSQLS~1.1/\"/include        -O2 -Wall  -std=gnu99\n> -c RS-MySQL.c -o RS-MySQL.o\n> x86_64-w64-mingw32-gcc -shared -s -static-libgcc -o RMySQL.dll tmp.def\n> RS-DBI.o RS-MySQL.o C:/PROGRA~2/MySQL/MYSQLS~1.1//bin/libmySQL.dll\n> -LC:/Users/sgraves/R/R-212~1.0/bin/x64 -lR\n> RS-MySQL.o:RS-MySQL.c:(.text+0xb0): undefined reference to\n> `mysql_more_results'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x2c6): undefined reference to `mysql_init'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x2d9): undefined reference to `mysql_options'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x2ef): undefined reference to `mysql_options'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x305): undefined reference to `mysql_options'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x338): undefined reference to\n> `mysql_real_connect'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x399): undefined reference to `mysql_close'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x3d1): undefined reference to `mysql_error'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x7a2): undefined reference to `mysql_close'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x80f): undefined reference to\n> `mysql_fetch_fields'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x823): undefined reference to\n> `mysql_field_count'\n> RS-MySQL.o:RS-MySQL.c:(.text+0xae7): undefined reference to\n> `mysql_next_result'\n> RS-MySQL.o:RS-MySQL.c:(.text+0xb0b): undefined reference to\n> `mysql_use_result'\n> RS-MySQL.o:RS-MySQL.c:(.text+0xb16): undefined reference to\n> `mysql_field_count'\n> RS-MySQL.o:RS-MySQL.c:(.text+0xbff): undefined reference to\n> `mysql_affected_rows'\n> RS-MySQL.o:RS-MySQL.c:(.text+0xd27): undefined reference to\n> `mysql_fetch_row'\n> RS-MySQL.o:RS-MySQL.c:(.text+0xd3d): undefined reference to\n> `mysql_fetch_lengths'\n> RS-MySQL.o:RS-MySQL.c:(.text+0xf2e): undefined reference to `mysql_errno'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x1093): undefined reference to `mysql_errno'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x109e): undefined reference to `mysql_error'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x1114): undefined reference to\n> `mysql_fetch_row'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x1121): undefined reference to\n> `mysql_free_result'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x11f0): undefined reference to `mysql_query'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x1200): undefined reference to\n> `mysql_use_result'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x120b): undefined reference to\n> `mysql_field_count'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x128f): undefined reference to `mysql_query'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x12ac): undefined reference to `mysql_error'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x133c): undefined reference to\n> `mysql_affected_rows'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x1539): undefined reference to\n> `mysql_get_client_info'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x172d): undefined reference to\n> `mysql_get_host_info'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x174b): undefined reference to\n> `mysql_get_server_info'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x176d): undefined reference to\n> `mysql_get_proto_info'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x177c): undefined reference to\n> `mysql_thread_id'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x23db): undefined reference to\n> `mysql_fetch_row'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x23fd): undefined reference to `mysql_errno'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x252a): undefined reference to\n> `mysql_fetch_lengths'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x28fd): undefined reference to\n> `mysql_insert_id'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x29cd): undefined reference to\n> `mysql_real_escape_string'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x2a7a): undefined reference to\n> `mysql_get_client_info'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x2ab8): undefined reference to\n> `mysql_get_client_version'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x2afc): undefined reference to\n> `mysql_server_init'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x2b01): undefined reference to\n> `mysql_get_client_version'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x2b29): undefined reference to\n> `mysql_get_client_info'\n> RS-MySQL.o:RS-MySQL.c:(.text+0x2b69): undefined reference to\n> `mysql_server_end'\n> collect2: ld returned 1 exit status\n> ERROR: compilation failed for package 'RMySQL'\n> * removing 'C:/Users/sgraves/Rpkgs/RMySQL/RMySQL.Rcheck/RMySQL'\n>\n> ______________________________________________\n> R-devel at r-project.org mailing list\n> https://stat.ethz.ch/mailman/listinfo/r-devel",
+      "body_snippet": "On 26/11/2010 1:06 PM, Spencer Graves wrote:\n> Hello:\n>\n>\n> \t  What do I need to do to compile R packages (especially RMySQL) for\n> the 64-bit version of R 2.12.0 under Vista_x64?\n\nThe symptoms you're",
+      "thread_id": "thread-96cad7daf8e8",
+      "thread_depth": 1,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-0871a72ffa75",
+      "message_id": "<200566.68411.qm@web53106.mail.re2.yahoo.com>",
+      "from_name": "bill hastings",
+      "from_email_hash": "618fa820ecccc94bf1645a3e1c0d802d8b213e466e06f67d0145f9aedbce8a8a",
+      "date": "2010-11-27T07:57:46-08:00",
+      "subject": "[R-sig-DB] R DB interfaces and saving charts",
+      "subject_clean": "R DB interfaces and saving charts",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\nHere are a few question I have. \nThanks, for any answers.\n\n1) Is there anyway to save a chart(produced by plot)\n\n    to a data base?\n\n    I see that most of the R DB methods\n\n    save output as data.frames or files.\n\n\n2) If I can not use db's to save charts and graphics,\n\n   is there a way to save multiple charts in a file?\n\n   saving the charts as individual files will create\n \n  thousands of files. I would like to keep the file count down.\n\n\n3)  I plan to use these charts in html web pages, does anyone\n\n    recommend any particular html editor to layout web pages\n\n    from R?\n\n\n4) How can R's screen output be saved in a DB as html or xml\n\n   for use in web pages?\n\n5) Are there any packages for capturing screen output for\n\n   entry into a db?\n\nThanks again,\n\nBill\n\n\n\n      \n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi,\n\nHere are a few question I have. \nThanks, for any answers.\n\n1) Is there anyway to save a chart(produced by plot)\n\n    to a data base?\n\n    I see that most of the R DB methods\n\n    save output as d",
+      "thread_id": "thread-0871a72ffa75",
+      "thread_depth": 0,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-ca11ad87a81e",
+      "message_id": "<19697.12442.519620.284238@max.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2010-11-27T10:23:54-06:00",
+      "subject": "[R-sig-DB] R DB interfaces and saving charts",
+      "subject_clean": "R DB interfaces and saving charts",
+      "in_reply_to": "<200566.68411.qm@web53106.mail.re2.yahoo.com>",
+      "references": [
+        "<200566.68411.qm@web53106.mail.re2.yahoo.com>"
+      ],
+      "body_plain": "On 27 November 2010 at 07:57, bill hastings wrote:\n| Here are a few question I have. \n| Thanks, for any answers.\n| \n| 1) Is there anyway to save a chart(produced by plot)\n|     to a data base?\n|     I see that most of the R DB methods\n|     save output as data.frames or files.\n\nMost R charts go to 'devices'; most of these devices can save to a file. You\ncan the serialize the file, or save the it as a blob.\n\nSo yes: you can render plenty of charts 'off-line' and then have, say, a web\nfrontend serve them.\n\nSome R charting packages also generate object you could serialize\ndirectly. My digest package is a useful interface for serializing /\ndeserialization.\n\n| 2) If I can not use db's to save charts and graphics,\n|    is there a way to save multiple charts in a file?\n|    saving the charts as individual files will create\n|   thousands of files. I would like to keep the file count down.\n\nSure. \n\nSee e.g. help(pdf) and look at the onefile argument. [ The question is\nkinds off-topic here as it has no bearing on DBs. ]\n \n| 3)  I plan to use these charts in html web pages, does anyone\n|     recommend any particular html editor to layout web pages\n|     from R?\n\nNo idea. I like gWidgetsWWW for high-level interfaces from R to (simple\nenough) web pages.  When I need to edit html, emacs is good enough with\nsuitable modes.\n \n| 4) How can R's screen output be saved in a DB as html or xml\n|    for use in web pages?\n\nHuh? Who said the devices produce html?  People do weird things with XML.\nAnd the XML package suppports so if you must wrap a binary blob (properly\nserialized) in XML tags then go for it.\n \n| 5) Are there any packages for capturing screen output for\n|    entry into a db?\n\nQuestion 5) is the same as question 1) so also see above.  Apart from that, R\nis a programming language. When a function is missing, we tend to write it.\nIf you need other people to write it for you, there are consultants (and if\nyou contact me offline I even recommend one).\n\nDirk\n\n-- \nDirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com",
+      "body_snippet": "On 27 November 2010 at 07:57, bill hastings wrote:\n| Here are a few question I have. \n| Thanks, for any answers.\n| \n| 1) Is there anyway to save a chart(produced by plot)\n|     to a data base?\n|     I",
+      "thread_id": "thread-0871a72ffa75",
+      "thread_depth": 1,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-bdaa9477a890",
+      "message_id": "<4CF13534.5060305@joeconway.com>",
+      "from_name": "Joe Conway",
+      "from_email_hash": "0949eac547cfdb5b4f8da255f732c1e0eefbdbedd75144220d850557442c3d4d",
+      "date": "2010-11-27T08:43:32-08:00",
+      "subject": "[R-sig-DB] R DB interfaces and saving charts",
+      "subject_clean": "R DB interfaces and saving charts",
+      "in_reply_to": "<200566.68411.qm@web53106.mail.re2.yahoo.com>",
+      "references": [
+        "<200566.68411.qm@web53106.mail.re2.yahoo.com>"
+      ],
+      "body_plain": "On 11/27/2010 07:57 AM, bill hastings wrote:\n> 1) Is there anyway to save a chart(produced by plot)\n> \n>     to a data base?\n> \n>     I see that most of the R DB methods\n> \n>     save output as data.frames or files.\n\nUse PL/R with PostgreSQL.\n  http://www.joeconway.com/plr/\n\nFor some ideas how to do this see:\n\nhttp://blog.credativ.com/en/2010/07/postgresql-topic-of-the-day---advanced-analytics.html\n\n-or-\n\nhttp://bit.ly/9NZ0fz\n\nThis example shows saving data frames directly as R objects to tables in\nthe database, and also shows returning a chart as binary data (jpg) as a\nresult of a SQL query. It would be a simple matter to store that\nreturned data into a bytea column in PostgreSQL.\n\nHTH,\n\nJoe\n\n\n-- \nJoe Conway\ncredativ LLC: http://www.credativ.us\nLinux, PostgreSQL, and general Open Source\nTraining, Service, Consulting, & 24x7 Support\n\n\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: signature.asc\nType: application/pgp-signature\nSize: 899 bytes\nDesc: OpenPGP digital signature\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20101127/27b40187/attachment.sig>",
+      "body_snippet": "On 11/27/2010 07:57 AM, bill hastings wrote:\n> 1) Is there anyway to save a chart(produced by plot)\n> \n>     to a data base?\n> \n>     I see that most of the R DB methods\n> \n>     save output as data.f",
+      "thread_id": "thread-0871a72ffa75",
+      "thread_depth": 1,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-3c5661f88bc8",
+      "message_id": "<4CF13981.3060905@structuremonitoring.com>",
+      "from_name": "Spencer Graves",
+      "from_email_hash": "74d65542d39045b8f519f051690253c45d7423bc83fbcf361d3e6c7f58751916",
+      "date": "2010-11-27T09:01:53-08:00",
+      "subject": "[R-sig-DB] R DB interfaces and saving charts",
+      "subject_clean": "R DB interfaces and saving charts",
+      "in_reply_to": "<4CF13534.5060305@joeconway.com>",
+      "references": [
+        "<200566.68411.qm@web53106.mail.re2.yahoo.com>",
+        "<4CF13534.5060305@joeconway.com>"
+      ],
+      "body_plain": "Beyond Dirk's comments, there is an \"R2HTML\" package.  (It has \nsome minor problems and could use maintenance.  If you have time and \ninterest, please contact either me or the officially listed maintainer \nor author.)  To produce *.pdf, one can print from a browser to *.pdf \n(e.g., using CutePDF).  To control pagination with that, I've manually \nedited the index.html file in Open Office, then wrote to *.pdf.\n\n\n       Have you considered creating a subdirectory, e.g., called \"figs\", \nand write all the individual plots to that subdirectory?  That's a more \ntraditional solution, I think.\n\n\n       If you'd rather use MySQL than PostgreSQL, the RMySQL package \nseems to work OK, though it cannot be installed from CRAN on a Windows \nmachine.  Instead, you need to download the source in *.tar.gz then do \n\"R CMD INSTALL\" from that to tailor it for the version of MySQL you have.\n\n\nHope this helps.\nSpencer\n\n\nOn 11/27/2010 8:43 AM, Joe Conway wrote:\n> On 11/27/2010 07:57 AM, bill hastings wrote:\n>> 1) Is there anyway to save a chart(produced by plot)\n>>\n>>      to a data base?\n>>\n>>      I see that most of the R DB methods\n>>\n>>      save output as data.frames or files.\n> Use PL/R with PostgreSQL.\n>    http://www.joeconway.com/plr/\n>\n> For some ideas how to do this see:\n>\n> http://blog.credativ.com/en/2010/07/postgresql-topic-of-the-day---advanced-analytics.html\n>\n> -or-\n>\n> http://bit.ly/9NZ0fz\n>\n> This example shows saving data frames directly as R objects to tables in\n> the database, and also shows returning a chart as binary data (jpg) as a\n> result of a SQL query. It would be a simple matter to store that\n> returned data into a bytea column in PostgreSQL.\n>\n> HTH,\n>\n> Joe\n>\n>\n>\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n\n-- \nSpencer Graves, PE, PhD\nPresident and Chief Operating Officer\nStructure Inspection and Monitoring, Inc.\n751 Emerson Ct.\nSan Jos?, CA 95126\nph:  408-655-4567\n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Beyond Dirk's comments, there is an \"R2HTML\" package.  (It has \nsome minor problems and could use maintenance.  If you have time and \ninterest, please contact either me or the officially listed mainta",
+      "thread_id": "thread-0871a72ffa75",
+      "thread_depth": 2,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-8257cf1c3704",
+      "message_id": "<4CF278E2.8080703@structuremonitoring.com>",
+      "from_name": "Spencer Graves",
+      "from_email_hash": "74d65542d39045b8f519f051690253c45d7423bc83fbcf361d3e6c7f58751916",
+      "date": "2010-11-28T07:44:34-08:00",
+      "subject": "[R-sig-DB] R DB interfaces and saving charts",
+      "subject_clean": "R DB interfaces and saving charts",
+      "in_reply_to": "<988701.22843.qm@web53102.mail.re2.yahoo.com>",
+      "references": [
+        "<200566.68411.qm@web53106.mail.re2.yahoo.com>",
+        "<4CF13534.5060305@joeconway.com>",
+        "<4CF13981.3060905@structuremonitoring.com>",
+        "<988701.22843.qm@web53102.mail.re2.yahoo.com>"
+      ],
+      "body_plain": "<in line>\n\nOn 11/28/2010 7:35 AM, bill hastings wrote:\n> Thanks for your great suggestions, I just looked\n> at r2html, it looks like just what i need.\n>\n> I wanted to do all of this in a scripted fashion(automated).\n> Each time I run my system(when it's finished)I would be generating thousands of\n> charts and blocks of text.\n>\n> Have you used open office's scripting feature?\nno.\n> What do you think of these content management systems or\n> other scripting languages to automate the production of\n> web pages from R outputs?\nI know nothing about them.\n> The problem I found with the RODBC was that it could not\n> handle blobs or binary files, only data.frames.\n> I could not find a way to put a blob into a data.frame.\n> Do you have any suggestions on that problem?\nno.\n> Thanks again,\n> bill\n>\n>\n>\n>\n> ________________________________\n> From: Spencer Graves<spencer.graves at structuremonitoring.com>\n> To: Joe Conway<mail at joeconway.com>\n> Cc: bill hastings<aaacompute at yahoo.com>; r-sig-db at r-project.org\n> Sent: Sat, November 27, 2010 12:01:53 PM\n> Subject: Re: [R-sig-DB] R DB interfaces and saving charts\n>\n>         Beyond Dirk's comments, there is an \"R2HTML\" package.  (It has     some\n> minor problems and could use maintenance.  If you have time and     interest,\n> please contact either me or the officially listed     maintainer or author.)  To\n> produce *.pdf, one can print from a     browser to *.pdf (e.g., using CutePDF).\n> To control pagination with     that, I've manually edited the index.html file in\n> Open Office, then     wrote to *.pdf.\n>\n>\n>\n>        Have you considered creating a subdirectory, e.g., called     \"figs\", and\n> write all the individual plots to that subdirectory?      That's a more\n> traditional solution, I think.\n>\n>\n>\n>        If you'd rather use MySQL than PostgreSQL, the RMySQL package     seems to\n> work OK, though it cannot be installed from CRAN on a     Windows machine.\n> Instead, you need to download the source in     *.tar.gz then do \"R CMD INSTALL\"\n> from that to tailor it for the     version of MySQL you have.\n>\n>\n>\n> Hope this helps.\n> Spencer\n>\n>\n> On 11/27/2010 8:43 AM, Joe Conway wrote:\n> On 11/27/2010 07:57 AM, bill hastings wrote:\n>> 1) Is there anyway to save a chart(produced by plot)\n>>>     to a data base?\n>>>\n>>>     I see that most of the R DB methods\n>>>\n>>>     save output as data.frames or files.\n>>>\n> Use PL/R with PostgreSQL.\n>    http://www.joeconway.com/plr/\n>\n> For some ideas how to do this see:\n>\n> http://blog.credativ.com/en/2010/07/postgresql-topic-of-the-day---advanced-analytics.html\n>\n>\n> -or-\n>\n> http://bit.ly/9NZ0fz\n>\n> This example shows saving data frames directly as R objects to tables in\n> the database, and also shows returning a chart as binary data (jpg) as a\n> result of a SQL query. It would be a simple matter to store that\n> returned data into a bytea column in PostgreSQL.\n>\n> HTH,\n>\n> Joe\n>\n>\n>\n>   _______________________________________________ R-sig-DB mailing list -- R\n> Special Interest Group R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n>\n>\n\n\n-- \nSpencer Graves, PE, PhD\nPresident and Chief Operating Officer\nStructure Inspection and Monitoring, Inc.\n751 Emerson Ct.\nSan Jos?, CA 95126\nph:  408-655-4567",
+      "body_snippet": "<in line>\n\nOn 11/28/2010 7:35 AM, bill hastings wrote:\n> Thanks for your great suggestions, I just looked\n> at r2html, it looks like just what i need.\n>\n> I wanted to do all of this in a scripted fash",
+      "thread_id": "thread-8257cf1c3704",
+      "thread_depth": 0,
+      "month": "2010-11"
+    },
+    {
+      "id": "msg-892c344d4545",
+      "message_id": "<AANLkTikYt1DGj6QJxo2BityuCrw0cFuyKf_4XSQpHnHJ@mail.gmail.com>",
+      "from_name": "Nick Torenvliet",
+      "from_email_hash": "3780280898a504964f2e9cd9ff8e45db222609cf2b3d757ee42cf7af12a0d24e",
+      "date": "2010-11-29T21:34:25-05:00",
+      "subject": "[R-sig-DB] Vector Operations",
+      "subject_clean": "Vector Operations",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "This isn't strictly an DB question, but I'll venture out anyways...\n\nI've got a vector of sql statements called sql\n\n> sql\n[1] \"select date, open, high, low, close, volume from endOfDayData where\ndate>'2009-09-01' and market like 'TSX' and symbol like 'AAB' order by date\"\n.\n.\n.\n[2464] \"select date, open, high, low, close, volume from endOfDayData where\ndate>'2009-09-01' and market like 'TSX' and symbol like 'ZUH' order by date\"\n\n[2465] \"select date, open, high, low, close, volume from endOfDayData where\ndate>'2009-09-01' and market like 'TSX' and symbol like 'ZUT' order by\ndate\"\n\nFor each element in sql I'd like to run the queries in sql and have them in\nanother vector of some sort as in the following for loop...\n\nfor(x in sql){\nallocatedSpace <- dbGetQuery(con, statement=x)\n}\n\nIs there a way to do this in a more R-esque vector like fashion/single line?\n\nRegards,\n\nNick\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "This isn't strictly an DB question, but I'll venture out anyways...\n\nI've got a vector of sql statements called sql\n\n> sql\n[1] \"select date, open, high, low, close, volume from endOfDayData where\ndate",
+      "thread_id": "thread-892c344d4545",
+      "thread_depth": 0,
+      "month": "2010-11"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-fbe076493b7e",
+      "subject": "Data type error with RpgSQL on Windows XP SP3 32bit",
+      "message_count": 1,
+      "participants": [
+        "Xiaobo Gu"
+      ],
+      "started": "2010-11-01T10:17:07+08:00",
+      "last_reply": "2010-11-01T10:17:07+08:00",
+      "root_message_id": "msg-fbe076493b7e"
+    },
+    {
+      "id": "thread-ccc7eca2bbb5",
+      "subject": "Data type error with RpgSQL on Windows XP SP3 32bit",
+      "message_count": 2,
+      "participants": [
+        "Gabor Grothendieck",
+        "Tomoaki NISHIYAMA"
+      ],
+      "started": "2010-11-01T14:42:56+09:00",
+      "last_reply": "2010-11-01T08:11:24-04:00",
+      "root_message_id": "msg-ccc7eca2bbb5"
+    },
+    {
+      "id": "thread-f17b0d38a502",
+      "subject": "Data type error with RpgSQL on Windows XP SP3 32bit",
+      "message_count": 2,
+      "participants": [
+        "Xiaobo Gu"
+      ],
+      "started": "2010-11-01T15:46:28+08:00",
+      "last_reply": "2010-11-06T11:11:50+08:00",
+      "root_message_id": "msg-f17b0d38a502"
+    },
+    {
+      "id": "thread-5f210430a339",
+      "subject": "R-sig-DB Digest, Vol 73, Issue 2",
+      "message_count": 1,
+      "participants": [
+        "Xiaobo Gu"
+      ],
+      "started": "2010-11-01T20:17:07+08:00",
+      "last_reply": "2010-11-01T20:17:07+08:00",
+      "root_message_id": "msg-5f210430a339"
+    },
+    {
+      "id": "thread-b56b82b6b872",
+      "subject": "Does RpgSQL implement dbHasCompleted function?",
+      "message_count": 1,
+      "participants": [
+        "Xiaobo Gu"
+      ],
+      "started": "2010-11-01T21:07:27+08:00",
+      "last_reply": "2010-11-01T21:07:27+08:00",
+      "root_message_id": "msg-b56b82b6b872"
+    },
+    {
+      "id": "thread-aac5f26cd6c7",
+      "subject": "connecting to remote database using RMySQL, from WinXP Pro",
+      "message_count": 2,
+      "participants": [
+        "Jan Theodore Galkowski",
+        "Tomoaki NISHIYAMA"
+      ],
+      "started": "2010-11-05T19:54:16+00:00",
+      "last_reply": "2010-11-06T09:54:34+09:00",
+      "root_message_id": "msg-aac5f26cd6c7"
+    },
+    {
+      "id": "thread-4ede606db59d",
+      "subject": "dbClearResult function error in package RpgSQL",
+      "message_count": 3,
+      "participants": [
+        "Gabor Grothendieck",
+        "Xiaobo Gu"
+      ],
+      "started": "2010-11-05T20:28:09+08:00",
+      "last_reply": "2010-11-06T10:42:34+08:00",
+      "root_message_id": "msg-4ede606db59d"
+    },
+    {
+      "id": "thread-571788eaafbf",
+      "subject": "Installing RMySQL under CentOS 5.5 version of Linux?",
+      "message_count": 1,
+      "participants": [
+        "Spencer Graves"
+      ],
+      "started": "2010-11-06T21:27:53-07:00",
+      "last_reply": "2010-11-06T21:27:53-07:00",
+      "root_message_id": "msg-571788eaafbf"
+    },
+    {
+      "id": "thread-566d18e70ec7",
+      "subject": "Proposal of dbQuoteIdentifier for DBI specification",
+      "message_count": 3,
+      "participants": [
+        "Seth Falcon",
+        "Tomoaki NISHIYAMA"
+      ],
+      "started": "2010-11-13T14:31:18+09:00",
+      "last_reply": "2010-11-15T19:35:03+09:00",
+      "root_message_id": "msg-566d18e70ec7"
+    },
+    {
+      "id": "thread-f950fa199d1d",
+      "subject": "character to factor transform in package RpgSQL",
+      "message_count": 3,
+      "participants": [
+        "Seth Falcon",
+        "Xiaobo Gu"
+      ],
+      "started": "2010-11-14T12:28:33+08:00",
+      "last_reply": "2010-11-14T19:59:34+08:00",
+      "root_message_id": "msg-f950fa199d1d"
+    },
+    {
+      "id": "thread-5ddb92fc3e57",
+      "subject": "RODBC with Oracle and 64-bit Linux (encore)",
+      "message_count": 11,
+      "participants": [
+        "Harlan Harris",
+        "Marc Schwartz",
+        "Prof Brian Ripley"
+      ],
+      "started": "2010-11-18T12:15:37-05:00",
+      "last_reply": "2010-11-22T13:04:21-05:00",
+      "root_message_id": "msg-5ddb92fc3e57"
+    },
+    {
+      "id": "thread-a3ba88e42936",
+      "subject": "Error compiling RMySQL under Vista_x64",
+      "message_count": 1,
+      "participants": [
+        "Spencer Graves"
+      ],
+      "started": "2010-11-25T10:15:18-08:00",
+      "last_reply": "2010-11-25T10:15:18-08:00",
+      "root_message_id": "msg-a3ba88e42936"
+    },
+    {
+      "id": "thread-96cad7daf8e8",
+      "subject": "R Tools & Vista_x64:  Problem compiling RMySQL?",
+      "message_count": 2,
+      "participants": [
+        "Duncan Murdoch",
+        "Spencer Graves"
+      ],
+      "started": "2010-11-26T10:06:41-08:00",
+      "last_reply": "2010-11-26T14:12:06-05:00",
+      "root_message_id": "msg-96cad7daf8e8"
+    },
+    {
+      "id": "thread-9c678468c366",
+      "subject": "RQuantLib for Win 7 64 Bit",
+      "message_count": 1,
+      "participants": [
+        "Santosh Srinivas"
+      ],
+      "started": "2010-11-26T22:26:25+05:30",
+      "last_reply": "2010-11-26T22:26:25+05:30",
+      "root_message_id": "msg-9c678468c366"
+    },
+    {
+      "id": "thread-52e1fbade8f9",
+      "subject": "R encoding question",
+      "message_count": 1,
+      "participants": [
+        "Xiaobo Gu"
+      ],
+      "started": "2010-11-26T23:39:11+08:00",
+      "last_reply": "2010-11-26T23:39:11+08:00",
+      "root_message_id": "msg-52e1fbade8f9"
+    },
+    {
+      "id": "thread-0871a72ffa75",
+      "subject": "R DB interfaces and saving charts",
+      "message_count": 4,
+      "participants": [
+        "Dirk Eddelbuettel",
+        "Joe Conway",
+        "Spencer Graves",
+        "bill hastings"
+      ],
+      "started": "2010-11-27T07:57:46-08:00",
+      "last_reply": "2010-11-27T09:01:53-08:00",
+      "root_message_id": "msg-0871a72ffa75"
+    },
+    {
+      "id": "thread-8257cf1c3704",
+      "subject": "R DB interfaces and saving charts",
+      "message_count": 1,
+      "participants": [
+        "Spencer Graves"
+      ],
+      "started": "2010-11-28T07:44:34-08:00",
+      "last_reply": "2010-11-28T07:44:34-08:00",
+      "root_message_id": "msg-8257cf1c3704"
+    },
+    {
+      "id": "thread-892c344d4545",
+      "subject": "Vector Operations",
+      "message_count": 1,
+      "participants": [
+        "Nick Torenvliet"
+      ],
+      "started": "2010-11-29T21:34:25-05:00",
+      "last_reply": "2010-11-29T21:34:25-05:00",
+      "root_message_id": "msg-892c344d4545"
+    }
+  ]
+}

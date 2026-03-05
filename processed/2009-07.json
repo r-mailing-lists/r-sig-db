@@ -1,0 +1,328 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2009-07",
+  "messages": [
+    {
+      "id": "msg-e9f953cdba0d",
+      "message_id": "<D0BEB4EB5702924CAFDF155D4C81C6C2323E36@ex2k.bankofamerica.com>",
+      "from_name": "Cater, Kenneth",
+      "from_email_hash": "7e162f43ccf2b56af58a370268262b04d7343b3fd54023713471fe3837f8c4fe",
+      "date": "2009-07-01T15:52:37-04:00",
+      "subject": "[R-sig-DB] RODBC and Netezza",
+      "subject_clean": "RODBC and Netezza",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I've been trying to discover the root cause of an issue I've observed\nusing RODBC to connect to a Netezza appliance; from the system calls\nbelow I can see that the Netezza is responding to the query, but for\nwhatever reason the connection dies before completion and R terminates\nexecution with no results.  Has anyone else seen this behavior?  Since\nI'm seeing data being returned via ODBC it appears to be an issue with\nRODBC, if I'm mistaken or if there is another test I could perform to\nisolate the underlying issue, please let me know, thank you.\n\n \n\nrecvfrom(3,\n\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\320\\7\\0\\0\\v\\0\\0\\0\\306\\20\\3\\0\\7\\00010900\\0\\5\\0\"...,\n16384, 0, NULL, NULL) = 8192\n\nrecvfrom(3, \"esa-Scottsdale, AZ\\0Y\\0\\0\\0\\6\\0\\0\\0\\310\\0\\0\\0\\304\"...,\n16384, 0, NULL, NULL) = 8192\n\nrecvfrom(3, \"\\0\\5\\0AUT\\0\\7\\00037620\\0$\\0Parkersburg-Mar\"..., 16384, 0,\nNULL, NULL) = 8192\n\nrecvfrom(3,\n\"\\0\\0\\0\\0\\0\\0\\0\\302]\\360\\t\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\6\\220\\0\\0\\0\\0\\0\\0\\0\".\n.., 16384, 0, NULL, NULL) = 9144\n\nrecvfrom(3,\n\"\\0\\305\\1\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"...,\n16384, 0, NULL, NULL) = 2669\n\nselect(4, [3], NULL, NULL, {0, 0})      = 0 (Timeout)\n\nsendto(3, \"X\", 1, 0, NULL, 0)           = 1\n\nclose(3)                                = 0\n\nsemop(32997381, 0x7fff9adb96a0, 2)      = 0\n\nsemop(32997381, 0x7fff9adb96a0, 1)      = 0\n\nwrite(1, \"> \", 2)                       = 2\n\nwrite(1, \"\\n\", 1)                       = 1\n\nwrite(1, \"> \", 2)                       = 2\n\nwrite(1, \"summary(SampleData)\\n\", 20)   = 20\n\ngetrusage(RUSAGE_SELF, {ru_utime={0, 625904}, ru_stime={9, 49624}, ...})\n= 0\n\ngetrusage(RUSAGE_CHILDREN, {ru_utime={0, 0}, ru_stime={0, 1999}, ...}) =\n0\n\nwrite(1, \"   Length \", 10)              = 10\n\nwrite(1, \"    Class \", 10)              = 10\n\nwrite(1, \"     Mode \", 10)              = 10\n\nwrite(1, \"\\n\", 1)                       = 1\n\nwrite(1, \"        0 \", 10)              = 10\n\nwrite(1, \"character \", 10)              = 10\n\nwrite(1, \"character \", 10)              = 10\n\nwrite(1, \"\\n\", 1)                       = 1\n\nwrite(1, \"> \", 2)                       = 2\n\nread(0, \"\", 4096)                       = 0\n\nwrite(1, \"\\n\", 1)                       = 1\n\nrt_sigaction(SIGINT, {SIG_IGN}, {0x41c690, [INT],\nSA_RESTORER|SA_RESTART, 0x2aaaab8af0b0}, 8) = 0\n\nrt_sigaction(SIGQUIT, {SIG_IGN}, {SIG_IGN}, 8) = 0\n\nrt_sigprocmask(SIG_BLOCK, [CHLD], [], 8) = 0\n\nclone(child_stack=0, flags=CLONE_PARENT_SETTID|SIGCHLD,\nparent_tidptr=0x7fff9adbbb08) = 2275\n\nwait4(2275, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 2275\n\nrt_sigaction(SIGINT, {0x41c690, [INT], SA_RESTORER|SA_RESTART,\n0x2aaaab8af0b0}, NULL, 8) = 0\n\nrt_sigaction(SIGQUIT, {SIG_IGN}, NULL, 8) = 0\n\nrt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0\n\n--- SIGCHLD (Child exited) @ 0 (0) ---\n\nclose(0)                                = 0\n\n \n\nThank you,\n\nKenneth Cater\n\nQuantitative Risk Technology\n\nBank of America\n\n980.683.4832\n\n \n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "I've been trying to discover the root cause of an issue I've observed\nusing RODBC to connect to a Netezza appliance; from the system calls\nbelow I can see that the Netezza is responding to the query, ",
+      "thread_id": "thread-e9f953cdba0d",
+      "thread_depth": 0,
+      "month": "2009-07"
+    },
+    {
+      "id": "msg-cf5eff0eb015",
+      "message_id": "<5c52ef1d0907052255u22d8a7c1p7e0439f242b4a7e6@mail.gmail.com>",
+      "from_name": "XFM",
+      "from_email_hash": "4e62cbff82388f024ec814416065ab556e0722e277730faf76812a8a476d1f43",
+      "date": "2009-07-06T13:55:21+08:00",
+      "subject": "[R-sig-DB] sqlSave: error 22018 Invalid character value for cast specification",
+      "subject_clean": "sqlSave: error 22018 Invalid character value for cast specification",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\nI try to use RODBC to upload dataframes to a SQL Server.\n\nhere is what odbcGetInfo returns:\n\n> odbcGetInfo(channel)\n?????????? DBMS_Name ?????????? ?? \"Microsoft SQL Server\"\n?????????? DBMS_Ver ????????????????? \"10.00.1600\"\n?????????? Driver_ODBC_Ver ???????? \"03.52\"\n?????????? Data_Source_Name????? \"databasefundamental4ecap\"\n?????????? Driver_Name ?????????? ? ?? \"SQLSRV32.DLL\"\n?????????? Driver_Ver ?????????????????? \"03.85.1132\"\n?????????? ODBC_Ver ????????????????? \"03.52.0000\"\n?????????? Server_Name ????????? ? ? ? \"name_of_my_server\"\n\n\nI have dowloaded a data.frame using\n\n> PRICE = sqlQuery(channel, query).\n\nPRICE looks like that:\n\n??????? cdate??????? PRICE\n1? 2009-06-15??? 0.8242105\n2? 2009-06-12??? 0.7942105\n3? 2009-06-11??? 0.8236842\n4? 2009-06-10??? 0.8178947\n5? 2009-06-09??? 0.8531579\n6? 2009-06-08??? 0.9715790\n7? 2009-06-05??? 0.8984211\n8? 2009-06-04??? 0.8536842\n9? 2009-06-03??? 0.9510526\n10 2009-06-02??? 0.8547368\n\n\nI try now to upload it back to the database, in a new table. I have\nnot changed anything in the format or in the values of the data.frame.\nI have done:\n\n> PRICE2 = PRICE\n> sqlSave(channel, PRICE2)\n\nIt returns me the following error:\n\n> sqlSave(channel, PRICE2)\nError in sqlSave(channel, PRICE2) : [RODBC] Failed exec in Update\n22018 0 [Microsoft][ODBC SQL Server Driver]Invalid character value for\ncast specification\n\nIf a try it again, I have the following error:\n> sqlSave(channel, PRICE2)\nError in sqlSave(channel, PRICE2) :? table ?PRICE2? already exists\n\n\nCan somebody help me on that?\n\nThank you\nXavier",
+      "body_snippet": "Hi,\n\nI try to use RODBC to upload dataframes to a SQL Server.\n\nhere is what odbcGetInfo returns:\n\n> odbcGetInfo(channel)\n?????????? DBMS_Name ?????????? ?? \"Microsoft SQL Server\"\n?????????? DBMS_Ver ?",
+      "thread_id": "thread-cf5eff0eb015",
+      "thread_depth": 0,
+      "month": "2009-07"
+    },
+    {
+      "id": "msg-d49371821d94",
+      "message_id": "<5c52ef1d0907052312o425ab1c5yf3c24929c606c0b2@mail.gmail.com>",
+      "from_name": "XFM",
+      "from_email_hash": "4e62cbff82388f024ec814416065ab556e0722e277730faf76812a8a476d1f43",
+      "date": "2009-07-06T14:12:24+08:00",
+      "subject": "[R-sig-DB] sqlSave: error 22018 Invalid character value for cast specification",
+      "subject_clean": "sqlSave: error 22018 Invalid character value for cast specification",
+      "in_reply_to": "<5c52ef1d0907052255u22d8a7c1p7e0439f242b4a7e6@mail.gmail.com>",
+      "references": [
+        "<5c52ef1d0907052255u22d8a7c1p7e0439f242b4a7e6@mail.gmail.com>"
+      ],
+      "body_plain": "I have found that, I dont know if it corresponds to my issue and how I\ncan apply the solution in the case of RODBC\nhttp://support.microsoft.com/kb/269011\n\n\nOn Mon, Jul 6, 2009 at 1:55 PM, XFM<XFM at xx> wrote:\n> Hi,\n>\n> I try to use RODBC to upload dataframes to a SQL Server.\n>\n> here is what odbcGetInfo returns:\n>\n>> odbcGetInfo(channel)\n> ?????????? DBMS_Name ?????????? ?? \"Microsoft SQL Server\"\n> ?????????? DBMS_Ver ????????????????? \"10.00.1600\"\n> ?????????? Driver_ODBC_Ver ???????? \"03.52\"\n> ?????????? Data_Source_Name????? \"databasefundamental4ecap\"\n> ?????????? Driver_Name ?????????? ? ?? \"SQLSRV32.DLL\"\n> ?????????? Driver_Ver ?????????????????? \"03.85.1132\"\n> ?????????? ODBC_Ver ????????????????? \"03.52.0000\"\n> ?????????? Server_Name ????????? ? ? ? \"name_of_my_server\"\n>\n>\n> I have dowloaded a data.frame using\n>\n>> PRICE = sqlQuery(channel, query).\n>\n> PRICE looks like that:\n>\n> ??????? cdate??????? PRICE\n> 1? 2009-06-15??? 0.8242105\n> 2? 2009-06-12??? 0.7942105\n> 3? 2009-06-11??? 0.8236842\n> 4? 2009-06-10??? 0.8178947\n> 5? 2009-06-09??? 0.8531579\n> 6? 2009-06-08??? 0.9715790\n> 7? 2009-06-05??? 0.8984211\n> 8? 2009-06-04??? 0.8536842\n> 9? 2009-06-03??? 0.9510526\n> 10 2009-06-02??? 0.8547368\n>\n>\n> I try now to upload it back to the database, in a new table. I have\n> not changed anything in the format or in the values of the data.frame.\n> I have done:\n>\n>> PRICE2 = PRICE\n>> sqlSave(channel, PRICE2)\n>\n> It returns me the following error:\n>\n>> sqlSave(channel, PRICE2)\n> Error in sqlSave(channel, PRICE2) : [RODBC] Failed exec in Update\n> 22018 0 [Microsoft][ODBC SQL Server Driver]Invalid character value for\n> cast specification\n>\n> If a try it again, I have the following error:\n>> sqlSave(channel, PRICE2)\n> Error in sqlSave(channel, PRICE2) :? table ?PRICE2? already exists\n>\n>\n> Can somebody help me on that?\n>\n> Thank you\n> Xavier\n>",
+      "body_snippet": "I have found that, I dont know if it corresponds to my issue and how I\ncan apply the solution in the case of RODBC\nhttp://support.microsoft.com/kb/269011\n\n\nOn Mon, Jul 6, 2009 at 1:55 PM, XFM<XFM at x",
+      "thread_id": "thread-cf5eff0eb015",
+      "thread_depth": 1,
+      "month": "2009-07"
+    },
+    {
+      "id": "msg-ec486e7c9285",
+      "message_id": "<5c52ef1d0907060003u5ebbce3s212ef5ce40756d83@mail.gmail.com>",
+      "from_name": "XFM",
+      "from_email_hash": "4e62cbff82388f024ec814416065ab556e0722e277730faf76812a8a476d1f43",
+      "date": "2009-07-06T15:03:04+08:00",
+      "subject": "[R-sig-DB] sqlSave: error 22018 Invalid character value for cast specification",
+      "subject_clean": "sqlSave: error 22018 Invalid character value for cast specification",
+      "in_reply_to": "<5c52ef1d0907052312o425ab1c5yf3c24929c606c0b2@mail.gmail.com>",
+      "references": [
+        "<5c52ef1d0907052255u22d8a7c1p7e0439f242b4a7e6@mail.gmail.com>",
+        "<5c52ef1d0907052312o425ab1c5yf3c24929c606c0b2@mail.gmail.com>"
+      ],
+      "body_plain": "apparently the table is created but the data is not sent in the right\nformat: the date list field is created as float instead of datetime.\nAny idea to help me?\n\nOn Mon, Jul 6, 2009 at 2:12 PM, XFM<XFM at xx> wrote:\n> I have found that, I dont know if it corresponds to my issue and how I\n> can apply the solution in the case of RODBC\n> http://support.microsoft.com/kb/269011\n>\n>\n> On Mon, Jul 6, 2009 at 1:55 PM, XFM<XFM at xx> wrote:\n>> Hi,\n>>\n>> I try to use RODBC to upload dataframes to a SQL Server.\n>>\n>> here is what odbcGetInfo returns:\n>>\n>>> odbcGetInfo(channel)\n>> ?????????? DBMS_Name ?????????? ?? \"Microsoft SQL Server\"\n>> ?????????? DBMS_Ver ????????????????? \"10.00.1600\"\n>> ?????????? Driver_ODBC_Ver ???????? \"03.52\"\n>> ?????????? Data_Source_Name????? \"databasefundamental4ecap\"\n>> ?????????? Driver_Name ?????????? ? ?? \"SQLSRV32.DLL\"\n>> ?????????? Driver_Ver ?????????????????? \"03.85.1132\"\n>> ?????????? ODBC_Ver ????????????????? \"03.52.0000\"\n>> ?????????? Server_Name ????????? ? ? ? \"name_of_my_server\"\n>>\n>>\n>> I have dowloaded a data.frame using\n>>\n>>> PRICE = sqlQuery(channel, query).\n>>\n>> PRICE looks like that:\n>>\n>> ??????? cdate??????? PRICE\n>> 1? 2009-06-15??? 0.8242105\n>> 2? 2009-06-12??? 0.7942105\n>> 3? 2009-06-11??? 0.8236842\n>> 4? 2009-06-10??? 0.8178947\n>> 5? 2009-06-09??? 0.8531579\n>> 6? 2009-06-08??? 0.9715790\n>> 7? 2009-06-05??? 0.8984211\n>> 8? 2009-06-04??? 0.8536842\n>> 9? 2009-06-03??? 0.9510526\n>> 10 2009-06-02??? 0.8547368\n>>\n>>\n>> I try now to upload it back to the database, in a new table. I have\n>> not changed anything in the format or in the values of the data.frame.\n>> I have done:\n>>\n>>> PRICE2 = PRICE\n>>> sqlSave(channel, PRICE2)\n>>\n>> It returns me the following error:\n>>\n>>> sqlSave(channel, PRICE2)\n>> Error in sqlSave(channel, PRICE2) : [RODBC] Failed exec in Update\n>> 22018 0 [Microsoft][ODBC SQL Server Driver]Invalid character value for\n>> cast specification\n>>\n>> If a try it again, I have the following error:\n>>> sqlSave(channel, PRICE2)\n>> Error in sqlSave(channel, PRICE2) :? table ?PRICE2? already exists\n>>\n>>\n>> Can somebody help me on that?\n>>\n>> Thank you\n>> Xavier\n>>\n>",
+      "body_snippet": "apparently the table is created but the data is not sent in the right\nformat: the date list field is created as float instead of datetime.\nAny idea to help me?\n\nOn Mon, Jul 6, 2009 at 2:12 PM, XFM<XFM",
+      "thread_id": "thread-cf5eff0eb015",
+      "thread_depth": 2,
+      "month": "2009-07"
+    },
+    {
+      "id": "msg-7624aa1a02eb",
+      "message_id": "<773cea9e0907061425o56018773u4954568885c03e84@mail.gmail.com>",
+      "from_name": "Rajarshi Guha",
+      "from_email_hash": "ffa685b1d40eb3e4cb46367671cdd205e8e6e89077691260866a97afd6cb99d0",
+      "date": "2009-07-06T17:25:23-04:00",
+      "subject": "[R-sig-DB] inserting multiple rows into a database",
+      "subject_clean": "inserting multiple rows into a database",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi, I'm using the ROracle package and I've been looking for a way to insert\ndata into a table at one go. While I can create multiple insert statements,\nI was hoping that I could supply a data.frame (wth the appropriate columns)\nand have a single function insert them at one go. While I could write this\nfunction myslf, I was wondering if any body has done something like this\nbefoe.\n\nThanks,\n\n-- \nRajarshi Guha\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi, I'm using the ROracle package and I've been looking for a way to insert\ndata into a table at one go. While I can create multiple insert statements,\nI was hoping that I could supply a data.frame (w",
+      "thread_id": "thread-7624aa1a02eb",
+      "thread_depth": 0,
+      "month": "2009-07"
+    },
+    {
+      "id": "msg-bb0931b44e07",
+      "message_id": "<p06240812c67d56dd0eff@[128.115.67.9]>",
+      "from_name": "Don MacQueen",
+      "from_email_hash": "e13bfb89115e8e835b0ed57c9de9e35a69bd33cf720ea654a4529b9050b00e0b",
+      "date": "2009-07-10T13:37:40-07:00",
+      "subject": "[R-sig-DB] inserting multiple rows into a database",
+      "subject_clean": "inserting multiple rows into a database",
+      "in_reply_to": "<773cea9e0907061425o56018773u4954568885c03e84@mail.gmail.com>",
+      "references": [
+        "<773cea9e0907061425o56018773u4954568885c03e84@mail.gmail.com>"
+      ],
+      "body_plain": "See the dbWriteTable function, and note the \"append\" argument.\n\n-Don\n\nAt 5:25 PM -0400 7/6/09, Rajarshi Guha wrote:\n>Hi, I'm using the ROracle package and I've been looking for a way to insert\n>data into a table at one go. While I can create multiple insert statements,\n>I was hoping that I could supply a data.frame (wth the appropriate columns)\n>and have a single function insert them at one go. While I could write this\n>function myslf, I was wondering if any body has done something like this\n>befoe.\n>\n>Thanks,\n>\n>--\n>Rajarshi Guha\n>\n>\t[[alternative HTML version deleted]]\n>\n>_______________________________________________\n>R-sig-DB mailing list -- R Special Interest Group\n>R-sig-DB at stat.math.ethz.ch\n>https://*stat.ethz.ch/mailman/listinfo/r-sig-db\n\n\n-- \n--------------------------------------\nDon MacQueen\nEnvironmental Protection Department\nLawrence Livermore National Laboratory\nLivermore, CA, USA\n925-423-1062",
+      "body_snippet": "See the dbWriteTable function, and note the \"append\" argument.\n\n-Don\n\nAt 5:25 PM -0400 7/6/09, Rajarshi Guha wrote:\n>Hi, I'm using the ROracle package and I've been looking for a way to insert\n>data i",
+      "thread_id": "thread-7624aa1a02eb",
+      "thread_depth": 1,
+      "month": "2009-07"
+    },
+    {
+      "id": "msg-852b0fc6dcd8",
+      "message_id": "<3CBE17F5.463FEF97@telefonica-ca.net>",
+      "from_name": "Agnella-Jordan",
+      "from_email_hash": "46b43280201859de3e5d6bea33ce95f35deb09ddcf50647cb851dae75b5e1288",
+      "date": "2009-07-16T00:15:32+06:00",
+      "subject": "[R-sig-DB] Bestellen Sie jetzt 24 Stunden Online",
+      "subject_clean": "Bestellen Sie jetzt 24 Stunden Online",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Amerika war uns schon oft in vielen Dingen voraus, und auch nun kommt ein\nganz neuartiger Erfolg aus Amerika, der allen Menschen Hoffnung verleiht,\ndie zu viele ueberfluessige Pfunde mit sich herumtragen.\n\nGanz einfache und sichere Bestellung und mehr Erlaeuterungen im WWW unter\nhttp://www.schlank-schoen2.org\n\nDieses revolutionaere Schlankheitsprodukt ist besonders gedacht fuer die\nMenschen, die nicht nur ein paar Pfunde Uebergewicht mit sich herumtragen,\nsondern tatsaechlich massiv zu dick sind und sich auch schon oft erfolglos\nmit Hungerkuren herumgeschlagen haben.\n\nAuf eine total neuartige und revolutionaere Weise unterstuetzen diese\nSchlankheitspillen Sie beim Gewicht verliren. Es geht fast wie von selbst.\nSchlucken Sie einfach zum Fruehstueck eine Pille und alles andere macht Ihr\nKoerper.\n\nBequeme und zuverlaessige Bestellung und weitere Hinweise im Internet unter\nhttp://www.schlank-schoen2.org\n\nMit freundlichen Gruessen\nDr. Petra Becker",
+      "body_snippet": "Amerika war uns schon oft in vielen Dingen voraus, und auch nun kommt ein\nganz neuartiger Erfolg aus Amerika, der allen Menschen Hoffnung verleiht,\ndie zu viele ueberfluessige Pfunde mit sich herumtra",
+      "thread_id": "thread-852b0fc6dcd8",
+      "thread_depth": 0,
+      "month": "2009-07"
+    },
+    {
+      "id": "msg-7daee1cca992",
+      "message_id": "<111060c20907170547o42379e28l2ff7ca16aa4daf50@mail.gmail.com>",
+      "from_name": "Matthieu Stigler",
+      "from_email_hash": "98cb55bce94d24467c901755eb9045dfadcbc186a954981bdf75b0fb6266b336",
+      "date": "2009-07-17T14:47:22+02:00",
+      "subject": "[R-sig-DB] RODBC: probs with arg",
+      "subject_clean": "RODBC: probs with arg",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi\n\nI'm trying to raed excel files with RODBC. This works well but I have a\nsmall problem, as my doc has:\n\n-line 1: gen infos\n-line 2: colnames\n-line 3: units\n\nSo I wanted to skip the first line, use the second as colnames and skip the\nthird.\n\nBut by default odbcConnectExcel() takes the first line as the right one, so\nthe 2 others lines are displayed as kind of NAs and I have wrong col\nnames...\n\n#To see it, can replicate pseudo example with xlsReadWrite:\nlibrary(xlsReadWrite)\ntdat <- data.frame( This= c(\"Price \", \"USD\",6399, 3699, 2499 ), Is=\nc(\"Amount \", \"Unit\",2, 3, 1 ),  How_my_file_looks_like= c(\"Date\",\n\"Day\",39202, 39198, 39199 ),  row.names = c(\"\", \"Type\",\"Pro machine\", \"Road\nracer\", \"Streetfire\" ) )\nwrite.xls( tdat, \"bikes.xls\" )\n\n#get the data\nlibrary(RODBC)\nchan<-odbcConnectExcel(\"bikes.xls\")\nsh1 <- sqlFetch(chan, \"Sheet1\")\nhead(sh1)\nodbcCloseAll()\n\n           F1   This      Is How_my_file_looks_like\n1        <NA> Price  Amount                    Date\n2        Type    USD    Unit                    Day\n3 Pro machine   6399       2                  39202\n4  Road racer   3699       3                  39198\n5  Streetfire   2499       1                  39199\n\nSee the message on the help file:\n\nIt is assumed that the first row of the table in the worksheet\n     contains column headings: the driver parameter 'FirstRowHasNames =\n     0' is supposed to turn this off (giving column names 'F1' ...) but\n     it is broken in many versions of the drivers.\n\nI don't know exactly where this arg should be added...  It doesn't work in\nodbcConnectExcel(\"bikes.xls\",FirstRowHasNames=0)\n\nSo I tried something like:\n\nchannel3 <-odbcDriverConnect(\"DRIVER=Microsoft Excel Driver\n(*.xls);DBQ=bikes.xls; ReadOnly=False;FirstRowHasNames=0\")\n\nBut his doesn't do anything... Do you see how I should do it? And if I\nmanage to escape the first line, can I avoid the problem of the third line?\n\nI tried alternatively usign xlsReadWrite, whihc can \"skip\" lines, but then\nthe first lines after colnames can't be escaped and hence the columns are\nseen as factors:\nsh2<-read.xls(file=\"bikes.xls\", sheet=1, from=2)\nsh2\n\nSo do you have a n idea how I can solve my problem?\n\nThanks a lot!\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi\n\nI'm trying to raed excel files with RODBC. This works well but I have a\nsmall problem, as my doc has:\n\n-line 1: gen infos\n-line 2: colnames\n-line 3: units\n\nSo I wanted to skip the first line, use ",
+      "thread_id": "thread-7daee1cca992",
+      "thread_depth": 0,
+      "month": "2009-07"
+    },
+    {
+      "id": "msg-a26708acc5e3",
+      "message_id": "<971536df0907170613h2ba74942id562e518ce07bdbe@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2009-07-17T09:13:57-04:00",
+      "subject": "[R-sig-DB] RODBC: probs with arg",
+      "subject_clean": "RODBC: probs with arg",
+      "in_reply_to": "<111060c20907170547o42379e28l2ff7ca16aa4daf50@mail.gmail.com>",
+      "references": [
+        "<111060c20907170547o42379e28l2ff7ca16aa4daf50@mail.gmail.com>"
+      ],
+      "body_plain": "Try reading in the headings and data separately like this\n(shown with read.xls from gdata):\n\nlibrary(gdata)\nDF <- read.xls(\"bikes.xls\", skip = 3, header = FALSE,\n    col.names = names(read.xls(\"bikes.xls\", skip = 1, nrows = 1)))\n\n\nOn Fri, Jul 17, 2009 at 8:47 AM, Matthieu\nStigler<matthieu.stigler at gmail.com> wrote:\n> Hi\n>\n> I'm trying to raed excel files with RODBC. This works well but I have a\n> small problem, as my doc has:\n>\n> -line 1: gen infos\n> -line 2: colnames\n> -line 3: units\n>\n> So I wanted to skip the first line, use the second as colnames and skip the\n> third.\n>\n> But by default odbcConnectExcel() takes the first line as the right one, so\n> the 2 others lines are displayed as kind of NAs and I have wrong col\n> names...\n>\n> #To see it, can replicate pseudo example with xlsReadWrite:\n> library(xlsReadWrite)\n> tdat <- data.frame( This= c(\"Price \", \"USD\",6399, 3699, 2499 ), Is=\n> c(\"Amount \", \"Unit\",2, 3, 1 ), ?How_my_file_looks_like= c(\"Date\",\n> \"Day\",39202, 39198, 39199 ), ?row.names = c(\"\", \"Type\",\"Pro machine\", \"Road\n> racer\", \"Streetfire\" ) )\n> write.xls( tdat, \"bikes.xls\" )\n>\n> #get the data\n> library(RODBC)\n> chan<-odbcConnectExcel(\"bikes.xls\")\n> sh1 <- sqlFetch(chan, \"Sheet1\")\n> head(sh1)\n> odbcCloseAll()\n>\n> ? ? ? ? ? F1 ? This ? ? ?Is How_my_file_looks_like\n> 1 ? ? ? ?<NA> Price ?Amount ? ? ? ? ? ? ? ? ? ?Date\n> 2 ? ? ? ?Type ? ?USD ? ?Unit ? ? ? ? ? ? ? ? ? ?Day\n> 3 Pro machine ? 6399 ? ? ? 2 ? ? ? ? ? ? ? ? ?39202\n> 4 ?Road racer ? 3699 ? ? ? 3 ? ? ? ? ? ? ? ? ?39198\n> 5 ?Streetfire ? 2499 ? ? ? 1 ? ? ? ? ? ? ? ? ?39199\n>\n> See the message on the help file:\n>\n> It is assumed that the first row of the table in the worksheet\n> ? ? contains column headings: the driver parameter 'FirstRowHasNames =\n> ? ? 0' is supposed to turn this off (giving column names 'F1' ...) but\n> ? ? it is broken in many versions of the drivers.\n>\n> I don't know exactly where this arg should be added... ?It doesn't work in\n> odbcConnectExcel(\"bikes.xls\",FirstRowHasNames=0)\n>\n> So I tried something like:\n>\n> channel3 <-odbcDriverConnect(\"DRIVER=Microsoft Excel Driver\n> (*.xls);DBQ=bikes.xls; ReadOnly=False;FirstRowHasNames=0\")\n>\n> But his doesn't do anything... Do you see how I should do it? And if I\n> manage to escape the first line, can I avoid the problem of the third line?\n>\n> I tried alternatively usign xlsReadWrite, whihc can \"skip\" lines, but then\n> the first lines after colnames can't be escaped and hence the columns are\n> seen as factors:\n> sh2<-read.xls(file=\"bikes.xls\", sheet=1, from=2)\n> sh2\n>\n> So do you have a n idea how I can solve my problem?\n>\n> Thanks a lot!\n>\n> ? ? ? ?[[alternative HTML version deleted]]\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "Try reading in the headings and data separately like this\n(shown with read.xls from gdata):\n\nlibrary(gdata)\nDF <- read.xls(\"bikes.xls\", skip = 3, header = FALSE,\n    col.names = names(read.xls(\"bikes.",
+      "thread_id": "thread-7daee1cca992",
+      "thread_depth": 1,
+      "month": "2009-07"
+    },
+    {
+      "id": "msg-d113ab4ae103",
+      "message_id": "<4A61E288.2090606@gmail.com>",
+      "from_name": "Matthieu Stigler",
+      "from_email_hash": "98cb55bce94d24467c901755eb9045dfadcbc186a954981bdf75b0fb6266b336",
+      "date": "2009-07-18T16:56:08+02:00",
+      "subject": "[R-sig-DB] RODBC: probs with arg",
+      "subject_clean": "RODBC: probs with arg",
+      "in_reply_to": "<971536df0907170613h2ba74942id562e518ce07bdbe@mail.gmail.com>",
+      "references": [
+        "<111060c20907170547o42379e28l2ff7ca16aa4daf50@mail.gmail.com>",
+        "<971536df0907170613h2ba74942id562e518ce07bdbe@mail.gmail.com>"
+      ],
+      "body_plain": "Thanks Gabor, that's a nice workaround!\n\nBut any view on how to use the parameter\n\n\"FirstRowHasNames\"\n\n\nin package RODBC? Thanks\n\nMatthieu Stigler\n\nGabor Grothendieck a ?crit :\n> Try reading in the headings and data separately like this\n> (shown with read.xls from gdata):\n>\n> library(gdata)\n> DF <- read.xls(\"bikes.xls\", skip = 3, header = FALSE,\n>     col.names = names(read.xls(\"bikes.xls\", skip = 1, nrows = 1)))\n>\n>\n> On Fri, Jul 17, 2009 at 8:47 AM, Matthieu\n> Stigler<matthieu.stigler at gmail.com> wrote:\n>   \n>> Hi\n>>\n>> I'm trying to raed excel files with RODBC. This works well but I have a\n>> small problem, as my doc has:\n>>\n>> -line 1: gen infos\n>> -line 2: colnames\n>> -line 3: units\n>>\n>> So I wanted to skip the first line, use the second as colnames and skip the\n>> third.\n>>\n>> But by default odbcConnectExcel() takes the first line as the right one, so\n>> the 2 others lines are displayed as kind of NAs and I have wrong col\n>> names...\n>>\n>> #To see it, can replicate pseudo example with xlsReadWrite:\n>> library(xlsReadWrite)\n>> tdat <- data.frame( This= c(\"Price \", \"USD\",6399, 3699, 2499 ), Is=\n>> c(\"Amount \", \"Unit\",2, 3, 1 ),  How_my_file_looks_like= c(\"Date\",\n>> \"Day\",39202, 39198, 39199 ),  row.names = c(\"\", \"Type\",\"Pro machine\", \"Road\n>> racer\", \"Streetfire\" ) )\n>> write.xls( tdat, \"bikes.xls\" )\n>>\n>> #get the data\n>> library(RODBC)\n>> chan<-odbcConnectExcel(\"bikes.xls\")\n>> sh1 <- sqlFetch(chan, \"Sheet1\")\n>> head(sh1)\n>> odbcCloseAll()\n>>\n>>           F1   This      Is How_my_file_looks_like\n>> 1        <NA> Price  Amount                    Date\n>> 2        Type    USD    Unit                    Day\n>> 3 Pro machine   6399       2                  39202\n>> 4  Road racer   3699       3                  39198\n>> 5  Streetfire   2499       1                  39199\n>>\n>> See the message on the help file:\n>>\n>> It is assumed that the first row of the table in the worksheet\n>>     contains column headings: the driver parameter 'FirstRowHasNames =\n>>     0' is supposed to turn this off (giving column names 'F1' ...) but\n>>     it is broken in many versions of the drivers.\n>>\n>> I don't know exactly where this arg should be added...  It doesn't work in\n>> odbcConnectExcel(\"bikes.xls\",FirstRowHasNames=0)\n>>\n>> So I tried something like:\n>>\n>> channel3 <-odbcDriverConnect(\"DRIVER=Microsoft Excel Driver\n>> (*.xls);DBQ=bikes.xls; ReadOnly=False;FirstRowHasNames=0\")\n>>\n>> But his doesn't do anything... Do you see how I should do it? And if I\n>> manage to escape the first line, can I avoid the problem of the third line?\n>>\n>> I tried alternatively usign xlsReadWrite, whihc can \"skip\" lines, but then\n>> the first lines after colnames can't be escaped and hence the columns are\n>> seen as factors:\n>> sh2<-read.xls(file=\"bikes.xls\", sheet=1, from=2)\n>> sh2\n>>\n>> So do you have a n idea how I can solve my problem?\n>>\n>> Thanks a lot!\n>>\n>>        [[alternative HTML version deleted]]\n>>\n>> _______________________________________________\n>> R-sig-DB mailing list -- R Special Interest Group\n>> R-sig-DB at stat.math.ethz.ch\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>>\n>>",
+      "body_snippet": "Thanks Gabor, that's a nice workaround!\n\nBut any view on how to use the parameter\n\n\"FirstRowHasNames\"\n\n\nin package RODBC? Thanks\n\nMatthieu Stigler\n\nGabor Grothendieck a ?crit :\n> Try reading in the he",
+      "thread_id": "thread-7daee1cca992",
+      "thread_depth": 2,
+      "month": "2009-07"
+    },
+    {
+      "id": "msg-8d45a9334e7d",
+      "message_id": "<D0BEB4EB5702924CAFDF155D4C81C6C25163EA@ex2k.bankofamerica.com>",
+      "from_name": "Cater, Kenneth",
+      "from_email_hash": "7e162f43ccf2b56af58a370268262b04d7343b3fd54023713471fe3837f8c4fe",
+      "date": "2009-07-23T16:29:14-04:00",
+      "subject": "[R-sig-DB] Problem using RODBC to access a Netezza appliance",
+      "subject_clean": "Problem using RODBC to access a Netezza appliance",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I've previously posted an issue I was having with accessing our Netezza\nAppliance with RODBC, after performing a system call trace, it appeared\nthat the SQL statement was being sent to the Netezza, and the Netezza\nwas sending data back to R; but suddenly the data would stop and the\nselect system call reported a timeout.  Since then, I've changed the\nQueryTimeout in odbc.ini to set it over 200 seconds; however this did\nnot resolve the issue.  In order to verify that the other components\nwere not at fault I used iSQL (provided by unixODBC) to send that exact\nsame query to the Netezza, and that worked.  So at this point, unixODBC,\nand libnzodbc.so appear to be working as designed, but I cannot figure\nout why RODBC is terminating the query prematurely.  It should also be\nnoted that I ran the same query with a limit set to five (to prevent the\nreturn of over 90,000 entries), and still the data was not being\nreported by RODBC.  If you having any experience with this scenario and\nyou've managed to resolve the issue, please let me know how you did it,\nany insight would be appreciated.  \n\n \n\n \n\nThank you,\n\nKenneth Cater\n\nQuantitative Risk Technology\n\nBank of America\n\n980.683.4832\n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "I've previously posted an issue I was having with accessing our Netezza\nAppliance with RODBC, after performing a system call trace, it appeared\nthat the SQL statement was being sent to the Netezza, an",
+      "thread_id": "thread-8d45a9334e7d",
+      "thread_depth": 0,
+      "month": "2009-07"
+    },
+    {
+      "id": "msg-825f80e1a709",
+      "message_id": "<web-81327475@controller2.cgpmail.ua.pt>",
+      "from_name": "Nuno Miguel Brites",
+      "from_email_hash": "317e5e44c4a2ed8266f25d2ac5ce7f7b65d8e6e1fff0367f2c4426d3ae8a491b",
+      "date": "2009-07-28T17:04:06+01:00",
+      "subject": "[R-sig-DB] Help on database!",
+      "subject_clean": "Help on database!",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi!\n\nI need to make a small linkage between R and a database \n(for eg, MSAccess). Is it possible?\n\nThanks.\n\nRegards,\nBrites",
+      "body_snippet": "Hi!\n\nI need to make a small linkage between R and a database \n(for eg, MSAccess). Is it possible?\n\nThanks.\n\nRegards,\nBrites",
+      "thread_id": "thread-825f80e1a709",
+      "thread_depth": 0,
+      "month": "2009-07"
+    },
+    {
+      "id": "msg-14c2f32a70fe",
+      "message_id": "<19055.9158.56094.673041@ron.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2009-07-28T11:13:58-05:00",
+      "subject": "[R-sig-DB] Help on database!",
+      "subject_clean": "Help on database!",
+      "in_reply_to": "<web-81327475@controller2.cgpmail.ua.pt>",
+      "references": [
+        "<web-81327475@controller2.cgpmail.ua.pt>"
+      ],
+      "body_plain": "On 28 July 2009 at 17:04, Nuno Miguel Brites wrote:\n| I need to make a small linkage between R and a database \n| (for eg, MSAccess). Is it possible?\n\nYes.\n\nYou want to read the manual 'R Data Import/Export that came with your\ninstallation of R, and is also available on each CRAN mirror, e.g. at\nhttp://neacm.fe.up.pt/CRAN/doc/manuals/R-data.html from the U Porto mirror\nthat should be closest to you.\n\nHth, Dirk\n\n-- \nThree out of two people have difficulties with fractions.",
+      "body_snippet": "On 28 July 2009 at 17:04, Nuno Miguel Brites wrote:\n| I need to make a small linkage between R and a database \n| (for eg, MSAccess). Is it possible?\n\nYes.\n\nYou want to read the manual 'R Data Import/E",
+      "thread_id": "thread-825f80e1a709",
+      "thread_depth": 1,
+      "month": "2009-07"
+    },
+    {
+      "id": "msg-84c6f3ed83b5",
+      "message_id": "<8E3590214E4380489D2F8BF129B939F38B393C@amsdc1-s-03371.europe.shell.com>",
+      "from_name": "W@y@e@W@Jo@es m@iii@g oii sheii@com",
+      "from_email_hash": "a147bdd3f26c876913bc139aba1e0462fd06a69494bd52b96ff8ef1ebcdfa33b",
+      "date": "2009-07-29T09:37:02+02:00",
+      "subject": "[R-sig-DB] Help on database!",
+      "subject_clean": "Help on database!",
+      "in_reply_to": "<web-81327475@controller2.cgpmail.ua.pt>",
+      "references": [],
+      "body_plain": "Hi Brites, \n\nI suggest you look up the package RODBC. \n\nIts very quick and easy to use. Here is a dummy example: \n\nchannel<-odbcConnectAccess(\"MyDb.mdb\")\nsqlQuery(channel,\"select * from Table1\")\n\n-----Original Message-----\nFrom: r-sig-db-bounces at stat.math.ethz.ch\n[mailto:r-sig-db-bounces at stat.math.ethz.ch]On Behalf Of Nuno Miguel\nBrites\nSent: 28 July 2009 17:04\nTo: r-sig-db at stat.math.ethz.ch\nSubject: [R-sig-DB] Help on database!\n\n\nHi!\n\nI need to make a small linkage between R and a database \n(for eg, MSAccess). Is it possible?\n\nThanks.\n\nRegards,\nBrites\n\n_______________________________________________\nR-sig-DB mailing list -- R Special Interest Group\nR-sig-DB at stat.math.ethz.ch\nhttps://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "Hi Brites, \n\nI suggest you look up the package RODBC. \n\nIts very quick and easy to use. Here is a dummy example: \n\nchannel<-odbcConnectAccess(\"MyDb.mdb\")\nsqlQuery(channel,\"select * from Table1\")\n\n----",
+      "thread_id": "thread-825f80e1a709",
+      "thread_depth": 1,
+      "month": "2009-07"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-e9f953cdba0d",
+      "subject": "RODBC and Netezza",
+      "message_count": 1,
+      "participants": [
+        "Cater, Kenneth"
+      ],
+      "started": "2009-07-01T15:52:37-04:00",
+      "last_reply": "2009-07-01T15:52:37-04:00",
+      "root_message_id": "msg-e9f953cdba0d"
+    },
+    {
+      "id": "thread-cf5eff0eb015",
+      "subject": "sqlSave: error 22018 Invalid character value for cast specification",
+      "message_count": 3,
+      "participants": [
+        "XFM"
+      ],
+      "started": "2009-07-06T13:55:21+08:00",
+      "last_reply": "2009-07-06T15:03:04+08:00",
+      "root_message_id": "msg-cf5eff0eb015"
+    },
+    {
+      "id": "thread-7624aa1a02eb",
+      "subject": "inserting multiple rows into a database",
+      "message_count": 2,
+      "participants": [
+        "Don MacQueen",
+        "Rajarshi Guha"
+      ],
+      "started": "2009-07-06T17:25:23-04:00",
+      "last_reply": "2009-07-10T13:37:40-07:00",
+      "root_message_id": "msg-7624aa1a02eb"
+    },
+    {
+      "id": "thread-852b0fc6dcd8",
+      "subject": "Bestellen Sie jetzt 24 Stunden Online",
+      "message_count": 1,
+      "participants": [
+        "Agnella-Jordan"
+      ],
+      "started": "2009-07-16T00:15:32+06:00",
+      "last_reply": "2009-07-16T00:15:32+06:00",
+      "root_message_id": "msg-852b0fc6dcd8"
+    },
+    {
+      "id": "thread-7daee1cca992",
+      "subject": "RODBC: probs with arg",
+      "message_count": 3,
+      "participants": [
+        "Gabor Grothendieck",
+        "Matthieu Stigler"
+      ],
+      "started": "2009-07-17T14:47:22+02:00",
+      "last_reply": "2009-07-18T16:56:08+02:00",
+      "root_message_id": "msg-7daee1cca992"
+    },
+    {
+      "id": "thread-8d45a9334e7d",
+      "subject": "Problem using RODBC to access a Netezza appliance",
+      "message_count": 1,
+      "participants": [
+        "Cater, Kenneth"
+      ],
+      "started": "2009-07-23T16:29:14-04:00",
+      "last_reply": "2009-07-23T16:29:14-04:00",
+      "root_message_id": "msg-8d45a9334e7d"
+    },
+    {
+      "id": "thread-825f80e1a709",
+      "subject": "Help on database!",
+      "message_count": 3,
+      "participants": [
+        "Dirk Eddelbuettel",
+        "Nuno Miguel Brites",
+        "W@y@e@W@Jo@es m@iii@g oii sheii@com"
+      ],
+      "started": "2009-07-28T17:04:06+01:00",
+      "last_reply": "2009-07-29T09:37:02+02:00",
+      "root_message_id": "msg-825f80e1a709"
+    }
+  ]
+}

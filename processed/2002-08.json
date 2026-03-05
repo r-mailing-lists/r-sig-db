@@ -1,0 +1,66 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2002-08",
+  "messages": [
+    {
+      "id": "msg-d24344898996",
+      "message_id": "<3D5E1437.2040905@bacbuc.dyndns.org>",
+      "from_name": "Emmanuel Charpentier",
+      "from_email_hash": "a31c085109d95f257f3dbf95df3ff1c7d91cb94bb2494125eb179f8a72f5e0a8",
+      "date": "2002-08-17T11:15:35+02:00",
+      "subject": "[R-sig-DB] DBI drivers ?",
+      "subject_clean": "DBI drivers ?",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Lurking on R-sig-DB archives, I saw, in a mail from David A. James that :\n\n > Last december I wrote DBI interfaces on top of both the existing\n > RPgSQL and RODBC, but I thought (and Tim agreed with me) that\n > the resulting layering of S4 on top of S3 classes wasn't ideal,\n > so these DBI.RpSQL and DBI.RODBC packages were not made public.\n\nMay I suggest to reconsider this decision ? As long as the *end-user* \ninterface is the same and the functions do indeed return what they are \nsupposed to return, offering these drivers would a) enable people to use \nthe DBI interface, therefore gaining familiarity with DBI, and, with a \nbit of luck, b) luring someone with some time (and better coding \nabilities than I have) to write the proper S4 interfaces.\n\nIn other words, it seems that we have a conflict between competence and \nperformance, and I think that offering competence first is, IMHO, a good \nway to foster some performance enhancements by third parties.\n\nYet another way to tell it is the (tired) ESR motto \"Release early, \nrelease often\".\n\nI woukd be interested in your thoughts about this. Could you please CC \nme, as I'M not sunbscribed to R-sig-DB ?\n\nSincerely yours,\n\n-- \nEmmanuel Charpentier",
+      "body_snippet": "Lurking on R-sig-DB archives, I saw, in a mail from David A. James that :\n\n > Last december I wrote DBI interfaces on top of both the existing\n > RPgSQL and RODBC, but I thought (and Tim agreed with m",
+      "thread_id": "thread-d24344898996",
+      "thread_depth": 0,
+      "month": "2002-08"
+    },
+    {
+      "id": "msg-ecf61c3954c9",
+      "message_id": "<3D68C541.3070902@bacbuc.dyndns.org>",
+      "from_name": "Emmanuel Charpentier",
+      "from_email_hash": "a31c085109d95f257f3dbf95df3ff1c7d91cb94bb2494125eb179f8a72f5e0a8",
+      "date": "2002-08-25T13:53:37+02:00",
+      "subject": "[R-sig-DB] DBI drivers ?",
+      "subject_clean": "DBI drivers ?",
+      "in_reply_to": null,
+      "references": [
+        "<3D5E1437.2040905@bacbuc.dyndns.org>",
+        "<20020819101408.B15333@jessie.research.bell-labs.com>"
+      ],
+      "body_plain": "David James wrote:\n> Hi Emmanuel,\n\nHi !\n\nSorry for the late answer : I was on vacation.\n\n[ ... ]\n\n> Well, there are other issues involve.  For instance, in the case\n> of the RODBC driver the underlying C code does not map correctly\n> R data types to SQL data types -- it just saves all the data as\n> character strings.  This approach is not too bad if R (thru the\n> RODBC driver) is the only application that will use those data;\n> but the tables created like this (with all the columns stored as\n> strings) may not be too useful to other applications (say, excel or\n> Splus or Matlab, ...).  I believe that in some (older?) versions of\n> RPgSQL the fetching cannot (could not) be done in batches, and in\n> some situations one may need to bring the data in chunks to avoid\n> crushing R.\n\nToo right ... So we need to improve this a bit. One of my pet peeves at \nthe moment with RODBC is the way it munches date/time data ...\n\nAbout RPgSQL : it does some great things, but the current doc does not \ndescribe what the current package does. For example : the funcrtion \nbinding a dtabase table to a R object does nt return this R proxy \nobject, as described, but, as a side effect, creates a R object having \nthe same name as the table in the top-level environment.\n\nTherefore, both packages have to be enhanced. To my na?ve eyes, it seeme \nto me that the ODBC specificaation is a good starting point, but I may \nbe wrong. IMHO, we'd better stick to an early ODBC specification (2.0 or \n3.0), in order to avoid too specific features ...\n\n> At some point it is better to rebuild from the ground up some of\n> these drivers.  My current plans is to update the RODBC and \n> Duncan Temple Lang has expressed interest in continuing Tim's\n> RPgSQL driver.\n\nDreat ! However, I think tht wrapping those two (and other ?) drivers in \na common interface is still the way to go ...\n\n> Which driver are you most interested in?\n\nAh ! That's a hard one : I use mostly PostgreSQL for many reasons, but \nODBC is, IMHO, the most important interface : it is currently the only \nDB interface specification close enough to a cross-platform standard. As \nmuch as I dislike some points of the specification, I feel that this \ninterface gives the most cross-platforms interoperability.\n\nFurthermore, even as a PostgreSQL die-hard, I have sometimes to use \nother datasources. ODBC is quite useful in this case.\n\nTherefore, I would vote for an ODBC driver as the highest priority. \nHowever, the proxu object concept of RPgSQL is quite interesting, and I \nwonder if such an interface can be build on top of ODBC : if so, my vote \nwould go to it.\n\nSincerely,\n\n\t\t\t\t\tEmmanuel Charpentier\n-- \nEmmanuel Charpentier",
+      "body_snippet": "David James wrote:\n> Hi Emmanuel,\n\nHi !\n\nSorry for the late answer : I was on vacation.\n\n[ ... ]\n\n> Well, there are other issues involve.  For instance, in the case\n> of the RODBC driver the underlyin",
+      "thread_id": "thread-ecf61c3954c9",
+      "thread_depth": 0,
+      "month": "2002-08"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-d24344898996",
+      "subject": "DBI drivers ?",
+      "message_count": 1,
+      "participants": [
+        "Emmanuel Charpentier"
+      ],
+      "started": "2002-08-17T11:15:35+02:00",
+      "last_reply": "2002-08-17T11:15:35+02:00",
+      "root_message_id": "msg-d24344898996"
+    },
+    {
+      "id": "thread-ecf61c3954c9",
+      "subject": "DBI drivers ?",
+      "message_count": 1,
+      "participants": [
+        "Emmanuel Charpentier"
+      ],
+      "started": "2002-08-25T13:53:37+02:00",
+      "last_reply": "2002-08-25T13:53:37+02:00",
+      "root_message_id": "msg-ecf61c3954c9"
+    }
+  ]
+}

@@ -1,0 +1,2982 @@
+From n|ckeub@nk @end|ng |rom gm@||@com  Tue Jul  1 02:01:04 2014
+From: n|ckeub@nk @end|ng |rom gm@||@com (Nick Eubank)
+Date: Mon, 30 Jun 2014 17:01:04 -0700
+Subject: [R-sig-DB] Link RSQLite to external (windows) SQLite
+	Installation?
+In-Reply-To: <CAFWQgOmGxVe==x8-1dUcTbSQ0yw8DCQgc_Owm_K0_BBEmWs6kQ@mail.gmail.com>
+References: <CAFWQgOmGxVe==x8-1dUcTbSQ0yw8DCQgc_Owm_K0_BBEmWs6kQ@mail.gmail.com>
+Message-ID: <CAFWQgO=cBGrUzp+WNd8E6T9Dnb82qzmYqCuNr917NxJpOtg+vA@mail.gmail.com>
+
+A few followup notes of other things I've tried:
+ - compiled the FULL (so sqlite3 folder with lib and include and an .exe
+inside) 64 bit build; installed (and tested) in "C:/sqlite3".
+- removed and installed RSQLite with
+INSTALL_opts="--with-sqlite-dir=C:/sqlite3"(since
+"configure-args" aren't for windows)
+- removed and installed RSQLite with system vars PKG_LIBS="-Lc:/sqlite3/lib
+-lsqlite" and PKG_CPPFLAGS="-Ic:/sqlite3/include"
+
+Still no luck.
+
+
+
+On Mon, Jun 30, 2014 at 11:26 AM, Nick Eubank <nickeubank at gmail.com> wrote:
+
+> Hi All,
+>
+> I'm trying to figure out how to link RSQLite to an external sqlite3.dll
+> file compiled for a 64bit platform. I see from the CRAN installation
+> instructions that on a unix machine there's a way to set the configuration
+> to access an outside, so I assume it's possible (see:
+> http://cran.r-project.org/web/packages/RSQLite/INSTALL).
+>
+> Any guidance on how to point RSQLite to a 64 bit sqlite3.dll?
+>
+> The reason, for those interested, is that 32 bit windows was built with
+> memory addressing that couldn't allocate more than 2gb of ram to a single
+> process. The 32 bit build of sqlite3 still has these variable types, so
+> even on a 64 bit machine, it can't allocate more than 2gb of ram.
+>
+> SQLite.org just (today) posted a 64 bit .dll file for SQLite, but I'm not
+> sure how to point RSQLite to that library.
+>
+> Thanks!
+>
+> Nick
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From tke|tt @end|ng |rom utex@@@edu  Fri Jul 25 18:45:21 2014
+From: tke|tt @end|ng |rom utex@@@edu (Tim Keitt)
+Date: Fri, 25 Jul 2014 11:45:21 -0500
+Subject: [R-sig-DB] new package
+Message-ID: <CANnL8grsNPfK4CkNjgZRxL23eaLHjg-oSTGRv3abLGfON7Q_NQ@mail.gmail.com>
+
+If you are interested in trying a new package for postgresql access, take a
+look at 'rpg' (http://cran.r-project.org/web/packages/rpg/index.html). I
+wrote if primarily for my own use and for my students (rcpp + roxygen2 +
+rstudio now makes package writing ridiculously fast and painless). The
+design goal was convenience not generality so its not a replacement for the
+DBI stuff.
+
+THK
+
+-- 
+http://www.keittlab.org/
+
+	[[alternative HTML version deleted]]
+
+
+
+From j@me@@d@v|d@@m|th @end|ng |rom gm@||@com  Fri Jul 25 18:52:55 2014
+From: j@me@@d@v|d@@m|th @end|ng |rom gm@||@com (James David Smith)
+Date: Fri, 25 Jul 2014 17:52:55 +0100
+Subject: [R-sig-DB] new package
+In-Reply-To: <CANnL8grsNPfK4CkNjgZRxL23eaLHjg-oSTGRv3abLGfON7Q_NQ@mail.gmail.com>
+References: <CANnL8grsNPfK4CkNjgZRxL23eaLHjg-oSTGRv3abLGfON7Q_NQ@mail.gmail.com>
+Message-ID: <CAMu32AD-Cg6Z-mE-b5DyPM-q_MgXDCUg6GjPB4ggFTvokrz=_w@mail.gmail.com>
+
+Hi Tim,
+
+Thanks for bringing this to the attention of the community. I use R to
+interact with PostgreSQL quite alot, so I've just been glancing at the
+manual you've wrote. Nice work. I wonder though - what would you say
+are the main advantages of using this over something like RPostgreSQL
+which I use at the moment?
+
+Cheers
+
+James
+
+On 25 July 2014 17:45, Tim Keitt <tkeitt at utexas.edu> wrote:
+> If you are interested in trying a new package for postgresql access, take a
+> look at 'rpg' (http://cran.r-project.org/web/packages/rpg/index.html). I
+> wrote if primarily for my own use and for my students (rcpp + roxygen2 +
+> rstudio now makes package writing ridiculously fast and painless). The
+> design goal was convenience not generality so its not a replacement for the
+> DBI stuff.
+>
+> THK
+>
+> --
+> http://www.keittlab.org/
+>
+>         [[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From tke|tt @end|ng |rom utex@@@edu  Fri Jul 25 20:05:20 2014
+From: tke|tt @end|ng |rom utex@@@edu (Tim Keitt)
+Date: Fri, 25 Jul 2014 13:05:20 -0500
+Subject: [R-sig-DB] new package
+In-Reply-To: <CAMu32AD-Cg6Z-mE-b5DyPM-q_MgXDCUg6GjPB4ggFTvokrz=_w@mail.gmail.com>
+References: <CANnL8grsNPfK4CkNjgZRxL23eaLHjg-oSTGRv3abLGfON7Q_NQ@mail.gmail.com>
+	<CAMu32AD-Cg6Z-mE-b5DyPM-q_MgXDCUg6GjPB4ggFTvokrz=_w@mail.gmail.com>
+Message-ID: <CANnL8grSgrfeuje5eDTrmFmL+mTVu6xL+=JnjTtcWY2E7Bfdvw@mail.gmail.com>
+
+I attempted to make it easier to use, mainly be having the connection and
+result pointers held as static data outside of R. For writing
+infrastructure and cross-db apps, DBI/RPostgreSQL is better. rpg might be
+preferred by some for interactive and lightweight applications. It fits
+more how I tend to interact with PostgresSQL. YMMV.
+
+THK
+
+
+On Fri, Jul 25, 2014 at 11:52 AM, James David Smith <
+james.david.smith at gmail.com> wrote:
+
+> Hi Tim,
+>
+> Thanks for bringing this to the attention of the community. I use R to
+> interact with PostgreSQL quite alot, so I've just been glancing at the
+> manual you've wrote. Nice work. I wonder though - what would you say
+> are the main advantages of using this over something like RPostgreSQL
+> which I use at the moment?
+>
+> Cheers
+>
+> James
+>
+> On 25 July 2014 17:45, Tim Keitt <tkeitt at utexas.edu> wrote:
+> > If you are interested in trying a new package for postgresql access,
+> take a
+> > look at 'rpg' (http://cran.r-project.org/web/packages/rpg/index.html). I
+> > wrote if primarily for my own use and for my students (rcpp + roxygen2 +
+> > rstudio now makes package writing ridiculously fast and painless). The
+> > design goal was convenience not generality so its not a replacement for
+> the
+> > DBI stuff.
+> >
+> > THK
+> >
+> > --
+> > http://www.keittlab.org/
+> >
+> >         [[alternative HTML version deleted]]
+> >
+> > _______________________________________________
+> > R-sig-DB mailing list -- R Special Interest Group
+> > R-sig-DB at r-project.org
+> > https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+-- 
+http://www.keittlab.org/
+
+	[[alternative HTML version deleted]]
+
+
+
+From joe|@obrecht @end|ng |rom w|k|@p|r@|@org  Fri Aug  1 11:02:58 2014
+From: joe|@obrecht @end|ng |rom w|k|@p|r@|@org (=?ISO-8859-1?Q?Jo=EBl_Obrecht_SPIRAL?=)
+Date: Fri, 1 Aug 2014 11:02:58 +0200
+Subject: [R-sig-DB] Fwd: Path to .my.cf configuration file in dbconnect() ?
+In-Reply-To: <CAMarmBHFagsPuJ3s--0jTAz+nHX_zMOVqk_xDXRojfy9vhbapQ@mail.gmail.com>
+References: <CAMarmBHFagsPuJ3s--0jTAz+nHX_zMOVqk_xDXRojfy9vhbapQ@mail.gmail.com>
+Message-ID: <CAMarmBHSESDcWTAbn5p9bg-v-nD4QZtaZNcGwyBu1Cg30TZMfg@mail.gmail.com>
+
+Dear all,
+
+We are currently implementing in our web application wikispiral.org the
+possibility to use direct connection to the database in scripts that are
+written by the users directly in the website, a wiki. In this regard we
+need a way to specify to dbConnect() the path where the configuration file .
+my.cf is located.
+
+Context :
+
+We run R scripts in a plugin, R : https://doc.tiki.org/PluginR which
+enables us to run R scripts in our CMS, tikiwiki <http://info.tiki.org>. We
+built a website, wikispiral.org, that stores in its database
+<https://doc.tiki.org/Trackers> data about well-being / ill-being surveys
+and use the opportunity of the wiki to give the citizens direct ouptut from
+their data so they can decide for community-based actions. We have in this
+regard automated R scripts that provide statistics and we would like to use
+direct connection to database for more advanced uses.
+
+See this page to browse our results :
+https://wikispiral.org/tiki-index.php?page=Territories+of+coresponsibility
+
+We located in the home dir of the website the files needed and it works for
+scripts run in bash, but when we use the exact same scripts that work in
+bash, here in the scripts in the wiki, the connection to the database is
+not made. I suppose this is a matter of finding o proper path and in this
+regard I would like to ask you if we can specify a path to the conf file in
+the dbconnect() call, or if we may copy our config file in other
+directories so that R scripts can find it.
+
+We do not want to disclose the password to our database as it is quite
+important information.
+
+Please if you would be so kind to help us with this issue, we would like to
+publish a test site to show how users can store in tikiwiki databases data
+and use then R directly in the website to build stats directly.
+
+Best regards,
+
+Jo?l Obrecht
+Administrateur web
+*wikispiral.org <http://wikispiral.org>*
+0033 647 601 128
+0033 388 412 611
+
+	[[alternative HTML version deleted]]
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Fri Aug 29 19:11:01 2014
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Fri, 29 Aug 2014 12:11:01 -0500
+Subject: [R-sig-DB] DBI 0.3
+Message-ID: <CABdHhvH2tsKjGmSGk3ETMwepL_vNrZAz63NcnveKqKBmq=hpgA@mail.gmail.com>
+
+Hi all,
+
+I'm planning a release of DBI in the next week or two (CRAN is
+demanding a fix or they'll pull it). I have done my best to make avoid
+any backward incompatible changes, while brining DBI up to a modern
+package development spec.
+
+If your package depends on DBI, please install the development version
+of DBI (devtools::install_github("rstats-db/DBI"), and run R CMD check
+on your package.
+
+The NEWS file (https://github.com/rstats-db/DBI/blob/master/NEWS) has
+a full list of changes, but I'd like to draw your particular attention
+to the new generics:
+
+* `dbIsValid()` returns a logical value describing whether a connection or
+  result set (or other object) is still valid. (#12).
+
+* `dbQuoteString()` and `dbQuoteIdentifier()` to implement database specific
+  quoting mechanisms.
+
+* `dbFetch()` added as alias to `fetch()` to provide consistent name.
+  Implementers should define methods for both `fetch()` and `dbFetch()` until
+  `fetch()` is deprecated in 2015. For now, the default method for `dbFetch()`
+  calls `fetch()`.
+
+* `dbBegin()` begins a transaction (#17). If not supported, DB specific
+  methods should throw an error (as should `dbCommit()` and `dbRollback()`).
+
+Please use these in preference to defining your own variants. You can
+check your adherence to the DBI API with the new dbiCheckCompliance()
+function.
+
+I am also planning to deprecate some some functions:
+
+* The following functions are soft-deprecated. They are going away,
+  and developers who use the DBI should begin preparing. The formal deprecation
+  process will begin in July 2015, where these function will emit warnings
+  on use.
+
+    * `fetch()` is replaced by `dbFetch()`.
+
+    * `make.db.names()`, `isSQLKeyword()` and `SQLKeywords()`: a black list
+      based approach is fundamentally flawed; instead quote strings and
+      identifiers with `dbQuoteIdentifier()` and `dbQuoteString()`.
+
+* `dbGetDBIVersion()` is deprecated since it's now just a thin wrapper
+  around `packageVersion("DBI")`.
+
+* `dbSetDataMappings()` (#9) and `dbCallProc()` (#7) are deprecated as no
+  implementations were ever provided.
+
+Kind regards,
+
+Hadley
+
+-- 
+http://had.co.nz/
+
+
+
+From tke|tt @end|ng |rom utex@@@edu  Wed Sep  3 19:51:15 2014
+From: tke|tt @end|ng |rom utex@@@edu (Tim Keitt)
+Date: Wed, 3 Sep 2014 12:51:15 -0500
+Subject: [R-sig-DB] rpg 1.2
+Message-ID: <CANnL8gq4J0tSmg8gS1FA2nd0u=JzE978+ZMXf+9XiaD59NqhUw@mail.gmail.com>
+
+Just a note that rpg has been updated on CRAN in case anyone wants to try
+it out.
+
+Main features:
+1) designed for convenience
+2) most common use cases require least input
+3) parameterized queries
+4) asynchronous queries
+5) prepared statement execution loop in C++
+6) iterate over query results using foreach + %do% or %dopar%
+7) easy connection setup and changing of defaults
+8) queries for password only after first trying without
+9) serialize and store any R object in database
+10) run psql within R session
+
+Main constraints:
+1) single active connection at a time
+2) only works with postgresql
+3) only useful if you know SQL
+
+If you already use postgresql and have a default database (ie "psql -c
+'\d'" works), all you need to type is:
+
+library(rpg)
+list_tables()
+
+THK
+
+-- 
+http://www.keittlab.org/
+
+	[[alternative HTML version deleted]]
+
+
+
+From m@cqueen1 @end|ng |rom ||n|@gov  Wed Sep  3 22:59:02 2014
+From: m@cqueen1 @end|ng |rom ||n|@gov (MacQueen, Don)
+Date: Wed, 3 Sep 2014 20:59:02 +0000
+Subject: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+Message-ID: <D02CCF25.10973C%macqueen1@llnl.gov>
+
+Hadley,
+
+Since you mentioned DBI 0.3 in a recent email, could I make a request to add a dbSendUpdate() function to DBI, like the one in RJDBC?
+
+require(RJDBC)
+
+> find('dbSendQuery')
+[1] "package:RJDBC" "package:DBI"
+
+> find('dbSendUpdate')
+[1] "package:RJDBC"
+
+And from ?dbSendUpdate
+
+  'dbSendQuery' and 'dbSendUpdate' submit a SQL query to the
+  database. The difference between the two is only that
+  'dbSendUpdate' is used with DBML queries and thus doesn't return
+  any result set.
+
+I would find this helpful, because I could then use scripts unmodified with either ROracle or RJDBC.
+(I suppose adding it to DBI would mean that the one in RJDBC would have to be modified.)
+
+
+I have:
+
+Package Version
+  "DBI" "0.3.0"
+
+Package Version
+"RJDBC" "0.2-4"
+
+
+Thanks
+-Don
+
+--
+Don MacQueen
+Lawrence Livermore National Laboratory
+7000 East Ave., L-627
+Livermore, CA 94550
+925-423-1062
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From h@d|ey @end|ng |rom r@tud|o@com  Wed Sep  3 23:39:14 2014
+From: h@d|ey @end|ng |rom r@tud|o@com (Hadley Wickham)
+Date: Wed, 3 Sep 2014 16:39:14 -0500
+Subject: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+In-Reply-To: <D02CCF25.10973C%macqueen1@llnl.gov>
+References: <D02CCF25.10973C%macqueen1@llnl.gov>
+Message-ID: <CABdHhvHkA9mo=79+HyyxwK28FGJtTBhxOOJJO9re4EWKmX6dDQ@mail.gmail.com>
+
+That seems reasonable to me.  If no one objects strongly, can you
+please file an issue at https://github.com/rstats-db/DBI/issues ?
+
+Thanks,
+
+Hadley
+
+On Wed, Sep 3, 2014 at 3:59 PM, MacQueen, Don <macqueen1 at llnl.gov> wrote:
+> Hadley,
+>
+> Since you mentioned DBI 0.3 in a recent email, could I make a request to add
+> a dbSendUpdate() function to DBI, like the one in RJDBC?
+>
+> require(RJDBC)
+>
+>> find('dbSendQuery')
+> [1] "package:RJDBC" "package:DBI"
+>
+>> find('dbSendUpdate')
+> [1] "package:RJDBC"
+>
+> And from ?dbSendUpdate
+>
+>   'dbSendQuery' and 'dbSendUpdate' submit a SQL query to the
+>   database. The difference between the two is only that
+>   'dbSendUpdate' is used with DBML queries and thus doesn't return
+>   any result set.
+>
+> I would find this helpful, because I could then use scripts unmodified with
+> either ROracle or RJDBC.
+> (I suppose adding it to DBI would mean that the one in RJDBC would have to
+> be modified.)
+>
+>
+> I have:
+>
+> Package Version
+>   "DBI" "0.3.0"
+>
+> Package Version
+> "RJDBC" "0.2-4"
+>
+>
+> Thanks
+> -Don
+>
+> --
+> Don MacQueen
+> Lawrence Livermore National Laboratory
+> 7000 East Ave., L-627
+> Livermore, CA 94550
+> 925-423-1062
+>
+
+
+
+-- 
+http://had.co.nz/
+
+
+
+From h@d|ey @end|ng |rom r@tud|o@com  Thu Sep  4 15:13:05 2014
+From: h@d|ey @end|ng |rom r@tud|o@com (Hadley Wickham)
+Date: Thu, 4 Sep 2014 08:13:05 -0500
+Subject: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+In-Reply-To: <D02CCF25.10973C%macqueen1@llnl.gov>
+References: <D02CCF25.10973C%macqueen1@llnl.gov>
+Message-ID: <CABdHhvEb+yajokahXy+Sc6kfJBNZ9NkckCNacog=bTvmK_PHdA@mail.gmail.com>
+
+A thought: should dbSendUpdate() return a boolean indicating success,
+or always return TRUE, otherwise throwing an error?
+
+Hadley
+
+On Wed, Sep 3, 2014 at 3:59 PM, MacQueen, Don <macqueen1 at llnl.gov> wrote:
+> Hadley,
+>
+> Since you mentioned DBI 0.3 in a recent email, could I make a request to add
+> a dbSendUpdate() function to DBI, like the one in RJDBC?
+>
+> require(RJDBC)
+>
+>> find('dbSendQuery')
+> [1] "package:RJDBC" "package:DBI"
+>
+>> find('dbSendUpdate')
+> [1] "package:RJDBC"
+>
+> And from ?dbSendUpdate
+>
+>   'dbSendQuery' and 'dbSendUpdate' submit a SQL query to the
+>   database. The difference between the two is only that
+>   'dbSendUpdate' is used with DBML queries and thus doesn't return
+>   any result set.
+>
+> I would find this helpful, because I could then use scripts unmodified with
+> either ROracle or RJDBC.
+> (I suppose adding it to DBI would mean that the one in RJDBC would have to
+> be modified.)
+>
+>
+> I have:
+>
+> Package Version
+>   "DBI" "0.3.0"
+>
+> Package Version
+> "RJDBC" "0.2-4"
+>
+>
+> Thanks
+> -Don
+>
+> --
+> Don MacQueen
+> Lawrence Livermore National Laboratory
+> 7000 East Ave., L-627
+> Livermore, CA 94550
+> 925-423-1062
+>
+
+
+
+-- 
+http://had.co.nz/
+
+
+
+From den|@@x@mukh|n @end|ng |rom or@c|e@com  Thu Sep  4 16:28:31 2014
+From: den|@@x@mukh|n @end|ng |rom or@c|e@com (Denis Mukhin)
+Date: Thu, 4 Sep 2014 07:28:31 -0700 (PDT)
+Subject: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+In-Reply-To: <CABdHhvEb+yajokahXy+Sc6kfJBNZ9NkckCNacog=bTvmK_PHdA@mail.gmail.com>
+References: <D02CCF25.10973C%macqueen1@llnl.gov>
+	<CABdHhvEb+yajokahXy+Sc6kfJBNZ9NkckCNacog=bTvmK_PHdA@mail.gmail.com>
+Message-ID: <acce0757-fcd1-4a33-8f19-2fbab0ff3558@default>
+
+In ROracle we standardized on the second approach, namely always return TRUE, otherwise throw an error.
+
+Also since UPDATE is not the only operation that does not return any results (although it might with a RETURNING clause) would a more generic name be more appropriate here? Besides DMLs there are also DDLs. Something like dbExecute(), dbSubmit(), dbSend() ...
+
+Denis
+
+-----Original Message-----
+From: Hadley Wickham [mailto:hadley at rstudio.com] 
+Sent: Thursday, September 04, 2014 9:13 AM
+To: MacQueen, Don
+Cc: Simon Urbanek; R-sig-DB at r-project.org
+Subject: Re: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+
+A thought: should dbSendUpdate() return a boolean indicating success, or always return TRUE, otherwise throwing an error?
+
+Hadley
+
+On Wed, Sep 3, 2014 at 3:59 PM, MacQueen, Don <macqueen1 at llnl.gov> wrote:
+> Hadley,
+>
+> Since you mentioned DBI 0.3 in a recent email, could I make a request 
+> to add a dbSendUpdate() function to DBI, like the one in RJDBC?
+>
+> require(RJDBC)
+>
+>> find('dbSendQuery')
+> [1] "package:RJDBC" "package:DBI"
+>
+>> find('dbSendUpdate')
+> [1] "package:RJDBC"
+>
+> And from ?dbSendUpdate
+>
+>   'dbSendQuery' and 'dbSendUpdate' submit a SQL query to the
+>   database. The difference between the two is only that
+>   'dbSendUpdate' is used with DBML queries and thus doesn't return
+>   any result set.
+>
+> I would find this helpful, because I could then use scripts unmodified 
+> with either ROracle or RJDBC.
+> (I suppose adding it to DBI would mean that the one in RJDBC would 
+> have to be modified.)
+>
+>
+> I have:
+>
+> Package Version
+>   "DBI" "0.3.0"
+>
+> Package Version
+> "RJDBC" "0.2-4"
+>
+>
+> Thanks
+> -Don
+>
+> --
+> Don MacQueen
+> Lawrence Livermore National Laboratory
+> 7000 East Ave., L-627
+> Livermore, CA 94550
+> 925-423-1062
+>
+
+
+
+--
+http://had.co.nz/
+
+_______________________________________________
+R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From peter@me|@@ner @end|ng |rom un|-kon@t@nz@de  Thu Sep  4 16:45:30 2014
+From: peter@me|@@ner @end|ng |rom un|-kon@t@nz@de (=?ISO-8859-1?Q?Peter_Mei=DFner?=)
+Date: Thu, 04 Sep 2014 16:45:30 +0200
+Subject: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+In-Reply-To: <acce0757-fcd1-4a33-8f19-2fbab0ff3558@default>
+References: <D02CCF25.10973C%macqueen1@llnl.gov>	<CABdHhvEb+yajokahXy+Sc6kfJBNZ9NkckCNacog=bTvmK_PHdA@mail.gmail.com>
+	<acce0757-fcd1-4a33-8f19-2fbab0ff3558@default>
+Message-ID: <54087B0A.6060901@uni-konstanz.de>
+
+IMHO
+
+the general approach should be:
+
+- as long as R does deliver the the queries to the DB and the DB does 
+give response there should never ever be an R error - the function did 
+what it should do: making sure things were delivered to DB
+
+- the return than should depend on what the DB said:
+   * 0/TRUE                    - no error, nothing else to say
+   * 1/FALSE                   - DB does complain somehow
+   * text/whatever appropriate - something was returned, ...
+
+- if however connection was lost during the execution of the function so 
+it cannot be sure delivery went as expected an error should be issued
+
+Best, Peter
+
+
+
+Am 04.09.2014 16:28, schrieb Denis Mukhin:
+> In ROracle we standardized on the second approach, namely always return TRUE, otherwise throw an error.
+>
+> Also since UPDATE is not the only operation that does not return any results (although it might with a RETURNING clause) would a more generic name be more appropriate here? Besides DMLs there are also DDLs. Something like dbExecute(), dbSubmit(), dbSend() ...
+>
+> Denis
+>
+> -----Original Message-----
+> From: Hadley Wickham [mailto:hadley at rstudio.com]
+> Sent: Thursday, September 04, 2014 9:13 AM
+> To: MacQueen, Don
+> Cc: Simon Urbanek; R-sig-DB at r-project.org
+> Subject: Re: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+>
+> A thought: should dbSendUpdate() return a boolean indicating success, or always return TRUE, otherwise throwing an error?
+>
+> Hadley
+>
+> On Wed, Sep 3, 2014 at 3:59 PM, MacQueen, Don <macqueen1 at llnl.gov> wrote:
+>> Hadley,
+>>
+>> Since you mentioned DBI 0.3 in a recent email, could I make a request
+>> to add a dbSendUpdate() function to DBI, like the one in RJDBC?
+>>
+>> require(RJDBC)
+>>
+>>> find('dbSendQuery')
+>> [1] "package:RJDBC" "package:DBI"
+>>
+>>> find('dbSendUpdate')
+>> [1] "package:RJDBC"
+>>
+>> And from ?dbSendUpdate
+>>
+>>    'dbSendQuery' and 'dbSendUpdate' submit a SQL query to the
+>>    database. The difference between the two is only that
+>>    'dbSendUpdate' is used with DBML queries and thus doesn't return
+>>    any result set.
+>>
+>> I would find this helpful, because I could then use scripts unmodified
+>> with either ROracle or RJDBC.
+>> (I suppose adding it to DBI would mean that the one in RJDBC would
+>> have to be modified.)
+>>
+>>
+>> I have:
+>>
+>> Package Version
+>>    "DBI" "0.3.0"
+>>
+>> Package Version
+>> "RJDBC" "0.2-4"
+>>
+>>
+>> Thanks
+>> -Don
+>>
+>> --
+>> Don MacQueen
+>> Lawrence Livermore National Laboratory
+>> 7000 East Ave., L-627
+>> Livermore, CA 94550
+>> 925-423-1062
+>>
+>
+>
+>
+> --
+> http://had.co.nz/
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Peter Mei?ner
+Workgroup 'Comparative Parliamentary Politics'
+Department of Politics and Administration
+University of Konstanz
+Box 216
+78457 Konstanz
+Germany
+
++49 7531 88 5665
+http://www.polver.uni-konstanz.de/sieberer/home/
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Thu Sep  4 16:53:49 2014
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Thu, 4 Sep 2014 09:53:49 -0500
+Subject: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+In-Reply-To: <54087B0A.6060901@uni-konstanz.de>
+References: <D02CCF25.10973C%macqueen1@llnl.gov>
+	<CABdHhvEb+yajokahXy+Sc6kfJBNZ9NkckCNacog=bTvmK_PHdA@mail.gmail.com>
+	<acce0757-fcd1-4a33-8f19-2fbab0ff3558@default>
+	<54087B0A.6060901@uni-konstanz.de>
+Message-ID: <CABdHhvEknhrF960wL-XSV=i-3VDXJ5qYt-LNa8nQTkKQZ4r4ww@mail.gmail.com>
+
+The problem with that approach is that you end up with a lot of code like:
+
+if (!dbBegin(con))  stop(dbGetException())
+...
+if (!dbExecute(con, sql)) stop(dbGetException())
+...
+if (!dbCommit(con))  stop(dbGetException())
+
+where the developer is responsible for always checking that the
+operation succeeded. If you throw an error, then the code is simpler:
+
+dbBegin(con)
+...
+dbExecute(con, sql)
+...
+dbCommit(con)
+
+Given that we're using a language with exceptions, it seems better to
+use them, rather than adopting the standard C error handling
+mechanism.
+
+Hadley
+
+On Thu, Sep 4, 2014 at 9:45 AM, Peter Mei?ner
+<peter.meissner at uni-konstanz.de> wrote:
+> IMHO
+>
+> the general approach should be:
+>
+> - as long as R does deliver the the queries to the DB and the DB does give
+> response there should never ever be an R error - the function did what it
+> should do: making sure things were delivered to DB
+>
+> - the return than should depend on what the DB said:
+>   * 0/TRUE                    - no error, nothing else to say
+>   * 1/FALSE                   - DB does complain somehow
+>   * text/whatever appropriate - something was returned, ...
+>
+> - if however connection was lost during the execution of the function so it
+> cannot be sure delivery went as expected an error should be issued
+>
+> Best, Peter
+>
+>
+>
+> Am 04.09.2014 16:28, schrieb Denis Mukhin:
+>
+>> In ROracle we standardized on the second approach, namely always return
+>> TRUE, otherwise throw an error.
+>>
+>> Also since UPDATE is not the only operation that does not return any
+>> results (although it might with a RETURNING clause) would a more generic
+>> name be more appropriate here? Besides DMLs there are also DDLs. Something
+>> like dbExecute(), dbSubmit(), dbSend() ...
+>>
+>> Denis
+>>
+>> -----Original Message-----
+>> From: Hadley Wickham [mailto:hadley at rstudio.com]
+>> Sent: Thursday, September 04, 2014 9:13 AM
+>> To: MacQueen, Don
+>> Cc: Simon Urbanek; R-sig-DB at r-project.org
+>> Subject: Re: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+>>
+>> A thought: should dbSendUpdate() return a boolean indicating success, or
+>> always return TRUE, otherwise throwing an error?
+>>
+>> Hadley
+>>
+>> On Wed, Sep 3, 2014 at 3:59 PM, MacQueen, Don <macqueen1 at llnl.gov> wrote:
+>>>
+>>> Hadley,
+>>>
+>>> Since you mentioned DBI 0.3 in a recent email, could I make a request
+>>> to add a dbSendUpdate() function to DBI, like the one in RJDBC?
+>>>
+>>> require(RJDBC)
+>>>
+>>>> find('dbSendQuery')
+>>>
+>>> [1] "package:RJDBC" "package:DBI"
+>>>
+>>>> find('dbSendUpdate')
+>>>
+>>> [1] "package:RJDBC"
+>>>
+>>> And from ?dbSendUpdate
+>>>
+>>>    'dbSendQuery' and 'dbSendUpdate' submit a SQL query to the
+>>>    database. The difference between the two is only that
+>>>    'dbSendUpdate' is used with DBML queries and thus doesn't return
+>>>    any result set.
+>>>
+>>> I would find this helpful, because I could then use scripts unmodified
+>>> with either ROracle or RJDBC.
+>>> (I suppose adding it to DBI would mean that the one in RJDBC would
+>>> have to be modified.)
+>>>
+>>>
+>>> I have:
+>>>
+>>> Package Version
+>>>    "DBI" "0.3.0"
+>>>
+>>> Package Version
+>>> "RJDBC" "0.2-4"
+>>>
+>>>
+>>> Thanks
+>>> -Don
+>>>
+>>> --
+>>> Don MacQueen
+>>> Lawrence Livermore National Laboratory
+>>> 7000 East Ave., L-627
+>>> Livermore, CA 94550
+>>> 925-423-1062
+>>>
+>>
+>>
+>>
+>> --
+>> http://had.co.nz/
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at r-project.org
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+>
+> --
+> Peter Mei?ner
+> Workgroup 'Comparative Parliamentary Politics'
+> Department of Politics and Administration
+> University of Konstanz
+> Box 216
+> 78457 Konstanz
+> Germany
+>
+> +49 7531 88 5665
+> http://www.polver.uni-konstanz.de/sieberer/home/
+>
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+-- 
+http://had.co.nz/
+
+
+
+From h@d|ey @end|ng |rom r@tud|o@com  Thu Sep  4 16:54:24 2014
+From: h@d|ey @end|ng |rom r@tud|o@com (Hadley Wickham)
+Date: Thu, 4 Sep 2014 09:54:24 -0500
+Subject: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+In-Reply-To: <acce0757-fcd1-4a33-8f19-2fbab0ff3558@default>
+References: <D02CCF25.10973C%macqueen1@llnl.gov>
+	<CABdHhvEb+yajokahXy+Sc6kfJBNZ9NkckCNacog=bTvmK_PHdA@mail.gmail.com>
+	<acce0757-fcd1-4a33-8f19-2fbab0ff3558@default>
+Message-ID: <CABdHhvHps9Da60SvS8F3s5idoD3mjowxXzZ3eUx-LFFEMNkF2A@mail.gmail.com>
+
+On Thu, Sep 4, 2014 at 9:28 AM, Denis Mukhin <denis.x.mukhin at oracle.com> wrote:
+> In ROracle we standardized on the second approach, namely always return TRUE, otherwise throw an error.
+>
+> Also since UPDATE is not the only operation that does not return any results (although it might with a RETURNING clause) would a more generic name be more appropriate here? Besides DMLs there are also DDLs. Something like dbExecute(), dbSubmit(), dbSend() ...
+
+How about dbExecuteQuery() ?
+
+(dbSendQuery() is already taken.)
+
+Hadley
+
+-- 
+http://had.co.nz/
+
+
+
+From den|@@x@mukh|n @end|ng |rom or@c|e@com  Thu Sep  4 17:06:27 2014
+From: den|@@x@mukh|n @end|ng |rom or@c|e@com (Denis Mukhin)
+Date: Thu, 4 Sep 2014 08:06:27 -0700 (PDT)
+Subject: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+In-Reply-To: <CABdHhvHps9Da60SvS8F3s5idoD3mjowxXzZ3eUx-LFFEMNkF2A@mail.gmail.com>
+References: <D02CCF25.10973C%macqueen1@llnl.gov>
+	<CABdHhvEb+yajokahXy+Sc6kfJBNZ9NkckCNacog=bTvmK_PHdA@mail.gmail.com>
+	<acce0757-fcd1-4a33-8f19-2fbab0ff3558@default>
+	<CABdHhvHps9Da60SvS8F3s5idoD3mjowxXzZ3eUx-LFFEMNkF2A@mail.gmail.com>
+Message-ID: <61e7a19a-d238-4028-ac40-5ba789f3caba@default>
+
+I like it. dbExecuteQuery() matches well with already existing dbGetQuery() and dbSendQuery(). All three are essentially doing the same operation (submitting a Query) but have different return types.
+
+Denis
+
+-----Original Message-----
+From: Hadley Wickham [mailto:hadley at rstudio.com] 
+Sent: Thursday, September 04, 2014 10:54 AM
+To: Denis Mukhin
+Cc: MacQueen, Don; Simon Urbanek; r-sig-db at r-project.org
+Subject: Re: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+
+On Thu, Sep 4, 2014 at 9:28 AM, Denis Mukhin <denis.x.mukhin at oracle.com> wrote:
+> In ROracle we standardized on the second approach, namely always return TRUE, otherwise throw an error.
+>
+> Also since UPDATE is not the only operation that does not return any results (although it might with a RETURNING clause) would a more generic name be more appropriate here? Besides DMLs there are also DDLs. Something like dbExecute(), dbSubmit(), dbSend() ...
+
+How about dbExecuteQuery() ?
+
+(dbSendQuery() is already taken.)
+
+Hadley
+
+-- 
+http://had.co.nz/
+
+
+
+From m@cqueen1 @end|ng |rom ||n|@gov  Thu Sep  4 17:24:11 2014
+From: m@cqueen1 @end|ng |rom ||n|@gov (MacQueen, Don)
+Date: Thu, 4 Sep 2014 15:24:11 +0000
+Subject: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+In-Reply-To: <CABdHhvEb+yajokahXy+Sc6kfJBNZ9NkckCNacog=bTvmK_PHdA@mail.gmail.com>
+References: <D02CCF25.10973C%macqueen1@llnl.gov>
+	<CABdHhvEb+yajokahXy+Sc6kfJBNZ9NkckCNacog=bTvmK_PHdA@mail.gmail.com>
+Message-ID: <D02DD178.109FB2%macqueen1@llnl.gov>
+
+I will defer to others on this question.
+
+In general I want to be able to detect failures and handle them
+gracefully, and this is perhaps easier if it returns a boolean, but
+wrapping it in try() is also easy enough.
+
+-Don
+
+-- 
+Don MacQueen
+
+Lawrence Livermore National Laboratory
+7000 East Ave., L-627
+Livermore, CA 94550
+925-423-1062
+
+
+
+
+
+On 9/4/14, 6:13 AM, "Hadley Wickham" <hadley at rstudio.com> wrote:
+
+>A thought: should dbSendUpdate() return a boolean indicating success,
+>or always return TRUE, otherwise throwing an error?
+>
+>Hadley
+>
+>On Wed, Sep 3, 2014 at 3:59 PM, MacQueen, Don <macqueen1 at llnl.gov> wrote:
+>> Hadley,
+>>
+>> Since you mentioned DBI 0.3 in a recent email, could I make a request
+>>to add
+>> a dbSendUpdate() function to DBI, like the one in RJDBC?
+>>
+>> require(RJDBC)
+>>
+>>> find('dbSendQuery')
+>> [1] "package:RJDBC" "package:DBI"
+>>
+>>> find('dbSendUpdate')
+>> [1] "package:RJDBC"
+>>
+>> And from ?dbSendUpdate
+>>
+>>   'dbSendQuery' and 'dbSendUpdate' submit a SQL query to the
+>>   database. The difference between the two is only that
+>>   'dbSendUpdate' is used with DBML queries and thus doesn't return
+>>   any result set.
+>>
+>> I would find this helpful, because I could then use scripts unmodified
+>>with
+>> either ROracle or RJDBC.
+>> (I suppose adding it to DBI would mean that the one in RJDBC would have
+>>to
+>> be modified.)
+>>
+>>
+>> I have:
+>>
+>> Package Version
+>>   "DBI" "0.3.0"
+>>
+>> Package Version
+>> "RJDBC" "0.2-4"
+>>
+>>
+>> Thanks
+>> -Don
+>>
+>> --
+>> Don MacQueen
+>> Lawrence Livermore National Laboratory
+>> 7000 East Ave., L-627
+>> Livermore, CA 94550
+>> 925-423-1062
+>>
+>
+>
+>
+>-- 
+>http://had.co.nz/
+
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Thu Sep  4 18:09:35 2014
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Thu, 04 Sep 2014 12:09:35 -0400
+Subject: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+In-Reply-To: <CABdHhvEknhrF960wL-XSV=i-3VDXJ5qYt-LNa8nQTkKQZ4r4ww@mail.gmail.com>
+References: <D02CCF25.10973C%macqueen1@llnl.gov>	<CABdHhvEb+yajokahXy+Sc6kfJBNZ9NkckCNacog=bTvmK_PHdA@mail.gmail.com>	<acce0757-fcd1-4a33-8f19-2fbab0ff3558@default>	<54087B0A.6060901@uni-konstanz.de>
+	<CABdHhvEknhrF960wL-XSV=i-3VDXJ5qYt-LNa8nQTkKQZ4r4ww@mail.gmail.com>
+Message-ID: <54088EBF.30108@gmail.com>
+
+
+
+On 09/04/2014 10:53 AM, Hadley Wickham wrote:
+> The problem with that approach is that you end up with a lot of code like:
+>
+> if (!dbBegin(con))  stop(dbGetException())
+> ...
+> if (!dbExecute(con, sql)) stop(dbGetException())
+> ...
+> if (!dbCommit(con))  stop(dbGetException())
+>
+> where the developer is responsible for always checking that the
+> operation succeeded. If you throw an error, then the code is simpler:
+>
+> dbBegin(con)
+> ...
+> dbExecute(con, sql)
+> ...
+> dbCommit(con)
+>
+
+I think this depends on the code. There are frequently situations where 
+it is nice to have a function that is certain to return a logical value, 
+so not have to catch exceptions and parse for all possibilities. (BTW, 
+if error message text is to be returned then that can be set as an 
+attribute to the logical value.) My feeling is it would be nice to have 
+both, one function certain to return a logical, and one that will throw 
+an error. If one is a simple wrapper to the other then only one method 
+needs to be implemented and the DBI default can look after the other.
+
+Paul
+
+> Given that we're using a language with exceptions, it seems better to
+> use them, rather than adopting the standard C error handling
+> mechanism.
+>
+> Hadley
+>
+> On Thu, Sep 4, 2014 at 9:45 AM, Peter Mei?ner
+> <peter.meissner at uni-konstanz.de> wrote:
+>> IMHO
+>>
+>> the general approach should be:
+>>
+>> - as long as R does deliver the the queries to the DB and the DB does give
+>> response there should never ever be an R error - the function did what it
+>> should do: making sure things were delivered to DB
+>>
+>> - the return than should depend on what the DB said:
+>>    * 0/TRUE                    - no error, nothing else to say
+>>    * 1/FALSE                   - DB does complain somehow
+>>    * text/whatever appropriate - something was returned, ...
+>>
+>> - if however connection was lost during the execution of the function so it
+>> cannot be sure delivery went as expected an error should be issued
+>>
+>> Best, Peter
+>>
+>>
+>>
+>> Am 04.09.2014 16:28, schrieb Denis Mukhin:
+>>
+>>> In ROracle we standardized on the second approach, namely always return
+>>> TRUE, otherwise throw an error.
+>>>
+>>> Also since UPDATE is not the only operation that does not return any
+>>> results (although it might with a RETURNING clause) would a more generic
+>>> name be more appropriate here? Besides DMLs there are also DDLs. Something
+>>> like dbExecute(), dbSubmit(), dbSend() ...
+>>>
+>>> Denis
+>>>
+>>> -----Original Message-----
+>>> From: Hadley Wickham [mailto:hadley at rstudio.com]
+>>> Sent: Thursday, September 04, 2014 9:13 AM
+>>> To: MacQueen, Don
+>>> Cc: Simon Urbanek; R-sig-DB at r-project.org
+>>> Subject: Re: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+>>>
+>>> A thought: should dbSendUpdate() return a boolean indicating success, or
+>>> always return TRUE, otherwise throwing an error?
+>>>
+>>> Hadley
+>>>
+>>> On Wed, Sep 3, 2014 at 3:59 PM, MacQueen, Don <macqueen1 at llnl.gov> wrote:
+>>>>
+>>>> Hadley,
+>>>>
+>>>> Since you mentioned DBI 0.3 in a recent email, could I make a request
+>>>> to add a dbSendUpdate() function to DBI, like the one in RJDBC?
+>>>>
+>>>> require(RJDBC)
+>>>>
+>>>>> find('dbSendQuery')
+>>>>
+>>>> [1] "package:RJDBC" "package:DBI"
+>>>>
+>>>>> find('dbSendUpdate')
+>>>>
+>>>> [1] "package:RJDBC"
+>>>>
+>>>> And from ?dbSendUpdate
+>>>>
+>>>>     'dbSendQuery' and 'dbSendUpdate' submit a SQL query to the
+>>>>     database. The difference between the two is only that
+>>>>     'dbSendUpdate' is used with DBML queries and thus doesn't return
+>>>>     any result set.
+>>>>
+>>>> I would find this helpful, because I could then use scripts unmodified
+>>>> with either ROracle or RJDBC.
+>>>> (I suppose adding it to DBI would mean that the one in RJDBC would
+>>>> have to be modified.)
+>>>>
+>>>>
+>>>> I have:
+>>>>
+>>>> Package Version
+>>>>     "DBI" "0.3.0"
+>>>>
+>>>> Package Version
+>>>> "RJDBC" "0.2-4"
+>>>>
+>>>>
+>>>> Thanks
+>>>> -Don
+>>>>
+>>>> --
+>>>> Don MacQueen
+>>>> Lawrence Livermore National Laboratory
+>>>> 7000 East Ave., L-627
+>>>> Livermore, CA 94550
+>>>> 925-423-1062
+>>>>
+>>>
+>>>
+>>>
+>>> --
+>>> http://had.co.nz/
+>>>
+>>> _______________________________________________
+>>> R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org
+>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>>
+>>> _______________________________________________
+>>> R-sig-DB mailing list -- R Special Interest Group
+>>> R-sig-DB at r-project.org
+>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>>
+>>
+>> --
+>> Peter Mei?ner
+>> Workgroup 'Comparative Parliamentary Politics'
+>> Department of Politics and Administration
+>> University of Konstanz
+>> Box 216
+>> 78457 Konstanz
+>> Germany
+>>
+>> +49 7531 88 5665
+>> http://www.polver.uni-konstanz.de/sieberer/home/
+>>
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at r-project.org
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+>
+>
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Thu Sep  4 18:26:27 2014
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Thu, 4 Sep 2014 11:26:27 -0500
+Subject: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+In-Reply-To: <54088EBF.30108@gmail.com>
+References: <D02CCF25.10973C%macqueen1@llnl.gov>
+	<CABdHhvEb+yajokahXy+Sc6kfJBNZ9NkckCNacog=bTvmK_PHdA@mail.gmail.com>
+	<acce0757-fcd1-4a33-8f19-2fbab0ff3558@default>
+	<54087B0A.6060901@uni-konstanz.de>
+	<CABdHhvEknhrF960wL-XSV=i-3VDXJ5qYt-LNa8nQTkKQZ4r4ww@mail.gmail.com>
+	<54088EBF.30108@gmail.com>
+Message-ID: <CABdHhvGGVvGpxcA89D5MifuOez0xAWjfPthW0DtZhDBA34Fcqg@mail.gmail.com>
+
+> I think this depends on the code. There are frequently situations where it
+> is nice to have a function that is certain to return a logical value, so not
+> have to catch exceptions and parse for all possibilities. (BTW, if error
+> message text is to be returned then that can be set as an attribute to the
+> logical value.) My feeling is it would be nice to have both, one function
+> certain to return a logical, and one that will throw an error. If one is a
+> simple wrapper to the other then only one method needs to be implemented and
+> the DBI default can look after the other.
+
+I think this is a philosophical API design decision, and it's a bad
+idea to try and support both approaches. That makes it confusing how
+you should approach a problem and more likely that you fail to catch
+an important error.
+
+If the API returns TRUE or throws an error, it's easy to write your
+own wrapper to make it return TRUE or FALSE:
+
+success <- function(x) {
+  tryCatch(x, error = function(e) FALSE)
+}
+
+success(TRUE)
+success(stop("!!"))
+
+Hadley
+
+-- 
+http://had.co.nz/
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Thu Sep  4 18:29:00 2014
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Thu, 4 Sep 2014 11:29:00 -0500
+Subject: [R-sig-DB] New generic for prepared queries
+Message-ID: <CABdHhvHqwy5VfgAP6qAbwMhHzFsk2LsLNmtGtRvpwefOaAWYSw@mail.gmail.com>
+
+While we're on the subject of new generics, I think we also need a
+generic for prepared queries. SQLite has
+
+setGeneric("dbSendPreparedQuery", function(conn, statement, bind.data, ...) {
+    standardGeneric("dbSendPreparedQuery")
+}, valueClass = "DBIResult"))
+
+Does that seem a reasonable API?  How the prepared query works would
+vary from backend to backend, depending on what the underlying
+database supports.
+
+(I guess we'd also need a matching dbGetPreparedQuery and
+dbExecutePreparedQuery)
+
+Hadley
+
+
+-- 
+http://had.co.nz/
+
+
+
+From m@cqueen1 @end|ng |rom ||n|@gov  Thu Sep  4 18:36:32 2014
+From: m@cqueen1 @end|ng |rom ||n|@gov (MacQueen, Don)
+Date: Thu, 4 Sep 2014 16:36:32 +0000
+Subject: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+In-Reply-To: <61e7a19a-d238-4028-ac40-5ba789f3caba@default>
+References: <D02CCF25.10973C%macqueen1@llnl.gov>
+	<CABdHhvEb+yajokahXy+Sc6kfJBNZ9NkckCNacog=bTvmK_PHdA@mail.gmail.com>
+	<acce0757-fcd1-4a33-8f19-2fbab0ff3558@default>
+	<CABdHhvHps9Da60SvS8F3s5idoD3mjowxXzZ3eUx-LFFEMNkF2A@mail.gmail.com>
+	<61e7a19a-d238-4028-ac40-5ba789f3caba@default>
+Message-ID: <D02DDBFC.109FD3%macqueen1@llnl.gov>
+
+As the OP, I don?t have a name preference, and dbExecuteQuery() seems fine.
+
+What I do hope for, of course, is that maintainers of packages based on
+DBI will in due course implement the new function, so that my scripts are
+portable between packages. I had mentioned ROracle and RJDBC (from which
+my request arose), but I also use RMySQL, and I use all three of these
+quite a bit. And of course there are several others.
+
+At the bottom of this email I?m including a reproducible example
+illustrating my situation, in case anyone is interested. I also use
+dbSendUpdate() or dbSendQuery() to send 'alter table' and 'grant' commands
+to the database. Also including sessionInfo() this time.
+
+Thanks
+-Don
+
+-- 
+Don MacQueen
+
+Lawrence Livermore National Laboratory
+7000 East Ave., L-627
+Livermore, CA 94550
+925-423-1062
+
+
+
+
+
+On 9/4/14, 8:06 AM, "Denis Mukhin" <denis.x.mukhin at oracle.com> wrote:
+
+>I like it. dbExecuteQuery() matches well with already existing
+>dbGetQuery() and dbSendQuery(). All three are essentially doing the same
+>operation (submitting a Query) but have different return types.
+>
+>Denis
+>
+>-----Original Message-----
+>From: Hadley Wickham [mailto:hadley at rstudio.com]
+>Sent: Thursday, September 04, 2014 10:54 AM
+>To: Denis Mukhin
+>Cc: MacQueen, Don; Simon Urbanek; r-sig-db at r-project.org
+>Subject: Re: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+>
+>On Thu, Sep 4, 2014 at 9:28 AM, Denis Mukhin <denis.x.mukhin at oracle.com>
+>wrote:
+>> In ROracle we standardized on the second approach, namely always return
+>>TRUE, otherwise throw an error.
+>>
+>> Also since UPDATE is not the only operation that does not return any
+>>results (although it might with a RETURNING clause) would a more generic
+>>name be more appropriate here? Besides DMLs there are also DDLs.
+>>Something like dbExecute(), dbSubmit(), dbSend() ...
+>
+>How about dbExecuteQuery() ?
+>
+>(dbSendQuery() is already taken.)
+>
+>Hadley
+>
+>-- 
+>http://had.co.nz/
+>
+>_______________________________________________
+>R-sig-DB mailing list -- R Special Interest Group
+>R-sig-DB at r-project.org
+>https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+################
+###     reproducible example
+### (my email software stupidly insists on inserting line breaks after
+###  79 or 80 characters when configured to send plain text email,
+### so take that into account when viewing the lines below. Sorry!
+################
+
+require(RJDBC)
+
+jdbm <- JDBC('oracle.jdbc.OracleDriver', 'username')
+jcon <- dbConnect(dbm, dbuser$jdbc.con, 'username', 'password')
+
+if (dbExistsTable(jcon,'JUNK')) dbRemoveTable(jcon,'JUNK')
+if (dbExistsTable(jcon,'JUNK2')) dbRemoveTable(jcon,'JUNK2')
+
+dbExistsTable(jcon,'JUNK2')
+
+tsttbl <- data.frame(x=1:7, a=c('AA','BB',letters[1:5]))
+dbWriteTable(jcon,'JUNK',tsttbl,row.names=FALSE)
+dbGetQuery(jcon,'select * from JUNK')
+
+dbSendUpdate(jcon,"create table JUNK2 as select * from JUNK where a='BB'")
+dbExistsTable(jcon,'JUNK2')
+dbGetQuery(jcon,'select * from JUNK2')
+
+if (dbExistsTable(jcon,'JUNK2')) dbRemoveTable(jcon,'JUNK2')
+dbExistsTable(jcon,'JUNK2')
+
+dbSendQuery(jcon,"create table JUNK2 as select * from JUNK where a='BB'")
+
+
+####################################################
+######### here is what I get when running the above
+
+> if (dbExistsTable(jcon,'JUNK')) dbRemoveTable(jcon,'JUNK')
+logical(0)
+> if (dbExistsTable(jcon,'JUNK2')) dbRemoveTable(jcon,'JUNK2')
+logical(0)
+> 
+> dbExistsTable(jcon,'JUNK2')
+[1] FALSE
+> 
+> tsttbl <- data.frame(x=1:7, a=c('AA','BB',letters[1:5]))
+> dbWriteTable(jcon,'JUNK',tsttbl,row.names=FALSE)
+[1] TRUE
+> dbGetQuery(jcon,'select * from JUNK')
+  X  A
+1 1 AA
+2 2 BB
+3 3  a
+4 4  b
+5 5  c
+6 6  d
+7 7  e
+> 
+> dbSendUpdate(jcon,"create table JUNK2 as select * from JUNK where
+>a='BB'")
+> dbExistsTable(jcon,'JUNK2')
+[1] TRUE
+> dbGetQuery(jcon,'select * from JUNK2')
+  X  A
+1 2 BB
+> 
+> if (dbExistsTable(jcon,'JUNK2')) dbRemoveTable(jcon,'JUNK2')
+logical(0)
+> dbExistsTable(jcon,'JUNK2')
+[1] FALSE
+> 
+> dbSendQuery(jcon,"create table JUNK2 as select * from JUNK where a='BB'")
+Error in .verify.JDBC.result(md, "Unable to retrieve JDBC result set meta
+data for ",  : 
+  Unable to retrieve JDBC result set meta data for create table JUNK2 as
+select * from JUNK where a='BB' in dbSendQuery (ORA-01003: no statement
+parsed
+)
+> 
+
+##################
+> sessionInfo()
+R version 3.1.1 (2014-07-10)
+Platform: x86_64-apple-darwin13.1.0 (64-bit)
+
+locale:
+[1] C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] RJDBC_0.2-4 rJava_0.9-6 DBI_0.3.0
+
+
+
+From h@d|ey @end|ng |rom r@tud|o@com  Thu Sep  4 18:47:05 2014
+From: h@d|ey @end|ng |rom r@tud|o@com (Hadley Wickham)
+Date: Thu, 4 Sep 2014 11:47:05 -0500
+Subject: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+In-Reply-To: <D02DDBFC.109FD3%macqueen1@llnl.gov>
+References: <D02CCF25.10973C%macqueen1@llnl.gov>
+	<CABdHhvEb+yajokahXy+Sc6kfJBNZ9NkckCNacog=bTvmK_PHdA@mail.gmail.com>
+	<acce0757-fcd1-4a33-8f19-2fbab0ff3558@default>
+	<CABdHhvHps9Da60SvS8F3s5idoD3mjowxXzZ3eUx-LFFEMNkF2A@mail.gmail.com>
+	<61e7a19a-d238-4028-ac40-5ba789f3caba@default>
+	<D02DDBFC.109FD3%macqueen1@llnl.gov>
+Message-ID: <CABdHhvG=oPH5=LPUpfRkQG=3Vd_DeTmmoF+Hu9wRzwuAfTha5A@mail.gmail.com>
+
+> What I do hope for, of course, is that maintainers of packages based on
+> DBI will in due course implement the new function, so that my scripts are
+> portable between packages. I had mentioned ROracle and RJDBC (from which
+> my request arose), but I also use RMySQL, and I use all three of these
+> quite a bit. And of course there are several others.
+
+That's what I hope for too!
+
+You can try out DBI::dbiCheckCompliance() to see how well a package is
+doing to the DBI standard. In the future, I hope to include more
+tests, so that it's easy to see where a package is lacking.
+
+Hadley
+
+-- 
+http://had.co.nz/
+
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Thu Sep  4 20:23:53 2014
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Thu, 04 Sep 2014 14:23:53 -0400
+Subject: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+In-Reply-To: <CABdHhvGGVvGpxcA89D5MifuOez0xAWjfPthW0DtZhDBA34Fcqg@mail.gmail.com>
+References: <D02CCF25.10973C%macqueen1@llnl.gov>
+	<CABdHhvEb+yajokahXy+Sc6kfJBNZ9NkckCNacog=bTvmK_PHdA@mail.gmail.com>
+	<acce0757-fcd1-4a33-8f19-2fbab0ff3558@default>
+	<54087B0A.6060901@uni-konstanz.de>
+	<CABdHhvEknhrF960wL-XSV=i-3VDXJ5qYt-LNa8nQTkKQZ4r4ww@mail.gmail.com>
+	<54088EBF.30108@gmail.com>
+	<CABdHhvGGVvGpxcA89D5MifuOez0xAWjfPthW0DtZhDBA34Fcqg@mail.gmail.com>
+Message-ID: <5408AE39.7020400@gmail.com>
+
+
+
+On 09/04/2014 12:26 PM, Hadley Wickham wrote:
+>> I think this depends on the code. There are frequently situations where it
+>> is nice to have a function that is certain to return a logical value, so not
+>> have to catch exceptions and parse for all possibilities. (BTW, if error
+>> message text is to be returned then that can be set as an attribute to the
+>> logical value.) My feeling is it would be nice to have both, one function
+>> certain to return a logical, and one that will throw an error. If one is a
+>> simple wrapper to the other then only one method needs to be implemented and
+>> the DBI default can look after the other.
+>
+> I think this is a philosophical API design decision, and it's a bad
+> idea to try and support both approaches. That makes it confusing how
+> you should approach a problem and more likely that you fail to catch
+> an important error.
+>
+> If the API returns TRUE or throws an error, it's easy to write your
+> own wrapper to make it return TRUE or FALSE:
+>
+> success <- function(x) {
+>    tryCatch(x, error = function(e) FALSE)
+> }
+>
+> success(TRUE)
+> success(stop("!!"))
+
+It is the "If the API" part that I worry about. For example
+
+ > success(warning("warn"))
+Warning message:
+In doTryCatch(return(expr), name, parentenv, handler) : warn
+ > is.logical(success(warning("warn")))
+[1] FALSE
+Warning message:
+In doTryCatch(return(expr), name, parentenv, handler) : warn
+ >
+
+So then every package writer trying to build on DBI has to write a 
+wrapper that anticipates the exceptions that may be thrown. This becomes 
+even more difficult when different db drivers, different OSes, and 
+different servers are involved.
+
+Given the philosophical constraint I think I would generally prefer the 
+function that is guaranteed to return a logical. The other wrapper is 
+easy to write too.
+
+Paul
+
+>
+> Hadley
+>
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Thu Sep  4 21:15:13 2014
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Thu, 4 Sep 2014 14:15:13 -0500
+Subject: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+In-Reply-To: <5408AE39.7020400@gmail.com>
+References: <D02CCF25.10973C%macqueen1@llnl.gov>
+	<CABdHhvEb+yajokahXy+Sc6kfJBNZ9NkckCNacog=bTvmK_PHdA@mail.gmail.com>
+	<acce0757-fcd1-4a33-8f19-2fbab0ff3558@default>
+	<54087B0A.6060901@uni-konstanz.de>
+	<CABdHhvEknhrF960wL-XSV=i-3VDXJ5qYt-LNa8nQTkKQZ4r4ww@mail.gmail.com>
+	<54088EBF.30108@gmail.com>
+	<CABdHhvGGVvGpxcA89D5MifuOez0xAWjfPthW0DtZhDBA34Fcqg@mail.gmail.com>
+	<5408AE39.7020400@gmail.com>
+Message-ID: <CABdHhvHz61j2k2eESBpJYhcA=fjAZKPg6M+gRdS+Ap6AKQs57g@mail.gmail.com>
+
+> It is the "If the API" part that I worry about. For example
+>
+>> success(warning("warn"))
+> Warning message:
+> In doTryCatch(return(expr), name, parentenv, handler) : warn
+>> is.logical(success(warning("warn")))
+> [1] FALSE
+> Warning message:
+> In doTryCatch(return(expr), name, parentenv, handler) : warn
+>>
+>
+> So then every package writer trying to build on DBI has to write a wrapper
+> that anticipates the exceptions that may be thrown. This becomes even more
+> difficult when different db drivers, different OSes, and different servers
+> are involved.
+
+I'm not sure I follow, because we hadn't talked about warnings. I
+would not expect that DBI backends to through warnings instead of
+errors.
+
+> Given the philosophical constraint I think I would generally prefer the
+> function that is guaranteed to return a logical. The other wrapper is easy
+> to write too.
+
+But it's fundamentally more dangerous. If all modification functions
+return TRUE or FALSE and you don't explicit check the return value, it
+is extremely easy to create invalid code. The same is not true for
+errors.
+
+Hadley
+
+
+-- 
+http://had.co.nz/
+
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Thu Sep  4 23:22:10 2014
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Thu, 04 Sep 2014 17:22:10 -0400
+Subject: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+In-Reply-To: <CABdHhvHz61j2k2eESBpJYhcA=fjAZKPg6M+gRdS+Ap6AKQs57g@mail.gmail.com>
+References: <D02CCF25.10973C%macqueen1@llnl.gov>
+	<CABdHhvEb+yajokahXy+Sc6kfJBNZ9NkckCNacog=bTvmK_PHdA@mail.gmail.com>
+	<acce0757-fcd1-4a33-8f19-2fbab0ff3558@default>
+	<54087B0A.6060901@uni-konstanz.de>
+	<CABdHhvEknhrF960wL-XSV=i-3VDXJ5qYt-LNa8nQTkKQZ4r4ww@mail.gmail.com>
+	<54088EBF.30108@gmail.com>
+	<CABdHhvGGVvGpxcA89D5MifuOez0xAWjfPthW0DtZhDBA34Fcqg@mail.gmail.com>
+	<5408AE39.7020400@gmail.com>
+	<CABdHhvHz61j2k2eESBpJYhcA=fjAZKPg6M+gRdS+Ap6AKQs57g@mail.gmail.com>
+Message-ID: <5408D802.2010207@gmail.com>
+
+
+
+On 09/04/2014 03:15 PM, Hadley Wickham wrote:
+>> It is the "If the API" part that I worry about. For example
+>>
+>>> success(warning("warn"))
+>> Warning message:
+>> In doTryCatch(return(expr), name, parentenv, handler) : warn
+>>> is.logical(success(warning("warn")))
+>> [1] FALSE
+>> Warning message:
+>> In doTryCatch(return(expr), name, parentenv, handler) : warn
+>>>
+>>
+>> So then every package writer trying to build on DBI has to write a wrapper
+>> that anticipates the exceptions that may be thrown. This becomes even more
+>> difficult when different db drivers, different OSes, and different servers
+>> are involved.
+>
+> I'm not sure I follow, because we hadn't talked about warnings. I
+> would not expect that DBI backends to through warnings instead of
+> errors.
+
+Well, in my experience my programs usually fail for the reasons I don't 
+expect rather than the ones I do expect. I guess that is mainly why I 
+like a function that returns a logical, I know what to expect.
+
+>
+>> Given the philosophical constraint I think I would generally prefer the
+>> function that is guaranteed to return a logical. The other wrapper is easy
+>> to write too.
+>
+> But it's fundamentally more dangerous. If all modification functions
+> return TRUE or FALSE and you don't explicit check the return value, it
+> is extremely easy to create invalid code. The same is not true for
+> errors.
+
+If I understand your logic correctly, you would recommend using 
+library() rather than require() when one of them is necessary in a 
+function? Or rather, you would not provide require(), only library()? (I 
+always use require(), and check the return value.) It is, of course, 
+always an interesting question whether to provide tools to protect in 
+the case of badly written packages, or to provide tools to simplify 
+writing good packages. (Personally, I avoid the choice by not having a 
+strong commitment to the philosophical constraint.)
+
+But I think maybe an important point is that a function that returns a 
+logical does not necessarily prevent errors from  being thrown. It just 
+distinguishes TRUE/FALSE errors, that a package using DBI should try to 
+deal with and handle gracefully, from exceptions that the programmer 
+might ignore and simply allow to be thrown back to the user. A simple 
+wrapper like your success() above cannot easily make that distinction. 
+Perhaps this is really not very different from the way you are thinking 
+about it, except that I would allow for a FALSE value that the 
+programmer might be expected to deal with.
+
+To make this more explicit and constructive, I would probably consider:
+
+    - a SQL error message should return a FALSE with the message as
+      an error attribute.
+
+    - a database access error message should return a FALSE with the
+      message as an error attribute.
+
+    - a faulty driver, non-working network, or expired con,  should
+      throw an exception (other than the case of the function to
+      check if a con is good, which should return TRUE/FALSE in
+      the last case.)
+
+
+In any case, I can work with it either way.
+
+Paul
+
+>
+> Hadley
+>
+>
+
+
+
+From @|mon@urb@nek @end|ng |rom r-project@org  Fri Sep  5 03:05:45 2014
+From: @|mon@urb@nek @end|ng |rom r-project@org (Simon Urbanek)
+Date: Thu, 4 Sep 2014 21:05:45 -0400
+Subject: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+In-Reply-To: <CABdHhvHps9Da60SvS8F3s5idoD3mjowxXzZ3eUx-LFFEMNkF2A@mail.gmail.com>
+References: <D02CCF25.10973C%macqueen1@llnl.gov>
+	<CABdHhvEb+yajokahXy+Sc6kfJBNZ9NkckCNacog=bTvmK_PHdA@mail.gmail.com>
+	<acce0757-fcd1-4a33-8f19-2fbab0ff3558@default>
+	<CABdHhvHps9Da60SvS8F3s5idoD3mjowxXzZ3eUx-LFFEMNkF2A@mail.gmail.com>
+Message-ID: <45CF8399-A71D-4C8A-88DD-6C331037D885@r-project.org>
+
+On Sep 4, 2014, at 10:54 AM, Hadley Wickham <hadley at rstudio.com> wrote:
+
+> On Thu, Sep 4, 2014 at 9:28 AM, Denis Mukhin <denis.x.mukhin at oracle.com> wrote:
+>> In ROracle we standardized on the second approach, namely always return TRUE, otherwise throw an error.
+>> 
+>> Also since UPDATE is not the only operation that does not return any results (although it might with a RETURNING clause) would a more generic name be more appropriate here? Besides DMLs there are also DDLs. Something like dbExecute(), dbSubmit(), dbSend() ...
+> 
+> How about dbExecuteQuery() ?
+> 
+
+I wouldn't call it "query" since that implies results... sort of the opposite of what it does.
+
+FWIW the "update" in dbSendUpdate has nothing to do with the "UPDATE" SQL statement - the intention was to convey the notion that there is no result - at least in my mind "an update" is a push action where as "a query" is a pull-action. But I'll certainly yield to native English speakers here ;).
+
+Cheers,
+Simon
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Fri Sep  5 08:40:19 2014
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Fri, 05 Sep 2014 07:40:19 +0100
+Subject: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+In-Reply-To: <5408D802.2010207@gmail.com>
+References: <D02CCF25.10973C%macqueen1@llnl.gov>	<CABdHhvEb+yajokahXy+Sc6kfJBNZ9NkckCNacog=bTvmK_PHdA@mail.gmail.com>	<acce0757-fcd1-4a33-8f19-2fbab0ff3558@default>	<54087B0A.6060901@uni-konstanz.de>	<CABdHhvEknhrF960wL-XSV=i-3VDXJ5qYt-LNa8nQTkKQZ4r4ww@mail.gmail.com>	<54088EBF.30108@gmail.com>	<CABdHhvGGVvGpxcA89D5MifuOez0xAWjfPthW0DtZhDBA34Fcqg@mail.gmail.com>	<5408AE39.7020400@gmail.com>	<CABdHhvHz61j2k2eESBpJYhcA=fjAZKPg6M+gRdS+Ap6AKQs57g@mail.gmail.com>
+	<5408D802.2010207@gmail.com>
+Message-ID: <54095AD3.9020509@stats.ox.ac.uk>
+
+On 04/09/2014 22:22, Paul Gilbert wrote:
+>
+>
+> On 09/04/2014 03:15 PM, Hadley Wickham wrote:
+>>> It is the "If the API" part that I worry about. For example
+>>>
+>>>> success(warning("warn"))
+>>> Warning message:
+>>> In doTryCatch(return(expr), name, parentenv, handler) : warn
+>>>> is.logical(success(warning("warn")))
+>>> [1] FALSE
+>>> Warning message:
+>>> In doTryCatch(return(expr), name, parentenv, handler) : warn
+>>>>
+>>>
+>>> So then every package writer trying to build on DBI has to write a
+>>> wrapper
+>>> that anticipates the exceptions that may be thrown. This becomes even
+>>> more
+>>> difficult when different db drivers, different OSes, and different
+>>> servers
+>>> are involved.
+>>
+>> I'm not sure I follow, because we hadn't talked about warnings. I
+>> would not expect that DBI backends to through warnings instead of
+>> errors.
+>
+> Well, in my experience my programs usually fail for the reasons I don't
+> expect rather than the ones I do expect. I guess that is mainly why I
+> like a function that returns a logical, I know what to expect.
+>
+>>
+>>> Given the philosophical constraint I think I would generally prefer the
+>>> function that is guaranteed to return a logical. The other wrapper is
+>>> easy
+>>> to write too.
+>>
+>> But it's fundamentally more dangerous. If all modification functions
+>> return TRUE or FALSE and you don't explicit check the return value, it
+>> is extremely easy to create invalid code. The same is not true for
+>> errors.
+>
+> If I understand your logic correctly, you would recommend using
+> library() rather than require() when one of them is necessary in a
+> function? Or rather, you would not provide require(), only library()? (I
+> always use require(), and check the return value.) It is, of course,
+
+You are wrong: see 
+http://cran.r-project.org/doc/manuals/r-patched/R-exts.html#Suggested-packages
+
+Code in functions should not change the search path, and it does not 
+achieve what most people seem to think it does.
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Emeritus Professor of Applied Statistics, University of Oxford
+1 South Parks Road, Oxford OX1 3TG, UK
+
+
+
+From h@d|ey @end|ng |rom r@tud|o@com  Fri Sep  5 13:36:45 2014
+From: h@d|ey @end|ng |rom r@tud|o@com (Hadley Wickham)
+Date: Fri, 5 Sep 2014 06:36:45 -0500
+Subject: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+In-Reply-To: <45CF8399-A71D-4C8A-88DD-6C331037D885@r-project.org>
+References: <D02CCF25.10973C%macqueen1@llnl.gov>
+	<CABdHhvEb+yajokahXy+Sc6kfJBNZ9NkckCNacog=bTvmK_PHdA@mail.gmail.com>
+	<acce0757-fcd1-4a33-8f19-2fbab0ff3558@default>
+	<CABdHhvHps9Da60SvS8F3s5idoD3mjowxXzZ3eUx-LFFEMNkF2A@mail.gmail.com>
+	<45CF8399-A71D-4C8A-88DD-6C331037D885@r-project.org>
+Message-ID: <CABdHhvHx6VNrp+d7jyQ2+O_0rbqE+Y11bPFm6_rjTtT_wY1aVw@mail.gmail.com>
+
+On Thu, Sep 4, 2014 at 8:05 PM, Simon Urbanek
+<simon.urbanek at r-project.org> wrote:
+> On Sep 4, 2014, at 10:54 AM, Hadley Wickham <hadley at rstudio.com> wrote:
+>
+>> On Thu, Sep 4, 2014 at 9:28 AM, Denis Mukhin <denis.x.mukhin at oracle.com> wrote:
+>>> In ROracle we standardized on the second approach, namely always return TRUE, otherwise throw an error.
+>>>
+>>> Also since UPDATE is not the only operation that does not return any results (although it might with a RETURNING clause) would a more generic name be more appropriate here? Besides DMLs there are also DDLs. Something like dbExecute(), dbSubmit(), dbSend() ...
+>>
+>> How about dbExecuteQuery() ?
+>
+> I wouldn't call it "query" since that implies results... sort of the opposite of what it does.
+
+Hmmm, that's true in regular English, but it is the structured *query*
+language, and I think it's common for people to talk about delete
+queries, updates queries etc.
+
+> FWIW the "update" in dbSendUpdate has nothing to do with the "UPDATE" SQL statement - the intention was to convey the notion that there is no result - at least in my mind "an update" is a push action where as "a query" is a pull-action. But I'll certainly yield to native English speakers here ;).
+
+dbSendUpdate doesn't feel quite right to me either - you can send
+things that are not updates (e.g. dbSendUpdate(con, "ROLLBACK")).
+
+What about dbExecuteStatement() ?
+
+Hadley
+
+-- 
+http://had.co.nz/
+
+
+
+From m@cqueen1 @end|ng |rom ||n|@gov  Fri Sep  5 17:39:41 2014
+From: m@cqueen1 @end|ng |rom ||n|@gov (MacQueen, Don)
+Date: Fri, 5 Sep 2014 15:39:41 +0000
+Subject: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+In-Reply-To: <CABdHhvHz61j2k2eESBpJYhcA=fjAZKPg6M+gRdS+Ap6AKQs57g@mail.gmail.com>
+References: <D02CCF25.10973C%macqueen1@llnl.gov>
+	<CABdHhvEb+yajokahXy+Sc6kfJBNZ9NkckCNacog=bTvmK_PHdA@mail.gmail.com>
+	<acce0757-fcd1-4a33-8f19-2fbab0ff3558@default>
+	<54087B0A.6060901@uni-konstanz.de>
+	<CABdHhvEknhrF960wL-XSV=i-3VDXJ5qYt-LNa8nQTkKQZ4r4ww@mail.gmail.com>
+	<54088EBF.30108@gmail.com>
+	<CABdHhvGGVvGpxcA89D5MifuOez0xAWjfPthW0DtZhDBA34Fcqg@mail.gmail.com>
+	<5408AE39.7020400@gmail.com>
+	<CABdHhvHz61j2k2eESBpJYhcA=fjAZKPg6M+gRdS+Ap6AKQs57g@mail.gmail.com>
+Message-ID: <D02F1D62.10A641%macqueen1@llnl.gov>
+
+Speaking as an end-user, not a package developer, I think that for
+consistency with current behavior of the functions I frequently use (see
+one of Denis Mukhin?s emails early in this thread), I?d prefer that this
+new function throw an error when the DB throws an error. Admittedly, I
+don?t have a deep understanding of the issues involved.
+
+If within a script I send an SQL statement to the DB in which, for
+example, I refer to a nonexistent table, the DB reports that as an error.
+It makes sense to me that the R function would do the same, which
+immediately stops my script. It?s telling me I?ve got an error that *must*
+be fixed. I would prefer being stopped, rather than having to test
+(perhaps that?s being lazy on my part, but the ?error? behavior is more
+protective).
+
+-Don
+
+-- 
+Don MacQueen
+
+Lawrence Livermore National Laboratory
+7000 East Ave., L-627
+Livermore, CA 94550
+925-423-1062
+
+
+
+
+
+On 9/4/14, 12:15 PM, "Hadley Wickham" <h.wickham at gmail.com> wrote:
+
+>> It is the "If the API" part that I worry about. For example
+>>
+>>> success(warning("warn"))
+>> Warning message:
+>> In doTryCatch(return(expr), name, parentenv, handler) : warn
+>>> is.logical(success(warning("warn")))
+>> [1] FALSE
+>> Warning message:
+>> In doTryCatch(return(expr), name, parentenv, handler) : warn
+>>>
+>>
+>> So then every package writer trying to build on DBI has to write a
+>>wrapper
+>> that anticipates the exceptions that may be thrown. This becomes even
+>>more
+>> difficult when different db drivers, different OSes, and different
+>>servers
+>> are involved.
+>
+>I'm not sure I follow, because we hadn't talked about warnings. I
+>would not expect that DBI backends to through warnings instead of
+>errors.
+>
+>> Given the philosophical constraint I think I would generally prefer the
+>> function that is guaranteed to return a logical. The other wrapper is
+>>easy
+>> to write too.
+>
+>But it's fundamentally more dangerous. If all modification functions
+>return TRUE or FALSE and you don't explicit check the return value, it
+>is extremely easy to create invalid code. The same is not true for
+>errors.
+>
+>Hadley
+>
+>
+>-- 
+>http://had.co.nz/
+>
+>_______________________________________________
+>R-sig-DB mailing list -- R Special Interest Group
+>R-sig-DB at r-project.org
+>https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Sat Sep  6 19:44:17 2014
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Sat, 06 Sep 2014 13:44:17 -0400
+Subject: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+In-Reply-To: <54095AD3.9020509@stats.ox.ac.uk>
+References: <D02CCF25.10973C%macqueen1@llnl.gov>	<CABdHhvEb+yajokahXy+Sc6kfJBNZ9NkckCNacog=bTvmK_PHdA@mail.gmail.com>	<acce0757-fcd1-4a33-8f19-2fbab0ff3558@default>	<54087B0A.6060901@uni-konstanz.de>	<CABdHhvEknhrF960wL-XSV=i-3VDXJ5qYt-LNa8nQTkKQZ4r4ww@mail.gmail.com>	<54088EBF.30108@gmail.com>	<CABdHhvGGVvGpxcA89D5MifuOez0xAWjfPthW0DtZhDBA34Fcqg@mail.gmail.com>	<5408AE39.7020400@gmail.com>	<CABdHhvHz61j2k2eESBpJYhcA=fjAZKPg6M+gRdS+Ap6AKQs57g@mail.gmail.com>
+	<5408D802.2010207@gmail.com> <54095AD3.9020509@stats.ox.ac.uk>
+Message-ID: <540B47F1.6040105@gmail.com>
+
+
+
+On 09/05/2014 02:40 AM, Prof Brian Ripley wrote:
+> On 04/09/2014 22:22, Paul Gilbert wrote:
+>>
+>>
+>> On 09/04/2014 03:15 PM, Hadley Wickham wrote:
+>>>> It is the "If the API" part that I worry about. For example
+>>>>
+>>>>> success(warning("warn"))
+>>>> Warning message:
+>>>> In doTryCatch(return(expr), name, parentenv, handler) : warn
+>>>>> is.logical(success(warning("warn")))
+>>>> [1] FALSE
+>>>> Warning message:
+>>>> In doTryCatch(return(expr), name, parentenv, handler) : warn
+>>>>>
+>>>>
+>>>> So then every package writer trying to build on DBI has to write a
+>>>> wrapper
+>>>> that anticipates the exceptions that may be thrown. This becomes even
+>>>> more
+>>>> difficult when different db drivers, different OSes, and different
+>>>> servers
+>>>> are involved.
+>>>
+>>> I'm not sure I follow, because we hadn't talked about warnings. I
+>>> would not expect that DBI backends to through warnings instead of
+>>> errors.
+>>
+>> Well, in my experience my programs usually fail for the reasons I don't
+>> expect rather than the ones I do expect. I guess that is mainly why I
+>> like a function that returns a logical, I know what to expect.
+>>
+>>>
+>>>> Given the philosophical constraint I think I would generally prefer the
+>>>> function that is guaranteed to return a logical. The other wrapper is
+>>>> easy
+>>>> to write too.
+>>>
+>>> But it's fundamentally more dangerous. If all modification functions
+>>> return TRUE or FALSE and you don't explicit check the return value, it
+>>> is extremely easy to create invalid code. The same is not true for
+>>> errors.
+>>
+>> If I understand your logic correctly, you would recommend using
+>> library() rather than require() when one of them is necessary in a
+>> function? Or rather, you would not provide require(), only library()? (I
+>> always use require(), and check the return value.) It is, of course,
+>
+> You are wrong: see
+> http://cran.r-project.org/doc/manuals/r-patched/R-exts.html#Suggested-packages
+>
+
+Thanks for pointing this out, I see I have some updating to do.
+
+As to the comparison in my comment, I don't think you would say that 
+library() is preferred to require() as a programming interface, for 
+example in a function in a vignette, even though requireNamespace() 
+would be even better.
+
+Paul
+
+>
+> Code in functions should not change the search path, and it does not
+> achieve what most people seem to think it does.
+>
+
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Sat Sep  6 21:05:52 2014
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Sat, 06 Sep 2014 15:05:52 -0400
+Subject: [R-sig-DB] Add a "dbSendUpdate" function to DBI?
+In-Reply-To: <D02F1D62.10A641%macqueen1@llnl.gov>
+References: <D02CCF25.10973C%macqueen1@llnl.gov>
+	<CABdHhvEb+yajokahXy+Sc6kfJBNZ9NkckCNacog=bTvmK_PHdA@mail.gmail.com>
+	<acce0757-fcd1-4a33-8f19-2fbab0ff3558@default>
+	<54087B0A.6060901@uni-konstanz.de>
+	<CABdHhvEknhrF960wL-XSV=i-3VDXJ5qYt-LNa8nQTkKQZ4r4ww@mail.gmail.com>
+	<54088EBF.30108@gmail.com>
+	<CABdHhvGGVvGpxcA89D5MifuOez0xAWjfPthW0DtZhDBA34Fcqg@mail.gmail.com>
+	<5408AE39.7020400@gmail.com>
+	<CABdHhvHz61j2k2eESBpJYhcA=fjAZKPg6M+gRdS+Ap6AKQs57g@mail.gmail.com>
+	<D02F1D62.10A641%macqueen1@llnl.gov>
+Message-ID: <540B5B10.6000006@gmail.com>
+
+
+
+On 09/05/2014 11:39 AM, MacQueen, Don wrote:
+> Speaking as an end-user, not a package developer, I think that for
+> consistency with current behavior of the functions I frequently use (see
+> one of Denis Mukhin?s emails early in this thread), I?d prefer that this
+> new function throw an error when the DB throws an error. Admittedly, I
+> don?t have a deep understanding of the issues involved.
+
+I think it would generally be the case that an end user would like 
+their queries to throw errors as reported by the database. But for a 
+programming API one might like a bit finer control. For example, in the 
+case of an error in the SQL statement it can be useful if the database 
+error is reported (from dbGetException()), and also some details about 
+objects used by the function to construct the query are reported. In the 
+case of an expired con a stop() from the DBI function can be passed 
+directly to the user and the extra information, which would just hide 
+the real error message, can be skipped. Admittedly, it is difficult to 
+know where the distinction should be between FALSE and stop(). But the 
+difference between an end users' needs and the needs of a programming 
+API is really the reason I think there is a need for two sets of programs.
+
+I personally think of DBI as defining the programming API, and packages 
+like RMySQl, RSQLite, etc, implementing the programming API but, in 
+fact, these are being used by end users directly to submit queries and 
+write batch scripts, so there are two sets of needs. But as I've said 
+before, in the end I can work with it either way.
+
+Paul
+>
+> If within a script I send an SQL statement to the DB in which, for
+> example, I refer to a nonexistent table, the DB reports that as an error.
+> It makes sense to me that the R function would do the same, which
+> immediately stops my script. It?s telling me I?ve got an error that *must*
+> be fixed. I would prefer being stopped, rather than having to test
+> (perhaps that?s being lazy on my part, but the ?error? behavior is more
+> protective).
+>
+> -Don
+>
+
+
+
+From p@u|o@corde|ro @end|ng |rom orn|@@com@br  Mon Sep  8 05:30:00 2014
+From: p@u|o@corde|ro @end|ng |rom orn|@@com@br (Paulo Cordeiro)
+Date: Mon, 8 Sep 2014 00:30:00 -0300
+Subject: [R-sig-DB] txt file
+Message-ID: <AD7E5880-BA1B-4074-905D-50AA9AEC5291@ornis.com.br>
+
+Hi,
+There are some txt datasets at http://ecoclimate.org/downloads/ that I
+would like to use in MaxEnt. I dont have a code to convert them to *.asc.  
+Please, anyone can help? 
+Paulo Cordeiro
+	[[alternative HTML version deleted]]
+
+
+
+From jor@n@e||@@ @end|ng |rom gm@||@com  Fri Sep 19 22:21:57 2014
+From: jor@n@e||@@ @end|ng |rom gm@||@com (Joran Elias)
+Date: Fri, 19 Sep 2014 14:21:57 -0600
+Subject: [R-sig-DB] RODBC and type.convert
+Message-ID: <CALdbFF4hZrM+Bd-04-jUECjbaYag9yJE0nrwgy=or8QkOi9VPw@mail.gmail.com>
+
+I know from the documentation that RODBC applies type.convert to columns
+(excepting some date and date time classes). In particular, the section
+from sqlGetResults:
+
+        for (i in seq_len(cols)) {
+            if(is.character(data[[i]]) && nchar(enc))
+                data[[i]] <- iconv(data[[i]], from = enc)
+            if(as.is[i] || is.list(data[[i]])) next
+            if(is.numeric(data[[i]])) next
+            if(cData$type[i] == "date")
+                data[[i]] <- as.Date(data[[i]])
+            else if(cData$type[i] == "timestamp")
+                data[[i]] <- as.POSIXct(data[[i]])
+            else
+                data[[i]] <- type.convert(as.character(data[[i]]),
+                                          na.strings = na.strings,
+                                          as.is = !stringsAsFactors,
+                                          dec = dec)
+
+This means that RODBC is fairly aggressive about converting character
+columns to numeric when compared to ROracle:
+
+> str(RODBC::sqlQuery(odbc_con,"select '01' as val from dual"))
+'data.frame': 1 obs. of  1 variable:
+ $ VAL: int 1
+> str(ROracle::dbGetQuery(roracle_con,"select '01' as val from dual"))
+'data.frame': 1 obs. of  1 variable:
+ $ VAL: chr "01"
+
+and further, RODBC will return result sets of different types from the same
+db table depending on what values happen to appear. If there is a character
+column with values "01" and "D1", it might sometimes return a factor and
+other times an integer.
+
+I presume there must be some reason why in the code above cData$type values
+of "varchar" or "char" are somehow unreliable across different database
+platforms (or within the ODBC standard) which would preclude simply doing
+something like:
+
+if(cData$type[i] %in% c("varchar","char")) {#Do something consistent, like
+always leave as character or always convert to factors}
+
+I was wondering if someone could enlighten me as to what that reason might
+be?
+
+Thanks!
+
+- Joran
+
+	[[alternative HTML version deleted]]
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Wed Sep 24 00:10:37 2014
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Tue, 23 Sep 2014 17:10:37 -0500
+Subject: [R-sig-DB] RSQLite 1.0.0
+Message-ID: <CABdHhvH05cjPbai9-7q4MYD0z_kFb9LYeO5FDHYUyOmFaExxhA@mail.gmail.com>
+
+Hi everyone,
+
+I'm preparing to release a new version of RSQLite, 1.0.0.  (I've taken
+over maintenance from Seth Falcon). This release is basically a big
+tidy up - I've refactored a lot of the C code to be easier to follow,
+deprecated a lot of unused functions, and converted everything to
+"Hadley"-style package development.  A complete list of changes are
+included at the bottom of this email.
+
+If you use RSQLite, I'd really appreciate it if you'd try out the
+development version and let me know if you have any problems. You can
+install it from github with:
+
+# install.packages("devtools")
+devtools::install_github("rstats-db/DBI")
+devtools::install_github("rstats-db/RSQLite")
+
+If you have written a package that depends on RSQLite, please check
+the list of R CMD check results at
+https://github.com/wch/checkresults/blob/master/RSQLite/r-release/00check-summary.txt.
+I've been quite aggressive at deprecating old functions, and
+un-exporting functions that are really part of RSQLite's internal
+interface. This means that many packages will need changes. If you
+have any trouble figuring out the problem, please let me know and I'll
+be happy to help. I apologise for the hassle, but this will make
+RSQLite a much better platform to build on in the future.
+
+I plan to submit this version of RSQLite to CRAN on Oct 20, so that
+there's plenty of time for feedback and changes.
+
+Hadley
+
+# Version 1.0.0
+
+## New features
+
+- Updated to SQLite 3.8.6
+
+- Added `datasetsDb()`, a bundled SQLite database containing all data frames
+  in the datasets package (#15).
+
+- Inlined `RSQLite.extfuns` - use `initExtension()` to load the many
+  useful extension functions (#44).
+
+- Methods no longer automatically clone the connection is there is an open
+  result set. This was implement inconsistently in a handful of places (#22).
+  RSQLite is now more forgiving if you forget to close a result set - it will
+  close it for you, with a warning. It's still good practice to clean up
+  after yourself, but you don't have to.
+
+- `dbBegin()`, `dbCommit()`, `dbRollback()` throw errors on failure, rather than
+  return `FALSE`.  They all gain a `name` argument to specify named savepoints.
+
+- `dbFetch()` method added (`fetch()` will be deprecated in the future)
+
+- `dbRemoveTable()` throws errors on failure, rather than returning `FALSE`.
+
+- `dbWriteTable()` has been rewritten:
+
+    * It quotes field names using `dbQuoteIdentifier()`, rather
+      than use a flawed black-list based approach with name munging.
+
+    * It now throws errors on failure, rather than returning FALSE.
+
+    * It will automatically add row names only if they are character,
+not integer.
+
+    * When loading a file from disk, `dbWriteTable()` will no longer
+      attempt to guess the correct values for `row.names` and `header` - instead
+      supply them explicitly if the defaults are incorrect.
+
+    * It uses named save points so it can be nested inside other
+      transactions (#41).
+
+    * When given a zero-row data frame it will just creates the table
+      definition (#35).
+
+## Changes to objects
+
+- The `dbname`, `loadable.extensions`, `flags` and `vfs` properties of
+  a SqliteConnection are now slots. Access them directly instead of using
+  `dbGetInfo()`.
+
+## Deprecated and removed functions
+
+- RSQLite is no longer nominally compatible with S (#39).
+
+- `idIsValid()` is deprecated. Please use `dbIsValid()` instead.
+
+- `dbBeginTransaction()` has been deprecated. Please use `dbBegin()` instead.
+
+- `dbCallProc()` method removed, since generic is now deprecated.
+
+- Renamed `dbBuildTableDefinition()` to `sqliteBuildTableDefinition()`
+  to avoid implying it's a DBI generic. Old function is aliased to new with
+  a warning.
+
+- `dbFetch()` no longer numbers row names sequentially between fetches.
+
+- `safe.write()` is no longer exported as it shouldn't be part of the
+  public RSQLite interface (#26).
+
+- Internal `sqlite*()` functions are no longer exported (#20).
+
+- Removed `SqliteObject` and `dbObject` classes, modifying `SqliteDriver`,
+  `SqliteConnection`, and `SqliteResult` to use composition instead of multiple
+  inheritance.
+
+-- 
+http://had.co.nz/
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Wed Sep 24 00:53:46 2014
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Tue, 23 Sep 2014 15:53:46 -0700
+Subject: [R-sig-DB] RSQLite 1.0.0
+In-Reply-To: <CABdHhvH05cjPbai9-7q4MYD0z_kFb9LYeO5FDHYUyOmFaExxhA@mail.gmail.com>
+References: <CABdHhvH05cjPbai9-7q4MYD0z_kFb9LYeO5FDHYUyOmFaExxhA@mail.gmail.com>
+Message-ID: <CANqbw6WUQ-=9XYU89d4ATB25vn7zGsVRZdxG21_OLGKZ+jFRaA@mail.gmail.com>
+
+I haven't had a chance to look over the changes; they sound like
+reasonable enhancements. Hadley, thanks for putting some love into
+RSQLite!
+
+Best,
+
++ seth
+
+
+
+On Tue, Sep 23, 2014 at 3:10 PM, Hadley Wickham <h.wickham at gmail.com> wrote:
+> Hi everyone,
+>
+> I'm preparing to release a new version of RSQLite, 1.0.0.  (I've taken
+> over maintenance from Seth Falcon). This release is basically a big
+> tidy up - I've refactored a lot of the C code to be easier to follow,
+> deprecated a lot of unused functions, and converted everything to
+> "Hadley"-style package development.  A complete list of changes are
+> included at the bottom of this email.
+>
+> If you use RSQLite, I'd really appreciate it if you'd try out the
+> development version and let me know if you have any problems. You can
+> install it from github with:
+>
+> # install.packages("devtools")
+> devtools::install_github("rstats-db/DBI")
+> devtools::install_github("rstats-db/RSQLite")
+>
+> If you have written a package that depends on RSQLite, please check
+> the list of R CMD check results at
+> https://github.com/wch/checkresults/blob/master/RSQLite/r-release/00check-summary.txt.
+> I've been quite aggressive at deprecating old functions, and
+> un-exporting functions that are really part of RSQLite's internal
+> interface. This means that many packages will need changes. If you
+> have any trouble figuring out the problem, please let me know and I'll
+> be happy to help. I apologise for the hassle, but this will make
+> RSQLite a much better platform to build on in the future.
+>
+> I plan to submit this version of RSQLite to CRAN on Oct 20, so that
+> there's plenty of time for feedback and changes.
+>
+> Hadley
+>
+> # Version 1.0.0
+>
+> ## New features
+>
+> - Updated to SQLite 3.8.6
+>
+> - Added `datasetsDb()`, a bundled SQLite database containing all data frames
+>   in the datasets package (#15).
+>
+> - Inlined `RSQLite.extfuns` - use `initExtension()` to load the many
+>   useful extension functions (#44).
+>
+> - Methods no longer automatically clone the connection is there is an open
+>   result set. This was implement inconsistently in a handful of places (#22).
+>   RSQLite is now more forgiving if you forget to close a result set - it will
+>   close it for you, with a warning. It's still good practice to clean up
+>   after yourself, but you don't have to.
+>
+> - `dbBegin()`, `dbCommit()`, `dbRollback()` throw errors on failure, rather than
+>   return `FALSE`.  They all gain a `name` argument to specify named savepoints.
+>
+> - `dbFetch()` method added (`fetch()` will be deprecated in the future)
+>
+> - `dbRemoveTable()` throws errors on failure, rather than returning `FALSE`.
+>
+> - `dbWriteTable()` has been rewritten:
+>
+>     * It quotes field names using `dbQuoteIdentifier()`, rather
+>       than use a flawed black-list based approach with name munging.
+>
+>     * It now throws errors on failure, rather than returning FALSE.
+>
+>     * It will automatically add row names only if they are character,
+> not integer.
+>
+>     * When loading a file from disk, `dbWriteTable()` will no longer
+>       attempt to guess the correct values for `row.names` and `header` - instead
+>       supply them explicitly if the defaults are incorrect.
+>
+>     * It uses named save points so it can be nested inside other
+>       transactions (#41).
+>
+>     * When given a zero-row data frame it will just creates the table
+>       definition (#35).
+>
+> ## Changes to objects
+>
+> - The `dbname`, `loadable.extensions`, `flags` and `vfs` properties of
+>   a SqliteConnection are now slots. Access them directly instead of using
+>   `dbGetInfo()`.
+>
+> ## Deprecated and removed functions
+>
+> - RSQLite is no longer nominally compatible with S (#39).
+>
+> - `idIsValid()` is deprecated. Please use `dbIsValid()` instead.
+>
+> - `dbBeginTransaction()` has been deprecated. Please use `dbBegin()` instead.
+>
+> - `dbCallProc()` method removed, since generic is now deprecated.
+>
+> - Renamed `dbBuildTableDefinition()` to `sqliteBuildTableDefinition()`
+>   to avoid implying it's a DBI generic. Old function is aliased to new with
+>   a warning.
+>
+> - `dbFetch()` no longer numbers row names sequentially between fetches.
+>
+> - `safe.write()` is no longer exported as it shouldn't be part of the
+>   public RSQLite interface (#26).
+>
+> - Internal `sqlite*()` functions are no longer exported (#20).
+>
+> - Removed `SqliteObject` and `dbObject` classes, modifying `SqliteDriver`,
+>   `SqliteConnection`, and `SqliteResult` to use composition instead of multiple
+>   inheritance.
+>
+> --
+> http://had.co.nz/
+
+
+
+-- 
+Seth Falcon | @sfalcon | http://userprimary.net/
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Wed Sep 24 01:54:47 2014
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Tue, 23 Sep 2014 19:54:47 -0400
+Subject: [R-sig-DB] RSQLite 1.0.0
+In-Reply-To: <CABdHhvH05cjPbai9-7q4MYD0z_kFb9LYeO5FDHYUyOmFaExxhA@mail.gmail.com>
+References: <CABdHhvH05cjPbai9-7q4MYD0z_kFb9LYeO5FDHYUyOmFaExxhA@mail.gmail.com>
+Message-ID: <CAP01uRk_HbhGsTZeptJCrPNbYWh2W+QHArOE-FGciV0-REPM6Q@mail.gmail.com>
+
+I get this error when building RSQLite from source under Windows 8.1
+using github_install:
+
+extension-functions.c:124:24: fatal error: sqlite3ext.h: No such file
+or directory
+
+
+
+
+On Tue, Sep 23, 2014 at 6:10 PM, Hadley Wickham <h.wickham at gmail.com> wrote:
+> Hi everyone,
+>
+> I'm preparing to release a new version of RSQLite, 1.0.0.  (I've taken
+> over maintenance from Seth Falcon). This release is basically a big
+> tidy up - I've refactored a lot of the C code to be easier to follow,
+> deprecated a lot of unused functions, and converted everything to
+> "Hadley"-style package development.  A complete list of changes are
+> included at the bottom of this email.
+>
+> If you use RSQLite, I'd really appreciate it if you'd try out the
+> development version and let me know if you have any problems. You can
+> install it from github with:
+>
+> # install.packages("devtools")
+> devtools::install_github("rstats-db/DBI")
+> devtools::install_github("rstats-db/RSQLite")
+>
+> If you have written a package that depends on RSQLite, please check
+> the list of R CMD check results at
+> https://github.com/wch/checkresults/blob/master/RSQLite/r-release/00check-summary.txt.
+> I've been quite aggressive at deprecating old functions, and
+> un-exporting functions that are really part of RSQLite's internal
+> interface. This means that many packages will need changes. If you
+> have any trouble figuring out the problem, please let me know and I'll
+> be happy to help. I apologise for the hassle, but this will make
+> RSQLite a much better platform to build on in the future.
+>
+> I plan to submit this version of RSQLite to CRAN on Oct 20, so that
+> there's plenty of time for feedback and changes.
+>
+> Hadley
+>
+> # Version 1.0.0
+>
+> ## New features
+>
+> - Updated to SQLite 3.8.6
+>
+> - Added `datasetsDb()`, a bundled SQLite database containing all data frames
+>   in the datasets package (#15).
+>
+> - Inlined `RSQLite.extfuns` - use `initExtension()` to load the many
+>   useful extension functions (#44).
+>
+> - Methods no longer automatically clone the connection is there is an open
+>   result set. This was implement inconsistently in a handful of places (#22).
+>   RSQLite is now more forgiving if you forget to close a result set - it will
+>   close it for you, with a warning. It's still good practice to clean up
+>   after yourself, but you don't have to.
+>
+> - `dbBegin()`, `dbCommit()`, `dbRollback()` throw errors on failure, rather than
+>   return `FALSE`.  They all gain a `name` argument to specify named savepoints.
+>
+> - `dbFetch()` method added (`fetch()` will be deprecated in the future)
+>
+> - `dbRemoveTable()` throws errors on failure, rather than returning `FALSE`.
+>
+> - `dbWriteTable()` has been rewritten:
+>
+>     * It quotes field names using `dbQuoteIdentifier()`, rather
+>       than use a flawed black-list based approach with name munging.
+>
+>     * It now throws errors on failure, rather than returning FALSE.
+>
+>     * It will automatically add row names only if they are character,
+> not integer.
+>
+>     * When loading a file from disk, `dbWriteTable()` will no longer
+>       attempt to guess the correct values for `row.names` and `header` - instead
+>       supply them explicitly if the defaults are incorrect.
+>
+>     * It uses named save points so it can be nested inside other
+>       transactions (#41).
+>
+>     * When given a zero-row data frame it will just creates the table
+>       definition (#35).
+>
+> ## Changes to objects
+>
+> - The `dbname`, `loadable.extensions`, `flags` and `vfs` properties of
+>   a SqliteConnection are now slots. Access them directly instead of using
+>   `dbGetInfo()`.
+>
+> ## Deprecated and removed functions
+>
+> - RSQLite is no longer nominally compatible with S (#39).
+>
+> - `idIsValid()` is deprecated. Please use `dbIsValid()` instead.
+>
+> - `dbBeginTransaction()` has been deprecated. Please use `dbBegin()` instead.
+>
+> - `dbCallProc()` method removed, since generic is now deprecated.
+>
+> - Renamed `dbBuildTableDefinition()` to `sqliteBuildTableDefinition()`
+>   to avoid implying it's a DBI generic. Old function is aliased to new with
+>   a warning.
+>
+> - `dbFetch()` no longer numbers row names sequentially between fetches.
+>
+> - `safe.write()` is no longer exported as it shouldn't be part of the
+>   public RSQLite interface (#26).
+>
+> - Internal `sqlite*()` functions are no longer exported (#20).
+>
+> - Removed `SqliteObject` and `dbObject` classes, modifying `SqliteDriver`,
+>   `SqliteConnection`, and `SqliteResult` to use composition instead of multiple
+>   inheritance.
+>
+> --
+> http://had.co.nz/
+
+
+
+-- 
+Statistics & Software Consulting
+GKX Group, GKX Associates Inc.
+tel: 1-877-GKX-GROUP
+email: ggrothendieck at gmail.com
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Wed Sep 24 13:36:31 2014
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Wed, 24 Sep 2014 06:36:31 -0500
+Subject: [R-sig-DB] RSQLite 1.0.0
+In-Reply-To: <CAP01uRk_HbhGsTZeptJCrPNbYWh2W+QHArOE-FGciV0-REPM6Q@mail.gmail.com>
+References: <CABdHhvH05cjPbai9-7q4MYD0z_kFb9LYeO5FDHYUyOmFaExxhA@mail.gmail.com>
+	<CAP01uRk_HbhGsTZeptJCrPNbYWh2W+QHArOE-FGciV0-REPM6Q@mail.gmail.com>
+Message-ID: <CABdHhvF=0AKDUTosmYyP-PD7w27k02vwDGJcTVgLMvfsyGw6wg@mail.gmail.com>
+
+I've just pushed a potential fix. Can you please check?
+Hadley
+
+On Tue, Sep 23, 2014 at 6:54 PM, Gabor Grothendieck
+<ggrothendieck at gmail.com> wrote:
+> I get this error when building RSQLite from source under Windows 8.1
+> using github_install:
+>
+> extension-functions.c:124:24: fatal error: sqlite3ext.h: No such file
+> or directory
+>
+>
+>
+>
+> On Tue, Sep 23, 2014 at 6:10 PM, Hadley Wickham <h.wickham at gmail.com> wrote:
+>> Hi everyone,
+>>
+>> I'm preparing to release a new version of RSQLite, 1.0.0.  (I've taken
+>> over maintenance from Seth Falcon). This release is basically a big
+>> tidy up - I've refactored a lot of the C code to be easier to follow,
+>> deprecated a lot of unused functions, and converted everything to
+>> "Hadley"-style package development.  A complete list of changes are
+>> included at the bottom of this email.
+>>
+>> If you use RSQLite, I'd really appreciate it if you'd try out the
+>> development version and let me know if you have any problems. You can
+>> install it from github with:
+>>
+>> # install.packages("devtools")
+>> devtools::install_github("rstats-db/DBI")
+>> devtools::install_github("rstats-db/RSQLite")
+>>
+>> If you have written a package that depends on RSQLite, please check
+>> the list of R CMD check results at
+>> https://github.com/wch/checkresults/blob/master/RSQLite/r-release/00check-summary.txt.
+>> I've been quite aggressive at deprecating old functions, and
+>> un-exporting functions that are really part of RSQLite's internal
+>> interface. This means that many packages will need changes. If you
+>> have any trouble figuring out the problem, please let me know and I'll
+>> be happy to help. I apologise for the hassle, but this will make
+>> RSQLite a much better platform to build on in the future.
+>>
+>> I plan to submit this version of RSQLite to CRAN on Oct 20, so that
+>> there's plenty of time for feedback and changes.
+>>
+>> Hadley
+>>
+>> # Version 1.0.0
+>>
+>> ## New features
+>>
+>> - Updated to SQLite 3.8.6
+>>
+>> - Added `datasetsDb()`, a bundled SQLite database containing all data frames
+>>   in the datasets package (#15).
+>>
+>> - Inlined `RSQLite.extfuns` - use `initExtension()` to load the many
+>>   useful extension functions (#44).
+>>
+>> - Methods no longer automatically clone the connection is there is an open
+>>   result set. This was implement inconsistently in a handful of places (#22).
+>>   RSQLite is now more forgiving if you forget to close a result set - it will
+>>   close it for you, with a warning. It's still good practice to clean up
+>>   after yourself, but you don't have to.
+>>
+>> - `dbBegin()`, `dbCommit()`, `dbRollback()` throw errors on failure, rather than
+>>   return `FALSE`.  They all gain a `name` argument to specify named savepoints.
+>>
+>> - `dbFetch()` method added (`fetch()` will be deprecated in the future)
+>>
+>> - `dbRemoveTable()` throws errors on failure, rather than returning `FALSE`.
+>>
+>> - `dbWriteTable()` has been rewritten:
+>>
+>>     * It quotes field names using `dbQuoteIdentifier()`, rather
+>>       than use a flawed black-list based approach with name munging.
+>>
+>>     * It now throws errors on failure, rather than returning FALSE.
+>>
+>>     * It will automatically add row names only if they are character,
+>> not integer.
+>>
+>>     * When loading a file from disk, `dbWriteTable()` will no longer
+>>       attempt to guess the correct values for `row.names` and `header` - instead
+>>       supply them explicitly if the defaults are incorrect.
+>>
+>>     * It uses named save points so it can be nested inside other
+>>       transactions (#41).
+>>
+>>     * When given a zero-row data frame it will just creates the table
+>>       definition (#35).
+>>
+>> ## Changes to objects
+>>
+>> - The `dbname`, `loadable.extensions`, `flags` and `vfs` properties of
+>>   a SqliteConnection are now slots. Access them directly instead of using
+>>   `dbGetInfo()`.
+>>
+>> ## Deprecated and removed functions
+>>
+>> - RSQLite is no longer nominally compatible with S (#39).
+>>
+>> - `idIsValid()` is deprecated. Please use `dbIsValid()` instead.
+>>
+>> - `dbBeginTransaction()` has been deprecated. Please use `dbBegin()` instead.
+>>
+>> - `dbCallProc()` method removed, since generic is now deprecated.
+>>
+>> - Renamed `dbBuildTableDefinition()` to `sqliteBuildTableDefinition()`
+>>   to avoid implying it's a DBI generic. Old function is aliased to new with
+>>   a warning.
+>>
+>> - `dbFetch()` no longer numbers row names sequentially between fetches.
+>>
+>> - `safe.write()` is no longer exported as it shouldn't be part of the
+>>   public RSQLite interface (#26).
+>>
+>> - Internal `sqlite*()` functions are no longer exported (#20).
+>>
+>> - Removed `SqliteObject` and `dbObject` classes, modifying `SqliteDriver`,
+>>   `SqliteConnection`, and `SqliteResult` to use composition instead of multiple
+>>   inheritance.
+>>
+>> --
+>> http://had.co.nz/
+>
+>
+>
+> --
+> Statistics & Software Consulting
+> GKX Group, GKX Associates Inc.
+> tel: 1-877-GKX-GROUP
+> email: ggrothendieck at gmail.com
+
+
+
+-- 
+http://had.co.nz/
+
+
+
+From r@|ner@@tuetz @end|ng |rom gm@||@com  Wed Sep 24 15:01:20 2014
+From: r@|ner@@tuetz @end|ng |rom gm@||@com (Rainer Stuetz)
+Date: Wed, 24 Sep 2014 15:01:20 +0200
+Subject: [R-sig-DB] RSQLite 1.0.0
+In-Reply-To: <CABdHhvF=0AKDUTosmYyP-PD7w27k02vwDGJcTVgLMvfsyGw6wg@mail.gmail.com>
+References: <CABdHhvH05cjPbai9-7q4MYD0z_kFb9LYeO5FDHYUyOmFaExxhA@mail.gmail.com>
+	<CAP01uRk_HbhGsTZeptJCrPNbYWh2W+QHArOE-FGciV0-REPM6Q@mail.gmail.com>
+	<CABdHhvF=0AKDUTosmYyP-PD7w27k02vwDGJcTVgLMvfsyGw6wg@mail.gmail.com>
+Message-ID: <CABZngTs_6tr6_pj3z65LWUb=_UivqikKbqWOsrhWX+CjKdoSCg@mail.gmail.com>
+
+I observed the same problem as Gabor. It compiles/installs now
+successfully on my Ubuntu 14.04 system.
+
+-Rainer
+
+On Wed, Sep 24, 2014 at 1:36 PM, Hadley Wickham <h.wickham at gmail.com> wrote:
+> I've just pushed a potential fix. Can you please check?
+> Hadley
+>
+> On Tue, Sep 23, 2014 at 6:54 PM, Gabor Grothendieck
+> <ggrothendieck at gmail.com> wrote:
+>> I get this error when building RSQLite from source under Windows 8.1
+>> using github_install:
+>>
+>> extension-functions.c:124:24: fatal error: sqlite3ext.h: No such file
+>> or directory
+>>
+>>
+>>
+>>
+>> On Tue, Sep 23, 2014 at 6:10 PM, Hadley Wickham <h.wickham at gmail.com> wrote:
+>>> Hi everyone,
+>>>
+>>> I'm preparing to release a new version of RSQLite, 1.0.0.  (I've taken
+>>> over maintenance from Seth Falcon). This release is basically a big
+>>> tidy up - I've refactored a lot of the C code to be easier to follow,
+>>> deprecated a lot of unused functions, and converted everything to
+>>> "Hadley"-style package development.  A complete list of changes are
+>>> included at the bottom of this email.
+>>>
+>>> If you use RSQLite, I'd really appreciate it if you'd try out the
+>>> development version and let me know if you have any problems. You can
+>>> install it from github with:
+>>>
+>>> # install.packages("devtools")
+>>> devtools::install_github("rstats-db/DBI")
+>>> devtools::install_github("rstats-db/RSQLite")
+>>>
+>>> If you have written a package that depends on RSQLite, please check
+>>> the list of R CMD check results at
+>>> https://github.com/wch/checkresults/blob/master/RSQLite/r-release/00check-summary.txt.
+>>> I've been quite aggressive at deprecating old functions, and
+>>> un-exporting functions that are really part of RSQLite's internal
+>>> interface. This means that many packages will need changes. If you
+>>> have any trouble figuring out the problem, please let me know and I'll
+>>> be happy to help. I apologise for the hassle, but this will make
+>>> RSQLite a much better platform to build on in the future.
+>>>
+>>> I plan to submit this version of RSQLite to CRAN on Oct 20, so that
+>>> there's plenty of time for feedback and changes.
+>>>
+>>> Hadley
+>>>
+>>> # Version 1.0.0
+>>>
+>>> ## New features
+>>>
+>>> - Updated to SQLite 3.8.6
+>>>
+>>> - Added `datasetsDb()`, a bundled SQLite database containing all data frames
+>>>   in the datasets package (#15).
+>>>
+>>> - Inlined `RSQLite.extfuns` - use `initExtension()` to load the many
+>>>   useful extension functions (#44).
+>>>
+>>> - Methods no longer automatically clone the connection is there is an open
+>>>   result set. This was implement inconsistently in a handful of places (#22).
+>>>   RSQLite is now more forgiving if you forget to close a result set - it will
+>>>   close it for you, with a warning. It's still good practice to clean up
+>>>   after yourself, but you don't have to.
+>>>
+>>> - `dbBegin()`, `dbCommit()`, `dbRollback()` throw errors on failure, rather than
+>>>   return `FALSE`.  They all gain a `name` argument to specify named savepoints.
+>>>
+>>> - `dbFetch()` method added (`fetch()` will be deprecated in the future)
+>>>
+>>> - `dbRemoveTable()` throws errors on failure, rather than returning `FALSE`.
+>>>
+>>> - `dbWriteTable()` has been rewritten:
+>>>
+>>>     * It quotes field names using `dbQuoteIdentifier()`, rather
+>>>       than use a flawed black-list based approach with name munging.
+>>>
+>>>     * It now throws errors on failure, rather than returning FALSE.
+>>>
+>>>     * It will automatically add row names only if they are character,
+>>> not integer.
+>>>
+>>>     * When loading a file from disk, `dbWriteTable()` will no longer
+>>>       attempt to guess the correct values for `row.names` and `header` - instead
+>>>       supply them explicitly if the defaults are incorrect.
+>>>
+>>>     * It uses named save points so it can be nested inside other
+>>>       transactions (#41).
+>>>
+>>>     * When given a zero-row data frame it will just creates the table
+>>>       definition (#35).
+>>>
+>>> ## Changes to objects
+>>>
+>>> - The `dbname`, `loadable.extensions`, `flags` and `vfs` properties of
+>>>   a SqliteConnection are now slots. Access them directly instead of using
+>>>   `dbGetInfo()`.
+>>>
+>>> ## Deprecated and removed functions
+>>>
+>>> - RSQLite is no longer nominally compatible with S (#39).
+>>>
+>>> - `idIsValid()` is deprecated. Please use `dbIsValid()` instead.
+>>>
+>>> - `dbBeginTransaction()` has been deprecated. Please use `dbBegin()` instead.
+>>>
+>>> - `dbCallProc()` method removed, since generic is now deprecated.
+>>>
+>>> - Renamed `dbBuildTableDefinition()` to `sqliteBuildTableDefinition()`
+>>>   to avoid implying it's a DBI generic. Old function is aliased to new with
+>>>   a warning.
+>>>
+>>> - `dbFetch()` no longer numbers row names sequentially between fetches.
+>>>
+>>> - `safe.write()` is no longer exported as it shouldn't be part of the
+>>>   public RSQLite interface (#26).
+>>>
+>>> - Internal `sqlite*()` functions are no longer exported (#20).
+>>>
+>>> - Removed `SqliteObject` and `dbObject` classes, modifying `SqliteDriver`,
+>>>   `SqliteConnection`, and `SqliteResult` to use composition instead of multiple
+>>>   inheritance.
+>>>
+>>> --
+>>> http://had.co.nz/
+>>
+>>
+>>
+>> --
+>> Statistics & Software Consulting
+>> GKX Group, GKX Associates Inc.
+>> tel: 1-877-GKX-GROUP
+>> email: ggrothendieck at gmail.com
+>
+>
+>
+> --
+> http://had.co.nz/
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Wed Sep 24 16:20:08 2014
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Wed, 24 Sep 2014 10:20:08 -0400
+Subject: [R-sig-DB] RSQLite 1.0.0
+In-Reply-To: <CABdHhvF=0AKDUTosmYyP-PD7w27k02vwDGJcTVgLMvfsyGw6wg@mail.gmail.com>
+References: <CABdHhvH05cjPbai9-7q4MYD0z_kFb9LYeO5FDHYUyOmFaExxhA@mail.gmail.com>
+	<CAP01uRk_HbhGsTZeptJCrPNbYWh2W+QHArOE-FGciV0-REPM6Q@mail.gmail.com>
+	<CABdHhvF=0AKDUTosmYyP-PD7w27k02vwDGJcTVgLMvfsyGw6wg@mail.gmail.com>
+Message-ID: <CAP01uR=PpSnUYO0KqFCvc6fU0b4ckNJTXeYMYCRHAMf2ctdKAA@mail.gmail.com>
+
+On Wed, Sep 24, 2014 at 7:36 AM, Hadley Wickham <h.wickham at gmail.com> wrote:
+> I've just pushed a potential fix. Can you please check?
+> Hadley
+>
+
+it now installs but RSQLite.extfuns breaks (which implies sqldf, dplyr
+and all other packages that depend on RSQLite.extfuns in some way
+potentially break too):
+
+> library(RSQLite.extfuns)
+Loading required package: RSQLite
+Loading required package: DBI
+> db <- dbConnect(SQLite())
+> init_extensions(db)
+Error in if (.allows_extensions(db)) { :
+  missing value where TRUE/FALSE needed
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Wed Sep 24 16:38:22 2014
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Wed, 24 Sep 2014 09:38:22 -0500
+Subject: [R-sig-DB] RSQLite 1.0.0
+In-Reply-To: <CAP01uR=PpSnUYO0KqFCvc6fU0b4ckNJTXeYMYCRHAMf2ctdKAA@mail.gmail.com>
+References: <CABdHhvH05cjPbai9-7q4MYD0z_kFb9LYeO5FDHYUyOmFaExxhA@mail.gmail.com>
+	<CAP01uRk_HbhGsTZeptJCrPNbYWh2W+QHArOE-FGciV0-REPM6Q@mail.gmail.com>
+	<CABdHhvF=0AKDUTosmYyP-PD7w27k02vwDGJcTVgLMvfsyGw6wg@mail.gmail.com>
+	<CAP01uR=PpSnUYO0KqFCvc6fU0b4ckNJTXeYMYCRHAMf2ctdKAA@mail.gmail.com>
+Message-ID: <CABdHhvEJL_7QbY6SOtpaRZKzd0Bt_eGaF_s5Kf7ULGfb_1UoNw@mail.gmail.com>
+
+On Wed, Sep 24, 2014 at 9:20 AM, Gabor Grothendieck
+<ggrothendieck at gmail.com> wrote:
+> On Wed, Sep 24, 2014 at 7:36 AM, Hadley Wickham <h.wickham at gmail.com> wrote:
+>> I've just pushed a potential fix. Can you please check?
+>> Hadley
+>>
+>
+> it now installs but RSQLite.extfuns breaks (which implies sqldf, dplyr
+> and all other packages that depend on RSQLite.extfuns in some way
+> potentially break too):
+>
+>> library(RSQLite.extfuns)
+> Loading required package: RSQLite
+> Loading required package: DBI
+>> db <- dbConnect(SQLite())
+>> init_extensions(db)
+> Error in if (.allows_extensions(db)) { :
+>   missing value where TRUE/FALSE needed
+
+Sorry - I should've been more explicit about that in the release
+notes. RSQLite.extfuns has been integrated into RSQLite so you no
+longer need it. Here's the dplyr code for example:
+
+
+load_extension <- function(con) {
+  if (packageVersion("RSQLite") >= 1) {
+    RSQLite::initExtension(con)
+    return()
+  }
+
+  require("RSQLite")
+  if (!require("RSQLite.extfuns")) {
+    stop("RSQLite.extfuns package required to effectively use sqlite db",
+      call. = FALSE)
+  }
+
+  RSQLite.extfuns::init_extensions(con)
+}
+
+Hadley
+
+-- 
+http://had.co.nz/
+
+
+

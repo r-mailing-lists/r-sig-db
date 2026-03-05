@@ -1,0 +1,757 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2012-05",
+  "messages": [
+    {
+      "id": "msg-05cb37f234bb",
+      "message_id": "<CEE8C35195DB944D9C75ABB15A04193B0840E7ED@EHKG17P32001A.csfb.cs-group.com>",
+      "from_name": "Jadhav, Alok",
+      "from_email_hash": "6fa5326a3a9134edf838deb2d31541f05e2d733603dd50a4e0073eadcfc06b7b",
+      "date": "2012-05-07T08:24:35+08:00",
+      "subject": "[R-sig-DB] [R] Why does RODBC driver returns garbage from Sybase server on new windows 7 machine?",
+      "subject_clean": "Why does RODBC driver returns garbage from Sybase server on new windows 7 machine?",
+      "in_reply_to": "<E30337F1-C076-450F-8002-9EC5BA0FB3AF@me.com>",
+      "references": [
+        "<1336117135322-4607994.post@n4.nabble.com>",
+        "<E30337F1-C076-450F-8002-9EC5BA0FB3AF@me.com>"
+      ],
+      "body_plain": "[Moving this mail from R-Help to R-SIG-DB ]\n\nMarc,\n\nThe below mentioned code is inside a function and the value of as.is is\npassed to the function, default value being FALSE.\n\nI tried your suggestion of passing rows_at_time=1 and\nbelieveNRows=FALSE. This did not solve the problem. It removed the\ngarbage data in the result set but the data is truncated. \n\nIn my query, I am expecting a result of 200 rows. Earlier I was getting\naround 17 rows with correct data and 3 rows with Nas. After above change\nnow I am getting total of 17 rows with no NAs in the output. But data is\nnot complete.\n\nI am tempted to try a different driver but still think driver is not a\nproblem as the same driver in other app works without any issues. Seems\nlike an issue with RODBC.  Same functions work well on my old machine\nwhich is a windows XP. I am trying this first time on my windows 7 box.\n\nRegards,\nAlok\n\n\n\nPlease follow the attached hyperlink to an important disclaimer\nhttp://www.credit-suisse.com/asiapac/legal/securities/ \n\n\n-----Original Message-----\nFrom: Marc Schwartz [mailto:marc_schwartz at me.com] \nSent: Friday, May 04, 2012 10:54 PM\nTo: Jadhav, Alok\nCc: r-help at r-project.org\nSubject: Re: [R] Why does RODBC driver returns garbage from Sybase\nserver on new windows 7 machine?\n\n\nOn May 4, 2012, at 2:38 AM, Alok Jadhav wrote:\n\n> Hi,\n> \n> I am trying to query a Sybase database on my new windows 7 machine.  I\n\n> am using native sybase driver \"Adaptive server Enterprise\" following \n> is example code\n> \n> conn <- sprintf(\"driver=Adaptive server\n> Enterprise;server=PHKSESMD01;database=smd_live;uid=temp_user;password=\n> temp_pass;port=2301\")\n> chan <- odbcDriverConnect(conn)\n> x <- sqlQuery(chan,sql,as.is=as.is)\n> odbcClose(chan)\n> \n> I am able to connect to the database and get the data using above \n> code. But when the data is more than couple of hundred lines (4 \n> columns.. its not much), i get garbage data. I usually get 5 to 6 rows\n\n> correctly and remaining data is NAs.  Is this an issue with ODBC\ndriver or issue with RODBC library?\n> I would think driver is ok because it works fine in other \n> applications.  Can someone suggest what could be wrong here and how to\nresolve it?\n> \n> Regards,\n> Alok\n\n\n\n1. This query is better posted to r-sig-db, which is dedicated to R and\nDB connectivity issues. More info at:\n\n https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n2. It is not clear what 'as.is = as.is' in the call to sqlQuery is. Is\nthe value of 'as.is' defined before the call someplace else that you\nhave not shown here, along with the 'sql' query itself? \n\n3. Try using 'rows_at_time = 1' as well as 'believeNRows = FALSE' in the\ncalls as below. That may help with corrupted data coming back. I have to\nuse the former with Oracle. That is also referenced in ?odbcConnect with\na comment specific to Sybase.\n\n  chan <- odbcDriverConnect(conn, rows_at_time = 1, believeNRows =\nFALSE)\n  x <- sqlQuery(chan, sql, as.is = as.is, rows_at_time = 1, believeNRows\n= FALSE) \n\n\nRegards,\n\nMarc Schwartz\n\n\n=============================================================================== \nPlease access the attached hyperlink for an important el...{{dropped:4}}",
+      "body_snippet": "[Moving this mail from R-Help to R-SIG-DB ]\n\nMarc,\n\nThe below mentioned code is inside a function and the value of as.is is\npassed to the function, default value being FALSE.\n\nI tried your suggestion ",
+      "thread_id": "thread-05cb37f234bb",
+      "thread_depth": 0,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-777d4d05285c",
+      "message_id": "<1DC52AB1-8F73-4F68-ADC3-0F36E1A38AD0@me.com>",
+      "from_name": "Marc Schwartz",
+      "from_email_hash": "040b2d09159b27cfd2853bc2dbb476bd637811586f307d9583c9ef7f806f3692",
+      "date": "2012-05-07T08:03:59-05:00",
+      "subject": "[R-sig-DB] [R] Why does RODBC driver returns garbage from\tSybase server on new windows 7 machine?",
+      "subject_clean": "Why does RODBC driver returns garbage from\tSybase server on new windows 7 machine?",
+      "in_reply_to": "<CEE8C35195DB944D9C75ABB15A04193B0840E7ED@EHKG17P32001A.csfb.cs-group.com>",
+      "references": [
+        "<1336117135322-4607994.post@n4.nabble.com>",
+        "<E30337F1-C076-450F-8002-9EC5BA0FB3AF@me.com>",
+        "<CEE8C35195DB944D9C75ABB15A04193B0840E7ED@EHKG17P32001A.csfb.cs-group.com>"
+      ],
+      "body_plain": "Hi Alok,\n\nUnfortunately, I don't have access to either Windows or Sybase, so I cannot attempt to replicate the problem you have or implement a working scenario.\n\nYou might just re-check the character vector that you are passing for the SQL query to be sure that there are no strange characters and/or things like line breaks, etc. that might cause issues.\n\nI will need to defer to others to see if anyone might have some insight into where the issue might be here.\n\nRegards,\n\nMarc\n\nOn May 6, 2012, at 7:24 PM, Jadhav, Alok wrote:\n\n> \n> [Moving this mail from R-Help to R-SIG-DB ]\n> \n> Marc,\n> \n> The below mentioned code is inside a function and the value of as.is is\n> passed to the function, default value being FALSE.\n> \n> I tried your suggestion of passing rows_at_time=1 and\n> believeNRows=FALSE. This did not solve the problem. It removed the\n> garbage data in the result set but the data is truncated. \n> \n> In my query, I am expecting a result of 200 rows. Earlier I was getting\n> around 17 rows with correct data and 3 rows with Nas. After above change\n> now I am getting total of 17 rows with no NAs in the output. But data is\n> not complete.\n> \n> I am tempted to try a different driver but still think driver is not a\n> problem as the same driver in other app works without any issues. Seems\n> like an issue with RODBC.  Same functions work well on my old machine\n> which is a windows XP. I am trying this first time on my windows 7 box.\n> \n> Regards,\n> Alok\n> \n> \n> \n> Please follow the attached hyperlink to an important disclaimer\n> http://www.credit-suisse.com/asiapac/legal/securities/ \n> \n> \n> -----Original Message-----\n> From: Marc Schwartz [mailto:marc_schwartz at me.com] \n> Sent: Friday, May 04, 2012 10:54 PM\n> To: Jadhav, Alok\n> Cc: r-help at r-project.org\n> Subject: Re: [R] Why does RODBC driver returns garbage from Sybase\n> server on new windows 7 machine?\n> \n> \n> On May 4, 2012, at 2:38 AM, Alok Jadhav wrote:\n> \n>> Hi,\n>> \n>> I am trying to query a Sybase database on my new windows 7 machine.  I\n> \n>> am using native sybase driver \"Adaptive server Enterprise\" following \n>> is example code\n>> \n>> conn <- sprintf(\"driver=Adaptive server\n>> Enterprise;server=PHKSESMD01;database=smd_live;uid=temp_user;password=\n>> temp_pass;port=2301\")\n>> chan <- odbcDriverConnect(conn)\n>> x <- sqlQuery(chan,sql,as.is=as.is)\n>> odbcClose(chan)\n>> \n>> I am able to connect to the database and get the data using above \n>> code. But when the data is more than couple of hundred lines (4 \n>> columns.. its not much), i get garbage data. I usually get 5 to 6 rows\n> \n>> correctly and remaining data is NAs.  Is this an issue with ODBC\n> driver or issue with RODBC library?\n>> I would think driver is ok because it works fine in other \n>> applications.  Can someone suggest what could be wrong here and how to\n> resolve it?\n>> \n>> Regards,\n>> Alok\n> \n> \n> \n> 1. This query is better posted to r-sig-db, which is dedicated to R and\n> DB connectivity issues. More info at:\n> \n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n> \n> 2. It is not clear what 'as.is = as.is' in the call to sqlQuery is. Is\n> the value of 'as.is' defined before the call someplace else that you\n> have not shown here, along with the 'sql' query itself? \n> \n> 3. Try using 'rows_at_time = 1' as well as 'believeNRows = FALSE' in the\n> calls as below. That may help with corrupted data coming back. I have to\n> use the former with Oracle. That is also referenced in ?odbcConnect with\n> a comment specific to Sybase.\n> \n>  chan <- odbcDriverConnect(conn, rows_at_time = 1, believeNRows =\n> FALSE)\n>  x <- sqlQuery(chan, sql, as.is = as.is, rows_at_time = 1, believeNRows\n> = FALSE) \n> \n> \n> Regards,\n> \n> Marc Schwartz",
+      "body_snippet": "Hi Alok,\n\nUnfortunately, I don't have access to either Windows or Sybase, so I cannot attempt to replicate the problem you have or implement a working scenario.\n\nYou might just re-check the character ",
+      "thread_id": "thread-05cb37f234bb",
+      "thread_depth": 1,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-edf554b5bcfa",
+      "message_id": "<AA8BFCAA-3737-4930-B666-B96D2499CC94@me.com>",
+      "from_name": "Marc Schwartz",
+      "from_email_hash": "040b2d09159b27cfd2853bc2dbb476bd637811586f307d9583c9ef7f806f3692",
+      "date": "2012-05-07T09:13:30-05:00",
+      "subject": "[R-sig-DB] [R] Why does RODBC driver returns garbage from\tSybase server on new windows 7 machine?",
+      "subject_clean": "Why does RODBC driver returns garbage from\tSybase server on new windows 7 machine?",
+      "in_reply_to": "<1DC52AB1-8F73-4F68-ADC3-0F36E1A38AD0@me.com>",
+      "references": [
+        "<1336117135322-4607994.post@n4.nabble.com>",
+        "<E30337F1-C076-450F-8002-9EC5BA0FB3AF@me.com>",
+        "<CEE8C35195DB944D9C75ABB15A04193B0840E7ED@EHKG17P32001A.csfb.cs-group.com>",
+        "<1DC52AB1-8F73-4F68-ADC3-0F36E1A38AD0@me.com>"
+      ],
+      "body_plain": "Alok,\n\nOne additional thought as I was driving to work this morning.\n\nTry running your RODBC connect/query code outside of the function and use a simple query like \"select * from TABLENAME\". Also be sure to use a clean working environment. \n\nJust to eliminate the possibility that there is something in your workspace, function and/or a more complex query, if you are using one, that is not obvious.\n\nMarc\n\nOn May 7, 2012, at 8:03 AM, Marc Schwartz wrote:\n\n> Hi Alok,\n> \n> Unfortunately, I don't have access to either Windows or Sybase, so I cannot attempt to replicate the problem you have or implement a working scenario.\n> \n> You might just re-check the character vector that you are passing for the SQL query to be sure that there are no strange characters and/or things like line breaks, etc. that might cause issues.\n> \n> I will need to defer to others to see if anyone might have some insight into where the issue might be here.\n> \n> Regards,\n> \n> Marc\n> \n> On May 6, 2012, at 7:24 PM, Jadhav, Alok wrote:\n> \n>> \n>> [Moving this mail from R-Help to R-SIG-DB ]\n>> \n>> Marc,\n>> \n>> The below mentioned code is inside a function and the value of as.is is\n>> passed to the function, default value being FALSE.\n>> \n>> I tried your suggestion of passing rows_at_time=1 and\n>> believeNRows=FALSE. This did not solve the problem. It removed the\n>> garbage data in the result set but the data is truncated. \n>> \n>> In my query, I am expecting a result of 200 rows. Earlier I was getting\n>> around 17 rows with correct data and 3 rows with Nas. After above change\n>> now I am getting total of 17 rows with no NAs in the output. But data is\n>> not complete.\n>> \n>> I am tempted to try a different driver but still think driver is not a\n>> problem as the same driver in other app works without any issues. Seems\n>> like an issue with RODBC.  Same functions work well on my old machine\n>> which is a windows XP. I am trying this first time on my windows 7 box.\n>> \n>> Regards,\n>> Alok\n>> \n>> \n>> \n>> Please follow the attached hyperlink to an important disclaimer\n>> http://www.credit-suisse.com/asiapac/legal/securities/ \n>> \n>> \n>> -----Original Message-----\n>> From: Marc Schwartz [mailto:marc_schwartz at me.com] \n>> Sent: Friday, May 04, 2012 10:54 PM\n>> To: Jadhav, Alok\n>> Cc: r-help at r-project.org\n>> Subject: Re: [R] Why does RODBC driver returns garbage from Sybase\n>> server on new windows 7 machine?\n>> \n>> \n>> On May 4, 2012, at 2:38 AM, Alok Jadhav wrote:\n>> \n>>> Hi,\n>>> \n>>> I am trying to query a Sybase database on my new windows 7 machine.  I\n>> \n>>> am using native sybase driver \"Adaptive server Enterprise\" following \n>>> is example code\n>>> \n>>> conn <- sprintf(\"driver=Adaptive server\n>>> Enterprise;server=PHKSESMD01;database=smd_live;uid=temp_user;password=\n>>> temp_pass;port=2301\")\n>>> chan <- odbcDriverConnect(conn)\n>>> x <- sqlQuery(chan,sql,as.is=as.is)\n>>> odbcClose(chan)\n>>> \n>>> I am able to connect to the database and get the data using above \n>>> code. But when the data is more than couple of hundred lines (4 \n>>> columns.. its not much), i get garbage data. I usually get 5 to 6 rows\n>> \n>>> correctly and remaining data is NAs.  Is this an issue with ODBC\n>> driver or issue with RODBC library?\n>>> I would think driver is ok because it works fine in other \n>>> applications.  Can someone suggest what could be wrong here and how to\n>> resolve it?\n>>> \n>>> Regards,\n>>> Alok\n>> \n>> \n>> \n>> 1. This query is better posted to r-sig-db, which is dedicated to R and\n>> DB connectivity issues. More info at:\n>> \n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>> \n>> 2. It is not clear what 'as.is = as.is' in the call to sqlQuery is. Is\n>> the value of 'as.is' defined before the call someplace else that you\n>> have not shown here, along with the 'sql' query itself? \n>> \n>> 3. Try using 'rows_at_time = 1' as well as 'believeNRows = FALSE' in the\n>> calls as below. That may help with corrupted data coming back. I have to\n>> use the former with Oracle. That is also referenced in ?odbcConnect with\n>> a comment specific to Sybase.\n>> \n>> chan <- odbcDriverConnect(conn, rows_at_time = 1, believeNRows =\n>> FALSE)\n>> x <- sqlQuery(chan, sql, as.is = as.is, rows_at_time = 1, believeNRows\n>> = FALSE) \n>> \n>> \n>> Regards,\n>> \n>> Marc Schwartz\n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "Alok,\n\nOne additional thought as I was driving to work this morning.\n\nTry running your RODBC connect/query code outside of the function and use a simple query like \"select * from TABLENAME\". Also be s",
+      "thread_id": "thread-05cb37f234bb",
+      "thread_depth": 2,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-2931e2e8a4f7",
+      "message_id": "<0352B6AC-2CAD-4452-8E62-F9E016A4E01B@staff.kanazawa-u.ac.jp>",
+      "from_name": "NISHIYAMA Tomoaki",
+      "from_email_hash": "ad7d0ad7e619994bf2ad9845ab93b14a1002af9dca9ed0f127abe8dd8475d08f",
+      "date": "2012-05-07T23:20:30+09:00",
+      "subject": "[R-sig-DB] [R] Why does RODBC driver returns garbage from Sybase server on new windows 7 machine?",
+      "subject_clean": "Why does RODBC driver returns garbage from Sybase server on new windows 7 machine?",
+      "in_reply_to": "<CEE8C35195DB944D9C75ABB15A04193B0840E7ED@EHKG17P32001A.csfb.cs-group.com>",
+      "references": [
+        "<1336117135322-4607994.post@n4.nabble.com>",
+        "<E30337F1-C076-450F-8002-9EC5BA0FB3AF@me.com>",
+        "<CEE8C35195DB944D9C75ABB15A04193B0840E7ED@EHKG17P32001A.csfb.cs-group.com>"
+      ],
+      "body_plain": "Hi,\n\n> Same functions work well on my old machine\n> which is a windows XP. I am trying this first time on my windows 7 box.\n\n\nDid you check the dependency of the error on 32 bit version and \n64 bit version of R?\n\nI assume you used a 32 bit version on Windows XP and now perhaps using the\n64 bit version. If so, you might try if it works on the 32 bit version\nof R (which usually should run on windows 7 as well).\n\n\nOn 2012/05/07, at 9:24, Jadhav, Alok wrote:\n\n> \n> [Moving this mail from R-Help to R-SIG-DB ]\n> \n> Marc,\n> \n> The below mentioned code is inside a function and the value of as.is is\n> passed to the function, default value being FALSE.\n> \n> I tried your suggestion of passing rows_at_time=1 and\n> believeNRows=FALSE. This did not solve the problem. It removed the\n> garbage data in the result set but the data is truncated. \n> \n> In my query, I am expecting a result of 200 rows. Earlier I was getting\n> around 17 rows with correct data and 3 rows with Nas. After above change\n> now I am getting total of 17 rows with no NAs in the output. But data is\n> not complete.\n> \n> I am tempted to try a different driver but still think driver is not a\n> problem as the same driver in other app works without any issues. Seems\n> like an issue with RODBC.  Same functions work well on my old machine\n> which is a windows XP. I am trying this first time on my windows 7 box.\n> \n> Regards,\n> Alok\n> \n> \n> \n> Please follow the attached hyperlink to an important disclaimer\n> http://www.credit-suisse.com/asiapac/legal/securities/ \n> \n> \n> -----Original Message-----\n> From: Marc Schwartz [mailto:marc_schwartz at me.com] \n> Sent: Friday, May 04, 2012 10:54 PM\n> To: Jadhav, Alok\n> Cc: r-help at r-project.org\n> Subject: Re: [R] Why does RODBC driver returns garbage from Sybase\n> server on new windows 7 machine?\n> \n> \n> On May 4, 2012, at 2:38 AM, Alok Jadhav wrote:\n> \n>> Hi,\n>> \n>> I am trying to query a Sybase database on my new windows 7 machine.  I\n> \n>> am using native sybase driver \"Adaptive server Enterprise\" following \n>> is example code\n>> \n>> conn <- sprintf(\"driver=Adaptive server\n>> Enterprise;server=PHKSESMD01;database=smd_live;uid=temp_user;password=\n>> temp_pass;port=2301\")\n>> chan <- odbcDriverConnect(conn)\n>> x <- sqlQuery(chan,sql,as.is=as.is)\n>> odbcClose(chan)\n>> \n>> I am able to connect to the database and get the data using above \n>> code. But when the data is more than couple of hundred lines (4 \n>> columns.. its not much), i get garbage data. I usually get 5 to 6 rows\n> \n>> correctly and remaining data is NAs.  Is this an issue with ODBC\n> driver or issue with RODBC library?\n>> I would think driver is ok because it works fine in other \n>> applications.  Can someone suggest what could be wrong here and how to\n> resolve it?\n>> \n>> Regards,\n>> Alok\n> \n> \n> \n> 1. This query is better posted to r-sig-db, which is dedicated to R and\n> DB connectivity issues. More info at:\n> \n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n> \n> 2. It is not clear what 'as.is = as.is' in the call to sqlQuery is. Is\n> the value of 'as.is' defined before the call someplace else that you\n> have not shown here, along with the 'sql' query itself? \n> \n> 3. Try using 'rows_at_time = 1' as well as 'believeNRows = FALSE' in the\n> calls as below. That may help with corrupted data coming back. I have to\n> use the former with Oracle. That is also referenced in ?odbcConnect with\n> a comment specific to Sybase.\n> \n>  chan <- odbcDriverConnect(conn, rows_at_time = 1, believeNRows =\n> FALSE)\n>  x <- sqlQuery(chan, sql, as.is = as.is, rows_at_time = 1, believeNRows\n> = FALSE) \n> \n> \n> Regards,\n> \n> Marc Schwartz\n> \n> \n> =============================================================================== \n> Please access the attached hyperlink for an important el...{{dropped:4}}\n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "Hi,\n\n> Same functions work well on my old machine\n> which is a windows XP. I am trying this first time on my windows 7 box.\n\n\nDid you check the dependency of the error on 32 bit version and \n64 bit ve",
+      "thread_id": "thread-05cb37f234bb",
+      "thread_depth": 1,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-67edca059e20",
+      "message_id": "<4836A10B-B0C4-4FF1-A25A-DBCAFE741CE0@me.com>",
+      "from_name": "Marc Schwartz",
+      "from_email_hash": "040b2d09159b27cfd2853bc2dbb476bd637811586f307d9583c9ef7f806f3692",
+      "date": "2012-05-07T09:55:58-05:00",
+      "subject": "[R-sig-DB] [R] Why does RODBC driver returns garbage from Sybase server on new windows 7 machine?",
+      "subject_clean": "Why does RODBC driver returns garbage from Sybase server on new windows 7 machine?",
+      "in_reply_to": "<0352B6AC-2CAD-4452-8E62-F9E016A4E01B@staff.kanazawa-u.ac.jp>",
+      "references": [
+        "<1336117135322-4607994.post@n4.nabble.com>",
+        "<E30337F1-C076-450F-8002-9EC5BA0FB3AF@me.com>",
+        "<CEE8C35195DB944D9C75ABB15A04193B0840E7ED@EHKG17P32001A.csfb.cs-group.com>",
+        "<0352B6AC-2CAD-4452-8E62-F9E016A4E01B@staff.kanazawa-u.ac.jp>"
+      ],
+      "body_plain": "Hi,\n\nI had thought of that as well, however, at least based upon prior posts, if there is an architecture mis-match between R/RODBC/ODBC (not all components are either 32 OR 64 bit), you will not be able to successfully connect to the DB server, much less run a query. \n\nIn other words, there would be an error issued from the call to odbc[Driver]Connect() before even getting to sqlQuery(). On some Linuxen (eg RHEL), a mis-match has caused segfaults upon trying to connect. \n\nRegards,\n\nMarc\n\nOn May 7, 2012, at 9:20 AM, NISHIYAMA Tomoaki wrote:\n\n> Hi,\n> \n>> Same functions work well on my old machine\n>> which is a windows XP. I am trying this first time on my windows 7 box.\n> \n> \n> Did you check the dependency of the error on 32 bit version and \n> 64 bit version of R?\n> \n> I assume you used a 32 bit version on Windows XP and now perhaps using the\n> 64 bit version. If so, you might try if it works on the 32 bit version\n> of R (which usually should run on windows 7 as well).\n> \n> \n> On 2012/05/07, at 9:24, Jadhav, Alok wrote:\n> \n>> \n>> [Moving this mail from R-Help to R-SIG-DB ]\n>> \n>> Marc,\n>> \n>> The below mentioned code is inside a function and the value of as.is is\n>> passed to the function, default value being FALSE.\n>> \n>> I tried your suggestion of passing rows_at_time=1 and\n>> believeNRows=FALSE. This did not solve the problem. It removed the\n>> garbage data in the result set but the data is truncated. \n>> \n>> In my query, I am expecting a result of 200 rows. Earlier I was getting\n>> around 17 rows with correct data and 3 rows with Nas. After above change\n>> now I am getting total of 17 rows with no NAs in the output. But data is\n>> not complete.\n>> \n>> I am tempted to try a different driver but still think driver is not a\n>> problem as the same driver in other app works without any issues. Seems\n>> like an issue with RODBC.  Same functions work well on my old machine\n>> which is a windows XP. I am trying this first time on my windows 7 box.\n>> \n>> Regards,\n>> Alok\n>> \n>> \n>> \n>> Please follow the attached hyperlink to an important disclaimer\n>> http://www.credit-suisse.com/asiapac/legal/securities/ \n>> \n>> \n>> -----Original Message-----\n>> From: Marc Schwartz [mailto:marc_schwartz at me.com] \n>> Sent: Friday, May 04, 2012 10:54 PM\n>> To: Jadhav, Alok\n>> Cc: r-help at r-project.org\n>> Subject: Re: [R] Why does RODBC driver returns garbage from Sybase\n>> server on new windows 7 machine?\n>> \n>> \n>> On May 4, 2012, at 2:38 AM, Alok Jadhav wrote:\n>> \n>>> Hi,\n>>> \n>>> I am trying to query a Sybase database on my new windows 7 machine.  I\n>> \n>>> am using native sybase driver \"Adaptive server Enterprise\" following \n>>> is example code\n>>> \n>>> conn <- sprintf(\"driver=Adaptive server\n>>> Enterprise;server=PHKSESMD01;database=smd_live;uid=temp_user;password=\n>>> temp_pass;port=2301\")\n>>> chan <- odbcDriverConnect(conn)\n>>> x <- sqlQuery(chan,sql,as.is=as.is)\n>>> odbcClose(chan)\n>>> \n>>> I am able to connect to the database and get the data using above \n>>> code. But when the data is more than couple of hundred lines (4 \n>>> columns.. its not much), i get garbage data. I usually get 5 to 6 rows\n>> \n>>> correctly and remaining data is NAs.  Is this an issue with ODBC\n>> driver or issue with RODBC library?\n>>> I would think driver is ok because it works fine in other \n>>> applications.  Can someone suggest what could be wrong here and how to\n>> resolve it?\n>>> \n>>> Regards,\n>>> Alok\n>> \n>> \n>> \n>> 1. This query is better posted to r-sig-db, which is dedicated to R and\n>> DB connectivity issues. More info at:\n>> \n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>> \n>> 2. It is not clear what 'as.is = as.is' in the call to sqlQuery is. Is\n>> the value of 'as.is' defined before the call someplace else that you\n>> have not shown here, along with the 'sql' query itself? \n>> \n>> 3. Try using 'rows_at_time = 1' as well as 'believeNRows = FALSE' in the\n>> calls as below. That may help with corrupted data coming back. I have to\n>> use the former with Oracle. That is also referenced in ?odbcConnect with\n>> a comment specific to Sybase.\n>> \n>> chan <- odbcDriverConnect(conn, rows_at_time = 1, believeNRows =\n>> FALSE)\n>> x <- sqlQuery(chan, sql, as.is = as.is, rows_at_time = 1, believeNRows\n>> = FALSE) \n>> \n>> \n>> Regards,\n>> \n>> Marc Schwartz",
+      "body_snippet": "Hi,\n\nI had thought of that as well, however, at least based upon prior posts, if there is an architecture mis-match between R/RODBC/ODBC (not all components are either 32 OR 64 bit), you will not be a",
+      "thread_id": "thread-05cb37f234bb",
+      "thread_depth": 2,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-ee1c604c6fd3",
+      "message_id": "<CEE8C35195DB944D9C75ABB15A04193B0840E827@EHKG17P32001A.csfb.cs-group.com>",
+      "from_name": "Jadhav, Alok",
+      "from_email_hash": "6fa5326a3a9134edf838deb2d31541f05e2d733603dd50a4e0073eadcfc06b7b",
+      "date": "2012-05-08T10:03:33+08:00",
+      "subject": "[R-sig-DB] [R] Why does RODBC driver returns garbage from\tSybase server on new windows 7 machine?",
+      "subject_clean": "Why does RODBC driver returns garbage from\tSybase server on new windows 7 machine?",
+      "in_reply_to": "<AA8BFCAA-3737-4930-B666-B96D2499CC94@me.com>",
+      "references": [
+        "<1336117135322-4607994.post@n4.nabble.com>",
+        "<E30337F1-C076-450F-8002-9EC5BA0FB3AF@me.com>",
+        "<CEE8C35195DB944D9C75ABB15A04193B0840E7ED@EHKG17P32001A.csfb.cs-group.com>",
+        "<1DC52AB1-8F73-4F68-ADC3-0F36E1A38AD0@me.com>",
+        "<AA8BFCAA-3737-4930-B666-B96D2499CC94@me.com>"
+      ],
+      "body_plain": "Marc,\n\n I am sure that my R version is 32 bit. Though I am not sure which\ndriver is picked up, 32bit or 64 bit. My box has both the drivers\ninstalled. I will look into it further. \nI have tried a simple query which returns single row and it is working\nfine. This issue happens only in case when the result set is larger than\n100 rows.\n\nI have a new observation. I was wrong when I said that this query was\nworking fine on old machine (windows xp) with same driver. Looks like\nwindows xp driver is different. I was using Merant driver on xp and\nusing sybase native driver ASE on windows 7. Looks like this is actually\na driver issue because I tried to use the same driver from a python\nscript and I am getting exactly same truncated result from my python\nscript. This clearly shows that RODBC doesn't has any problem. I will\ntest this out with a different driver and let you know.\n\nThanks for your time.\n\nRegards,\nAlok\n\n\n\nPlease follow the attached hyperlink to an important disclaimer\nhttp://www.credit-suisse.com/asiapac/legal/securities/ \n\n\n-----Original Message-----\nFrom: Marc Schwartz [mailto:marc_schwartz at me.com] \nSent: Monday, May 07, 2012 10:14 PM\nTo: Jadhav, Alok\nCc: r-sig-db at r-project.org\nSubject: Re: [R-sig-DB] [R] Why does RODBC driver returns garbage from\nSybase server on new windows 7 machine?\n\nAlok,\n\nOne additional thought as I was driving to work this morning.\n\nTry running your RODBC connect/query code outside of the function and\nuse a simple query like \"select * from TABLENAME\". Also be sure to use a\nclean working environment. \n\nJust to eliminate the possibility that there is something in your\nworkspace, function and/or a more complex query, if you are using one,\nthat is not obvious.\n\nMarc\n\nOn May 7, 2012, at 8:03 AM, Marc Schwartz wrote:\n\n> Hi Alok,\n> \n> Unfortunately, I don't have access to either Windows or Sybase, so I\ncannot attempt to replicate the problem you have or implement a working\nscenario.\n> \n> You might just re-check the character vector that you are passing for\nthe SQL query to be sure that there are no strange characters and/or\nthings like line breaks, etc. that might cause issues.\n> \n> I will need to defer to others to see if anyone might have some\ninsight into where the issue might be here.\n> \n> Regards,\n> \n> Marc\n> \n> On May 6, 2012, at 7:24 PM, Jadhav, Alok wrote:\n> \n>> \n>> [Moving this mail from R-Help to R-SIG-DB ]\n>> \n>> Marc,\n>> \n>> The below mentioned code is inside a function and the value of as.is \n>> is passed to the function, default value being FALSE.\n>> \n>> I tried your suggestion of passing rows_at_time=1 and \n>> believeNRows=FALSE. This did not solve the problem. It removed the \n>> garbage data in the result set but the data is truncated.\n>> \n>> In my query, I am expecting a result of 200 rows. Earlier I was \n>> getting around 17 rows with correct data and 3 rows with Nas. After \n>> above change now I am getting total of 17 rows with no NAs in the \n>> output. But data is not complete.\n>> \n>> I am tempted to try a different driver but still think driver is not \n>> a problem as the same driver in other app works without any issues. \n>> Seems like an issue with RODBC.  Same functions work well on my old \n>> machine which is a windows XP. I am trying this first time on my\nwindows 7 box.\n>> \n>> Regards,\n>> Alok\n>> \n>> \n>> \n>> Please follow the attached hyperlink to an important disclaimer \n>> http://www.credit-suisse.com/asiapac/legal/securities/\n>> \n>> \n>> -----Original Message-----\n>> From: Marc Schwartz [mailto:marc_schwartz at me.com]\n>> Sent: Friday, May 04, 2012 10:54 PM\n>> To: Jadhav, Alok\n>> Cc: r-help at r-project.org\n>> Subject: Re: [R] Why does RODBC driver returns garbage from Sybase \n>> server on new windows 7 machine?\n>> \n>> \n>> On May 4, 2012, at 2:38 AM, Alok Jadhav wrote:\n>> \n>>> Hi,\n>>> \n>>> I am trying to query a Sybase database on my new windows 7 machine.\n\n>>> I\n>> \n>>> am using native sybase driver \"Adaptive server Enterprise\" following\n\n>>> is example code\n>>> \n>>> conn <- sprintf(\"driver=Adaptive server \n>>> Enterprise;server=PHKSESMD01;database=smd_live;uid=temp_user;passwor\n>>> d=\n>>> temp_pass;port=2301\")\n>>> chan <- odbcDriverConnect(conn)\n>>> x <- sqlQuery(chan,sql,as.is=as.is)\n>>> odbcClose(chan)\n>>> \n>>> I am able to connect to the database and get the data using above \n>>> code. But when the data is more than couple of hundred lines (4 \n>>> columns.. its not much), i get garbage data. I usually get 5 to 6 \n>>> rows\n>> \n>>> correctly and remaining data is NAs.  Is this an issue with ODBC\n>> driver or issue with RODBC library?\n>>> I would think driver is ok because it works fine in other \n>>> applications.  Can someone suggest what could be wrong here and how \n>>> to\n>> resolve it?\n>>> \n>>> Regards,\n>>> Alok\n>> \n>> \n>> \n>> 1. This query is better posted to r-sig-db, which is dedicated to R \n>> and DB connectivity issues. More info at:\n>> \n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>> \n>> 2. It is not clear what 'as.is = as.is' in the call to sqlQuery is. \n>> Is the value of 'as.is' defined before the call someplace else that \n>> you have not shown here, along with the 'sql' query itself?\n>> \n>> 3. Try using 'rows_at_time = 1' as well as 'believeNRows = FALSE' in \n>> the calls as below. That may help with corrupted data coming back. I \n>> have to use the former with Oracle. That is also referenced in \n>> ?odbcConnect with a comment specific to Sybase.\n>> \n>> chan <- odbcDriverConnect(conn, rows_at_time = 1, believeNRows =\n>> FALSE)\n>> x <- sqlQuery(chan, sql, as.is = as.is, rows_at_time = 1, \n>> believeNRows = FALSE)\n>> \n>> \n>> Regards,\n>> \n>> Marc Schwartz\n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group \n> R-sig-DB at r-project.org https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n\n=============================================================================== \nPlease access the attached hyperlink for an important el...{{dropped:4}}",
+      "body_snippet": "Marc,\n\n I am sure that my R version is 32 bit. Though I am not sure which\ndriver is picked up, 32bit or 64 bit. My box has both the drivers\ninstalled. I will look into it further. \nI have tried a simp",
+      "thread_id": "thread-05cb37f234bb",
+      "thread_depth": 3,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-22221b565d29",
+      "message_id": "<CEE8C35195DB944D9C75ABB15A04193B0840E82F@EHKG17P32001A.csfb.cs-group.com>",
+      "from_name": "Jadhav, Alok",
+      "from_email_hash": "6fa5326a3a9134edf838deb2d31541f05e2d733603dd50a4e0073eadcfc06b7b",
+      "date": "2012-05-08T18:48:13+08:00",
+      "subject": "[R-sig-DB] [R] Why does RODBC driver returns garbage from Sybase server on new windows 7 machine?",
+      "subject_clean": "Why does RODBC driver returns garbage from Sybase server on new windows 7 machine?",
+      "in_reply_to": "<4836A10B-B0C4-4FF1-A25A-DBCAFE741CE0@me.com>",
+      "references": [
+        "<1336117135322-4607994.post@n4.nabble.com>",
+        "<E30337F1-C076-450F-8002-9EC5BA0FB3AF@me.com>",
+        "<CEE8C35195DB944D9C75ABB15A04193B0840E7ED@EHKG17P32001A.csfb.cs-group.com>",
+        "<0352B6AC-2CAD-4452-8E62-F9E016A4E01B@staff.kanazawa-u.ac.jp>",
+        "<4836A10B-B0C4-4FF1-A25A-DBCAFE741CE0@me.com>"
+      ],
+      "body_plain": "Hi Marc,\n\nAfter investigation, I found out the issue. The issue is with the\nprecision of numeric column which is not handled properly by ASE driver\non windows 7. So one of the columns in the query was the culprit. I\nfound the correct query to get the data. \n\nIssue was plainly with sybase driver only.\n\n\n\nRegards,\nAlok \n\n\n\n\nPlease follow the attached hyperlink to an important disclaimer\nhttp://www.credit-suisse.com/asiapac/legal/securities/ \n\n\n-----Original Message-----\nFrom: Marc Schwartz [mailto:marc_schwartz at me.com] \nSent: Monday, May 07, 2012 10:56 PM\nTo: NISHIYAMA Tomoaki\nCc: Jadhav, Alok; r-sig-db at r-project.org\nSubject: Re: [R-sig-DB] [R] Why does RODBC driver returns garbage from\nSybase server on new windows 7 machine?\n\nHi,\n\nI had thought of that as well, however, at least based upon prior posts,\nif there is an architecture mis-match between R/RODBC/ODBC (not all\ncomponents are either 32 OR 64 bit), you will not be able to\nsuccessfully connect to the DB server, much less run a query. \n\nIn other words, there would be an error issued from the call to\nodbc[Driver]Connect() before even getting to sqlQuery(). On some Linuxen\n(eg RHEL), a mis-match has caused segfaults upon trying to connect. \n\nRegards,\n\nMarc\n\nOn May 7, 2012, at 9:20 AM, NISHIYAMA Tomoaki wrote:\n\n> Hi,\n> \n>> Same functions work well on my old machine which is a windows XP. I \n>> am trying this first time on my windows 7 box.\n> \n> \n> Did you check the dependency of the error on 32 bit version and\n> 64 bit version of R?\n> \n> I assume you used a 32 bit version on Windows XP and now perhaps using\n\n> the\n> 64 bit version. If so, you might try if it works on the 32 bit version\n\n> of R (which usually should run on windows 7 as well).\n> \n> \n> On 2012/05/07, at 9:24, Jadhav, Alok wrote:\n> \n>> \n>> [Moving this mail from R-Help to R-SIG-DB ]\n>> \n>> Marc,\n>> \n>> The below mentioned code is inside a function and the value of as.is \n>> is passed to the function, default value being FALSE.\n>> \n>> I tried your suggestion of passing rows_at_time=1 and \n>> believeNRows=FALSE. This did not solve the problem. It removed the \n>> garbage data in the result set but the data is truncated.\n>> \n>> In my query, I am expecting a result of 200 rows. Earlier I was \n>> getting around 17 rows with correct data and 3 rows with Nas. After \n>> above change now I am getting total of 17 rows with no NAs in the \n>> output. But data is not complete.\n>> \n>> I am tempted to try a different driver but still think driver is not \n>> a problem as the same driver in other app works without any issues. \n>> Seems like an issue with RODBC.  Same functions work well on my old \n>> machine which is a windows XP. I am trying this first time on my\nwindows 7 box.\n>> \n>> Regards,\n>> Alok\n>> \n>> \n>> \n>> Please follow the attached hyperlink to an important disclaimer \n>> http://www.credit-suisse.com/asiapac/legal/securities/\n>> \n>> \n>> -----Original Message-----\n>> From: Marc Schwartz [mailto:marc_schwartz at me.com]\n>> Sent: Friday, May 04, 2012 10:54 PM\n>> To: Jadhav, Alok\n>> Cc: r-help at r-project.org\n>> Subject: Re: [R] Why does RODBC driver returns garbage from Sybase \n>> server on new windows 7 machine?\n>> \n>> \n>> On May 4, 2012, at 2:38 AM, Alok Jadhav wrote:\n>> \n>>> Hi,\n>>> \n>>> I am trying to query a Sybase database on my new windows 7 machine.\n\n>>> I\n>> \n>>> am using native sybase driver \"Adaptive server Enterprise\" following\n\n>>> is example code\n>>> \n>>> conn <- sprintf(\"driver=Adaptive server \n>>> Enterprise;server=PHKSESMD01;database=smd_live;uid=temp_user;passwor\n>>> d=\n>>> temp_pass;port=2301\")\n>>> chan <- odbcDriverConnect(conn)\n>>> x <- sqlQuery(chan,sql,as.is=as.is)\n>>> odbcClose(chan)\n>>> \n>>> I am able to connect to the database and get the data using above \n>>> code. But when the data is more than couple of hundred lines (4 \n>>> columns.. its not much), i get garbage data. I usually get 5 to 6 \n>>> rows\n>> \n>>> correctly and remaining data is NAs.  Is this an issue with ODBC\n>> driver or issue with RODBC library?\n>>> I would think driver is ok because it works fine in other \n>>> applications.  Can someone suggest what could be wrong here and how \n>>> to\n>> resolve it?\n>>> \n>>> Regards,\n>>> Alok\n>> \n>> \n>> \n>> 1. This query is better posted to r-sig-db, which is dedicated to R \n>> and DB connectivity issues. More info at:\n>> \n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>> \n>> 2. It is not clear what 'as.is = as.is' in the call to sqlQuery is. \n>> Is the value of 'as.is' defined before the call someplace else that \n>> you have not shown here, along with the 'sql' query itself?\n>> \n>> 3. Try using 'rows_at_time = 1' as well as 'believeNRows = FALSE' in \n>> the calls as below. That may help with corrupted data coming back. I \n>> have to use the former with Oracle. That is also referenced in \n>> ?odbcConnect with a comment specific to Sybase.\n>> \n>> chan <- odbcDriverConnect(conn, rows_at_time = 1, believeNRows =\n>> FALSE)\n>> x <- sqlQuery(chan, sql, as.is = as.is, rows_at_time = 1, \n>> believeNRows = FALSE)\n>> \n>> \n>> Regards,\n>> \n>> Marc Schwartz\n\n=============================================================================== \nPlease access the attached hyperlink for an important el...{{dropped:4}}",
+      "body_snippet": "Hi Marc,\n\nAfter investigation, I found out the issue. The issue is with the\nprecision of numeric column which is not handled properly by ASE driver\non windows 7. So one of the columns in the query was",
+      "thread_id": "thread-05cb37f234bb",
+      "thread_depth": 3,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-e6c5a21bef2d",
+      "message_id": "<C6FF3D1D-F3DC-4142-816B-400FC93B3C19@me.com>",
+      "from_name": "Marc Schwartz",
+      "from_email_hash": "040b2d09159b27cfd2853bc2dbb476bd637811586f307d9583c9ef7f806f3692",
+      "date": "2012-05-08T07:08:58-05:00",
+      "subject": "[R-sig-DB] [R] Why does RODBC driver returns garbage from\tSybase server on new windows 7 machine?",
+      "subject_clean": "Why does RODBC driver returns garbage from\tSybase server on new windows 7 machine?",
+      "in_reply_to": "<CEE8C35195DB944D9C75ABB15A04193B0840E82F@EHKG17P32001A.csfb.cs-group.com>",
+      "references": [
+        "<1336117135322-4607994.post@n4.nabble.com>",
+        "<E30337F1-C076-450F-8002-9EC5BA0FB3AF@me.com>",
+        "<CEE8C35195DB944D9C75ABB15A04193B0840E7ED@EHKG17P32001A.csfb.cs-group.com>",
+        "<0352B6AC-2CAD-4452-8E62-F9E016A4E01B@staff.kanazawa-u.ac.jp>",
+        "<4836A10B-B0C4-4FF1-A25A-DBCAFE741CE0@me.com>",
+        "<CEE8C35195DB944D9C75ABB15A04193B0840E82F@EHKG17P32001A.csfb.cs-group.com>"
+      ],
+      "body_plain": "On May 8, 2012, at 5:48 AM, Jadhav, Alok wrote:\n\n> Hi Marc,\n> \n> After investigation, I found out the issue. The issue is with the\n> precision of numeric column which is not handled properly by ASE driver\n> on windows 7. So one of the columns in the query was the culprit. I\n> found the correct query to get the data. \n> \n> Issue was plainly with sybase driver only.\n> \n> \n> \n> Regards,\n> Alok \n\n\nHi Alok,\n\nGlad that you got it resolved. If you have not yet, you should send in a bug report to Sybase.\n\nRegards,\n\nMarc",
+      "body_snippet": "On May 8, 2012, at 5:48 AM, Jadhav, Alok wrote:\n\n> Hi Marc,\n> \n> After investigation, I found out the issue. The issue is with the\n> precision of numeric column which is not handled properly by ASE dr",
+      "thread_id": "thread-05cb37f234bb",
+      "thread_depth": 4,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-783b69f88e61",
+      "message_id": "<CAKC0Bh=UD_hE1mLZQZ56j-JrkF6nwd5=h17Skf-gSw--x4Lz1A@mail.gmail.com>",
+      "from_name": "Andreas Voellenklee",
+      "from_email_hash": "e79ed4e32fa6eff7d95fce8091648cf6dc302ee335a23e7ad42b7e820b2d1ef3",
+      "date": "2012-05-09T16:05:20+02:00",
+      "subject": "[R-sig-DB] RMySQL, DBI: unrecognized MySQL field type 7 in column",
+      "subject_clean": "RMySQL, DBI: unrecognized MySQL field type 7 in column",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello,\n\nwhen I query a MySQL database using the commands\n\n  con <- dbConnect(MySQL(), user=dbuser, password=dbpasswd,\ndbname=dbname, host=dbhost)\n  df <- dbGetQuery(con, sql)\n\nI get the following message when a table contains the timestamp type:\n\nRS-DBI driver warning: (unrecognized MySQL field type 7 in column 1\nimported as character)\n\nI googled and found a post on this mailing list from 2006:\nhttps://stat.ethz.ch/pipermail/r-sig-db/2006q3/000221.html\n\nObviously this is still not fixed. Are there any plans to do so?\n\nThanks,\nAndreas\n\n\n> sessionInfo()\nR version 2.15.0 (2012-03-30)\nPlatform: i686-pc-linux-gnu (32-bit)\n\nlocale:\n [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C\n [3] LC_TIME=de_CH.UTF-8        LC_COLLATE=en_US.UTF-8\n [5] LC_MONETARY=de_CH.UTF-8    LC_MESSAGES=en_US.UTF-8\n [7] LC_PAPER=C                 LC_NAME=C\n [9] LC_ADDRESS=C               LC_TELEPHONE=C\n[11] LC_MEASUREMENT=de_CH.UTF-8 LC_IDENTIFICATION=C\n\nattached base packages:\n[1] stats     graphics  grDevices utils     datasets  methods   base\n\nother attached packages:\n[1] RMySQL_0.8-0 DBI_0.2-5",
+      "body_snippet": "Hello,\n\nwhen I query a MySQL database using the commands\n\n  con <- dbConnect(MySQL(), user=dbuser, password=dbpasswd,\ndbname=dbname, host=dbhost)\n  df <- dbGetQuery(con, sql)\n\nI get the following mess",
+      "thread_id": "thread-783b69f88e61",
+      "thread_depth": 0,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-c54e962d305d",
+      "message_id": "<4FB5125A.8090203@tensegritycapital.com>",
+      "from_name": "Mark Moon",
+      "from_email_hash": "a213aaa88741dd47e6a94ae47669a484ce0f7229aa0683cc7b56c60f2ad21421",
+      "date": "2012-05-17T07:59:38-07:00",
+      "subject": "[R-sig-DB] RMySQL frustrations",
+      "subject_clean": "RMySQL frustrations",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Getting frustrated using R with MySQL (on Debian Squeeze).  I can \nconnect to mySQL database and I can execute simple queries.  But, having \nvarious difficulties executing queries with multiple statements \nseparated by \";\".  Set the client.flag to CLIENT_MULTI_STATEMENTS but \nstill having difficulties.\n\nQuestions: are the RMySQL and RODBC packages really meant just for \nsimple, one line queries?  Can anyone point me to where I might learn \nhow to execute more complicated queries with in R?\n\nThanks!\n\nMark",
+      "body_snippet": "Getting frustrated using R with MySQL (on Debian Squeeze).  I can \nconnect to mySQL database and I can execute simple queries.  But, having \nvarious difficulties executing queries with multiple statem",
+      "thread_id": "thread-c54e962d305d",
+      "thread_depth": 0,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-fd4f1e8dd08a",
+      "message_id": "<CANeAVBkMPw96vR9DJSZaKrmOXn40HRcSyhEtxaWQUtgcbgyL7Q@mail.gmail.com>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2012-05-17T11:06:02-04:00",
+      "subject": "[R-sig-DB] RMySQL frustrations",
+      "subject_clean": "RMySQL frustrations",
+      "in_reply_to": "<4FB5125A.8090203@tensegritycapital.com>",
+      "references": [
+        "<4FB5125A.8090203@tensegritycapital.com>"
+      ],
+      "body_plain": "On Thu, May 17, 2012 at 10:59 AM, Mark Moon <mmoon at tensegritycapital.com>wrote:\n\n> Getting frustrated using R with MySQL (on Debian Squeeze).  I can\n> connect to mySQL database and I can execute simple queries.  But, having\n> various difficulties executing queries with multiple statements\n> separated by \";\".  Set the client.flag to CLIENT_MULTI_STATEMENTS but\n> still having difficulties.\n>\n> Questions: are the RMySQL and RODBC packages really meant just for\n> simple, one line queries?\n\n\nWhat kinds of queries are you trying to do that require multiple statements\nseparated by \";\"?  It seems these could be simply separated into individual\nqueries without loss of generality?\n\nSean\n\n\n> Can anyone point me to where I might learn\n> how to execute more complicated queries with in R?\n>\n> Thanks!\n>\n> Mark\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "On Thu, May 17, 2012 at 10:59 AM, Mark Moon <mmoon at tensegritycapital.com>wrote:\n\n> Getting frustrated using R with MySQL (on Debian Squeeze).  I can\n> connect to mySQL database and I can execute si",
+      "thread_id": "thread-c54e962d305d",
+      "thread_depth": 1,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-7def0bb0e071",
+      "message_id": "<CBDA8B6D.982EB%macqueen1@llnl.gov>",
+      "from_name": "MacQueen, Don",
+      "from_email_hash": "57bebc14c9dfd76714b31750b84b62773dc73c911ab434c31e5a16c8c34dda91",
+      "date": "2012-05-17T11:23:41-07:00",
+      "subject": "[R-sig-DB] RMySQL frustrations",
+      "subject_clean": "RMySQL frustrations",
+      "in_reply_to": "<4FB5125A.8090203@tensegritycapital.com>",
+      "references": [],
+      "body_plain": "I'm no expert, but I believe they are designed to pass one SQL expression\nat a time to the database.\n(this is not the same as \"simple, one line queries\"; I frequently use\nmulti-line moderately complex queries with sub-selects and such).\n\nIf you are talking about multiple queries of the form\n\n mydat <-  dbGetQuery(con, \"select ... ; select ... ; select ...\")\n\nthen I would argue this makes no sense to even try. Any R function returns\na only single object, but this would be asking it to return several\nobjects. Sure, we could ask the people who wrote the package to recognize\nsuch a case, run each query separately, and return a list object\ncontaining their individual results -- but I think that would be asking\ntoo much since it is simple to split such a set of queries into multiple\ncalls.\n\nIf you are talking about multiple \"queries\" of the form\n\n  dbGetQuery(con, \"create table as ... ; create table as ... ; select ...\")\n\nthat might be a little more reasonable to expect, but even so, it's easy\nenough to break this into a sequence of uses of dbSendQuery() followed by\na final dbGetQuery(). I have done this kind of thing. [or dbSendUpdate()\nin the case of JDBC]\n\nI'm trying to imagine a use of multiple statements separated by \";\" where\nit's truly essential that they all be done in a single R command.\n\n-Don\n\n-- \nDon MacQueen\n\nLawrence Livermore National Laboratory\n7000 East Ave., L-627\nLivermore, CA 94550\n925-423-1062\n\n\n\n\n\nOn 5/17/12 7:59 AM, \"Mark Moon\" <mmoon at tensegritycapital.com> wrote:\n\n>Getting frustrated using R with MySQL (on Debian Squeeze).  I can\n>connect to mySQL database and I can execute simple queries.  But, having\n>various difficulties executing queries with multiple statements\n>separated by \";\".  Set the client.flag to CLIENT_MULTI_STATEMENTS but\n>still having difficulties.\n>\n>Questions: are the RMySQL and RODBC packages really meant just for\n>simple, one line queries?  Can anyone point me to where I might learn\n>how to execute more complicated queries with in R?\n>\n>Thanks!\n>\n>Mark\n>\n>_______________________________________________\n>R-sig-DB mailing list -- R Special Interest Group\n>R-sig-DB at r-project.org\n>https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "I'm no expert, but I believe they are designed to pass one SQL expression\nat a time to the database.\n(this is not the same as \"simple, one line queries\"; I frequently use\nmulti-line moderately complex",
+      "thread_id": "thread-c54e962d305d",
+      "thread_depth": 1,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-e18d5e3a397a",
+      "message_id": "<4FB546C8.9030104@tensegritycapital.com>",
+      "from_name": "Mark Moon",
+      "from_email_hash": "a213aaa88741dd47e6a94ae47669a484ce0f7229aa0683cc7b56c60f2ad21421",
+      "date": "2012-05-17T11:43:20-07:00",
+      "subject": "[R-sig-DB] RMySQL frustrations",
+      "subject_clean": "RMySQL frustrations",
+      "in_reply_to": "<CBDA8B6D.982EB%macqueen1@llnl.gov>",
+      "references": [
+        "<CBDA8B6D.982EB%macqueen1@llnl.gov>"
+      ],
+      "body_plain": "Thanks, all.  I am trying to do the following:\n\n- set an @variable,\n- drop a table if exists\n- create a temp table from a select\n- update the temp table\n- do a select on the updated, temp table\n\nI'm now trying to run each as separate calls to dbSendQuery().  But, I'm \ngetting allkinds of errors, now of the flavor,\n\nError in mysqlExecStatement(conn, statement, ...): RS-DBI driver (could \nnot run statement ....\n\nDROP command denied to user ..\n\nAccess denied for user ..\n\nUPDATE command denied to user ..\n\nNot sure why I don't have access to DROP, UPDATE, nor can create a \ntemporary table.\n\nAny help will be GREATLY appreciated!\n\nMark\n\n\n\n\nOn 05/17/2012 11:23 AM, MacQueen, Don wrote:\n> I'm no expert, but I believe they are designed to pass one SQL expression\n> at a time to the database.\n> (this is not the same as \"simple, one line queries\"; I frequently use\n> multi-line moderately complex queries with sub-selects and such).\n>\n> If you are talking about multiple queries of the form\n>\n>   mydat<-  dbGetQuery(con, \"select ... ; select ... ; select ...\")\n>\n> then I would argue this makes no sense to even try. Any R function returns\n> a only single object, but this would be asking it to return several\n> objects. Sure, we could ask the people who wrote the package to recognize\n> such a case, run each query separately, and return a list object\n> containing their individual results -- but I think that would be asking\n> too much since it is simple to split such a set of queries into multiple\n> calls.\n>\n> If you are talking about multiple \"queries\" of the form\n>\n>    dbGetQuery(con, \"create table as ... ; create table as ... ; select ...\")\n>\n> that might be a little more reasonable to expect, but even so, it's easy\n> enough to break this into a sequence of uses of dbSendQuery() followed by\n> a final dbGetQuery(). I have done this kind of thing. [or dbSendUpdate()\n> in the case of JDBC]\n>\n> I'm trying to imagine a use of multiple statements separated by \";\" where\n> it's truly essential that they all be done in a single R command.\n>\n> -Don\n>\n\n\n-- \n-- \nMark Moon\nManaging Director and Principal\nRoss Institutional Investors\n33 Whitney Avenue\nNew Haven, CT 06510\ncell (805) 657-9504\nhome (805) 491-2826\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Thanks, all.  I am trying to do the following:\n\n- set an @variable,\n- drop a table if exists\n- create a temp table from a select\n- update the temp table\n- do a select on the updated, temp table\n\nI'm n",
+      "thread_id": "thread-c54e962d305d",
+      "thread_depth": 2,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-e9a910fb75ff",
+      "message_id": "<CANeAVBm4AP0bOKLQ9g+cEyHHHHkLgKWQfYqg6HEXG1pU6NvH+g@mail.gmail.com>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2012-05-17T15:25:00-04:00",
+      "subject": "[R-sig-DB] RMySQL frustrations",
+      "subject_clean": "RMySQL frustrations",
+      "in_reply_to": "<4FB546C8.9030104@tensegritycapital.com>",
+      "references": [
+        "<CBDA8B6D.982EB%macqueen1@llnl.gov>",
+        "<4FB546C8.9030104@tensegritycapital.com>"
+      ],
+      "body_plain": "On Thu, May 17, 2012 at 2:43 PM, Mark Moon <mmoon at tensegritycapital.com>wrote:\n\n> Thanks, all.  I am trying to do the following:\n>\n> - set an @variable,\n> - drop a table if exists\n> - create a temp table from a select\n> - update the temp table\n> - do a select on the updated, temp table\n>\n> I'm now trying to run each as separate calls to dbSendQuery().  But, I'm\n> getting allkinds of errors, now of the flavor,\n>\n> Error in mysqlExecStatement(conn, statement, ...): RS-DBI driver (could\n> not run statement ....\n>\n> DROP command denied to user ..\n>\n> Access denied for user ..\n>\n> UPDATE command denied to user ..\n>\n> Not sure why I don't have access to DROP, UPDATE, nor can create a\n> temporary table.\n>\n>\nHi, Mark.\n\nAccess to those features is a function of the mysql server.  You will need\nto explicitly GRANT those privileges to your user (or have your DBA/admin\ndo it) before you can perform those functions.  This isn't an RMySQL issue,\nI don't think.\n\nSean\n\n\n> Any help will be GREATLY appreciated!\n>\n> Mark\n>\n>\n>\n>\n> On 05/17/2012 11:23 AM, MacQueen, Don wrote:\n> > I'm no expert, but I believe they are designed to pass one SQL expression\n> > at a time to the database.\n> > (this is not the same as \"simple, one line queries\"; I frequently use\n> > multi-line moderately complex queries with sub-selects and such).\n> >\n> > If you are talking about multiple queries of the form\n> >\n> >   mydat<-  dbGetQuery(con, \"select ... ; select ... ; select ...\")\n> >\n> > then I would argue this makes no sense to even try. Any R function\n> returns\n> > a only single object, but this would be asking it to return several\n> > objects. Sure, we could ask the people who wrote the package to recognize\n> > such a case, run each query separately, and return a list object\n> > containing their individual results -- but I think that would be asking\n> > too much since it is simple to split such a set of queries into multiple\n> > calls.\n> >\n> > If you are talking about multiple \"queries\" of the form\n> >\n> >    dbGetQuery(con, \"create table as ... ; create table as ... ; select\n> ...\")\n> >\n> > that might be a little more reasonable to expect, but even so, it's easy\n> > enough to break this into a sequence of uses of dbSendQuery() followed by\n> > a final dbGetQuery(). I have done this kind of thing. [or dbSendUpdate()\n> > in the case of JDBC]\n> >\n> > I'm trying to imagine a use of multiple statements separated by \";\" where\n> > it's truly essential that they all be done in a single R command.\n> >\n> > -Don\n> >\n>\n>\n> --\n> --\n> Mark Moon\n> Managing Director and Principal\n> Ross Institutional Investors\n> 33 Whitney Avenue\n> New Haven, CT 06510\n> cell (805) 657-9504\n> home (805) 491-2826\n>\n>        [[alternative HTML version deleted]]\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "On Thu, May 17, 2012 at 2:43 PM, Mark Moon <mmoon at tensegritycapital.com>wrote:\n\n> Thanks, all.  I am trying to do the following:\n>\n> - set an @variable,\n> - drop a table if exists\n> - create a temp",
+      "thread_id": "thread-c54e962d305d",
+      "thread_depth": 3,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-65b4fa839f9d",
+      "message_id": "<CAPM4tZpt88zEZHWfZUPfT0O9RY72eOXm2=poTXhfaBUg_89JAQ@mail.gmail.com>",
+      "from_name": "Christopher A. Simon",
+      "from_email_hash": "5130e919eac4d5d3a7efa22ad76a30a616065e4101be6271ae836d8a3c920118",
+      "date": "2012-05-17T16:06:22-04:00",
+      "subject": "[R-sig-DB] RODBC Debugging",
+      "subject_clean": "RODBC Debugging",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "We are trying to attach R to our ODBC driver via RODBC. Unfortunately\nwe're getting Segmentation faults in odbcConnect (error detailed\nbelow). We would like to attach a debugger to whatever process is\ncommunicating with UnixODBC/our driver, but are not sure where to\nstart. R itself seems to be a large bash script, ideally we could\ninject \"gdb --args\" before the execution of some process in that\nscript to get the desired results. Any guidance is much appreciated.\n\n> library(RODBC)\n> odbcConnect(\"sql1010odbc\",uid = \"uname\", pwd = \"pword\")\n\n *** caught segfault ***\naddress 0x100000abb, cause 'memory not mapped'\n\nTraceback:\n 1: .Call(C_RODBCDriverConnect, as.character(connection), id,\nas.integer(believeNRows))\n 2: odbcDriverConnect(st, ...)\n 3: odbcConnect(\"sql1010odbc\")\n\n-- \n__________________________________________\n\nChristopher Alex Simon\n__________________________________________\n\n(831) 239 0636\n\n113 Cedar Apt 5A\n\nNew York, New York 10006, USA",
+      "body_snippet": "We are trying to attach R to our ODBC driver via RODBC. Unfortunately\nwe're getting Segmentation faults in odbcConnect (error detailed\nbelow). We would like to attach a debugger to whatever process is",
+      "thread_id": "thread-65b4fa839f9d",
+      "thread_depth": 0,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-7cd9ea5f89fa",
+      "message_id": "<4FB5E30C.5070101@stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2012-05-18T06:50:04+01:00",
+      "subject": "[R-sig-DB] RODBC Debugging",
+      "subject_clean": "RODBC Debugging",
+      "in_reply_to": "<CAPM4tZpt88zEZHWfZUPfT0O9RY72eOXm2=poTXhfaBUg_89JAQ@mail.gmail.com>",
+      "references": [
+        "<CAPM4tZpt88zEZHWfZUPfT0O9RY72eOXm2=poTXhfaBUg_89JAQ@mail.gmail.com>"
+      ],
+      "body_plain": "On 17/05/2012 21:06, Christopher A. Simon wrote:\n> We are trying to attach R to our ODBC driver via RODBC. Unfortunately\n> we're getting Segmentation faults in odbcConnect (error detailed\n> below). We would like to attach a debugger to whatever process is\n> communicating with UnixODBC/our driver, but are not sure where to\n> start. R itself seems to be a large bash script, ideally we could\n> inject \"gdb --args\" before the execution of some process in that\n> script to get the desired results. Any guidance is much appreciated.\n>\n>> library(RODBC)\n>> odbcConnect(\"sql1010odbc\",uid = \"uname\", pwd = \"pword\")\n>\n>   *** caught segfault ***\n> address 0x100000abb, cause 'memory not mapped'\n>\n> Traceback:\n>   1: .Call(C_RODBCDriverConnect, as.character(connection), id,\n> as.integer(believeNRows))\n>   2: odbcDriverConnect(st, ...)\n>   3: odbcConnect(\"sql1010odbc\")\n>\nYou need to read some basic R documentation.  'R' is not a 'bash \nscript'. not even an sh script.  But the front-end script allows e.g. R \n-d gdb to run the R executable under gdb.\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "On 17/05/2012 21:06, Christopher A. Simon wrote:\n> We are trying to attach R to our ODBC driver via RODBC. Unfortunately\n> we're getting Segmentation faults in odbcConnect (error detailed\n> below). We",
+      "thread_id": "thread-65b4fa839f9d",
+      "thread_depth": 1,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-e93921a7801a",
+      "message_id": "<CBDBBDFD.98503%macqueen1@llnl.gov>",
+      "from_name": "MacQueen, Don",
+      "from_email_hash": "57bebc14c9dfd76714b31750b84b62773dc73c911ab434c31e5a16c8c34dda91",
+      "date": "2012-05-18T08:59:55-07:00",
+      "subject": "[R-sig-DB] RMySQL frustrations",
+      "subject_clean": "RMySQL frustrations",
+      "in_reply_to": "<4FB546C8.9030104@tensegritycapital.com>",
+      "references": [],
+      "body_plain": "I would 't be optimistic about the @variable persisting from one dbSendQuery call to the next. But maybe it will.\n\nHowever, I think it likely you can achieve the same result on the R side, i.e., by defining an R variable to take the place of the @variable, and then using paste() to construct the subsequent queries.\n\nOther than that, the rest of your steps look just like what I have done from time to time. My guess would be like Sean's, a permissions issue.\n\nI use\n  dbExistsTable()\nand\n  dbDropTable()\ninstead of dbSendQuery() when I need to drop a table if it exists.\n\n-Don\n\n--\nDon MacQueen\nLawrence Livermore National Laboratory\n7000 East Ave., L-627\nLivermore, CA 94550\n925-423-1062\n\n\nFrom: Mark Moon <mmoon at tensegritycapital.com<mailto:mmoon at tensegritycapital.com>>\nTo: Donald MacQueen <macqueen1 at llnl.gov<mailto:macqueen1 at llnl.gov>>\nCc: \"r-sig-db at r-project.org<mailto:r-sig-db at r-project.org>\" <r-sig-db at r-project.org<mailto:r-sig-db at r-project.org>>\nSubject: Re: [R-sig-DB] RMySQL frustrations\n\nThanks, all.  I am trying to do the following:\n\n- set an @variable,\n- drop a table if exists\n- create a temp table from a select\n- update the temp table\n- do a select on the updated, temp table\n\nI'm now trying to run each as separate calls to dbSendQuery().  But, I'm getting allkinds of errors, now of the flavor,\n\nError in mysqlExecStatement(conn, statement, ...): RS-DBI driver (could not run statement ....\n\nDROP command denied to user ..\n\nAccess denied for user ..\n\nUPDATE command denied to user ..\n\nNot sure why I don't have access to DROP, UPDATE, nor can create a temporary table.\n\nAny help will be GREATLY appreciated!\n\nMark\n\n\n\n\nOn 05/17/2012 11:23 AM, MacQueen, Don wrote:\n\nI'm no expert, but I believe they are designed to pass one SQL expression\nat a time to the database.\n(this is not the same as \"simple, one line queries\"; I frequently use\nmulti-line moderately complex queries with sub-selects and such).\n\nIf you are talking about multiple queries of the form\n\n mydat <-  dbGetQuery(con, \"select ... ; select ... ; select ...\")\n\nthen I would argue this makes no sense to even try. Any R function returns\na only single object, but this would be asking it to return several\nobjects. Sure, we could ask the people who wrote the package to recognize\nsuch a case, run each query separately, and return a list object\ncontaining their individual results -- but I think that would be asking\ntoo much since it is simple to split such a set of queries into multiple\ncalls.\n\nIf you are talking about multiple \"queries\" of the form\n\n  dbGetQuery(con, \"create table as ... ; create table as ... ; select ...\")\nthat might be a little more reasonable to expect, but even so, it's easy\nenough to break this into a sequence of uses of dbSendQuery() followed by\na final dbGetQuery(). I have done this kind of thing. [or dbSendUpdate()\nin the case of JDBC]\n\nI'm trying to imagine a use of multiple statements separated by \";\" where\nit's truly essential that they all be done in a single R command.\n\n-Don\n\n\n\n\n--\n--\nMark Moon\nManaging Director and Principal\nRoss Institutional Investors\n33 Whitney Avenue\nNew Haven, CT 06510\ncell (805) 657-9504\nhome (805) 491-2826\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "I would 't be optimistic about the @variable persisting from one dbSendQuery call to the next. But maybe it will.\n\nHowever, I think it likely you can achieve the same result on the R side, i.e., by de",
+      "thread_id": "thread-c54e962d305d",
+      "thread_depth": 3,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-183d4fbceff4",
+      "message_id": "<FDC71F667B78594DB61931C4ACAC82D30D1418@sprdxchmbx3.puget.com>",
+      "from_name": "Mortensen, Mikael - Marketing",
+      "from_email_hash": "7f94a1f920698b4063346c113c027f0b9201ddbb36334a86513674528817ee06",
+      "date": "2012-05-25T20:52:44Z",
+      "subject": "[R-sig-DB] RODBC sqlSave to table with computed column",
+      "subject_clean": "RODBC sqlSave to table with computed column",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello. Does sqlSave support appending to a table with a computed column?\n\nIn my attempt, RODBC will not allow the append because I have \"missing columns in 'data'\"\n\nIf I create a column in my dataframe as a place holder for the computed column in the table and then try to append the data RStudio experiences an unhandled exception and crashes.\n\nThanks for any advice you might have.\n\nMikael\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hello. Does sqlSave support appending to a table with a computed column?\n\nIn my attempt, RODBC will not allow the append because I have \"missing columns in 'data'\"\n\nIf I create a column in my datafram",
+      "thread_id": "thread-183d4fbceff4",
+      "thread_depth": 0,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-bfe04de8aeea",
+      "message_id": "<4FC0A587.7090309@stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2012-05-26T10:42:31+01:00",
+      "subject": "[R-sig-DB] RODBC sqlSave to table with computed column",
+      "subject_clean": "RODBC sqlSave to table with computed column",
+      "in_reply_to": "<FDC71F667B78594DB61931C4ACAC82D30D1418@sprdxchmbx3.puget.com>",
+      "references": [
+        "<FDC71F667B78594DB61931C4ACAC82D30D1418@sprdxchmbx3.puget.com>"
+      ],
+      "body_plain": "On 25/05/2012 21:52, Mortensen, Mikael - Marketing wrote:\n> Hello. Does sqlSave support appending to a table with a computed column?\n\nDepends what you mean.\n\n> In my attempt, RODBC will not allow the append because I have \"missing columns in 'data'\"\n\nNo attempt was shown.\n\n> If I create a column in my dataframe as a place holder for the computed column in the table and then try to append the data RStudio experiences an unhandled exception and crashes.\n>\n> Thanks for any advice you might have.\n>\n> Mikael\n>\n> \t[[alternative HTML version deleted]]\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\nFirst, follow the posting guide at \nhttp://www.r-project.org/posting-guide.html .\n\nSecond, this is a subscribers-only list, so subscribe before posting the \nmissing information .....\n\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "On 25/05/2012 21:52, Mortensen, Mikael - Marketing wrote:\n> Hello. Does sqlSave support appending to a table with a computed column?\n\nDepends what you mean.\n\n> In my attempt, RODBC will not allow the ",
+      "thread_id": "thread-183d4fbceff4",
+      "thread_depth": 1,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-82bbe1244f0a",
+      "message_id": "<CAPNjSFYtbRw30=0WFvdqyqX=whPCMMiffAp=YTE-PN_Uyo_Wwg@mail.gmail.com>",
+      "from_name": "Michael",
+      "from_email_hash": "bcce04fb171ea2e0e1183d516248ccbe9e816010059627028b091dd2d6255a0b",
+      "date": "2012-05-26T22:27:40-05:00",
+      "subject": "[R-sig-DB] How to set up RODBC? Diff between R Console and RStudio?",
+      "subject_clean": "How to set up RODBC? Diff between R Console and RStudio?",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi all,\n\nIt's very strange. In RStudio, I can successfully load(\"RODBC\"). But in the\nplain R Console, I just couldn't get it work:\n\n(For some special and important reasons, I have to make the RODBC work in R\nConsole, not the RStudio.)\n\nAt first, the some shared library \"libodbc.so\" couldn't be found... it's\nright there, but R Console just couldn't find it.\n\nI then find that the\n\nSys.getenv(\"LD_LIBRARY_PATH\") is different for R Console vs. RStudio.\n\nWeirdly, the LD_LIBRARY_PATH in RStudio even doesn't have any \"ODBC\"\nterms/words in its long string...\n\nI guess RStudio has some special configuration for RODBC, so it doesn't\nrequire LD_LIBRARY_PATH to be set up for ODBC at all.\n\nI then added the ODBC library path into the LD_LIBRARY_PATH in R Console.\n\nI found that this problem is solved...\n\nBut then the R Console complained that the \"ODBCINI\" was set up correctly.\n\nSo I compared the \"ODBCINI\" in RStudio vs. \"ODBCINI\" in R Console, found\nthe R Console one seems to be missing.\n\nI then copied the \"ODBCINI\" from RStudio and pasted it into R Console.\n\nNow the load(\"RODBC\") can run in the plain R Console, but then the whole R\nconsole crashed without giving any errors/warnings...\n\nIt exited back to the shell prompt...\n\nWhat can I do? Anybody please shed some lights on me on this?\n\nThanks a lot!\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi all,\n\nIt's very strange. In RStudio, I can successfully load(\"RODBC\"). But in the\nplain R Console, I just couldn't get it work:\n\n(For some special and important reasons, I have to make the RODBC wo",
+      "thread_id": "thread-82bbe1244f0a",
+      "thread_depth": 0,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-fcdee1f839aa",
+      "message_id": "<CAPNjSFaJt+uwN81DRUQJBbjw2Qtp4Sa-6YhWf2sgH7n8qyAs2g@mail.gmail.com>",
+      "from_name": "Michael",
+      "from_email_hash": "bcce04fb171ea2e0e1183d516248ccbe9e816010059627028b091dd2d6255a0b",
+      "date": "2012-05-27T11:32:24-05:00",
+      "subject": "[R-sig-DB] SOS! R Console crashed after loading RODBC... Update: Re: How to set up RODBC? Diff between R Console and RStudio?",
+      "subject_clean": "SOS! R Console crashed after loading RODBC... Update: Re: How to set up RODBC? Diff between R Console and RStudio?",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Help! The R Console very quietly closed and exited without giving any\nerrors/warnings...after I loaded the RODBC library...\n\nLoading required package: RODBC\n\n\n\n\nOn Sat, May 26, 2012 at 10:27 PM, Michael <comtech.usa at gmail.com> wrote:\n\n> Hi all,\n>\n> It's very strange. In RStudio, I can successfully load(\"RODBC\"). But in\n> the plain R Console, I just couldn't get it work:\n>\n> (For some special and important reasons, I have to make the RODBC work in\n> R Console, not the RStudio.)\n>\n> At first, the some shared library \"libodbc.so\" couldn't be found... it's\n> right there, but R Console just couldn't find it.\n>\n> I then find that the\n>\n> Sys.getenv(\"LD_LIBRARY_PATH\") is different for R Console vs. RStudio.\n>\n> Weirdly, the LD_LIBRARY_PATH in RStudio even doesn't have any \"ODBC\"\n> terms/words in its long string...\n>\n> I guess RStudio has some special configuration for RODBC, so it doesn't\n> require LD_LIBRARY_PATH to be set up for ODBC at all.\n>\n> I then added the ODBC library path into the LD_LIBRARY_PATH in R Console.\n>\n> I found that this problem is solved...\n>\n> But then the R Console complained that the \"ODBCINI\" was set up correctly.\n>\n> So I compared the \"ODBCINI\" in RStudio vs. \"ODBCINI\" in R Console, found\n> the R Console one seems to be missing.\n>\n> I then copied the \"ODBCINI\" from RStudio and pasted it into R Console.\n>\n> Now the load(\"RODBC\") can run in the plain R Console, but then the whole R\n> console crashed without giving any errors/warnings...\n>\n> It exited back to the shell prompt...\n>\n> What can I do? Anybody please shed some lights on me on this?\n>\n> Thanks a lot!\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Help! The R Console very quietly closed and exited without giving any\nerrors/warnings...after I loaded the RODBC library...\n\nLoading required package: RODBC\n\n\n\n\nOn Sat, May 26, 2012 at 10:27 PM, Micha",
+      "thread_id": "thread-fcdee1f839aa",
+      "thread_depth": 0,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-f3be9eeaa6e2",
+      "message_id": "<CAPNjSFZe5WxYLvgocptY7QYrq8RRosWMTFhxVwA3W72os9x7Ng@mail.gmail.com>",
+      "from_name": "Michael",
+      "from_email_hash": "bcce04fb171ea2e0e1183d516248ccbe9e816010059627028b091dd2d6255a0b",
+      "date": "2012-05-27T12:26:45-05:00",
+      "subject": "[R-sig-DB] SOS! R Console crashed after loading RODBC... Update: Re: How to set up RODBC? Diff between R Console and RStudio?",
+      "subject_clean": "SOS! R Console crashed after loading RODBC... Update: Re: How to set up RODBC? Diff between R Console and RStudio?",
+      "in_reply_to": "<CAPNjSFaJt+uwN81DRUQJBbjw2Qtp4Sa-6YhWf2sgH7n8qyAs2g@mail.gmail.com>",
+      "references": [
+        "<CAPNjSFaJt+uwN81DRUQJBbjw2Qtp4Sa-6YhWf2sgH7n8qyAs2g@mail.gmail.com>"
+      ],
+      "body_plain": "On Sun, May 27, 2012 at 11:32 AM, Michael <comtech.usa at gmail.com> wrote:\n\n> Help! The R Console very quietly closed and exited without giving any\n> errors/warnings...after I loaded the RODBC library...\n>\n> Loading required package: RODBC\n>\n>\n>\n>\n> On Sat, May 26, 2012 at 10:27 PM, Michael <comtech.usa at gmail.com> wrote:\n>\n>> Hi all,\n>>\n>> It's very strange. In RStudio, I can successfully load(\"RODBC\"). But in\n>> the plain R Console, I just couldn't get it work:\n>>\n>> (For some special and important reasons, I have to make the RODBC work in\n>> R Console, not the RStudio.)\n>>\n>> At first, the some shared library \"libodbc.so\" couldn't be found... it's\n>> right there, but R Console just couldn't find it.\n>>\n>> I then find that the\n>>\n>> Sys.getenv(\"LD_LIBRARY_PATH\") is different for R Console vs. RStudio.\n>>\n>> Weirdly, the LD_LIBRARY_PATH in RStudio even doesn't have any \"ODBC\"\n>> terms/words in its long string...\n>>\n>> I guess RStudio has some special configuration for RODBC, so it doesn't\n>> require LD_LIBRARY_PATH to be set up for ODBC at all.\n>>\n>> I then added the ODBC library path into the LD_LIBRARY_PATH in R Console.\n>>\n>> I found that this problem is solved...\n>>\n>> But then the R Console complained that the \"ODBCINI\" was set up correctly.\n>>\n>> So I compared the \"ODBCINI\" in RStudio vs. \"ODBCINI\" in R Console, found\n>> the R Console one seems to be missing.\n>>\n>> I then copied the \"ODBCINI\" from RStudio and pasted it into R Console.\n>>\n>> Now the load(\"RODBC\") can run in the plain R Console, but then the whole\n>> R console crashed without giving any errors/warnings...\n>>\n>> It exited back to the shell prompt...\n>>\n>> What can I do? Anybody please shed some lights on me on this?\n>>\n>> Thanks a lot!\n>>\n>\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "On Sun, May 27, 2012 at 11:32 AM, Michael <comtech.usa at gmail.com> wrote:\n\n> Help! The R Console very quietly closed and exited without giving any\n> errors/warnings...after I loaded the RODBC librar",
+      "thread_id": "thread-fcdee1f839aa",
+      "thread_depth": 1,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-7706216caa12",
+      "message_id": "<705739833.829784.1338147591446.JavaMail.ngmail@webmail13.arcor-online.net>",
+      "from_name": "juii@@j@cobso@ m@iii@g oii @rcor@de",
+      "from_email_hash": "c5945c3d3e2c8ddfaf4549df2d1aeae174f9d57160de2ac0d6db9687b93159d1",
+      "date": "2012-05-27T21:39:51+02:00",
+      "subject": "[R-sig-DB] [R] RODBC Error Code 202 on Mac OS X 10.6",
+      "subject_clean": "RODBC Error Code 202 on Mac OS X 10.6",
+      "in_reply_to": "<1377271085.518314.1335708540481.JavaMail.ngmail@webmail10.arcor-online.net>",
+      "references": [
+        "<1377271085.518314.1335708540481.JavaMail.ngmail@webmail10.arcor-online.net>",
+        "<97479138-556A-440C-8402-CCC521987969@me.com>",
+        "<729563822.223386.1335366225903.JavaMail.ngmail@webmail07.arcor-online.net>"
+      ],
+      "body_plain": "> > Hello everybody out there using the RODBC package,\n> > \n> > On my linux (unixODBC) and windows machines, I can successfully use the\n> RODBC package to connect to a PostgreSQL databse.\n> > On my Mac Book running Mac OS X 10.6 (Intel 64bit architecture), I get the\n> error \"code 202\" and message \"?????\" when I try to establish an connection\n> by using\n> >> con <- odbcConnect(dsn=\"MyDataSource\",UID=\"Me\",pwd=\"secret\")\n> > Could anyone please hint me towards additional diagnostics I can run to\n> pin down the problem?\n> > I have the latest versions of unixODBC and psqlODBC installed from\n> Macports.\n> > They seem to be okay, because\n> > $isql dsn uid pwd\n> > works fine to connect to the database.\n> > \n> > Thanks in advance for your help,\n> > Julia\n\n> Unfortunately, I'm not really making any progresses, despite a lot of\n> effort.\n> I've compiled R on Mac OS X for myself using MacPorts and the error is now\n> \"state 28000, code 201\" which is failed password authentification.\n\nInterestingly, I was able to set up RODBC on Mac OS X 10.4 (PowerPC architecture) successfully and as I said, it does work on Linux and Windows XP/7 perfectly.\nI was wondering whether the undecipherable error message I get on OS X 10.6 is due to wrong encoding settings on my machine in relation to the ones on the server. It would already be of great help to be able to read the error message.\nIt is probably a problem of the versions of the OS, psqlODBC, R and RODBC on my machine.\nIt would be great to get feedback from someone running Mac OS X 10.6 in combination with RODBC successfully and check for the differences with my setup.",
+      "body_snippet": "> > Hello everybody out there using the RODBC package,\n> > \n> > On my linux (unixODBC) and windows machines, I can successfully use the\n> RODBC package to connect to a PostgreSQL databse.\n> > On my Ma",
+      "thread_id": "thread-7706216caa12",
+      "thread_depth": 0,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-cfebf5f45a8f",
+      "message_id": "<4FC2BC90.7030200@gmail.com>",
+      "from_name": "Paul Gilbert",
+      "from_email_hash": "29fea860e182a01f3e4160bbdef3ad0b7144bad40faef12022989132ed8ec2b1",
+      "date": "2012-05-27T19:45:20-04:00",
+      "subject": "[R-sig-DB] SOS! R Console crashed after loading RODBC... Update: Re: How to set up RODBC? Diff between R Console and RStudio?",
+      "subject_clean": "SOS! R Console crashed after loading RODBC... Update: Re: How to set up RODBC? Diff between R Console and RStudio?",
+      "in_reply_to": "<CAPNjSFZe5WxYLvgocptY7QYrq8RRosWMTFhxVwA3W72os9x7Ng@mail.gmail.com>",
+      "references": [
+        "<CAPNjSFaJt+uwN81DRUQJBbjw2Qtp4Sa-6YhWf2sgH7n8qyAs2g@mail.gmail.com>",
+        "<CAPNjSFZe5WxYLvgocptY7QYrq8RRosWMTFhxVwA3W72os9x7Ng@mail.gmail.com>"
+      ],
+      "body_plain": "(Cross posting should not be done!)\n\nA crash to the shell prompt suggests a bad .so got loaded. Maybe you are \npicking up a 32 bit version instead of 64 bit, or the reverse. I am \nsurprised you need to set  LD_LIBRARY_PATH, and if you set it wrong it \nmight cause this. (Just guessing.)\n\nPaul\n\n\nOn 12-05-27 01:26 PM, Michael wrote:\n> On Sun, May 27, 2012 at 11:32 AM, Michael<comtech.usa at gmail.com>  wrote:\n>\n>> Help! The R Console very quietly closed and exited without giving any\n>> errors/warnings...after I loaded the RODBC library...\n>>\n>> Loading required package: RODBC\n>>\n>>\n>>\n>>\n>> On Sat, May 26, 2012 at 10:27 PM, Michael<comtech.usa at gmail.com>  wrote:\n>>\n>>> Hi all,\n>>>\n>>> It's very strange. In RStudio, I can successfully load(\"RODBC\"). But in\n>>> the plain R Console, I just couldn't get it work:\n>>>\n>>> (For some special and important reasons, I have to make the RODBC work in\n>>> R Console, not the RStudio.)\n>>>\n>>> At first, the some shared library \"libodbc.so\" couldn't be found... it's\n>>> right there, but R Console just couldn't find it.\n>>>\n>>> I then find that the\n>>>\n>>> Sys.getenv(\"LD_LIBRARY_PATH\") is different for R Console vs. RStudio.\n>>>\n>>> Weirdly, the LD_LIBRARY_PATH in RStudio even doesn't have any \"ODBC\"\n>>> terms/words in its long string...\n>>>\n>>> I guess RStudio has some special configuration for RODBC, so it doesn't\n>>> require LD_LIBRARY_PATH to be set up for ODBC at all.\n>>>\n>>> I then added the ODBC library path into the LD_LIBRARY_PATH in R Console.\n>>>\n>>> I found that this problem is solved...\n>>>\n>>> But then the R Console complained that the \"ODBCINI\" was set up correctly.\n>>>\n>>> So I compared the \"ODBCINI\" in RStudio vs. \"ODBCINI\" in R Console, found\n>>> the R Console one seems to be missing.\n>>>\n>>> I then copied the \"ODBCINI\" from RStudio and pasted it into R Console.\n>>>\n>>> Now the load(\"RODBC\") can run in the plain R Console, but then the whole\n>>> R console crashed without giving any errors/warnings...\n>>>\n>>> It exited back to the shell prompt...\n>>>\n>>> What can I do? Anybody please shed some lights on me on this?\n>>>\n>>> Thanks a lot!\n>>>\n>>\n>>\n>\n> \t[[alternative HTML version deleted]]\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "(Cross posting should not be done!)\n\nA crash to the shell prompt suggests a bad .so got loaded. Maybe you are \npicking up a 32 bit version instead of 64 bit, or the reverse. I am \nsurprised you need t",
+      "thread_id": "thread-fcdee1f839aa",
+      "thread_depth": 2,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-abaad8e89562",
+      "message_id": "<4FC2C442.7070703@gmail.com>",
+      "from_name": "Paul Gilbert",
+      "from_email_hash": "29fea860e182a01f3e4160bbdef3ad0b7144bad40faef12022989132ed8ec2b1",
+      "date": "2012-05-27T20:18:10-04:00",
+      "subject": "[R-sig-DB] [R] RODBC Error Code 202 on Mac OS X 10.6",
+      "subject_clean": "RODBC Error Code 202 on Mac OS X 10.6",
+      "in_reply_to": "<705739833.829784.1338147591446.JavaMail.ngmail@webmail13.arcor-online.net>",
+      "references": [
+        "<1377271085.518314.1335708540481.JavaMail.ngmail@webmail10.arcor-online.net>",
+        "<97479138-556A-440C-8402-CCC521987969@me.com>",
+        "<729563822.223386.1335366225903.JavaMail.ngmail@webmail07.arcor-online.net>",
+        "<705739833.829784.1338147591446.JavaMail.ngmail@webmail13.arcor-online.net>"
+      ],
+      "body_plain": "I cannot help you if this really is a Mac issue, but the error message \nsounds to me like your server is not configured to accept connections \nfrom your client. When you say it works with a different OS, do you mean \non the same machine, or do you mean on a machine with a different IP \naddress?  If the latter, then be sure the server has the same \npermissions for the two machines, then check that the odbc.ini files \nhave the same UserName and Password settings, just in case that is \nreally what is being used, rather than the strings in the command line. \nYou should also be sure the host server setting is the same on both \nmachines, just in case you happen to be talking to different servers.\n\n(I do realize that you probably know this, but it is surprisingly \ndifficult to get these right, and the error message you get when they \nare wrong is the one you are getting.)\n\nAnother thing you can do is to run the server in debug mode, which \nsometimes gives better details about attempted connection failures.\n\nPaul\n\nOn 12-05-27 03:39 PM, julia.jacobson at arcor.de wrote:\n>>> Hello everybody out there using the RODBC package,\n>>>\n>>> On my linux (unixODBC) and windows machines, I can successfully use the\n>> RODBC package to connect to a PostgreSQL databse.\n>>> On my Mac Book running Mac OS X 10.6 (Intel 64bit architecture), I get the\n>> error \"code 202\" and message \"?????\" when I try to establish an connection\n>> by using\n>>>> con<- odbcConnect(dsn=\"MyDataSource\",UID=\"Me\",pwd=\"secret\")\n>>> Could anyone please hint me towards additional diagnostics I can run to\n>> pin down the problem?\n>>> I have the latest versions of unixODBC and psqlODBC installed from\n>> Macports.\n>>> They seem to be okay, because\n>>> $isql dsn uid pwd\n>>> works fine to connect to the database.\n>>>\n>>> Thanks in advance for your help,\n>>> Julia\n>\n>> Unfortunately, I'm not really making any progresses, despite a lot of\n>> effort.\n>> I've compiled R on Mac OS X for myself using MacPorts and the error is now\n>> \"state 28000, code 201\" which is failed password authentification.\n>\n> Interestingly, I was able to set up RODBC on Mac OS X 10.4 (PowerPC architecture) successfully and as I said, it does work on Linux and Windows XP/7 perfectly.\n> I was wondering whether the undecipherable error message I get on OS X 10.6 is due to wrong encoding settings on my machine in relation to the ones on the server. It would already be of great help to be able to read the error message.\n> It is probably a problem of the versions of the OS, psqlODBC, R and RODBC on my machine.\n> It would be great to get feedback from someone running Mac OS X 10.6 in combination with RODBC successfully and check for the differences with my setup.\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "I cannot help you if this really is a Mac issue, but the error message \nsounds to me like your server is not configured to accept connections \nfrom your client. When you say it works with a different ",
+      "thread_id": "thread-7706216caa12",
+      "thread_depth": 1,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-bf4a4b67579f",
+      "message_id": "<4FC2C8C3.4050302@gmail.com>",
+      "from_name": "Paul Gilbert",
+      "from_email_hash": "29fea860e182a01f3e4160bbdef3ad0b7144bad40faef12022989132ed8ec2b1",
+      "date": "2012-05-27T20:37:23-04:00",
+      "subject": "[R-sig-DB] SOS! R Console crashed after loading RODBC... Update: Re: How to set up RODBC? Diff between R Console and RStudio?",
+      "subject_clean": "SOS! R Console crashed after loading RODBC... Update: Re: How to set up RODBC? Diff between R Console and RStudio?",
+      "in_reply_to": "<CAPNjSFYe80Lzuz_vLX=DPaJmj+nS4kAukK-VcDFxN39aTX4E=g@mail.gmail.com>",
+      "references": [
+        "<CAPNjSFaJt+uwN81DRUQJBbjw2Qtp4Sa-6YhWf2sgH7n8qyAs2g@mail.gmail.com>",
+        "<CAPNjSFZe5WxYLvgocptY7QYrq8RRosWMTFhxVwA3W72os9x7Ng@mail.gmail.com>",
+        "<4FC2BC90.7030200@gmail.com>",
+        "<CAPNjSFYe80Lzuz_vLX=DPaJmj+nS4kAukK-VcDFxN39aTX4E=g@mail.gmail.com>"
+      ],
+      "body_plain": "If they are both installed, I think they are in directories like \n/usr/lib/i386-linux-gnu/ and /usr/lib/x86_64-linux-gnu/. If they are not \nboth installed, then that could not be the problem. Try\n   locate libodbc.so\nto see what you have installed.\n\n\nOn 12-05-27 07:58 PM, Michael wrote:\n> Thank you Paul.\n> How do I judge/check which lib is 32 and which is 64?\n> Thanks again!\n>\n> On Sun, May 27, 2012 at 6:45 PM, Paul Gilbert <pgilbert902 at gmail.com\n> <mailto:pgilbert902 at gmail.com>> wrote:\n>\n>     (Cross posting should not be done!)\n>\n>     A crash to the shell prompt suggests a bad .so got loaded. Maybe you\n>     are picking up a 32 bit version instead of 64 bit, or the reverse. I\n>     am surprised you need to set  LD_LIBRARY_PATH, and if you set it\n>     wrong it might cause this. (Just guessing.)\n>\n>     Paul\n>\n>\n>\n>     On 12-05-27 01:26 PM, Michael wrote:\n>\n>         On Sun, May 27, 2012 at 11:32 AM, Michael<comtech.usa at gmail.com\n>         <mailto:comtech.usa at gmail.com>>  wrote:\n>\n>             Help! The R Console very quietly closed and exited without\n>             giving any\n>             errors/warnings...after I loaded the RODBC library...\n>\n>             Loading required package: RODBC\n>\n>\n>\n>\n>             On Sat, May 26, 2012 at 10:27 PM,\n>             Michael<comtech.usa at gmail.com\n>             <mailto:comtech.usa at gmail.com>>  wrote:\n>\n>                 Hi all,\n>\n>                 It's very strange. In RStudio, I can successfully\n>                 load(\"RODBC\"). But in\n>                 the plain R Console, I just couldn't get it work:\n>\n>                 (For some special and important reasons, I have to make\n>                 the RODBC work in\n>                 R Console, not the RStudio.)\n>\n>                 At first, the some shared library \"libodbc.so\" couldn't\n>                 be found... it's\n>                 right there, but R Console just couldn't find it.\n>\n>                 I then find that the\n>\n>                 Sys.getenv(\"LD_LIBRARY_PATH\") is different for R Console\n>                 vs. RStudio.\n>\n>                 Weirdly, the LD_LIBRARY_PATH in RStudio even doesn't\n>                 have any \"ODBC\"\n>                 terms/words in its long string...\n>\n>                 I guess RStudio has some special configuration for\n>                 RODBC, so it doesn't\n>                 require LD_LIBRARY_PATH to be set up for ODBC at all.\n>\n>                 I then added the ODBC library path into the\n>                 LD_LIBRARY_PATH in R Console.\n>\n>                 I found that this problem is solved...\n>\n>                 But then the R Console complained that the \"ODBCINI\" was\n>                 set up correctly.\n>\n>                 So I compared the \"ODBCINI\" in RStudio vs. \"ODBCINI\" in\n>                 R Console, found\n>                 the R Console one seems to be missing.\n>\n>                 I then copied the \"ODBCINI\" from RStudio and pasted it\n>                 into R Console.\n>\n>                 Now the load(\"RODBC\") can run in the plain R Console,\n>                 but then the whole\n>                 R console crashed without giving any errors/warnings...\n>\n>                 It exited back to the shell prompt...\n>\n>                 What can I do? Anybody please shed some lights on me on\n>                 this?\n>\n>                 Thanks a lot!\n>\n>\n>\n>\n>                 [[alternative HTML version deleted]]\n>\n>         _________________________________________________\n>         R-sig-DB mailing list -- R Special Interest Group\n>         R-sig-DB at r-project.org <mailto:R-sig-DB at r-project.org>\n>         https://stat.ethz.ch/mailman/__listinfo/r-sig-db\n>         <https://stat.ethz.ch/mailman/listinfo/r-sig-db>\n>\n>",
+      "body_snippet": "If they are both installed, I think they are in directories like \n/usr/lib/i386-linux-gnu/ and /usr/lib/x86_64-linux-gnu/. If they are not \nboth installed, then that could not be the problem. Try\n   l",
+      "thread_id": "thread-bf4a4b67579f",
+      "thread_depth": 0,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-38e0a4c5eb8d",
+      "message_id": "<4FC3772B.8080204@gmail.com>",
+      "from_name": "Paul Gilbert",
+      "from_email_hash": "29fea860e182a01f3e4160bbdef3ad0b7144bad40faef12022989132ed8ec2b1",
+      "date": "2012-05-28T09:01:31-04:00",
+      "subject": "[R-sig-DB] SOS! R Console crashed after loading RODBC... Update: Re: How to set up RODBC? Diff between R Console and RStudio?",
+      "subject_clean": "SOS! R Console crashed after loading RODBC... Update: Re: How to set up RODBC? Diff between R Console and RStudio?",
+      "in_reply_to": "<CAPNjSFYcf32PGkt+WPBc=Z0gqeTm2JyvBRkeuFKPQZXrSETQ2g@mail.gmail.com>",
+      "references": [
+        "<CAPNjSFaJt+uwN81DRUQJBbjw2Qtp4Sa-6YhWf2sgH7n8qyAs2g@mail.gmail.com>",
+        "<CAPNjSFZe5WxYLvgocptY7QYrq8RRosWMTFhxVwA3W72os9x7Ng@mail.gmail.com>",
+        "<4FC2BC90.7030200@gmail.com>",
+        "<CAPNjSFYe80Lzuz_vLX=DPaJmj+nS4kAukK-VcDFxN39aTX4E=g@mail.gmail.com>",
+        "<4FC2C8C3.4050302@gmail.com>",
+        "<CAPNjSFYfQYn69MBDmo+RtOpTb99y0pPAahfqOphac9CENPh4_g@mail.gmail.com>",
+        "<CAPNjSFYcf32PGkt+WPBc=Z0gqeTm2JyvBRkeuFKPQZXrSETQ2g@mail.gmail.com>"
+      ],
+      "body_plain": "I think it would be useful to first understand how your RStudio \nenvironment is working. You should not need both \"/pp64/odbc/5.3/lib\" \nand \"/pp64/odbc/5.1/lib\" on your LD_LIBRARY_PATH. One can guess what is \nbeing used, but it would be better to be certain. So if you can get a \nrelatively clean RStudio environment that works, then deciding what to \nuse in the console session would be easier.\n\nOnce again, while the crash to the shell with no error messages may not \nhappen until you execute some R commands, this behaviour is almost \ncertainly related to loading a bad binary file or library.\n\n(Also, be certain you are getting the same version of R and package \nlibraries when you run RStudio and your console session.)\n\nPaul\n\nOn 12-05-27 09:59 PM, Michael wrote:\n> Even more weirdly...\n> Now I open the R-Console again, and manually typed:\n>\n>  >\n>\n> library(RODBC)\n>\n>  >\n>\n> require(RODBC)\n>\n> And it seems to be fine, no crash at all.\n> But when I run my original program(the same program ran perfectly fine\n> in RStudio), it crashed again quietly...\n> The problem seems to be lying in the commands/functions after loading\n> the RODBC library, but it's related to RODBC...\n>\n>\n> On Sun, May 27, 2012 at 8:46 PM, Michael <comtech.usa at gmail.com\n> <mailto:comtech.usa at gmail.com>> wrote:\n>\n>     Thank you!\n>     I dug into the RStudio, since the RODBC worked perfectly fine inside\n>     RStudio.\n>     I did Sys.getenv(\"ODBC_HOME\"), it returned:\n>     /pp64/odbc/5.3/\n>     I then looked into that fold and found \"libodbc.so\" in that directory.\n>     When I set the LD_LIBRARY_PATH, I actually have copied everything\n>     related to \"odbc\" and \"ODBC\" on the environments from RStudio.\n>     There, inside RStudio, I found the following in LD_LIBRARY_PATH:\n>     \"/pp64/unixODBC/2.3.1/lib\" \"/pp64/unixODBC/2.3.1/lib\"\n>     \"/pp64/unixODBC/2.3.1/lib\"\n>     \"/pp64/unixODBC/2.3.1/lib\"\n>     \"/pp64/odbc/5.3/lib\" \"/pp64/odbc/5.1/lib\"\n>     \"/pp64/odbcpp/0.2.5-unixodbc/lib\" \"/pp64/odbcpp/0.2.5-unixodbc/lib\"\n>     \"/pp64/odbc/5.3/lib\" \"/pp64/odbc/5.1/lib\"\n>     \"/pp64/odbcpp/0.2.5-unixodbc/lib\" \"/pp64/odbcpp/0.2.5-unixodbc/lib\"\n>     There are some repetitions, so I copied only those non-repitives to\n>     the global shell environment before calling the R-Console.\n>     My goal was to replicate the exactly same environment variables for\n>     R-Console... so that RODBC could work in R-Console.\n>     Also following exactly what I see from RStudio, using Sys.getenv(),\n>     I copied over and set up for R-Console the following:\n>     ODBC_HOME\n>     ODBCINI\n>     ODBC_INI\n>     PATH\n>     PYTHONPATH\n>     They all have \"odbc\" or \"ODBC\" in them...\n>     As reported, initially it was the file \"libodbc.so\" couldn't be\n>     found; later it became crash after I set up the paths...\n>     Any more thoughts?\n>     Thanks a lot!\n>\n>     On Sun, May 27, 2012 at 7:37 PM, Paul Gilbert <pgilbert902 at gmail.com\n>     <mailto:pgilbert902 at gmail.com>> wrote:\n>\n>         If they are both installed, I think they are in directories like\n>         /usr/lib/i386-linux-gnu/ and /usr/lib/x86_64-linux-gnu/. If they\n>         are not both installed, then that could not be the problem. Try\n>           locate libodbc.so\n>         to see what you have installed.\n>\n>\n>\n>         On 12-05-27 07:58 PM, Michael wrote:\n>\n>             Thank you Paul.\n>             How do I judge/check which lib is 32 and which is 64?\n>             Thanks again!\n>\n>             On Sun, May 27, 2012 at 6:45 PM, Paul Gilbert\n>             <pgilbert902 at gmail.com <mailto:pgilbert902 at gmail.com>\n>             <mailto:pgilbert902 at gmail.com\n>             <mailto:pgilbert902 at gmail.com>>__> wrote:\n>\n>                 (Cross posting should not be done!)\n>\n>                 A crash to the shell prompt suggests a bad .so got\n>             loaded. Maybe you\n>                 are picking up a 32 bit version instead of 64 bit, or\n>             the reverse. I\n>                 am surprised you need to set  LD_LIBRARY_PATH, and if\n>             you set it\n>                 wrong it might cause this. (Just guessing.)\n>\n>                 Paul\n>\n>\n>\n>                 On 12-05-27 01:26 PM, Michael wrote:\n>\n>                     On Sun, May 27, 2012 at 11:32 AM,\n>             Michael<comtech.usa at gmail.com <mailto:comtech.usa at gmail.com>\n>             <mailto:comtech.usa at gmail.com\n>             <mailto:comtech.usa at gmail.com>>__>  wrote:\n>\n>\n>                         Help! The R Console very quietly closed and\n>             exited without\n>                         giving any\n>                         errors/warnings...after I loaded the RODBC\n>             library...\n>\n>                         Loading required package: RODBC\n>\n>\n>\n>\n>                         On Sat, May 26, 2012 at 10:27 PM,\n>                         Michael<comtech.usa at gmail.com\n>             <mailto:comtech.usa at gmail.com>\n>             <mailto:comtech.usa at gmail.com\n>             <mailto:comtech.usa at gmail.com>>__>  wrote:\n>\n>\n>                             Hi all,\n>\n>                             It's very strange. In RStudio, I can\n>             successfully\n>                             load(\"RODBC\"). But in\n>                             the plain R Console, I just couldn't get it\n>             work:\n>\n>                             (For some special and important reasons, I\n>             have to make\n>                             the RODBC work in\n>                             R Console, not the RStudio.)\n>\n>                             At first, the some shared library\n>             \"libodbc.so\" couldn't\n>                             be found... it's\n>                             right there, but R Console just couldn't\n>             find it.\n>\n>                             I then find that the\n>\n>                             Sys.getenv(\"LD_LIBRARY_PATH\") is different\n>             for R Console\n>                             vs. RStudio.\n>\n>                             Weirdly, the LD_LIBRARY_PATH in RStudio even\n>             doesn't\n>                             have any \"ODBC\"\n>                             terms/words in its long string...\n>\n>                             I guess RStudio has some special\n>             configuration for\n>                             RODBC, so it doesn't\n>                             require LD_LIBRARY_PATH to be set up for\n>             ODBC at all.\n>\n>                             I then added the ODBC library path into the\n>                             LD_LIBRARY_PATH in R Console.\n>\n>                             I found that this problem is solved...\n>\n>                             But then the R Console complained that the\n>             \"ODBCINI\" was\n>                             set up correctly.\n>\n>                             So I compared the \"ODBCINI\" in RStudio vs.\n>             \"ODBCINI\" in\n>                             R Console, found\n>                             the R Console one seems to be missing.\n>\n>                             I then copied the \"ODBCINI\" from RStudio and\n>             pasted it\n>                             into R Console.\n>\n>                             Now the load(\"RODBC\") can run in the plain R\n>             Console,\n>                             but then the whole\n>                             R console crashed without giving any\n>             errors/warnings...\n>\n>                             It exited back to the shell prompt...\n>\n>                             What can I do? Anybody please shed some\n>             lights on me on\n>                             this?\n>\n>                             Thanks a lot!\n>\n>\n>\n>\n>                             [[alternative HTML version deleted]]\n>\n>                     ___________________________________________________\n>\n>                     R-sig-DB mailing list -- R Special Interest Group\n>             R-sig-DB at r-project.org <mailto:R-sig-DB at r-project.org>\n>             <mailto:R-sig-DB at r-project.org\n>             <mailto:R-sig-DB at r-project.org>__>\n>             https://stat.ethz.ch/mailman/____listinfo/r-sig-db\n>             <https://stat.ethz.ch/mailman/__listinfo/r-sig-db>\n>             <https://stat.ethz.ch/mailman/__listinfo/r-sig-db\n>             <https://stat.ethz.ch/mailman/listinfo/r-sig-db>>\n>\n>\n>\n>",
+      "body_snippet": "I think it would be useful to first understand how your RStudio \nenvironment is working. You should not need both \"/pp64/odbc/5.3/lib\" \nand \"/pp64/odbc/5.1/lib\" on your LD_LIBRARY_PATH. One can guess ",
+      "thread_id": "thread-38e0a4c5eb8d",
+      "thread_depth": 0,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-749ab0151752",
+      "message_id": "<CAPNjSFby7sQYAUAhphpFNc-D6dXTWNJ394CEQ8YE4W=bSCkbSg@mail.gmail.com>",
+      "from_name": "Michael",
+      "from_email_hash": "bcce04fb171ea2e0e1183d516248ccbe9e816010059627028b091dd2d6255a0b",
+      "date": "2012-05-28T10:36:34-05:00",
+      "subject": "[R-sig-DB] SOS! R Console crashed after loading RODBC... Update: Re: How to set up RODBC? Diff between R Console and RStudio?",
+      "subject_clean": "SOS! R Console crashed after loading RODBC... Update: Re: How to set up RODBC? Diff between R Console and RStudio?",
+      "in_reply_to": "<4FC3772B.8080204@gmail.com>",
+      "references": [
+        "<CAPNjSFaJt+uwN81DRUQJBbjw2Qtp4Sa-6YhWf2sgH7n8qyAs2g@mail.gmail.com>",
+        "<CAPNjSFZe5WxYLvgocptY7QYrq8RRosWMTFhxVwA3W72os9x7Ng@mail.gmail.com>",
+        "<4FC2BC90.7030200@gmail.com>",
+        "<CAPNjSFYe80Lzuz_vLX=DPaJmj+nS4kAukK-VcDFxN39aTX4E=g@mail.gmail.com>",
+        "<4FC2C8C3.4050302@gmail.com>",
+        "<CAPNjSFYfQYn69MBDmo+RtOpTb99y0pPAahfqOphac9CENPh4_g@mail.gmail.com>",
+        "<CAPNjSFYcf32PGkt+WPBc=Z0gqeTm2JyvBRkeuFKPQZXrSETQ2g@mail.gmail.com>",
+        "<4FC3772B.8080204@gmail.com>"
+      ],
+      "body_plain": "Thank you!\n\nIn order to identify which library is used by RStudio, I have actually done\nthe following in RStudio:\n\n> aa=Sys.getenv(\"LD_LIBRARY_PATH\")\n> bb=gsub(\"odbc\", \"xxxx\", aa)\n> cc=gsub(\"ODBC\", \"XXXX\", bb)\n> Sys.setenv(LD_LIBRARY_PATH=cc)\n\nAmazingly, all the programs still worked in RStudio...\n\nSo at least for RStudio, LD_LIBRARY_PATH is not used for RODBC, as you\npointed out earlier...\n\nThen what shall I set up for running the same program in R-Console?\n\nWhat are the key elements that are in RStuio but missing in R-Console?\n\nI have also made sure the RStudio and R-Console have the same underlying by\nchecking:\n\nR.Version\nR.home()\n\nin both R-Console and RStudio...\n\nAny more thoughts? Thanks a lot again!\n\n\n\nOn Mon, May 28, 2012 at 8:01 AM, Paul Gilbert <pgilbert902 at gmail.com> wrote:\n\n> I think it would be useful to first understand how your RStudio\n> environment is working. You should not need both \"/pp64/odbc/5.3/lib\" and\n> \"/pp64/odbc/5.1/lib\" on your LD_LIBRARY_PATH. One can guess what is being\n> used, but it would be better to be certain. So if you can get a relatively\n> clean RStudio environment that works, then deciding what to use in the\n> console session would be easier.\n>\n> Once again, while the crash to the shell with no error messages may not\n> happen until you execute some R commands, this behaviour is almost\n> certainly related to loading a bad binary file or library.\n>\n> (Also, be certain you are getting the same version of R and package\n> libraries when you run RStudio and your console session.)\n>\n> Paul\n>\n>\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Thank you!\n\nIn order to identify which library is used by RStudio, I have actually done\nthe following in RStudio:\n\n> aa=Sys.getenv(\"LD_LIBRARY_PATH\")\n> bb=gsub(\"odbc\", \"xxxx\", aa)\n> cc=gsub(\"ODBC\", \"X",
+      "thread_id": "thread-38e0a4c5eb8d",
+      "thread_depth": 1,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-19820b6a134e",
+      "message_id": "<46564726.1063668.1338310724877.JavaMail.ngmail@webmail06.arcor-online.net>",
+      "from_name": "juii@@j@cobso@ m@iii@g oii @rcor@de",
+      "from_email_hash": "c5945c3d3e2c8ddfaf4549df2d1aeae174f9d57160de2ac0d6db9687b93159d1",
+      "date": "2012-05-29T18:58:44+02:00",
+      "subject": "[R-sig-DB] [R] RODBC Error Code 202 on Mac OS X 10.6",
+      "subject_clean": "RODBC Error Code 202 on Mac OS X 10.6",
+      "in_reply_to": "<4FC2C442.7070703@gmail.com>",
+      "references": [
+        "<4FC2C442.7070703@gmail.com>",
+        "<1377271085.518314.1335708540481.JavaMail.ngmail@webmail10.arcor-online.net>",
+        "<97479138-556A-440C-8402-CCC521987969@me.com>",
+        "<729563822.223386.1335366225903.JavaMail.ngmail@webmail07.arcor-online.net>",
+        "<705739833.829784.1338147591446.JavaMail.ngmail@webmail13.arcor-online.net>"
+      ],
+      "body_plain": "----- Original Nachricht ----\nVon:     Paul Gilbert <pgilbert902 at gmail.com>\nAn:      julia.jacobson at arcor.de\nDatum:   28.05.2012 02:18\nBetreff: Re: [R-sig-DB] [R] RODBC Error Code 202 on Mac OS X 10.6\n\n> I cannot help you if this really is a Mac issue, but the error message \n> sounds to me like your server is not configured to accept connections \n> from your client. When you say it works with a different OS, do you mean \n> on the same machine, or do you mean on a machine with a different IP \n> address?  If the latter, then be sure the server has the same \n> permissions for the two machines, then check that the odbc.ini files \n> have the same UserName and Password settings, just in case that is \n> really what is being used, rather than the strings in the command line. \n> You should also be sure the host server setting is the same on both \n> machines, just in case you happen to be talking to different servers.\n> \n> (I do realize that you probably know this, but it is surprisingly \n> difficult to get these right, and the error message you get when they \n> are wrong is the one you are getting.)\n> \n> Another thing you can do is to run the server in debug mode, which \n> sometimes gives better details about attempted connection failures.\n> \n> Paul\n> \n> On 12-05-27 03:39 PM, julia.jacobson at arcor.de wrote:\n> >>> Hello everybody out there using the RODBC package,\n> >>>\n> >>> On my linux (unixODBC) and windows machines, I can successfully use the\n> >> RODBC package to connect to a PostgreSQL databse.\n> >>> On my Mac Book running Mac OS X 10.6 (Intel 64bit architecture), I get\n> the\n> >> error \"code 202\" and message \"?????\" when I try to establish an\n> connection\n> >> by using\n> >>>> con<- odbcConnect(dsn=\"MyDataSource\",UID=\"Me\",pwd=\"secret\")\n> >>> Could anyone please hint me towards additional diagnostics I can run to\n> >> pin down the problem?\n> >>> I have the latest versions of unixODBC and psqlODBC installed from\n> >> Macports.\n> >>> They seem to be okay, because\n> >>> $isql dsn uid pwd\n> >>> works fine to connect to the database.\n> >>>\n> >>> Thanks in advance for your help,\n> >>> Julia\n> >\n> >> Unfortunately, I'm not really making any progresses, despite a lot of\n> >> effort.\n> >> I've compiled R on Mac OS X for myself using MacPorts and the error is\n> now\n> >> \"state 28000, code 201\" which is failed password authentification.\n> >\n> > Interestingly, I was able to set up RODBC on Mac OS X 10.4 (PowerPC\n> architecture) successfully and as I said, it does work on Linux and Windows\n> XP/7 perfectly.\n> > I was wondering whether the undecipherable error message I get on OS X\n> 10.6 is due to wrong encoding settings on my machine in relation to the ones\n> on the server. It would already be of great help to be able to read the\n> error message.\n> > It is probably a problem of the versions of the OS, psqlODBC, R and RODBC\n> on my machine.\n> > It would be great to get feedback from someone running Mac OS X 10.6 in\n> combination with RODBC successfully and check for the differences with my\n> setup.\n> >\n> > _______________________________________________\n> > R-sig-DB mailing list -- R Special Interest Group\n> > R-sig-DB at r-project.org\n> > https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "----- Original Nachricht ----\nVon:     Paul Gilbert <pgilbert902 at gmail.com>\nAn:      julia.jacobson at arcor.de\nDatum:   28.05.2012 02:18\nBetreff: Re: [R-sig-DB] [R] RODBC Error Code 202 on Mac OS ",
+      "thread_id": "thread-7706216caa12",
+      "thread_depth": 2,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-465643558af1",
+      "message_id": "<609400398.1063959.1338311308303.JavaMail.ngmail@webmail06.arcor-online.net>",
+      "from_name": "juii@@j@cobso@ m@iii@g oii @rcor@de",
+      "from_email_hash": "c5945c3d3e2c8ddfaf4549df2d1aeae174f9d57160de2ac0d6db9687b93159d1",
+      "date": "2012-05-29T19:08:28+02:00",
+      "subject": "[R-sig-DB] [R] RODBC Error Code 202 on Mac OS X 10.6",
+      "subject_clean": "RODBC Error Code 202 on Mac OS X 10.6",
+      "in_reply_to": "<4FC2C442.7070703@gmail.com>",
+      "references": [
+        "<4FC2C442.7070703@gmail.com>",
+        "<1377271085.518314.1335708540481.JavaMail.ngmail@webmail10.arcor-online.net>",
+        "<97479138-556A-440C-8402-CCC521987969@me.com>",
+        "<729563822.223386.1335366225903.JavaMail.ngmail@webmail07.arcor-online.net>",
+        "<705739833.829784.1338147591446.JavaMail.ngmail@webmail13.arcor-online.net>"
+      ],
+      "body_plain": "When trying to further investigate, whether it makes a differences to use the 64 bit version of R on Mac OS X or the 32 bit one, I got a different error message on the 32 bit version:\n[RODBC] FEHLER: Status IM003, Code -1073759164, Nachricht [iODBC][Driver Manager]Specified driver could not be loaded\nRODBC is obviously trying to use the wrong ODBC setup here: I use unixODBC and not iODBC for connecting to the database with other programs on my Mac.\nCould it perhaps be that also the 64 bit version, which does however return the error message mentioned in the title of this thread use iODBC instead of unixODBC? Is there a way to force the usage of unixODBC in RODBC?\n\n> I cannot help you if this really is a Mac issue, but the error message \n> sounds to me like your server is not configured to accept connections \n> from your client. When you say it works with a different OS, do you mean \n> on the same machine, or do you mean on a machine with a different IP \n> address?  If the latter, then be sure the server has the same \n> permissions for the two machines, then check that the odbc.ini files \n> have the same UserName and Password settings, just in case that is \n> really what is being used, rather than the strings in the command line. \n> You should also be sure the host server setting is the same on both \n> machines, just in case you happen to be talking to different servers.\n> \n> (I do realize that you probably know this, but it is surprisingly \n> difficult to get these right, and the error message you get when they \n> are wrong is the one you are getting.)\n> \n> Another thing you can do is to run the server in debug mode, which \n> sometimes gives better details about attempted connection failures.\n> \n> Paul\n> \n> On 12-05-27 03:39 PM, julia.jacobson at arcor.de wrote:\n> >>> Hello everybody out there using the RODBC package,\n> >>>\n> >>> On my linux (unixODBC) and windows machines, I can successfully use the\n> >> RODBC package to connect to a PostgreSQL databse.\n> >>> On my Mac Book running Mac OS X 10.6 (Intel 64bit architecture), I get\n> the\n> >> error \"code 202\" and message \"?????\" when I try to establish an\n> connection\n> >> by using\n> >>>> con<- odbcConnect(dsn=\"MyDataSource\",UID=\"Me\",pwd=\"secret\")\n> >>> Could anyone please hint me towards additional diagnostics I can run to\n> >> pin down the problem?\n> >>> I have the latest versions of unixODBC and psqlODBC installed from\n> >> Macports.\n> >>> They seem to be okay, because\n> >>> $isql dsn uid pwd\n> >>> works fine to connect to the database.\n> >>>\n> >>> Thanks in advance for your help,\n> >>> Julia\n> >\n> >> Unfortunately, I'm not really making any progresses, despite a lot of\n> >> effort.\n> >> I've compiled R on Mac OS X for myself using MacPorts and the error is\n> now\n> >> \"state 28000, code 201\" which is failed password authentification.\n> >\n> > Interestingly, I was able to set up RODBC on Mac OS X 10.4 (PowerPC\n> architecture) successfully and as I said, it does work on Linux and Windows\n> XP/7 perfectly.\n> > I was wondering whether the undecipherable error message I get on OS X\n> 10.6 is due to wrong encoding settings on my machine in relation to the ones\n> on the server. It would already be of great help to be able to read the\n> error message.\n> > It is probably a problem of the versions of the OS, psqlODBC, R and RODBC\n> on my machine.\n> > It would be great to get feedback from someone running Mac OS X 10.6 in\n> combination with RODBC successfully and check for the differences with my\n> setup.\n> >\n> > _______________________________________________\n> > R-sig-DB mailing list -- R Special Interest Group\n> > R-sig-DB at r-project.org\n> > https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "When trying to further investigate, whether it makes a differences to use the 64 bit version of R on Mac OS X or the 32 bit one, I got a different error message on the 32 bit version:\n[RODBC] FEHLER: ",
+      "thread_id": "thread-7706216caa12",
+      "thread_depth": 2,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-2ee49526e901",
+      "message_id": "<FDC71F667B78594DB61931C4ACAC82D30D1F56@sprdxchmbx3.puget.com>",
+      "from_name": "Mortensen, Mikael - Marketing",
+      "from_email_hash": "7f94a1f920698b4063346c113c027f0b9201ddbb36334a86513674528817ee06",
+      "date": "2012-05-29T19:16:20Z",
+      "subject": "[R-sig-DB] RODBC sqlSave to table with computed column.",
+      "subject_clean": "RODBC sqlSave to table with computed column.",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello. I would like to append records to a sql server table with a computed column. The computed column is the product of two other columns in the same table. In my first attempt I used a dataframe with all of the columns populated less the computed column, but I received and error\n\nSubmitted:\nsqlSave(riskDB, optHedgesFiltered, tablename = \"OptHedges\", append = TRUE, verbose=TRUE, rownames=FALSE)\n\nERROR:\nQuery: INSERT INTO \"OptHedges\" ( \"Book\", \"DealTicket\", \"TransactionDate\", \"ForwardDate\", \"Location\", \"DemandProfile\", \"Volume\", \"Price\", \"Contract\" ) VALUES ( ?,?,?,?,?,?,?,? )\nError in odbcUpdate(channel, query, mydata, coldata[m, ], test = test,  : \n  missing columns in 'data'\n\n\nIf I change the dataframe to include contract (the computed column) the ERROR changes to:\n\nsqlwrite returned \n[RODBC] Failed exec in Update\n42000 271 [Microsoft][ODBC SQL Server Driver][SQL Server]The column \"Contract\" cannot be modified because it is either a computed column or is the result of a UNION operator.\n\nAm I missing something in the sqlSave to deal with the computed column? As a test to make sure that I could append at all, I created a copy of the table I am trying to append to on the server and removed the computed column. The sqlSave statement above worked perfectly on the copy without the computed column.\n\nAny direction is appreciated.\n\nThanks,\nMikael",
+      "body_snippet": "Hello. I would like to append records to a sql server table with a computed column. The computed column is the product of two other columns in the same table. In my first attempt I used a dataframe wi",
+      "thread_id": "thread-2ee49526e901",
+      "thread_depth": 0,
+      "month": "2012-05"
+    },
+    {
+      "id": "msg-6c64d483731a",
+      "message_id": "<886278961.1860123.1338361873598.JavaMail.ngmail@webmail08.arcor-online.net>",
+      "from_name": "juii@@j@cobso@ m@iii@g oii @rcor@de",
+      "from_email_hash": "c5945c3d3e2c8ddfaf4549df2d1aeae174f9d57160de2ac0d6db9687b93159d1",
+      "date": "2012-05-30T09:11:13+02:00",
+      "subject": "[R-sig-DB] [R] RODBC Error Code 202 on Mac OS X 10.6",
+      "subject_clean": "RODBC Error Code 202 on Mac OS X 10.6",
+      "in_reply_to": "<609400398.1063959.1338311308303.JavaMail.ngmail@webmail06.arcor-online.net>",
+      "references": [
+        "<609400398.1063959.1338311308303.JavaMail.ngmail@webmail06.arcor-online.net>",
+        "<4FC2C442.7070703@gmail.com>",
+        "<1377271085.518314.1335708540481.JavaMail.ngmail@webmail10.arcor-online.net>",
+        "<97479138-556A-440C-8402-CCC521987969@me.com>",
+        "<729563822.223386.1335366225903.JavaMail.ngmail@webmail07.arcor-online.net>",
+        "<705739833.829784.1338147591446.JavaMail.ngmail@webmail13.arcor-online.net>"
+      ],
+      "body_plain": "Finally, I found the core of the problem: If I use a password without special characters, I can odbcConnect from within R on Mac OS X. So it's really a matter of the encoding.\nSince I would like to use strong passwords with special characters I would be very grateful  for any hints on how to fix the encoding, because there are several places where I can set it: The PostgreSQL DBMS itself, in the psqlODBC driver, in the RODBC package in finally in R itselft.\n\n> When trying to further investigate, whether it makes a differences to use\n> the 64 bit version of R on Mac OS X or the 32 bit one, I got a different\n> error message on the 32 bit version:\n> [RODBC] FEHLER: Status IM003, Code -1073759164, Nachricht [iODBC][Driver\n> Manager]Specified driver could not be loaded\n> RODBC is obviously trying to use the wrong ODBC setup here: I use unixODBC\n> and not iODBC for connecting to the database with other programs on my Mac.\n> Could it perhaps be that also the 64 bit version, which does however return\n> the error message mentioned in the title of this thread use iODBC instead of\n> unixODBC? Is there a way to force the usage of unixODBC in RODBC?\n> \n> > I cannot help you if this really is a Mac issue, but the error message \n> > sounds to me like your server is not configured to accept connections \n> > from your client. When you say it works with a different OS, do you mean \n> > on the same machine, or do you mean on a machine with a different IP \n> > address?  If the latter, then be sure the server has the same \n> > permissions for the two machines, then check that the odbc.ini files \n> > have the same UserName and Password settings, just in case that is \n> > really what is being used, rather than the strings in the command line. \n> > You should also be sure the host server setting is the same on both \n> > machines, just in case you happen to be talking to different servers.\n> > \n> > (I do realize that you probably know this, but it is surprisingly \n> > difficult to get these right, and the error message you get when they \n> > are wrong is the one you are getting.)\n> > \n> > Another thing you can do is to run the server in debug mode, which \n> > sometimes gives better details about attempted connection failures.\n> > \n> > Paul\n> > \n> > On 12-05-27 03:39 PM, julia.jacobson at arcor.de wrote:\n> > >>> Hello everybody out there using the RODBC package,\n> > >>>\n> > >>> On my linux (unixODBC) and windows machines, I can successfully use\n> the\n> > >> RODBC package to connect to a PostgreSQL databse.\n> > >>> On my Mac Book running Mac OS X 10.6 (Intel 64bit architecture), I\n> get\n> > the\n> > >> error \"code 202\" and message \"?????\" when I try to establish an\n> > connection\n> > >> by using\n> > >>>> con<- odbcConnect(dsn=\"MyDataSource\",UID=\"Me\",pwd=\"secret\")\n> > >>> Could anyone please hint me towards additional diagnostics I can run\n> to\n> > >> pin down the problem?\n> > >>> I have the latest versions of unixODBC and psqlODBC installed from\n> > >> Macports.\n> > >>> They seem to be okay, because\n> > >>> $isql dsn uid pwd\n> > >>> works fine to connect to the database.\n> > >>>\n> > >>> Thanks in advance for your help,\n> > >>> Julia\n> > >\n> > >> Unfortunately, I'm not really making any progresses, despite a lot of\n> > >> effort.\n> > >> I've compiled R on Mac OS X for myself using MacPorts and the error is\n> > now\n> > >> \"state 28000, code 201\" which is failed password authentification.\n> > >\n> > > Interestingly, I was able to set up RODBC on Mac OS X 10.4 (PowerPC\n> > architecture) successfully and as I said, it does work on Linux and\n> Windows\n> > XP/7 perfectly.\n> > > I was wondering whether the undecipherable error message I get on OS X\n> > 10.6 is due to wrong encoding settings on my machine in relation to the\n> ones\n> > on the server. It would already be of great help to be able to read the\n> > error message.\n> > > It is probably a problem of the versions of the OS, psqlODBC, R and\n> RODBC\n> > on my machine.\n> > > It would be great to get feedback from someone running Mac OS X 10.6 in\n> > combination with RODBC successfully and check for the differences with my\n> > setup.\n> > >\n> > > _______________________________________________\n> > > R-sig-DB mailing list -- R Special Interest Group\n> > > R-sig-DB at r-project.org\n> > > https://stat.ethz.ch/mailman/listinfo/r-sig-db\n> >\n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "Finally, I found the core of the problem: If I use a password without special characters, I can odbcConnect from within R on Mac OS X. So it's really a matter of the encoding.\nSince I would like to us",
+      "thread_id": "thread-7706216caa12",
+      "thread_depth": 3,
+      "month": "2012-05"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-05cb37f234bb",
+      "subject": "Why does RODBC driver returns garbage from Sybase server on new windows 7 machine?",
+      "message_count": 8,
+      "participants": [
+        "Jadhav, Alok",
+        "Marc Schwartz",
+        "NISHIYAMA Tomoaki"
+      ],
+      "started": "2012-05-07T08:24:35+08:00",
+      "last_reply": "2012-05-08T07:08:58-05:00",
+      "root_message_id": "msg-05cb37f234bb"
+    },
+    {
+      "id": "thread-783b69f88e61",
+      "subject": "RMySQL, DBI: unrecognized MySQL field type 7 in column",
+      "message_count": 1,
+      "participants": [
+        "Andreas Voellenklee"
+      ],
+      "started": "2012-05-09T16:05:20+02:00",
+      "last_reply": "2012-05-09T16:05:20+02:00",
+      "root_message_id": "msg-783b69f88e61"
+    },
+    {
+      "id": "thread-c54e962d305d",
+      "subject": "RMySQL frustrations",
+      "message_count": 6,
+      "participants": [
+        "MacQueen, Don",
+        "Mark Moon",
+        "Sean Davis"
+      ],
+      "started": "2012-05-17T07:59:38-07:00",
+      "last_reply": "2012-05-18T08:59:55-07:00",
+      "root_message_id": "msg-c54e962d305d"
+    },
+    {
+      "id": "thread-65b4fa839f9d",
+      "subject": "RODBC Debugging",
+      "message_count": 2,
+      "participants": [
+        "Christopher A. Simon",
+        "Prof Brian Ripley"
+      ],
+      "started": "2012-05-17T16:06:22-04:00",
+      "last_reply": "2012-05-18T06:50:04+01:00",
+      "root_message_id": "msg-65b4fa839f9d"
+    },
+    {
+      "id": "thread-183d4fbceff4",
+      "subject": "RODBC sqlSave to table with computed column",
+      "message_count": 2,
+      "participants": [
+        "Mortensen, Mikael - Marketing",
+        "Prof Brian Ripley"
+      ],
+      "started": "2012-05-25T20:52:44+00:00",
+      "last_reply": "2012-05-26T10:42:31+01:00",
+      "root_message_id": "msg-183d4fbceff4"
+    },
+    {
+      "id": "thread-82bbe1244f0a",
+      "subject": "How to set up RODBC? Diff between R Console and RStudio?",
+      "message_count": 1,
+      "participants": [
+        "Michael"
+      ],
+      "started": "2012-05-26T22:27:40-05:00",
+      "last_reply": "2012-05-26T22:27:40-05:00",
+      "root_message_id": "msg-82bbe1244f0a"
+    },
+    {
+      "id": "thread-fcdee1f839aa",
+      "subject": "SOS! R Console crashed after loading RODBC... Update: Re: How to set up RODBC? Diff between R Console and RStudio?",
+      "message_count": 3,
+      "participants": [
+        "Michael",
+        "Paul Gilbert"
+      ],
+      "started": "2012-05-27T11:32:24-05:00",
+      "last_reply": "2012-05-27T19:45:20-04:00",
+      "root_message_id": "msg-fcdee1f839aa"
+    },
+    {
+      "id": "thread-bf4a4b67579f",
+      "subject": "SOS! R Console crashed after loading RODBC... Update: Re: How to set up RODBC? Diff between R Console and RStudio?",
+      "message_count": 1,
+      "participants": [
+        "Paul Gilbert"
+      ],
+      "started": "2012-05-27T20:37:23-04:00",
+      "last_reply": "2012-05-27T20:37:23-04:00",
+      "root_message_id": "msg-bf4a4b67579f"
+    },
+    {
+      "id": "thread-7706216caa12",
+      "subject": "RODBC Error Code 202 on Mac OS X 10.6",
+      "message_count": 5,
+      "participants": [
+        "Paul Gilbert",
+        "juii@@j@cobso@ m@iii@g oii @rcor@de"
+      ],
+      "started": "2012-05-27T21:39:51+02:00",
+      "last_reply": "2012-05-30T09:11:13+02:00",
+      "root_message_id": "msg-7706216caa12"
+    },
+    {
+      "id": "thread-38e0a4c5eb8d",
+      "subject": "SOS! R Console crashed after loading RODBC... Update: Re: How to set up RODBC? Diff between R Console and RStudio?",
+      "message_count": 2,
+      "participants": [
+        "Michael",
+        "Paul Gilbert"
+      ],
+      "started": "2012-05-28T09:01:31-04:00",
+      "last_reply": "2012-05-28T10:36:34-05:00",
+      "root_message_id": "msg-38e0a4c5eb8d"
+    },
+    {
+      "id": "thread-2ee49526e901",
+      "subject": "RODBC sqlSave to table with computed column.",
+      "message_count": 1,
+      "participants": [
+        "Mortensen, Mikael - Marketing"
+      ],
+      "started": "2012-05-29T19:16:20+00:00",
+      "last_reply": "2012-05-29T19:16:20+00:00",
+      "root_message_id": "msg-2ee49526e901"
+    }
+  ]
+}

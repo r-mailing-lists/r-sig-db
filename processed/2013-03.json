@@ -1,0 +1,287 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2013-03",
+  "messages": [
+    {
+      "id": "msg-a41ee9ec0cf0",
+      "message_id": "<CAMOcQfNjSmZSSe9c-3fNn7H+N_v=eSK3MV=U6udzuTB0nqkTKA@mail.gmail.com>",
+      "from_name": "Paul Bernal",
+      "from_email_hash": "8fc6778f6ae6d741782e7cd653cd7170b2fa93ddae068e9b5459c96d6ec54c8a",
+      "date": "2013-03-06T14:24:44-05:00",
+      "subject": "[R-sig-DB] Working with Large sets of Data or even Big Data",
+      "subject_clean": "Working with Large sets of Data or even Big Data",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello everyone,\n\nI managed to connect R with some database tables residing in Microsoft SQL\nServer, and I also got R to read the information in. My question is, since\nusually, those tables can have 50 thousand or even more records, or even\nhundreds of thousands  or millions of records what would be the maximum\namount of records that R is able to read and process or better put, what\nwould be the maximum amount of rows and columns that R is able to manage\n(to perform data mining analysis)?  What would I need to do in order for R\nto be able to manage large amounts of data?\n\nAny information regarding this question would be greatly appreciated.\n\nBest regards and have a wonderful day guys,\n\nPaul\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hello everyone,\n\nI managed to connect R with some database tables residing in Microsoft SQL\nServer, and I also got R to read the information in. My question is, since\nusually, those tables can have 50",
+      "thread_id": "thread-a41ee9ec0cf0",
+      "thread_depth": 0,
+      "month": "2013-03"
+    },
+    {
+      "id": "msg-84f6d09fdd9a",
+      "message_id": "<1f2bb2a9dc9d0d6f0e63d6b3ce7dc51a@varenka.cime.net>",
+      "from_name": "CIURANA EUGENE (R users list)",
+      "from_email_hash": "bb5c9baa5110267d003b30b513ca8a278f19768fce217b78bac0b25895bf3794",
+      "date": "2013-03-06T12:07:44-08:00",
+      "subject": "[R-sig-DB] Working with Large sets of Data or even Big Data",
+      "subject_clean": "Working with Large sets of Data or even Big Data",
+      "in_reply_to": "<CAMOcQfNjSmZSSe9c-3fNn7H+N_v=eSK3MV=U6udzuTB0nqkTKA@mail.gmail.com>",
+      "references": [
+        "<CAMOcQfNjSmZSSe9c-3fNn7H+N_v=eSK3MV=U6udzuTB0nqkTKA@mail.gmail.com>"
+      ],
+      "body_plain": "On 2013-03-06 11:24, Paul Bernal wrote:\n\n> I managed to connect R with some database tables residing in \n> Microsoft\n> SQL\n> Server, and I also got R to read the information in. My question is,\n> since\n> usually, those tables can have 50 thousand or even more records, or \n> even\n> hundreds of thousands or millions of records what would be the \n> maximum\n> amount of records that R is able to read and process or better put, \n> what\n> would be the maximum amount of rows and columns that R is able to \n> manage\n> (to perform data mining analysis)? What would I need to do in order \n> for R\n> to be able to manage large amounts of data?\n\nHi Paul!\n\nThe main constraint for R will be memory.  The run-times are designed \nin such a way that they'll use as much memory as possible.  A 50,000 \nrecord database is by no means \"large\".  We manipulate DBs with 2 \nmillion or more records in our machines, each with 20-50 fields, and \nmany of the fields contain long text (my company aggregates and \nsummarizes breaking news stories).  I write most of the R scripts in a \nMac with 16 GB RAM, run them on servers that have either 8 or 16 GB RAM, \nsame data set.  R is happy.\n\nI would suggest that, if possible, you don't read directly from the \ndatabase and instead create a simple ETL process for R.  R run-times \nlike to \"hang\" while processing lots of data (some times it's just slow \nprocessing) and the DB driver may see that as \"connection hung\" and drop \nit.\n\nMy humble suggestion for a workflow:\n\n1. Dump your DB/query to a TSV (tab separated values) file\n\n2. Scrub the data with awk or equivalent to ensure that it doesn't\n    have weird characters (non-UTF-8 and so on), or extraneous \\n\n    or \\r that could mess up ingestion into R\n\n3. Split the data into multiple files, say of 500,000 records each\n\n4. Ingest the data into an R data frame with something like:\n\n    myData <- read.table(file.choose(), sep=\"\\t\", header=TRUE, quote=\"\", \ncomment.char=\"\")\n\n    This assumes that the first row will have the column names\n\n5. Save your data frame NOW!  That's because if R hangs/crashes/etc. \nyou\n    won't have to reload from TSV -- that's slow -- so:\n\n    save(myData, \"some-file-name.RData\", compress=\"bzip2\")\n\n6. Repeat steps 4 and 5 until you have the whole data set in memory; \nyou\n    can \"stack\" two data sets like this:\n\n    myData <- read.table(file.choose(), sep=\"\\t\", header=TRUE, quote=\"\", \ncomment.char=\"\")\n\n    myTotalData <- myData\n\n    save(myTotalData, \"some-file-name.RData\", compress=\"bzip2\")\n\n    # second and all remaining split files:\n\n    myData <- read.table(file.choose(), sep=\"\\t\", header=TRUE, quote=\"\", \ncomment.char=\"\")\n\n    myTotalData <- rbind(myTotalData, myData)\n\n    save(myTotalData, \"some-file-name.RData\", compress=\"bzip2\")\n\n    # Repeat this last three steps until you get everything in memory\n\n7. You're ready to manipulate this to your heart's content!  Transform, \nextract, analyze,\n    whatever you need to do.\n\nBy bringing the data into R's space you will have a more \nmemory-efficient representation for your operations.  By saving it to an \n.RData file you will have that memory-efficient representation stored in \na tightly compressed format (bzip2 rocks for that) that you can more \neasily move around systems.\n\nHere are some examples from our own databases:\n\n* TSV dump to disk: 12.5 GB\n* After scrubbing:  12.45 GB -- ~5,000 fewer records\n* .RData representation:  1.3 GB\n\nThis fits comfortably in main memory on a MacBook Air.  The servers \nwill have no problem dealing with it.\n\nIn general, you should plan on your R use not happening in real-time, \nagainst your live database (think best practices).  If you're banging \nagainst a production database, for example, you may slow other users' \naccess down while running your queries.\n\nGood luck, and let us know how it goes!\n\npr3d4t0r\n-- \nhttp://summly.com | http://eugeneciurana.com",
+      "body_snippet": "On 2013-03-06 11:24, Paul Bernal wrote:\n\n> I managed to connect R with some database tables residing in \n> Microsoft\n> SQL\n> Server, and I also got R to read the information in. My question is,\n> sinc",
+      "thread_id": "thread-a41ee9ec0cf0",
+      "thread_depth": 1,
+      "month": "2013-03"
+    },
+    {
+      "id": "msg-0dcb28e1534a",
+      "message_id": "<c57921d2149e01d3eca8e3de581771e7@varenka.cime.net>",
+      "from_name": "CIURANA EUGENE (R users list)",
+      "from_email_hash": "bb5c9baa5110267d003b30b513ca8a278f19768fce217b78bac0b25895bf3794",
+      "date": "2013-03-06T12:14:04-08:00",
+      "subject": "[R-sig-DB] Working with Large sets of Data or even Big Data",
+      "subject_clean": "Working with Large sets of Data or even Big Data",
+      "in_reply_to": "<1f2bb2a9dc9d0d6f0e63d6b3ce7dc51a@varenka.cime.net>",
+      "references": [
+        "<CAMOcQfNjSmZSSe9c-3fNn7H+N_v=eSK3MV=U6udzuTB0nqkTKA@mail.gmail.com>",
+        "<1f2bb2a9dc9d0d6f0e63d6b3ce7dc51a@varenka.cime.net>"
+      ],
+      "body_plain": "On 2013-03-06 12:07, CIURANA EUGENE (R users list) wrote: \n\n> On\n2013-03-06 11:24, Paul Bernal wrote:\n> \n>> I managed to connect R with\nsome database tables residing in Microsoft SQL Server, and I also got R\nto read the information in. My question is, since usually, those tables\ncan have 50 thousand or even more records, or even hundreds of thousands\nor millions of records what would be the maximum amount of records that\nR is able to read and process or better put, what would be the maximum\namount of rows and columns that R is able to manage (to perform data\nmining analysis)? What would I need to do in order for R to be able to\nmanage large amounts of data?\n\nSorry - I forgot to add: the space\nexample at the end of my previous message: ~2.5 million records.\n\n\nCheers! \n\npr3d \n\n-- \nhttp://summly.com | http://eugeneciurana.com \n \n\t[[alternative HTML version deleted]]",
+      "body_snippet": "On 2013-03-06 12:07, CIURANA EUGENE (R users list) wrote: \n\n> On\n2013-03-06 11:24, Paul Bernal wrote:\n> \n>> I managed to connect R with\nsome database tables residing in Microsoft SQL Server, and I als",
+      "thread_id": "thread-a41ee9ec0cf0",
+      "thread_depth": 2,
+      "month": "2013-03"
+    },
+    {
+      "id": "msg-df9446e0627c",
+      "message_id": "<CA+MmmTLd4tmuiz9atjrMNGaW5YTaz49nukB=8Xn0HJVP+2Fqtg@mail.gmail.com>",
+      "from_name": "Sean O'Riordain",
+      "from_email_hash": "d18631f6661da4deeaa90b92231c34f3f14fafbbc9231a0242073f8c21ec5e89",
+      "date": "2013-03-07T18:31:19Z",
+      "subject": "[R-sig-DB] Working with Large sets of Data or even Big Data",
+      "subject_clean": "Working with Large sets of Data or even Big Data",
+      "in_reply_to": "<c57921d2149e01d3eca8e3de581771e7@varenka.cime.net>",
+      "references": [
+        "<CAMOcQfNjSmZSSe9c-3fNn7H+N_v=eSK3MV=U6udzuTB0nqkTKA@mail.gmail.com>",
+        "<1f2bb2a9dc9d0d6f0e63d6b3ce7dc51a@varenka.cime.net>",
+        "<c57921d2149e01d3eca8e3de581771e7@varenka.cime.net>"
+      ],
+      "body_plain": "Very nice Eugene,\n\nWhen I have large tables (say 30 million rows), I am often not interested\nin most of the columns, so I set colClasses=c('character', rep(NULL, 30),\n'integer', 'integer', 'character') etc... in the read.table()... this\nconsiderably speeds up the ingesting of the table and specifying the class\nyou want means that you don't get an auto-convert to factor when it is\ninappropriate, e.g. addresses.\n\nKind regards,\nSe?n\n\n\n\nOn 6 March 2013 20:14, CIURANA EUGENE (R users list) <r.user at ciurana.eu>wrote:\n\n>\n>\n> On 2013-03-06 12:07, CIURANA EUGENE (R users list) wrote:\n>\n> > On\n> 2013-03-06 11:24, Paul Bernal wrote:\n> >\n> >> I managed to connect R with\n> some database tables residing in Microsoft SQL Server, and I also got R\n> to read the information in. My question is, since usually, those tables\n> can have 50 thousand or even more records, or even hundreds of thousands\n> or millions of records what would be the maximum amount of records that\n> R is able to read and process or better put, what would be the maximum\n> amount of rows and columns that R is able to manage (to perform data\n> mining analysis)? What would I need to do in order for R to be able to\n> manage large amounts of data?\n>\n> Sorry - I forgot to add: the space\n> example at the end of my previous message: ~2.5 million records.\n>\n>\n> Cheers!\n>\n> pr3d\n>\n> --\n> http://summly.com | http://eugeneciurana.com\n>\n>         [[alternative HTML version deleted]]\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Very nice Eugene,\n\nWhen I have large tables (say 30 million rows), I am often not interested\nin most of the columns, so I set colClasses=c('character', rep(NULL, 30),\n'integer', 'integer', 'character'",
+      "thread_id": "thread-a41ee9ec0cf0",
+      "thread_depth": 3,
+      "month": "2013-03"
+    },
+    {
+      "id": "msg-122c8c2c7c66",
+      "message_id": "<CALdbFF647rXSHRC3XnA7aKXHQ-5sRo_pKPCz2K3EOydKHGyeCA@mail.gmail.com>",
+      "from_name": "Joran Elias",
+      "from_email_hash": "059a7ea99e0c68ba69818c6f34655289e52b2c5a7f9b1353a3dd12b375f146f1",
+      "date": "2013-03-11T09:27:19-06:00",
+      "subject": "[R-sig-DB] ROracle loads from command line, but not RGUI/RStudio in OSX",
+      "subject_clean": "ROracle loads from command line, but not RGUI/RStudio in OSX",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I'm having some trouble getting ROracle up and running completely on my\ncomputer (OS X 10.7.5, R 2.15.2).\n\nCompiling ROracle was a little bit of an adventure, but I finally did get\nit to compile by mostly following the Linux instructions with some\nmodifications pieced together from the web. When I run R from the command\nline, ROracle loads fine, I can connect to the db and run queries.\nEverything works. (I've also installed the Oracle utility sqlplus which\nworks as well; connecting, querying, etc.)\n\nBut if I try to load ROracle from either the R GUI or RStudio, I get this\nerror:\n\nLoading required package: DBI\nError in dyn.load(file, DLLpath = DLLpath, ...) :\n  unable to load shared object\n'/Users/joranelias/Library/R/2.15/library/ROracle/libs/x86_64/ROracle.so':\n\ndlopen(/Users/joranelias/Library/R/2.15/library/ROracle/libs/x86_64/ROracle.so,\n6): Library not loaded:\n/ade/b/2649109290/oracle/rdbms/lib/libclntsh.dylib.11.1\n  Referenced from:\n/Users/joranelias/Library/R/2.15/library/ROracle/libs/x86_64/ROracle.so\n  Reason: image not found\nError: package/namespace load failed for ?ROracle?\n\nI examined how the environment variables are set between running R from the\ncommand line and RGUI/RStudio, and noticed some differences, so I tried\nmaking them the same via setting:\n\nDYLD_LIBRARY_PATH =\n/Library/Frameworks/R.framework/Resources/lib/x86_64::/Applications/Oracle\nPATH =\n/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin:/usr/local/git/bin:/usr/texbin:/Applications/Oracle\nTNS_ADMIN = /Applications/Oracle\n\nso that my environment variables match what's reported by Sys.getenv() from\nthe command line. I've done this directly via Sys.setenv() and also using\n.Renviron in the current directory. It appears to successfully set the\nenvironment variables, but I still get the same error when trying to load\nROracle.\n\nAll I can think of is that I've somehow done something non-standard in\ninstalling/compiling ROracle and the InstantClient software, but I can't\nunderstand why it would work fine from the command line only. Does anyone\nhave any suggestions for other things I could try...?\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "I'm having some trouble getting ROracle up and running completely on my\ncomputer (OS X 10.7.5, R 2.15.2).\n\nCompiling ROracle was a little bit of an adventure, but I finally did get\nit to compile by mo",
+      "thread_id": "thread-122c8c2c7c66",
+      "thread_depth": 0,
+      "month": "2013-03"
+    },
+    {
+      "id": "msg-d671cc817fc2",
+      "message_id": "<513DFC2C.1070901@stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2013-03-11T15:45:48Z",
+      "subject": "[R-sig-DB] ROracle loads from command line, but not RGUI/RStudio in OSX",
+      "subject_clean": "ROracle loads from command line, but not RGUI/RStudio in OSX",
+      "in_reply_to": "<CALdbFF647rXSHRC3XnA7aKXHQ-5sRo_pKPCz2K3EOydKHGyeCA@mail.gmail.com>",
+      "references": [
+        "<CALdbFF647rXSHRC3XnA7aKXHQ-5sRo_pKPCz2K3EOydKHGyeCA@mail.gmail.com>"
+      ],
+      "body_plain": "The message indicates DYLD_LIBRARY_PATH problems.\n\nBut:\n\n- double colons are wrong.\n\n- /Applications/Oracle would be a very un-Apple layout, and a non-Unix \nlocation for a library directory.\n\nBut I've never seen Oracle for a Mac, so have no idea what the layout \nis.  The ROracle authors might know (and do read this list).\n\nIn the Terminal, run\n\nR CMD otool -L \n/Users/joranelias/Library/R/2.15/library/ROracle/libs/x86_64/ROracle.so\n\nand make sure the directories to Oracle dylibs it mentions are on \nDYLD_LIBRARY_PATH.\n\nOn 11/03/2013 15:27, Joran Elias wrote:\n> I'm having some trouble getting ROracle up and running completely on my\n> computer (OS X 10.7.5, R 2.15.2).\n>\n> Compiling ROracle was a little bit of an adventure, but I finally did get\n> it to compile by mostly following the Linux instructions with some\n> modifications pieced together from the web. When I run R from the command\n> line, ROracle loads fine, I can connect to the db and run queries.\n> Everything works. (I've also installed the Oracle utility sqlplus which\n> works as well; connecting, querying, etc.)\n>\n> But if I try to load ROracle from either the R GUI or RStudio, I get this\n> error:\n>\n> Loading required package: DBI\n> Error in dyn.load(file, DLLpath = DLLpath, ...) :\n>    unable to load shared object\n> '/Users/joranelias/Library/R/2.15/library/ROracle/libs/x86_64/ROracle.so':\n>\n> dlopen(/Users/joranelias/Library/R/2.15/library/ROracle/libs/x86_64/ROracle.so,\n> 6): Library not loaded:\n> /ade/b/2649109290/oracle/rdbms/lib/libclntsh.dylib.11.1\n>    Referenced from:\n> /Users/joranelias/Library/R/2.15/library/ROracle/libs/x86_64/ROracle.so\n>    Reason: image not found\n> Error: package/namespace load failed for ?ROracle?\n>\n> I examined how the environment variables are set between running R from the\n> command line and RGUI/RStudio, and noticed some differences, so I tried\n> making them the same via setting:\n>\n> DYLD_LIBRARY_PATH =\n> /Library/Frameworks/R.framework/Resources/lib/x86_64::/Applications/Oracle\n> PATH =\n> /usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin:/usr/local/git/bin:/usr/texbin:/Applications/Oracle\n> TNS_ADMIN = /Applications/Oracle\n>\n> so that my environment variables match what's reported by Sys.getenv() from\n> the command line. I've done this directly via Sys.setenv() and also using\n> .Renviron in the current directory. It appears to successfully set the\n> environment variables, but I still get the same error when trying to load\n> ROracle.\n>\n> All I can think of is that I've somehow done something non-standard in\n> installing/compiling ROracle and the InstantClient software, but I can't\n> understand why it would work fine from the command line only. Does anyone\n> have any suggestions for other things I could try...?\n>\n> \t[[alternative HTML version deleted]]\n>\n>\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "The message indicates DYLD_LIBRARY_PATH problems.\n\nBut:\n\n- double colons are wrong.\n\n- /Applications/Oracle would be a very un-Apple layout, and a non-Unix \nlocation for a library directory.\n\nBut I've",
+      "thread_id": "thread-122c8c2c7c66",
+      "thread_depth": 1,
+      "month": "2013-03"
+    },
+    {
+      "id": "msg-bb542a44e093",
+      "message_id": "<E031A44BB4301E47BB2D9486C095DE5C0115AC3ED0@GMOANDEXC01.email.gmo.tld>",
+      "from_name": "Elliot Bernstein",
+      "from_email_hash": "b82bc7aac29572ef323576cff8eb79452a536e02c21b51d9d9e338576e0e7da1",
+      "date": "2013-03-11T13:35:20-04:00",
+      "subject": "[R-sig-DB] Microsoft SQL Server Temp Tables and RODBC",
+      "subject_clean": "Microsoft SQL Server Temp Tables and RODBC",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I've noticed that RODBC has some issues with MS SQL Server's syntax for temp tables. For example:\n\n> temp <- data.frame(x = 1:10)\n> sqlSave(conn, temp, \"#rtemp\")\nError in sqlColumns(channel, tablename) :\n  '#rtemp': table not found on channel\n> sqlQuery(conn, \"create table #rtemp (x integer)\")\n[1] \"42S01 2714 [Microsoft][ODBC SQL Server Driver][SQL Server]There is already an object named '#rtemp' in the database.\"\n[2] \"[RODBC] ERROR: Could not SQLExecDirect 'create table #rtemp (x integer)'\"\n> sqlSave(conn, temp, \"#rtemp\", append = TRUE)\nError in sqlSave(conn, temp, \"#rtemp\", append = TRUE) :\n  42S01 2714 [Microsoft][ODBC SQL Server Driver][SQL Server]There is already an object named '#rtemp' in the database.\n[RODBC] ERROR: Could not SQLExecDirect 'CREATE TABLE \"#rtemp\"  (\"rownames\" varchar(255), \"x\" int)'\n> sqlQuery(conn, \"select * from #rtemp\")\n[1] rownames x\n<0 rows> (or 0-length row.names)\n> for (i in 1:nrow(temp)) { sqlQuery(conn, sprintf(\"insert into #rtemp (x) values (%d)\", temp$x[i])) }\n> sqlQuery(conn, \"select * from #rtemp\")\n   rownames  x\n1        NA  1\n2        NA  2\n3        NA  3\n4        NA  4\n5        NA  5\n6        NA  6\n7        NA  7\n8        NA  8\n9        NA  9\n10       NA 10\n\nIs there any way to get functions like 'sqlSave' working?\n\nThanks.\n\n- Elliot\n\nElliot Joel Bernstein, Ph.D.\nGrantham, Mayo, Van Otterloo & Co. LLC\n225 Franklin Street\nBoston, MA 02110\nOffice: 617-880-8972\n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "I've noticed that RODBC has some issues with MS SQL Server's syntax for temp tables. For example:\n\n> temp <- data.frame(x = 1:10)\n> sqlSave(conn, temp, \"#rtemp\")\nError in sqlColumns(channel, tablename",
+      "thread_id": "thread-bb542a44e093",
+      "thread_depth": 0,
+      "month": "2013-03"
+    },
+    {
+      "id": "msg-70deeda18954",
+      "message_id": "<CALdbFF5tG_5Mvrf5VrAtcXbqqFPqgt0ddT=Ew2XR39AnvooBrQ@mail.gmail.com>",
+      "from_name": "Joran Elias",
+      "from_email_hash": "059a7ea99e0c68ba69818c6f34655289e52b2c5a7f9b1353a3dd12b375f146f1",
+      "date": "2013-03-11T14:57:32-06:00",
+      "subject": "[R-sig-DB] ROracle loads from command line, but not RGUI/RStudio in OSX",
+      "subject_clean": "ROracle loads from command line, but not RGUI/RStudio in OSX",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": ">\n> The message indicates DYLD_LIBRARY_PATH problems.\n> But:\n> - double colons are wrong.\n> - /Applications/Oracle would be a very un-Apple layout, and a non-Unix\n> location for a library directory.\n>\n\nYes, I agree. I was having a hard time figuring out where to put everything\nsuch that ROracle would even install without error, and this:\n\nhttp://stackoverflow.com/q/5550977/324364\n\nwas one of the sources that ended up being blended into the solution that\nworked for me. With/without the double colons yields the same results.\n\n\n> But I've never seen Oracle for a Mac, so have no idea what the layout\n> is.  The ROracle authors might know (and do read this list).\n> In the Terminal, run\n> R CMD otool -L\n> /Users/joranelias/Library/R/2.15/library/ROracle/libs/x86_64/ROracle.so\n> and make sure the directories to Oracle dylibs it mentions are on\n> DYLD_LIBRARY_PATH.\n\n\nThis is what I find puzzling. I have done this and added the relevant path\nto DYLD_LIBRARY_PATH, and it still doesn't work, except when I run R from\nthe terminal. So something, somewhere must be configured correctly (or at\nleast just correctly enough), but somehow it's getting lost when I run R in\nthe GUI or RStudio. I just wish I knew what that missing piece could be. Oh\nwell.\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": ">\n> The message indicates DYLD_LIBRARY_PATH problems.\n> But:\n> - double colons are wrong.\n> - /Applications/Oracle would be a very un-Apple layout, and a non-Unix\n> location for a library directory.\n>",
+      "thread_id": "thread-70deeda18954",
+      "thread_depth": 0,
+      "month": "2013-03"
+    },
+    {
+      "id": "msg-ea169ac7ef27",
+      "message_id": "<20808.58925.96138.798149@max.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2013-03-19T17:26:53-05:00",
+      "subject": "[R-sig-DB] R port of pymssql",
+      "subject_clean": "R port of pymssql",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I just came across  \n\n   https://code.google.com/p/pymssql/\n\nMaybe someone wants to run with this and create 'RMSSql' using the DBI\ninterface?  \n\nThe Google Summer of Code framework served us well when Sameer started\nRPostgreSQL a few years ago (which I had suggested and mentored).  Now, I am\nnot volunteering to mentor again (particularly as I, luckily, get by without\nhaving to use mssql).  But in case someone a) needs mssql and b) has some\ncapacity to (co-)mentor this...\n\nDirk\n\n-- \nDirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com",
+      "body_snippet": "I just came across  \n\n   https://code.google.com/p/pymssql/\n\nMaybe someone wants to run with this and create 'RMSSql' using the DBI\ninterface?  \n\nThe Google Summer of Code framework served us well whe",
+      "thread_id": "thread-ea169ac7ef27",
+      "thread_depth": 0,
+      "month": "2013-03"
+    },
+    {
+      "id": "msg-a23b905e7222",
+      "message_id": "<78D33BA2-2298-47C9-BB9D-7B43E5389841@gmail.com>",
+      "from_name": "Jeff Ryan",
+      "from_email_hash": "95878a047996a0737b4b4d2ed91b77929627ecf12d574b471a1c5fdc0d35066c",
+      "date": "2013-03-19T20:08:03-05:00",
+      "subject": "[R-sig-DB] R port of pymssql",
+      "subject_clean": "R port of pymssql",
+      "in_reply_to": "<20808.58925.96138.798149@max.nulle.part>",
+      "references": [
+        "<20808.58925.96138.798149@max.nulle.part>"
+      ],
+      "body_plain": "Not as lucky as Dirk, but this could be something to look to as well for inspiration...\n\nhttps://github.com/bwlewis/RSQLServer\n\nJeff\n\nJeffrey Ryan    |    Founder    |    jeffrey.ryan at lemnica.com\n\nwww.lemnica.com\n\nOn Mar 19, 2013, at 5:26 PM, Dirk Eddelbuettel <edd at debian.org> wrote:\n\n> \n> I just came across  \n> \n>   https://code.google.com/p/pymssql/\n> \n> Maybe someone wants to run with this and create 'RMSSql' using the DBI\n> interface?  \n> \n> The Google Summer of Code framework served us well when Sameer started\n> RPostgreSQL a few years ago (which I had suggested and mentored).  Now, I am\n> not volunteering to mentor again (particularly as I, luckily, get by without\n> having to use mssql).  But in case someone a) needs mssql and b) has some\n> capacity to (co-)mentor this...\n> \n> Dirk\n> \n> -- \n> Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com\n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "Not as lucky as Dirk, but this could be something to look to as well for inspiration...\n\nhttps://github.com/bwlewis/RSQLServer\n\nJeff\n\nJeffrey Ryan    |    Founder    |    jeffrey.ryan at lemnica.com\n\n",
+      "thread_id": "thread-ea169ac7ef27",
+      "thread_depth": 1,
+      "month": "2013-03"
+    },
+    {
+      "id": "msg-5a7232faf6f2",
+      "message_id": "<20809.5423.137691.460369@max.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2013-03-19T20:47:27-05:00",
+      "subject": "[R-sig-DB] R port of pymssql",
+      "subject_clean": "R port of pymssql",
+      "in_reply_to": "<78D33BA2-2298-47C9-BB9D-7B43E5389841@gmail.com>",
+      "references": [
+        "<20808.58925.96138.798149@max.nulle.part>",
+        "<78D33BA2-2298-47C9-BB9D-7B43E5389841@gmail.com>"
+      ],
+      "body_plain": "On 19 March 2013 at 20:08, Jeff Ryan wrote:\n| Not as lucky as Dirk, but this could be something to look to as well for inspiration...\n| \n| https://github.com/bwlewis/RSQLServer\n\nDang. You look away for a split-second, and BWL has built a new toy :)\n\nNote, though, that the pmyssql I refer to below promises to work on any\n(relevant) OS: Windoze, Linux, OS X, *BSD, ... This can work as it on top of\nFreeTDS and requires only a C compiler.  What Bryan is cooking here seems a\nlittle scarier (mixing CLR and MinGW?) and less applicable beyond 'doze.\n\nI, for one, would want an RMSSql to be used from a real OS. But then I don't\nreally need it these days (lucky me...)\n\nDirk\n \n| Jeff\n| \n| Jeffrey Ryan    |    Founder    |    jeffrey.ryan at lemnica.com\n| \n| www.lemnica.com\n| \n| On Mar 19, 2013, at 5:26 PM, Dirk Eddelbuettel <edd at debian.org> wrote:\n| \n| > \n| > I just came across  \n| > \n| >   https://code.google.com/p/pymssql/\n| > \n| > Maybe someone wants to run with this and create 'RMSSql' using the DBI\n| > interface?  \n| > \n| > The Google Summer of Code framework served us well when Sameer started\n| > RPostgreSQL a few years ago (which I had suggested and mentored).  Now, I am\n| > not volunteering to mentor again (particularly as I, luckily, get by without\n| > having to use mssql).  But in case someone a) needs mssql and b) has some\n| > capacity to (co-)mentor this...\n| > \n| > Dirk\n| > \n| > -- \n| > Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com\n| > \n| > _______________________________________________\n| > R-sig-DB mailing list -- R Special Interest Group\n| > R-sig-DB at r-project.org\n| > https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n-- \nDirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com",
+      "body_snippet": "On 19 March 2013 at 20:08, Jeff Ryan wrote:\n| Not as lucky as Dirk, but this could be something to look to as well for inspiration...\n| \n| https://github.com/bwlewis/RSQLServer\n\nDang. You look away fo",
+      "thread_id": "thread-ea169ac7ef27",
+      "thread_depth": 2,
+      "month": "2013-03"
+    },
+    {
+      "id": "msg-1d329bef9834",
+      "message_id": "<CANeAVBnzeuf3pr-ciQ08OuV=eXCi-Rn+y24D1ZsCqy3QRSJOtg@mail.gmail.com>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2013-03-20T14:37:04-04:00",
+      "subject": "[R-sig-DB] neo4j graph database for R",
+      "subject_clean": "neo4j graph database for R",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dirk got this started with his interest in a mssql R interface.  Is anyone\naware of an R interface to the neo4j graph database?\n\nhttp://www.neo4j.org/\n\nThe main interface to the server is REST over http, so the infrastructure\ncan be native R, potentially.  Interoperability between igraph and graph\npackages with neo4j might be interesting as well.  Would this be an\nappropriate Google Summer of Code endeavor?\n\nSean\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Dirk got this started with his interest in a mssql R interface.  Is anyone\naware of an R interface to the neo4j graph database?\n\nhttp://www.neo4j.org/\n\nThe main interface to the server is REST over ht",
+      "thread_id": "thread-1d329bef9834",
+      "thread_depth": 0,
+      "month": "2013-03"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-a41ee9ec0cf0",
+      "subject": "Working with Large sets of Data or even Big Data",
+      "message_count": 4,
+      "participants": [
+        "CIURANA EUGENE (R users list)",
+        "Paul Bernal",
+        "Sean O'Riordain"
+      ],
+      "started": "2013-03-06T14:24:44-05:00",
+      "last_reply": "2013-03-07T18:31:19+00:00",
+      "root_message_id": "msg-a41ee9ec0cf0"
+    },
+    {
+      "id": "thread-122c8c2c7c66",
+      "subject": "ROracle loads from command line, but not RGUI/RStudio in OSX",
+      "message_count": 2,
+      "participants": [
+        "Joran Elias",
+        "Prof Brian Ripley"
+      ],
+      "started": "2013-03-11T09:27:19-06:00",
+      "last_reply": "2013-03-11T15:45:48+00:00",
+      "root_message_id": "msg-122c8c2c7c66"
+    },
+    {
+      "id": "thread-bb542a44e093",
+      "subject": "Microsoft SQL Server Temp Tables and RODBC",
+      "message_count": 1,
+      "participants": [
+        "Elliot Bernstein"
+      ],
+      "started": "2013-03-11T13:35:20-04:00",
+      "last_reply": "2013-03-11T13:35:20-04:00",
+      "root_message_id": "msg-bb542a44e093"
+    },
+    {
+      "id": "thread-70deeda18954",
+      "subject": "ROracle loads from command line, but not RGUI/RStudio in OSX",
+      "message_count": 1,
+      "participants": [
+        "Joran Elias"
+      ],
+      "started": "2013-03-11T14:57:32-06:00",
+      "last_reply": "2013-03-11T14:57:32-06:00",
+      "root_message_id": "msg-70deeda18954"
+    },
+    {
+      "id": "thread-ea169ac7ef27",
+      "subject": "R port of pymssql",
+      "message_count": 3,
+      "participants": [
+        "Dirk Eddelbuettel",
+        "Jeff Ryan"
+      ],
+      "started": "2013-03-19T17:26:53-05:00",
+      "last_reply": "2013-03-19T20:47:27-05:00",
+      "root_message_id": "msg-ea169ac7ef27"
+    },
+    {
+      "id": "thread-1d329bef9834",
+      "subject": "neo4j graph database for R",
+      "message_count": 1,
+      "participants": [
+        "Sean Davis"
+      ],
+      "started": "2013-03-20T14:37:04-04:00",
+      "last_reply": "2013-03-20T14:37:04-04:00",
+      "root_message_id": "msg-1d329bef9834"
+    }
+  ]
+}

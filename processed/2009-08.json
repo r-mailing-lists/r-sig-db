@@ -1,0 +1,455 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2009-08",
+  "messages": [
+    {
+      "id": "msg-a4cfc129bc96",
+      "message_id": "<773cea9e0908031859l40f3c496oa158fe59b3d9e130@mail.gmail.com>",
+      "from_name": "Rajarshi Guha",
+      "from_email_hash": "ffa685b1d40eb3e4cb46367671cdd205e8e6e89077691260866a97afd6cb99d0",
+      "date": "2009-08-03T21:59:45-04:00",
+      "subject": "[R-sig-DB] problem with ROracle calls from a package",
+      "subject_clean": "problem with ROracle calls from a package",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi, I have some R code that uses a OracConnection object to query a\ndatabase. The function is something like\n\nmyfunction <- function(con, .....) {\n  sql <- paste(\"SELECT pd.plate_info_id, pd.col_index, \",data.cols,\n               \" FROM plate_data pd \",\n               \" WHERE pd.plate_info_id IN \",\n               \" (SELECT pi.plate_info_id \",\n               \" FROM plate_info pi \",\n               \" WHERE pi.protocol_name = '\",protocol.name,\"')\",\n               \" AND pd.type_index = \", type.index,\" and pd.layer_index =\n\",layer.index,\n               \" order by pd.plate_info_id ,pd.col_index\", sep='',\ncollapse='')\n  res <- dbSendQuery(con, statement=sql)\n....\n....\n}\n\nWhen I source the file containing this function and pass it a connection\nobject it works fine.\n\nHowever, when I bundle this function into a package and install the package\nand then call the function, I get\n\nError in oraExecStatement(ps, ora.buf.size = as(ora.buf.size, \"integer\")) :\n  expired or invalid prepared statement\nError in oraExecDirect(conn, statement, ...) :\n  could not exec direct statement SELECT pd.plate_info_id, pd.col_index,\npd.value0, pd.value1, pd.value2, pd.value3, pd.value4, pd.value5, pd.value6,\npd.value7, pd.value8, pd.value9, pd.value10, pd.value11, pd.value12,\npd.value13, pd.value14, pd.value15 FROM plate_data pd  WHERE\npd.plate_info_id IN  (SELECT pi.plate_info_id  FROM plate_info pi  WHERE\npi.protocol_name = 'cptk-3-vo') AND pd.type_index = 22 and pd.layer_index =\n0 order by pd.plate_info_id ,pd.col_index\n\nHas anybody seen this behavior before?\n-- \nRajarshi Guha\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi, I have some R code that uses a OracConnection object to query a\ndatabase. The function is something like\n\nmyfunction <- function(con, .....) {\n  sql <- paste(\"SELECT pd.plate_info_id, pd.col_index",
+      "thread_id": "thread-a4cfc129bc96",
+      "thread_depth": 0,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-c196ed01f7ad",
+      "message_id": "<p0624082fc6a098bd6ba8@[128.115.67.9]>",
+      "from_name": "Don MacQueen",
+      "from_email_hash": "e13bfb89115e8e835b0ed57c9de9e35a69bd33cf720ea654a4529b9050b00e0b",
+      "date": "2009-08-06T07:35:12-07:00",
+      "subject": "[R-sig-DB] problem with ROracle calls from a package",
+      "subject_clean": "problem with ROracle calls from a package",
+      "in_reply_to": "<773cea9e0908031859l40f3c496oa158fe59b3d9e130@mail.gmail.com>",
+      "references": [
+        "<773cea9e0908031859l40f3c496oa158fe59b3d9e130@mail.gmail.com>"
+      ],
+      "body_plain": "When I did this I defined the connection inside the function.\n\nThat is,\n\nmyfun <- function( dbc, ...) {\n   ## dbc is a list with username, password, etc to the database\n\n   dbm <- Oracle()\n   con <- dbConnect(dbm, user = dbc$user, dbname = dbc$db, password = dbc$pass)\n\n   ## build the query, then\n   res <- dbGetQuery(con, sql)\n  ....\n}\n\nAnd it works.\n\nI also found it helpful to have something like this after defining \ndbm and before defining con\n\n     tmp <- dbListConnections(dbm)\n     if (length(tmp) > 5)\n         for (ic in tmp) dbDisconnect(ic)\n\n\nI also put this in there somewhere:\n\n     on.exit({\n         dbDisconnect(con)\n         dbUnloadDriver(dbm)\n     })\n\n-Don\n\n\n\nAt 9:59 PM -0400 8/3/09, Rajarshi Guha wrote:\n>Hi, I have some R code that uses a OracConnection object to query a\n>database. The function is something like\n>\n>myfunction <- function(con, .....) {\n>   sql <- paste(\"SELECT pd.plate_info_id, pd.col_index, \",data.cols,\n>                \" FROM plate_data pd \",\n>                \" WHERE pd.plate_info_id IN \",\n>                \" (SELECT pi.plate_info_id \",\n>                \" FROM plate_info pi \",\n>                \" WHERE pi.protocol_name = '\",protocol.name,\"')\",\n>                \" AND pd.type_index = \", type.index,\" and pd.layer_index =\n>\",layer.index,\n>                \" order by pd.plate_info_id ,pd.col_index\", sep='',\n>collapse='')\n>   res <- dbSendQuery(con, statement=sql)\n>....\n>....\n>}\n>\n>When I source the file containing this function and pass it a connection\n>object it works fine.\n>\n>However, when I bundle this function into a package and install the package\n>and then call the function, I get\n>\n>Error in oraExecStatement(ps, ora.buf.size = as(ora.buf.size, \"integer\")) :\n>   expired or invalid prepared statement\n>Error in oraExecDirect(conn, statement, ...) :\n>   could not exec direct statement SELECT pd.plate_info_id, pd.col_index,\n>pd.value0, pd.value1, pd.value2, pd.value3, pd.value4, pd.value5, pd.value6,\n>pd.value7, pd.value8, pd.value9, pd.value10, pd.value11, pd.value12,\n>pd.value13, pd.value14, pd.value15 FROM plate_data pd  WHERE\n>pd.plate_info_id IN  (SELECT pi.plate_info_id  FROM plate_info pi  WHERE\n>pi.protocol_name = 'cptk-3-vo') AND pd.type_index = 22 and pd.layer_index =\n>0 order by pd.plate_info_id ,pd.col_index\n>\n>Has anybody seen this behavior before?\n>--\n>Rajarshi Guha\n>\n>\t[[alternative HTML version deleted]]\n>\n>_______________________________________________\n>R-sig-DB mailing list -- R Special Interest Group\n>R-sig-DB at stat.math.ethz.ch\n>https://*stat.ethz.ch/mailman/listinfo/r-sig-db\n\n\n-- \n--------------------------------------\nDon MacQueen\nEnvironmental Protection Department\nLawrence Livermore National Laboratory\nLivermore, CA, USA\n925-423-1062",
+      "body_snippet": "When I did this I defined the connection inside the function.\n\nThat is,\n\nmyfun <- function( dbc, ...) {\n   ## dbc is a list with username, password, etc to the database\n\n   dbm <- Oracle()\n   con <- d",
+      "thread_id": "thread-a4cfc129bc96",
+      "thread_depth": 1,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-6eaaa7c1de2b",
+      "message_id": "<p06240831c6a09ac9e640@[128.115.67.9]>",
+      "from_name": "Don MacQueen",
+      "from_email_hash": "e13bfb89115e8e835b0ed57c9de9e35a69bd33cf720ea654a4529b9050b00e0b",
+      "date": "2009-08-06T07:37:28-07:00",
+      "subject": "[R-sig-DB] problem with ROracle calls from a package",
+      "subject_clean": "problem with ROracle calls from a package",
+      "in_reply_to": "<773cea9e0908031859l40f3c496oa158fe59b3d9e130@mail.gmail.com>",
+      "references": [
+        "<773cea9e0908031859l40f3c496oa158fe59b3d9e130@mail.gmail.com>"
+      ],
+      "body_plain": "I meant to add that when \"I did this\" I meant I built a function like \nthis and put it in a package, and used it from the package as \ndescribed by Rajarshi.\n\n-Don\n\nAt 9:59 PM -0400 8/3/09, Rajarshi Guha wrote:\n>Hi, I have some R code that uses a OracConnection object to query a\n>database. The function is something like\n>\n>myfunction <- function(con, .....) {\n>   sql <- paste(\"SELECT pd.plate_info_id, pd.col_index, \",data.cols,\n>                \" FROM plate_data pd \",\n>                \" WHERE pd.plate_info_id IN \",\n>                \" (SELECT pi.plate_info_id \",\n>                \" FROM plate_info pi \",\n>                \" WHERE pi.protocol_name = '\",protocol.name,\"')\",\n>                \" AND pd.type_index = \", type.index,\" and pd.layer_index =\n>\",layer.index,\n>                \" order by pd.plate_info_id ,pd.col_index\", sep='',\n>collapse='')\n>   res <- dbSendQuery(con, statement=sql)\n>....\n>....\n>}\n>\n>When I source the file containing this function and pass it a connection\n>object it works fine.\n>\n>However, when I bundle this function into a package and install the package\n>and then call the function, I get\n>\n>Error in oraExecStatement(ps, ora.buf.size = as(ora.buf.size, \"integer\")) :\n>   expired or invalid prepared statement\n>Error in oraExecDirect(conn, statement, ...) :\n>   could not exec direct statement SELECT pd.plate_info_id, pd.col_index,\n>pd.value0, pd.value1, pd.value2, pd.value3, pd.value4, pd.value5, pd.value6,\n>pd.value7, pd.value8, pd.value9, pd.value10, pd.value11, pd.value12,\n>pd.value13, pd.value14, pd.value15 FROM plate_data pd  WHERE\n>pd.plate_info_id IN  (SELECT pi.plate_info_id  FROM plate_info pi  WHERE\n>pi.protocol_name = 'cptk-3-vo') AND pd.type_index = 22 and pd.layer_index =\n>0 order by pd.plate_info_id ,pd.col_index\n>\n>Has anybody seen this behavior before?\n>--\n>Rajarshi Guha\n>\n>\t[[alternative HTML version deleted]]\n>\n>_______________________________________________\n>R-sig-DB mailing list -- R Special Interest Group\n>R-sig-DB at stat.math.ethz.ch\n>https://*stat.ethz.ch/mailman/listinfo/r-sig-db\n\n\n-- \n--------------------------------------\nDon MacQueen\nEnvironmental Protection Department\nLawrence Livermore National Laboratory\nLivermore, CA, USA\n925-423-1062",
+      "body_snippet": "I meant to add that when \"I did this\" I meant I built a function like \nthis and put it in a package, and used it from the package as \ndescribed by Rajarshi.\n\n-Don\n\nAt 9:59 PM -0400 8/3/09, Rajarshi Gu",
+      "thread_id": "thread-a4cfc129bc96",
+      "thread_depth": 1,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-4cf0a508b639",
+      "message_id": "<773cea9e0908060749j275f8e1et1e3240b5fd780472@mail.gmail.com>",
+      "from_name": "Rajarshi Guha",
+      "from_email_hash": "ffa685b1d40eb3e4cb46367671cdd205e8e6e89077691260866a97afd6cb99d0",
+      "date": "2009-08-06T10:49:51-04:00",
+      "subject": "[R-sig-DB] problem with ROracle calls from a package",
+      "subject_clean": "problem with ROracle calls from a package",
+      "in_reply_to": "<p0624082fc6a098bd6ba8@128.115.67.9>",
+      "references": [
+        "<773cea9e0908031859l40f3c496oa158fe59b3d9e130@mail.gmail.com>",
+        "<p0624082fc6a098bd6ba8@128.115.67.9>"
+      ],
+      "body_plain": "Thanks for the pointer. However, I have a number of functions that require a\nconnection, and I wanted to avoid keeping on opening and closing\nconnections.\n\nIn the end it turned out that my package was loading a Bioconductor package\nafter loding the ROracle package. The Bioconductor package then went and\nloaded RSQLite, whose 'isValidConnection' overwrote that from ROracle and\nhence the error!\n\nOn Thu, Aug 6, 2009 at 10:35 AM, Don MacQueen <macq at llnl.gov> wrote:\n\n> When I did this I defined the connection inside the function.\n>\n> That is,\n>\n> myfun <- function( dbc, ...) {\n>  ## dbc is a list with username, password, etc to the database\n>\n>  dbm <- Oracle()\n>  con <- dbConnect(dbm, user = dbc$user, dbname = dbc$db, password =\n> dbc$pass)\n>\n>  ## build the query, then\n>  res <- dbGetQuery(con, sql)\n>  ....\n> }\n>\n> And it works.\n>\n> I also found it helpful to have something like this after defining dbm and\n> before defining con\n>\n>    tmp <- dbListConnections(dbm)\n>    if (length(tmp) > 5)\n>        for (ic in tmp) dbDisconnect(ic)\n>\n>\n> I also put this in there somewhere:\n>\n>    on.exit({\n>        dbDisconnect(con)\n>        dbUnloadDriver(dbm)\n>    })\n>\n> -Don\n>\n>\n>\n>\n> At 9:59 PM -0400 8/3/09, Rajarshi Guha wrote:\n>\n>> Hi, I have some R code that uses a OracConnection object to query a\n>> database. The function is something like\n>>\n>> myfunction <- function(con, .....) {\n>>  sql <- paste(\"SELECT pd.plate_info_id, pd.col_index, \",data.cols,\n>>               \" FROM plate_data pd \",\n>>               \" WHERE pd.plate_info_id IN \",\n>>               \" (SELECT pi.plate_info_id \",\n>>               \" FROM plate_info pi \",\n>>               \" WHERE pi.protocol_name = '\",protocol.name,\"')\",\n>>               \" AND pd.type_index = \", type.index,\" and pd.layer_index =\n>> \",layer.index,\n>>               \" order by pd.plate_info_id ,pd.col_index\", sep='',\n>> collapse='')\n>>  res <- dbSendQuery(con, statement=sql)\n>> ....\n>> ....\n>> }\n>>\n>> When I source the file containing this function and pass it a connection\n>> object it works fine.\n>>\n>> However, when I bundle this function into a package and install the\n>> package\n>> and then call the function, I get\n>>\n>> Error in oraExecStatement(ps, ora.buf.size = as(ora.buf.size, \"integer\"))\n>> :\n>>  expired or invalid prepared statement\n>> Error in oraExecDirect(conn, statement, ...) :\n>>  could not exec direct statement SELECT pd.plate_info_id, pd.col_index,\n>> pd.value0, pd.value1, pd.value2, pd.value3, pd.value4, pd.value5,\n>> pd.value6,\n>> pd.value7, pd.value8, pd.value9, pd.value10, pd.value11, pd.value12,\n>> pd.value13, pd.value14, pd.value15 FROM plate_data pd  WHERE\n>> pd.plate_info_id IN  (SELECT pi.plate_info_id  FROM plate_info pi  WHERE\n>> pi.protocol_name = 'cptk-3-vo') AND pd.type_index = 22 and pd.layer_index\n>> =\n>> 0 order by pd.plate_info_id ,pd.col_index\n>>\n>> Has anybody seen this behavior before?\n>> --\n>> Rajarshi Guha\n>>\n>>        [[alternative HTML version deleted]]\n>>\n>> _______________________________________________\n>> R-sig-DB mailing list -- R Special Interest Group\n>> R-sig-DB at stat.math.ethz.ch\n>> https://*stat.ethz.ch/mailman/listinfo/r-sig-db\n>>\n>\n>\n> --\n> --------------------------------------\n> Don MacQueen\n> Environmental Protection Department\n> Lawrence Livermore National Laboratory\n> Livermore, CA, USA\n> 925-423-1062\n> --------------------------------------\n>\n\n\n\n-- \nRajarshi Guha\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Thanks for the pointer. However, I have a number of functions that require a\nconnection, and I wanted to avoid keeping on opening and closing\nconnections.\n\nIn the end it turned out that my package was",
+      "thread_id": "thread-4cf0a508b639",
+      "thread_depth": 0,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-28c58e2dcde3",
+      "message_id": "<01CA172D.57F74E7D@da1.cincinnati.fasterping.com>",
+      "from_name": "kh@iid@b@h@@i m@iii@g oii @gi@ir",
+      "from_email_hash": "39f74cbc587ca2dee90068a1f7661807650f06da8147852820d7e4a8d984a1c9",
+      "date": "2009-08-07T03:06:15+04:00",
+      "subject": "[R-sig-DB] If I can stop one heart from breaking",
+      "subject_clean": "If I can stop one heart from breaking",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "At table with the king:\nhttp://assistbc.co.nz/ntaqc.html",
+      "body_snippet": "At table with the king:\nhttp://assistbc.co.nz/ntaqc.html",
+      "thread_id": "thread-28c58e2dcde3",
+      "thread_depth": 0,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-bcf046702864",
+      "message_id": "<B09DB010.5C684197@elekta.lt>",
+      "from_name": "Aigneis-Henry",
+      "from_email_hash": "b72f58c589e85f8c1fa00fe19095e520e334389133f693fd89aaed8334b15820",
+      "date": "2009-08-08T13:38:24-09:00",
+      "subject": "[R-sig-DB] Endlich erfolgreich abnehmen",
+      "subject_clean": "Endlich erfolgreich abnehmen",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Umgehend und natuerlich Pfunde verlieren, ohne sich mit strengen Diaeten und\nhartem Training quaelen zu muessen ist das ueberhaupt machbar?\n\nJa, es ist realistisch. Ein voellig neuartiges Schlankheitsprodukt aus\nAmerika macht es jetzt jedem Menschen auch Ihnen moeglich, ohne Plackerei\nund Qualen Gewicht reduzieren zu koennen. Sie muessen nur beim Fruehstueck\neine einzige dieser Schlankheitspillen schlucken.\n \nProbieren Sie es am besten sofort. Sie werden hingerissen sein. In nur\neinem Monat koennen Sie schon auf dem besten Weg zu Ihrem Wunschgewicht\nsein.\n\nhttp://groups.yahoo.com/group/rimgifts9m40ft\n\nMit angenehmen Gruessen\nDr. Prof. Michelle Grede",
+      "body_snippet": "Umgehend und natuerlich Pfunde verlieren, ohne sich mit strengen Diaeten und\nhartem Training quaelen zu muessen ist das ueberhaupt machbar?\n\nJa, es ist realistisch. Ein voellig neuartiges Schlankheits",
+      "thread_id": "thread-bcf046702864",
+      "thread_depth": 0,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-c34ad27d9a47",
+      "message_id": "<01CA1A5D.72063ED6@web21.alojamentos21.com>",
+      "from_name": "shopMED_goodSEXgu m@iii@g oii @etzero@com",
+      "from_email_hash": "1bc3033e1bc9d2fcc3070cb7c367c7e4f9ae72a39ba00a5509ce7b6cf8261a64",
+      "date": "2009-08-11T09:24:20+04:00",
+      "subject": "[R-sig-DB] Make your pipe incredible",
+      "subject_clean": "Make your pipe incredible",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "vqOvdiBuQy\nNew word in infections treatment with antibiotics.\nntXcAddnHZ\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "vqOvdiBuQy\nNew word in infections treatment with antibiotics.\nntXcAddnHZ\n\t[[alternative HTML version deleted]]",
+      "thread_id": "thread-c34ad27d9a47",
+      "thread_depth": 0,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-68fd8c816b54",
+      "message_id": "<4A843E930200008700000D18@mail.elektron.fo>",
+      "from_name": "Luis Ridao Cruz",
+      "from_email_hash": "b985a37893b74f253226f9a1fbfe797d9794f2867644b6a85429653a97f313d0",
+      "date": "2009-08-13T16:25:55+01:00",
+      "subject": "[R-sig-DB] In odbcDriverConnect   ODBC connection failed",
+      "subject_clean": "In odbcDriverConnect   ODBC connection failed",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "R-sig-DB help,\n\nI have installed an ODBC Driver for Linux.\n\nI want to connect to our database through R via:\n\n>library(RODBC)\n>con <- odbcDriverConnect(\"SERVER=IP_address:PORT;DRIVER=ORACLE;DATABASE=MAGNUS\")\nWarning message:\nIn odbcDriverConnect(\"SERVER=IP_address:PORT;DRIVER=ORACLE;DATABASE=MAGNUS\") :\n  ODBC connection failed\n\nI don't really know whether this is the right syntax. I copy-paste files \"odbc.ini\" and \"odbcinst.ini\":\n\n## file odbc.ini\n[ORACLE]\nDriver        = ORACLE\nDatabase        = //IP_address:PORT/MAGNUS\nUser        = my_username\nPassword        = my_password\nMETADATA_ID        = 0\nENABLE_USER_CATALOG        = 1\nENABLE_SYNONYMS        = 1\n\n## file odbcinst.ini\n[ORACLE]\nDescription        = Easysoft ODBC Oracle Driver\nDriver        = /usr/local/easysoft/oracle/libesoracle.so\nSetup        = /usr/local/easysoft/oracle/libesoraclesetup.so\nDontDLClose        = 1\nFileUsage        = 1\nUsageCount        = 1\n\n\nThanks in advance",
+      "body_snippet": "R-sig-DB help,\n\nI have installed an ODBC Driver for Linux.\n\nI want to connect to our database through R via:\n\n>library(RODBC)\n>con <- odbcDriverConnect(\"SERVER=IP_address:PORT;DRIVER=ORACLE;DATABASE=M",
+      "thread_id": "thread-68fd8c816b54",
+      "thread_depth": 0,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-849718a8c7e6",
+      "message_id": "<5d07dbf0908140944o19df0ca4lf26a9369ebc3e6ac@mail.gmail.com>",
+      "from_name": "Stephen Weller",
+      "from_email_hash": "47acb5f314b7daef82b7d48355c865cfea493153c3b24a091279114c8d7af397",
+      "date": "2009-08-14T09:44:18-07:00",
+      "subject": "[R-sig-DB] R-sig-DB Digest, Vol 58, Issue 5",
+      "subject_clean": "R-sig-DB Digest, Vol 58, Issue 5",
+      "in_reply_to": "<mailman.13.1250244004.721.r-sig-db@stat.math.ethz.ch>",
+      "references": [
+        "<mailman.13.1250244004.721.r-sig-db@stat.math.ethz.ch>"
+      ],
+      "body_plain": "Hello Luis,\n\nHave you tried setting the Servername explicitly in your call to\n'odbcDriverConnect()'?\n\nCan you get the following to work:    > con <-\nodbcDriverConnect(\"SERVER=*******\";DRIVER=ORACLE;DATABASE=MAGNUS\")\n\n\nStephen Weller\nRevolution Computing\n\n\n\nOn Fri, Aug 14, 2009 at 3:00 AM, <r-sig-db-request at stat.math.ethz.ch> wrote:\n\n> Send R-sig-DB mailing list submissions to\n>        r-sig-db at stat.math.ethz.ch\n>\n> To subscribe or unsubscribe via the World Wide Web, visit\n>        https://stat.ethz.ch/mailman/listinfo/r-sig-db\n> or, via email, send a message with subject or body 'help' to\n>        r-sig-db-request at stat.math.ethz.ch\n>\n> You can reach the person managing the list at\n>        r-sig-db-owner at stat.math.ethz.ch\n>\n> When replying, please edit your Subject line so it is more specific\n> than \"Re: Contents of R-sig-DB digest...\"\n>\n>\n> Today's Topics:\n>\n>   1. In odbcDriverConnect   ODBC connection failed (Luis Ridao Cruz)\n>\n>\n> ----------------------------------------------------------------------\n>\n> Message: 1\n> Date: Thu, 13 Aug 2009 16:25:55 +0100\n> From: \"Luis Ridao Cruz\" <Luisr at hav.fo>\n> Subject: [R-sig-DB] In odbcDriverConnect   ODBC connection failed\n> To: <r-sig-db at stat.math.ethz.ch>\n> Message-ID: <4A843E930200008700000D18 at mail.elektron.fo>\n> Content-Type: text/plain;       charset=\"US-ASCII\"\n>\n>\n> R-sig-DB help,\n>\n> I have installed an ODBC Driver for Linux.\n>\n> I want to connect to our database through R via:\n>\n> >library(RODBC)\n> >con <-\n> odbcDriverConnect(\"SERVER=IP_address:PORT;DRIVER=ORACLE;DATABASE=MAGNUS\")\n> Warning message:\n> In\n> odbcDriverConnect(\"SERVER=IP_address:PORT;DRIVER=ORACLE;DATABASE=MAGNUS\") :\n>  ODBC connection failed\n>\n> I don't really know whether this is the right syntax. I copy-paste files\n> \"odbc.ini\" and \"odbcinst.ini\":\n>\n> ## file odbc.ini\n> [ORACLE]\n> Driver        = ORACLE\n> Database        = //IP_address:PORT/MAGNUS\n> User        = my_username\n> Password        = my_password\n> METADATA_ID        = 0\n> ENABLE_USER_CATALOG        = 1\n> ENABLE_SYNONYMS        = 1\n>\n> ## file odbcinst.ini\n> [ORACLE]\n> Description        = Easysoft ODBC Oracle Driver\n> Driver        = /usr/local/easysoft/oracle/libesoracle.so\n> Setup        = /usr/local/easysoft/oracle/libesoraclesetup.so\n> DontDLClose        = 1\n> FileUsage        = 1\n> UsageCount        = 1\n>\n>\n> Thanks in advance\n>\n>\n>\n> ------------------------------\n>\n> _______________________________________________\n> R-sig-DB mailing list\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n>\n> End of R-sig-DB Digest, Vol 58, Issue 5\n> ***************************************\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hello Luis,\n\nHave you tried setting the Servername explicitly in your call to\n'odbcDriverConnect()'?\n\nCan you get the following to work:    > con <-\nodbcDriverConnect(\"SERVER=*******\";DRIVER=ORACLE;DA",
+      "thread_id": "thread-849718a8c7e6",
+      "thread_depth": 0,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-9423ae017845",
+      "message_id": "<01CA227A.45067C0B@wh-www22.xs4all.nl>",
+      "from_name": "m@ii2europrizece@ter1 m@iii@g oii y@hoo@co@uk",
+      "from_email_hash": "5f217f6cff7648720eec4c307f58d5ff56a818ce5d834bde9a8fde4dfad97417",
+      "date": "2009-08-21T18:17:22+04:00",
+      "subject": "[R-sig-DB] Sale on supplements! -50%!",
+      "subject_clean": "Sale on supplements! -50%!",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "difbmh\nWith Perfect day every day becomes perfect one.\nlorOIS\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "difbmh\nWith Perfect day every day becomes perfect one.\nlorOIS\n\t[[alternative HTML version deleted]]",
+      "thread_id": "thread-9423ae017845",
+      "thread_depth": 0,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-a9697f2840e6",
+      "message_id": "<20090826.XHHHNSILCOCACSLT@upload-ro.ro>",
+      "from_name": "cornel",
+      "from_email_hash": "fc8a24df3ac7c1dc495d93a1ac5c7bd41dc24d8add179ae379dd3295ecd3464c",
+      "date": "2009-08-26T23:12:16+03:00",
+      "subject": "[R-sig-DB] cursuri online GRATUITE",
+      "subject_clean": "cursuri online GRATUITE",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "An HTML attachment was scrubbed...\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20090826/c1893f89/attachment.html>",
+      "body_snippet": "An HTML attachment was scrubbed...\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20090826/c1893f89/attachment.html>",
+      "thread_id": "thread-a9697f2840e6",
+      "thread_depth": 0,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-b5e77c1013c8",
+      "message_id": "<BLU0-SMTP64E8191AB243A85908717FCAF60@phx.gbl>",
+      "from_name": "Jack Tanner",
+      "from_email_hash": "05d5de428494aa3777b56653254dfe0c2761fe8cf0ec64831c3ec99770ff599d",
+      "date": "2009-08-26T22:56:04-04:00",
+      "subject": "[R-sig-DB] RMySQL doesn't auto-reconnect",
+      "subject_clean": "RMySQL doesn't auto-reconnect",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "After I do library(RMySQL), dbConnect(), and run a few queries, I \nsometimes get this:\n\nError in mysqlExecStatement(conn, statement, ...) :\n  RS-DBI driver: (could not run statement: MySQL server has gone away)\n\nIf I issue a dbConnect() again, I can run queries again ... for a little \nwhile, and then I get another \"server has gone away\".\n\nThe MySQL server is on a separate machine from the client. It's entirely \npossible that there's one or more firewalls in between, which could be \ncausing the problem. The\n\nI understand that MySQL has auto-reconnect functionality:\n\nhttp://blog.taragana.com/index.php/archive/how-to-enable-disable-auto-reconnect-in-mysql/\n\nDoes RMySQL allow me to turn on auto-reconnect? If so, how?\n\n > version\n               _                          \nplatform       i386-redhat-linux-gnu      \narch           i386                       \nos             linux-gnu                  \nsystem         i386, linux-gnu            \nstatus                                    \nmajor          2                          \nminor          9.1                        \nyear           2009                       \nmonth          06                         \nday            26                         \nsvn rev        48839                      \nlanguage       R                          \nversion.string R version 2.9.1 (2009-06-26)\n > mysqlClientLibraryVersions()\n5.0.45 5.0.45\n 50045  50045",
+      "body_snippet": "After I do library(RMySQL), dbConnect(), and run a few queries, I \nsometimes get this:\n\nError in mysqlExecStatement(conn, statement, ...) :\n  RS-DBI driver: (could not run statement: MySQL server has ",
+      "thread_id": "thread-b5e77c1013c8",
+      "thread_depth": 0,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-d1e12739f9a0",
+      "message_id": "<6181d6960908270930u6d9e08b6ha53712c597b79647@mail.gmail.com>",
+      "from_name": "S. Few",
+      "from_email_hash": "e68960ce58b3141054a1182b140c3a066a26d3b8f5a527438285381d059a48d2",
+      "date": "2009-08-27T12:30:37-04:00",
+      "subject": "[R-sig-DB] testing",
+      "subject_clean": "testing",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "...\n\nsteve",
+      "body_snippet": "...\n\nsteve",
+      "thread_id": "thread-d1e12739f9a0",
+      "thread_depth": 0,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-cccf07454d38",
+      "message_id": "<4A97F617.70607@vanderbilt.edu>",
+      "from_name": "Jeffrey Horner",
+      "from_email_hash": "77f9f3268effd48e70e790ba24e5db9767f6401d87fbba7ec6a16ee2e060daf2",
+      "date": "2009-08-28T10:21:59-05:00",
+      "subject": "[R-sig-DB] RMySQL doesn't auto-reconnect",
+      "subject_clean": "RMySQL doesn't auto-reconnect",
+      "in_reply_to": "<BLU0-SMTP64E8191AB243A85908717FCAF60@phx.gbl>",
+      "references": [
+        "<BLU0-SMTP64E8191AB243A85908717FCAF60@phx.gbl>"
+      ],
+      "body_plain": "Jack Tanner wrote:\n> After I do library(RMySQL), dbConnect(), and run a few queries, I \n> sometimes get this:\n>\n> Error in mysqlExecStatement(conn, statement, ...) :\n>  RS-DBI driver: (could not run statement: MySQL server has gone away)\n>\n> If I issue a dbConnect() again, I can run queries again ... for a \n> little while, and then I get another \"server has gone away\".\n>\n> The MySQL server is on a separate machine from the client. It's \n> entirely possible that there's one or more firewalls in between, which \n> could be causing the problem. The\n>\n> I understand that MySQL has auto-reconnect functionality:\n>\n> http://blog.taragana.com/index.php/archive/how-to-enable-disable-auto-reconnect-in-mysql/ \n>\n>\n> Does RMySQL allow me to turn on auto-reconnect? If so, how?\n\nUnfortunately it doesn't right now, but that would be a great addition. \nI've often had to test for the connection going away for unknown reasons \nas well.\n\n I'll pencil it in for the next release as it's easy to add.\n\nJeff\n\n>\n> > version\n>               _                          platform       \n> i386-redhat-linux-gnu      arch           i386                       \n> os             linux-gnu                  system         i386, \n> linux-gnu            status                                    \n> major          2                          minor          \n> 9.1                        year           2009                       \n> month          06                         day            \n> 26                         svn rev        48839                      \n> language       R                          version.string R version \n> 2.9.1 (2009-06-26)\n> > mysqlClientLibraryVersions()\n> 5.0.45 5.0.45\n> 50045  50045\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "Jack Tanner wrote:\n> After I do library(RMySQL), dbConnect(), and run a few queries, I \n> sometimes get this:\n>\n> Error in mysqlExecStatement(conn, statement, ...) :\n>  RS-DBI driver: (could not run s",
+      "thread_id": "thread-b5e77c1013c8",
+      "thread_depth": 1,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-50874c0f2ee3",
+      "message_id": "<4A980701.20903@bank-banque-canada.ca>",
+      "from_name": "Paul Gilbert",
+      "from_email_hash": "f15a30c5ab39154b581a2ce01b7fb2604afed67b285aae590682e87400af9680",
+      "date": "2009-08-28T12:34:09-04:00",
+      "subject": "[R-sig-DB] RMySQL doesn't auto-reconnect",
+      "subject_clean": "RMySQL doesn't auto-reconnect",
+      "in_reply_to": "<4A97F617.70607@vanderbilt.edu>",
+      "references": [
+        "<BLU0-SMTP64E8191AB243A85908717FCAF60@phx.gbl>",
+        "<4A97F617.70607@vanderbilt.edu>"
+      ],
+      "body_plain": "Jack\n\nIt is possible this is a firewall, but I think there is also a \nconnection timeout parameter on the server, which can be adjusted. I'm \nnot sure what the default is, but I don't usually have trouble unless I \nleave a connection sitting idle overnight. Probably the firewall has \nsome sort of connection timeout too. I think both these timeouts should \ndepend on idle time, so are not consistent with the problem you report.\n\nAuto-reconnect would fix your problem, but I don't think you should be \ngetting dropped in the first place, unless you are really leaving the \nconnection idle for a long time.  If you are doing that, I would not \nrecommend auto-reconnect  (for security reasons).\n\nPaul\n\nJeffrey Horner wrote:\n> Jack Tanner wrote:\n> \n>> After I do library(RMySQL), dbConnect(), and run a few queries, I \n>> sometimes get this:\n>>\n>> Error in mysqlExecStatement(conn, statement, ...) :\n>>  RS-DBI driver: (could not run statement: MySQL server has gone away)\n>>\n>> If I issue a dbConnect() again, I can run queries again ... for a \n>> little while, and then I get another \"server has gone away\".\n>>\n>> The MySQL server is on a separate machine from the client. It's \n>> entirely possible that there's one or more firewalls in between, which \n>> could be causing the problem. The\n>>\n>> I understand that MySQL has auto-reconnect functionality:\n>>\n>> http://blog.taragana.com/index.php/archive/how-to-enable-disable-auto-reconnect-in-mysql/ \n>>\n>>\n>> Does RMySQL allow me to turn on auto-reconnect? If so, how?\n> \n> \n> Unfortunately it doesn't right now, but that would be a great addition. \n> I've often had to test for the connection going away for unknown reasons \n> as well.\n> \n> I'll pencil it in for the next release as it's easy to add.\n> \n> Jeff\n> \n>>\n>> > version\n>>               _                          platform       \n>> i386-redhat-linux-gnu      arch           i386                       \n>> os             linux-gnu                  system         i386, \n>> linux-gnu            status                                    \n>> major          2                          minor          \n>> 9.1                        year           2009                       \n>> month          06                         day            \n>> 26                         svn rev        48839                      \n>> language       R                          version.string R version \n>> 2.9.1 (2009-06-26)\n>> > mysqlClientLibraryVersions()\n>> 5.0.45 5.0.45\n>> 50045  50045\n>>\n>> _______________________________________________\n>> R-sig-DB mailing list -- R Special Interest Group\n>> R-sig-DB at stat.math.ethz.ch\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n> \n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n====================================================================================\n\nLa version fran?aise suit le texte anglais.\n\n------------------------------------------------------------------------------------\n\nThis email may contain privileged and/or confidential information, and the Bank of\nCanada does not waive any related rights. Any distribution, use, or copying of this\nemail or the information it contains by other than the intended recipient is\nunauthorized. If you received this email in error please delete it immediately from\nyour system and notify the sender promptly by email that you have done so. \n\n------------------------------------------------------------------------------------\n\nLe pr?sent courriel peut contenir de l'information privil?gi?e ou confidentielle.\nLa Banque du Canada ne renonce pas aux droits qui s'y rapportent. Toute diffusion,\nutilisation ou copie de ce courriel ou des renseignements qu'il contient par une\npersonne autre que le ou les destinataires d?sign?s est interdite. Si vous recevez\nce courriel par erreur, veuillez le supprimer imm?diatement et envoyer sans d?lai ?\nl'exp?diteur un message ?lectronique pour l'aviser que vous avez ?limin? de votre\nordinateur toute copie du courriel re?u.",
+      "body_snippet": "Jack\n\nIt is possible this is a firewall, but I think there is also a \nconnection timeout parameter on the server, which can be adjusted. I'm \nnot sure what the default is, but I don't usually have tro",
+      "thread_id": "thread-b5e77c1013c8",
+      "thread_depth": 2,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-f615817a776b",
+      "message_id": "<BLU0-SMTP5965E4E394BAB3CF3369D7CAF50@phx.gbl>",
+      "from_name": "Jack Tanner",
+      "from_email_hash": "05d5de428494aa3777b56653254dfe0c2761fe8cf0ec64831c3ec99770ff599d",
+      "date": "2009-08-28T13:07:30-04:00",
+      "subject": "[R-sig-DB] RMySQL doesn't auto-reconnect",
+      "subject_clean": "RMySQL doesn't auto-reconnect",
+      "in_reply_to": "<4A980701.20903@bank-banque-canada.ca>",
+      "references": [
+        "<BLU0-SMTP64E8191AB243A85908717FCAF60@phx.gbl>",
+        "<4A97F617.70607@vanderbilt.edu>",
+        "<4A980701.20903@bank-banque-canada.ca>"
+      ],
+      "body_plain": "Unfortunately, the server in question is on a web host, so I almost \ncertainly have no control of time-out parameters, even just to play with \nto test the hypothesis. The loss of connection usually happens within \nseconds, not even tens of seconds. Connecting from a different client \nmachine still results in \"server has gone away.\"\n\nI agree that auto-reconnect is a kludge, but I don't really know how to \ndiagnose the failure of the connection. Ideas welcome. :)\n\nCould you clarify why auto-reconnect is dangerous security-wise?\n\nPaul Gilbert wrote:\n> Jack\n>\n> It is possible this is a firewall, but I think there is also a \n> connection timeout parameter on the server, which can be adjusted. I'm \n> not sure what the default is, but I don't usually have trouble unless \n> I leave a connection sitting idle overnight. Probably the firewall has \n> some sort of connection timeout too. I think both these timeouts \n> should depend on idle time, so are not consistent with the problem you \n> report.\n>\n> Auto-reconnect would fix your problem, but I don't think you should be \n> getting dropped in the first place, unless you are really leaving the \n> connection idle for a long time.  If you are doing that, I would not \n> recommend auto-reconnect  (for security reasons).\n>\n> Paul\n>\n> Jeffrey Horner wrote:\n>> Jack Tanner wrote:\n>>\n>>> After I do library(RMySQL), dbConnect(), and run a few queries, I \n>>> sometimes get this:\n>>>\n>>> Error in mysqlExecStatement(conn, statement, ...) :\n>>>  RS-DBI driver: (could not run statement: MySQL server has gone away)\n>>>\n>>> If I issue a dbConnect() again, I can run queries again ... for a \n>>> little while, and then I get another \"server has gone away\".\n>>>\n>>> The MySQL server is on a separate machine from the client. It's \n>>> entirely possible that there's one or more firewalls in between, \n>>> which could be causing the problem. The\n>>>\n>>> I understand that MySQL has auto-reconnect functionality:\n>>>\n>>> http://blog.taragana.com/index.php/archive/how-to-enable-disable-auto-reconnect-in-mysql/ \n>>>\n>>>\n>>> Does RMySQL allow me to turn on auto-reconnect? If so, how?\n>>\n>>\n>> Unfortunately it doesn't right now, but that would be a great \n>> addition. I've often had to test for the connection going away for \n>> unknown reasons as well.\n>>\n>> I'll pencil it in for the next release as it's easy to add.\n>>\n>> Jeff\n>>\n>>>\n>>> > version\n>>>               _                          platform       \n>>> i386-redhat-linux-gnu      arch           i386                       \n>>> os             linux-gnu                  system         i386, \n>>> linux-gnu            status                                    \n>>> major          2                          minor          \n>>> 9.1                        year           2009                       \n>>> month          06                         day            \n>>> 26                         svn rev        48839                      \n>>> language       R                          version.string R version \n>>> 2.9.1 (2009-06-26)\n>>> > mysqlClientLibraryVersions()\n>>> 5.0.45 5.0.45\n>>> 50045  50045",
+      "body_snippet": "Unfortunately, the server in question is on a web host, so I almost \ncertainly have no control of time-out parameters, even just to play with \nto test the hypothesis. The loss of connection usually ha",
+      "thread_id": "thread-b5e77c1013c8",
+      "thread_depth": 3,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-fbb3906305ea",
+      "message_id": "<4A981658.6090105@bank-banque-canada.ca>",
+      "from_name": "Paul Gilbert",
+      "from_email_hash": "f15a30c5ab39154b581a2ce01b7fb2604afed67b285aae590682e87400af9680",
+      "date": "2009-08-28T13:39:36-04:00",
+      "subject": "[R-sig-DB] RMySQL doesn't auto-reconnect",
+      "subject_clean": "RMySQL doesn't auto-reconnect",
+      "in_reply_to": "<BLU0-SMTP5965E4E394BAB3CF3369D7CAF50@phx.gbl>",
+      "references": [
+        "<BLU0-SMTP64E8191AB243A85908717FCAF60@phx.gbl>",
+        "<4A97F617.70607@vanderbilt.edu>",
+        "<4A980701.20903@bank-banque-canada.ca>",
+        "<BLU0-SMTP5965E4E394BAB3CF3369D7CAF50@phx.gbl>"
+      ],
+      "body_plain": "Jack Tanner wrote:\n> Unfortunately, the server in question is on a web host, so I almost \n> certainly have no control of time-out parameters, even just to play with \n> to test the hypothesis. The loss of connection usually happens within \n> seconds, not even tens of seconds. Connecting from a different client \n> machine still results in \"server has gone away.\"\n\nMy guess is that this is not a time-out problem.  If you can arrage to \ntemporarly connect without the firewall in the middle then at least you \ncould determine if the problem is the server or the firewall.\n\n> \n> I agree that auto-reconnect is a kludge, but I don't really know how to \n> diagnose the failure of the connection. Ideas welcome. :)\n> \n> Could you clarify why auto-reconnect is dangerous security-wise?\n\nI was assuming a situation that may not apply: if you use a \nuserid/password to connect then you should probably worry about how easy \nit is to reconnect to a session that has been disconnected because it \nhas been idle for awhile. (But I was thinking hours not seconds.)\n\nPaul\n> \n> Paul Gilbert wrote:\n> \n>> Jack\n>>\n>> It is possible this is a firewall, but I think there is also a \n>> connection timeout parameter on the server, which can be adjusted. I'm \n>> not sure what the default is, but I don't usually have trouble unless \n>> I leave a connection sitting idle overnight. Probably the firewall has \n>> some sort of connection timeout too. I think both these timeouts \n>> should depend on idle time, so are not consistent with the problem you \n>> report.\n>>\n>> Auto-reconnect would fix your problem, but I don't think you should be \n>> getting dropped in the first place, unless you are really leaving the \n>> connection idle for a long time.  If you are doing that, I would not \n>> recommend auto-reconnect  (for security reasons).\n>>\n>> Paul\n>>\n>> Jeffrey Horner wrote:\n>>\n>>> Jack Tanner wrote:\n>>>\n>>>> After I do library(RMySQL), dbConnect(), and run a few queries, I \n>>>> sometimes get this:\n>>>>\n>>>> Error in mysqlExecStatement(conn, statement, ...) :\n>>>>  RS-DBI driver: (could not run statement: MySQL server has gone away)\n>>>>\n>>>> If I issue a dbConnect() again, I can run queries again ... for a \n>>>> little while, and then I get another \"server has gone away\".\n>>>>\n>>>> The MySQL server is on a separate machine from the client. It's \n>>>> entirely possible that there's one or more firewalls in between, \n>>>> which could be causing the problem. The\n>>>>\n>>>> I understand that MySQL has auto-reconnect functionality:\n>>>>\n>>>> http://blog.taragana.com/index.php/archive/how-to-enable-disable-auto-reconnect-in-mysql/ \n>>>>\n>>>>\n>>>> Does RMySQL allow me to turn on auto-reconnect? If so, how?\n>>>\n>>>\n>>>\n>>> Unfortunately it doesn't right now, but that would be a great \n>>> addition. I've often had to test for the connection going away for \n>>> unknown reasons as well.\n>>>\n>>> I'll pencil it in for the next release as it's easy to add.\n>>>\n>>> Jeff\n>>>\n>>>>\n>>>> > version\n>>>>               _                          platform       \n>>>> i386-redhat-linux-gnu      arch           i386                       \n>>>> os             linux-gnu                  system         i386, \n>>>> linux-gnu            status                                    \n>>>> major          2                          minor          \n>>>> 9.1                        year           2009                       \n>>>> month          06                         day            \n>>>> 26                         svn rev        48839                      \n>>>> language       R                          version.string R version \n>>>> 2.9.1 (2009-06-26)\n>>>> > mysqlClientLibraryVersions()\n>>>> 5.0.45 5.0.45\n>>>> 50045  50045\n> \n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n====================================================================================\n\nLa version fran?aise suit le texte anglais.\n\n------------------------------------------------------------------------------------\n\nThis email may contain privileged and/or confidential information, and the Bank of\nCanada does not waive any related rights. Any distribution, use, or copying of this\nemail or the information it contains by other than the intended recipient is\nunauthorized. If you received this email in error please delete it immediately from\nyour system and notify the sender promptly by email that you have done so. \n\n------------------------------------------------------------------------------------\n\nLe pr?sent courriel peut contenir de l'information privil?gi?e ou confidentielle.\nLa Banque du Canada ne renonce pas aux droits qui s'y rapportent. Toute diffusion,\nutilisation ou copie de ce courriel ou des renseignements qu'il contient par une\npersonne autre que le ou les destinataires d?sign?s est interdite. Si vous recevez\nce courriel par erreur, veuillez le supprimer imm?diatement et envoyer sans d?lai ?\nl'exp?diteur un message ?lectronique pour l'aviser que vous avez ?limin? de votre\nordinateur toute copie du courriel re?u.",
+      "body_snippet": "Jack Tanner wrote:\n> Unfortunately, the server in question is on a web host, so I almost \n> certainly have no control of time-out parameters, even just to play with \n> to test the hypothesis. The loss",
+      "thread_id": "thread-b5e77c1013c8",
+      "thread_depth": 4,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-b4c6227c71a9",
+      "message_id": "<063ADC77.E8679E2F@micgi.com>",
+      "from_name": "Agnetat_Schatzi",
+      "from_email_hash": "8dd94078a4deb2bb4f6236c076b970c5234f5ba06f07b4d13d496091a4c0e7e1",
+      "date": "2009-08-30T10:28:08-04:00",
+      "subject": "[R-sig-DB] Gesund abnehmen",
+      "subject_clean": "Gesund abnehmen",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Amerika war uns schon regelmaessig in Vielem ueberlegen, und auch nun kommt\nein ganz revolutionaerer Erfolg aus Amerika, der allen Menschen Zuversicht\nmacht, die zu dick sind.\n\nGanz bequeme und sichere Bestellung und weitere Erklaerungen im Web\n\nhttp://groups.yahoo.com/group/creakhexhuy8b\n\nDieses neue Mittel richtet sich besonders an die Menschen, die nicht nur\nein paar Kilo Uebergewicht haben, sondern tatsaechlich erheblich zu dick\nsind und sich auch schon oft ohne Erfolg mit Hungerkuren gequaelt haben.\n\nAuf eine vollkommen neue und revolutionaere Weise unterstuetzen diese\nSchlankheitspillen Sie beim Abnehmen. Es geht nahezu wie von selbst. Nehmen\nSie einfach zum Fruehstueck eine Pille und den Rest erledigt Ihr\nStoffwechsel.\n\nGanz einfache und sichere Bestellung sowie mehr Hinweise im WorldWideWeb\n\nhttp://groups.yahoo.com/group/thusdeedmwp0zc\n\nMit netten Gruessen\nDr. Sabrina Schmitz",
+      "body_snippet": "Amerika war uns schon regelmaessig in Vielem ueberlegen, und auch nun kommt\nein ganz revolutionaerer Erfolg aus Amerika, der allen Menschen Zuversicht\nmacht, die zu dick sind.\n\nGanz bequeme und sicher",
+      "thread_id": "thread-b4c6227c71a9",
+      "thread_depth": 0,
+      "month": "2009-08"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-a4cfc129bc96",
+      "subject": "problem with ROracle calls from a package",
+      "message_count": 3,
+      "participants": [
+        "Don MacQueen",
+        "Rajarshi Guha"
+      ],
+      "started": "2009-08-03T21:59:45-04:00",
+      "last_reply": "2009-08-06T07:37:28-07:00",
+      "root_message_id": "msg-a4cfc129bc96"
+    },
+    {
+      "id": "thread-4cf0a508b639",
+      "subject": "problem with ROracle calls from a package",
+      "message_count": 1,
+      "participants": [
+        "Rajarshi Guha"
+      ],
+      "started": "2009-08-06T10:49:51-04:00",
+      "last_reply": "2009-08-06T10:49:51-04:00",
+      "root_message_id": "msg-4cf0a508b639"
+    },
+    {
+      "id": "thread-28c58e2dcde3",
+      "subject": "If I can stop one heart from breaking",
+      "message_count": 1,
+      "participants": [
+        "kh@iid@b@h@@i m@iii@g oii @gi@ir"
+      ],
+      "started": "2009-08-07T03:06:15+04:00",
+      "last_reply": "2009-08-07T03:06:15+04:00",
+      "root_message_id": "msg-28c58e2dcde3"
+    },
+    {
+      "id": "thread-bcf046702864",
+      "subject": "Endlich erfolgreich abnehmen",
+      "message_count": 1,
+      "participants": [
+        "Aigneis-Henry"
+      ],
+      "started": "2009-08-08T13:38:24-09:00",
+      "last_reply": "2009-08-08T13:38:24-09:00",
+      "root_message_id": "msg-bcf046702864"
+    },
+    {
+      "id": "thread-c34ad27d9a47",
+      "subject": "Make your pipe incredible",
+      "message_count": 1,
+      "participants": [
+        "shopMED_goodSEXgu m@iii@g oii @etzero@com"
+      ],
+      "started": "2009-08-11T09:24:20+04:00",
+      "last_reply": "2009-08-11T09:24:20+04:00",
+      "root_message_id": "msg-c34ad27d9a47"
+    },
+    {
+      "id": "thread-68fd8c816b54",
+      "subject": "In odbcDriverConnect   ODBC connection failed",
+      "message_count": 1,
+      "participants": [
+        "Luis Ridao Cruz"
+      ],
+      "started": "2009-08-13T16:25:55+01:00",
+      "last_reply": "2009-08-13T16:25:55+01:00",
+      "root_message_id": "msg-68fd8c816b54"
+    },
+    {
+      "id": "thread-849718a8c7e6",
+      "subject": "R-sig-DB Digest, Vol 58, Issue 5",
+      "message_count": 1,
+      "participants": [
+        "Stephen Weller"
+      ],
+      "started": "2009-08-14T09:44:18-07:00",
+      "last_reply": "2009-08-14T09:44:18-07:00",
+      "root_message_id": "msg-849718a8c7e6"
+    },
+    {
+      "id": "thread-9423ae017845",
+      "subject": "Sale on supplements! -50%!",
+      "message_count": 1,
+      "participants": [
+        "m@ii2europrizece@ter1 m@iii@g oii y@hoo@co@uk"
+      ],
+      "started": "2009-08-21T18:17:22+04:00",
+      "last_reply": "2009-08-21T18:17:22+04:00",
+      "root_message_id": "msg-9423ae017845"
+    },
+    {
+      "id": "thread-b5e77c1013c8",
+      "subject": "RMySQL doesn't auto-reconnect",
+      "message_count": 5,
+      "participants": [
+        "Jack Tanner",
+        "Jeffrey Horner",
+        "Paul Gilbert"
+      ],
+      "started": "2009-08-26T22:56:04-04:00",
+      "last_reply": "2009-08-28T13:39:36-04:00",
+      "root_message_id": "msg-b5e77c1013c8"
+    },
+    {
+      "id": "thread-a9697f2840e6",
+      "subject": "cursuri online GRATUITE",
+      "message_count": 1,
+      "participants": [
+        "cornel"
+      ],
+      "started": "2009-08-26T23:12:16+03:00",
+      "last_reply": "2009-08-26T23:12:16+03:00",
+      "root_message_id": "msg-a9697f2840e6"
+    },
+    {
+      "id": "thread-d1e12739f9a0",
+      "subject": "testing",
+      "message_count": 1,
+      "participants": [
+        "S. Few"
+      ],
+      "started": "2009-08-27T12:30:37-04:00",
+      "last_reply": "2009-08-27T12:30:37-04:00",
+      "root_message_id": "msg-d1e12739f9a0"
+    },
+    {
+      "id": "thread-b4c6227c71a9",
+      "subject": "Gesund abnehmen",
+      "message_count": 1,
+      "participants": [
+        "Agnetat_Schatzi"
+      ],
+      "started": "2009-08-30T10:28:08-04:00",
+      "last_reply": "2009-08-30T10:28:08-04:00",
+      "root_message_id": "msg-b4c6227c71a9"
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+From @p@r|c|o2457 @end|ng |rom gm@||@com  Wed May  8 15:53:01 2019
+From: @p@r|c|o2457 @end|ng |rom gm@||@com (Luis Aparicio)
+Date: Wed, 8 May 2019 09:53:01 -0400
+Subject: [R-sig-DB] Importing data into a MySQL table from a data.frame with
+ R
+Message-ID: <CABSSfpcHDPTj2FcdD58QAmGsgMhT+GEke-dJNmr21HHNhyaZog@mail.gmail.com>
+
+ Greetings.  I'm trying to update a MySQL table with new data from a data
+frame using R. The data frame has several thousand rows, but only three
+columns.  The table has approximately five attributes (columns) so I only
+want to update the specific columns that the data frame provides.  I've
+been attempting to use the RMySQLDB or RMariaDB package and the dbx
+package.  I'm posting the relevant sections of the code.  The lines that
+connect to the database are fine.
+
+I'm having trouble because of the different number of columns between the
+data frame and the target table.  Also, note that the order the data frame
+columns are different than the location of the same columns in the table.
+The five columns in the table are:  INTERNAL_ID,  AA_CLONOTYPE,
+NT_CLONOTYPE, COUNT, and SAMPLE_ID.  The headers in the data frame are
+INTERNAL_ID, NT_CLONOTYPE, and SAMPLE_ID.
+
+The target table may be empty or may have already had rows totally
+completed or partially completed with prior data.
+
+I'm posting the code snippet, the error message, and an example of what I
+expect to be the result below.  Any ideas how I can approach this problem?
+Any help is appreciated.  Thank you. Regards.
+
+*Code snippet*:
+
+table <- "TCR"  #name of the MySQL table
+records <- newdf  # data frame with new records
+
+# Insert or update new rows with specific column data
+dbxUpsert(conx, table, records, where_cols = c("INTERNAL_ID"))
+
+*The error message:*
+Error in .local(conn, statement, ...) :
+  could not run statement: Field 'COUNT' doesn't have a default value
+
+*Example of expected output:*
+
+INTERNAL_ID    AA_CLONOTYPE   NT_CLONOTYPE   COUNT   SAMPLE_ID
+P28.10.1
+ACCGTCTCCTT                  P28.10
+P28.10.2
+CGGTTTAAAG                   P28.10
+
+-Luis
+
+	[[alternative HTML version deleted]]
+
+
+From tom_ph|||pp| @end|ng |rom np@@gov  Wed May  8 18:51:52 2019
+From: tom_ph|||pp| @end|ng |rom np@@gov (Philippi, Tom)
+Date: Wed, 8 May 2019 09:51:52 -0700
+Subject: [R-sig-DB] [EXTERNAL] Importing data into a MySQL table from a
+ data.frame with R
+In-Reply-To: <CABSSfpcHDPTj2FcdD58QAmGsgMhT+GEke-dJNmr21HHNhyaZog@mail.gmail.com>
+References: <CABSSfpcHDPTj2FcdD58QAmGsgMhT+GEke-dJNmr21HHNhyaZog@mail.gmail.com>
+Message-ID: <CAM9kYqhUb3=rHSUiMn2m9sJ2Bad4vgdAJwav=esYm2Tr6S7-Dg@mail.gmail.com>
+
+Luis--
+Unless I'm missing something, that's not specifically a MySQL or database
+issue.  For any form of update or append you need to make your "records"
+object have the same variables (columns) in the same order as the table
+you're updating.
+
+If your table has 5 variables and your update dataframe only has 3, do you
+want the other 2 variables to have missing values?
+records <- newdf
+records$AA_CLONETYPE <- NA   # probably needs to match type, so
+na_character_ or na_numeric_
+records$COUNT <- na_integer_  # assuming COUNT is integer type
+records <- records[,c("INTERNAL_ID", "AA_CLONOTYPE", "NT_CLONOTYPE",
+"COUNT", "SAMPLE_ID")]
+dbxUpsert(conx, table, records, where_cols = c("INTERNAL_ID"))
+
+Tom
+
+On Wed, May 8, 2019 at 6:53 AM Luis Aparicio <aparicio2457 at gmail.com> wrote:
+
+>  Greetings.  I'm trying to update a MySQL table with new data from a data
+> frame using R. The data frame has several thousand rows, but only three
+> columns.  The table has approximately five attributes (columns) so I only
+> want to update the specific columns that the data frame provides.  I've
+> been attempting to use the RMySQLDB or RMariaDB package and the dbx
+> package.  I'm posting the relevant sections of the code.  The lines that
+> connect to the database are fine.
+>
+> I'm having trouble because of the different number of columns between the
+> data frame and the target table.  Also, note that the order the data frame
+> columns are different than the location of the same columns in the table.
+> The five columns in the table are:  INTERNAL_ID,  AA_CLONOTYPE,
+> NT_CLONOTYPE, COUNT, and SAMPLE_ID.  The headers in the data frame are
+> INTERNAL_ID, NT_CLONOTYPE, and SAMPLE_ID.
+>
+> The target table may be empty or may have already had rows totally
+> completed or partially completed with prior data.
+>
+> I'm posting the code snippet, the error message, and an example of what I
+> expect to be the result below.  Any ideas how I can approach this problem?
+> Any help is appreciated.  Thank you. Regards.
+>
+> *Code snippet*:
+>
+> table <- "TCR"  #name of the MySQL table
+> records <- newdf  # data frame with new records
+>
+> # Insert or update new rows with specific column data
+> dbxUpsert(conx, table, records, where_cols = c("INTERNAL_ID"))
+>
+> *The error message:*
+> Error in .local(conn, statement, ...) :
+>   could not run statement: Field 'COUNT' doesn't have a default value
+>
+> *Example of expected output:*
+>
+> INTERNAL_ID    AA_CLONOTYPE   NT_CLONOTYPE   COUNT   SAMPLE_ID
+> P28.10.1
+> ACCGTCTCCTT                  P28.10
+> P28.10.2
+> CGGTTTAAAG                   P28.10
+>
+> -Luis
+>
+>         [[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+	[[alternative HTML version deleted]]
+
+

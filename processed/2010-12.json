@@ -1,0 +1,141 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2010-12",
+  "messages": [
+    {
+      "id": "msg-afbc64883894",
+      "message_id": "<AANLkTimpFLdUgZgFqWjXNE8F8b8-QQ_jMekEi=7JTbvo@mail.gmail.com>",
+      "from_name": "Kasper Daniel Hansen",
+      "from_email_hash": "d93d2b6e7e026786d1329cc362094fa8cf7678c5556ec56db24b97db9e327685",
+      "date": "2010-12-01T08:27:39-05:00",
+      "subject": "[R-sig-DB] Vector Operations",
+      "subject_clean": "Vector Operations",
+      "in_reply_to": "<AANLkTikYt1DGj6QJxo2BityuCrw0cFuyKf_4XSQpHnHJ@mail.gmail.com>",
+      "references": [
+        "<AANLkTikYt1DGj6QJxo2BityuCrw0cFuyKf_4XSQpHnHJ@mail.gmail.com>"
+      ],
+      "body_plain": "This is a pretty basic R question.  For you own sake, I would\nrecommend looking into lapply, sapply, mapply\n\nIn this case you could do\n\nallocatedSpace <- lapply(sql, dbGetQuery, con = con)\n\nThis code assumes that the relevant position of the argument is the\nsecond one in dbGetQuery.  A more future proof version would be\nsomething like\n\nallocatedSpace <- lapply(sql, function(state) dbGetQuery(con = con,\nstatement = state))\n\nKasper\n\nOn Mon, Nov 29, 2010 at 9:34 PM, Nick Torenvliet\n<nick.torenvliet at gmail.com> wrote:\n> This isn't strictly an DB question, but I'll venture out anyways...\n>\n> I've got a vector of sql statements called sql\n>\n>> sql\n> [1] \"select date, open, high, low, close, volume from endOfDayData where\n> date>'2009-09-01' and market like 'TSX' and symbol like 'AAB' order by date\"\n> .\n> .\n> .\n> [2464] \"select date, open, high, low, close, volume from endOfDayData where\n> date>'2009-09-01' and market like 'TSX' and symbol like 'ZUH' order by date\"\n>\n> [2465] \"select date, open, high, low, close, volume from endOfDayData where\n> date>'2009-09-01' and market like 'TSX' and symbol like 'ZUT' order by\n> date\"\n>\n> For each element in sql I'd like to run the queries in sql and have them in\n> another vector of some sort as in the following for loop...\n>\n> for(x in sql){\n> allocatedSpace <- dbGetQuery(con, statement=x)\n> }\n>\n> Is there a way to do this in a more R-esque vector like fashion/single line?\n>\n> Regards,\n>\n> Nick\n>\n> ? ? ? ?[[alternative HTML version deleted]]\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "This is a pretty basic R question.  For you own sake, I would\nrecommend looking into lapply, sapply, mapply\n\nIn this case you could do\n\nallocatedSpace <- lapply(sql, dbGetQuery, con = con)\n\nThis code ",
+      "thread_id": "thread-afbc64883894",
+      "thread_depth": 0,
+      "month": "2010-12"
+    },
+    {
+      "id": "msg-6d097e0df6b7",
+      "message_id": "<AANLkTi=hu6uCci5Gh3gm=DfCb95kPACHP-ce65F2djR5@mail.gmail.com>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2010-12-01T09:16:36-05:00",
+      "subject": "[R-sig-DB] Vector Operations",
+      "subject_clean": "Vector Operations",
+      "in_reply_to": "<AANLkTimpFLdUgZgFqWjXNE8F8b8-QQ_jMekEi=7JTbvo@mail.gmail.com>",
+      "references": [
+        "<AANLkTikYt1DGj6QJxo2BityuCrw0cFuyKf_4XSQpHnHJ@mail.gmail.com>",
+        "<AANLkTimpFLdUgZgFqWjXNE8F8b8-QQ_jMekEi=7JTbvo@mail.gmail.com>"
+      ],
+      "body_plain": "On Wed, Dec 1, 2010 at 8:27 AM, Kasper Daniel Hansen <\nkasperdanielhansen at gmail.com> wrote:\n\n> This is a pretty basic R question.  For you own sake, I would\n> recommend looking into lapply, sapply, mapply\n>\n> In this case you could do\n>\n> allocatedSpace <- lapply(sql, dbGetQuery, con = con)\n>\n> This code assumes that the relevant position of the argument is the\n> second one in dbGetQuery.  A more future proof version would be\n> something like\n>\n> allocatedSpace <- lapply(sql, function(state) dbGetQuery(con = con,\n> statement = state))\n>\n> Kasper\n>\n> On Mon, Nov 29, 2010 at 9:34 PM, Nick Torenvliet\n> <nick.torenvliet at gmail.com> wrote:\n> > This isn't strictly an DB question, but I'll venture out anyways...\n> >\n> > I've got a vector of sql statements called sql\n> >\n> >> sql\n> > [1] \"select date, open, high, low, close, volume from endOfDayData where\n> > date>'2009-09-01' and market like 'TSX' and symbol like 'AAB' order by\n> date\"\n> > .\n> > .\n> > .\n> > [2464] \"select date, open, high, low, close, volume from endOfDayData\n> where\n> > date>'2009-09-01' and market like 'TSX' and symbol like 'ZUH' order by\n> date\"\n> >\n> > [2465] \"select date, open, high, low, close, volume from endOfDayData\n> where\n> > date>'2009-09-01' and market like 'TSX' and symbol like 'ZUT' order by\n> > date\"\n> >\n> > For each element in sql I'd like to run the queries in sql and have them\n> in\n> > another vector of some sort as in the following for loop...\n> >\n> > for(x in sql){\n> > allocatedSpace <- dbGetQuery(con, statement=x)\n> > }\n> >\n> > Is there a way to do this in a more R-esque vector like fashion/single\n> line?\n>\n>\nHi, Nick.\n\nAre you sure that you can't do this on the database side with a single query\nwith something like:\n\nselect symbol, date, open, high, low, close, volume from endOfDayData\nwhere date>'2009-09-01' and market like 'TSX' and symbol in\n('ZUH','ZUT','AAB') order by symbol,date\n\nTypically (but not always), letting the database do this once will be more\nperformant than several thousand separate queries.  On the R side, you can\nuse split() if you need separate data frames per symbol.\n\nAlso, just a note that using \"like\" instead of \"=\" will often disable the\nuse of indexes in the query, perhaps significantly impacting performance.\n\nSean\n\n\n> > Regards,\n> >\n> > Nick\n> >\n> >        [[alternative HTML version deleted]]\n> >\n> > _______________________________________________\n> > R-sig-DB mailing list -- R Special Interest Group\n> > R-sig-DB at r-project.org\n> > https://stat.ethz.ch/mailman/listinfo/r-sig-db\n> >\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "On Wed, Dec 1, 2010 at 8:27 AM, Kasper Daniel Hansen <\nkasperdanielhansen at gmail.com> wrote:\n\n> This is a pretty basic R question.  For you own sake, I would\n> recommend looking into lapply, sapply,",
+      "thread_id": "thread-afbc64883894",
+      "thread_depth": 1,
+      "month": "2010-12"
+    },
+    {
+      "id": "msg-726d010446b4",
+      "message_id": "<AANLkTik0GOA-KHUoFtqocj4uV-C81TLkcESgKDTf3=eq@mail.gmail.com>",
+      "from_name": "Daniel",
+      "from_email_hash": "e75e57f43599ba5e48d01f1d535f200935c93d65e50cefa56b0c382d1c1f0c97",
+      "date": "2010-12-16T21:47:47-02:00",
+      "subject": "[R-sig-DB] Help with loop",
+      "subject_clean": "Help with loop",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello all,\nIs there a way to get each file from a website list and aggregate in a\nunique file?\nOtherwise I have to type 23 thousand web address into a long script like it:\n\nbase1 <- read.table(\"site 1\", sep=\";\", header=T,\nfileEncoding=\"windows-1252\")\nbase2 <- read.table(\"site 2\", sep=\";\", header=T,\nfileEncoding=\"windows-1252\")\n\nI need to download each .CSV file from each web address and \"rbind\" all them\ninto one data frame.\nAlso I need to translate each object to UTF-8. Of course many of address\nmaybe be empty, so, my loop can't stops because this.\n\nI never type a loop before, so, in my first shot I get an error. Can\nsomebody help me?\n\nmyresult <- NULL\nn <-length(mysites)\nfor (i in 1:n) {\n bases <- read.table(n)\n bases[i]<-read.table(mysites[[i]], sep=\";\", header=TRUE,\nfileEncoding=\"windows-1252\")\ntudo <- rbind(myresult, bases)\n}\n\nError in read.table(n) : 'file' must be a character string or connection\n-- \nDaniel Marcelino\nSkype: dmsilv\nwww.sites.google.com/site/politicaevoce/ <http://bit.ly/pol4vc>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hello all,\nIs there a way to get each file from a website list and aggregate in a\nunique file?\nOtherwise I have to type 23 thousand web address into a long script like it:\n\nbase1 <- read.table(\"site 1",
+      "thread_id": "thread-726d010446b4",
+      "thread_depth": 0,
+      "month": "2010-12"
+    },
+    {
+      "id": "msg-9855ad17574c",
+      "message_id": "<AANLkTinchVLWwzn9-LoYrdUah6+5=_=pY0SyqGQaMdRa@mail.gmail.com>",
+      "from_name": "Nilza BARROS",
+      "from_email_hash": "30d3c3a70854317e1774795dd909f4d61c014c2a0c5d202ff579bc802cb3c6d9",
+      "date": "2010-12-18T18:20:19-02:00",
+      "subject": "[R-sig-DB] R-sig-DB Digest, Vol 74, Issue 2",
+      "subject_clean": "R-sig-DB Digest, Vol 74, Issue 2",
+      "in_reply_to": "<mailman.15.1292583604.9796.r-sig-db@r-project.org>",
+      "references": [
+        "<mailman.15.1292583604.9796.r-sig-db@r-project.org>"
+      ],
+      "body_plain": "Hi,\nYour mistake is related with   \"read.table(n)\". I haven`t got what you want\nbut I put an example below (where I used loop to read many files). Hope it\nhelps. Anyway, I thougth should have sent your question to\n\n<r-help at r-project.org>.\nBye\nNilza\n\n\n=====example ====================\nnomesout <- dir(dat.dir,pattern=\"^[s]\") #obtem no diretorio de atual todos\narquivo iniciado com a letra s\n\nOUT <- read.table(paste(dat.dir,nomesout[1] ,sep = \"\"),header = FALSE, sep =\n\",\", na.strings = c(\"/\",\"///\",\"////\",\"/////\",\"//////\"))\n\nfor(i in 2:length(nomesout)){\n\nY <- read.table(paste(dat.dir,nomesout[i] ,sep = \"\"),header = FALSE, sep =\n\",\")\n\nOUT <- rbind(OUT, Y)\n\n}\n\nOUT <- OUT[-1,] ## Remove linhas em branco\n\n\nOn Fri, Dec 17, 2010 at 9:00 AM, <r-sig-db-request at r-project.org> wrote:\n\n> Send R-sig-DB mailing list submissions to\n>        r-sig-db at r-project.org\n>\n> To subscribe or unsubscribe via the World Wide Web, visit\n>        https://stat.ethz.ch/mailman/listinfo/r-sig-db\n> or, via email, send a message with subject or body 'help' to\n>        r-sig-db-request at r-project.org\n>\n> You can reach the person managing the list at\n>        r-sig-db-owner at r-project.org\n>\n> When replying, please edit your Subject line so it is more specific\n> than \"Re: Contents of R-sig-DB digest...\"\n>\n>\n> Today's Topics:\n>\n>   1. Help with loop (Daniel)\n>\n>\n> ----------------------------------------------------------------------\n>\n> Message: 1\n> Date: Thu, 16 Dec 2010 21:47:47 -0200\n> From: Daniel <dmsilv at gmail.com>\n> To: r-sig-db at stat.math.ethz.ch\n> Subject: [R-sig-DB] Help with loop\n> Message-ID:\n>        <AANLkTik0GOA-KHUoFtqocj4uV-C81TLkcESgKDTf3=eq at mail.gmail.com>\n> Content-Type: text/plain\n>\n> Hello all,\n> Is there a way to get each file from a website list and aggregate in a\n> unique file?\n> Otherwise I have to type 23 thousand web address into a long script like\n> it:\n>\n> base1 <- read.table(\"site 1\", sep=\";\", header=T,\n> fileEncoding=\"windows-1252\")\n> base2 <- read.table(\"site 2\", sep=\";\", header=T,\n> fileEncoding=\"windows-1252\")\n>\n> I need to download each .CSV file from each web address and \"rbind\" all\n> them\n> into one data frame.\n> Also I need to translate each object to UTF-8. Of course many of address\n> maybe be empty, so, my loop can't stops because this.\n>\n> I never type a loop before, so, in my first shot I get an error. Can\n> somebody help me?\n>\n> myresult <- NULL\n> n <-length(mysites)\n> for (i in 1:n) {\n>  bases <- read.table(n)\n>  bases[i]<-read.table(mysites[[i]], sep=\";\", header=TRUE,\n> fileEncoding=\"windows-1252\")\n> tudo <- rbind(myresult, bases)\n> }\n>\n> Error in read.table(n) : 'file' must be a character string or connection\n> --\n> Daniel Marcelino\n> Skype: dmsilv\n> www.sites.google.com/site/politicaevoce/ <http://bit.ly/pol4vc>\n>\n>        [[alternative HTML version deleted]]\n>\n>\n>\n> ------------------------------\n>\n> _______________________________________________\n> R-sig-DB mailing list\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n>\n> End of R-sig-DB Digest, Vol 74, Issue 2\n> ***************************************\n>\n\n\n\n-- \nAbra?o,\nNilza Barros\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi,\nYour mistake is related with   \"read.table(n)\". I haven`t got what you want\nbut I put an example below (where I used loop to read many files). Hope it\nhelps. Anyway, I thougth should have sent you",
+      "thread_id": "thread-9855ad17574c",
+      "thread_depth": 0,
+      "month": "2010-12"
+    },
+    {
+      "id": "msg-9427d0f099f3",
+      "message_id": "<9AA0409178E2D14DAFBE80D2F7EB278083B0F9FDB7@VAXMUCQ1.wwg00m.rootdom.net>",
+      "from_name": "Landscheidt, Ruediger Joachim (AIM SE)",
+      "from_email_hash": "123221cb569c3c43e015110df39d468f3db6e47cf567b566dae0e49b2883f65b",
+      "date": "2010-12-23T15:33:24+01:00",
+      "subject": "[R-sig-DB] error: install the oackage \"RMySQL\"",
+      "subject_clean": "error: install the oackage \"RMySQL\"",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello\n\nI have a problem. I want to install the package \"RMySQL\".\nI was trying to install the package how they describe the installationway in http://biostat.mc.vanderbilt.edu/wiki/Main/RMySQL.\nDuring building a binary of the source or installing the package, i get this error-message\n:\n* installing *source* package 'RMySQL' ...\nchecking for $MYSQL_HOME... C:/Programme/xampp/mysql\ncygwin warning:\n  MS-DOS style path detected: C:/Programme/xampp/mysql\n  Preferred POSIX equivalent is: /cygdrive/c/Programme/xampp/mysql\n  CYGWIN environment variable option \"nodosfilewarning\" turns off this warning.\n  Consult the user's guide for more details about POSIX paths:\n    http://cygwin.com/cygwin-ug-net/using.html#using-pathnames\ncp: cannot stat `src/Makevars.win32': No such file or directory                              <--- especially what is that?!\nERROR: configuration failed for package 'RMySQL'\n* removing 'C:/.../RMYSQL~1.RCH/RMySQL'\n\nAlso I get this information too:\n* installing *source* package 'RMySQL' ...\nchecking for $MYSQL_HOME... C:/Programme/xampp/mysql\ncygwin warning:\n  MS-DOS style path detected: C:/Programme/xampp/mysql\n  Preferred POSIX equivalent is: /cygdrive/c/Programme/xampp/mysql\n  CYGWIN environment variable option \"nodosfilewarning\" turns off this warning.\n  Consult the user's guide for more details about POSIX paths:\n    http://cygwin.com/cygwin-ug-net/using.html#using-pathnames\n** libs\nWarnung: this package has a non-empty 'configure.win' file,\nso building only the main architecture\n\ncygwin warning:\n  MS-DOS style path detected: C:/PROGRA~1/R/R-212~1.1/etc/i386/Makeconf\n  Preferred POSIX equivalent is: /cygdrive/c/PROGRA~1/R/R-212~1.1/etc/i386/Makeconf\n  CYGWIN environment variable option \"nodosfilewarning\" turns off this warning.\n  Consult the user's guide for more details about POSIX paths:\n    http://cygwin.com/cygwin-ug-net/using.html#using-pathnames\ngcc -I\"C:/PROGRA~1/R/R-212~1.1/include\" -I\"C:/Programme/xampp/mysql\"/include        -O3 -Wall  -std=gnu99 -c RS-DBI.c -o RS-DBI.o\ngcc -I\"C:/PROGRA~1/R/R-212~1.1/include\" -I\"C:/Programme/xampp/mysql\"/include        -O3 -Wall  -std=gnu99 -c RS-MySQL.c -o RS-MySQL.o\nIn file included from RS-MySQL.c:22:0:\nRS-MySQL.h:32:19: fatal error: mysql.h: No such file or directory\ncompilation terminated.\nmake: *** [RS-MySQL.o] Error 1\nERROR: compilation failed for package 'RMySQL'\n* removing 'C:/Programme/R/R-2.12.1/library/RMySQL'\n\nI dont know how i can correct the error?!\nSo I'm lost and please tell me, where is my problem?!\nThanks for your help.\n\nR??diger Landscheidt\n\nSome backgroundinformation:\nI am using R.2.12.1, mysql is 5.0.67 and xampp is 1.6.8.\nAlso i am using Eclipse 3.6. with Rtools 212 in C:/Programme/Rtools.\nI set the environmental variable: MYSQL_HOME= C:/Programme/xampp/mysql.\n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hello\n\nI have a problem. I want to install the package \"RMySQL\".\nI was trying to install the package how they describe the installationway in http://biostat.mc.vanderbilt.edu/wiki/Main/RMySQL.\nDuring ",
+      "thread_id": "thread-9427d0f099f3",
+      "thread_depth": 0,
+      "month": "2010-12"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-afbc64883894",
+      "subject": "Vector Operations",
+      "message_count": 2,
+      "participants": [
+        "Kasper Daniel Hansen",
+        "Sean Davis"
+      ],
+      "started": "2010-12-01T08:27:39-05:00",
+      "last_reply": "2010-12-01T09:16:36-05:00",
+      "root_message_id": "msg-afbc64883894"
+    },
+    {
+      "id": "thread-726d010446b4",
+      "subject": "Help with loop",
+      "message_count": 1,
+      "participants": [
+        "Daniel"
+      ],
+      "started": "2010-12-16T21:47:47-02:00",
+      "last_reply": "2010-12-16T21:47:47-02:00",
+      "root_message_id": "msg-726d010446b4"
+    },
+    {
+      "id": "thread-9855ad17574c",
+      "subject": "R-sig-DB Digest, Vol 74, Issue 2",
+      "message_count": 1,
+      "participants": [
+        "Nilza BARROS"
+      ],
+      "started": "2010-12-18T18:20:19-02:00",
+      "last_reply": "2010-12-18T18:20:19-02:00",
+      "root_message_id": "msg-9855ad17574c"
+    },
+    {
+      "id": "thread-9427d0f099f3",
+      "subject": "error: install the oackage \"RMySQL\"",
+      "message_count": 1,
+      "participants": [
+        "Landscheidt, Ruediger Joachim (AIM SE)"
+      ],
+      "started": "2010-12-23T15:33:24+01:00",
+      "last_reply": "2010-12-23T15:33:24+01:00",
+      "root_message_id": "msg-9427d0f099f3"
+    }
+  ]
+}

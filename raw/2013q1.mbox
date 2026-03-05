@@ -1,0 +1,1068 @@
+From jporz@k @end|ng |rom gm@||@com  Wed Jan 23 20:08:53 2013
+From: jporz@k @end|ng |rom gm@||@com (Jim Porzak)
+Date: Wed, 23 Jan 2013 11:08:53 -0800
+Subject: [R-sig-DB] RpgSQL/RJDBC(?) on R15.2(64) Win7 throws can't find
+	.verify.JDBC.result
+Message-ID: <CAOo3SQgJ5OgobM9eBNecvhPQwYOhjEtmj2L+rqE4U9YnaNorGg@mail.gmail.com>
+
+All, I see:
+
+> options(RpgSQL.user = "tableau", RpgSQL.password = "******",
++         RpgSQL.host = "10.8.0.1", RpgSQL.port = 5432,
++         RpgSQL.JAR = "C:/Drivers/JDBC")
+>
+> library(RpgSQL)                                  ## Version: 0.1-6
+Loading required package: RJDBC           ## Version: 0.2-1
+Loading required package: DBI                ## Version: 0.2-5
+Loading required package: rJava              ## Version: 0.9-3
+
+> con <- dbConnect(pgSQL(), dbname = "bidata_pg")
+Error in .local(drv, ...) : could not find function ".verify.JDBC.result"
+
+The above works just fine with R14.2 & prior versions of PpgSQL & RJDBC.
+
+I noticed H2 user had a similar error which they worked around by
+rolling back to RJDBC 0.2-0
+I tried hacking a roll-back using files from my 14.2 install but that
+didn't work.
+I did not see any window binaries for RJDBC 0.2-0
+
+Suggestions?
+
+
+Jim Porzak
+Minted.com
+San Francisco, CA
+www.linkedin.com/in/jimporzak
+use R! Group SF: www.meetup.com/R-Users/
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Wed Jan 23 21:22:51 2013
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Wed, 23 Jan 2013 15:22:51 -0500
+Subject: [R-sig-DB] RpgSQL/RJDBC(?) on R15.2(64) Win7 throws can't find
+	.verify.JDBC.result
+In-Reply-To: <CAOo3SQgJ5OgobM9eBNecvhPQwYOhjEtmj2L+rqE4U9YnaNorGg@mail.gmail.com>
+References: <CAOo3SQgJ5OgobM9eBNecvhPQwYOhjEtmj2L+rqE4U9YnaNorGg@mail.gmail.com>
+Message-ID: <CAP01uRmOtnhy1XPtnvCYvBVO6dK5Kc+DP4fhn4uApOwbdbP8pA@mail.gmail.com>
+
+I tried the same fix that worked for RH2 but it seems its something
+else as you found too.  I will have a look next week.
+
+On Wed, Jan 23, 2013 at 2:08 PM, Jim Porzak <jporzak at gmail.com> wrote:
+> All, I see:
+>
+>> options(RpgSQL.user = "tableau", RpgSQL.password = "******",
+> +         RpgSQL.host = "10.8.0.1", RpgSQL.port = 5432,
+> +         RpgSQL.JAR = "C:/Drivers/JDBC")
+>>
+>> library(RpgSQL)                                  ## Version: 0.1-6
+> Loading required package: RJDBC           ## Version: 0.2-1
+> Loading required package: DBI                ## Version: 0.2-5
+> Loading required package: rJava              ## Version: 0.9-3
+>
+>> con <- dbConnect(pgSQL(), dbname = "bidata_pg")
+> Error in .local(drv, ...) : could not find function ".verify.JDBC.result"
+>
+> The above works just fine with R14.2 & prior versions of PpgSQL & RJDBC.
+>
+> I noticed H2 user had a similar error which they worked around by
+> rolling back to RJDBC 0.2-0
+> I tried hacking a roll-back using files from my 14.2 install but that
+> didn't work.
+> I did not see any window binaries for RJDBC 0.2-0
+>
+> Suggestions?
+>
+>
+> Jim Porzak
+> Minted.com
+> San Francisco, CA
+> www.linkedin.com/in/jimporzak
+> use R! Group SF: www.meetup.com/R-Users/
+
+
+
+--
+Statistics & Software Consulting
+GKX Group, GKX Associates Inc.
+tel: 1-877-GKX-GROUP
+email: ggrothendieck at gmail.com
+
+
+
+From jporz@k @end|ng |rom gm@||@com  Wed Jan 23 22:16:33 2013
+From: jporz@k @end|ng |rom gm@||@com (Jim Porzak)
+Date: Wed, 23 Jan 2013 13:16:33 -0800
+Subject: [R-sig-DB] RpgSQL/RJDBC(?) on R15.2(64) Win7 throws can't find
+	.verify.JDBC.result
+In-Reply-To: <CAP01uRmOtnhy1XPtnvCYvBVO6dK5Kc+DP4fhn4uApOwbdbP8pA@mail.gmail.com>
+References: <CAOo3SQgJ5OgobM9eBNecvhPQwYOhjEtmj2L+rqE4U9YnaNorGg@mail.gmail.com>
+	<CAP01uRmOtnhy1XPtnvCYvBVO6dK5Kc+DP4fhn4uApOwbdbP8pA@mail.gmail.com>
+Message-ID: <CAOo3SQipSCStjbdFpWarxahdrbcJaN6hMS3BcJw981_ZFr0i7Q@mail.gmail.com>
+
+Thanks Gabor,
+Not a panic, since I'm doing this work in 2.14.2, but would be good to
+get cleaned up.
+Jim
+
+
+On Wed, Jan 23, 2013 at 12:22 PM, Gabor Grothendieck
+<ggrothendieck at gmail.com> wrote:
+> I tried the same fix that worked for RH2 but it seems its something
+> else as you found too.  I will have a look next week.
+>
+> On Wed, Jan 23, 2013 at 2:08 PM, Jim Porzak <jporzak at gmail.com> wrote:
+>> All, I see:
+>>
+>>> options(RpgSQL.user = "tableau", RpgSQL.password = "******",
+>> +         RpgSQL.host = "10.8.0.1", RpgSQL.port = 5432,
+>> +         RpgSQL.JAR = "C:/Drivers/JDBC")
+>>>
+>>> library(RpgSQL)                                  ## Version: 0.1-6
+>> Loading required package: RJDBC           ## Version: 0.2-1
+>> Loading required package: DBI                ## Version: 0.2-5
+>> Loading required package: rJava              ## Version: 0.9-3
+>>
+>>> con <- dbConnect(pgSQL(), dbname = "bidata_pg")
+>> Error in .local(drv, ...) : could not find function ".verify.JDBC.result"
+>>
+>> The above works just fine with R14.2 & prior versions of PpgSQL & RJDBC.
+>>
+>> I noticed H2 user had a similar error which they worked around by
+>> rolling back to RJDBC 0.2-0
+>> I tried hacking a roll-back using files from my 14.2 install but that
+>> didn't work.
+>> I did not see any window binaries for RJDBC 0.2-0
+>>
+>> Suggestions?
+>>
+>>
+>> Jim Porzak
+>> Minted.com
+>> San Francisco, CA
+>> www.linkedin.com/in/jimporzak
+>> use R! Group SF: www.meetup.com/R-Users/
+>
+>
+>
+> --
+> Statistics & Software Consulting
+> GKX Group, GKX Associates Inc.
+> tel: 1-877-GKX-GROUP
+> email: ggrothendieck at gmail.com
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Thu Feb  7 06:20:55 2013
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Thu, 7 Feb 2013 00:20:55 -0500
+Subject: [R-sig-DB] RpgSQL/RJDBC(?) on R15.2(64) Win7 throws can't find
+	.verify.JDBC.result
+In-Reply-To: <CAOo3SQipSCStjbdFpWarxahdrbcJaN6hMS3BcJw981_ZFr0i7Q@mail.gmail.com>
+References: <CAOo3SQgJ5OgobM9eBNecvhPQwYOhjEtmj2L+rqE4U9YnaNorGg@mail.gmail.com>
+	<CAP01uRmOtnhy1XPtnvCYvBVO6dK5Kc+DP4fhn4uApOwbdbP8pA@mail.gmail.com>
+	<CAOo3SQipSCStjbdFpWarxahdrbcJaN6hMS3BcJw981_ZFr0i7Q@mail.gmail.com>
+Message-ID: <CAP01uRnGBBUW_hX0yKVEpnx5WdpoaE4AABiQ1K4wHMvqM-35Qg@mail.gmail.com>
+
+I was wondering if you could use RPostgreSQL instead of RpgSQL?
+
+RpgSQL was written to support cross platform PostgreSQL at a time that
+RPostgreSQL did not have that capability but now that RPostgreSQL
+works on all platforms (as far as I know) it does have the benefit of
+not needing Java.  If there is a general feeling that RPostgreSQL is
+sufficient I was thinking I could retire RpgSQL.
+
+Let me know.
+
+Regards.
+
+
+On Wed, Jan 23, 2013 at 4:16 PM, Jim Porzak <jporzak at gmail.com> wrote:
+> Thanks Gabor,
+> Not a panic, since I'm doing this work in 2.14.2, but would be good to
+> get cleaned up.
+> Jim
+>
+>
+> On Wed, Jan 23, 2013 at 12:22 PM, Gabor Grothendieck
+> <ggrothendieck at gmail.com> wrote:
+>> I tried the same fix that worked for RH2 but it seems its something
+>> else as you found too.  I will have a look next week.
+>>
+>> On Wed, Jan 23, 2013 at 2:08 PM, Jim Porzak <jporzak at gmail.com> wrote:
+>>> All, I see:
+>>>
+>>>> options(RpgSQL.user = "tableau", RpgSQL.password = "******",
+>>> +         RpgSQL.host = "10.8.0.1", RpgSQL.port = 5432,
+>>> +         RpgSQL.JAR = "C:/Drivers/JDBC")
+>>>>
+>>>> library(RpgSQL)                                  ## Version: 0.1-6
+>>> Loading required package: RJDBC           ## Version: 0.2-1
+>>> Loading required package: DBI                ## Version: 0.2-5
+>>> Loading required package: rJava              ## Version: 0.9-3
+>>>
+>>>> con <- dbConnect(pgSQL(), dbname = "bidata_pg")
+>>> Error in .local(drv, ...) : could not find function ".verify.JDBC.result"
+>>>
+>>> The above works just fine with R14.2 & prior versions of PpgSQL & RJDBC.
+>>>
+>>> I noticed H2 user had a similar error which they worked around by
+>>> rolling back to RJDBC 0.2-0
+>>> I tried hacking a roll-back using files from my 14.2 install but that
+>>> didn't work.
+>>> I did not see any window binaries for RJDBC 0.2-0
+>>>
+>>> Suggestions?
+>>>
+>>>
+>>> Jim Porzak
+>>> Minted.com
+>>> San Francisco, CA
+>>> www.linkedin.com/in/jimporzak
+>>> use R! Group SF: www.meetup.com/R-Users/
+>>
+>>
+>>
+>> --
+>> Statistics & Software Consulting
+>> GKX Group, GKX Associates Inc.
+>> tel: 1-877-GKX-GROUP
+>> email: ggrothendieck at gmail.com
+
+
+
+-- 
+Statistics & Software Consulting
+GKX Group, GKX Associates Inc.
+tel: 1-877-GKX-GROUP
+email: ggrothendieck at gmail.com
+
+
+
+From Robert@McGehee @end|ng |rom geodec@p|t@|@com  Tue Feb 12 16:05:31 2013
+From: Robert@McGehee @end|ng |rom geodec@p|t@|@com (McGehee, Robert)
+Date: Tue, 12 Feb 2013 10:05:31 -0500
+Subject: [R-sig-DB] PostgreSQL killed on dbDisconnect (RPostgreSQL)
+Message-ID: <17B09E7789D3104E8F5EEB0582A8D66FF250D527BE@MSGRTPCCRF2WIN.DMN1.FMR.COM>
+
+Hi,
+Has anyone had an issue where a PostgreSQL connection was forcibly killed (SIGKILL) by RPostgreSQL, causing a full database crash/recovery/restart? 
+
+This seems to happen about twice a week when a RPostgreSQL connection is closed using dbDisconnect (or when an R session ends) while other queries are running. The Linux OOM killer is not enabled on this server and I can find no evidence of hardware problems or any evidence of problems with the PostgreSQL database. This left me to wonder if there was a problem with the way RPostgreSQL (or R) disconnects that causes the database crash.
+ 
+I generally interface with RPostgreSQL inside a function like this:
+
+FUN <- function() {
+	conn <- dbConnect(dbDriver("PostgreSQL"), host="xx", user="xx", password="xx", dbname="xx")
+	on.exit(dbDisconnect(conn), add=TRUE)
+	dbGetQuery("SELECT 1;", conn=conn)
+}
+
+I found record of a similar problem with the RpgSQL package here (from 2009):
+https://stat.ethz.ch/pipermail/r-help/2009-January/184707.html
+which indicates that dbDisconnect() caused a crash under similar circumstances in RpgSQL. However, in this case there was a crash in R; in my case there is a crash in PostgreSQL (and it's a different package).
+
+Has anyone else had a problem like this with RPostgreSQL or know if it is even possible for RPostgreSQL to send a SIGKILL signal to a PostgreSQL connection? I'm reluctant to remove dbDisconnect everywhere, as I don't want zombie connections accumulating. Also, I'm not the only user of the database.
+
+Thanks, Robert
+
+
+
+From edd @end|ng |rom deb|@n@org  Tue Feb 12 16:18:47 2013
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Tue, 12 Feb 2013 09:18:47 -0600
+Subject: [R-sig-DB] PostgreSQL killed on dbDisconnect (RPostgreSQL)
+In-Reply-To: <17B09E7789D3104E8F5EEB0582A8D66FF250D527BE@MSGRTPCCRF2WIN.DMN1.FMR.COM>
+References: <17B09E7789D3104E8F5EEB0582A8D66FF250D527BE@MSGRTPCCRF2WIN.DMN1.FMR.COM>
+Message-ID: <20762.23895.744575.859760@max.nulle.part>
+
+
+Robert,
+
+On 12 February 2013 at 10:05, McGehee, Robert wrote:
+| Hi,
+| Has anyone had an issue where a PostgreSQL connection was forcibly killed (SIGKILL) by RPostgreSQL, causing a full database crash/recovery/restart? 
+| 
+| This seems to happen about twice a week when a RPostgreSQL connection is closed using dbDisconnect (or when an R session ends) while other queries are running. The Linux OOM killer is not enabled on this server and I can find no evidence of hardware problems or any evidence of problems with the PostgreSQL database. This left me to wonder if there was a problem with the way RPostgreSQL (or R) disconnects that causes the database crash.
+|  
+| I generally interface with RPostgreSQL inside a function like this:
+| 
+| FUN <- function() {
+| 	conn <- dbConnect(dbDriver("PostgreSQL"), host="xx", user="xx", password="xx", dbname="xx")
+| 	on.exit(dbDisconnect(conn), add=TRUE)
+| 	dbGetQuery("SELECT 1;", conn=conn)
+| }
+| 
+| I found record of a similar problem with the RpgSQL package here (from 2009):
+| https://stat.ethz.ch/pipermail/r-help/2009-January/184707.html
+| which indicates that dbDisconnect() caused a crash under similar circumstances in RpgSQL. However, in this case there was a crash in R; in my case there is a crash in PostgreSQL (and it's a different package).
+| 
+| Has anyone else had a problem like this with RPostgreSQL or know if it is even possible for RPostgreSQL to send a SIGKILL signal to a PostgreSQL connection? I'm reluctant to remove dbDisconnect everywhere, as I don't want zombie connections accumulating. Also, I'm not the only user of the database.
+
+We obviousy have a lot of connect/disconnect in the unit testing for
+RPostgreSQL and this has never come up before.  
+
+This may be an iffy one to chase down as it could well depend on your load,
+database, server version, ...
+
+We will try to help where we can but without a reproducible example it is
+difficult.  Maybe you can locally mod your RPostgreSQL package and add
+logging ?
+
+There is a (very low-volume) list for RPostgreSQL which may be more appropriate.
+
+Dirk
+ 
+| Thanks, Robert
+| 
+| _______________________________________________
+| R-sig-DB mailing list -- R Special Interest Group
+| R-sig-DB at r-project.org
+| https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+-- 
+Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+
+
+From tomo@k|n @end|ng |rom @t@||@k@n@z@w@-u@@c@jp  Sun Feb 17 14:16:59 2013
+From: tomo@k|n @end|ng |rom @t@||@k@n@z@w@-u@@c@jp (NISHIYAMA Tomoaki)
+Date: Sun, 17 Feb 2013 22:16:59 +0900
+Subject: [R-sig-DB] PostgreSQL killed on dbDisconnect (RPostgreSQL)
+In-Reply-To: <17B09E7789D3104E8F5EEB0582A8D66FF250D527BE@MSGRTPCCRF2WIN.DMN1.FMR.COM>
+References: <17B09E7789D3104E8F5EEB0582A8D66FF250D527BE@MSGRTPCCRF2WIN.DMN1.FMR.COM>
+Message-ID: <A9906F5A-7B19-4CD8-969D-825A144FFA9D@staff.kanazawa-u.ac.jp>
+
+Dear Robert,
+
+Since you are seeing crashes in the server side, which is probably very serious
+problem for the PostgreSQL developers, I think it is best to contact their
+mailing list.  With more specific version no. of the server and libpq etc.
+Hopefully, they would direct you to collect information necessary to 
+investigate the problem.
+
+Best regards,
+
+Tomoaki
+
+On 2013/02/13, at 0:05, McGehee, Robert wrote:
+
+> Hi,
+> Has anyone had an issue where a PostgreSQL connection was forcibly killed (SIGKILL) by RPostgreSQL, causing a full database crash/recovery/restart? 
+> 
+> This seems to happen about twice a week when a RPostgreSQL connection is closed using dbDisconnect (or when an R session ends) while other queries are running. The Linux OOM killer is not enabled on this server and I can find no evidence of hardware problems or any evidence of problems with the PostgreSQL database. This left me to wonder if there was a problem with the way RPostgreSQL (or R) disconnects that causes the database crash.
+> 
+> I generally interface with RPostgreSQL inside a function like this:
+> 
+> FUN <- function() {
+> 	conn <- dbConnect(dbDriver("PostgreSQL"), host="xx", user="xx", password="xx", dbname="xx")
+> 	on.exit(dbDisconnect(conn), add=TRUE)
+> 	dbGetQuery("SELECT 1;", conn=conn)
+> }
+> 
+> I found record of a similar problem with the RpgSQL package here (from 2009):
+> https://stat.ethz.ch/pipermail/r-help/2009-January/184707.html
+> which indicates that dbDisconnect() caused a crash under similar circumstances in RpgSQL. However, in this case there was a crash in R; in my case there is a crash in PostgreSQL (and it's a different package).
+> 
+> Has anyone else had a problem like this with RPostgreSQL or know if it is even possible for RPostgreSQL to send a SIGKILL signal to a PostgreSQL connection? I'm reluctant to remove dbDisconnect everywhere, as I don't want zombie connections accumulating. Also, I'm not the only user of the database.
+> 
+> Thanks, Robert
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From H@nne@@Mueh|e|@en @end|ng |rom cw|@n|  Sun Feb 24 11:16:11 2013
+From: H@nne@@Mueh|e|@en @end|ng |rom cw|@n| (=?iso-8859-1?Q?Hannes_M=FChleisen?=)
+Date: Sun, 24 Feb 2013 11:16:11 +0100
+Subject: [R-sig-DB] MonetDB.R connector
+Message-ID: <DDBF4D74-5157-4158-8C7F-93450661FF92@cwi.nl>
+
+Hello everybody,
+
+We would like to announce the immediate availability of the first native connector for the open source database MonetDB [1] in R.  The connector is available on CRAN [2] and implements the R DBI [3]. MonetDB is particularly suited to support statistics due to its column-oriented storage model that allows fast bulk operations. 
+
+We invite everybody to try this combination and are looking forward to your feedback.
+
+Best,
+
+Hannes M?hleisen
+
+[1] http://www.monetdb.org
+[2] http://cran.r-project.org/web/packages/MonetDB.R/index.html
+[3] http://cran.r-project.org/web/packages/DBI/index.html
+	[[alternative HTML version deleted]]
+
+
+
+From p@u|bern@|07 @end|ng |rom gm@||@com  Wed Mar  6 20:24:44 2013
+From: p@u|bern@|07 @end|ng |rom gm@||@com (Paul Bernal)
+Date: Wed, 6 Mar 2013 14:24:44 -0500
+Subject: [R-sig-DB] Working with Large sets of Data or even Big Data
+Message-ID: <CAMOcQfNjSmZSSe9c-3fNn7H+N_v=eSK3MV=U6udzuTB0nqkTKA@mail.gmail.com>
+
+Hello everyone,
+
+I managed to connect R with some database tables residing in Microsoft SQL
+Server, and I also got R to read the information in. My question is, since
+usually, those tables can have 50 thousand or even more records, or even
+hundreds of thousands  or millions of records what would be the maximum
+amount of records that R is able to read and process or better put, what
+would be the maximum amount of rows and columns that R is able to manage
+(to perform data mining analysis)?  What would I need to do in order for R
+to be able to manage large amounts of data?
+
+Any information regarding this question would be greatly appreciated.
+
+Best regards and have a wonderful day guys,
+
+Paul
+
+	[[alternative HTML version deleted]]
+
+
+
+From r@u@er @end|ng |rom c|ur@n@@eu  Wed Mar  6 21:07:44 2013
+From: r@u@er @end|ng |rom c|ur@n@@eu (CIURANA EUGENE (R users list))
+Date: Wed, 06 Mar 2013 12:07:44 -0800
+Subject: [R-sig-DB] Working with Large sets of Data or even Big Data
+In-Reply-To: <CAMOcQfNjSmZSSe9c-3fNn7H+N_v=eSK3MV=U6udzuTB0nqkTKA@mail.gmail.com>
+References: <CAMOcQfNjSmZSSe9c-3fNn7H+N_v=eSK3MV=U6udzuTB0nqkTKA@mail.gmail.com>
+Message-ID: <1f2bb2a9dc9d0d6f0e63d6b3ce7dc51a@varenka.cime.net>
+
+On 2013-03-06 11:24, Paul Bernal wrote:
+
+> I managed to connect R with some database tables residing in 
+> Microsoft
+> SQL
+> Server, and I also got R to read the information in. My question is,
+> since
+> usually, those tables can have 50 thousand or even more records, or 
+> even
+> hundreds of thousands or millions of records what would be the 
+> maximum
+> amount of records that R is able to read and process or better put, 
+> what
+> would be the maximum amount of rows and columns that R is able to 
+> manage
+> (to perform data mining analysis)? What would I need to do in order 
+> for R
+> to be able to manage large amounts of data?
+
+Hi Paul!
+
+The main constraint for R will be memory.  The run-times are designed 
+in such a way that they'll use as much memory as possible.  A 50,000 
+record database is by no means "large".  We manipulate DBs with 2 
+million or more records in our machines, each with 20-50 fields, and 
+many of the fields contain long text (my company aggregates and 
+summarizes breaking news stories).  I write most of the R scripts in a 
+Mac with 16 GB RAM, run them on servers that have either 8 or 16 GB RAM, 
+same data set.  R is happy.
+
+I would suggest that, if possible, you don't read directly from the 
+database and instead create a simple ETL process for R.  R run-times 
+like to "hang" while processing lots of data (some times it's just slow 
+processing) and the DB driver may see that as "connection hung" and drop 
+it.
+
+My humble suggestion for a workflow:
+
+1. Dump your DB/query to a TSV (tab separated values) file
+
+2. Scrub the data with awk or equivalent to ensure that it doesn't
+    have weird characters (non-UTF-8 and so on), or extraneous \n
+    or \r that could mess up ingestion into R
+
+3. Split the data into multiple files, say of 500,000 records each
+
+4. Ingest the data into an R data frame with something like:
+
+    myData <- read.table(file.choose(), sep="\t", header=TRUE, quote="", 
+comment.char="")
+
+    This assumes that the first row will have the column names
+
+5. Save your data frame NOW!  That's because if R hangs/crashes/etc. 
+you
+    won't have to reload from TSV -- that's slow -- so:
+
+    save(myData, "some-file-name.RData", compress="bzip2")
+
+6. Repeat steps 4 and 5 until you have the whole data set in memory; 
+you
+    can "stack" two data sets like this:
+
+    myData <- read.table(file.choose(), sep="\t", header=TRUE, quote="", 
+comment.char="")
+
+    myTotalData <- myData
+
+    save(myTotalData, "some-file-name.RData", compress="bzip2")
+
+    # second and all remaining split files:
+
+    myData <- read.table(file.choose(), sep="\t", header=TRUE, quote="", 
+comment.char="")
+
+    myTotalData <- rbind(myTotalData, myData)
+
+    save(myTotalData, "some-file-name.RData", compress="bzip2")
+
+    # Repeat this last three steps until you get everything in memory
+
+7. You're ready to manipulate this to your heart's content!  Transform, 
+extract, analyze,
+    whatever you need to do.
+
+By bringing the data into R's space you will have a more 
+memory-efficient representation for your operations.  By saving it to an 
+.RData file you will have that memory-efficient representation stored in 
+a tightly compressed format (bzip2 rocks for that) that you can more 
+easily move around systems.
+
+Here are some examples from our own databases:
+
+* TSV dump to disk: 12.5 GB
+* After scrubbing:  12.45 GB -- ~5,000 fewer records
+* .RData representation:  1.3 GB
+
+This fits comfortably in main memory on a MacBook Air.  The servers 
+will have no problem dealing with it.
+
+In general, you should plan on your R use not happening in real-time, 
+against your live database (think best practices).  If you're banging 
+against a production database, for example, you may slow other users' 
+access down while running your queries.
+
+Good luck, and let us know how it goes!
+
+pr3d4t0r
+-- 
+http://summly.com | http://eugeneciurana.com
+
+
+
+From r@u@er @end|ng |rom c|ur@n@@eu  Wed Mar  6 21:14:04 2013
+From: r@u@er @end|ng |rom c|ur@n@@eu (CIURANA EUGENE (R users list))
+Date: Wed, 06 Mar 2013 12:14:04 -0800
+Subject: [R-sig-DB] Working with Large sets of Data or even Big Data
+In-Reply-To: <1f2bb2a9dc9d0d6f0e63d6b3ce7dc51a@varenka.cime.net>
+References: <CAMOcQfNjSmZSSe9c-3fNn7H+N_v=eSK3MV=U6udzuTB0nqkTKA@mail.gmail.com>
+	<1f2bb2a9dc9d0d6f0e63d6b3ce7dc51a@varenka.cime.net>
+Message-ID: <c57921d2149e01d3eca8e3de581771e7@varenka.cime.net>
+
+ 
+
+On 2013-03-06 12:07, CIURANA EUGENE (R users list) wrote: 
+
+> On
+2013-03-06 11:24, Paul Bernal wrote:
+> 
+>> I managed to connect R with
+some database tables residing in Microsoft SQL Server, and I also got R
+to read the information in. My question is, since usually, those tables
+can have 50 thousand or even more records, or even hundreds of thousands
+or millions of records what would be the maximum amount of records that
+R is able to read and process or better put, what would be the maximum
+amount of rows and columns that R is able to manage (to perform data
+mining analysis)? What would I need to do in order for R to be able to
+manage large amounts of data?
+
+Sorry - I forgot to add: the space
+example at the end of my previous message: ~2.5 million records.
+
+
+Cheers! 
+
+pr3d 
+
+-- 
+http://summly.com | http://eugeneciurana.com 
+ 
+	[[alternative HTML version deleted]]
+
+
+
+From @e@npor @end|ng |rom @cm@org  Thu Mar  7 19:31:19 2013
+From: @e@npor @end|ng |rom @cm@org (Sean O'Riordain)
+Date: Thu, 7 Mar 2013 18:31:19 +0000
+Subject: [R-sig-DB] Working with Large sets of Data or even Big Data
+In-Reply-To: <c57921d2149e01d3eca8e3de581771e7@varenka.cime.net>
+References: <CAMOcQfNjSmZSSe9c-3fNn7H+N_v=eSK3MV=U6udzuTB0nqkTKA@mail.gmail.com>
+	<1f2bb2a9dc9d0d6f0e63d6b3ce7dc51a@varenka.cime.net>
+	<c57921d2149e01d3eca8e3de581771e7@varenka.cime.net>
+Message-ID: <CA+MmmTLd4tmuiz9atjrMNGaW5YTaz49nukB=8Xn0HJVP+2Fqtg@mail.gmail.com>
+
+Very nice Eugene,
+
+When I have large tables (say 30 million rows), I am often not interested
+in most of the columns, so I set colClasses=c('character', rep(NULL, 30),
+'integer', 'integer', 'character') etc... in the read.table()... this
+considerably speeds up the ingesting of the table and specifying the class
+you want means that you don't get an auto-convert to factor when it is
+inappropriate, e.g. addresses.
+
+Kind regards,
+Se?n
+
+
+
+On 6 March 2013 20:14, CIURANA EUGENE (R users list) <r.user at ciurana.eu>wrote:
+
+>
+>
+> On 2013-03-06 12:07, CIURANA EUGENE (R users list) wrote:
+>
+> > On
+> 2013-03-06 11:24, Paul Bernal wrote:
+> >
+> >> I managed to connect R with
+> some database tables residing in Microsoft SQL Server, and I also got R
+> to read the information in. My question is, since usually, those tables
+> can have 50 thousand or even more records, or even hundreds of thousands
+> or millions of records what would be the maximum amount of records that
+> R is able to read and process or better put, what would be the maximum
+> amount of rows and columns that R is able to manage (to perform data
+> mining analysis)? What would I need to do in order for R to be able to
+> manage large amounts of data?
+>
+> Sorry - I forgot to add: the space
+> example at the end of my previous message: ~2.5 million records.
+>
+>
+> Cheers!
+>
+> pr3d
+>
+> --
+> http://summly.com | http://eugeneciurana.com
+>
+>         [[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From jor@n@e||@@ @end|ng |rom gm@||@com  Mon Mar 11 16:27:19 2013
+From: jor@n@e||@@ @end|ng |rom gm@||@com (Joran Elias)
+Date: Mon, 11 Mar 2013 09:27:19 -0600
+Subject: [R-sig-DB] ROracle loads from command line,
+	but not RGUI/RStudio in OSX
+Message-ID: <CALdbFF647rXSHRC3XnA7aKXHQ-5sRo_pKPCz2K3EOydKHGyeCA@mail.gmail.com>
+
+I'm having some trouble getting ROracle up and running completely on my
+computer (OS X 10.7.5, R 2.15.2).
+
+Compiling ROracle was a little bit of an adventure, but I finally did get
+it to compile by mostly following the Linux instructions with some
+modifications pieced together from the web. When I run R from the command
+line, ROracle loads fine, I can connect to the db and run queries.
+Everything works. (I've also installed the Oracle utility sqlplus which
+works as well; connecting, querying, etc.)
+
+But if I try to load ROracle from either the R GUI or RStudio, I get this
+error:
+
+Loading required package: DBI
+Error in dyn.load(file, DLLpath = DLLpath, ...) :
+  unable to load shared object
+'/Users/joranelias/Library/R/2.15/library/ROracle/libs/x86_64/ROracle.so':
+
+dlopen(/Users/joranelias/Library/R/2.15/library/ROracle/libs/x86_64/ROracle.so,
+6): Library not loaded:
+/ade/b/2649109290/oracle/rdbms/lib/libclntsh.dylib.11.1
+  Referenced from:
+/Users/joranelias/Library/R/2.15/library/ROracle/libs/x86_64/ROracle.so
+  Reason: image not found
+Error: package/namespace load failed for ?ROracle?
+
+I examined how the environment variables are set between running R from the
+command line and RGUI/RStudio, and noticed some differences, so I tried
+making them the same via setting:
+
+DYLD_LIBRARY_PATH =
+/Library/Frameworks/R.framework/Resources/lib/x86_64::/Applications/Oracle
+PATH =
+/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin:/usr/local/git/bin:/usr/texbin:/Applications/Oracle
+TNS_ADMIN = /Applications/Oracle
+
+so that my environment variables match what's reported by Sys.getenv() from
+the command line. I've done this directly via Sys.setenv() and also using
+.Renviron in the current directory. It appears to successfully set the
+environment variables, but I still get the same error when trying to load
+ROracle.
+
+All I can think of is that I've somehow done something non-standard in
+installing/compiling ROracle and the InstantClient software, but I can't
+understand why it would work fine from the command line only. Does anyone
+have any suggestions for other things I could try...?
+
+	[[alternative HTML version deleted]]
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Mon Mar 11 16:45:48 2013
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Mon, 11 Mar 2013 15:45:48 +0000
+Subject: [R-sig-DB] ROracle loads from command line,
+ but not RGUI/RStudio in OSX
+In-Reply-To: <CALdbFF647rXSHRC3XnA7aKXHQ-5sRo_pKPCz2K3EOydKHGyeCA@mail.gmail.com>
+References: <CALdbFF647rXSHRC3XnA7aKXHQ-5sRo_pKPCz2K3EOydKHGyeCA@mail.gmail.com>
+Message-ID: <513DFC2C.1070901@stats.ox.ac.uk>
+
+The message indicates DYLD_LIBRARY_PATH problems.
+
+But:
+
+- double colons are wrong.
+
+- /Applications/Oracle would be a very un-Apple layout, and a non-Unix 
+location for a library directory.
+
+But I've never seen Oracle for a Mac, so have no idea what the layout 
+is.  The ROracle authors might know (and do read this list).
+
+In the Terminal, run
+
+R CMD otool -L 
+/Users/joranelias/Library/R/2.15/library/ROracle/libs/x86_64/ROracle.so
+
+and make sure the directories to Oracle dylibs it mentions are on 
+DYLD_LIBRARY_PATH.
+
+On 11/03/2013 15:27, Joran Elias wrote:
+> I'm having some trouble getting ROracle up and running completely on my
+> computer (OS X 10.7.5, R 2.15.2).
+>
+> Compiling ROracle was a little bit of an adventure, but I finally did get
+> it to compile by mostly following the Linux instructions with some
+> modifications pieced together from the web. When I run R from the command
+> line, ROracle loads fine, I can connect to the db and run queries.
+> Everything works. (I've also installed the Oracle utility sqlplus which
+> works as well; connecting, querying, etc.)
+>
+> But if I try to load ROracle from either the R GUI or RStudio, I get this
+> error:
+>
+> Loading required package: DBI
+> Error in dyn.load(file, DLLpath = DLLpath, ...) :
+>    unable to load shared object
+> '/Users/joranelias/Library/R/2.15/library/ROracle/libs/x86_64/ROracle.so':
+>
+> dlopen(/Users/joranelias/Library/R/2.15/library/ROracle/libs/x86_64/ROracle.so,
+> 6): Library not loaded:
+> /ade/b/2649109290/oracle/rdbms/lib/libclntsh.dylib.11.1
+>    Referenced from:
+> /Users/joranelias/Library/R/2.15/library/ROracle/libs/x86_64/ROracle.so
+>    Reason: image not found
+> Error: package/namespace load failed for ?ROracle?
+>
+> I examined how the environment variables are set between running R from the
+> command line and RGUI/RStudio, and noticed some differences, so I tried
+> making them the same via setting:
+>
+> DYLD_LIBRARY_PATH =
+> /Library/Frameworks/R.framework/Resources/lib/x86_64::/Applications/Oracle
+> PATH =
+> /usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin:/usr/local/git/bin:/usr/texbin:/Applications/Oracle
+> TNS_ADMIN = /Applications/Oracle
+>
+> so that my environment variables match what's reported by Sys.getenv() from
+> the command line. I've done this directly via Sys.setenv() and also using
+> .Renviron in the current directory. It appears to successfully set the
+> environment variables, but I still get the same error when trying to load
+> ROracle.
+>
+> All I can think of is that I've somehow done something non-standard in
+> installing/compiling ROracle and the InstantClient software, but I can't
+> understand why it would work fine from the command line only. Does anyone
+> have any suggestions for other things I could try...?
+>
+> 	[[alternative HTML version deleted]]
+>
+>
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From E|||ot@Bern@te|n @end|ng |rom gmo@com  Mon Mar 11 18:35:20 2013
+From: E|||ot@Bern@te|n @end|ng |rom gmo@com (Elliot Bernstein)
+Date: Mon, 11 Mar 2013 13:35:20 -0400
+Subject: [R-sig-DB] Microsoft SQL Server Temp Tables and RODBC
+Message-ID: <E031A44BB4301E47BB2D9486C095DE5C0115AC3ED0@GMOANDEXC01.email.gmo.tld>
+
+I've noticed that RODBC has some issues with MS SQL Server's syntax for temp tables. For example:
+
+> temp <- data.frame(x = 1:10)
+> sqlSave(conn, temp, "#rtemp")
+Error in sqlColumns(channel, tablename) :
+  '#rtemp': table not found on channel
+> sqlQuery(conn, "create table #rtemp (x integer)")
+[1] "42S01 2714 [Microsoft][ODBC SQL Server Driver][SQL Server]There is already an object named '#rtemp' in the database."
+[2] "[RODBC] ERROR: Could not SQLExecDirect 'create table #rtemp (x integer)'"
+> sqlSave(conn, temp, "#rtemp", append = TRUE)
+Error in sqlSave(conn, temp, "#rtemp", append = TRUE) :
+  42S01 2714 [Microsoft][ODBC SQL Server Driver][SQL Server]There is already an object named '#rtemp' in the database.
+[RODBC] ERROR: Could not SQLExecDirect 'CREATE TABLE "#rtemp"  ("rownames" varchar(255), "x" int)'
+> sqlQuery(conn, "select * from #rtemp")
+[1] rownames x
+<0 rows> (or 0-length row.names)
+> for (i in 1:nrow(temp)) { sqlQuery(conn, sprintf("insert into #rtemp (x) values (%d)", temp$x[i])) }
+> sqlQuery(conn, "select * from #rtemp")
+   rownames  x
+1        NA  1
+2        NA  2
+3        NA  3
+4        NA  4
+5        NA  5
+6        NA  6
+7        NA  7
+8        NA  8
+9        NA  9
+10       NA 10
+
+Is there any way to get functions like 'sqlSave' working?
+
+Thanks.
+
+- Elliot
+
+Elliot Joel Bernstein, Ph.D.
+Grantham, Mayo, Van Otterloo & Co. LLC
+225 Franklin Street
+Boston, MA 02110
+Office: 617-880-8972
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From jor@n@e||@@ @end|ng |rom gm@||@com  Mon Mar 11 21:57:32 2013
+From: jor@n@e||@@ @end|ng |rom gm@||@com (Joran Elias)
+Date: Mon, 11 Mar 2013 14:57:32 -0600
+Subject: [R-sig-DB] ROracle loads from command line,
+	but not RGUI/RStudio in OSX
+Message-ID: <CALdbFF5tG_5Mvrf5VrAtcXbqqFPqgt0ddT=Ew2XR39AnvooBrQ@mail.gmail.com>
+
+>
+> The message indicates DYLD_LIBRARY_PATH problems.
+> But:
+> - double colons are wrong.
+> - /Applications/Oracle would be a very un-Apple layout, and a non-Unix
+> location for a library directory.
+>
+
+Yes, I agree. I was having a hard time figuring out where to put everything
+such that ROracle would even install without error, and this:
+
+http://stackoverflow.com/q/5550977/324364
+
+was one of the sources that ended up being blended into the solution that
+worked for me. With/without the double colons yields the same results.
+
+
+> But I've never seen Oracle for a Mac, so have no idea what the layout
+> is.  The ROracle authors might know (and do read this list).
+> In the Terminal, run
+> R CMD otool -L
+> /Users/joranelias/Library/R/2.15/library/ROracle/libs/x86_64/ROracle.so
+> and make sure the directories to Oracle dylibs it mentions are on
+> DYLD_LIBRARY_PATH.
+
+
+This is what I find puzzling. I have done this and added the relevant path
+to DYLD_LIBRARY_PATH, and it still doesn't work, except when I run R from
+the terminal. So something, somewhere must be configured correctly (or at
+least just correctly enough), but somehow it's getting lost when I run R in
+the GUI or RStudio. I just wish I knew what that missing piece could be. Oh
+well.
+
+	[[alternative HTML version deleted]]
+
+
+
+From edd @end|ng |rom deb|@n@org  Tue Mar 19 23:26:53 2013
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Tue, 19 Mar 2013 17:26:53 -0500
+Subject: [R-sig-DB] R port of pymssql
+Message-ID: <20808.58925.96138.798149@max.nulle.part>
+
+
+I just came across  
+
+   https://code.google.com/p/pymssql/
+
+Maybe someone wants to run with this and create 'RMSSql' using the DBI
+interface?  
+
+The Google Summer of Code framework served us well when Sameer started
+RPostgreSQL a few years ago (which I had suggested and mentored).  Now, I am
+not volunteering to mentor again (particularly as I, luckily, get by without
+having to use mssql).  But in case someone a) needs mssql and b) has some
+capacity to (co-)mentor this...
+
+Dirk
+
+-- 
+Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+
+
+From je||@@@ry@n @end|ng |rom gm@||@com  Wed Mar 20 02:08:03 2013
+From: je||@@@ry@n @end|ng |rom gm@||@com (Jeff Ryan)
+Date: Tue, 19 Mar 2013 20:08:03 -0500
+Subject: [R-sig-DB] R port of pymssql
+In-Reply-To: <20808.58925.96138.798149@max.nulle.part>
+References: <20808.58925.96138.798149@max.nulle.part>
+Message-ID: <78D33BA2-2298-47C9-BB9D-7B43E5389841@gmail.com>
+
+Not as lucky as Dirk, but this could be something to look to as well for inspiration...
+
+https://github.com/bwlewis/RSQLServer
+
+Jeff
+
+Jeffrey Ryan    |    Founder    |    jeffrey.ryan at lemnica.com
+
+www.lemnica.com
+
+On Mar 19, 2013, at 5:26 PM, Dirk Eddelbuettel <edd at debian.org> wrote:
+
+> 
+> I just came across  
+> 
+>   https://code.google.com/p/pymssql/
+> 
+> Maybe someone wants to run with this and create 'RMSSql' using the DBI
+> interface?  
+> 
+> The Google Summer of Code framework served us well when Sameer started
+> RPostgreSQL a few years ago (which I had suggested and mentored).  Now, I am
+> not volunteering to mentor again (particularly as I, luckily, get by without
+> having to use mssql).  But in case someone a) needs mssql and b) has some
+> capacity to (co-)mentor this...
+> 
+> Dirk
+> 
+> -- 
+> Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From edd @end|ng |rom deb|@n@org  Wed Mar 20 02:47:27 2013
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Tue, 19 Mar 2013 20:47:27 -0500
+Subject: [R-sig-DB] R port of pymssql
+In-Reply-To: <78D33BA2-2298-47C9-BB9D-7B43E5389841@gmail.com>
+References: <20808.58925.96138.798149@max.nulle.part>
+	<78D33BA2-2298-47C9-BB9D-7B43E5389841@gmail.com>
+Message-ID: <20809.5423.137691.460369@max.nulle.part>
+
+
+On 19 March 2013 at 20:08, Jeff Ryan wrote:
+| Not as lucky as Dirk, but this could be something to look to as well for inspiration...
+| 
+| https://github.com/bwlewis/RSQLServer
+
+Dang. You look away for a split-second, and BWL has built a new toy :)
+
+Note, though, that the pmyssql I refer to below promises to work on any
+(relevant) OS: Windoze, Linux, OS X, *BSD, ... This can work as it on top of
+FreeTDS and requires only a C compiler.  What Bryan is cooking here seems a
+little scarier (mixing CLR and MinGW?) and less applicable beyond 'doze.
+
+I, for one, would want an RMSSql to be used from a real OS. But then I don't
+really need it these days (lucky me...)
+
+Dirk
+ 
+| Jeff
+| 
+| Jeffrey Ryan    |    Founder    |    jeffrey.ryan at lemnica.com
+| 
+| www.lemnica.com
+| 
+| On Mar 19, 2013, at 5:26 PM, Dirk Eddelbuettel <edd at debian.org> wrote:
+| 
+| > 
+| > I just came across  
+| > 
+| >   https://code.google.com/p/pymssql/
+| > 
+| > Maybe someone wants to run with this and create 'RMSSql' using the DBI
+| > interface?  
+| > 
+| > The Google Summer of Code framework served us well when Sameer started
+| > RPostgreSQL a few years ago (which I had suggested and mentored).  Now, I am
+| > not volunteering to mentor again (particularly as I, luckily, get by without
+| > having to use mssql).  But in case someone a) needs mssql and b) has some
+| > capacity to (co-)mentor this...
+| > 
+| > Dirk
+| > 
+| > -- 
+| > Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+| > 
+| > _______________________________________________
+| > R-sig-DB mailing list -- R Special Interest Group
+| > R-sig-DB at r-project.org
+| > https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+-- 
+Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Wed Mar 20 19:37:04 2013
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Wed, 20 Mar 2013 14:37:04 -0400
+Subject: [R-sig-DB] neo4j graph database for R
+Message-ID: <CANeAVBnzeuf3pr-ciQ08OuV=eXCi-Rn+y24D1ZsCqy3QRSJOtg@mail.gmail.com>
+
+Dirk got this started with his interest in a mssql R interface.  Is anyone
+aware of an R interface to the neo4j graph database?
+
+http://www.neo4j.org/
+
+The main interface to the server is REST over http, so the infrastructure
+can be native R, potentially.  Interoperability between igraph and graph
+packages with neo4j might be interesting as well.  Would this be an
+appropriate Google Summer of Code endeavor?
+
+Sean
+
+	[[alternative HTML version deleted]]
+
+
+

@@ -1,0 +1,336 @@
+From je||@horner @end|ng |rom v@nderb||t@edu  Mon Oct  8 23:28:46 2007
+From: je||@horner @end|ng |rom v@nderb||t@edu (Jeffrey Horner)
+Date: Mon, 08 Oct 2007 16:28:46 -0500
+Subject: [R-sig-DB] [PATCH] Memory leak in RMySQL 0.6-0
+Message-ID: <470AA10E.5000405@vanderbilt.edu>
+
+Hi David,
+
+I hope I'm working on the latest version of RMySQL...
+
+I found a memory leak in RMySQL 0.6-0 for calls to mysqlExecStatement 
+that return a result set. The fix is quite simple and is attached.
+
+Jeff
+-- 
+http://biostat.mc.vanderbilt.edu/JeffreyHorner
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: RMySQL_0.6-0.patch
+Type: text/x-patch
+Size: 150 bytes
+Desc: not available
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20071008/4fa635f4/attachment.bin>
+
+From je||@horner @end|ng |rom v@nderb||t@edu  Mon Oct  8 23:35:15 2007
+From: je||@horner @end|ng |rom v@nderb||t@edu (Jeffrey Horner)
+Date: Mon, 08 Oct 2007 16:35:15 -0500
+Subject: [R-sig-DB] [PATCH] Memory leak in RMySQL 0.6-0
+In-Reply-To: <470AA10E.5000405@vanderbilt.edu>
+References: <470AA10E.5000405@vanderbilt.edu>
+Message-ID: <470AA293.5020303@vanderbilt.edu>
+
+Jeffrey Horner wrote on 10/08/2007 04:28 PM:
+> Hi David,
+> 
+> I hope I'm working on the latest version of RMySQL...
+> 
+> I found a memory leak in RMySQL 0.6-0 for calls to mysqlExecStatement 
+> that return a result set. The fix is quite simple and is attached.
+
+Oops, it would help if I attached the appropriate patch file. This one 
+should be right.
+
+Jeff
+-- 
+http://biostat.mc.vanderbilt.edu/JeffreyHorner
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: RMySQL_0.6-0.patch
+Type: text/x-patch
+Size: 685 bytes
+Desc: not available
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20071008/0262d8e5/attachment.bin>
+
+From je||@horner @end|ng |rom v@nderb||t@edu  Tue Oct  9 22:18:47 2007
+From: je||@horner @end|ng |rom v@nderb||t@edu (Jeffrey Horner)
+Date: Tue, 09 Oct 2007 15:18:47 -0500
+Subject: [R-sig-DB] [PATCH] Memory leak in RMySQL 0.6-0
+In-Reply-To: <470AA293.5020303@vanderbilt.edu>
+References: <470AA10E.5000405@vanderbilt.edu> <470AA293.5020303@vanderbilt.edu>
+Message-ID: <470BE227.1060403@vanderbilt.edu>
+
+Jeffrey Horner wrote on 10/08/2007 04:35 PM:
+> Jeffrey Horner wrote on 10/08/2007 04:28 PM:
+>> Hi David,
+>>
+>> I hope I'm working on the latest version of RMySQL...
+>>
+>> I found a memory leak in RMySQL 0.6-0 for calls to mysqlExecStatement 
+>> that return a result set. The fix is quite simple and is attached.
+> 
+> Oops, it would help if I attached the appropriate patch file. This one 
+> should be right.
+
+Just a follow-up, but there seems to be another memory leak. This time 
+it's in the libmysqlclient c library call load_defaults() (at least the 
+one provided by my ubuntu distro). Each time a new RMySQL connection is 
+made, load_defaults() is called. Another tidbit is that function doesn't 
+seem to be part of the mysql client API according to this mysql bug report:
+
+http://bugs.mysql.com/bug.php?id=25535
+
+But all is not lost. The leak can be avoided by compiling RMySQL without 
+getopt long support, but since most linux distros provide getopt, it's 
+just as easy to edit line 348 of RS-MySQL.c (part of the RMySQL package) 
+to look like this:
+
+#if 0 /* HAVE_GETOPT_LONG */
+
+
+Not sure what the maintainer wants to do about this one.
+
+Jeff
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Thu Oct 25 16:04:41 2007
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Thu, 25 Oct 2007 07:04:41 -0700
+Subject: [R-sig-DB] RSQLite dbWriteTable: REAL() can only be applied to a
+	'numeric', not a 'logical'
+Message-ID: <m2odene1dy.fsf@userprimary.net>
+
+Hi all,
+
+I've received to problem reports regarding dbWriteTable in RSQLite.
+The issue can be reproduced by calling dbWriteTable on a data frame
+where a logical column's first row contains logical NA:
+
+      library(RSQLite)
+      db = dbConnect(SQLite(), ":memory:")
+      df = data.frame(a=1, b=as.logical(NA))
+      dbWriteTable(db, "foo", df)
+    Error in sqliteTransactionStatement(conn, "ROLLBACK") : 
+      connection with pending rows, close resultSet before continuing
+    In addition: Warning message:
+    In value[[3]](cond) :
+      REAL() can only be applied to a 'numeric', not a 'logical'
+
+I'm working on a fix, but it may take me a few days.  In the meantime,
+if you convert logical columns to integer, things should work:
+
+      dbClearResult(dbListResults(db)[[1]])
+      dbRollback(db)
+
+      df$b = as.integer(df$b)
+      dbWriteTable(db, "foo", df)
+
++ seth
+
+-- 
+Seth Falcon | seth at userprimary.net | blog: http://userprimary.net/user/
+
+
+
+From no@h@ho||m@n @end|ng |rom gm@||@com  Fri Oct 26 21:35:00 2007
+From: no@h@ho||m@n @end|ng |rom gm@||@com (Noah Hoffman)
+Date: Fri, 26 Oct 2007 12:35:00 -0700
+Subject: [R-sig-DB] RSQLite segfault after adding column to table
+Message-ID: <722a2f5e0710261235k3ac1a996y68b7777cba02d235@mail.gmail.com>
+
+Hello -
+
+I've noticed a segfault caused by attempting to select from a table
+after a column of unspecified type is added. I've only tested this
+using the single R installation described below.
+
+Here's some info about my environment:
+> sessionInfo()
+R version 2.7.0 Under development (unstable) (2007-09-24 r42964)
+x86_64-unknown-linux-gnu
+...
+other attached packages:
+[1] RSQLite_0.6-0 DBI_0.2-3
+
+And here's code to reproduce the segfault:
+
+# causes segfault!
+library(RSQLite)
+con <- dbConnect(dbDriver("SQLite"), dbname = ":memory:")
+dbGetQuery(con, "create table s (col1 INTEGER)")
+dbGetQuery(con, "insert into s (col1) values (1)")
+dbGetQuery(con, "select * from s")
+dbGetQuery(con, "alter table s add column col2")
+dbGetQuery(con, "select * from s")
+ *** caught segfault ***
+address (nil), cause 'memory not mapped'
+
+Traceback:
+ 1: .Call("RS_SQLite_fetch", rsId, nrec = n, PACKAGE = .SQLitePkgName)
+ 2: sqliteFetch(rs, n = -1, ...)
+ 3: sqliteQuickSQL(conn, statement, ...)
+ 4: dbGetQuery(con, "select * from s")
+ 5: dbGetQuery(con, "select * from s")
+
+Possible actions:
+1: abort (with core dump, if enabled)
+2: normal R exit
+3: exit R without saving workspace
+4: exit R saving workspace
+
+The following code executes without errors:
+
+# no segfault
+library(RSQLite)
+con <- dbConnect(dbDriver("SQLite"), dbname = ":memory:")
+dbGetQuery(con, "create table s (col1 INTEGER)")
+dbGetQuery(con, "insert into s (col1) values (1)")
+dbGetQuery(con, "select * from s")
+dbGetQuery(con, "alter table s add column col2 INTEGER")
+# neither of these have a problem either:
+# dbGetQuery(con, "alter table s add column col2 TEXT")
+# dbGetQuery(con, "alter table s add column col2 default 0")
+dbGetQuery(con, "select * from s")
+
+Thanks,
+
+Noah
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Sat Oct 27 16:57:03 2007
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Sat, 27 Oct 2007 07:57:03 -0700
+Subject: [R-sig-DB] RSQLite segfault after adding column to table
+In-Reply-To: <722a2f5e0710261235k3ac1a996y68b7777cba02d235@mail.gmail.com>
+	(Noah Hoffman's message of "Fri\, 26 Oct 2007 12\:35\:00 -0700")
+References: <722a2f5e0710261235k3ac1a996y68b7777cba02d235@mail.gmail.com>
+Message-ID: <m2ve8sppvk.fsf@userprimary.net>
+
+Hi Noah,
+
+"Noah Hoffman" <noah.hoffman at gmail.com> writes:
+> I've noticed a segfault caused by attempting to select from a table
+> after a column of unspecified type is added. I've only tested this
+> using the single R installation described below.
+>
+> Here's some info about my environment:
+>> sessionInfo()
+> R version 2.7.0 Under development (unstable) (2007-09-24 r42964)
+> x86_64-unknown-linux-gnu
+> ...
+> other attached packages:
+> [1] RSQLite_0.6-0 DBI_0.2-3
+
+Can you try upgrading to RSQLite 0.6-3?
+
+I'm seeing the following:
+
+> library(RSQLite)
+Loading required package: DBI
+> con <- dbConnect(dbDriver("SQLite"), dbname = ":memory:")
+> dbGetQuery(con, "create table s (col1 INTEGER)")
+NULL
+> dbGetQuery(con, "insert into s (col1) values (1)")
+NULL
+> dbGetQuery(con, "select * from s")
+  col1
+1    1
+> dbGetQuery(con, "alter table s add column col2")
+NULL
+> dbGetQuery(con, "select * from s")
+  col1 col2
+1    1 <NA>
+> sessionInfo()
+R version 2.6.0 beta (--) 
+i386-apple-darwin8.10.1 
+
+locale:
+C
+
+attached base packages:
+[1] stats     graphics  grDevices datasets  utils     methods   base     
+
+other attached packages:
+[1] RSQLite_0.6-3 DBI_0.3-0    
+
+loaded via a namespace (and not attached):
+[1] tools_2.6.0
+
+-- 
+Seth Falcon | seth at userprimary.net | blog: http://userprimary.net/user/
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Sat Oct 27 18:21:04 2007
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Sat, 27 Oct 2007 09:21:04 -0700
+Subject: [R-sig-DB] [RESOLVED] RSQLite dbWriteTable: REAL() can only be
+	applied to a 'numeric', not a 'logical'
+In-Reply-To: <m2odene1dy.fsf@userprimary.net> (Seth Falcon's message of "Thu\,
+	25 Oct 2007 07\:04\:41 -0700")
+References: <m2odene1dy.fsf@userprimary.net>
+Message-ID: <m2odekplzj.fsf@userprimary.net>
+
+Hi again,
+
+I believe I have a fix for the issue with logical columns in data
+frames.  Before I push an update to CRAN, I would like to hear from
+one or two testers...
+
+A source only version is here:
+
+   http://userprimary.net/misc/RSQLite_0.6-4.tar.gz
+
+Details:
+
+When a data frame has a logical column, its values will be converted
+to integers when stored in SQLite.  Here is the test that I added:
+
+    df <- data.frame(x=1:3, y=c(NA, TRUE, FALSE))
+
+    dbWriteTable(DATA$db, "t1", df)
+
+    got <- dbGetQuery(DATA$db, "select * from t1")
+
+    checkEquals("integer", typeof(got$y))
+    checkEquals(as.integer(NA), got$y[1])
+    checkEquals(1L, got$y[2])
+    checkEquals(0L, got$y[3])
+
++ seth
+
+-- 
+Seth Falcon | seth at userprimary.net | blog: http://userprimary.net/user/
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Mon Oct 29 21:25:45 2007
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Mon, 29 Oct 2007 13:25:45 -0700
+Subject: [R-sig-DB] [RESOLVED] RSQLite dbWriteTable: REAL() can only be
+	applied to a 'numeric', not a 'logical'
+In-Reply-To: <472620A7.1060508@fhcrc.org> (Herve Pages's message of "Mon\,
+	29 Oct 2007 11\:04\:23 -0700")
+References: <m2odene1dy.fsf@userprimary.net> <m2odekplzj.fsf@userprimary.net>
+	<472620A7.1060508@fhcrc.org>
+Message-ID: <m2y7dlbrcm.fsf@userprimary.net>
+
+Herve Pages <hpages at fhcrc.org> writes:
+> This works for me. FYI I tested with R-2.6.0 on 64-bit SUSE Linux 10.1
+> and 32-bit openSUSE Linux 10.3.
+> Thanks for the fix!
+
+Good.  I've uploaded the new version to CRAN and it should be
+available within the next 48hrs I suppose.
+
++ seth
+
+-- 
+Seth Falcon | seth at userprimary.net | blog: http://userprimary.net/user/
+
+
+

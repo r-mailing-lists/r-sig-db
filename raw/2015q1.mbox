@@ -1,0 +1,2426 @@
+From wz@n|ne @end|ng |rom u@@|bm@com  Thu Jan 22 21:36:07 2015
+From: wz@n|ne @end|ng |rom u@@|bm@com (Bill Zanine)
+Date: Thu, 22 Jan 2015 20:36:07 +0000
+Subject: [R-sig-DB] Netezza
+References: <CAEOubqnft=yAtrA26AZdPL2BN8-QkRefXzftCFmC2OnFQnZ27Q@mail.gmail.com>
+Message-ID: <loom.20150122T213546-555@post.gmane.org>
+
+Davor Turkalj <davor.turkalj at ...> writes:
+
+> 
+> Good day,
+> 
+> I am using R to do some time sires analysis and data forecast. So fare 
+I
+> have used csv data as source but would like to use Netezza db. Is 
+there a
+> way to connect R to Netezza?
+> 
+> Thank you,
+> Davor Turkalj
+> 
+
+
+IBM provides several interfaces to use R with Netezza, to include 
+running R within the appliance.
+
+These are provided for free under GPL. Originally it was only available 
+via Revolution for a fee, but that changed over 1 year ago.
+
+You must register with IBM Developerworks (www.ibm.com/developerworks). 
+
+Once registered you can download the software and installation 
+directions.
+
+(http://ibm.co/XOC1q3)
+
+On this wiki (under the How To section), there are several documents and 
+labs regarding the use of R with Netezza.
+
+Bill
+
+
+
+From L@||th@@Kr|@t|p@t| @end|ng |rom techm@h|ndr@@com  Tue Feb 10 10:37:05 2015
+From: L@||th@@Kr|@t|p@t| @end|ng |rom techm@h|ndr@@com (Lalitha Kristipati)
+Date: Tue, 10 Feb 2015 09:37:05 +0000
+Subject: [R-sig-DB] Database Connection Query
+Message-ID: <8a12e15407f341368a4796cbd9ac1c35@BLREXCHMBX001.TechMahindra.com>
+
+Hi,
+
+ I would like to know when to use drivers and when to use packages to connect to databases in R.
+
+
+Regards,
+Lalitha Kristipati
+Associate Software Engineer
+
+
+
+============================================================================================================================
+Disclaimer:  This message and the information contained herein is proprietary and confidential and subject to the Tech Mahindra policy statement, you may review the policy at http://www.techmahindra.com/Disclaimer.html externally http://tim.techmahindra.com/tim/disclaimer.html internally within TechMahindra.
+============================================================================================================================
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Tue Feb 10 15:25:28 2015
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Tue, 10 Feb 2015 14:25:28 +0000
+Subject: [R-sig-DB] Database Connection Query
+In-Reply-To: <8a12e15407f341368a4796cbd9ac1c35@BLREXCHMBX001.TechMahindra.com>
+References: <8a12e15407f341368a4796cbd9ac1c35@BLREXCHMBX001.TechMahindra.com>
+Message-ID: <54DA14D8.2050808@stats.ox.ac.uk>
+
+On 10/02/2015 09:37, Lalitha Kristipati wrote:
+> Hi,
+>
+>   I would like to know when to use drivers and when to use packages to connect to databases in R.
+>
+
+This has already been asked and answered on R-help.  Please do not 
+answer again.
+
+Mr Kristipati: do follow the posting guide at 
+http://www.r-project.org/posting-guide.html and do the homework 
+requested.  Especially, read the manual that Marc Schwartz pointed out 
+to you.
+
+The list moderator.
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Emeritus Professor of Applied Statistics, University of Oxford
+1 South Parks Road, Oxford OX1 3TG, UK
+
+
+
+From myot|@two @end|ng |rom gm@||@com  Tue Feb 10 20:37:43 2015
+From: myot|@two @end|ng |rom gm@||@com (Graham Smith)
+Date: Tue, 10 Feb 2015 19:37:43 +0000
+Subject: [R-sig-DB] Connecting to libreoffice base with ODB package
+Message-ID: <CAE6fdSk8mB_BiY1PgqVKTO4M+Yo76HYfnCNUcmiBwqtymMUN0Q@mail.gmail.com>
+
+I am experimenting with this and have a small Libreoffice database (created
+with version LR 4.4.0.3) to try and learn how this works.
+
+So far I have run these commands (its ODB 1.1.1)
+
+con <-
+odb.open("~/Dropbox/2015/Projects/LibreofficeDataBase/LRBaseTutorial.odb")
+odb.tables(con)
+
+The first two work fine and the two tables are printed out by R,
+
+> odb.tables(con)
+$tbl_nutrients
+  field.name field.type data.type comment
+1         ID    INTEGER   numeric      NA
+2     Outlet       CHAR character      NA
+3        Fat    DECIMAL   numeric      NA
+4    Protein    DECIMAL   numeric      NA
+5     Sodium    DECIMAL   numeric      NA
+6  Pottasium    DECIMAL   numeric      NA
+
+$`tbl-Nuclear`
+                              field.name field.type data.type comment
+1                                     ID    INTEGER   numeric    <NA>
+2                            institution    VARCHAR character    <NA>
+3                                 status    VARCHAR charact
+etc etc
+
+
+but
+
+nutrients <- odb.read(con, "SELECT * FROM tbl_nutrients")
+
+gives the error:
+
+Error: Error while executing SQL query  : "Unable to retrieve JDBC result
+set for SELECT * FROM tbl_nutrients (Table not found in statement [SELECT *
+FROM tbl_nutrients])"
+
+This is rather new to me, so I wondered if anyone could point out any
+obvious thing I am doing wrong.
+
+Its R version 3.1.2, in Rstudio 0.98.1091 running on Mac/Maverick.
+
+Thanks,
+
+Graham
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20150210/da021c59/attachment.html>
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: LRBaseTutorial.odb
+Type: application/vnd.oasis.opendocument.database
+Size: 28473 bytes
+Desc: not available
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20150210/da021c59/attachment.odb>
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Wed Feb 11 15:01:02 2015
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Wed, 11 Feb 2015 08:01:02 -0600
+Subject: [R-sig-DB] Parameterised queries
+Message-ID: <CABdHhvFnhUB0DmiryDpptdP9bh86OcnoB4B8SPq8CRn+Z7RZ2w@mail.gmail.com>
+
+Hi all,
+
+As part of my work modernising R's database connnectors, I've been
+working on improving the support for parameterised queries. I'd love
+to get your feedback on the API I'm proposing.
+
+The goal is to encourage people to use parameterise queries instead of
+pasting together SQL strings because it is much safer (no worries
+about SQL injection attacks) and somewhat more performant (becuase the
+database only needs to parse the query once).
+
+There are basically two ways to use it:
+
+* A parameterised query + multiple calls to `dbBind()`
+* A parameterised query + a list of params.
+
+Here's an example using the dev version of RSQLite available from
+https://github.com/rstats-db/RSQLite:
+
+```
+library(DBI)
+con <- RSQLite::datasetsDb()
+
+rs <- dbSendQuery(con, "SELECT * FROM mtcars WHERE cyl = $x")
+# Not bound, so throws error
+dbFetch(rs)
+
+# Bind by position
+dbBind(rs, list(8))
+dbFetch(rs)
+
+# Bind by name
+dbBind(rs, list(x = 8))
+dbFetch(rs)
+
+# Or do when you create the query
+rs <- dbSendQuery(con, "SELECT * FROM mtcars WHERE cyl = $x", list(x = 8))
+dbFetch(rs)
+
+# Or all at once with dbGetQuery
+dbGetQuery(con, "SELECT * FROM mtcars WHERE cyl = $x", list(x = 8))
+```
+
+What do you think? I've deliberately designed the syntax to be
+backward compatible, although it obviously requires some changes to
+DBI (such as the introduction of the dbBind() generic).
+
+I also have an implementation available for Postgres (in my new
+RPostgres package, https://github.com/rstats-db/RPostgres) and I'll be
+working on RMySQL later this week.
+
+Hadley
+
+-- 
+http://had.co.nz/
+
+
+
+From H@nne@@Mueh|e|@en @end|ng |rom cw|@n|  Wed Feb 11 15:39:19 2015
+From: H@nne@@Mueh|e|@en @end|ng |rom cw|@n| (=?utf-8?Q?Hannes_M=C3=BChleisen?=)
+Date: Wed, 11 Feb 2015 15:39:19 +0100
+Subject: [R-sig-DB] Parameterised queries
+In-Reply-To: <CABdHhvFnhUB0DmiryDpptdP9bh86OcnoB4B8SPq8CRn+Z7RZ2w@mail.gmail.com>
+References: <CABdHhvFnhUB0DmiryDpptdP9bh86OcnoB4B8SPq8CRn+Z7RZ2w@mail.gmail.com>
+Message-ID: <1333248C-F482-47AB-ADF6-4CA6C083A5B0@cwi.nl>
+
+Hi Hadley and list,
+
+> On 11 Feb 2015, at 15:01, Hadley Wickham <h.wickham at gmail.com> wrote:
+> As part of my work modernising R's database connnectors, I've been
+> working on improving the support for parameterised queries. I'd love
+> to get your feedback on the API I'm proposing.
+> 
+> The goal is to encourage people to use parameterise queries instead of
+> pasting together SQL strings because it is much safer (no worries
+> about SQL injection attacks) and somewhat more performant (becuase the
+> database only needs to parse the query once).
+Makes a lot of sense, yes. MonetDB.R has had support for this from day one. Our syntax uses the list of parameters approach, e.g.
+
+dbSendUpdate(conn, "INSERT INTO sometable (a) VALUES (?)", ?foobar?)
+
+of course, the parameter can be a vector, in which case the query is executed multiple times. 
+
+Generally, I would be in favour of the ?list of params? approach. Also, please note that the ?bind by name? is not supported by all databases. Sticking to position-only parameter binding using ? would be most compatible (also used in JDBC for example).
+
+Best,
+
+Hannes
+
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: smime.p7s
+Type: application/pkcs7-signature
+Size: 4154 bytes
+Desc: not available
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20150211/86267552/attachment.p7s>
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Wed Feb 11 16:08:17 2015
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Wed, 11 Feb 2015 09:08:17 -0600
+Subject: [R-sig-DB] Parameterised queries
+In-Reply-To: <1333248C-F482-47AB-ADF6-4CA6C083A5B0@cwi.nl>
+References: <CABdHhvFnhUB0DmiryDpptdP9bh86OcnoB4B8SPq8CRn+Z7RZ2w@mail.gmail.com>
+	<1333248C-F482-47AB-ADF6-4CA6C083A5B0@cwi.nl>
+Message-ID: <CABdHhvEYZ+6JG7R3JL74UPfiWb3ZHsE5f4g9KbVP6hiHb+o7+A@mail.gmail.com>
+
+On Wed, Feb 11, 2015 at 8:39 AM, Hannes M?hleisen
+<Hannes.Muehleisen at cwi.nl> wrote:
+> Hi Hadley and list,
+>
+>> On 11 Feb 2015, at 15:01, Hadley Wickham <h.wickham at gmail.com> wrote:
+>> As part of my work modernising R's database connnectors, I've been
+>> working on improving the support for parameterised queries. I'd love
+>> to get your feedback on the API I'm proposing.
+>>
+>> The goal is to encourage people to use parameterise queries instead of
+>> pasting together SQL strings because it is much safer (no worries
+>> about SQL injection attacks) and somewhat more performant (becuase the
+>> database only needs to parse the query once).
+> Makes a lot of sense, yes. MonetDB.R has had support for this from day one. Our syntax uses the list of parameters approach, e.g.
+>
+> dbSendUpdate(conn, "INSERT INTO sometable (a) VALUES (?)", ?foobar?)
+>
+> of course, the parameter can be a vector, in which case the query is executed multiple times.
+
+I deliberately chose not to allow vector parameters because I think
+it's reasonable to say: "Each R function only ever generates a single
+query to the database", leaving the onus of looping on the user, and
+forcing them to think about how to ensure the vectors don't contain
+bad values.  This the same principle behind disallowing multiple
+queries (separated by ";") in a single string.
+
+(Side note: if you create a new generic, can you please start it with
+(e.g.) monet, not db, because it's doesn't live in the DBI package.
+Alternatively, submit a pull request to DBI adding the generic, and
+I'll review it. I don't think dbSendQuery is needed with the current
+api, but I might be wrong.)
+
+> Generally, I would be in favour of the ?list of params? approach. Also, please note that the ?bind by name? is not supported by all databases. Sticking to position-only parameter binding using ? would be most compatible (also used in JDBC for example).
+
+Yup, postgresql doesn't support names either. In that case, providing
+a named list would be an error. But where named binding is supported,
+I think it's better to use it because it eliminates a class of
+potential errors.
+
+Hadley
+
+-- 
+http://had.co.nz/
+
+
+
+From H@nne@@Mueh|e|@en @end|ng |rom cw|@n|  Wed Feb 11 20:09:23 2015
+From: H@nne@@Mueh|e|@en @end|ng |rom cw|@n| (=?utf-8?Q?Hannes_M=C3=BChleisen?=)
+Date: Wed, 11 Feb 2015 20:09:23 +0100
+Subject: [R-sig-DB] Parameterised queries
+In-Reply-To: <CABdHhvEYZ+6JG7R3JL74UPfiWb3ZHsE5f4g9KbVP6hiHb+o7+A@mail.gmail.com>
+References: <CABdHhvFnhUB0DmiryDpptdP9bh86OcnoB4B8SPq8CRn+Z7RZ2w@mail.gmail.com>
+	<1333248C-F482-47AB-ADF6-4CA6C083A5B0@cwi.nl>
+	<CABdHhvEYZ+6JG7R3JL74UPfiWb3ZHsE5f4g9KbVP6hiHb+o7+A@mail.gmail.com>
+Message-ID: <BFB170FC-74B9-4524-9CC4-052D7E3C19DB@cwi.nl>
+
+Hi Hadley,
+
+> On 11 Feb 2015, at 16:08, Hadley Wickham <h.wickham at gmail.com> wrote:
+> 
+> On Wed, Feb 11, 2015 at 8:39 AM, Hannes M?hleisen
+> <Hannes.Muehleisen at cwi.nl> wrote:
+>> Hi Hadley and list,
+>> 
+>>> On 11 Feb 2015, at 15:01, Hadley Wickham <h.wickham at gmail.com> wrote:
+>>> As part of my work modernising R's database connnectors, I've been
+>>> working on improving the support for parameterised queries. I'd love
+>>> to get your feedback on the API I'm proposing.
+>>> 
+>>> The goal is to encourage people to use parameterise queries instead of
+>>> pasting together SQL strings because it is much safer (no worries
+>>> about SQL injection attacks) and somewhat more performant (becuase the
+>>> database only needs to parse the query once).
+>> Makes a lot of sense, yes. MonetDB.R has had support for this from day one. Our syntax uses the list of parameters approach, e.g.
+>> 
+>> dbSendUpdate(conn, "INSERT INTO sometable (a) VALUES (?)", ?foobar?)
+>> 
+>> of course, the parameter can be a vector, in which case the query is executed multiple times.
+> 
+> I deliberately chose not to allow vector parameters because I think
+> it's reasonable to say: "Each R function only ever generates a single
+> query to the database", leaving the onus of looping on the user, and
+> forcing them to think about how to ensure the vectors don't contain
+> bad values.  This the same principle behind disallowing multiple
+> queries (separated by ";") in a single string.
+However, there are optimisation opportunities that the db driver could exploit if multiple values are to be inserted at once. For example, a database connection in auto commit mode could switch of auto commit, and try to insert all values in a transaction to get all-or-nothing semantics. Another opportunity would be a bulk load if the vectors are large.
+
+>> Generally, I would be in favour of the ?list of params? approach. Also, please note that the ?bind by name? is not supported by all databases. Sticking to position-only parameter binding using ? would be most compatible (also used in JDBC for example).
+> 
+> Yup, postgresql doesn't support names either. In that case, providing
+> a named list would be an error. But where named binding is supported,
+> I think it's better to use it because it eliminates a class of
+> potential errors.
+I think a script using DBI should not need to know which DBI implementation is running behind it. But if someone uses named parameters on a MySQL backend (possibly out of order), that script will not run with Postgres or others. 
+
+Best,
+
+Hannes
+
+
+
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: smime.p7s
+Type: application/pkcs7-signature
+Size: 4154 bytes
+Desc: not available
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20150211/9c4f187d/attachment.p7s>
+
+From tke|tt @end|ng |rom utex@@@edu  Wed Feb 11 20:43:53 2015
+From: tke|tt @end|ng |rom utex@@@edu (Tim Keitt)
+Date: Wed, 11 Feb 2015 13:43:53 -0600
+Subject: [R-sig-DB] Parameterised queries
+In-Reply-To: <CABdHhvFnhUB0DmiryDpptdP9bh86OcnoB4B8SPq8CRn+Z7RZ2w@mail.gmail.com>
+References: <CABdHhvFnhUB0DmiryDpptdP9bh86OcnoB4B8SPq8CRn+Z7RZ2w@mail.gmail.com>
+Message-ID: <CANnL8gqZ7OKnR_9EeHuU_QR4hMiLT3csfdp1os-_HsvGpPFeqg@mail.gmail.com>
+
+On Wed, Feb 11, 2015 at 8:01 AM, Hadley Wickham <h.wickham at gmail.com> wrote:
+
+> Hi all,
+>
+> As part of my work modernising R's database connnectors, I've been
+> working on improving the support for parameterised queries. I'd love
+> to get your feedback on the API I'm proposing.
+>
+> The goal is to encourage people to use parameterise queries instead of
+> pasting together SQL strings because it is much safer (no worries
+> about SQL injection attacks) and somewhat more performant (becuase the
+> database only needs to parse the query once).
+>
+> There are basically two ways to use it:
+>
+> * A parameterised query + multiple calls to `dbBind()`
+> * A parameterised query + a list of params.
+>
+> Here's an example using the dev version of RSQLite available from
+> https://github.com/rstats-db/RSQLite:
+>
+> ```
+> library(DBI)
+> con <- RSQLite::datasetsDb()
+>
+> rs <- dbSendQuery(con, "SELECT * FROM mtcars WHERE cyl = $x")
+> # Not bound, so throws error
+> dbFetch(rs)
+>
+> # Bind by position
+> dbBind(rs, list(8))
+> dbFetch(rs)
+>
+> # Bind by name
+> dbBind(rs, list(x = 8))
+> dbFetch(rs)
+>
+> # Or do when you create the query
+> rs <- dbSendQuery(con, "SELECT * FROM mtcars WHERE cyl = $x", list(x = 8))
+> dbFetch(rs)
+>
+> # Or all at once with dbGetQuery
+> dbGetQuery(con, "SELECT * FROM mtcars WHERE cyl = $x", list(x = 8))
+> ```
+>
+> What do you think? I've deliberately designed the syntax to be
+> backward compatible, although it obviously requires some changes to
+> DBI (such as the introduction of the dbBind() generic).
+>
+> I also have an implementation available for Postgres (in my new
+> RPostgres package, https://github.com/rstats-db/RPostgres) and I'll be
+> working on RMySQL later this week.
+>
+
+This seems like a reasonable extension to DBI.
+
+Just for comparison, in rpg (https://github.com/thk686/rpg) I have:
+
+query(sql, pars)  # pars are substituted for $ vars if provided
+fetch(sql, pars) # also fetches result
+
+The latest version (not yet on CRAN) has:
+
+f = prepare(sql)
+f(pars)
+
+for prepared queries. f is a closure around the auto-generated
+prepared-query id-string. The function f does loop at the C++ level over a
+vector or matrix of parameters.
+
+THK
+
+
+
+
+>
+> Hadley
+>
+> --
+> http://had.co.nz/
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+-- 
+http://www.keittlab.org/
+
+	[[alternative HTML version deleted]]
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Wed Feb 11 20:49:10 2015
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Wed, 11 Feb 2015 13:49:10 -0600
+Subject: [R-sig-DB] Parameterised queries
+In-Reply-To: <BFB170FC-74B9-4524-9CC4-052D7E3C19DB@cwi.nl>
+References: <CABdHhvFnhUB0DmiryDpptdP9bh86OcnoB4B8SPq8CRn+Z7RZ2w@mail.gmail.com>
+	<1333248C-F482-47AB-ADF6-4CA6C083A5B0@cwi.nl>
+	<CABdHhvEYZ+6JG7R3JL74UPfiWb3ZHsE5f4g9KbVP6hiHb+o7+A@mail.gmail.com>
+	<BFB170FC-74B9-4524-9CC4-052D7E3C19DB@cwi.nl>
+Message-ID: <CABdHhvE=k6bFE89UUKnoh31_XKS1kdQ-ZecR_LGQdhcdh0ircQ@mail.gmail.com>
+
+>> I deliberately chose not to allow vector parameters because I think
+>> it's reasonable to say: "Each R function only ever generates a single
+>> query to the database", leaving the onus of looping on the user, and
+>> forcing them to think about how to ensure the vectors don't contain
+>> bad values.  This the same principle behind disallowing multiple
+>> queries (separated by ";") in a single string.
+
+> However, there are optimisation opportunities that the db driver could exploit if multiple values are to be inserted at once. For example, a database connection in auto commit mode could switch of auto commit, and try to insert all values in a transaction to get all-or-nothing semantics. Another opportunity would be a bulk load if the vectors are large.
+
+Agreed, but it's also fundamentally dangerous. I think this should be
+a separate function with that clearly describes the performance-safety
+trade off, maybe dbBindAll()?  Alternatively, you could have an
+additional `vectorise` argument that defaulted to FALSE.
+
+That said, can you think of a use case apart from doing bulk inserts?
+In RSQLite, I use an internal function to get optimal performance for
+dbReadTable without generally exposing a more dangerous api.
+
+>>> Generally, I would be in favour of the ?list of params? approach. Also, please note that the ?bind by name? is not supported by all databases. Sticking to position-only parameter binding using ? would be most compatible (also used in JDBC for example).
+>>
+>> Yup, postgresql doesn't support names either. In that case, providing
+>> a named list would be an error. But where named binding is supported,
+>> I think it's better to use it because it eliminates a class of
+>> potential errors.
+
+> I think a script using DBI should not need to know which DBI implementation is running behind it. But if someone uses named parameters on a MySQL backend (possibly out of order), that script will not run with Postgres or others.
+
+That's a noble goal, but extremely difficult in principle because of
+the variations in SQL support across backends. I'd prefer not to take
+a lowest common denominator approach.
+
+Hadley
+
+-- 
+http://had.co.nz/
+
+
+
+From tke|tt @end|ng |rom utex@@@edu  Wed Feb 11 21:19:35 2015
+From: tke|tt @end|ng |rom utex@@@edu (Tim Keitt)
+Date: Wed, 11 Feb 2015 14:19:35 -0600
+Subject: [R-sig-DB] Parameterised queries
+In-Reply-To: <CABdHhvE=k6bFE89UUKnoh31_XKS1kdQ-ZecR_LGQdhcdh0ircQ@mail.gmail.com>
+References: <CABdHhvFnhUB0DmiryDpptdP9bh86OcnoB4B8SPq8CRn+Z7RZ2w@mail.gmail.com>
+	<1333248C-F482-47AB-ADF6-4CA6C083A5B0@cwi.nl>
+	<CABdHhvEYZ+6JG7R3JL74UPfiWb3ZHsE5f4g9KbVP6hiHb+o7+A@mail.gmail.com>
+	<BFB170FC-74B9-4524-9CC4-052D7E3C19DB@cwi.nl>
+	<CABdHhvE=k6bFE89UUKnoh31_XKS1kdQ-ZecR_LGQdhcdh0ircQ@mail.gmail.com>
+Message-ID: <CANnL8gqFzjknre5stpMtS7i-Hvaj5LN0-wmCKhB431uYu91mBQ@mail.gmail.com>
+
+On Wed, Feb 11, 2015 at 1:49 PM, Hadley Wickham <h.wickham at gmail.com> wrote:
+
+> >> I deliberately chose not to allow vector parameters because I think
+> >> it's reasonable to say: "Each R function only ever generates a single
+> >> query to the database", leaving the onus of looping on the user, and
+> >> forcing them to think about how to ensure the vectors don't contain
+> >> bad values.  This the same principle behind disallowing multiple
+> >> queries (separated by ";") in a single string.
+>
+> > However, there are optimisation opportunities that the db driver could
+> exploit if multiple values are to be inserted at once. For example, a
+> database connection in auto commit mode could switch of auto commit, and
+> try to insert all values in a transaction to get all-or-nothing semantics.
+> Another opportunity would be a bulk load if the vectors are large.
+>
+> Agreed, but it's also fundamentally dangerous. I think this should be
+> a separate function with that clearly describes the performance-safety
+> trade off, maybe dbBindAll()?  Alternatively, you could have an
+> additional `vectorise` argument that defaulted to FALSE.
+>
+
+I don't understand what is dangerous about repeatedly executing a prepared
+query. Can you give a scenario?
+
+
+>
+> That said, can you think of a use case apart from doing bulk inserts?
+> In RSQLite, I use an internal function to get optimal performance for
+> dbReadTable without generally exposing a more dangerous api.
+>
+
+Other than the convenience, and it being sort of R-like, yes, bulk inserts
+is the main application in my case.
+
+
+>
+> >>> Generally, I would be in favour of the "list of params" approach.
+> Also, please note that the "bind by name" is not supported by all
+> databases. Sticking to position-only parameter binding using ? would be
+> most compatible (also used in JDBC for example).
+> >>
+> >> Yup, postgresql doesn't support names either. In that case, providing
+> >> a named list would be an error. But where named binding is supported,
+> >> I think it's better to use it because it eliminates a class of
+> >> potential errors.
+>
+> > I think a script using DBI should not need to know which DBI
+> implementation is running behind it. But if someone uses named parameters
+> on a MySQL backend (possibly out of order), that script will not run with
+> Postgres or others.
+>
+> That's a noble goal, but extremely difficult in principle because of
+> the variations in SQL support across backends. I'd prefer not to take
+> a lowest common denominator approach.
+>
+
+I thought that was the intent of DBI.
+
+THK
+
+
+>
+> Hadley
+>
+> --
+> http://had.co.nz/
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+-- 
+http://www.keittlab.org/
+
+	[[alternative HTML version deleted]]
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Wed Feb 11 21:24:27 2015
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Wed, 11 Feb 2015 14:24:27 -0600
+Subject: [R-sig-DB] Parameterised queries
+In-Reply-To: <CANnL8gqFzjknre5stpMtS7i-Hvaj5LN0-wmCKhB431uYu91mBQ@mail.gmail.com>
+References: <CABdHhvFnhUB0DmiryDpptdP9bh86OcnoB4B8SPq8CRn+Z7RZ2w@mail.gmail.com>
+	<1333248C-F482-47AB-ADF6-4CA6C083A5B0@cwi.nl>
+	<CABdHhvEYZ+6JG7R3JL74UPfiWb3ZHsE5f4g9KbVP6hiHb+o7+A@mail.gmail.com>
+	<BFB170FC-74B9-4524-9CC4-052D7E3C19DB@cwi.nl>
+	<CABdHhvE=k6bFE89UUKnoh31_XKS1kdQ-ZecR_LGQdhcdh0ircQ@mail.gmail.com>
+	<CANnL8gqFzjknre5stpMtS7i-Hvaj5LN0-wmCKhB431uYu91mBQ@mail.gmail.com>
+Message-ID: <CABdHhvGKyBe5xRdBH8Hn8qEnoWv7_EkHEHXvvqnAZbF2rNZgHQ@mail.gmail.com>
+
+>> >> I deliberately chose not to allow vector parameters because I think
+>> >> it's reasonable to say: "Each R function only ever generates a single
+>> >> query to the database", leaving the onus of looping on the user, and
+>> >> forcing them to think about how to ensure the vectors don't contain
+>> >> bad values.  This the same principle behind disallowing multiple
+>> >> queries (separated by ";") in a single string.
+>>
+>> > However, there are optimisation opportunities that the db driver could
+>> > exploit if multiple values are to be inserted at once. For example, a
+>> > database connection in auto commit mode could switch of auto commit, and try
+>> > to insert all values in a transaction to get all-or-nothing semantics.
+>> > Another opportunity would be a bulk load if the vectors are large.
+>>
+>> Agreed, but it's also fundamentally dangerous. I think this should be
+>> a separate function with that clearly describes the performance-safety
+>> trade off, maybe dbBindAll()?  Alternatively, you could have an
+>> additional `vectorise` argument that defaulted to FALSE.
+>
+> I don't understand what is dangerous about repeatedly executing a prepared
+> query. Can you give a scenario?
+
+It gives a new attack vector - to introduce additional data into the
+database, you just need to figure out how to turn a length 1 vector in
+to a length 2 vector.
+
+It's dangerous in the same way that allowing dbGetQuery() to execute
+multiple queries is dangerous.
+
+>> That said, can you think of a use case apart from doing bulk inserts?
+>> In RSQLite, I use an internal function to get optimal performance for
+>> dbReadTable without generally exposing a more dangerous api.
+>
+> Other than the convenience, and it being sort of R-like, yes, bulk inserts
+> is the main application in my case.
+
+Great.
+
+Hadley
+
+-- 
+http://had.co.nz/
+
+
+
+From tke|tt @end|ng |rom utex@@@edu  Wed Feb 11 21:38:23 2015
+From: tke|tt @end|ng |rom utex@@@edu (Tim Keitt)
+Date: Wed, 11 Feb 2015 14:38:23 -0600
+Subject: [R-sig-DB] Parameterised queries
+In-Reply-To: <CABdHhvGKyBe5xRdBH8Hn8qEnoWv7_EkHEHXvvqnAZbF2rNZgHQ@mail.gmail.com>
+References: <CABdHhvFnhUB0DmiryDpptdP9bh86OcnoB4B8SPq8CRn+Z7RZ2w@mail.gmail.com>
+	<1333248C-F482-47AB-ADF6-4CA6C083A5B0@cwi.nl>
+	<CABdHhvEYZ+6JG7R3JL74UPfiWb3ZHsE5f4g9KbVP6hiHb+o7+A@mail.gmail.com>
+	<BFB170FC-74B9-4524-9CC4-052D7E3C19DB@cwi.nl>
+	<CABdHhvE=k6bFE89UUKnoh31_XKS1kdQ-ZecR_LGQdhcdh0ircQ@mail.gmail.com>
+	<CANnL8gqFzjknre5stpMtS7i-Hvaj5LN0-wmCKhB431uYu91mBQ@mail.gmail.com>
+	<CABdHhvGKyBe5xRdBH8Hn8qEnoWv7_EkHEHXvvqnAZbF2rNZgHQ@mail.gmail.com>
+Message-ID: <CANnL8goDe=M987KktVDm21=eQhi-SoOVMVTBSxXEjwrNathuTA@mail.gmail.com>
+
+On Wed, Feb 11, 2015 at 2:24 PM, Hadley Wickham <h.wickham at gmail.com> wrote:
+
+> >> >> I deliberately chose not to allow vector parameters because I think
+> >> >> it's reasonable to say: "Each R function only ever generates a single
+> >> >> query to the database", leaving the onus of looping on the user, and
+> >> >> forcing them to think about how to ensure the vectors don't contain
+> >> >> bad values.  This the same principle behind disallowing multiple
+> >> >> queries (separated by ";") in a single string.
+> >>
+> >> > However, there are optimisation opportunities that the db driver could
+> >> > exploit if multiple values are to be inserted at once. For example, a
+> >> > database connection in auto commit mode could switch of auto commit,
+> and try
+> >> > to insert all values in a transaction to get all-or-nothing semantics.
+> >> > Another opportunity would be a bulk load if the vectors are large.
+> >>
+> >> Agreed, but it's also fundamentally dangerous. I think this should be
+> >> a separate function with that clearly describes the performance-safety
+> >> trade off, maybe dbBindAll()?  Alternatively, you could have an
+> >> additional `vectorise` argument that defaulted to FALSE.
+> >
+> > I don't understand what is dangerous about repeatedly executing a
+> prepared
+> > query. Can you give a scenario?
+>
+> It gives a new attack vector - to introduce additional data into the
+> database, you just need to figure out how to turn a length 1 vector in
+> to a length 2 vector.
+>
+> It's dangerous in the same way that allowing dbGetQuery() to execute
+> multiple queries is dangerous.
+>
+
+I'd rather hope that if it were a case that mattered, the user would not
+rely on the api as a substitute for appropriate checks.
+
+THK
+
+
+>
+> >> That said, can you think of a use case apart from doing bulk inserts?
+> >> In RSQLite, I use an internal function to get optimal performance for
+> >> dbReadTable without generally exposing a more dangerous api.
+> >
+> > Other than the convenience, and it being sort of R-like, yes, bulk
+> inserts
+> > is the main application in my case.
+>
+> Great.
+>
+> Hadley
+>
+> --
+> http://had.co.nz/
+>
+
+
+
+-- 
+http://www.keittlab.org/
+
+	[[alternative HTML version deleted]]
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Wed Feb 11 21:41:01 2015
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Wed, 11 Feb 2015 14:41:01 -0600
+Subject: [R-sig-DB] Parameterised queries
+In-Reply-To: <CANnL8goDe=M987KktVDm21=eQhi-SoOVMVTBSxXEjwrNathuTA@mail.gmail.com>
+References: <CABdHhvFnhUB0DmiryDpptdP9bh86OcnoB4B8SPq8CRn+Z7RZ2w@mail.gmail.com>
+	<1333248C-F482-47AB-ADF6-4CA6C083A5B0@cwi.nl>
+	<CABdHhvEYZ+6JG7R3JL74UPfiWb3ZHsE5f4g9KbVP6hiHb+o7+A@mail.gmail.com>
+	<BFB170FC-74B9-4524-9CC4-052D7E3C19DB@cwi.nl>
+	<CABdHhvE=k6bFE89UUKnoh31_XKS1kdQ-ZecR_LGQdhcdh0ircQ@mail.gmail.com>
+	<CANnL8gqFzjknre5stpMtS7i-Hvaj5LN0-wmCKhB431uYu91mBQ@mail.gmail.com>
+	<CABdHhvGKyBe5xRdBH8Hn8qEnoWv7_EkHEHXvvqnAZbF2rNZgHQ@mail.gmail.com>
+	<CANnL8goDe=M987KktVDm21=eQhi-SoOVMVTBSxXEjwrNathuTA@mail.gmail.com>
+Message-ID: <CABdHhvESQxxJcrVwzE0BMEWYpH=c-F0ADpp5SBocODqi4NpqJA@mail.gmail.com>
+
+>> It gives a new attack vector - to introduce additional data into the
+>> database, you just need to figure out how to turn a length 1 vector in
+>> to a length 2 vector.
+>>
+>> It's dangerous in the same way that allowing dbGetQuery() to execute
+>> multiple queries is dangerous.
+>
+> I'd rather hope that if it were a case that mattered, the user would not
+> rely on the api as a substitute for appropriate checks.
+
+I think the API should be as safe as possible by default, and
+sacrificing safety for speed should only be done explicitly when the
+user asks for it.
+
+Hadley
+
+-- 
+http://had.co.nz/
+
+
+
+From tke|tt @end|ng |rom utex@@@edu  Wed Feb 11 22:05:08 2015
+From: tke|tt @end|ng |rom utex@@@edu (Tim Keitt)
+Date: Wed, 11 Feb 2015 15:05:08 -0600
+Subject: [R-sig-DB] Parameterised queries
+In-Reply-To: <CABdHhvESQxxJcrVwzE0BMEWYpH=c-F0ADpp5SBocODqi4NpqJA@mail.gmail.com>
+References: <CABdHhvFnhUB0DmiryDpptdP9bh86OcnoB4B8SPq8CRn+Z7RZ2w@mail.gmail.com>
+	<1333248C-F482-47AB-ADF6-4CA6C083A5B0@cwi.nl>
+	<CABdHhvEYZ+6JG7R3JL74UPfiWb3ZHsE5f4g9KbVP6hiHb+o7+A@mail.gmail.com>
+	<BFB170FC-74B9-4524-9CC4-052D7E3C19DB@cwi.nl>
+	<CABdHhvE=k6bFE89UUKnoh31_XKS1kdQ-ZecR_LGQdhcdh0ircQ@mail.gmail.com>
+	<CANnL8gqFzjknre5stpMtS7i-Hvaj5LN0-wmCKhB431uYu91mBQ@mail.gmail.com>
+	<CABdHhvGKyBe5xRdBH8Hn8qEnoWv7_EkHEHXvvqnAZbF2rNZgHQ@mail.gmail.com>
+	<CANnL8goDe=M987KktVDm21=eQhi-SoOVMVTBSxXEjwrNathuTA@mail.gmail.com>
+	<CABdHhvESQxxJcrVwzE0BMEWYpH=c-F0ADpp5SBocODqi4NpqJA@mail.gmail.com>
+Message-ID: <CANnL8gr1MCX-LFjFHWyoQSg-DD6Tetbp0iBGx0=Ht2LVH1Vp4A@mail.gmail.com>
+
+On Wed, Feb 11, 2015 at 2:41 PM, Hadley Wickham <h.wickham at gmail.com> wrote:
+
+> >> It gives a new attack vector - to introduce additional data into the
+> >> database, you just need to figure out how to turn a length 1 vector in
+> >> to a length 2 vector.
+> >>
+> >> It's dangerous in the same way that allowing dbGetQuery() to execute
+> >> multiple queries is dangerous.
+> >
+> > I'd rather hope that if it were a case that mattered, the user would not
+> > rely on the api as a substitute for appropriate checks.
+>
+> I think the API should be as safe as possible by default, and
+> sacrificing safety for speed should only be done explicitly when the
+> user asks for it.
+>
+
+My use cases are not so sensitive, but I agree with the general idea. Also,
+you really do not gain much over regular looping as inserts are really
+slow, at least in postgresql.
+
+THK
+
+
+>
+> Hadley
+>
+> --
+> http://had.co.nz/
+>
+
+
+
+-- 
+http://www.keittlab.org/
+
+	[[alternative HTML version deleted]]
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Wed Feb 11 22:07:45 2015
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Wed, 11 Feb 2015 15:07:45 -0600
+Subject: [R-sig-DB] Parameterised queries
+In-Reply-To: <CANnL8gr1MCX-LFjFHWyoQSg-DD6Tetbp0iBGx0=Ht2LVH1Vp4A@mail.gmail.com>
+References: <CABdHhvFnhUB0DmiryDpptdP9bh86OcnoB4B8SPq8CRn+Z7RZ2w@mail.gmail.com>
+	<1333248C-F482-47AB-ADF6-4CA6C083A5B0@cwi.nl>
+	<CABdHhvEYZ+6JG7R3JL74UPfiWb3ZHsE5f4g9KbVP6hiHb+o7+A@mail.gmail.com>
+	<BFB170FC-74B9-4524-9CC4-052D7E3C19DB@cwi.nl>
+	<CABdHhvE=k6bFE89UUKnoh31_XKS1kdQ-ZecR_LGQdhcdh0ircQ@mail.gmail.com>
+	<CANnL8gqFzjknre5stpMtS7i-Hvaj5LN0-wmCKhB431uYu91mBQ@mail.gmail.com>
+	<CABdHhvGKyBe5xRdBH8Hn8qEnoWv7_EkHEHXvvqnAZbF2rNZgHQ@mail.gmail.com>
+	<CANnL8goDe=M987KktVDm21=eQhi-SoOVMVTBSxXEjwrNathuTA@mail.gmail.com>
+	<CABdHhvESQxxJcrVwzE0BMEWYpH=c-F0ADpp5SBocODqi4NpqJA@mail.gmail.com>
+	<CANnL8gr1MCX-LFjFHWyoQSg-DD6Tetbp0iBGx0=Ht2LVH1Vp4A@mail.gmail.com>
+Message-ID: <CABdHhvE8nJ-0gs=cTxCQNPifdrnBjy-ZAo1d6aWLr7W0Uw8Ddg@mail.gmail.com>
+
+>> I think the API should be as safe as possible by default, and
+>> sacrificing safety for speed should only be done explicitly when the
+>> user asks for it.
+>
+> My use cases are not so sensitive, but I agree with the general idea. Also,
+> you really do not gain much over regular looping as inserts are really slow,
+> at least in postgresql.
+
+Yes, I'm just working on that for RPostgres. Parameterised inserts are
+actually slower than sending one giant SQL string. RPostgreSQL uses
+COPY ... FROM STDIN (and manually converts the data frame into a
+single c string) for better performance
+
+Hadley
+
+-- 
+http://had.co.nz/
+
+
+
+From tke|tt @end|ng |rom utex@@@edu  Wed Feb 11 22:11:23 2015
+From: tke|tt @end|ng |rom utex@@@edu (Tim Keitt)
+Date: Wed, 11 Feb 2015 15:11:23 -0600
+Subject: [R-sig-DB] Parameterised queries
+In-Reply-To: <CABdHhvE8nJ-0gs=cTxCQNPifdrnBjy-ZAo1d6aWLr7W0Uw8Ddg@mail.gmail.com>
+References: <CABdHhvFnhUB0DmiryDpptdP9bh86OcnoB4B8SPq8CRn+Z7RZ2w@mail.gmail.com>
+	<1333248C-F482-47AB-ADF6-4CA6C083A5B0@cwi.nl>
+	<CABdHhvEYZ+6JG7R3JL74UPfiWb3ZHsE5f4g9KbVP6hiHb+o7+A@mail.gmail.com>
+	<BFB170FC-74B9-4524-9CC4-052D7E3C19DB@cwi.nl>
+	<CABdHhvE=k6bFE89UUKnoh31_XKS1kdQ-ZecR_LGQdhcdh0ircQ@mail.gmail.com>
+	<CANnL8gqFzjknre5stpMtS7i-Hvaj5LN0-wmCKhB431uYu91mBQ@mail.gmail.com>
+	<CABdHhvGKyBe5xRdBH8Hn8qEnoWv7_EkHEHXvvqnAZbF2rNZgHQ@mail.gmail.com>
+	<CANnL8goDe=M987KktVDm21=eQhi-SoOVMVTBSxXEjwrNathuTA@mail.gmail.com>
+	<CABdHhvESQxxJcrVwzE0BMEWYpH=c-F0ADpp5SBocODqi4NpqJA@mail.gmail.com>
+	<CANnL8gr1MCX-LFjFHWyoQSg-DD6Tetbp0iBGx0=Ht2LVH1Vp4A@mail.gmail.com>
+	<CABdHhvE8nJ-0gs=cTxCQNPifdrnBjy-ZAo1d6aWLr7W0Uw8Ddg@mail.gmail.com>
+Message-ID: <CANnL8gpVrM-_HoZMZJi2d2ARAfpEv97uV9JjKxwNpTDaGfDY2Q@mail.gmail.com>
+
+On Wed, Feb 11, 2015 at 3:07 PM, Hadley Wickham <h.wickham at gmail.com> wrote:
+
+> >> I think the API should be as safe as possible by default, and
+> >> sacrificing safety for speed should only be done explicitly when the
+> >> user asks for it.
+> >
+> > My use cases are not so sensitive, but I agree with the general idea.
+> Also,
+> > you really do not gain much over regular looping as inserts are really
+> slow,
+> > at least in postgresql.
+>
+> Yes, I'm just working on that for RPostgres. Parameterised inserts are
+> actually slower than sending one giant SQL string. RPostgreSQL uses
+> COPY ... FROM STDIN (and manually converts the data frame into a
+> single c string) for better performance
+>
+
+I put copy_from and copy_to in rpg. I punted on the C interface and simply
+shell out to psql in that case. Works fine with read.csv. and write.csv.
+
+THK
+
+
+>
+> Hadley
+>
+> --
+> http://had.co.nz/
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+-- 
+http://www.keittlab.org/
+
+	[[alternative HTML version deleted]]
+
+
+
+From |@ndgow @end|ng |rom gm@||@com  Thu Feb 12 15:20:44 2015
+From: |@ndgow @end|ng |rom gm@||@com (Ian Gow)
+Date: Thu, 12 Feb 2015 09:20:44 -0500
+Subject: [R-sig-DB] Parameterised queries
+In-Reply-To: <mailman.9.1423738804.12325.r-sig-db@r-project.org>
+References: <mailman.9.1423738804.12325.r-sig-db@r-project.org>
+Message-ID: <3381AFBE-2F69-4A4B-8498-41323E71EB1D@gmail.com>
+
+Is there merit in using PostgreSQL?s arrays to send data from R to PostgreSQL? (Caveat: I say this having no idea how PL/R gets vectors from R to PostgreSQL.)
+
+PL/R is able to pull vectors in from R, though RPostgreSQL cannot pulls arrays from PostgreSQL as vectors (though it would be great to have this feature).
+
+The second and third approaches below do not differ in performance.
+
+# Getting data one vector at a time
+
+DROP FUNCTION IF EXISTS get_int_vector();
+
+CREATE OR REPLACE FUNCTION get_int_vector()
+  RETURNS integer[] AS
+$BODY$
+     sample(1:10)
+$BODY$ LANGUAGE plr;
+
+DROP FUNCTION IF EXISTS get_str_vector();
+
+CREATE OR REPLACE FUNCTION get_str_vector()
+  RETURNS text[] AS
+$BODY$
+     sample(letters[1:10])
+$BODY$ LANGUAGE plr;
+
+DROP FUNCTION IF EXISTS get_date_vector();
+
+? For some reason, dates get converted to integers.
+CREATE OR REPLACE FUNCTION get_date_vector()
+  RETURNS date[] AS
+$BODY$
+     as.character(seq(from=as.Date("1971-01-01"), by=1, length.out = 10))
+$BODY$ LANGUAGE plr;
+
+
+WITH raw_data AS (
+    SELECT get_int_vector() AS ints, 
+        get_str_vector() AS strs,
+        get_date_vector() AS dates)
+SELECT 
+    UNNEST(ints) AS int,
+    UNNEST(strs) AS str,
+    UNNEST(dates) AS date
+FROM raw_data;
+
+## Via RPostgreSQL
+
+system.time({
+    n <- 1e6
+    df <- data.frame(int=sample(1:10, size=n, replace=TRUE),
+                     str=sample(letters[1:10], size=n, replace=TRUE),
+                     date=as.character(sample(seq(from=as.Date("1971-01-01"), 
+                                                  by=1, length.out = 10), 
+                                              size=n, replace=TRUE)),
+                     stringsAsFactors=FALSE)
+    
+    library("RPostgreSQL")
+    
+    pg <- dbConnect(PostgreSQL())
+    
+    dbWriteTable(pg, "rpostgresql_test", df, row.names=FALSE, overwrite=TRUE)
+})
+
+## Using composite type created with table
+
+DROP TABLE IF EXISTS plr_test CASCADE;
+
+CREATE TABLE plr_test (int integer, str text, date date);
+
+CREATE OR REPLACE FUNCTION get_df()
+  RETURNS SETOF plr_test AS
+$BODY$
+    n <- 1e6
+    df <- data.frame(int=sample(1:10, size=n, replace=TRUE),
+                    str=sample(letters[1:10], size=n, replace=TRUE),
+                    date=as.character(sample(seq(from=as.Date("1971-01-01"), 
+                                                by=1, length.out = 10), 
+                                             size=n, replace=TRUE)),
+                    stringsAsFactors=FALSE)
+    return(df)
+$BODY$ LANGUAGE plr;
+
+INSERT INTO plr_test
+SELECT * FROM get_df();
+
+
+> On Feb 12, 2015, at 6:00 AM, r-sig-db-request at r-project.org wrote:
+> 
+> Send R-sig-DB mailing list submissions to
+> 	r-sig-db at r-project.org
+> 
+> To subscribe or unsubscribe via the World Wide Web, visit
+> 	https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> or, via email, send a message with subject or body 'help' to
+> 	r-sig-db-request at r-project.org
+> 
+> You can reach the person managing the list at
+> 	r-sig-db-owner at r-project.org
+> 
+> When replying, please edit your Subject line so it is more specific
+> than "Re: Contents of R-sig-DB digest..."
+> 
+> 
+> Today's Topics:
+> 
+>   1. Re: Parameterised queries (Tim Keitt)
+>   2. Re: Parameterised queries (Hadley Wickham)
+>   3. Re: Parameterised queries (Tim Keitt)
+> 
+> 
+> ----------------------------------------------------------------------
+> 
+> Message: 1
+> Date: Wed, 11 Feb 2015 15:05:08 -0600
+> From: Tim Keitt <tkeitt at utexas.edu>
+> To: Hadley Wickham <h.wickham at gmail.com>
+> Cc: "r-sig-db at r-project.org" <r-sig-db at r-project.org>
+> Subject: Re: [R-sig-DB] Parameterised queries
+> Message-ID:
+> 	<CANnL8gr1MCX-LFjFHWyoQSg-DD6Tetbp0iBGx0=Ht2LVH1Vp4A at mail.gmail.com>
+> Content-Type: text/plain; charset="UTF-8"
+> 
+> On Wed, Feb 11, 2015 at 2:41 PM, Hadley Wickham <h.wickham at gmail.com> wrote:
+> 
+>>>> It gives a new attack vector - to introduce additional data into the
+>>>> database, you just need to figure out how to turn a length 1 vector in
+>>>> to a length 2 vector.
+>>>> 
+>>>> It's dangerous in the same way that allowing dbGetQuery() to execute
+>>>> multiple queries is dangerous.
+>>> 
+>>> I'd rather hope that if it were a case that mattered, the user would not
+>>> rely on the api as a substitute for appropriate checks.
+>> 
+>> I think the API should be as safe as possible by default, and
+>> sacrificing safety for speed should only be done explicitly when the
+>> user asks for it.
+>> 
+> 
+> My use cases are not so sensitive, but I agree with the general idea. Also,
+> you really do not gain much over regular looping as inserts are really
+> slow, at least in postgresql.
+> 
+> THK
+> 
+> 
+>> 
+>> Hadley
+>> 
+>> --
+>> http://had.co.nz/
+>> 
+> 
+> 
+> 
+> -- 
+> http://www.keittlab.org/
+> 
+> 	[[alternative HTML version deleted]]
+> 
+> 
+> 
+> ------------------------------
+> 
+> Message: 2
+> Date: Wed, 11 Feb 2015 15:07:45 -0600
+> From: Hadley Wickham <h.wickham at gmail.com>
+> To: Tim Keitt <tkeitt at utexas.edu>
+> Cc: "r-sig-db at r-project.org" <r-sig-db at r-project.org>
+> Subject: Re: [R-sig-DB] Parameterised queries
+> Message-ID:
+> 	<CABdHhvE8nJ-0gs=cTxCQNPifdrnBjy-ZAo1d6aWLr7W0Uw8Ddg at mail.gmail.com>
+> Content-Type: text/plain; charset=UTF-8
+> 
+>>> I think the API should be as safe as possible by default, and
+>>> sacrificing safety for speed should only be done explicitly when the
+>>> user asks for it.
+>> 
+>> My use cases are not so sensitive, but I agree with the general idea. Also,
+>> you really do not gain much over regular looping as inserts are really slow,
+>> at least in postgresql.
+> 
+> Yes, I'm just working on that for RPostgres. Parameterised inserts are
+> actually slower than sending one giant SQL string. RPostgreSQL uses
+> COPY ... FROM STDIN (and manually converts the data frame into a
+> single c string) for better performance
+> 
+> Hadley
+> 
+> -- 
+> http://had.co.nz/
+> 
+> 
+> 
+> ------------------------------
+> 
+> Message: 3
+> Date: Wed, 11 Feb 2015 15:11:23 -0600
+> From: Tim Keitt <tkeitt at utexas.edu>
+> To: Hadley Wickham <h.wickham at gmail.com>
+> Cc: "r-sig-db at r-project.org" <r-sig-db at r-project.org>
+> Subject: Re: [R-sig-DB] Parameterised queries
+> Message-ID:
+> 	<CANnL8gpVrM-_HoZMZJi2d2ARAfpEv97uV9JjKxwNpTDaGfDY2Q at mail.gmail.com>
+> Content-Type: text/plain; charset="UTF-8"
+> 
+> On Wed, Feb 11, 2015 at 3:07 PM, Hadley Wickham <h.wickham at gmail.com> wrote:
+> 
+>>>> I think the API should be as safe as possible by default, and
+>>>> sacrificing safety for speed should only be done explicitly when the
+>>>> user asks for it.
+>>> 
+>>> My use cases are not so sensitive, but I agree with the general idea.
+>> Also,
+>>> you really do not gain much over regular looping as inserts are really
+>> slow,
+>>> at least in postgresql.
+>> 
+>> Yes, I'm just working on that for RPostgres. Parameterised inserts are
+>> actually slower than sending one giant SQL string. RPostgreSQL uses
+>> COPY ... FROM STDIN (and manually converts the data frame into a
+>> single c string) for better performance
+>> 
+> 
+> I put copy_from and copy_to in rpg. I punted on the C interface and simply
+> shell out to psql in that case. Works fine with read.csv. and write.csv.
+> 
+> THK
+> 
+> 
+>> 
+>> Hadley
+>> 
+>> --
+>> http://had.co.nz/
+>> 
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at r-project.org
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>> 
+> 
+> 
+> 
+> -- 
+> http://www.keittlab.org/
+> 
+> 	[[alternative HTML version deleted]]
+> 
+> 
+> 
+> ------------------------------
+> 
+> Subject: Digest Footer
+> 
+> _______________________________________________
+> R-sig-DB mailing list
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> 
+> 
+> ------------------------------
+> 
+> End of R-sig-DB Digest, Vol 119, Issue 5
+> ****************************************
+
+
+
+From tke|tt @end|ng |rom utex@@@edu  Thu Feb 12 15:56:10 2015
+From: tke|tt @end|ng |rom utex@@@edu (Tim Keitt)
+Date: Thu, 12 Feb 2015 08:56:10 -0600
+Subject: [R-sig-DB] Parameterised queries
+In-Reply-To: <3381AFBE-2F69-4A4B-8498-41323E71EB1D@gmail.com>
+References: <mailman.9.1423738804.12325.r-sig-db@r-project.org>
+	<3381AFBE-2F69-4A4B-8498-41323E71EB1D@gmail.com>
+Message-ID: <CANnL8goTrUg0=RhN45wo2-mARUcqxKBwbpMNwfT3OZZ2Vqk=BA@mail.gmail.com>
+
+On Thu, Feb 12, 2015 at 8:20 AM, Ian Gow <iandgow at gmail.com> wrote:
+
+> Is there merit in using PostgreSQL's arrays to send data from R to
+> PostgreSQL? (Caveat: I say this having no idea how PL/R gets vectors from R
+> to PostgreSQL.)
+>
+
+Not in terms of performance. Communication between the client and server is
+one byte at a time. The reason inserts are slow is that the server does a
+lot of validation, updates indices, triggers, etc. It is also a lot safer
+than copy, which just writes whatever it sees to the fields.
+
+If you want to see how things are copied byte-by-byte, you can trace the
+communication between R and PostgreSQL in 'rpg'.
+
+
+>
+> PL/R is able to pull vectors in from R, though RPostgreSQL cannot pulls
+> arrays from PostgreSQL as vectors (though it would be great to have this
+> feature).
+>
+
+I've forgotten how DBI works, but an array should just come through in text
+form and you can parse it how ever you want on the R side. You can also
+send an array by converting it to a string of the appropriate format.
+
+rpg has a 'format_for_send' method that you can dispatch on any type to
+convert it to something PostgreSQL can read. I'm working on something for
+formatting strings returned from the server.
+
+THK
+
+
+>
+> The second and third approaches below do not differ in performance.
+>
+> # Getting data one vector at a time
+>
+> DROP FUNCTION IF EXISTS get_int_vector();
+>
+> CREATE OR REPLACE FUNCTION get_int_vector()
+>   RETURNS integer[] AS
+> $BODY$
+>      sample(1:10)
+> $BODY$ LANGUAGE plr;
+>
+> DROP FUNCTION IF EXISTS get_str_vector();
+>
+> CREATE OR REPLACE FUNCTION get_str_vector()
+>   RETURNS text[] AS
+> $BODY$
+>      sample(letters[1:10])
+> $BODY$ LANGUAGE plr;
+>
+> DROP FUNCTION IF EXISTS get_date_vector();
+>
+> -- For some reason, dates get converted to integers.
+> CREATE OR REPLACE FUNCTION get_date_vector()
+>   RETURNS date[] AS
+> $BODY$
+>      as.character(seq(from=as.Date("1971-01-01"), by=1, length.out = 10))
+> $BODY$ LANGUAGE plr;
+>
+>
+> WITH raw_data AS (
+>     SELECT get_int_vector() AS ints,
+>         get_str_vector() AS strs,
+>         get_date_vector() AS dates)
+> SELECT
+>     UNNEST(ints) AS int,
+>     UNNEST(strs) AS str,
+>     UNNEST(dates) AS date
+> FROM raw_data;
+>
+> ## Via RPostgreSQL
+>
+> system.time({
+>     n <- 1e6
+>     df <- data.frame(int=sample(1:10, size=n, replace=TRUE),
+>                      str=sample(letters[1:10], size=n, replace=TRUE),
+>
+>  date=as.character(sample(seq(from=as.Date("1971-01-01"),
+>                                                   by=1, length.out = 10),
+>                                               size=n, replace=TRUE)),
+>                      stringsAsFactors=FALSE)
+>
+>     library("RPostgreSQL")
+>
+>     pg <- dbConnect(PostgreSQL())
+>
+>     dbWriteTable(pg, "rpostgresql_test", df, row.names=FALSE,
+> overwrite=TRUE)
+> })
+>
+> ## Using composite type created with table
+>
+> DROP TABLE IF EXISTS plr_test CASCADE;
+>
+> CREATE TABLE plr_test (int integer, str text, date date);
+>
+> CREATE OR REPLACE FUNCTION get_df()
+>   RETURNS SETOF plr_test AS
+> $BODY$
+>     n <- 1e6
+>     df <- data.frame(int=sample(1:10, size=n, replace=TRUE),
+>                     str=sample(letters[1:10], size=n, replace=TRUE),
+>
+> date=as.character(sample(seq(from=as.Date("1971-01-01"),
+>                                                 by=1, length.out = 10),
+>                                              size=n, replace=TRUE)),
+>                     stringsAsFactors=FALSE)
+>     return(df)
+> $BODY$ LANGUAGE plr;
+>
+> INSERT INTO plr_test
+> SELECT * FROM get_df();
+>
+>
+> > On Feb 12, 2015, at 6:00 AM, r-sig-db-request at r-project.org wrote:
+> >
+> > Send R-sig-DB mailing list submissions to
+> >       r-sig-db at r-project.org
+> >
+> > To subscribe or unsubscribe via the World Wide Web, visit
+> >       https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> > or, via email, send a message with subject or body 'help' to
+> >       r-sig-db-request at r-project.org
+> >
+> > You can reach the person managing the list at
+> >       r-sig-db-owner at r-project.org
+> >
+> > When replying, please edit your Subject line so it is more specific
+> > than "Re: Contents of R-sig-DB digest..."
+> >
+> >
+> > Today's Topics:
+> >
+> >   1. Re: Parameterised queries (Tim Keitt)
+> >   2. Re: Parameterised queries (Hadley Wickham)
+> >   3. Re: Parameterised queries (Tim Keitt)
+> >
+> >
+> > ----------------------------------------------------------------------
+> >
+> > Message: 1
+> > Date: Wed, 11 Feb 2015 15:05:08 -0600
+> > From: Tim Keitt <tkeitt at utexas.edu>
+> > To: Hadley Wickham <h.wickham at gmail.com>
+> > Cc: "r-sig-db at r-project.org" <r-sig-db at r-project.org>
+> > Subject: Re: [R-sig-DB] Parameterised queries
+> > Message-ID:
+> >       <CANnL8gr1MCX-LFjFHWyoQSg-DD6Tetbp0iBGx0=
+> Ht2LVH1Vp4A at mail.gmail.com>
+> > Content-Type: text/plain; charset="UTF-8"
+> >
+> > On Wed, Feb 11, 2015 at 2:41 PM, Hadley Wickham <h.wickham at gmail.com>
+> wrote:
+> >
+> >>>> It gives a new attack vector - to introduce additional data into the
+> >>>> database, you just need to figure out how to turn a length 1 vector in
+> >>>> to a length 2 vector.
+> >>>>
+> >>>> It's dangerous in the same way that allowing dbGetQuery() to execute
+> >>>> multiple queries is dangerous.
+> >>>
+> >>> I'd rather hope that if it were a case that mattered, the user would
+> not
+> >>> rely on the api as a substitute for appropriate checks.
+> >>
+> >> I think the API should be as safe as possible by default, and
+> >> sacrificing safety for speed should only be done explicitly when the
+> >> user asks for it.
+> >>
+> >
+> > My use cases are not so sensitive, but I agree with the general idea.
+> Also,
+> > you really do not gain much over regular looping as inserts are really
+> > slow, at least in postgresql.
+> >
+> > THK
+> >
+> >
+> >>
+> >> Hadley
+> >>
+> >> --
+> >> http://had.co.nz/
+> >>
+> >
+> >
+> >
+> > --
+> > http://www.keittlab.org/
+> >
+> >       [[alternative HTML version deleted]]
+> >
+> >
+> >
+> > ------------------------------
+> >
+> > Message: 2
+> > Date: Wed, 11 Feb 2015 15:07:45 -0600
+> > From: Hadley Wickham <h.wickham at gmail.com>
+> > To: Tim Keitt <tkeitt at utexas.edu>
+> > Cc: "r-sig-db at r-project.org" <r-sig-db at r-project.org>
+> > Subject: Re: [R-sig-DB] Parameterised queries
+> > Message-ID:
+> >       <CABdHhvE8nJ-0gs=
+> cTxCQNPifdrnBjy-ZAo1d6aWLr7W0Uw8Ddg at mail.gmail.com>
+> > Content-Type: text/plain; charset=UTF-8
+> >
+> >>> I think the API should be as safe as possible by default, and
+> >>> sacrificing safety for speed should only be done explicitly when the
+> >>> user asks for it.
+> >>
+> >> My use cases are not so sensitive, but I agree with the general idea.
+> Also,
+> >> you really do not gain much over regular looping as inserts are really
+> slow,
+> >> at least in postgresql.
+> >
+> > Yes, I'm just working on that for RPostgres. Parameterised inserts are
+> > actually slower than sending one giant SQL string. RPostgreSQL uses
+> > COPY ... FROM STDIN (and manually converts the data frame into a
+> > single c string) for better performance
+> >
+> > Hadley
+> >
+> > --
+> > http://had.co.nz/
+> >
+> >
+> >
+> > ------------------------------
+> >
+> > Message: 3
+> > Date: Wed, 11 Feb 2015 15:11:23 -0600
+> > From: Tim Keitt <tkeitt at utexas.edu>
+> > To: Hadley Wickham <h.wickham at gmail.com>
+> > Cc: "r-sig-db at r-project.org" <r-sig-db at r-project.org>
+> > Subject: Re: [R-sig-DB] Parameterised queries
+> > Message-ID:
+> >       <
+> CANnL8gpVrM-_HoZMZJi2d2ARAfpEv97uV9JjKxwNpTDaGfDY2Q at mail.gmail.com>
+> > Content-Type: text/plain; charset="UTF-8"
+> >
+> > On Wed, Feb 11, 2015 at 3:07 PM, Hadley Wickham <h.wickham at gmail.com>
+> wrote:
+> >
+> >>>> I think the API should be as safe as possible by default, and
+> >>>> sacrificing safety for speed should only be done explicitly when the
+> >>>> user asks for it.
+> >>>
+> >>> My use cases are not so sensitive, but I agree with the general idea.
+> >> Also,
+> >>> you really do not gain much over regular looping as inserts are really
+> >> slow,
+> >>> at least in postgresql.
+> >>
+> >> Yes, I'm just working on that for RPostgres. Parameterised inserts are
+> >> actually slower than sending one giant SQL string. RPostgreSQL uses
+> >> COPY ... FROM STDIN (and manually converts the data frame into a
+> >> single c string) for better performance
+> >>
+> >
+> > I put copy_from and copy_to in rpg. I punted on the C interface and
+> simply
+> > shell out to psql in that case. Works fine with read.csv. and write.csv.
+> >
+> > THK
+> >
+> >
+> >>
+> >> Hadley
+> >>
+> >> --
+> >> http://had.co.nz/
+> >>
+> >> _______________________________________________
+> >> R-sig-DB mailing list -- R Special Interest Group
+> >> R-sig-DB at r-project.org
+> >> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> >>
+> >
+> >
+> >
+> > --
+> > http://www.keittlab.org/
+> >
+> >       [[alternative HTML version deleted]]
+> >
+> >
+> >
+> > ------------------------------
+> >
+> > Subject: Digest Footer
+> >
+> > _______________________________________________
+> > R-sig-DB mailing list
+> > R-sig-DB at r-project.org
+> > https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> >
+> >
+> > ------------------------------
+> >
+> > End of R-sig-DB Digest, Vol 119, Issue 5
+> > ****************************************
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+-- 
+http://www.keittlab.org/
+
+	[[alternative HTML version deleted]]
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Thu Feb 12 17:48:24 2015
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Thu, 12 Feb 2015 10:48:24 -0600
+Subject: [R-sig-DB] Parameterised queries
+In-Reply-To: <CANnL8goTrUg0=RhN45wo2-mARUcqxKBwbpMNwfT3OZZ2Vqk=BA@mail.gmail.com>
+References: <mailman.9.1423738804.12325.r-sig-db@r-project.org>
+	<3381AFBE-2F69-4A4B-8498-41323E71EB1D@gmail.com>
+	<CANnL8goTrUg0=RhN45wo2-mARUcqxKBwbpMNwfT3OZZ2Vqk=BA@mail.gmail.com>
+Message-ID: <CABdHhvEaFUzQhidG=rfZgEarPtRAgD3WzTKGLodU7qWNN1XRhA@mail.gmail.com>
+
+>> PL/R is able to pull vectors in from R, though RPostgreSQL cannot pulls
+>> arrays from PostgreSQL as vectors (though it would be great to have this
+>> feature).
+>>
+>
+> I've forgotten how DBI works, but an array should just come through in text
+> form and you can parse it how ever you want on the R side. You can also
+> send an array by converting it to a string of the appropriate format.
+>
+> rpg has a 'format_for_send' method that you can dispatch on any type to
+> convert it to something PostgreSQL can read. I'm working on something for
+> formatting strings returned from the server.
+
+I've started thinking about a general interface for DBI to do this
+too. It's particularly important for SQLite since it has such limited
+type information.
+
+Ian, if you'd like RPostgres (https://github.com/rstats-db/RPostgres)
+to support arrays natively, please file an issue describing your use
+case and providing a reproducible example that creates a table with
+array data.
+
+Hadley
+
+-- 
+http://had.co.nz/
+
+
+
+From tke|tt @end|ng |rom utex@@@edu  Thu Feb 12 18:22:08 2015
+From: tke|tt @end|ng |rom utex@@@edu (Tim Keitt)
+Date: Thu, 12 Feb 2015 11:22:08 -0600
+Subject: [R-sig-DB] Parameterised queries
+In-Reply-To: <CABdHhvEaFUzQhidG=rfZgEarPtRAgD3WzTKGLodU7qWNN1XRhA@mail.gmail.com>
+References: <mailman.9.1423738804.12325.r-sig-db@r-project.org>
+	<3381AFBE-2F69-4A4B-8498-41323E71EB1D@gmail.com>
+	<CANnL8goTrUg0=RhN45wo2-mARUcqxKBwbpMNwfT3OZZ2Vqk=BA@mail.gmail.com>
+	<CABdHhvEaFUzQhidG=rfZgEarPtRAgD3WzTKGLodU7qWNN1XRhA@mail.gmail.com>
+Message-ID: <CANnL8grpD_vnL8yXnq2tCD4t3Nzjx6vjp5Vodya9zzyGrgDc+Q@mail.gmail.com>
+
+On Thu, Feb 12, 2015 at 10:48 AM, Hadley Wickham <h.wickham at gmail.com>
+wrote:
+
+> >> PL/R is able to pull vectors in from R, though RPostgreSQL cannot pulls
+> >> arrays from PostgreSQL as vectors (though it would be great to have this
+> >> feature).
+> >>
+> >
+> > I've forgotten how DBI works, but an array should just come through in
+> text
+> > form and you can parse it how ever you want on the R side. You can also
+> > send an array by converting it to a string of the appropriate format.
+> >
+> > rpg has a 'format_for_send' method that you can dispatch on any type to
+> > convert it to something PostgreSQL can read. I'm working on something for
+> > formatting strings returned from the server.
+>
+> I've started thinking about a general interface for DBI to do this
+> too. It's particularly important for SQLite since it has such limited
+> type information.
+>
+
+Perhaps its time for DBI2. As long as its not cAmEl. (I've become allergic.)
+
+THK
+
+
+>
+> Ian, if you'd like RPostgres (https://github.com/rstats-db/RPostgres)
+> to support arrays natively, please file an issue describing your use
+> case and providing a reproducible example that creates a table with
+> array data.
+>
+> Hadley
+>
+> --
+> http://had.co.nz/
+>
+
+
+
+-- 
+http://www.keittlab.org/
+
+	[[alternative HTML version deleted]]
+
+
+
+From jor@n@e||@@ @end|ng |rom gm@||@com  Fri Feb 13 20:17:52 2015
+From: jor@n@e||@@ @end|ng |rom gm@||@com (Joran Elias)
+Date: Fri, 13 Feb 2015 12:17:52 -0700
+Subject: [R-sig-DB] RODBC and type.convert
+Message-ID: <CALdbFF5dTxz8cmafy_NSOzMMgqJdD393GkKUqhuJWLcbeHk8+Q@mail.gmail.com>
+
+I sent the message below several months ago, but received no reply. I'm
+trying once again, just for good measure.
+
+If it helps any, the behavior I'm seeing below is in R 3.1.2, RODBC 1.3-10,
+on OS X Mavericks using the Actual Tech drivers on an Oracle db.
+
+My specific interest is if there are any platform/driver/db combinations
+where the column information retrieved into cData in the function
+sqlGetResults is unreliable enough that we cannot trust a value of "char"
+or "varchar". As it stands, when I query a table with a column containing
+values like "01" and "D1", I'm at the whim of the specific result set and
+type.convert as to what happens. If my result set contains only "01",
+type.convert gives me the integer 1. If my result set contains "D1" I get a
+character/factor as you might expect.
+
+Many thanks!
+
+- Joran
+
+On Fri, Sep 19, 2014 at 2:21 PM, Joran Elias <joran.elias at gmail.com> wrote:
+
+> I know from the documentation that RODBC applies type.convert to columns
+> (excepting some date and date time classes). In particular, the section
+> from sqlGetResults:
+>
+>         for (i in seq_len(cols)) {
+>             if(is.character(data[[i]]) && nchar(enc))
+>                 data[[i]] <- iconv(data[[i]], from = enc)
+>             if(as.is[i] || is.list(data[[i]])) next
+>             if(is.numeric(data[[i]])) next
+>             if(cData$type[i] == "date")
+>                 data[[i]] <- as.Date(data[[i]])
+>             else if(cData$type[i] == "timestamp")
+>                 data[[i]] <- as.POSIXct(data[[i]])
+>             else
+>                 data[[i]] <- type.convert(as.character(data[[i]]),
+>                                           na.strings = na.strings,
+>                                           as.is = !stringsAsFactors,
+>                                           dec = dec)
+>
+> This means that RODBC is fairly aggressive about converting character
+> columns to numeric when compared to ROracle:
+>
+> > str(RODBC::sqlQuery(odbc_con,"select '01' as val from dual"))
+> 'data.frame': 1 obs. of  1 variable:
+>  $ VAL: int 1
+> > str(ROracle::dbGetQuery(roracle_con,"select '01' as val from dual"))
+> 'data.frame': 1 obs. of  1 variable:
+>  $ VAL: chr "01"
+>
+> and further, RODBC will return result sets of different types from the
+> same db table depending on what values happen to appear. If there is a
+> character column with values "01" and "D1", it might sometimes return a
+> factor and other times an integer.
+>
+> I presume there must be some reason why in the code above cData$type
+> values of "varchar" or "char" are somehow unreliable across different
+> database platforms (or within the ODBC standard) which would preclude
+> simply doing something like:
+>
+> if(cData$type[i] %in% c("varchar","char")) {#Do something consistent, like
+> always leave as character or always convert to factors}
+>
+> I was wondering if someone could enlighten me as to what that reason might
+> be?
+>
+> Thanks!
+>
+> - Joran
+>
+>
+>
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Fri Feb 13 23:53:28 2015
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Fri, 13 Feb 2015 17:53:28 -0500
+Subject: [R-sig-DB] Parameterised queries
+In-Reply-To: <CANnL8goTrUg0=RhN45wo2-mARUcqxKBwbpMNwfT3OZZ2Vqk=BA@mail.gmail.com>
+References: <mailman.9.1423738804.12325.r-sig-db@r-project.org>	<3381AFBE-2F69-4A4B-8498-41323E71EB1D@gmail.com>
+	<CANnL8goTrUg0=RhN45wo2-mARUcqxKBwbpMNwfT3OZZ2Vqk=BA@mail.gmail.com>
+Message-ID: <54DE8068.1020302@gmail.com>
+
+(Possibly naive question.)
+
+>The reason inserts are slow...
+
+I've now seen this stated a few times on this thread and I don't fully 
+understand the context everyone seems to be assuming. With a Perl client 
+I can insert multiple records with a single insert command, over a 
+network, and it seems to be nearly as fast as loading with the batch 
+utility locally on the server. As I recall, I had to block less that 
+10,000 records or something choked, but multiple blocks loaded a fairly 
+large database reasonably quickly. (I'm travelling and cannot verify 
+this number at the moment.) It is import to load before specifying 
+indexes, otherwise the index gets recalculated with each insert.
+
+When people say inserts  are slow:
+
+-Is this an R specific problem?
+-Is it assumed indexes are already specified?
+-Or am I missing something else once again?
+
+Thanks,
+Paul
+
+
+
+From tech_dev @end|ng |rom w||d|nte||ect@com  Sat Feb 14 00:05:39 2015
+From: tech_dev @end|ng |rom w||d|nte||ect@com (Alex Mandel)
+Date: Fri, 13 Feb 2015 15:05:39 -0800
+Subject: [R-sig-DB] Parameterised queries
+In-Reply-To: <54DE8068.1020302@gmail.com>
+References: <mailman.9.1423738804.12325.r-sig-db@r-project.org>	<3381AFBE-2F69-4A4B-8498-41323E71EB1D@gmail.com>	<CANnL8goTrUg0=RhN45wo2-mARUcqxKBwbpMNwfT3OZZ2Vqk=BA@mail.gmail.com>
+	<54DE8068.1020302@gmail.com>
+Message-ID: <54DE8343.9080604@wildintellect.com>
+
+On 02/13/2015 02:53 PM, Paul Gilbert wrote:
+> (Possibly naive question.)
+> 
+>> The reason inserts are slow...
+> 
+> I've now seen this stated a few times on this thread and I don't fully
+> understand the context everyone seems to be assuming. With a Perl client
+> I can insert multiple records with a single insert command, over a
+> network, and it seems to be nearly as fast as loading with the batch
+> utility locally on the server. As I recall, I had to block less that
+> 10,000 records or something choked, but multiple blocks loaded a fairly
+> large database reasonably quickly. (I'm travelling and cannot verify
+> this number at the moment.) It is import to load before specifying
+> indexes, otherwise the index gets recalculated with each insert.
+> 
+> When people say inserts  are slow:
+> 
+> -Is this an R specific problem?
+> -Is it assumed indexes are already specified?
+> -Or am I missing something else once again?
+> 
+> Thanks,
+> Paul
+> 
+
+It's not exactly R specific, though we are discussing the implementation
+in R.
+
+If you bulk load generally you want it to be an atomic commit (all
+records or none), and you want it to hold of on doing triggers and
+indexes until after the data has made it to the db. Different Dbs have
+different performance levels.
+
+In postgres you can compare using the psql copy command vs sending a sql
+file with INSERT commands.
+
+More background
+http://en.wikipedia.org/wiki/Prepared_statement
+http://rosettacode.org/wiki/Parametrized_SQL_statement
+
+Not knowing how you wrote your Perl code, you may have been using
+prepared statements. In which case both of your runs remote or local
+should of had similar performance. What's being discussed is the
+introduction of prepared statements which has not existed for most Db
+connectors in R previously.
+
+Having done bulk loads in the 10 GB+ range before I can tell you it
+matters a lot.
+
+Thanks,
+Alex
+
+
+
+From tke|tt @end|ng |rom utex@@@edu  Sat Feb 14 02:49:25 2015
+From: tke|tt @end|ng |rom utex@@@edu (Tim Keitt)
+Date: Fri, 13 Feb 2015 19:49:25 -0600
+Subject: [R-sig-DB] Parameterised queries
+In-Reply-To: <54DE8343.9080604@wildintellect.com>
+References: <mailman.9.1423738804.12325.r-sig-db@r-project.org>
+	<3381AFBE-2F69-4A4B-8498-41323E71EB1D@gmail.com>
+	<CANnL8goTrUg0=RhN45wo2-mARUcqxKBwbpMNwfT3OZZ2Vqk=BA@mail.gmail.com>
+	<54DE8068.1020302@gmail.com> <54DE8343.9080604@wildintellect.com>
+Message-ID: <CANnL8grXn9+KSiQV7OSw3KVugGV8nbG0ECpzwnOVNgi4rGM3zw@mail.gmail.com>
+
+On Fri, Feb 13, 2015 at 5:05 PM, Alex Mandel <tech_dev at wildintellect.com>
+wrote:
+
+> On 02/13/2015 02:53 PM, Paul Gilbert wrote:
+> > (Possibly naive question.)
+> >
+> >> The reason inserts are slow...
+> >
+> > I've now seen this stated a few times on this thread and I don't fully
+> > understand the context everyone seems to be assuming. With a Perl client
+> > I can insert multiple records with a single insert command, over a
+> > network, and it seems to be nearly as fast as loading with the batch
+> > utility locally on the server. As I recall, I had to block less that
+> > 10,000 records or something choked, but multiple blocks loaded a fairly
+> > large database reasonably quickly. (I'm travelling and cannot verify
+> > this number at the moment.) It is import to load before specifying
+> > indexes, otherwise the index gets recalculated with each insert.
+> >
+> > When people say inserts  are slow:
+> >
+> > -Is this an R specific problem?
+> > -Is it assumed indexes are already specified?
+> > -Or am I missing something else once again?
+> >
+> > Thanks,
+> > Paul
+> >
+>
+> It's not exactly R specific, though we are discussing the implementation
+> in R.
+>
+> If you bulk load generally you want it to be an atomic commit (all
+> records or none), and you want it to hold of on doing triggers and
+> indexes until after the data has made it to the db. Different Dbs have
+> different performance levels.
+>
+> In postgres you can compare using the psql copy command vs sending a sql
+> file with INSERT commands.
+>
+
+The example for "copy_to" in rpg compares pushing the hflights db to
+postgresql using inserts and copy. You'll notice the insert version
+('write_table') is commented out because it takes 5 minutes or so and I got
+tired of waiting. Using 'copy_to' is less than 5 seconds. No indices or
+constraints in operation.
+
+
+>
+> More background
+> http://en.wikipedia.org/wiki/Prepared_statement
+> http://rosettacode.org/wiki/Parametrized_SQL_statement
+>
+> Not knowing how you wrote your Perl code, you may have been using
+> prepared statements. In which case both of your runs remote or local
+> should of had similar performance. What's being discussed is the
+> introduction of prepared statements which has not existed for most Db
+> connectors in R previously.
+>
+> Having done bulk loads in the 10 GB+ range before I can tell you it
+> matters a lot.
+>
+
+I've experimented with using parallel R to run many inserts in parallel.
+Still have not gotten it worked out and I'm not sure it will help in any
+event owing to write contention. Would be interesting to have a good test
+case.
+
+THK
+
+
+>
+> Thanks,
+> Alex
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+-- 
+http://www.keittlab.org/
+
+	[[alternative HTML version deleted]]
+
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Sat Feb 14 03:55:48 2015
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Fri, 13 Feb 2015 21:55:48 -0500
+Subject: [R-sig-DB] Parameterised queries
+In-Reply-To: <CANnL8grXn9+KSiQV7OSw3KVugGV8nbG0ECpzwnOVNgi4rGM3zw@mail.gmail.com>
+References: <mailman.9.1423738804.12325.r-sig-db@r-project.org>
+	<3381AFBE-2F69-4A4B-8498-41323E71EB1D@gmail.com>
+	<CANnL8goTrUg0=RhN45wo2-mARUcqxKBwbpMNwfT3OZZ2Vqk=BA@mail.gmail.com>
+	<54DE8068.1020302@gmail.com> <54DE8343.9080604@wildintellect.com>
+	<CANnL8grXn9+KSiQV7OSw3KVugGV8nbG0ECpzwnOVNgi4rGM3zw@mail.gmail.com>
+Message-ID: <54DEB934.1050405@gmail.com>
+
+
+
+On 15-02-13 08:49 PM, Tim Keitt wrote:
+>
+>
+> On Fri, Feb 13, 2015 at 5:05 PM, Alex Mandel <tech_dev at wildintellect.com
+> <mailto:tech_dev at wildintellect.com>> wrote:
+>
+>     On 02/13/2015 02:53 PM, Paul Gilbert wrote:
+>     > (Possibly naive question.)
+>     >
+>     >> The reason inserts are slow...
+>     >
+>     > I've now seen this stated a few times on this thread and I don't fully
+>     > understand the context everyone seems to be assuming. With a Perl client
+>     > I can insert multiple records with a single insert command, over a
+>     > network, and it seems to be nearly as fast as loading with the batch
+>     > utility locally on the server. As I recall, I had to block less that
+>     > 10,000 records or something choked, but multiple blocks loaded a fairly
+>     > large database reasonably quickly. (I'm travelling and cannot verify
+>     > this number at the moment.) It is import to load before specifying
+>     > indexes, otherwise the index gets recalculated with each insert.
+>     >
+>     > When people say inserts  are slow:
+>     >
+>     > -Is this an R specific problem?
+>     > -Is it assumed indexes are already specified?
+>     > -Or am I missing something else once again?
+>     >
+>     > Thanks,
+>     > Paul
+>     >
+>
+>     It's not exactly R specific, though we are discussing the implementation
+>     in R.
+>
+>     If you bulk load generally you want it to be an atomic commit (all
+>     records or none), and you want it to hold of on doing triggers and
+>     indexes until after the data has made it to the db. Different Dbs have
+>     different performance levels.
+>
+>     In postgres you can compare using the psql copy command vs sending a sql
+>     file with INSERT commands.
+>
+>
+> The example for "copy_to" in rpg compares pushing the hflights db to
+> postgresql using inserts and copy. You'll notice the insert version
+> ('write_table') is commented out because it takes 5 minutes or so and I
+> got tired of waiting. Using 'copy_to' is less than 5 seconds. No indices
+> or constraints in operation.
+
+I don't have the tools to test anything at the moment, but the rpg note 
+under write_tables says "write_table uses SQL INSERT statements".
+
+Just to be clear, I know
+
+     INSERT INTO PRODUCT (name, price) VALUES (bread, 1.0)
+     ...
+     INSERT INTO PRODUCT (name, price) VALUES (butter, 2.5)
+
+is slow, it is
+
+     INSERT INTO PRODUCT (name, price) VALUES (
+       (bread, 1.0),
+        ...
+       (butter, 2.5))
+
+that I think is fairly fast. (I might have the syntax wrong.)
+
+Paul
+>
+>
+>     More background
+>     http://en.wikipedia.org/wiki/Prepared_statement
+>     http://rosettacode.org/wiki/Parametrized_SQL_statement
+>
+>     Not knowing how you wrote your Perl code, you may have been using
+>     prepared statements. In which case both of your runs remote or local
+>     should of had similar performance. What's being discussed is the
+>     introduction of prepared statements which has not existed for most Db
+>     connectors in R previously.
+>
+>     Having done bulk loads in the 10 GB+ range before I can tell you it
+>     matters a lot.
+>
+>
+> I've experimented with using parallel R to run many inserts in parallel.
+> Still have not gotten it worked out and I'm not sure it will help in any
+> event owing to write contention. Would be interesting to have a good
+> test case.
+>
+> THK
+>
+>
+>     Thanks,
+>     Alex
+>
+>     _______________________________________________
+>     R-sig-DB mailing list -- R Special Interest Group
+>     R-sig-DB at r-project.org <mailto:R-sig-DB at r-project.org>
+>     https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+>
+>
+>
+> --
+> http://www.keittlab.org/
+
+
+
+From tech_dev @end|ng |rom w||d|nte||ect@com  Sat Feb 14 19:54:56 2015
+From: tech_dev @end|ng |rom w||d|nte||ect@com (Alex Mandel)
+Date: Sat, 14 Feb 2015 10:54:56 -0800
+Subject: [R-sig-DB] Parameterised queries
+In-Reply-To: <54DEB4AA.1070908@gmail.com>
+References: <mailman.9.1423738804.12325.r-sig-db@r-project.org>	<3381AFBE-2F69-4A4B-8498-41323E71EB1D@gmail.com>	<CANnL8goTrUg0=RhN45wo2-mARUcqxKBwbpMNwfT3OZZ2Vqk=BA@mail.gmail.com>
+	<54DE8068.1020302@gmail.com> <54DE8343.9080604@wildintellect.com>
+	<54DEB4AA.1070908@gmail.com>
+Message-ID: <54DF9A00.4000608@wildintellect.com>
+
+On 02/13/2015 06:36 PM, Paul Gilbert wrote:
+> Alex
+> 
+> Thanks for explaining this. I realized my question was a bit peripheral
+> to the discussion, which I did not really follow, so thanks for the
+> pointers.
+> ...
+>> If you bulk load generally you want it to be an atomic commit (all
+>> records or none), and you want it to hold of on doing triggers and
+>> indexes until after the data has made it to the db. Different Dbs have
+>> different performance levels.
+> 
+> I was guessing something like this was the reason
+>     INSERT INTO PRODUCT (name, price) VALUES (
+>       (bread, 1.0),
+>        ...
+>       (butter, 2.5))
+
+I'm not sure all DBs allow this format (seem at least Postgres, MySQL
+and SQlite do). This looks like kinda like a DB native way of doing
+prepared/parametrized insert. I suspect this would be similar in speed.
+Note at least in python using prepared statements is also a security
+feature, as it sanitizes the inputs so you can't sneak in ; where it
+doesn't belong. Not sure if that's part of this DBI plan. Having to
+write a SQL string like the above in R would be a real pain. Being able
+to just pass a data.frame or list of lists to a single SQL with
+placeholders is much simpler.
+
+> 
+> is so much faster than
+>     INSERT INTO PRODUCT (name, price) VALUES (bread, 1.0)
+>     ...
+>     INSERT INTO PRODUCT (name, price) VALUES (butter, 2.5)
+> 
+>> In postgres you can compare using the psql copy command vs sending a sql
+>> file with INSERT commands.
+> 
+> I think this is roughly one of the things I did, but it was a long time
+> ago. As I recall, I found several inserts was slow, but an insert with
+> many records was about the same speed as a copy. Are you saying you
+> would not expect that?
+> 
+> If you don't mind answering a second question, is it possible to make a
+> parameterised query that handles a variable number of parameters, as one
+> might want to do for an insert with multiple records?
+> 
+
+No, I don't think so, the way you would do this would be to have blanks
+in your data.frame for the values you wanted to not fill in. Others wise
+you would have a ragged array which is odd to handle in general.
+But you can't do that in a regular insert statement anyways. Number of
+columns listed is the number of values you have to pass for it to work.
+
+
+
+From |uke@|@ke @end|ng |rom |mm|@gov@@u  Sun Mar  1 20:09:31 2015
+From: |uke@|@ke @end|ng |rom |mm|@gov@@u (Luke LAKE)
+Date: Sun, 1 Mar 2015 19:09:31 +0000
+Subject: [R-sig-DB] Luke Lake: Being able to load Rdata into DB2 XMl/BLOB
+ [SEC=UNOFFICIAL]
+Message-ID: <9162B9BAA135314C9086C1DF6A5922B38ED9382C@PDCWPIPEX01.IMMI.LOCAL>
+
+UNOFFICIAL
+Hi,
+
+Modern IT systems store a variety of different types of data in a database. I want to store RData in an XML/BLOB column in a DB2 table. Having a central spot for a model, its parameters, results, test data would be pretty cool.(and all those other control freak management jargon)
+
+What I wanted to do was , build a model etc then save it as Rdata file. Then load that RData file into an XML or BLOB DB2 column. When required, export and save the Rdata stored as XML/BLOB. Then load it back into R. (I know there are nicer ways of doing it)
+
+
+1) Is this possible? Have I missed something?(R XML does not seem to have the functionality, XML requires tags and data in character format)
+
+2) For clarity these are the steps I have attempted.
+
+STEPS:
+
+a) Getting the RData file type
+
+file TEST_gbm.RData
+TEST_gbm.RData: gzip compressed data, from Unix
+
+b) Determine if DB2, XML columns can accept RData gzip files format. It cant nor can DB2 BLOBS accepts RData gzip format
+
+c) Trying to change the RData file into a character format that will allow it to be stored in XML. Various commands used have been xxd and hexdump. Never seem to get the sequence right nor add the XML tags.
+
+d) looking at the source code to try to figure out how save and load works. My impression is that the source code gets rid of some of the fields like CRC etc in gzio.h
+
+There is a large number of difference in the fields in a normal gz file and a RData file. I could not change any field without destroying the whole file.
+
+Normal Gzip xxd tttt.txt.gz
+0000000: 1f8b 0808 500b f054 0003
+
+RData gzip:
+xxd TEST_Y.RData | head
+0000000: 1f8b 0800 0000 0000 0003
+
+
+e) RData is a compressed file. DB2 requires inputted XML  to have at least 1 tag with the data. Unfortunately adding tags was impossible for me to achieve.
+
+Any help would be fantastic!!!!!!!!!
+
+Luke Lake
+Exec 1
+Department of Immigration and Citizenship
+Telephone: (02) 6225 6535
+Mobile: [Mobile]
+Email: luke.lake at immi.gov.au<mailto:luke.lake at immi.gov.au>
+
+"Description, inference, prediction, and decision-making: these are the four components of statistical
+work, and all of them centrally involve assumptions and judgments, rendering them subjective at their core. James Berger"
+
+
+
+UNOFFICIAL
+Important Notice: If you have received this email by mistake, please advise
+the sender and delete the message and attachments immediately.  This email,
+including attachments, may contain confidential, sensitive, legally privileged
+and/or copyright information.  Any review, retransmission, dissemination
+or other use of this information by persons or entities other than the
+intended recipient is prohibited.  DIBP respects your privacy and has
+obligations under the Privacy Act 1988.  The official departmental privacy
+policy can be viewed on the department's website at www.immi.gov.au.  See:
+http://www.immi.gov.au/functional/privacy.htm
+
+	[[alternative HTML version deleted]]
+
+
+
+From @|emu@t@de@@e @end|ng |rom gm@||@com  Sat Mar  7 01:54:26 2015
+From: @|emu@t@de@@e @end|ng |rom gm@||@com (Alemu Tadesse)
+Date: Fri, 6 Mar 2015 17:54:26 -0700
+Subject: [R-sig-DB] my Problem with the RODBC sql script below
+Message-ID: <CACGkHRM9LwNi=5qBEU-rPqrgyo5PO=FsA+-rJq2hiJmKb5cgbQ@mail.gmail.com>
+
+Dear All,
+
+The following script works in sql server or toad  for sql server.
+
+SELECT MD.CallSign
+  ,HD.WBAN
+      ,TimeStamp_Local
+      ,ref_density
+      ,ref_dewpoint
+      ,ref_dir
+      ,ref_precip
+      ,ref_press
+      ,ref_rh
+      ,ref_temperature_avg
+      ,ref_ws_avg
+      ,ref_wetbulb
+  FROM ASOS.dbo.HourlyData HD
+    left outer join ASOS.dbo.ASOS_MetaData MD on MD.WBAN = HD.WBAN
+where CallSign = 'BOS' order by TimeStamp_Local ASC
+
+and the result is a table of the data corresponding to those variables
+listed above
+
+But, in R it doesn't work with the following commands
+
+ch1 <- odbcConnect(dsn="COLOMSQ", uid="DataPull", pwd="Puldata")
+
+
+p3<-sqlQuery(ch1,'SELECT MD.CallSign
+  ,HD.WBAN
+      ,TimeStamp_Local
+      ,ref_density
+      ,ref_dewpoint
+      ,ref_dir
+      ,ref_precip
+      ,ref_press
+      ,ref_rh
+      ,ref_temperature_avg
+      ,ref_ws_avg
+      ,ref_wetbulb
+  FROM ASOS.dbo.HourlyData HD
+    left outer join ASOS.dbo.ASOS_MetaData MD on MD.WBAN = HD.WBAN
+where CallSign = BOS order by TimeStamp_Local ASC')
+
+close(ch1)
+
+and p3 results in
+
+[1] "08S01 0 [Microsoft][ODBC SQL Server Driver]Communication link failure"
+
+
+
+
+
+[2] "[RODBC] ERROR: Could not SQLExecDirect 'SELECT MD.CallSign\n
+ ,HD.WBAN\n      ,TimeStamp_Local\n      ,ref_density\n
+ ,ref_dewpoint\n      ,ref_dir\n      ,ref_precip\n      ,ref_press\n
+ ,ref_rh\n      ,ref_temperature_avg\n      ,ref_ws_avg\n
+ ,ref_wetbulb\n  FROM ASOS.dbo.HourlyData HD\n    left outer join
+ASOS.dbo.ASOS_MetaData MD on MD.WBAN = HD.WBAN\nwhere CallSign = BOS order
+by TimeStamp_Local ASC'"
+
+with no data
+
+Any idea ?
+ Thank you in Advance
+
+	[[alternative HTML version deleted]]
+
+
+
+From tom_ph|||pp| @end|ng |rom np@@gov  Sat Mar  7 04:24:02 2015
+From: tom_ph|||pp| @end|ng |rom np@@gov (Philippi, Tom)
+Date: Fri, 6 Mar 2015 19:24:02 -0800
+Subject: [R-sig-DB] my Problem with the RODBC sql script below
+In-Reply-To: <CACGkHRM9LwNi=5qBEU-rPqrgyo5PO=FsA+-rJq2hiJmKb5cgbQ@mail.gmail.com>
+References: <CACGkHRM9LwNi=5qBEU-rPqrgyo5PO=FsA+-rJq2hiJmKb5cgbQ@mail.gmail.com>
+Message-ID: <CAM9kYqg6O64ox7UYGX3n7xoNi3rABh+72R_rjabf1EvU1gKaYw@mail.gmail.com>
+
+My first test would be dealing with the quotes around BOS in
+where CallSign = 'BOS'
+
+qString <- paste("SELECT MD.CallSign, ",
+                           " HD.WBAN, ",
+                           "TimeStamp_Local, ",
+                           "ref_density, ",
+                           "ref_dewpoint, ",
+                           "ref_dir, ",
+                           "ref_precip, ",
+                           "ref_press, ",
+                            "ref_rh, ",
+                           "ref_temperature_avg, ",
+                            "ref_ws_avg, ",
+                            "ref_wetbulb ",
+                            "FROM ASOS.dbo.HourlyData HD ",
+                           "left outer join ASOS.dbo.ASOS_MetaData MD on ",
+                            "MD.WBAN = HD.WBAN ",
+                           "where CallSign = 'BOS' ",
+                           "order by TimeStamp_Local ASC;",sep='')
+p3 <- sqlQuery(ch1,qString)
+
+
+That has 2 changes: quoting around the character literal value BOS, and a
+semicolon at the end of the query string.
+
+My second idea would be the syntax of FROM ASOS.dbo.HourlyData HD instead
+of FROM ASOS.dbo.HourlyData AS HD.  That may differ depending on the db
+backend you're hitting.  If this doesn't work, try reposting with
+sessionInfo() and information on the db you are using.
+
+
+I hope that this helps...
+Tom 2
+
+
+On Fri, Mar 6, 2015 at 4:54 PM, Alemu Tadesse <alemu.tadesse at gmail.com>
+wrote:
+
+> Dear All,
+>
+> The following script works in sql server or toad  for sql server.
+>
+> SELECT MD.CallSign
+>   ,HD.WBAN
+>       ,TimeStamp_Local
+>       ,ref_density
+>       ,ref_dewpoint
+>       ,ref_dir
+>       ,ref_precip
+>       ,ref_press
+>       ,ref_rh
+>       ,ref_temperature_avg
+>       ,ref_ws_avg
+>       ,ref_wetbulb
+>   FROM ASOS.dbo.HourlyData HD
+>     left outer join ASOS.dbo.ASOS_MetaData MD on MD.WBAN = HD.WBAN
+> where CallSign = 'BOS' order by TimeStamp_Local ASC
+>
+> and the result is a table of the data corresponding to those variables
+> listed above
+>
+> But, in R it doesn't work with the following commands
+>
+> ch1 <- odbcConnect(dsn="COLOMSQ", uid="DataPull", pwd="Puldata")
+>
+>
+> p3<-sqlQuery(ch1,'SELECT MD.CallSign
+>   ,HD.WBAN
+>       ,TimeStamp_Local
+>       ,ref_density
+>       ,ref_dewpoint
+>       ,ref_dir
+>       ,ref_precip
+>       ,ref_press
+>       ,ref_rh
+>       ,ref_temperature_avg
+>       ,ref_ws_avg
+>       ,ref_wetbulb
+>   FROM ASOS.dbo.HourlyData HD
+>     left outer join ASOS.dbo.ASOS_MetaData MD on MD.WBAN = HD.WBAN
+> where CallSign = BOS order by TimeStamp_Local ASC')
+>
+> close(ch1)
+>
+> and p3 results in
+>
+> [1] "08S01 0 [Microsoft][ODBC SQL Server Driver]Communication link failure"
+>
+>
+>
+>
+>
+> [2] "[RODBC] ERROR: Could not SQLExecDirect 'SELECT MD.CallSign\n
+>  ,HD.WBAN\n      ,TimeStamp_Local\n      ,ref_density\n
+>  ,ref_dewpoint\n      ,ref_dir\n      ,ref_precip\n      ,ref_press\n
+>  ,ref_rh\n      ,ref_temperature_avg\n      ,ref_ws_avg\n
+>  ,ref_wetbulb\n  FROM ASOS.dbo.HourlyData HD\n    left outer join
+> ASOS.dbo.ASOS_MetaData MD on MD.WBAN = HD.WBAN\nwhere CallSign = BOS order
+> by TimeStamp_Local ASC'"
+>
+> with no data
+>
+> Any idea ?
+>  Thank you in Advance
+>
+>         [[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+--
+
+	[[alternative HTML version deleted]]
+
+
+
+From peter@ruckde@che| @end|ng |rom web@de  Mon Mar 23 13:13:38 2015
+From: peter@ruckde@che| @end|ng |rom web@de (Peter Ruckdeschel)
+Date: Mon, 23 Mar 2015 13:13:38 +0100
+Subject: [R-sig-DB] RODBC and Office 365 / cloud office
+Message-ID: <trinity-a152bd3b-ed07-41a1-b27e-5b389315f275-1427112818552@3capp-webde-bs23>
+
+An HTML attachment was scrubbed...
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20150323/af9db229/attachment.html>
+

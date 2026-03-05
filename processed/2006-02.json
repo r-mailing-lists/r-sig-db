@@ -1,0 +1,239 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2006-02",
+  "messages": [
+    {
+      "id": "msg-ddce6f5a6663",
+      "message_id": "<43ECD5A9.8040700@vanderbilt.edu>",
+      "from_name": "Jeffrey Horner",
+      "from_email_hash": "77f9f3268effd48e70e790ba24e5db9767f6401d87fbba7ec6a16ee2e060daf2",
+      "date": "2006-02-10T12:04:25-06:00",
+      "subject": "[R-sig-DB] RODBC and BLOBS",
+      "subject_clean": "RODBC and BLOBS",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Does RODBC support BLOBS? I ask because I would like to \nserialize(ascii=FALSE) an R variable and store it in a database table.\nIs this doable?\n\nMy naive attempt went like this:\n\n > library(RODBC)\n > chan <- odbcConnect('test') # to mysql thru myodbc thru unixodbc\n > sqlQuery(chan,\"create table vars( name varchar(255), val blob)\")\n[1] \"No Data\"\n > data(iris)\n > x<-serialize(iris,connection=NULL)\n > sqlQuery(chan,paste(\"insert into vars VALUES ('iris','\",x,\"')\",sep=''))\ncharacter(0)\n > y<- sqlQuery(chan,\"select * from vars\")\n > z<-unserialize(y$val)\nError in unserialize(y$val) : 'connection' must be a connection\n > typeof(y$val)\n[1] \"integer\"\n\n-- \nJeffrey Horner       Computer Systems Analyst         School of Medicine\n615-322-8606         Department of Biostatistics   Vanderbilt University",
+      "body_snippet": "Does RODBC support BLOBS? I ask because I would like to \nserialize(ascii=FALSE) an R variable and store it in a database table.\nIs this doable?\n\nMy naive attempt went like this:\n\n > library(RODBC)\n > ",
+      "thread_id": "thread-ddce6f5a6663",
+      "thread_depth": 0,
+      "month": "2006-02"
+    },
+    {
+      "id": "msg-39ce02f9210d",
+      "message_id": "<CA95591D-FB32-47CD-9D36-B38942F77C85@bu.edu>",
+      "from_name": "Jason Horn",
+      "from_email_hash": "80dd4023238a0e62df6918318e42337d33260c364c22732a1c0797b782591571",
+      "date": "2006-02-20T06:29:21-05:00",
+      "subject": "[R-sig-DB] RMySQL Error Messages, crashing R",
+      "subject_clean": "RMySQL Error Messages, crashing R",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I am having trouble getting RMySQL working with R.  It did at one  \npoint, work with an older 1.x version of R, but now with R2.2.1, I am  \ngetting the following messages on my OS X 10.4.5 system:\n\nRS-DBI driver warning: (MySQL mismatch between compiled version  \n4.0.24 and runtime version 4.1.14)\n\nif I then try to run any further db commands such as dbConnect, R  \ncrashes with a bus error.  When I started getting this error, I was  \nusing MySQL 5.  I have since removed that installation and instead  \ninstalled the older 4.0.24.  I still get the error message.  I have  \nalso tried other versions of MySQL, but the error persists.  I have  \nalso tried installing RMySQL from sources, but it makes no difference.\n\nDoes anyone know what this error message means.  Are there any OS X  \nusers that have with R 2.x working with RMySQL?\n\nPlease help!\n\n- Jason\n\n\nJason Horn\nBoston University Department of Biology\n5 Cumington Street  Boston, MA 02215\n\njhorn at bu.edu\noffice: 617 353 6987\ncell: 401 588 2766\n\n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "I am having trouble getting RMySQL working with R.  It did at one  \npoint, work with an older 1.x version of R, but now with R2.2.1, I am  \ngetting the following messages on my OS X 10.4.5 system:\n\nRS",
+      "thread_id": "thread-39ce02f9210d",
+      "thread_depth": 0,
+      "month": "2006-02"
+    },
+    {
+      "id": "msg-762a9c9f1366",
+      "message_id": "<0E366731-895B-42DD-8E70-A9C7D0E66B05@bu.edu>",
+      "from_name": "Jason Horn",
+      "from_email_hash": "80dd4023238a0e62df6918318e42337d33260c364c22732a1c0797b782591571",
+      "date": "2006-02-20T08:09:49-05:00",
+      "subject": "[R-sig-DB] [R] RMySQL Error Messages, crashing R",
+      "subject_clean": "RMySQL Error Messages, crashing R",
+      "in_reply_to": "<Pine.LNX.4.64.0602192017580.12132@springer.berkeley.edu>",
+      "references": [
+        "<E586A268-8D74-46C2-9169-171171D4F9A5@bu.edu>",
+        "<Pine.LNX.4.64.0602192017580.12132@springer.berkeley.edu>"
+      ],
+      "body_plain": "Phil,\n\nThanks for the tip.  I have tried rebuilding the RMySQL library, but  \nit always fails.  When I run:\n\nR CMD INSTALL --configure-args='--with-mysql-inc=/usr/local/mysql/ \ninclude --with-mysql-lib=/usr/local/mysql/lib' /Users/jason/Desktop/ \nRMySQL_0.5-7.tar.gz.tar\n\nI get ...\n\ngcc-3.3 -bundle -flat_namespace -undefined suppress -L/usr/local/lib - \no RMySQL.so RS-DBI.o RS-MySQL.o -L/usr/local/mysql/lib -lmysqlclient - \nlz -lcc_dynamic -F/Library/Frameworks/R.framework/.. -framework R\nld: can't locate file for: -lcc_dynamic\nmake: *** [RMySQL.so] Error 1\nERROR: compilation failed for package 'RMySQL'\n\nThe MySQL that I have is 5.0.18 that I downloaded as a binary  \ndirectly from mysql.com.  Is your mySQL installation from elsewhere?   \nWhat do you mean \"...that I installed through port.\"\n\nIt sounds like you have everything working.  What commands did you  \nuse to get mySQL 5 installed?  To get  RMySQL compiled?  Any help  \nhere is appreciated. I am heavily dependent on R working with mySQL  \nfor my project.\n\nThanks,\n\n- Jason\n\nOn Feb 19, 2006, at 11:21 PM, Phil Spector wrote:\n\n> Jason -\n>     In order to get mysql5 to work with R.2.2 on Tiger, I had to  \n> rebuild\n> the RMySQL library against the mysql libraries that I installed  \n> through port.\n> (You didn't mention where you got your mysql from).  The problem I saw\n> was that I kept seeing the warning message, and R wouldn't connect  \n> to the database, but I'm pretty sure what you need to do is rebuild  \n> the R library\n> against the system libraries that you've currently got installed.\n>\n>                                        - Phil Spector\n> \t\t\t\t\t Statistical Computing Facility\n> \t\t\t\t\t Department of Statistics\n> \t\t\t\t\t UC Berkeley\n> \t\t\t\t\t spector at stat.berkeley.edu\n>\n>\n> On Sun, 19 Feb 2006, Jason Horn wrote:\n>\n>> I am having trouble getting RMySQL working with R.  It did at one\n>> point, work with an older 1.x version of R, but now with R2.2.1, I am\n>> getting the following messages on my OS X 10.4.5 system:\n>>\n>> RS-DBI driver warning: (MySQL mismatch between compiled version\n>> 4.0.24 and runtime version 4.1.14)\n>>\n>> if I then try to run any further db commands such as dbConnect, R\n>> crashes with a bus error.  When I started getting this error, I was\n>> using MySQL 5.  I have since removed that installation and instead\n>> installed the older 4.0.24.  I still get the error message.  I have\n>> also tried other versions of MySQL, but the error persists.  I have\n>> also tried installing RMySQL from sources, but it makes no  \n>> difference.\n>>\n>> Does anyone know what this error message means.  Are there any OS X\n>> users that have with R 2.x working with RMySQL?\n>>\n>> Please help!\n>>\n>> - Jason\n>>\n>>\n>> Jason Horn\n>> Boston University Department of Biology\n>> 5 Cumington Street  Boston, MA 02215\n>>\n>> jhorn at bu.edu\n>> office: 617 353 6987\n>> cell: 401 588 2766\n>>\n>>\n>>\n>> \t[[alternative HTML version deleted]]\n>>\n>> ______________________________________________\n>> R-help at stat.math.ethz.ch mailing list\n>> https://stat.ethz.ch/mailman/listinfo/r-help\n>> PLEASE do read the posting guide! http://www.R-project.org/posting- \n>> guide.html\n>>\n>",
+      "body_snippet": "Phil,\n\nThanks for the tip.  I have tried rebuilding the RMySQL library, but  \nit always fails.  When I run:\n\nR CMD INSTALL --configure-args='--with-mysql-inc=/usr/local/mysql/ \ninclude --with-mysql-li",
+      "thread_id": "thread-762a9c9f1366",
+      "thread_depth": 0,
+      "month": "2006-02"
+    },
+    {
+      "id": "msg-bef07c927339",
+      "message_id": "<36993BFB-C6F9-4199-99B5-9D2C96423838@bu.edu>",
+      "from_name": "Jason Horn",
+      "from_email_hash": "80dd4023238a0e62df6918318e42337d33260c364c22732a1c0797b782591571",
+      "date": "2006-02-20T08:31:28-05:00",
+      "subject": "[R-sig-DB] (no subject)",
+      "subject_clean": "(no subject)",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Brian,\n\nI am having exactly the same problem.  I am very interested to know  \nif you have R 2.2.x, mySQL and RMySQL working together successfully  \n(it sounds like you do).  If recompiling MySQL with gcc 3.3 was the  \nsolution, can you tell me how you managed to do it?  I have never  \ntried to compile mySQL before, much less with a version of gcc that I  \ndon't have on my system (I currently have gcc 4.0.1 on my OS X 10.4.5  \nsystem).  Any and all details are welcome.\n\nThanks,\n\n-Jason\n\nJason Horn\nBoston University Department of Biology\n5 Cumington Street  Boston, MA 02215\n\njhorn at bu.edu\noffice: 617 353 6987\ncell: 401 588 2766\n\n\n> Update on this thread:\n>\n> It turned out that, not only did I need to install RMySQL from\n> sources, I also needed to reinstall MySQL from sources, using gcc 3.3\n> as the c and c++ compiler.  The binary version of MySQL 5.0.15 was\n> compiled using gcc 4.0, which caused some kind of conflict with R\n> relating to the C API (R complained as follows):\n>\n> >> ld: truncated or malformed archive: /usr/local/mysql/lib/\n> >> libmysqlclient.a (ranlib structures in table of contents extends  \n> past\n> >> the end of the table of contents, can't load from it)\n>\n> Anyway, it all works now.  I am not sure whether it was the compiler\n> version that did the trick, of whether something else in my\n> configuration was different than in the MySQL binary (perhaps\n> relating to the ld flags) but it works.\n>\n> FP\n>\n> On Oct 20, 2005, at 1:22 AM, Prof Brian Ripley wrote:\n>\n> > On Thu, 20 Oct 2005, Parlamis Franklin wrote:\n> >\n> >> I upgraded R to 2.2.0 (Mac Cocoa GUI 1.13) this evening.  I am\n> >> running MySQL Standard version 4.1.14 locally, which I installed\n> >> several months ago from binaries on the MySQL web site (mysql-\n> >> standard-4.1.14-apple-darwin8.2.0-powerpc-64bit.dmg).  Before I\n> >> upgraded R, everything worked fine with RMySQL and DBI (all I used\n> >> was DBSendQuery, DBReadTable and DBWriteTable).\n> >>\n> >> However, now when I load the DBI package I get the following error:\n> >>\n> >>         Warning message:\n> >>         RS-DBI driver warning: (MySQL mismatch between compiled\n> >> version 4.0.24 and runtime version 4.1.14)\n> >>\n> >> Then, if I attempt to use one of the DBI functions, say  \n> DBReadTable,\n> >> R quits unexpectedly.  I reinstalled MySQL from binaries, and I  \n> also\n> >> reinstalled the DBI and RMySQL packages from binaries.  Nothing has\n> >> helped.  I have never had MySQL 4.0.24 on my computer (4.1.14  \n> was my\n> >> first and only install).\n> >\n> > It is the (powerpc/2.2) RMySQL MacOS X binary that is compiled\n> > against MySQL 4.0.24.  It seems you need to install RMySQL from the\n> > sources.\n> >\n> > This is not really a R-sig-DB topic but a MacOS one.\n> >\n> > --\n> > Brian D. Ripley,                  ripley at stats.ox.ac.uk\n> > Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\n> > University of Oxford,             Tel:  +44 1865 272861 (self)\n> > 1 South Parks Road,                     +44 1865 272866 (PA)\n> > Oxford OX1 3TG, UK                Fax:  +44 1865 272595\n\n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Brian,\n\nI am having exactly the same problem.  I am very interested to know  \nif you have R 2.2.x, mySQL and RMySQL working together successfully  \n(it sounds like you do).  If recompiling MySQL with ",
+      "thread_id": "thread-bef07c927339",
+      "thread_depth": 0,
+      "month": "2006-02"
+    },
+    {
+      "id": "msg-f8387d58bac5",
+      "message_id": "<9C7C73B4-54C6-4D0D-B2ED-C7DAEAE1D95F@bu.edu>",
+      "from_name": "Jason Horn",
+      "from_email_hash": "80dd4023238a0e62df6918318e42337d33260c364c22732a1c0797b782591571",
+      "date": "2006-02-20T08:35:23-05:00",
+      "subject": "[R-sig-DB] [R] RMySQL Error Messages, crashing R",
+      "subject_clean": "RMySQL Error Messages, crashing R",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Phil,\n\nThanks for the tip.  I have tried rebuilding the RMySQL library, but  \nit always fails.  When I run:\n\nR CMD INSTALL --configure-args='--with-mysql-inc=/usr/local/mysql/ \ninclude --with-mysql-lib=/usr/local/mysql/lib' /Users/jason/Desktop/ \nRMySQL_0.5-7.tar.gz.tar\n\nI get ...\n\ngcc-3.3 -bundle -flat_namespace -undefined suppress -L/usr/local/lib - \no RMySQL.so RS-DBI.o RS-MySQL.o -L/usr/local/mysql/lib -lmysqlclient - \nlz -lcc_dynamic -F/Library/Frameworks/R.framework/.. -framework R\nld: can't locate file for: -lcc_dynamic\nmake: *** [RMySQL.so] Error 1\nERROR: compilation failed for package 'RMySQL'\n\nThe MySQL that I have is 5.0.18 that I downloaded as a binary  \ndirectly from mysql.com.  Is your mySQL installation from elsewhere?   \nWhat do you mean \"...that I installed through port.\"\n\nIt sounds like you have everything working.  What commands did you  \nuse to get mySQL 5 installed?  To get  RMySQL compiled?  Any help  \nhere is appreciated. I am heavily dependent on R working with mySQL  \nfor my project.\n\nThanks,\n\n- Jason\n\nOn Feb 19, 2006, at 11:21 PM, Phil Spector wrote:\n\n\n> Jason -\n>     In order to get mysql5 to work with R.2.2 on Tiger, I had to  \n> rebuild\n> the RMySQL library against the mysql libraries that I installed  \n> through port.\n> (You didn't mention where you got your mysql from).  The problem I saw\n> was that I kept seeing the warning message, and R wouldn't connect  \n> to the database, but I'm pretty sure what you need to do is rebuild  \n> the R library\n> against the system libraries that you've currently got installed.\n>\n>                                        - Phil Spector\n> \t\t\t\t\t Statistical Computing Facility\n> \t\t\t\t\t Department of Statistics\n> \t\t\t\t\t UC Berkeley\n> \t\t\t\t\t spector at stat.berkeley.edu\n>\n>\n> On Sun, 19 Feb 2006, Jason Horn wrote:\n>\n>\n>> I am having trouble getting RMySQL working with R.  It did at one\n>> point, work with an older 1.x version of R, but now with R2.2.1, I am\n>> getting the following messages on my OS X 10.4.5 system:\n>>\n>> RS-DBI driver warning: (MySQL mismatch between compiled version\n>> 4.0.24 and runtime version 4.1.14)\n>>\n>> if I then try to run any further db commands such as dbConnect, R\n>> crashes with a bus error.  When I started getting this error, I was\n>> using MySQL 5.  I have since removed that installation and instead\n>> installed the older 4.0.24.  I still get the error message.  I have\n>> also tried other versions of MySQL, but the error persists.  I have\n>> also tried installing RMySQL from sources, but it makes no  \n>> difference.\n>>\n>> Does anyone know what this error message means.  Are there any OS X\n>> users that have with R 2.x working with RMySQL?\n>>\n>> Please help!\n>>\n>> - Jason\n>>\n>>\n>> Jason Horn\n>> Boston University Department of Biology\n>> 5 Cumington Street  Boston, MA 02215\n>>\n>> jhorn at bu.edu\n>> office: 617 353 6987\n>> cell: 401 588 2766\n>>\n>>\n>>\n>> \t[[alternative HTML version deleted]]\n>>\n>> ______________________________________________\n>> R-help at stat.math.ethz.ch mailing list\n>> https://stat.ethz.ch/mailman/listinfo/r-help\n>> PLEASE do read the posting guide! http://www.R-project.org/posting- \n>> guide.html\n>>\n>>\n>\n>",
+      "body_snippet": "Phil,\n\nThanks for the tip.  I have tried rebuilding the RMySQL library, but  \nit always fails.  When I run:\n\nR CMD INSTALL --configure-args='--with-mysql-inc=/usr/local/mysql/ \ninclude --with-mysql-li",
+      "thread_id": "thread-f8387d58bac5",
+      "thread_depth": 0,
+      "month": "2006-02"
+    },
+    {
+      "id": "msg-428e5f0e7e6b",
+      "message_id": "<D07B67A7-05D3-4B61-9A45-F2E04FFD27BC@r-project.org>",
+      "from_name": "Simon Urbanek",
+      "from_email_hash": "462c2bcb8906513e9f9479b987cfcefe1c44206d8c5cbd3d80558c4419410602",
+      "date": "2006-02-20T09:41:53-05:00",
+      "subject": "[R-sig-DB] [R-SIG-Mac] [R] RMySQL Error Messages, crashing R",
+      "subject_clean": "RMySQL Error Messages, crashing R",
+      "in_reply_to": "<9C7C73B4-54C6-4D0D-B2ED-C7DAEAE1D95F@bu.edu>",
+      "references": [
+        "<9C7C73B4-54C6-4D0D-B2ED-C7DAEAE1D95F@bu.edu>"
+      ],
+      "body_plain": "Jason,\n\nplease consult the R FAQ for Mac OS X, this has been discussed many  \ntimes - run\nsudo gcc_select 3.3\n\nJust in case you are using Xcode 2.2.1, you may also want to read this:\nhttps://stat.ethz.ch/pipermail/r-sig-mac/2006-January/002593.html\n\nAs it says, last time I checked, I had no problem using the stock  \nMySQL libraries (i.e. simply the binary from www.mysql.com), no need  \nto re-compile it.\n\nCheers,\nSimon\n\n\nOn Feb 20, 2006, at 8:35 AM, Jason Horn wrote:\n\n> Phil,\n>\n> Thanks for the tip.  I have tried rebuilding the RMySQL library, but\n> it always fails.  When I run:\n>\n> R CMD INSTALL --configure-args='--with-mysql-inc=/usr/local/mysql/\n> include --with-mysql-lib=/usr/local/mysql/lib' /Users/jason/Desktop/\n> RMySQL_0.5-7.tar.gz.tar\n>\n> I get ...\n>\n> gcc-3.3 -bundle -flat_namespace -undefined suppress -L/usr/local/lib -\n> o RMySQL.so RS-DBI.o RS-MySQL.o -L/usr/local/mysql/lib -lmysqlclient -\n> lz -lcc_dynamic -F/Library/Frameworks/R.framework/.. -framework R\n> ld: can't locate file for: -lcc_dynamic\n> make: *** [RMySQL.so] Error 1\n> ERROR: compilation failed for package 'RMySQL'\n>\n> The MySQL that I have is 5.0.18 that I downloaded as a binary\n> directly from mysql.com.  Is your mySQL installation from elsewhere?\n> What do you mean \"...that I installed through port.\"\n>\n> It sounds like you have everything working.  What commands did you\n> use to get mySQL 5 installed?  To get  RMySQL compiled?  Any help\n> here is appreciated. I am heavily dependent on R working with mySQL\n> for my project.",
+      "body_snippet": "Jason,\n\nplease consult the R FAQ for Mac OS X, this has been discussed many  \ntimes - run\nsudo gcc_select 3.3\n\nJust in case you are using Xcode 2.2.1, you may also want to read this:\nhttps://stat.ethz",
+      "thread_id": "thread-f8387d58bac5",
+      "thread_depth": 1,
+      "month": "2006-02"
+    },
+    {
+      "id": "msg-520ce4d1a4f7",
+      "message_id": "<84E65AB7-114A-495F-BB12-DF2307761238@bu.edu>",
+      "from_name": "Jason Horn",
+      "from_email_hash": "80dd4023238a0e62df6918318e42337d33260c364c22732a1c0797b782591571",
+      "date": "2006-02-20T13:40:27-05:00",
+      "subject": "[R-sig-DB] Extracting a column of numbers from a data frame",
+      "subject_clean": "Extracting a column of numbers from a data frame",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "When using RMySQL to retrieve data from a database, the result is  \nalways a data frame.  What is the best way to take get the numbers  \nfrom a column of the data frame into a vector?  That is, I just want  \nthe column of numbers from the data frame and not the column label.   \nI'm sure this has been done many times, but I'm new to this, so I  \nthought I'd ask.\n\nThanks,\n\n- Jason",
+      "body_snippet": "When using RMySQL to retrieve data from a database, the result is  \nalways a data frame.  What is the best way to take get the numbers  \nfrom a column of the data frame into a vector?  That is, I just",
+      "thread_id": "thread-520ce4d1a4f7",
+      "thread_depth": 0,
+      "month": "2006-02"
+    },
+    {
+      "id": "msg-42bd2973661a",
+      "message_id": "<40e66e0b0602201237p46c16630t47da28db75de952f@mail.gmail.com>",
+      "from_name": "Douglas Bates",
+      "from_email_hash": "beb95926ab99cf7030a6ac1d0a51476f820a47d6ef4bce246a398953762762ed",
+      "date": "2006-02-20T14:37:50-06:00",
+      "subject": "[R-sig-DB] Extracting a column of numbers from a data frame",
+      "subject_clean": "Extracting a column of numbers from a data frame",
+      "in_reply_to": "<84E65AB7-114A-495F-BB12-DF2307761238@bu.edu>",
+      "references": [
+        "<84E65AB7-114A-495F-BB12-DF2307761238@bu.edu>"
+      ],
+      "body_plain": "On 2/20/06, Jason Horn <jhorn at bu.edu> wrote:\n> When using RMySQL to retrieve data from a database, the result is\n> always a data frame.  What is the best way to take get the numbers\n> from a column of the data frame into a vector?  That is, I just want\n> the column of numbers from the data frame and not the column label.\n> I'm sure this has been done many times, but I'm new to this, so I\n> thought I'd ask.\n\nYou use the \"[[\" subscripting operator or its short form for use with\nnames, the $ operator.\n\nIf your data frame is called \"df\" and you want the third column as a vector use\n\ndf[[3]]\n\nIf the name of the column is \"foo\" you can also use\n\ndf[[\"foo\"]]\n\nThe expression\n\ndf$foo\n\nis syntactic sugar for df[[\"foo\"]]",
+      "body_snippet": "On 2/20/06, Jason Horn <jhorn at bu.edu> wrote:\n> When using RMySQL to retrieve data from a database, the result is\n> always a data frame.  What is the best way to take get the numbers\n> from a column",
+      "thread_id": "thread-520ce4d1a4f7",
+      "thread_depth": 1,
+      "month": "2006-02"
+    },
+    {
+      "id": "msg-8399c605a6f5",
+      "message_id": "<9BC6895D-B153-4962-BE29-A9BFD8B04713@bu.edu>",
+      "from_name": "Jason Horn",
+      "from_email_hash": "80dd4023238a0e62df6918318e42337d33260c364c22732a1c0797b782591571",
+      "date": "2006-02-21T11:27:24-05:00",
+      "subject": "[R-sig-DB] Error calling stored procedures with RMySQL",
+      "subject_clean": "Error calling stored procedures with RMySQL",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Has anyone had success with calling stored procedures with RMySQL?  I  \nget this error when I try to call a simple stored procedure with  \nselect statements:\n\nError in mysqlExecStatement(conn, statement, ...) :\n\tRS-DBI driver: (could not run statement: PROCEDURE radarbats.ia_mean  \ncan't return a result set in the given context)\n\n\nAny ideas?\n\n- Jason",
+      "body_snippet": "Has anyone had success with calling stored procedures with RMySQL?  I  \nget this error when I try to call a simple stored procedure with  \nselect statements:\n\nError in mysqlExecStatement(conn, stateme",
+      "thread_id": "thread-8399c605a6f5",
+      "thread_depth": 0,
+      "month": "2006-02"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-ddce6f5a6663",
+      "subject": "RODBC and BLOBS",
+      "message_count": 1,
+      "participants": [
+        "Jeffrey Horner"
+      ],
+      "started": "2006-02-10T12:04:25-06:00",
+      "last_reply": "2006-02-10T12:04:25-06:00",
+      "root_message_id": "msg-ddce6f5a6663"
+    },
+    {
+      "id": "thread-39ce02f9210d",
+      "subject": "RMySQL Error Messages, crashing R",
+      "message_count": 1,
+      "participants": [
+        "Jason Horn"
+      ],
+      "started": "2006-02-20T06:29:21-05:00",
+      "last_reply": "2006-02-20T06:29:21-05:00",
+      "root_message_id": "msg-39ce02f9210d"
+    },
+    {
+      "id": "thread-762a9c9f1366",
+      "subject": "RMySQL Error Messages, crashing R",
+      "message_count": 1,
+      "participants": [
+        "Jason Horn"
+      ],
+      "started": "2006-02-20T08:09:49-05:00",
+      "last_reply": "2006-02-20T08:09:49-05:00",
+      "root_message_id": "msg-762a9c9f1366"
+    },
+    {
+      "id": "thread-bef07c927339",
+      "subject": "(no subject)",
+      "message_count": 1,
+      "participants": [
+        "Jason Horn"
+      ],
+      "started": "2006-02-20T08:31:28-05:00",
+      "last_reply": "2006-02-20T08:31:28-05:00",
+      "root_message_id": "msg-bef07c927339"
+    },
+    {
+      "id": "thread-f8387d58bac5",
+      "subject": "RMySQL Error Messages, crashing R",
+      "message_count": 2,
+      "participants": [
+        "Jason Horn",
+        "Simon Urbanek"
+      ],
+      "started": "2006-02-20T08:35:23-05:00",
+      "last_reply": "2006-02-20T09:41:53-05:00",
+      "root_message_id": "msg-f8387d58bac5"
+    },
+    {
+      "id": "thread-520ce4d1a4f7",
+      "subject": "Extracting a column of numbers from a data frame",
+      "message_count": 2,
+      "participants": [
+        "Douglas Bates",
+        "Jason Horn"
+      ],
+      "started": "2006-02-20T13:40:27-05:00",
+      "last_reply": "2006-02-20T14:37:50-06:00",
+      "root_message_id": "msg-520ce4d1a4f7"
+    },
+    {
+      "id": "thread-8399c605a6f5",
+      "subject": "Error calling stored procedures with RMySQL",
+      "message_count": 1,
+      "participants": [
+        "Jason Horn"
+      ],
+      "started": "2006-02-21T11:27:24-05:00",
+      "last_reply": "2006-02-21T11:27:24-05:00",
+      "root_message_id": "msg-8399c605a6f5"
+    }
+  ]
+}

@@ -1,0 +1,3798 @@
+From d@v|d @end|ng |rom @erend|p|ty@c|ence@com  Thu Oct  4 22:44:53 2012
+From: d@v|d @end|ng |rom @erend|p|ty@c|ence@com (David)
+Date: Thu, 4 Oct 2012 15:44:53 -0500
+Subject: [R-sig-DB] Intermittent connectivity issues for RJDBC / Oracle
+Message-ID: <CANk6X+XsnsEFdH6T1BzF8a6QXsD4MfQgyUeiOmcTBuFu-MbbNA@mail.gmail.com>
+
+I will forward more details like versions of xyz when i can, but any
+thoughts on what I can focus on to debug the problem described below?
+
+Thank you, David
+---------- Forwarded message ----------
+From: "dh_ss" <david at serendipityscience.com>
+Date: Oct 4, 2012 1:29 AM
+Subject: [R] Intermittent connectivity issues for JDBC / Oracle
+To: <r-help at r-project.org>
+
+I have been experiencing issues with an R script hanging when connecting to
+an Oracle database.  To help debug, I found a function here in the nabble
+forum and made a small test script:
+
+  #!/usr/bin/Rscript --no-restore --no-save --no-init-file
+  library("RJDBC")
+  drv<-JDBC("oracle.jdbc.OracleDriver","/home/oracle/lib/ojdbc6.jar", "'")
+
+  dbCheck = function(url, user='', pwd='') {
+    j = .jcall("java/sql/DriverManager", "Ljava/sql/Connection;",
+  "getConnection", url, user, pwd, check=FALSE)
+    x = .jgetEx()
+    .jcheck()
+    x
+  }
+  dbCheck("jdbc:oracle:thin:@192.168.3.10:1521:psrndpt1","myuser","mypass")
+
+
+When I run the file - sometimes it works, returning NULL, and sometimes it
+hangs for between 1 and 2.5 minutes before throwing an error.  The database
+is new and stable, on the same network - with no connection issues from any
+other clients.  This machine isn't currently doing anything else except for
+running this script.  Output from running it several times looks like this:
+
+R at ss-dev:~/scripts$ ./dbCheck.R
+Loading required package: methods
+Loading required package: DBI
+Loading required package: rJava
+NULL
+R at ss-dev:~/scripts$ ./dbCheck.R
+Loading required package: methods
+Loading required package: DBI
+Loading required package: rJava
+NULL
+R at ss-dev:~/scripts$ ./dbCheck.R
+Loading required package: methods
+Loading required package: DBI
+Loading required package: rJava
+NULL
+R at ss-dev:~/scripts$ ./dbCheck.R
+Loading required package: methods
+Loading required package: DBI
+Loading required package: rJava
+NULL
+R at ss-dev:~/scripts$ ./dbCheck.R
+Loading required package: methods
+Loading required package: DBI
+Loading required package: rJava
+NULL
+R at ss-dev:~/scripts$ ./dbCheck.R
+Loading required package: methods
+Loading required package: DBI
+Loading required package: rJava
+NULL
+R at ss-dev:~/scripts$ ./dbCheck.R
+Loading required package: methods
+Loading required package: DBI
+Loading required package: rJava
+Error in .jcall("java/sql/DriverManager", "Ljava/sql/Connection;",
+"getConnection",  :
+  ignoring SIGPIPE signal
+Calls: dbCheck -> .jcall -> .External
+Execution halted
+R at ss-dev:~/scripts$ ./dbCheck.R
+Loading required package: methods
+Loading required package: DBI
+Loading required package: rJava
+Error in .jcall("java/sql/DriverManager", "Ljava/sql/Connection;",
+"getConnection",  :
+  ignoring SIGPIPE signal
+Calls: dbCheck -> .jcall -> .External
+Execution halted
+R at ss-dev:~/scripts$ ./dbCheck.R
+Loading required package: methods
+Loading required package: DBI
+Loading required package: rJava
+NULL
+R at ss-dev:~/scripts$ ./dbCheck.R
+Loading required package: methods
+Loading required package: DBI
+Loading required package: rJava
+Error in .jcall("java/sql/DriverManager", "Ljava/sql/Connection;",
+"getConnection",  :
+  ignoring SIGPIPE signal
+Calls: dbCheck -> .jcall -> .External
+Execution halted
+
+
+The times that it returns NULL, it returns immediately.  When it throws the
+error, it is a varying amount of time between roughly 1 and 2.5 minutes.
+Both machines are not busy at all.
+
+Any ideas would greatly appreciated.  Thanks.
+
+
+
+--
+View this message in context:
+http://r.789695.n4.nabble.com/Intermittent-connectivity-issues-for-JDBC-Oracle-tp4644960.html
+Sent from the R help mailing list archive at Nabble.com.
+
+______________________________________________
+R-help at r-project.org mailing list
+https://stat.ethz.ch/mailman/listinfo/r-help
+PLEASE do read the posting guide http://www.R-project.org/posting-guide.html
+and provide commented, minimal, self-contained, reproducible code.
+
+	[[alternative HTML version deleted]]
+
+
+
+From den|@@x@mukh|n @end|ng |rom or@c|e@com  Thu Oct  4 23:07:06 2012
+From: den|@@x@mukh|n @end|ng |rom or@c|e@com (Denis Mukhin)
+Date: Thu, 4 Oct 2012 14:07:06 -0700 (PDT)
+Subject: [R-sig-DB] Intermittent connectivity issues for RJDBC / Oracle
+In-Reply-To: <CANk6X+XsnsEFdH6T1BzF8a6QXsD4MfQgyUeiOmcTBuFu-MbbNA@mail.gmail.com>
+References: <CANk6X+XsnsEFdH6T1BzF8a6QXsD4MfQgyUeiOmcTBuFu-MbbNA@mail.gmail.com>
+Message-ID: <8d65d421-5743-4a69-930e-6ee091bd1b9c@default>
+
+David,
+
+Have you considered using ROracle instead? It is also DBI based. ROracle uses native interfaces (OCI) so it should be much faster (although I have not run any comparisons). It is also actively maintained by Oracle so if you have any problems/concerns we should be able to address them fairly quickly.
+
+Denis
+
+-----Original Message-----
+From: David [mailto:david at serendipityscience.com] 
+Sent: Thursday, October 04, 2012 4:45 PM
+To: r-sig-db at r-project.org
+Subject: [R-sig-DB] Intermittent connectivity issues for RJDBC / Oracle
+
+I will forward more details like versions of xyz when i can, but any thoughts on what I can focus on to debug the problem described below?
+
+Thank you, David
+---------- Forwarded message ----------
+From: "dh_ss" <david at serendipityscience.com>
+Date: Oct 4, 2012 1:29 AM
+Subject: [R] Intermittent connectivity issues for JDBC / Oracle
+To: <r-help at r-project.org>
+
+I have been experiencing issues with an R script hanging when connecting to an Oracle database.  To help debug, I found a function here in the nabble forum and made a small test script:
+
+  #!/usr/bin/Rscript --no-restore --no-save --no-init-file
+  library("RJDBC")
+  drv<-JDBC("oracle.jdbc.OracleDriver","/home/oracle/lib/ojdbc6.jar", "'")
+
+  dbCheck = function(url, user='', pwd='') {
+    j = .jcall("java/sql/DriverManager", "Ljava/sql/Connection;",
+  "getConnection", url, user, pwd, check=FALSE)
+    x = .jgetEx()
+    .jcheck()
+    x
+  }
+  dbCheck("jdbc:oracle:thin:@192.168.3.10:1521:psrndpt1","myuser","mypass")
+
+
+When I run the file - sometimes it works, returning NULL, and sometimes it hangs for between 1 and 2.5 minutes before throwing an error.  The database is new and stable, on the same network - with no connection issues from any other clients.  This machine isn't currently doing anything else except for running this script.  Output from running it several times looks like this:
+
+R at ss-dev:~/scripts$ ./dbCheck.R
+Loading required package: methods
+Loading required package: DBI
+Loading required package: rJava
+NULL
+R at ss-dev:~/scripts$ ./dbCheck.R
+Loading required package: methods
+Loading required package: DBI
+Loading required package: rJava
+NULL
+R at ss-dev:~/scripts$ ./dbCheck.R
+Loading required package: methods
+Loading required package: DBI
+Loading required package: rJava
+NULL
+R at ss-dev:~/scripts$ ./dbCheck.R
+Loading required package: methods
+Loading required package: DBI
+Loading required package: rJava
+NULL
+R at ss-dev:~/scripts$ ./dbCheck.R
+Loading required package: methods
+Loading required package: DBI
+Loading required package: rJava
+NULL
+R at ss-dev:~/scripts$ ./dbCheck.R
+Loading required package: methods
+Loading required package: DBI
+Loading required package: rJava
+NULL
+R at ss-dev:~/scripts$ ./dbCheck.R
+Loading required package: methods
+Loading required package: DBI
+Loading required package: rJava
+Error in .jcall("java/sql/DriverManager", "Ljava/sql/Connection;", "getConnection",  :
+  ignoring SIGPIPE signal
+Calls: dbCheck -> .jcall -> .External
+Execution halted
+R at ss-dev:~/scripts$ ./dbCheck.R
+Loading required package: methods
+Loading required package: DBI
+Loading required package: rJava
+Error in .jcall("java/sql/DriverManager", "Ljava/sql/Connection;", "getConnection",  :
+  ignoring SIGPIPE signal
+Calls: dbCheck -> .jcall -> .External
+Execution halted
+R at ss-dev:~/scripts$ ./dbCheck.R
+Loading required package: methods
+Loading required package: DBI
+Loading required package: rJava
+NULL
+R at ss-dev:~/scripts$ ./dbCheck.R
+Loading required package: methods
+Loading required package: DBI
+Loading required package: rJava
+Error in .jcall("java/sql/DriverManager", "Ljava/sql/Connection;", "getConnection",  :
+  ignoring SIGPIPE signal
+Calls: dbCheck -> .jcall -> .External
+Execution halted
+
+
+The times that it returns NULL, it returns immediately.  When it throws the error, it is a varying amount of time between roughly 1 and 2.5 minutes.
+Both machines are not busy at all.
+
+Any ideas would greatly appreciated.  Thanks.
+
+
+
+--
+View this message in context:
+http://r.789695.n4.nabble.com/Intermittent-connectivity-issues-for-JDBC-Oracle-tp4644960.html
+Sent from the R help mailing list archive at Nabble.com.
+
+______________________________________________
+R-help at r-project.org mailing list
+https://stat.ethz.ch/mailman/listinfo/r-help
+PLEASE do read the posting guide http://www.R-project.org/posting-guide.html
+and provide commented, minimal, self-contained, reproducible code.
+
+	[[alternative HTML version deleted]]
+
+_______________________________________________
+R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From edd @end|ng |rom deb|@n@org  Fri Oct  5 01:21:11 2012
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Thu, 4 Oct 2012 18:21:11 -0500
+Subject: [R-sig-DB] Intermittent connectivity issues for RJDBC / Oracle
+In-Reply-To: <8d65d421-5743-4a69-930e-6ee091bd1b9c@default>
+References: <CANk6X+XsnsEFdH6T1BzF8a6QXsD4MfQgyUeiOmcTBuFu-MbbNA@mail.gmail.com>
+	<8d65d421-5743-4a69-930e-6ee091bd1b9c@default>
+Message-ID: <20590.6631.64905.542359@max.nulle.part>
+
+
+Denis,
+
+On 4 October 2012 at 14:07, Denis Mukhin wrote:
+| David,
+| 
+| Have you considered using ROracle instead? It is also DBI based. ROracle uses native interfaces (OCI) so it should be much faster (although I have not run any comparisons). It is also actively maintained by Oracle so if you have any problems/concerns we should be able to address them fairly quickly.
+
+This is the second time this week you are pulling this stunt, and I formally
+object.  
+
+If someone wants and need (R)Oracle, they will know where and how to get it,
+provided they also find their six-figure check.
+
+This is an open source mailing list, and I would like to ask you to stop your
+salesmanship here.  The last post ("I don't know anything about RPostgreSQL,
+but this is what ROracle does") was borderline amusing, but this one is very
+clearly stepping over that line we all know.
+
+Stop it now, please.
+
+Dirk
+
+
+| 
+| Denis
+| 
+| -----Original Message-----
+| From: David [mailto:david at serendipityscience.com] 
+| Sent: Thursday, October 04, 2012 4:45 PM
+| To: r-sig-db at r-project.org
+| Subject: [R-sig-DB] Intermittent connectivity issues for RJDBC / Oracle
+| 
+| I will forward more details like versions of xyz when i can, but any thoughts on what I can focus on to debug the problem described below?
+| 
+| Thank you, David
+| ---------- Forwarded message ----------
+| From: "dh_ss" <david at serendipityscience.com>
+| Date: Oct 4, 2012 1:29 AM
+| Subject: [R] Intermittent connectivity issues for JDBC / Oracle
+| To: <r-help at r-project.org>
+| 
+| I have been experiencing issues with an R script hanging when connecting to an Oracle database.  To help debug, I found a function here in the nabble forum and made a small test script:
+| 
+|   #!/usr/bin/Rscript --no-restore --no-save --no-init-file
+|   library("RJDBC")
+|   drv<-JDBC("oracle.jdbc.OracleDriver","/home/oracle/lib/ojdbc6.jar", "'")
+| 
+|   dbCheck = function(url, user='', pwd='') {
+|     j = .jcall("java/sql/DriverManager", "Ljava/sql/Connection;",
+|   "getConnection", url, user, pwd, check=FALSE)
+|     x = .jgetEx()
+|     .jcheck()
+|     x
+|   }
+|   dbCheck("jdbc:oracle:thin:@192.168.3.10:1521:psrndpt1","myuser","mypass")
+| 
+| 
+| When I run the file - sometimes it works, returning NULL, and sometimes it hangs for between 1 and 2.5 minutes before throwing an error.  The database is new and stable, on the same network - with no connection issues from any other clients.  This machine isn't currently doing anything else except for running this script.  Output from running it several times looks like this:
+| 
+| R at ss-dev:~/scripts$ ./dbCheck.R
+| Loading required package: methods
+| Loading required package: DBI
+| Loading required package: rJava
+| NULL
+| R at ss-dev:~/scripts$ ./dbCheck.R
+| Loading required package: methods
+| Loading required package: DBI
+| Loading required package: rJava
+| NULL
+| R at ss-dev:~/scripts$ ./dbCheck.R
+| Loading required package: methods
+| Loading required package: DBI
+| Loading required package: rJava
+| NULL
+| R at ss-dev:~/scripts$ ./dbCheck.R
+| Loading required package: methods
+| Loading required package: DBI
+| Loading required package: rJava
+| NULL
+| R at ss-dev:~/scripts$ ./dbCheck.R
+| Loading required package: methods
+| Loading required package: DBI
+| Loading required package: rJava
+| NULL
+| R at ss-dev:~/scripts$ ./dbCheck.R
+| Loading required package: methods
+| Loading required package: DBI
+| Loading required package: rJava
+| NULL
+| R at ss-dev:~/scripts$ ./dbCheck.R
+| Loading required package: methods
+| Loading required package: DBI
+| Loading required package: rJava
+| Error in .jcall("java/sql/DriverManager", "Ljava/sql/Connection;", "getConnection",  :
+|   ignoring SIGPIPE signal
+| Calls: dbCheck -> .jcall -> .External
+| Execution halted
+| R at ss-dev:~/scripts$ ./dbCheck.R
+| Loading required package: methods
+| Loading required package: DBI
+| Loading required package: rJava
+| Error in .jcall("java/sql/DriverManager", "Ljava/sql/Connection;", "getConnection",  :
+|   ignoring SIGPIPE signal
+| Calls: dbCheck -> .jcall -> .External
+| Execution halted
+| R at ss-dev:~/scripts$ ./dbCheck.R
+| Loading required package: methods
+| Loading required package: DBI
+| Loading required package: rJava
+| NULL
+| R at ss-dev:~/scripts$ ./dbCheck.R
+| Loading required package: methods
+| Loading required package: DBI
+| Loading required package: rJava
+| Error in .jcall("java/sql/DriverManager", "Ljava/sql/Connection;", "getConnection",  :
+|   ignoring SIGPIPE signal
+| Calls: dbCheck -> .jcall -> .External
+| Execution halted
+| 
+| 
+| The times that it returns NULL, it returns immediately.  When it throws the error, it is a varying amount of time between roughly 1 and 2.5 minutes.
+| Both machines are not busy at all.
+| 
+| Any ideas would greatly appreciated.  Thanks.
+| 
+| 
+| 
+| --
+| View this message in context:
+| http://r.789695.n4.nabble.com/Intermittent-connectivity-issues-for-JDBC-Oracle-tp4644960.html
+| Sent from the R help mailing list archive at Nabble.com.
+| 
+| ______________________________________________
+| R-help at r-project.org mailing list
+| https://stat.ethz.ch/mailman/listinfo/r-help
+| PLEASE do read the posting guide http://www.R-project.org/posting-guide.html
+| and provide commented, minimal, self-contained, reproducible code.
+| 
+| 	[[alternative HTML version deleted]]
+| 
+| _______________________________________________
+| R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org https://stat.ethz.ch/mailman/listinfo/r-sig-db
+| 
+| _______________________________________________
+| R-sig-DB mailing list -- R Special Interest Group
+| R-sig-DB at r-project.org
+| https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+-- 
+Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+
+
+From d@v|d @end|ng |rom @erend|p|ty@c|ence@com  Fri Oct  5 02:38:51 2012
+From: d@v|d @end|ng |rom @erend|p|ty@c|ence@com (David)
+Date: Thu, 4 Oct 2012 19:38:51 -0500
+Subject: [R-sig-DB] Intermittent connectivity issues for RJDBC / Oracle
+In-Reply-To: <20590.6631.64905.542359@max.nulle.part>
+References: <CANk6X+XsnsEFdH6T1BzF8a6QXsD4MfQgyUeiOmcTBuFu-MbbNA@mail.gmail.com>
+	<8d65d421-5743-4a69-930e-6ee091bd1b9c@default>
+	<20590.6631.64905.542359@max.nulle.part>
+Message-ID: <CANk6X+VLbdK2cggfh2JBYYW4kz8c1j=WDcQdBF_SRMV3GytQZA@mail.gmail.com>
+
+Well as it is, I am already going against an Oracle database - so the
+checks are already out the door.  My issue is how to connect R that runs on
+a different application server to connect to the Oracle instance on the
+database server.  I read Dennis' comment as using another type of driver to
+connect to the Oracle DB.  If you or he were referring to the R that Oracle
+has embedded in the DB - that is definitely out of the question.
+
+But if it is driver - to respond to Denis,  I didn't use ROracle because it
+didn't install correctly and I gave up.  I just went through the process
+again.  I downloaded these files...
+
+-rw-r--r--  1 R ss 60331694 Oct  4 18:08
+instantclient-basic-linux.x64-11.2.0.3.0.zip
+-rw-r--r--  1 R ss   641586 Oct  4 18:11
+instantclient-sdk-linux.x64-11.2.0.3.0.zip
+-rw-r--r--  1 R ss   151972 Oct  4 18:05 ROracle_1.1-5.tar.gz
+
+unzipped both to this dir:
+
+R at ss-dev:/home/oracle/instantclient_11_2$ ls -al
+total 182076
+drwxr-xr-x 3 root root      4096 Oct  4 18:13 .
+drwxrwxrwx 5 R    ss        4096 Oct  4 18:13 ..
+-rwxrwxr-x 1 root root     25308 Sep 17  2011 adrci
+-rw-rw-r-- 1 root root       437 Sep 17  2011 BASIC_README
+-rwxrwxr-x 1 root root     46228 Sep 17  2011 genezi
+-rwxrwxr-x 1 root root  52761218 Sep 17  2011 libclntsh.so.11.1
+-r-xr-xr-x 1 root root   7955322 Sep 17  2011 libnnz11.so
+-rwxrwxr-x 1 root root   1971762 Sep 17  2011 libocci.so.11.1
+-rwxrwxr-x 1 root root 118408281 Sep 17  2011 libociei.so
+-r-xr-xr-x 1 root root    164836 Sep 17  2011 libocijdbc11.so
+-r--r--r-- 1 root root   2095661 Sep 17  2011 ojdbc5.jar
+-r--r--r-- 1 root root   2714016 Sep 17  2011 ojdbc6.jar
+drwxrwxr-x 4 root root      4096 Sep 17  2011 sdk
+-rwxrwxr-x 1 root root    191237 Sep 17  2011 uidrvci
+-rw-rw-r-- 1 root root     66779 Sep 17  2011 xstreams.jar
+
+
+and ran these commands...
+
+root at ss-dev:/home/R/Downloads# export
+OCI_LIB=/home/oracle/instantclient_11_2
+root at ss-dev:/home/R/Downloads# export
+LD_LIBRARY_PATH=/home/oracle/instantclient_11_2:$LD_LIBRARY_PATH
+root at ss-dev:/home/R/Downloads# R CMD INSTALL ROracle_1.1-5.tar.gz
+* installing to library ?/usr/local/lib/R/site-library?
+* installing *source* package ?ROracle? ...
+** package ?ROracle? successfully unpacked and MD5 sums checked
+configure: creating ./config.status
+config.status: creating src/Makevars
+** libs
+gcc -std=gnu99 -I/usr/share/R/include
+-I/home/oracle/instantclient_11_2/sdk/include     -fpic  -O3 -pipe  -g -c
+rodbi.c -o rodbi.o
+gcc -std=gnu99 -I/usr/share/R/include
+-I/home/oracle/instantclient_11_2/sdk/include     -fpic  -O3 -pipe  -g -c
+rooci.c -o rooci.o
+gcc -std=gnu99 -shared -o ROracle.so rodbi.o rooci.o
+-L/home/oracle/instantclient_11_2 -lclntsh -L/usr/lib/R/lib -lR
+/usr/bin/ld: cannot find -lclntsh
+collect2: ld returned 1 exit status
+make: *** [ROracle.so] Error 1
+ERROR: compilation failed for package ?ROracle?
+* removing ?/usr/local/lib/R/site-library/ROracle?
+
+
+As root (thinking to avoid permission issues..)  The OS is Ubuntu:
+
+R at ss-dev:/home/oracle/instantclient_11_2$ uname -a
+Linux ss-dev 3.2.0-29-generic #46-Ubuntu SMP Fri Jul 27 17:03:23 UTC 2012
+x86_64 x86_64 x86_64 GNU/Linux
+
+
+Basically the same thing happened the first time around and I tried RJDBC
+and it worked.. or seemed to work.  The intermittent stuff I didn't really
+notice until later.  I am open to the ROracle driver if we can get it to
+work.
+
+Ideas on why it isn't installing correctly?
+
+Thanks - David
+
+
+On Thu, Oct 4, 2012 at 6:21 PM, Dirk Eddelbuettel <edd at debian.org> wrote:
+
+>
+> Denis,
+>
+> On 4 October 2012 at 14:07, Denis Mukhin wrote:
+> | David,
+> |
+> | Have you considered using ROracle instead? It is also DBI based. ROracle
+> uses native interfaces (OCI) so it should be much faster (although I have
+> not run any comparisons). It is also actively maintained by Oracle so if
+> you have any problems/concerns we should be able to address them fairly
+> quickly.
+>
+> This is the second time this week you are pulling this stunt, and I
+> formally
+> object.
+>
+> If someone wants and need (R)Oracle, they will know where and how to get
+> it,
+> provided they also find their six-figure check.
+>
+> This is an open source mailing list, and I would like to ask you to stop
+> your
+> salesmanship here.  The last post ("I don't know anything about
+> RPostgreSQL,
+> but this is what ROracle does") was borderline amusing, but this one is
+> very
+> clearly stepping over that line we all know.
+>
+> Stop it now, please.
+>
+> Dirk
+>
+>
+> |
+> | Denis
+> |
+> | -----Original Message-----
+> | From: David [mailto:david at serendipityscience.com]
+> | Sent: Thursday, October 04, 2012 4:45 PM
+> | To: r-sig-db at r-project.org
+> | Subject: [R-sig-DB] Intermittent connectivity issues for RJDBC / Oracle
+> |
+> | I will forward more details like versions of xyz when i can, but any
+> thoughts on what I can focus on to debug the problem described below?
+> |
+> | Thank you, David
+> | ---------- Forwarded message ----------
+> | From: "dh_ss" <david at serendipityscience.com>
+> | Date: Oct 4, 2012 1:29 AM
+> | Subject: [R] Intermittent connectivity issues for JDBC / Oracle
+> | To: <r-help at r-project.org>
+> |
+> | I have been experiencing issues with an R script hanging when connecting
+> to an Oracle database.  To help debug, I found a function here in the
+> nabble forum and made a small test script:
+> |
+> |   #!/usr/bin/Rscript --no-restore --no-save --no-init-file
+> |   library("RJDBC")
+> |   drv<-JDBC("oracle.jdbc.OracleDriver","/home/oracle/lib/ojdbc6.jar",
+> "'")
+> |
+> |   dbCheck = function(url, user='', pwd='') {
+> |     j = .jcall("java/sql/DriverManager", "Ljava/sql/Connection;",
+> |   "getConnection", url, user, pwd, check=FALSE)
+> |     x = .jgetEx()
+> |     .jcheck()
+> |     x
+> |   }
+> |   dbCheck("jdbc:oracle:thin:@192.168.3.10:1521
+> :psrndpt1","myuser","mypass")
+> |
+> |
+> | When I run the file - sometimes it works, returning NULL, and sometimes
+> it hangs for between 1 and 2.5 minutes before throwing an error.  The
+> database is new and stable, on the same network - with no connection issues
+> from any other clients.  This machine isn't currently doing anything else
+> except for running this script.  Output from running it several times looks
+> like this:
+> |
+> | R at ss-dev:~/scripts$ ./dbCheck.R
+> | Loading required package: methods
+> | Loading required package: DBI
+> | Loading required package: rJava
+> | NULL
+> | R at ss-dev:~/scripts$ ./dbCheck.R
+> | Loading required package: methods
+> | Loading required package: DBI
+> | Loading required package: rJava
+> | NULL
+> | R at ss-dev:~/scripts$ ./dbCheck.R
+> | Loading required package: methods
+> | Loading required package: DBI
+> | Loading required package: rJava
+> | NULL
+> | R at ss-dev:~/scripts$ ./dbCheck.R
+> | Loading required package: methods
+> | Loading required package: DBI
+> | Loading required package: rJava
+> | NULL
+> | R at ss-dev:~/scripts$ ./dbCheck.R
+> | Loading required package: methods
+> | Loading required package: DBI
+> | Loading required package: rJava
+> | NULL
+> | R at ss-dev:~/scripts$ ./dbCheck.R
+> | Loading required package: methods
+> | Loading required package: DBI
+> | Loading required package: rJava
+> | NULL
+> | R at ss-dev:~/scripts$ ./dbCheck.R
+> | Loading required package: methods
+> | Loading required package: DBI
+> | Loading required package: rJava
+> | Error in .jcall("java/sql/DriverManager", "Ljava/sql/Connection;",
+> "getConnection",  :
+> |   ignoring SIGPIPE signal
+> | Calls: dbCheck -> .jcall -> .External
+> | Execution halted
+> | R at ss-dev:~/scripts$ ./dbCheck.R
+> | Loading required package: methods
+> | Loading required package: DBI
+> | Loading required package: rJava
+> | Error in .jcall("java/sql/DriverManager", "Ljava/sql/Connection;",
+> "getConnection",  :
+> |   ignoring SIGPIPE signal
+> | Calls: dbCheck -> .jcall -> .External
+> | Execution halted
+> | R at ss-dev:~/scripts$ ./dbCheck.R
+> | Loading required package: methods
+> | Loading required package: DBI
+> | Loading required package: rJava
+> | NULL
+> | R at ss-dev:~/scripts$ ./dbCheck.R
+> | Loading required package: methods
+> | Loading required package: DBI
+> | Loading required package: rJava
+> | Error in .jcall("java/sql/DriverManager", "Ljava/sql/Connection;",
+> "getConnection",  :
+> |   ignoring SIGPIPE signal
+> | Calls: dbCheck -> .jcall -> .External
+> | Execution halted
+> |
+> |
+> | The times that it returns NULL, it returns immediately.  When it throws
+> the error, it is a varying amount of time between roughly 1 and 2.5 minutes.
+> | Both machines are not busy at all.
+> |
+> | Any ideas would greatly appreciated.  Thanks.
+> |
+> |
+> |
+> | --
+> | View this message in context:
+> |
+> http://r.789695.n4.nabble.com/Intermittent-connectivity-issues-for-JDBC-Oracle-tp4644960.html
+> | Sent from the R help mailing list archive at Nabble.com.
+> |
+> | ______________________________________________
+> | R-help at r-project.org mailing list
+> | https://stat.ethz.ch/mailman/listinfo/r-help
+> | PLEASE do read the posting guide
+> http://www.R-project.org/posting-guide.html
+> | and provide commented, minimal, self-contained, reproducible code.
+> |
+> |       [[alternative HTML version deleted]]
+> |
+> | _______________________________________________
+> | R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> |
+> | _______________________________________________
+> | R-sig-DB mailing list -- R Special Interest Group
+> | R-sig-DB at r-project.org
+> | https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+> --
+> Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From edd @end|ng |rom deb|@n@org  Fri Oct  5 02:55:46 2012
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Thu, 4 Oct 2012 19:55:46 -0500
+Subject: [R-sig-DB] Intermittent connectivity issues for RJDBC / Oracle
+In-Reply-To: <CANk6X+VLbdK2cggfh2JBYYW4kz8c1j=WDcQdBF_SRMV3GytQZA@mail.gmail.com>
+References: <CANk6X+XsnsEFdH6T1BzF8a6QXsD4MfQgyUeiOmcTBuFu-MbbNA@mail.gmail.com>
+	<8d65d421-5743-4a69-930e-6ee091bd1b9c@default>
+	<20590.6631.64905.542359@max.nulle.part>
+	<CANk6X+VLbdK2cggfh2JBYYW4kz8c1j=WDcQdBF_SRMV3GytQZA@mail.gmail.com>
+Message-ID: <20590.12306.862536.733426@max.nulle.part>
+
+
+On 4 October 2012 at 19:38, David wrote:
+| and ran these commands...
+
+You need to pay attention to the errors:
+ 
+|     root at ss-dev:/home/R/Downloads# export OCI_LIB=/home/oracle/
+|     instantclient_11_2
+|     root at ss-dev:/home/R/Downloads# export LD_LIBRARY_PATH=/home/oracle/
+|     instantclient_11_2:$LD_LIBRARY_PATH
+|     root at ss-dev:/home/R/Downloads# R CMD INSTALL ROracle_1.1-5.tar.gz
+|     * installing to library ?/usr/local/lib/R/site-library?
+|     * installing *source* package ?ROracle? ...
+|     ** package ?ROracle? successfully unpacked and MD5 sums checked
+|     configure: creating ./config.status
+|     config.status: creating src/Makevars
+|     ** libs
+|     gcc -std=gnu99 -I/usr/share/R/include -I/home/oracle/instantclient_11_2/sdk
+|     /include ? ? -fpic ?-O3 -pipe ?-g -c rodbi.c -o rodbi.o
+|     gcc -std=gnu99 -I/usr/share/R/include -I/home/oracle/instantclient_11_2/sdk
+|     /include ? ? -fpic ?-O3 -pipe ?-g -c rooci.c -o rooci.o
+|     gcc -std=gnu99 -shared -o ROracle.so rodbi.o rooci.o -L/home/oracle/
+|     instantclient_11_2 -lclntsh -L/usr/lib/R/lib -lR
+|     /usr/bin/ld: cannot find -lclntsh
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+I have no idea what that is and where it comes from, but
+http://package.ubuntu.com allows you to search for it.
+
+Dirk
+
+|     collect2: ld returned 1 exit status
+|     make: *** [ROracle.so] Error 1
+|     ERROR: compilation failed for package ?ROracle?
+|     * removing ?/usr/local/lib/R/site-library/ROracle?
+| 
+| 
+| As root (thinking to avoid permission issues..) ?The OS is Ubuntu:
+| 
+| 
+|     R at ss-dev:/home/oracle/instantclient_11_2$ uname -a
+|     Linux ss-dev 3.2.0-29-generic #46-Ubuntu SMP Fri Jul 27 17:03:23 UTC 2012
+|     x86_64 x86_64 x86_64 GNU/Linux
+
+-- 
+Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com  
+
+
+
+From d@v|d @end|ng |rom @erend|p|ty@c|ence@com  Fri Oct  5 03:42:18 2012
+From: d@v|d @end|ng |rom @erend|p|ty@c|ence@com (David)
+Date: Thu, 4 Oct 2012 20:42:18 -0500
+Subject: [R-sig-DB] Intermittent connectivity issues for RJDBC / Oracle
+In-Reply-To: <20590.12306.862536.733426@max.nulle.part>
+References: <CANk6X+XsnsEFdH6T1BzF8a6QXsD4MfQgyUeiOmcTBuFu-MbbNA@mail.gmail.com>
+	<8d65d421-5743-4a69-930e-6ee091bd1b9c@default>
+	<20590.6631.64905.542359@max.nulle.part>
+	<CANk6X+VLbdK2cggfh2JBYYW4kz8c1j=WDcQdBF_SRMV3GytQZA@mail.gmail.com>
+	<20590.12306.862536.733426@max.nulle.part>
+Message-ID: <CANk6X+VfQ1f_SPZRdG_ta2Uf1VjQ4US+Oi7gN2nTG=5W0sQkRQ@mail.gmail.com>
+
+I noticed that but wasn't sure where to get it.  Ubuntu doesn't have the
+file I needed - it is in the oracle client and was present in my
+LD_LIBRARY_PATH.  Why it is looking for libclntsh but erroring out lclntsh
+I do not know.
+
+After some searching I found a similar problem happened in many Oracle
+client installs.. the fix in my case was to create a soft link as follows
+in my client directory:
+
+root at ss-dev:/home/oracle/instantclient_11_2# ln -s ./libclntsh.so.11.1
+./libclntsh.so
+
+
+Then the ROracle appears to have installed without issue.
+
+Thank you for your help.
+
+David
+
+
+On Thu, Oct 4, 2012 at 7:55 PM, Dirk Eddelbuettel <edd at debian.org> wrote:
+
+>
+> On 4 October 2012 at 19:38, David wrote:
+> | and ran these commands...
+>
+> You need to pay attention to the errors:
+>
+> |     root at ss-dev:/home/R/Downloads# export OCI_LIB=/home/oracle/
+> |     instantclient_11_2
+> |     root at ss-dev:/home/R/Downloads# export LD_LIBRARY_PATH=/home/oracle/
+> |     instantclient_11_2:$LD_LIBRARY_PATH
+> |     root at ss-dev:/home/R/Downloads# R CMD INSTALL ROracle_1.1-5.tar.gz
+> |     * installing to library ?/usr/local/lib/R/site-library?
+> |     * installing *source* package ?ROracle? ...
+> |     ** package ?ROracle? successfully unpacked and MD5 sums checked
+> |     configure: creating ./config.status
+> |     config.status: creating src/Makevars
+> |     ** libs
+> |     gcc -std=gnu99 -I/usr/share/R/include
+> -I/home/oracle/instantclient_11_2/sdk
+> |     /include     -fpic  -O3 -pipe  -g -c rodbi.c -o rodbi.o
+> |     gcc -std=gnu99 -I/usr/share/R/include
+> -I/home/oracle/instantclient_11_2/sdk
+> |     /include     -fpic  -O3 -pipe  -g -c rooci.c -o rooci.o
+> |     gcc -std=gnu99 -shared -o ROracle.so rodbi.o rooci.o -L/home/oracle/
+> |     instantclient_11_2 -lclntsh -L/usr/lib/R/lib -lR
+> |     /usr/bin/ld: cannot find -lclntsh
+>       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>
+> I have no idea what that is and where it comes from, but
+> http://package.ubuntu.com allows you to search for it.
+>
+> Dirk
+>
+> |     collect2: ld returned 1 exit status
+> |     make: *** [ROracle.so] Error 1
+> |     ERROR: compilation failed for package ?ROracle?
+> |     * removing ?/usr/local/lib/R/site-library/ROracle?
+> |
+> |
+> | As root (thinking to avoid permission issues..)  The OS is Ubuntu:
+> |
+> |
+> |     R at ss-dev:/home/oracle/instantclient_11_2$ uname -a
+> |     Linux ss-dev 3.2.0-29-generic #46-Ubuntu SMP Fri Jul 27 17:03:23 UTC
+> 2012
+> |     x86_64 x86_64 x86_64 GNU/Linux
+>
+> --
+> Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From den|@@x@mukh|n @end|ng |rom or@c|e@com  Fri Oct  5 04:33:07 2012
+From: den|@@x@mukh|n @end|ng |rom or@c|e@com (Denis Mukhin)
+Date: Thu, 4 Oct 2012 19:33:07 -0700 (PDT)
+Subject: [R-sig-DB] Intermittent connectivity issues for RJDBC / Oracle
+In-Reply-To: <CANk6X+VfQ1f_SPZRdG_ta2Uf1VjQ4US+Oi7gN2nTG=5W0sQkRQ@mail.gmail.com>
+References: <CANk6X+XsnsEFdH6T1BzF8a6QXsD4MfQgyUeiOmcTBuFu-MbbNA@mail.gmail.com>
+	<8d65d421-5743-4a69-930e-6ee091bd1b9c@default>
+	<20590.6631.64905.542359@max.nulle.part>
+	<CANk6X+VLbdK2cggfh2JBYYW4kz8c1j=WDcQdBF_SRMV3GytQZA@mail.gmail.com>
+	<20590.12306.862536.733426@max.nulle.part>
+	<CANk6X+VfQ1f_SPZRdG_ta2Uf1VjQ4US+Oi7gN2nTG=5W0sQkRQ@mail.gmail.com>
+Message-ID: <a7d1fb11-2a6e-4028-a923-90f513be21b5@default>
+
+David,
+
+?
+
+Thank you for reporting this. I'll make sure to update the INSTALL file that comes with ROracle package to include this information. Unfortunately, this information is not easily available when you download Instant Client. The only place I saw this documented is in the OCI Programmer's Guide at the very bottom of chapter 1 when it talks about SDK for Instant Client.
+
+?
+
+Denis
+
+?
+
+From: David [mailto:david at serendipityscience.com] 
+Sent: Thursday, October 04, 2012 9:42 PM
+To: Dirk Eddelbuettel
+Cc: Denis Mukhin; r-sig-db at r-project.org
+Subject: Re: [R-sig-DB] Intermittent connectivity issues for RJDBC / Oracle
+
+?
+
+I noticed that but wasn't sure where to get it. ?Ubuntu doesn't have the file I needed - it is in the oracle client and was present in my LD_LIBRARY_PATH. ?Why it is looking for libclntsh but erroring out lclntsh I do not know.
+
+?
+
+After some searching I found a similar problem happened in many Oracle client installs.. the fix in my case was to create a soft link as follows in my client directory:
+
+root at ss-dev:/home/oracle/instantclient_11_2# ln -s ./libclntsh.so.11.1 ./libclntsh.so
+
+?
+
+Then the ROracle appears to have installed without issue.
+
+?
+
+Thank you for your help.
+
+?
+
+David?
+
+?
+
+?
+
+On Thu, Oct 4, 2012 at 7:55 PM, Dirk Eddelbuettel <HYPERLINK "mailto:edd at debian.org" \nedd at debian.org> wrote:
+
+
+On 4 October 2012 at 19:38, David wrote:
+| and ran these commands...
+
+You need to pay attention to the errors:
+
+| ? ? root at ss-dev:/home/R/Downloads# export OCI_LIB=/home/oracle/
+| ? ? instantclient_11_2
+| ? ? root at ss-dev:/home/R/Downloads# export LD_LIBRARY_PATH=/home/oracle/
+| ? ? instantclient_11_2:$LD_LIBRARY_PATH
+| ? ? root at ss-dev:/home/R/Downloads# R CMD INSTALL ROracle_1.1-5.tar.gz
+| ? ? * installing to library ?/usr/local/lib/R/site-library?
+| ? ? * installing *source* package ?ROracle? ...
+| ? ? ** package ?ROracle? successfully unpacked and MD5 sums checked
+| ? ? configure: creating ./config.status
+| ? ? config.status: creating src/Makevars
+| ? ? ** libs
+| ? ? gcc -std=gnu99 -I/usr/share/R/include -I/home/oracle/instantclient_11_2/sdk
+| ? ? /include ? ? -fpic ?-O3 -pipe ?-g -c rodbi.c -o rodbi.o
+| ? ? gcc -std=gnu99 -I/usr/share/R/include -I/home/oracle/instantclient_11_2/sdk
+| ? ? /include ? ? -fpic ?-O3 -pipe ?-g -c rooci.c -o rooci.o
+| ? ? gcc -std=gnu99 -shared -o ROracle.so rodbi.o rooci.o -L/home/oracle/
+| ? ? instantclient_11_2 -lclntsh -L/usr/lib/R/lib -lR
+| ? ? /usr/bin/ld: cannot find -lclntsh
+? ? ? ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+I have no idea what that is and where it comes from, but
+http://package.ubuntu.com allows you to search for it.
+
+Dirk
+
+| ? ? collect2: ld returned 1 exit status
+| ? ? make: *** [ROracle.so] Error 1
+| ? ? ERROR: compilation failed for package ?ROracle?
+| ? ? * removing ?/usr/local/lib/R/site-library/ROracle?
+|
+|
+| As root (thinking to avoid permission issues..) ?The OS is Ubuntu:
+|
+|
+| ? ? R at ss-dev:/home/oracle/instantclient_11_2$ uname -a
+| ? ? Linux ss-dev 3.2.0-29-generic #46-Ubuntu SMP Fri Jul 27 17:03:23 UTC 2012
+| ? ? x86_64 x86_64 x86_64 GNU/Linux
+
+--
+Dirk Eddelbuettel | HYPERLINK "mailto:edd at debian.org"edd at debian.org | http://dirk.eddelbuettel.com
+
+?
+
+	[[alternative HTML version deleted]]
+
+
+
+From d@v|d @end|ng |rom @erend|p|ty@c|ence@com  Sun Oct  7 23:16:54 2012
+From: d@v|d @end|ng |rom @erend|p|ty@c|ence@com (David)
+Date: Sun, 7 Oct 2012 16:16:54 -0500
+Subject: [R-sig-DB] DB updates with ROracle - ORA-01000
+Message-ID: <CANk6X+UE3sD+v8R8zCbyU7orO7V1TyvdG8HgL-HMPL15n1RMKg@mail.gmail.com>
+
+I have an R script that makes an ROracle connection to a DB and pulls
+data.. analyzes and then updates approx 7,000 records.
+
+I have two functions defined in my script that look like this:
+
+       # Create the updateTC function
+        updateTC <- function(dfrm) {
+                with(dfrm, {
+                updateDB(paste("update SIMETRA.RTA_MARKET_STATS set
+CLOSEST_LOC_TRAVEL_COEFFICIENT = '",format(GEOGRAPHIC_COEFFICIENT,
+scientific=FALSE, digits=6),"' where RTA_MARKET_STATS_ID = '",MSID,"'", sep
+= ""))
+                })
+        }
+
+        # Create the updateDB function
+        updateDB <- function(stmt) {
+                for (update in stmt) {
+                        res <- dbSendQuery(conn, update)
+                        res <- dbCommit(conn)
+                        summary(drv)
+                }
+        }
+
+and I call it like so (cr is a dataframe with my results):
+
+        # Update the DB with the new geographic coefficients
+        updateTC(cr)
+        res <- dbCommit(conn)
+
+You can tell I wrote this code while still familiarizing myself with
+vector-based functions, but I still don't know the most efficient way to
+get the fields updated properly.  Still, when I had this same code using
+the RJDBC driver, I had no issues with cursors (I switched for other
+reasons).  But now I immediately get an ORA-01000 from the database, which
+is "Maximum open cursors exceeded"...
+
+Thoughts?  I don't think I should increase the maximum cursors on the DB to
+> 7,000.  I put in the dbCommit after the update in an attempt to release
+cursors, but I feel I am missing something important.
+
+Any assistance is greatly appreciated,
+
+David
+
+	[[alternative HTML version deleted]]
+
+
+
+From den|@@x@mukh|n @end|ng |rom or@c|e@com  Mon Oct  8 04:57:21 2012
+From: den|@@x@mukh|n @end|ng |rom or@c|e@com (Denis Mukhin)
+Date: Sun, 7 Oct 2012 22:57:21 -0400
+Subject: [R-sig-DB] DB updates with ROracle - ORA-01000
+In-Reply-To: <CANk6X+UE3sD+v8R8zCbyU7orO7V1TyvdG8HgL-HMPL15n1RMKg@mail.gmail.com>
+References: <CANk6X+UE3sD+v8R8zCbyU7orO7V1TyvdG8HgL-HMPL15n1RMKg@mail.gmail.com>
+Message-ID: <27154A36-3F16-476B-9D0D-580DE71000EC@oracle.com>
+
+David,
+
+You are missing a call to dbClearResult right after dbSendQuery. This call will release the cursor. However, a better way to do this is to use bulk binds. I had an example in my previous post to this list. The question was about doing this in RPostgreSQL. If you have trouble finding it I can resend it to you.
+
+Denis
+
+On Oct 7, 2012, at 5:16 PM, David <david at serendipityscience.com> wrote:
+
+> I have an R script that makes an ROracle connection to a DB and pulls data.. analyzes and then updates approx 7,000 records.
+> 
+> I have two functions defined in my script that look like this:
+> 
+>        # Create the updateTC function
+>         updateTC <- function(dfrm) {
+>                 with(dfrm, {
+>                 updateDB(paste("update SIMETRA.RTA_MARKET_STATS set CLOSEST_LOC_TRAVEL_COEFFICIENT = '",format(GEOGRAPHIC_COEFFICIENT, scientific=FALSE, digits=6),"' where RTA_MARKET_STATS_ID = '",MSID,"'", sep = ""))
+>                 })
+>         }
+> 
+>         # Create the updateDB function
+>         updateDB <- function(stmt) {
+>                 for (update in stmt) {
+>                         res <- dbSendQuery(conn, update)
+>                         res <- dbCommit(conn)
+>                         summary(drv)
+>                 }
+>         }
+> 
+> and I call it like so (cr is a dataframe with my results):
+> 
+>         # Update the DB with the new geographic coefficients
+>         updateTC(cr)
+>         res <- dbCommit(conn)
+> 
+> You can tell I wrote this code while still familiarizing myself with vector-based functions, but I still don't know the most efficient way to get the fields updated properly.  Still, when I had this same code using the RJDBC driver, I had no issues with cursors (I switched for other reasons).  But now I immediately get an ORA-01000 from the database, which is "Maximum open cursors exceeded"...
+> 
+> Thoughts?  I don't think I should increase the maximum cursors on the DB to > 7,000.  I put in the dbCommit after the update in an attempt to release cursors, but I feel I am missing something important.
+> 
+> Any assistance is greatly appreciated,
+> 
+> David
+
+	[[alternative HTML version deleted]]
+
+
+
+From tomo@k|n @end|ng |rom @t@||@k@n@z@w@-u@@c@jp  Tue Oct  9 11:21:12 2012
+From: tomo@k|n @end|ng |rom @t@||@k@n@z@w@-u@@c@jp (NISHIYAMA Tomoaki)
+Date: Tue, 9 Oct 2012 18:21:12 +0900
+Subject: [R-sig-DB] Insufficient PROTECT in RMySQL code
+Message-ID: <F0DBE8D8-4CD5-457A-AE99-2B823378B7C4@staff.kanazawa-u.ac.jp>
+
+Hi,
+
+We recently identified errors in RPostgreSQL that PROTECT is not
+issued where needed.  The behaviour reported at
+http://code.google.com/p/rpostgresql/issues/detail?id=42
+is similar in RMySQL.
+
+The fix is seeking every C code returning a pointer to s_object or 
+its aliases (i.e., Mgr_Handle, Con_Handle, Res_Handle, Db_Handle),
+and carefully ensure the structure returned is properly constructed in
+PROTECTed block.
+
+We do not have test for every places, but the following example
+suggests that RMySQL probably has at least one similar error.
+
+> library(RMySQL)
+Loading required package: DBI
+> con <- dbConnect('MySQL')
+> rs <-dbSendQuery(con,'SELECT 1;')
+> dbColumnInfo(rs)
+  name  Sclass                type len precision scale nullOK
+1    1 integer FIELD_TYPE_LONGLONG   1         1     0  FALSE
+> dbColumnInfo(rs)
+  name  Sclass                type len precision scale nullOK
+1    1 integer FIELD_TYPE_LONGLONG   1         1     0  FALSE
+> gctorture(TRUE)
+> dbColumnInfo(rs)
+  name  Sclass                type len precision scale nullOK
+1    1 integer FIELD_TYPE_LONGLONG   1         1     0  FALSE
+> dbColumnInfo(rs)
+Error in mysqlDescribeFields(res, ...) : 
+  RS-DBI driver: (internal error in RS_DBI_SclassNames: input S types must be nonNULL)
+
+Another pattern:
+
+> library(RMySQL)
+Loading required package: DBI
+> gctorture(TRUE)
+> con <-dbConnect('MySQL')
+> con
+<MySQLConnection:(19925,0)> 
+> rs <-dbSendQuery(con,'SELECT 1;')
+> dbColumnInfo(rs)
+Error: protect(): protection stack overflow
+
+This was tested with RMySQL_0.9-3.
+
+Best regards,
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi, 
+Kanazawa, 920-0934, Japan
+
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From m@cqueen1 @end|ng |rom ||n|@gov  Wed Oct 17 21:52:29 2012
+From: m@cqueen1 @end|ng |rom ||n|@gov (MacQueen, Don)
+Date: Wed, 17 Oct 2012 19:52:29 +0000
+Subject: [R-sig-DB] Intermittent connectivity issues for RJDBC / Oracle
+In-Reply-To: <20590.12306.862536.733426@max.nulle.part>
+Message-ID: <CCA458AF.AF973%macqueen1@llnl.gov>
+
+Regarding the message "cannot find -lclntsh",
+and according to my old notes, it may be necesssary to to run
+
+  genclntsh
+  genclntst
+
+in ORACLE_HOME/bin.
+
+This creates or fixes the missing lib. Two of them, actually.
+Note that it's an Oracle issue, not an ROracle issue.
+
+This information was, at least in the past, in the INSTALL file in the
+inst directory in the ROracle source distribution (it was there in
+ROracle_0.5-9).
+
+I have no idea if this is still necessary.
+
+-Don
+
+
+-- 
+Don MacQueen
+
+Lawrence Livermore National Laboratory
+7000 East Ave., L-627
+Livermore, CA 94550
+925-423-1062
+
+
+
+
+
+On 10/4/12 5:55 PM, "Dirk Eddelbuettel" <edd at debian.org> wrote:
+
+>
+>On 4 October 2012 at 19:38, David wrote:
+>| and ran these commands...
+>
+>You need to pay attention to the errors:
+> 
+>|     root at ss-dev:/home/R/Downloads# export OCI_LIB=/home/oracle/
+>|     instantclient_11_2
+>|     root at ss-dev:/home/R/Downloads# export LD_LIBRARY_PATH=/home/oracle/
+>|     instantclient_11_2:$LD_LIBRARY_PATH
+>|     root at ss-dev:/home/R/Downloads# R CMD INSTALL ROracle_1.1-5.tar.gz
+>|     * installing to library ?/usr/local/lib/R/site-library?
+>|     * installing *source* package ?ROracle? ...
+>|     ** package ?ROracle? successfully unpacked and MD5 sums checked
+>|     configure: creating ./config.status
+>|     config.status: creating src/Makevars
+>|     ** libs
+>|     gcc -std=gnu99 -I/usr/share/R/include
+>-I/home/oracle/instantclient_11_2/sdk
+>|     /include     -fpic  -O3 -pipe  -g -c rodbi.c -o rodbi.o
+>|     gcc -std=gnu99 -I/usr/share/R/include
+>-I/home/oracle/instantclient_11_2/sdk
+>|     /include     -fpic  -O3 -pipe  -g -c rooci.c -o rooci.o
+>|     gcc -std=gnu99 -shared -o ROracle.so rodbi.o rooci.o -L/home/oracle/
+>|     instantclient_11_2 -lclntsh -L/usr/lib/R/lib -lR
+>|     /usr/bin/ld: cannot find -lclntsh
+>      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>
+>I have no idea what that is and where it comes from, but
+>http://package.ubuntu.com allows you to search for it.
+>
+>Dirk
+>
+>|     collect2: ld returned 1 exit status
+>|     make: *** [ROracle.so] Error 1
+>|     ERROR: compilation failed for package ?ROracle?
+>|     * removing ?/usr/local/lib/R/site-library/ROracle?
+>| 
+>| 
+>| As root (thinking to avoid permission issues..)  The OS is Ubuntu:
+>| 
+>| 
+>|     R at ss-dev:/home/oracle/instantclient_11_2$ uname -a
+>|     Linux ss-dev 3.2.0-29-generic #46-Ubuntu SMP Fri Jul 27 17:03:23
+>UTC 2012
+>|     x86_64 x86_64 x86_64 GNU/Linux
+>
+>-- 
+>Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+>
+>_______________________________________________
+>R-sig-DB mailing list -- R Special Interest Group
+>R-sig-DB at r-project.org
+>https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From @@j|t75 @end|ng |rom y@hoo@co@|n  Tue Oct 30 15:01:47 2012
+From: @@j|t75 @end|ng |rom y@hoo@co@|n (ajit aher)
+Date: Tue, 30 Oct 2012 22:01:47 +0800 (SGT)
+Subject: [R-sig-DB] Java Exception error while reading large data in R from
+	DB using RJDBC
+Message-ID: <1351605707.92916.YahooMailNeo@web193004.mail.sg3.yahoo.com>
+
+
+
+Dear List, 
+
+Java Exception error while reading large data in R from DB using RJDBC. 
+I am trying to read large data from DB table(Vectorwise), using RJDBC connection. 
+I have tested the connection with small size data and was able to fetch DB tables using same connection(conn as in my code). ? 
+
+Please suggest where ?am i going wrong or alternate option to solve such issues ?while reading large DB table. 
+
+drv <- JDBC(paste(db_driver, ?sep = ""), 
+? ? ? ? ? ?paste(db_jar_file, ?sep = ""), 
+? ? ? ? ? ?identifier.quote="`") 
+
+conn <<- dbConnect(drv, paste(db_server, ?sep = ""), 
+? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? paste(db_server_lgn, ?sep = ""), 
+? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? paste(db_server_pwd, ?sep = "")) 
+s <- sprintf("select * from ?cypress_modeldev_account_info") 
+?temp <- dbGetQuery(conn, s) 
+Error in .jcheck() : 
+? Java Exception <no description because toString() 
+failed>.jcall(rp, "I", "fetch", stride)<S4 object of class 
+"jobjRef">
+
+Thanks,
+Ajit
+
+	[[alternative HTML version deleted]]
+
+
+
+From btyner @end|ng |rom gm@||@com  Sun Nov 11 05:10:00 2012
+From: btyner @end|ng |rom gm@||@com (Benjamin Tyner)
+Date: Sat, 10 Nov 2012 23:10:00 -0500
+Subject: [R-sig-DB] RJDBC: dbGetQuery works but fetch does not.
+Message-ID: <509F2518.2050901@gmail.com>
+
+Hello,
+
+When using fetch() with RJDBC, I get the error:
+
+   Error in function (classes, fdef, mtable)  :
+     unable to find an inherited method for function "fetch", for 
+signature "JDBCResult", "missing"
+
+However if I use dbGetQuery instead, it works splendidly. my driverClass 
+is com.sybase.jdbc2.jdbc.SybDriver and I'm using:
+
+   R version 2.14.1 (2011-12-22)
+   Platform: x86_64-unknown-linux-gnu (64-bit)
+   RJDBC_0.2-0
+   rJava_0.9-3
+   DBI_0.2-5
+
+Any ideas?
+
+Thanks
+Ben
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: smime.p7s
+Type: application/x-pkcs7-signature
+Size: 3776 bytes
+Desc: S/MIME Cryptographic Signature
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20121110/68b91b5f/attachment.bin>
+
+From m@cqueen1 @end|ng |rom ||n|@gov  Fri Nov 16 20:11:18 2012
+From: m@cqueen1 @end|ng |rom ||n|@gov (MacQueen, Don)
+Date: Fri, 16 Nov 2012 19:11:18 +0000
+Subject: [R-sig-DB] ROracle 1.1-5 and date fields?
+Message-ID: <5E1B812FAC2C4A49B3D99593B5A52191116419@PRDEXMBX-04.the-lab.llnl.gov>
+
+I updated R and packages today, and am seeing some changes in ROracle
+behavior that I want to ask about. I'll describe the problems first;
+details follow.
+
+1) dbListTables now lists only my personal tables
+previously it listed global tables
+(don't see any way to show an example of this)
+
+2) simple queries to tables with date fields fail.
+For example,
+
+> dbGetQuery(con,"select * from wdrstats")
+Error in .oci.GetQuery(conn, statement, ...) :
+  Error in try({ : ORA-01805: possible error in date/time operation
+
+The table in this example has, among others, two date fields.
+That is, "describe wdrstats;" returns (among others)
+EFFDATE             DATE
+ENTERED   NOT NULL  DATE
+By the way, I'm very happy to see that ROracle is being actively
+maintained. Thank you!
+
+Thanks
+-Don
+
+-------------------------------
+This was a substantial upgrade; previously I had
+  ROracle 0.5-12 with R 2.14.1
+now I have
+  ROracle 1.1-5 and R 2.15.2
+(so ROracle now uses OCI; whereas before it did not)
+
+R itself is built from source on a linux (RHEL5) machine.
+I ran update.packages() and didn't see any problems.
+Reinstalling ROracle using install.packages() succeeds (I can provide a
+log if desired).
+
+Running R on the same machine as the Oracle installation.
+
+> require(ROracle)
+Loading required package: ROracle
+Loading required package: DBI
+
+> dbm <- Oracle()
+> dbm
+Driver name:            Oracle (OCI)
+Driver version:         1.1-5
+Client version:         11.2.0.1.0
+Connections processed:  0
+Open connections:       0
+Interruptible:          FALSE
+
+
+##  'adbname' equals the value of env var ORACLE_SID
+
+> con <- dbConnect(dbm,user='macq',dbname='adbname',password='my.pwd')
+> con
+User name:             macq
+Connect string: adbname
+Server version:        11.2.0.3.0
+Server type:           Oracle RDBMS
+Results processed:     0
+OCI prefetch:          FALSE
+Bulk read:             25
+Statement cache size:  0
+Open results:          0
+
+
+> dbGetQuery(con,"select * from wdrstats")
+Error in .oci.GetQuery(conn, statement, ...) :
+Error in try({ : ORA-01805: possible error in date/time operation
+
+
+> sessionInfo()
+R version 2.15.2 (2012-10-26)
+Platform: x86_64-unknown-linux-gnu (64-bit)
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8
+ [7] LC_PAPER=C                 LC_NAME=C
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] ROracle_1.1-5 DBI_0.2-5
+
+
+-- 
+Don MacQueen
+
+Lawrence Livermore National Laboratory
+7000 East Ave., L-627
+Livermore, CA 94550
+925-423-1062
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Fri Nov 16 22:07:39 2012
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Fri, 16 Nov 2012 21:07:39 +0000
+Subject: [R-sig-DB] ROracle 1.1-5 and date fields?
+In-Reply-To: <5E1B812FAC2C4A49B3D99593B5A52191116419@PRDEXMBX-04.the-lab.llnl.gov>
+References: <5E1B812FAC2C4A49B3D99593B5A52191116419@PRDEXMBX-04.the-lab.llnl.gov>
+Message-ID: <50A6AB1B.6050503@stats.ox.ac.uk>
+
+On 16/11/2012 19:11, MacQueen, Don wrote:
+> I updated R and packages today, and am seeing some changes in ROracle
+> behavior that I want to ask about. I'll describe the problems first;
+
+You need to ask the ROracle maintainer: he does not usually reply here.
+
+> details follow.
+>
+> 1) dbListTables now lists only my personal tables
+> previously it listed global tables
+> (don't see any way to show an example of this)
+>
+> 2) simple queries to tables with date fields fail.
+> For example,
+>
+>> dbGetQuery(con,"select * from wdrstats")
+> Error in .oci.GetQuery(conn, statement, ...) :
+>    Error in try({ : ORA-01805: possible error in date/time operation
+>
+> The table in this example has, among others, two date fields.
+> That is, "describe wdrstats;" returns (among others)
+> EFFDATE             DATE
+> ENTERED   NOT NULL  DATE
+> By the way, I'm very happy to see that ROracle is being actively
+> maintained. Thank you!
+>
+> Thanks
+> -Don
+>
+> -------------------------------
+> This was a substantial upgrade; previously I had
+>    ROracle 0.5-12 with R 2.14.1
+> now I have
+>    ROracle 1.1-5 and R 2.15.2
+> (so ROracle now uses OCI; whereas before it did not)
+>
+> R itself is built from source on a linux (RHEL5) machine.
+> I ran update.packages() and didn't see any problems.
+> Reinstalling ROracle using install.packages() succeeds (I can provide a
+> log if desired).
+>
+> Running R on the same machine as the Oracle installation.
+>
+>> require(ROracle)
+> Loading required package: ROracle
+> Loading required package: DBI
+>
+>> dbm <- Oracle()
+>> dbm
+> Driver name:            Oracle (OCI)
+> Driver version:         1.1-5
+> Client version:         11.2.0.1.0
+> Connections processed:  0
+> Open connections:       0
+> Interruptible:          FALSE
+>
+>
+> ##  'adbname' equals the value of env var ORACLE_SID
+>
+>> con <- dbConnect(dbm,user='macq',dbname='adbname',password='my.pwd')
+>> con
+> User name:             macq
+> Connect string: adbname
+> Server version:        11.2.0.3.0
+> Server type:           Oracle RDBMS
+> Results processed:     0
+> OCI prefetch:          FALSE
+> Bulk read:             25
+> Statement cache size:  0
+> Open results:          0
+>
+>
+>> dbGetQuery(con,"select * from wdrstats")
+> Error in .oci.GetQuery(conn, statement, ...) :
+> Error in try({ : ORA-01805: possible error in date/time operation
+>
+>
+>> sessionInfo()
+> R version 2.15.2 (2012-10-26)
+> Platform: x86_64-unknown-linux-gnu (64-bit)
+>
+> locale:
+>   [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C
+>   [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8
+>   [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8
+>   [7] LC_PAPER=C                 LC_NAME=C
+>   [9] LC_ADDRESS=C               LC_TELEPHONE=C
+> [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C
+>
+> attached base packages:
+> [1] stats     graphics  grDevices utils     datasets  methods   base
+>
+> other attached packages:
+> [1] ROracle_1.1-5 DBI_0.2-5
+>
+>
+
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From den|@@x@mukh|n @end|ng |rom or@c|e@com  Fri Nov 16 22:30:43 2012
+From: den|@@x@mukh|n @end|ng |rom or@c|e@com (Denis Mukhin)
+Date: Fri, 16 Nov 2012 13:30:43 -0800 (PST)
+Subject: [R-sig-DB] ROracle 1.1-5 and date fields?
+In-Reply-To: <50A6AB1B.6050503@stats.ox.ac.uk>
+References: <5E1B812FAC2C4A49B3D99593B5A52191116419@PRDEXMBX-04.the-lab.llnl.gov>
+	<50A6AB1B.6050503@stats.ox.ac.uk>
+Message-ID: <00bb211d-7209-442f-9eb5-dc969eff1988@default>
+
+Don,
+
+1) dbListTables now takes two additional arguments that control the display of tables/views in other schemas (assuming you have select access on these). Here is the description from the man page:
+
+     dbListTables(conn, schema = NULL, all = FALSE, full = FALSE, ...)
+
+     all: a logical specifying whether to look at all schemas.
+
+    full: a logical specifying whether to generate schema names. When
+          argument 'all' is 'TRUE', the output is a vector containing
+          schema names followed by the table names. Using 'matrix(...,
+          ncol = 2)' on the output produces a matrix where each row
+          corresponds to a table and the columns represent the schema
+          names and table names respectively.
+
+If you are interested in particular schema you can use the schema argument:
+
+  schema: a case sensitive character string specifying a schema name
+          (or a vector of character strings for 'dbListTables').
+
+2) We are getting ready to roll out ROracle 1.1-6 very soon. It has some fixes to date/time columns. A simple example seems to work fine in my development version:
+
+R> con<-dbConnect(Oracle(), "scott", "tiger")
+R> res<-dbGetQuery(con, "select sysdate cd, systimestamp ct from dual")
+R> lapply(res, class)
+$CD
+[1] "POSIXct" "POSIXt" 
+
+$CT
+[1] "POSIXct" "POSIXt" 
+
+R> res
+                   CD                  CT
+1 2012-11-16 16:22:40 2012-11-16 16:22:40
+
+I'll install 1.1-5 and double check that this is indeed a problem to be sure that nothing else is at play here. I did get a report of a similar problem from another user today via email. He was having problem with 
+  Select SYSDATE + 1 * Interval '1' Day FROM dual;
+
+Denis
+
+-----Original Message-----
+From: Prof Brian Ripley [mailto:ripley at stats.ox.ac.uk] 
+Sent: Friday, November 16, 2012 4:08 PM
+To: MacQueen, Don
+Cc: r-sig-db at r-project.org
+Subject: Re: [R-sig-DB] ROracle 1.1-5 and date fields?
+
+On 16/11/2012 19:11, MacQueen, Don wrote:
+> I updated R and packages today, and am seeing some changes in ROracle 
+> behavior that I want to ask about. I'll describe the problems first;
+
+You need to ask the ROracle maintainer: he does not usually reply here.
+
+> details follow.
+>
+> 1) dbListTables now lists only my personal tables previously it listed 
+> global tables (don't see any way to show an example of this)
+>
+> 2) simple queries to tables with date fields fail.
+> For example,
+>
+>> dbGetQuery(con,"select * from wdrstats")
+> Error in .oci.GetQuery(conn, statement, ...) :
+>    Error in try({ : ORA-01805: possible error in date/time operation
+>
+> The table in this example has, among others, two date fields.
+> That is, "describe wdrstats;" returns (among others)
+> EFFDATE             DATE
+> ENTERED   NOT NULL  DATE
+> By the way, I'm very happy to see that ROracle is being actively 
+> maintained. Thank you!
+>
+> Thanks
+> -Don
+>
+> -------------------------------
+> This was a substantial upgrade; previously I had
+>    ROracle 0.5-12 with R 2.14.1
+> now I have
+>    ROracle 1.1-5 and R 2.15.2
+> (so ROracle now uses OCI; whereas before it did not)
+>
+> R itself is built from source on a linux (RHEL5) machine.
+> I ran update.packages() and didn't see any problems.
+> Reinstalling ROracle using install.packages() succeeds (I can provide 
+> a log if desired).
+>
+> Running R on the same machine as the Oracle installation.
+>
+>> require(ROracle)
+> Loading required package: ROracle
+> Loading required package: DBI
+>
+>> dbm <- Oracle()
+>> dbm
+> Driver name:            Oracle (OCI)
+> Driver version:         1.1-5
+> Client version:         11.2.0.1.0
+> Connections processed:  0
+> Open connections:       0
+> Interruptible:          FALSE
+>
+>
+> ##  'adbname' equals the value of env var ORACLE_SID
+>
+>> con <- dbConnect(dbm,user='macq',dbname='adbname',password='my.pwd')
+>> con
+> User name:             macq
+> Connect string: adbname
+> Server version:        11.2.0.3.0
+> Server type:           Oracle RDBMS
+> Results processed:     0
+> OCI prefetch:          FALSE
+> Bulk read:             25
+> Statement cache size:  0
+> Open results:          0
+>
+>
+>> dbGetQuery(con,"select * from wdrstats")
+> Error in .oci.GetQuery(conn, statement, ...) :
+> Error in try({ : ORA-01805: possible error in date/time operation
+>
+>
+>> sessionInfo()
+> R version 2.15.2 (2012-10-26)
+> Platform: x86_64-unknown-linux-gnu (64-bit)
+>
+> locale:
+>   [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C
+>   [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8
+>   [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8
+>   [7] LC_PAPER=C                 LC_NAME=C
+>   [9] LC_ADDRESS=C               LC_TELEPHONE=C
+> [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C
+>
+> attached base packages:
+> [1] stats     graphics  grDevices utils     datasets  methods   base
+>
+> other attached packages:
+> [1] ROracle_1.1-5 DBI_0.2-5
+>
+>
+
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+_______________________________________________
+R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Wed Nov 28 18:17:51 2012
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Wed, 28 Nov 2012 12:17:51 -0500
+Subject: [R-sig-DB] problems with RPostgreSQL compilation
+In-Reply-To: <mailman.23.1354100406.17220.r-help@r-project.org>
+References: <mailman.23.1354100406.17220.r-help@r-project.org>
+Message-ID: <50B6473F.1010509@gmail.com>
+
+
+(moved from R-help)
+
+You should get better help with this on R-SIG-DB. It seems you need some 
+additional hint to help the loader find pg.
+Paul
+
+On 12-11-28 06:00 AM, r-help-request at r-project.org wrote:
+> Date: Thu, 22 Nov 2012 12:15:18 +0100
+> From: Tomas Lanczos<lanczos at t-zones.sk>
+> To:r-help at r-project.org
+> Subject: Re: [R] problems with RPostgreSQL compilation
+> Message-ID: <1353582918.3021.12.camel at freya>
+> Content-Type: text/plain; charset="UTF-8"
+>
+> Thank You for Your answer.I have installed libpqxx 4.0.0 and its devel
+> tools also.
+>
+> Regards
+>
+> Tomas
+>
+>
+> On Thu, 2012-11-22 at 19:32 +0900, Pascal Oettli wrote:
+>> >Hello,
+>> >
+>> >Do you have the shared libraries required by PostgreSQL installed on
+>> >your machine (libpq)?
+>> >
+>> >Regards,
+>> >Pascal
+>> >
+>> >Le 22/11/2012 18:45,lanczos at t-zones.sk  a ?crit :
+>>> > >Hello,
+>>> > >
+>>> > >I am trying to install RPostgreSQL, but without success at the moment, getting an errormessage - see below.
+>>> > >My OS is Fedora 17, R version 2.15.2, PostgreSQL 9.2.1 with Postgis 2.0.1 spatial extension.
+>>> > >
+>>> > >Thank You for any help, advice or hint in advance.
+>>> > >
+>>> > >Regards
+>>> > >
+>>> > >Tomas
+>>> > >
+>>> > >
+>>>> > >>install.packages("RPostgreSQL", dependencies=TRUE)
+>>> > >trying URL 'http://cran.fyxm.net/src/contrib/RPostgreSQL_0.3-3.tar.gz'
+>>> > >Content type 'application/x-gzip' length 474570 bytes (463 Kb)
+>>> > >opened URL
+>>> > >==================================================
+>>> > >downloaded 463 Kb
+>>> > >
+>>> > >* installing*source*  package ?RPostgreSQL? ...
+>>> > >** package ?RPostgreSQL? successfully unpacked and MD5 sums checked
+>>> > >checking for gcc... gcc
+>>> > >checking for C compiler default output file name... a.out
+>>> > >checking whether the C compiler works... yes
+>>> > >checking whether we are cross compiling... no
+>>> > >checking for suffix of executables...
+>>> > >checking for suffix of object files... o
+>>> > >checking whether we are using the GNU C compiler... yes
+>>> > >checking whether gcc accepts -g... yes
+>>> > >checking for gcc option to accept ISO C89... none needed
+>>> > >checking build system type... x86_64-unknown-linux-gnu
+>>> > >checking host system type... x86_64-unknown-linux-gnu
+>>> > >checking target system type... x86_64-unknown-linux-gnu
+>>> > >checking for pg_config... /usr/bin/pg_config
+>>> > >checking for "/usr/include/libpq-fe.h"... yes
+>>> > >configure: creating ./config.status
+>>> > >config.status: creating src/Makevars
+>>> > >** libs
+>>> > >gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG -I/usr/include -I/usr/local/include    -fpic  -g -O2  -c RS-DBI.c -o RS-DBI.o
+>>> > >gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG -I/usr/include -I/usr/local/include    -fpic  -g -O2  -c RS-PQescape.c -o RS-PQescape.o
+>>> > >gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG -I/usr/include -I/usr/local/include    -fpic  -g -O2  -c RS-PostgreSQL.c -o RS-PostgreSQL.o
+>>> > >gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG -I/usr/include -I/usr/local/include    -fpic  -g -O2  -c RS-pgsql-copy.c -o RS-pgsql-copy.o
+>>> > >gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG -I/usr/include -I/usr/local/include    -fpic  -g -O2  -c RS-pgsql-getResult.c -o RS-pgsql-getResult.o
+>>> > >gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG -I/usr/include -I/usr/local/include    -fpic  -g -O2  -c RS-pgsql-pqexec.c -o RS-pgsql-pqexec.o
+>>> > >gcc -std=gnu99 -shared -L/usr/local/lib64 -o RPostgreSQL.so RS-DBI.o RS-PQescape.o RS-PostgreSQL.o RS-pgsql-copy.o RS-pgsql-getResult.o RS-pgsql-pqexec.o -L/usr/lib -lpq
+>>> > >/usr/bin/ld: cannot find -lpq
+>>> > >collect2: error: ld returned 1 exit status
+>>> > >make: *** [RPostgreSQL.so] Error 1
+>>> > >ERROR: compilation failed for package ?RPostgreSQL?
+>>> > >* removing ?/usr/local/lib64/R/library/RPostgreSQL?
+>>> > >
+>>> > >The downloaded source packages are in
+>>> > >	?/tmp/Rtmpv5LkJj/downloaded_packages?
+>>> > >Updating HTML index of packages in '.Library'
+>>> > >Making packages.html  ... done
+>>> > >Warning message:
+>>> > >In install.packages("RPostgreSQL", dependencies = TRUE) :
+>>> > >    installation of package ?RPostgreSQL? had non-zero exit status
+>>> > >
+>>> > >--
+>>> > >
+>>> > >
+>>> > >
+
+
+
+From edd @end|ng |rom deb|@n@org  Wed Nov 28 18:34:27 2012
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Wed, 28 Nov 2012 11:34:27 -0600
+Subject: [R-sig-DB] problems with RPostgreSQL compilation
+In-Reply-To: <50B6473F.1010509@gmail.com>
+References: <mailman.23.1354100406.17220.r-help@r-project.org>
+	<50B6473F.1010509@gmail.com>
+Message-ID: <20662.19235.820978.273220@max.nulle.part>
+
+
+On 28 November 2012 at 12:17, Paul Gilbert wrote:
+| 
+| (moved from R-help)
+| 
+| You should get better help with this on R-SIG-DB. It seems you need some 
+| additional hint to help the loader find pg.
+
+The linker clearly does not find -lpq so you need to install libpq-dev (or
+whichever related name it has) but not ...
+
+| Paul
+| 
+| On 12-11-28 06:00 AM, r-help-request at r-project.org wrote:
+| > Date: Thu, 22 Nov 2012 12:15:18 +0100
+| > From: Tomas Lanczos<lanczos at t-zones.sk>
+| > To:r-help at r-project.org
+| > Subject: Re: [R] problems with RPostgreSQL compilation
+| > Message-ID: <1353582918.3021.12.camel at freya>
+| > Content-Type: text/plain; charset="UTF-8"
+| >
+| > Thank You for Your answer.I have installed libpqxx 4.0.0 and its devel
+| > tools also.
+
+libpqxx which is the __C++__ interface whereas we use the standard __C__ interface.
+
+Those are not the same thing.
+
+Dirk
+
+| >
+| > Regards
+| >
+| > Tomas
+| >
+| >
+| > On Thu, 2012-11-22 at 19:32 +0900, Pascal Oettli wrote:
+| >> >Hello,
+| >> >
+| >> >Do you have the shared libraries required by PostgreSQL installed on
+| >> >your machine (libpq)?
+| >> >
+| >> >Regards,
+| >> >Pascal
+| >> >
+| >> >Le 22/11/2012 18:45,lanczos at t-zones.sk  a ?crit :
+| >>> > >Hello,
+| >>> > >
+| >>> > >I am trying to install RPostgreSQL, but without success at the moment, getting an errormessage - see below.
+| >>> > >My OS is Fedora 17, R version 2.15.2, PostgreSQL 9.2.1 with Postgis 2.0.1 spatial extension.
+| >>> > >
+| >>> > >Thank You for any help, advice or hint in advance.
+| >>> > >
+| >>> > >Regards
+| >>> > >
+| >>> > >Tomas
+| >>> > >
+| >>> > >
+| >>>> > >>install.packages("RPostgreSQL", dependencies=TRUE)
+| >>> > >trying URL 'http://cran.fyxm.net/src/contrib/RPostgreSQL_0.3-3.tar.gz'
+| >>> > >Content type 'application/x-gzip' length 474570 bytes (463 Kb)
+| >>> > >opened URL
+| >>> > >==================================================
+| >>> > >downloaded 463 Kb
+| >>> > >
+| >>> > >* installing*source*  package ?RPostgreSQL? ...
+| >>> > >** package ?RPostgreSQL? successfully unpacked and MD5 sums checked
+| >>> > >checking for gcc... gcc
+| >>> > >checking for C compiler default output file name... a.out
+| >>> > >checking whether the C compiler works... yes
+| >>> > >checking whether we are cross compiling... no
+| >>> > >checking for suffix of executables...
+| >>> > >checking for suffix of object files... o
+| >>> > >checking whether we are using the GNU C compiler... yes
+| >>> > >checking whether gcc accepts -g... yes
+| >>> > >checking for gcc option to accept ISO C89... none needed
+| >>> > >checking build system type... x86_64-unknown-linux-gnu
+| >>> > >checking host system type... x86_64-unknown-linux-gnu
+| >>> > >checking target system type... x86_64-unknown-linux-gnu
+| >>> > >checking for pg_config... /usr/bin/pg_config
+| >>> > >checking for "/usr/include/libpq-fe.h"... yes
+| >>> > >configure: creating ./config.status
+| >>> > >config.status: creating src/Makevars
+| >>> > >** libs
+| >>> > >gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG -I/usr/include -I/usr/local/include    -fpic  -g -O2  -c RS-DBI.c -o RS-DBI.o
+| >>> > >gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG -I/usr/include -I/usr/local/include    -fpic  -g -O2  -c RS-PQescape.c -o RS-PQescape.o
+| >>> > >gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG -I/usr/include -I/usr/local/include    -fpic  -g -O2  -c RS-PostgreSQL.c -o RS-PostgreSQL.o
+| >>> > >gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG -I/usr/include -I/usr/local/include    -fpic  -g -O2  -c RS-pgsql-copy.c -o RS-pgsql-copy.o
+| >>> > >gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG -I/usr/include -I/usr/local/include    -fpic  -g -O2  -c RS-pgsql-getResult.c -o RS-pgsql-getResult.o
+| >>> > >gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG -I/usr/include -I/usr/local/include    -fpic  -g -O2  -c RS-pgsql-pqexec.c -o RS-pgsql-pqexec.o
+| >>> > >gcc -std=gnu99 -shared -L/usr/local/lib64 -o RPostgreSQL.so RS-DBI.o RS-PQescape.o RS-PostgreSQL.o RS-pgsql-copy.o RS-pgsql-getResult.o RS-pgsql-pqexec.o -L/usr/lib -lpq
+| >>> > >/usr/bin/ld: cannot find -lpq
+| >>> > >collect2: error: ld returned 1 exit status
+| >>> > >make: *** [RPostgreSQL.so] Error 1
+| >>> > >ERROR: compilation failed for package ?RPostgreSQL?
+| >>> > >* removing ?/usr/local/lib64/R/library/RPostgreSQL?
+| >>> > >
+| >>> > >The downloaded source packages are in
+| >>> > >	?/tmp/Rtmpv5LkJj/downloaded_packages?
+| >>> > >Updating HTML index of packages in '.Library'
+| >>> > >Making packages.html  ... done
+| >>> > >Warning message:
+| >>> > >In install.packages("RPostgreSQL", dependencies = TRUE) :
+| >>> > >    installation of package ?RPostgreSQL? had non-zero exit status
+| >>> > >
+| >>> > >--
+| >>> > >
+| >>> > >
+| >>> > >
+| 
+| _______________________________________________
+| R-sig-DB mailing list -- R Special Interest Group
+| R-sig-DB at r-project.org
+| https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+-- 
+Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+
+
+From |@nczo@ @end|ng |rom |n@@un|b@@@k  Thu Nov 29 16:32:22 2012
+From: |@nczo@ @end|ng |rom |n@@un|b@@@k (Tomas Lanczos)
+Date: Thu, 29 Nov 2012 16:32:22 +0100
+Subject: [R-sig-DB] Problems with the RPostgreSQL package compilation
+Message-ID: <1354203142.3158.0.camel@freya>
+
+
+  Hello,
+ 
+  I am trying to install RPostgreSQL, but without success at the moment,
+getting an errormessage - see below.
+  My OS is Fedora 17, R version 2.15.2, PostgreSQL 9.2.1 with Postgis
+2.0.1 spatial extension. I installed libpqxx 4.0.0 and its devel
+tools also.
+ 
+  Thank You for any help, advice or hint in advance.
+ 
+  Regards
+ 
+  Tomas
+ 
+ 
+  install.packages("RPostgreSQL", dependencies=TRUE)
+  trying URL 'http://cran.fyxm.net/src/contrib/RPostgreSQL_0.3-3.tar.gz'
+  Content type 'application/x-gzip' length 474570 bytes (463 Kb)
+  opened URL
+  ==================================================
+  downloaded 463 Kb
+ 
+  * installing *source* package ?RPostgreSQL? ...
+  ** package ?RPostgreSQL? successfully unpacked and MD5 sums checked
+  checking for gcc... gcc
+  checking for C compiler default output file name... a.out
+  checking whether the C compiler works... yes
+  checking whether we are cross compiling... no
+  checking for suffix of executables...
+  checking for suffix of object files... o
+  checking whether we are using the GNU C compiler... yes
+  checking whether gcc accepts -g... yes
+  checking for gcc option to accept ISO C89... none needed
+  checking build system type... x86_64-unknown-linux-gnu
+  checking host system type... x86_64-unknown-linux-gnu
+  checking target system type... x86_64-unknown-linux-gnu
+  checking for pg_config... /usr/bin/pg_config
+  checking for "/usr/include/libpq-fe.h"... yes
+  configure: creating ./config.status
+  config.status: creating src/Makevars
+  ** libs
+  gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG -I/usr/include
+-I/usr/local/include    -fpic  -g -O2  -c RS-DBI.c -o RS-DBI.o
+  gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG -I/usr/include
+-I/usr/local/include    -fpic  -g -O2  -c RS-PQescape.c -o RS-PQescape.o
+  gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG -I/usr/include
+-I/usr/local/include    -fpic  -g -O2  -c RS-PostgreSQL.c -o
+RS-PostgreSQL.o
+  gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG -I/usr/include
+-I/usr/local/include    -fpic  -g -O2  -c RS-pgsql-copy.c -o
+RS-pgsql-copy.o
+  gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG -I/usr/include
+-I/usr/local/include    -fpic  -g -O2  -c RS-pgsql-getResult.c -o
+RS-pgsql-getResult.o
+  gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG -I/usr/include
+-I/usr/local/include    -fpic  -g -O2  -c RS-pgsql-pqexec.c -o
+RS-pgsql-pqexec.o
+  gcc -std=gnu99 -shared -L/usr/local/lib64 -o RPostgreSQL.so RS-DBI.o
+RS-PQescape.o RS-PostgreSQL.o RS-pgsql-copy.o RS-pgsql-getResult.o
+RS-pgsql-pqexec.o -L/usr/lib -lpq
+  /usr/bin/ld: cannot find -lpq
+  collect2: error: ld returned 1 exit status
+  make: *** [RPostgreSQL.so] Error 1
+  ERROR: compilation failed for package ?RPostgreSQL?
+  * removing ?/usr/local/lib64/R/library/RPostgreSQL?
+ 
+  The downloaded source packages are in
+      ?/tmp/Rtmpv5LkJj/downloaded_packages?
+  Updating HTML index of packages in '.Library'
+  Making packages.html  ... done
+  Warning message:
+  In install.packages("RPostgreSQL", dependencies = TRUE) :
+     installation of package ?RPostgreSQL? had non-zero exit status
+
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Thu Nov 29 18:53:47 2012
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Thu, 29 Nov 2012 12:53:47 -0500
+Subject: [R-sig-DB] Problems with the RPostgreSQL package compilation
+In-Reply-To: <1354203142.3158.0.camel@freya>
+References: <1354203142.3158.0.camel@freya>
+Message-ID: <50B7A12B.1090302@gmail.com>
+
+Possibly some crossed wires. I think Dirk already replied to this 
+(copied below) but you many not yet have been subscribed to the list 
+when he responded, and it seems to have gone to a different email 
+address for you.  Paul
+
+On 28 November 2012 at 12:17, Paul Gilbert wrote:
+|
+| (moved from R-help)
+|
+| You should get better help with this on R-SIG-DB. It seems you need some
+| additional hint to help the loader find pg.
+
+The linker clearly does not find -lpq so you need to install libpq-dev (or
+whichever related name it has) but not ...
+
+| Paul
+|
+| On 12-11-28 06:00 AM, r-help-request at r-project.org wrote:
+| > Date: Thu, 22 Nov 2012 12:15:18 +0100
+| > From: Tomas Lanczos<lanczos at t-zones.sk>
+| > To:r-help at r-project.org
+| > Subject: Re: [R] problems with RPostgreSQL compilation
+| > Message-ID: <1353582918.3021.12.camel at freya>
+| > Content-Type: text/plain; charset="UTF-8"
+| >
+| > Thank You for Your answer.I have installed libpqxx 4.0.0 and its devel
+| > tools also.
+
+libpqxx which is the __C++__ interface whereas we use the standard __C__ 
+interface.
+
+Those are not the same thing.
+
+Dirk
+
+| >
+| > Regards
+| >
+| > Tomas
+| >
+| >
+| > On Thu, 2012-11-22 at 19:32 +0900, Pascal Oettli wrote:
+| >> >Hello,
+| >> >
+| >> >Do you have the shared libraries required by PostgreSQL installed on
+| >> >your machine (libpq)?
+| >> >
+| >> >Regards,
+| >> >Pascal
+| >> >
+| >> >Le 22/11/2012 18:45,lanczos at t-zones.sk  a ?crit :
+| >>> > >Hello,
+| >>> > >
+| >>> > >I am trying to install RPostgreSQL, but without success at the 
+moment, getting an errormessage - see below.
+| >>> > >My OS is Fedora 17, R version 2.15.2, PostgreSQL 9.2.1 with 
+Postgis 2.0.1 spatial extension.
+| >>> > >
+| >>> > >Thank You for any help, advice or hint in advance.
+| >>> > >
+| >>> > >Regards
+| >>> > >
+| >>> > >Tomas
+| >>> > >
+| >>> > >
+| >>>> > >>install.packages("RPostgreSQL", dependencies=TRUE)
+| >>> > >trying URL 
+'http://cran.fyxm.net/src/contrib/RPostgreSQL_0.3-3.tar.gz'
+| >>> > >Content type 'application/x-gzip' length 474570 bytes (463 Kb)
+| >>> > >opened URL
+| >>> > >==================================================
+| >>> > >downloaded 463 Kb
+| >>> > >
+| >>> > >* installing*source*  package ?RPostgreSQL? ...
+| >>> > >** package ?RPostgreSQL? successfully unpacked and MD5 sums checked
+| >>> > >checking for gcc... gcc
+| >>> > >checking for C compiler default output file name... a.out
+| >>> > >checking whether the C compiler works... yes
+| >>> > >checking whether we are cross compiling... no
+| >>> > >checking for suffix of executables...
+| >>> > >checking for suffix of object files... o
+| >>> > >checking whether we are using the GNU C compiler... yes
+| >>> > >checking whether gcc accepts -g... yes
+| >>> > >checking for gcc option to accept ISO C89... none needed
+| >>> > >checking build system type... x86_64-unknown-linux-gnu
+| >>> > >checking host system type... x86_64-unknown-linux-gnu
+| >>> > >checking target system type... x86_64-unknown-linux-gnu
+| >>> > >checking for pg_config... /usr/bin/pg_config
+| >>> > >checking for "/usr/include/libpq-fe.h"... yes
+| >>> > >configure: creating ./config.status
+| >>> > >config.status: creating src/Makevars
+| >>> > >** libs
+| >>> > >gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG 
+-I/usr/include -I/usr/local/include    -fpic  -g -O2  -c RS-DBI.c -o 
+RS-DBI.o
+| >>> > >gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG 
+-I/usr/include -I/usr/local/include    -fpic  -g -O2  -c RS-PQescape.c 
+-o RS-PQescape.o
+| >>> > >gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG 
+-I/usr/include -I/usr/local/include    -fpic  -g -O2  -c RS-PostgreSQL.c 
+-o RS-PostgreSQL.o
+| >>> > >gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG 
+-I/usr/include -I/usr/local/include    -fpic  -g -O2  -c RS-pgsql-copy.c 
+-o RS-pgsql-copy.o
+| >>> > >gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG 
+-I/usr/include -I/usr/local/include    -fpic  -g -O2  -c 
+RS-pgsql-getResult.c -o RS-pgsql-getResult.o
+| >>> > >gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG 
+-I/usr/include -I/usr/local/include    -fpic  -g -O2  -c 
+RS-pgsql-pqexec.c -o RS-pgsql-pqexec.o
+| >>> > >gcc -std=gnu99 -shared -L/usr/local/lib64 -o RPostgreSQL.so 
+RS-DBI.o RS-PQescape.o RS-PostgreSQL.o RS-pgsql-copy.o 
+RS-pgsql-getResult.o RS-pgsql-pqexec.o -L/usr/lib -lpq
+| >>> > >/usr/bin/ld: cannot find -lpq
+| >>> > >collect2: error: ld returned 1 exit status
+| >>> > >make: *** [RPostgreSQL.so] Error 1
+| >>> > >ERROR: compilation failed for package ?RPostgreSQL?
+| >>> > >* removing ?/usr/local/lib64/R/library/RPostgreSQL?
+| >>> > >
+| >>> > >The downloaded source packages are in
+| >>> > >	?/tmp/Rtmpv5LkJj/downloaded_packages?
+| >>> > >Updating HTML index of packages in '.Library'
+| >>> > >Making packages.html  ... done
+| >>> > >Warning message:
+| >>> > >In install.packages("RPostgreSQL", dependencies = TRUE) :
+| >>> > >    installation of package ?RPostgreSQL? had non-zero exit status
+| >>> > >
+| >>> > >--
+| >>> > >
+| >>> > >
+| >>> > >
+|
+| _______________________________________________
+| R-sig-DB mailing list -- R Special Interest Group
+| R-sig-DB at r-project.org
+| https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+-- Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+On 12-11-29 10:32 AM, Tomas Lanczos wrote:
+>
+>    Hello,
+>
+>    I am trying to install RPostgreSQL, but without success at the moment,
+> getting an errormessage - see below.
+>    My OS is Fedora 17, R version 2.15.2, PostgreSQL 9.2.1 with Postgis
+> 2.0.1 spatial extension. I installed libpqxx 4.0.0 and its devel
+> tools also.
+>
+>    Thank You for any help, advice or hint in advance.
+>
+>    Regards
+>
+>    Tomas
+>
+>
+>    install.packages("RPostgreSQL", dependencies=TRUE)
+>    trying URL 'http://cran.fyxm.net/src/contrib/RPostgreSQL_0.3-3.tar.gz'
+>    Content type 'application/x-gzip' length 474570 bytes (463 Kb)
+>    opened URL
+>    ==================================================
+>    downloaded 463 Kb
+>
+>    * installing *source* package ?RPostgreSQL? ...
+>    ** package ?RPostgreSQL? successfully unpacked and MD5 sums checked
+>    checking for gcc... gcc
+>    checking for C compiler default output file name... a.out
+>    checking whether the C compiler works... yes
+>    checking whether we are cross compiling... no
+>    checking for suffix of executables...
+>    checking for suffix of object files... o
+>    checking whether we are using the GNU C compiler... yes
+>    checking whether gcc accepts -g... yes
+>    checking for gcc option to accept ISO C89... none needed
+>    checking build system type... x86_64-unknown-linux-gnu
+>    checking host system type... x86_64-unknown-linux-gnu
+>    checking target system type... x86_64-unknown-linux-gnu
+>    checking for pg_config... /usr/bin/pg_config
+>    checking for "/usr/include/libpq-fe.h"... yes
+>    configure: creating ./config.status
+>    config.status: creating src/Makevars
+>    ** libs
+>    gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG -I/usr/include
+> -I/usr/local/include    -fpic  -g -O2  -c RS-DBI.c -o RS-DBI.o
+>    gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG -I/usr/include
+> -I/usr/local/include    -fpic  -g -O2  -c RS-PQescape.c -o RS-PQescape.o
+>    gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG -I/usr/include
+> -I/usr/local/include    -fpic  -g -O2  -c RS-PostgreSQL.c -o
+> RS-PostgreSQL.o
+>    gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG -I/usr/include
+> -I/usr/local/include    -fpic  -g -O2  -c RS-pgsql-copy.c -o
+> RS-pgsql-copy.o
+>    gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG -I/usr/include
+> -I/usr/local/include    -fpic  -g -O2  -c RS-pgsql-getResult.c -o
+> RS-pgsql-getResult.o
+>    gcc -std=gnu99 -I/usr/local/lib64/R/include -DNDEBUG -I/usr/include
+> -I/usr/local/include    -fpic  -g -O2  -c RS-pgsql-pqexec.c -o
+> RS-pgsql-pqexec.o
+>    gcc -std=gnu99 -shared -L/usr/local/lib64 -o RPostgreSQL.so RS-DBI.o
+> RS-PQescape.o RS-PostgreSQL.o RS-pgsql-copy.o RS-pgsql-getResult.o
+> RS-pgsql-pqexec.o -L/usr/lib -lpq
+>    /usr/bin/ld: cannot find -lpq
+>    collect2: error: ld returned 1 exit status
+>    make: *** [RPostgreSQL.so] Error 1
+>    ERROR: compilation failed for package ?RPostgreSQL?
+>    * removing ?/usr/local/lib64/R/library/RPostgreSQL?
+>
+>    The downloaded source packages are in
+>        ?/tmp/Rtmpv5LkJj/downloaded_packages?
+>    Updating HTML index of packages in '.Library'
+>    Making packages.html  ... done
+>    Warning message:
+>    In install.packages("RPostgreSQL", dependencies = TRUE) :
+>       installation of package ?RPostgreSQL? had non-zero exit status
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From @@@|dh@r116 @end|ng |rom gm@||@com  Fri Nov 30 11:40:26 2012
+From: @@@|dh@r116 @end|ng |rom gm@||@com (sasidhar M)
+Date: Fri, 30 Nov 2012 16:10:26 +0530
+Subject: [R-sig-DB] oracle database connection issue from R in Linux
+Message-ID: <CAF63_=g4vM1qWuTat0qu1NgfGEBHtx0Q_P9EOTU72i1JOjC2PQ@mail.gmail.com>
+
+Hi,
+
+This is sasi.
+I installed R 64 bit and oracle client 64 bit in fedora 17. After R is
+working fine. Oracle database also working fine. but problem is, If i try
+to connect oracle from R its not connecting.
+So, pls guide me how to connect from R to oracle.
+
+
+how, i tried:--
+
+odbcinst.ini file code is
+
+[ORACLE2]
+Description = oracle driver
+Driver = /ibexis/app/oracle/product/11.2.0/db_1/lib/libsqora.so.11.1
+DontDLClose = 1
+FileUsage = 1
+UsageCount = 1
+
+
+I tried in R ...
+>library(RODBC)
+>con <- odbcConnect("data source name", uid="username", pwd="password")
+
+after this line i got error,
+
+> odbcConnect("india", uid="data_quality", pwd="data_quality")
+[1] -1
+Warning messages:
+1: In odbcDriverConnect("DSN=india;UID=data_quality;PWD=data_quality") :
+  [RODBC] ERROR: state 01000, code 0, message [unixODBC][Driver
+Manager]Can't open lib '/ibexis/app/oracle/product/
+11.2.0/db_1/lib/libsqora.so.11.1' : file not found
+2: In odbcDriverConnect("DSN=india;UID=data_quality;PWD=data_quality") :
+  ODBC connection failed
+
+Please help me .
+Iam eagerly waiting for reply
+
+	[[alternative HTML version deleted]]
+
+
+
+From j@me@@d@v|d@@m|th @end|ng |rom gm@||@com  Fri Nov 30 16:05:16 2012
+From: j@me@@d@v|d@@m|th @end|ng |rom gm@||@com (James David Smith)
+Date: Fri, 30 Nov 2012 15:05:16 +0000
+Subject: [R-sig-DB] R and PostgreSQL - Writing data?
+In-Reply-To: <f3b9eca0-6059-440d-b636-729bf05438f0@default>
+References: <CAMu32ACFMBa7Z-6ZepagkdsXvqxi7ObSXCa-hn0FMcLQUZ9Y+g@mail.gmail.com>
+	<CANeAVB=5Rm17sQnfvAThu0X7z3P=gOX5WcqadJjss+0J0QzBZA@mail.gmail.com>
+	<CAMu32ADVRDn=ExeAYnVn-Xv7YDhFJgAe=qAJC4ai0OaQohV3qA@mail.gmail.com>
+	<CANeAVBksja5EyLYNbCk_mz=msidSFjKU8RgCzr09-j9a5y23iQ@mail.gmail.com>
+	<f3b9eca0-6059-440d-b636-729bf05438f0@default>
+Message-ID: <CAMu32ADKqtR44G6PrOm-GxkropMiuHSoNxpVn1n3rcjjVVUoLw@mail.gmail.com>
+
+Hi all,
+
+Sorry for the thread re-activation. I was wondering if anyone has
+successfully used the syntax below with the library RPostgreSQL?
+
+dbGetQuery(con, "update foo set sal = :1 where empno = :2",
+           data = dat[,c("SAL","EMPNO")])
+
+I've been messing about with it but can't get it to work. I get the error:
+
+Error in postgresqlQuickSQL(conn, statement, ...) :
+  unused argument(s) (data = list(bc = c(NA, NA, NA etc.
+
+Thanks
+
+James
+
+
+
+On 28 September 2012 17:13, Denis Mukhin <denis.x.mukhin at oracle.com> wrote:
+> James,
+>
+> I have never tried RPostgreSQL before but in ROracle which is also a DBI based interface you can do something like this:
+>
+> library(ROracle)
+> con <- dbConnect(Oracle(), "scott", "tiger")
+> dbGetQuery(con, "create table foo as select * from emp")
+>
+> dat <- dbGetQuery(con, "select * from foo")
+> dat$SAL <- dat$SAL*10
+> dbGetQuery(con, "update foo set sal = :1 where empno = :2",
+>            data = dat[,c("SAL","EMPNO")])
+> dbCommit(con)
+> dbGetQuery(con, "select * from foo")
+>
+> dbGetQuery(con, "drop table foo purge")
+> dbDisconnect(con)
+>
+> Denis
+>
+> -----Original Message-----
+> From: Sean Davis [mailto:sdavis2 at mail.nih.gov]
+> Sent: Friday, September 28, 2012 11:43 AM
+> To: James David Smith
+> Cc: r-sig-db at r-project.org
+> Subject: Re: [R-sig-DB] R and PostgreSQL - Writing data?
+>
+> On Fri, Sep 28, 2012 at 10:36 AM, James David Smith <james.david.smith at gmail.com> wrote:
+>> Hi Sean,
+>>
+>> Thanks for the reply. I'm familiar with UPDATE queries when working in
+>> PostgreSQL, but not from within R. Would it look something like this?
+>>
+>> dbWriteTable(con, " UPDATE table SET ucam_no2 =
+>> 'ucam_no2$interpolated_data' ")
+>>
+>> My problem is how to get the R data 'within' my SQL statement I think.
+>
+> To do an update, you'll need to loop through your data.frame and issue a dbSendQuery().  To create the SQL string, I often use something
+> like:
+>
+> sprintf("UPDATE originalTable SET ucam_no2=%f WHERE originalTable.id = %d",....)
+>
+> You can't do this in one step, unfortunately.  This is how UPDATE works and has nothing to do with R.
+>
+> Sean
+>
+>
+>>
+>> On 28 September 2012 15:19, Sean Davis <sdavis2 at mail.nih.gov> wrote:
+>>> On Fri, Sep 28, 2012 at 10:14 AM, James David Smith
+>>> <james.david.smith at gmail.com> wrote:
+>>>> Dear all,
+>>>>
+>>>> Sorry if this isn't quite the right place, but it's the first time
+>> SendSave NowDiscardDraft autosaved at 15:36 (0 minutes ago) 33% full
+>> Using 3.4 GB of your 10.1 GB
+>> ?2012 Google - Terms & Privacy
+>> Last account activity: 50 minutes ago
+>> Details
+>> People (2)
+>> Sean Davis
+>> Add to circles
+>>
+>> Show details
+>> Ads ? Why these ads?
+>> Big Data Too Slow?
+>> Real-Time Analytics for Big Data. Visual Drag & Drop UI. Quick & Easy
+>> PentahoBigData.com Talend Open Source ESB Open Source ESB Based on
+>> Apache CXF and Apache Camel. Free Download!
+>> www.talend.com/Free_ESB_Software
+>> Warp I/O for SQL Server
+>> Speed SQL Server performance 3x Faster I/O, reduced storage
+>> www.confio.com/warp-io Storage Container Sussex Ex-Shipping Containers
+>> Sale & Hire Storage Container 0800 043 6311
+>> www.CsShippingContainers.co.uk More about...
+>> MS Access Database SQL ?
+>> Database ?
+>> Excel Database Query ?
+>> Oracle Database Problems ?
+>>
+>>>> I've posted here. My issue is to do with writing to a PostgreSQL
+>>>> database from within R. My situation is best explained by some R
+>>>> code to start:
+>>>>
+>>>> #Connect to the database
+>>>> con <- dbConnect(PostgreSQL(), user="postgres", password="password",
+>>>> dbname="database")
+>>>>
+>>>> #Get some data out of the database.
+>>>> ucam_no2$original_data <- dbGetQuery(con, "select ucam_no2 FROM
+>>>> table")
+>>>>
+>>>> This returns say 10000 rows of data, but there is only data in about
+>>>> half of those rows. What I want to do is interpolate the missing
+>>>> data so I do this:
+>>>>
+>>>> #Generate some data
+>>>> ucam_no2$interpolated_data <- na.approx(ucam_data$ucam_no2, na.rm =
+>>>> FALSE)
+>>>>
+>>>> This works well and I now have 10000 rows of data with no empty cells.
+>>>> I now want to write this back into my PostgresSQL database. Into the
+>>>> same row that I took the data from in the first place. But I don't
+>>>> know how. I can write to a new table with something like the below,
+>>>> but what I'd really like to do is put the data back into the table I
+>>>> got it from.
+>>>>
+>>>> # Try to write the data back
+>>>> dbWriteTable(con, "new_data", ucam_no2$interpolated_data)
+>>>
+>>> Hi, James.
+>>>
+>>> You'll need to look into doing a SQL UPDATE.  That is the standard
+>>> way to "put data back into the table I got it from".
+>>>
+>>> Sean
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From edd @end|ng |rom deb|@n@org  Fri Nov 30 16:26:43 2012
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Fri, 30 Nov 2012 09:26:43 -0600
+Subject: [R-sig-DB] R and PostgreSQL - Writing data?
+In-Reply-To: <CAMu32ADKqtR44G6PrOm-GxkropMiuHSoNxpVn1n3rcjjVVUoLw@mail.gmail.com>
+References: <CAMu32ACFMBa7Z-6ZepagkdsXvqxi7ObSXCa-hn0FMcLQUZ9Y+g@mail.gmail.com>
+	<CANeAVB=5Rm17sQnfvAThu0X7z3P=gOX5WcqadJjss+0J0QzBZA@mail.gmail.com>
+	<CAMu32ADVRDn=ExeAYnVn-Xv7YDhFJgAe=qAJC4ai0OaQohV3qA@mail.gmail.com>
+	<CANeAVBksja5EyLYNbCk_mz=msidSFjKU8RgCzr09-j9a5y23iQ@mail.gmail.com>
+	<f3b9eca0-6059-440d-b636-729bf05438f0@default>
+	<CAMu32ADKqtR44G6PrOm-GxkropMiuHSoNxpVn1n3rcjjVVUoLw@mail.gmail.com>
+Message-ID: <20664.53299.715207.913771@max.nulle.part>
+
+
+On 30 November 2012 at 15:05, James David Smith wrote:
+| Hi all,
+| 
+| Sorry for the thread re-activation. I was wondering if anyone has
+| successfully used the syntax below with the library RPostgreSQL?
+
+Nope. 
+
+I always expand the strings explicitly. It would be news to me of that
+worked.  Good news, for sure, but still news...
+
+Dirk
+ 
+
+| dbGetQuery(con, "update foo set sal = :1 where empno = :2",
+|            data = dat[,c("SAL","EMPNO")])
+| 
+| I've been messing about with it but can't get it to work. I get the error:
+| 
+| Error in postgresqlQuickSQL(conn, statement, ...) :
+|   unused argument(s) (data = list(bc = c(NA, NA, NA etc.
+| 
+| Thanks
+| 
+| James
+| 
+| 
+| 
+| On 28 September 2012 17:13, Denis Mukhin <denis.x.mukhin at oracle.com> wrote:
+| > James,
+| >
+| > I have never tried RPostgreSQL before but in ROracle which is also a DBI based interface you can do something like this:
+| >
+| > library(ROracle)
+| > con <- dbConnect(Oracle(), "scott", "tiger")
+| > dbGetQuery(con, "create table foo as select * from emp")
+| >
+| > dat <- dbGetQuery(con, "select * from foo")
+| > dat$SAL <- dat$SAL*10
+| > dbGetQuery(con, "update foo set sal = :1 where empno = :2",
+| >            data = dat[,c("SAL","EMPNO")])
+| > dbCommit(con)
+| > dbGetQuery(con, "select * from foo")
+| >
+| > dbGetQuery(con, "drop table foo purge")
+| > dbDisconnect(con)
+| >
+| > Denis
+| >
+| > -----Original Message-----
+| > From: Sean Davis [mailto:sdavis2 at mail.nih.gov]
+| > Sent: Friday, September 28, 2012 11:43 AM
+| > To: James David Smith
+| > Cc: r-sig-db at r-project.org
+| > Subject: Re: [R-sig-DB] R and PostgreSQL - Writing data?
+| >
+| > On Fri, Sep 28, 2012 at 10:36 AM, James David Smith <james.david.smith at gmail.com> wrote:
+| >> Hi Sean,
+| >>
+| >> Thanks for the reply. I'm familiar with UPDATE queries when working in
+| >> PostgreSQL, but not from within R. Would it look something like this?
+| >>
+| >> dbWriteTable(con, " UPDATE table SET ucam_no2 =
+| >> 'ucam_no2$interpolated_data' ")
+| >>
+| >> My problem is how to get the R data 'within' my SQL statement I think.
+| >
+| > To do an update, you'll need to loop through your data.frame and issue a dbSendQuery().  To create the SQL string, I often use something
+| > like:
+| >
+| > sprintf("UPDATE originalTable SET ucam_no2=%f WHERE originalTable.id = %d",....)
+| >
+| > You can't do this in one step, unfortunately.  This is how UPDATE works and has nothing to do with R.
+| >
+| > Sean
+| >
+| >
+| >>
+| >> On 28 September 2012 15:19, Sean Davis <sdavis2 at mail.nih.gov> wrote:
+| >>> On Fri, Sep 28, 2012 at 10:14 AM, James David Smith
+| >>> <james.david.smith at gmail.com> wrote:
+| >>>> Dear all,
+| >>>>
+| >>>> Sorry if this isn't quite the right place, but it's the first time
+| >> SendSave NowDiscardDraft autosaved at 15:36 (0 minutes ago) 33% full
+| >> Using 3.4 GB of your 10.1 GB
+| >> ?2012 Google - Terms & Privacy
+| >> Last account activity: 50 minutes ago
+| >> Details
+| >> People (2)
+| >> Sean Davis
+| >> Add to circles
+| >>
+| >> Show details
+| >> Ads ? Why these ads?
+| >> Big Data Too Slow?
+| >> Real-Time Analytics for Big Data. Visual Drag & Drop UI. Quick & Easy
+| >> PentahoBigData.com Talend Open Source ESB Open Source ESB Based on
+| >> Apache CXF and Apache Camel. Free Download!
+| >> www.talend.com/Free_ESB_Software
+| >> Warp I/O for SQL Server
+| >> Speed SQL Server performance 3x Faster I/O, reduced storage
+| >> www.confio.com/warp-io Storage Container Sussex Ex-Shipping Containers
+| >> Sale & Hire Storage Container 0800 043 6311
+| >> www.CsShippingContainers.co.uk More about...
+| >> MS Access Database SQL ?
+| >> Database ?
+| >> Excel Database Query ?
+| >> Oracle Database Problems ?
+| >>
+| >>>> I've posted here. My issue is to do with writing to a PostgreSQL
+| >>>> database from within R. My situation is best explained by some R
+| >>>> code to start:
+| >>>>
+| >>>> #Connect to the database
+| >>>> con <- dbConnect(PostgreSQL(), user="postgres", password="password",
+| >>>> dbname="database")
+| >>>>
+| >>>> #Get some data out of the database.
+| >>>> ucam_no2$original_data <- dbGetQuery(con, "select ucam_no2 FROM
+| >>>> table")
+| >>>>
+| >>>> This returns say 10000 rows of data, but there is only data in about
+| >>>> half of those rows. What I want to do is interpolate the missing
+| >>>> data so I do this:
+| >>>>
+| >>>> #Generate some data
+| >>>> ucam_no2$interpolated_data <- na.approx(ucam_data$ucam_no2, na.rm =
+| >>>> FALSE)
+| >>>>
+| >>>> This works well and I now have 10000 rows of data with no empty cells.
+| >>>> I now want to write this back into my PostgresSQL database. Into the
+| >>>> same row that I took the data from in the first place. But I don't
+| >>>> know how. I can write to a new table with something like the below,
+| >>>> but what I'd really like to do is put the data back into the table I
+| >>>> got it from.
+| >>>>
+| >>>> # Try to write the data back
+| >>>> dbWriteTable(con, "new_data", ucam_no2$interpolated_data)
+| >>>
+| >>> Hi, James.
+| >>>
+| >>> You'll need to look into doing a SQL UPDATE.  That is the standard
+| >>> way to "put data back into the table I got it from".
+| >>>
+| >>> Sean
+| >
+| > _______________________________________________
+| > R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org https://stat.ethz.ch/mailman/listinfo/r-sig-db
+| >
+| > _______________________________________________
+| > R-sig-DB mailing list -- R Special Interest Group
+| > R-sig-DB at r-project.org
+| > https://stat.ethz.ch/mailman/listinfo/r-sig-db
+| 
+| _______________________________________________
+| R-sig-DB mailing list -- R Special Interest Group
+| R-sig-DB at r-project.org
+| https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+-- 
+Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com  
+
+
+
+From j@me@@d@v|d@@m|th @end|ng |rom gm@||@com  Fri Nov 30 16:30:29 2012
+From: j@me@@d@v|d@@m|th @end|ng |rom gm@||@com (James David Smith)
+Date: Fri, 30 Nov 2012 15:30:29 +0000
+Subject: [R-sig-DB] R and PostgreSQL - Writing data?
+In-Reply-To: <20664.53299.715207.913771@max.nulle.part>
+References: <CAMu32ACFMBa7Z-6ZepagkdsXvqxi7ObSXCa-hn0FMcLQUZ9Y+g@mail.gmail.com>
+	<CANeAVB=5Rm17sQnfvAThu0X7z3P=gOX5WcqadJjss+0J0QzBZA@mail.gmail.com>
+	<CAMu32ADVRDn=ExeAYnVn-Xv7YDhFJgAe=qAJC4ai0OaQohV3qA@mail.gmail.com>
+	<CANeAVBksja5EyLYNbCk_mz=msidSFjKU8RgCzr09-j9a5y23iQ@mail.gmail.com>
+	<f3b9eca0-6059-440d-b636-729bf05438f0@default>
+	<CAMu32ADKqtR44G6PrOm-GxkropMiuHSoNxpVn1n3rcjjVVUoLw@mail.gmail.com>
+	<20664.53299.715207.913771@max.nulle.part>
+Message-ID: <CAMu32ABuHyCZ49oPMxyx5toEpttVXJTCRjzKRK4o1LDo4H_qaQ@mail.gmail.com>
+
+Hi Dirk,
+
+Would be interested to know what you mean by 'expand the strings
+explicitly' please? Would that help me? I want to be able to write
+data from a dataframe into an existing PostgresSQL table, matching a
+column to a variable in the dataframe (e.g. like the query I posted).
+
+Thanks
+
+James
+
+On 30 November 2012 15:26, Dirk Eddelbuettel <edd at debian.org> wrote:
+>
+> On 30 November 2012 at 15:05, James David Smith wrote:
+> | Hi all,
+> |
+> | Sorry for the thread re-activation. I was wondering if anyone has
+> | successfully used the syntax below with the library RPostgreSQL?
+>
+> Nope.
+>
+> I always expand the strings explicitly. It would be news to me of that
+> worked.  Good news, for sure, but still news...
+>
+> Dirk
+>
+>
+> | dbGetQuery(con, "update foo set sal = :1 where empno = :2",
+> |            data = dat[,c("SAL","EMPNO")])
+> |
+> | I've been messing about with it but can't get it to work. I get the error:
+> |
+> | Error in postgresqlQuickSQL(conn, statement, ...) :
+> |   unused argument(s) (data = list(bc = c(NA, NA, NA etc.
+> |
+> | Thanks
+> |
+> | James
+> |
+> |
+> |
+> | On 28 September 2012 17:13, Denis Mukhin <denis.x.mukhin at oracle.com> wrote:
+> | > James,
+> | >
+> | > I have never tried RPostgreSQL before but in ROracle which is also a DBI based interface you can do something like this:
+> | >
+> | > library(ROracle)
+> | > con <- dbConnect(Oracle(), "scott", "tiger")
+> | > dbGetQuery(con, "create table foo as select * from emp")
+> | >
+> | > dat <- dbGetQuery(con, "select * from foo")
+> | > dat$SAL <- dat$SAL*10
+> | > dbGetQuery(con, "update foo set sal = :1 where empno = :2",
+> | >            data = dat[,c("SAL","EMPNO")])
+> | > dbCommit(con)
+> | > dbGetQuery(con, "select * from foo")
+> | >
+> | > dbGetQuery(con, "drop table foo purge")
+> | > dbDisconnect(con)
+> | >
+> | > Denis
+> | >
+> | > -----Original Message-----
+> | > From: Sean Davis [mailto:sdavis2 at mail.nih.gov]
+> | > Sent: Friday, September 28, 2012 11:43 AM
+> | > To: James David Smith
+> | > Cc: r-sig-db at r-project.org
+> | > Subject: Re: [R-sig-DB] R and PostgreSQL - Writing data?
+> | >
+> | > On Fri, Sep 28, 2012 at 10:36 AM, James David Smith <james.david.smith at gmail.com> wrote:
+> | >> Hi Sean,
+> | >>
+> | >> Thanks for the reply. I'm familiar with UPDATE queries when working in
+> | >> PostgreSQL, but not from within R. Would it look something like this?
+> | >>
+> | >> dbWriteTable(con, " UPDATE table SET ucam_no2 =
+> | >> 'ucam_no2$interpolated_data' ")
+> | >>
+> | >> My problem is how to get the R data 'within' my SQL statement I think.
+> | >
+> | > To do an update, you'll need to loop through your data.frame and issue a dbSendQuery().  To create the SQL string, I often use something
+> | > like:
+> | >
+> | > sprintf("UPDATE originalTable SET ucam_no2=%f WHERE originalTable.id = %d",....)
+> | >
+> | > You can't do this in one step, unfortunately.  This is how UPDATE works and has nothing to do with R.
+> | >
+> | > Sean
+> | >
+> | >
+> | >>
+> | >> On 28 September 2012 15:19, Sean Davis <sdavis2 at mail.nih.gov> wrote:
+> | >>> On Fri, Sep 28, 2012 at 10:14 AM, James David Smith
+> | >>> <james.david.smith at gmail.com> wrote:
+> | >>>> Dear all,
+> | >>>>
+> | >>>> Sorry if this isn't quite the right place, but it's the first time
+> | >> SendSave NowDiscardDraft autosaved at 15:36 (0 minutes ago) 33% full
+> | >> Using 3.4 GB of your 10.1 GB
+> | >> ?2012 Google - Terms & Privacy
+> | >> Last account activity: 50 minutes ago
+> | >> Details
+> | >> People (2)
+> | >> Sean Davis
+> | >> Add to circles
+> | >>
+> | >> Show details
+> | >> Ads ? Why these ads?
+> | >> Big Data Too Slow?
+> | >> Real-Time Analytics for Big Data. Visual Drag & Drop UI. Quick & Easy
+> | >> PentahoBigData.com Talend Open Source ESB Open Source ESB Based on
+> | >> Apache CXF and Apache Camel. Free Download!
+> | >> www.talend.com/Free_ESB_Software
+> | >> Warp I/O for SQL Server
+> | >> Speed SQL Server performance 3x Faster I/O, reduced storage
+> | >> www.confio.com/warp-io Storage Container Sussex Ex-Shipping Containers
+> | >> Sale & Hire Storage Container 0800 043 6311
+> | >> www.CsShippingContainers.co.uk More about...
+> | >> MS Access Database SQL ?
+> | >> Database ?
+> | >> Excel Database Query ?
+> | >> Oracle Database Problems ?
+> | >>
+> | >>>> I've posted here. My issue is to do with writing to a PostgreSQL
+> | >>>> database from within R. My situation is best explained by some R
+> | >>>> code to start:
+> | >>>>
+> | >>>> #Connect to the database
+> | >>>> con <- dbConnect(PostgreSQL(), user="postgres", password="password",
+> | >>>> dbname="database")
+> | >>>>
+> | >>>> #Get some data out of the database.
+> | >>>> ucam_no2$original_data <- dbGetQuery(con, "select ucam_no2 FROM
+> | >>>> table")
+> | >>>>
+> | >>>> This returns say 10000 rows of data, but there is only data in about
+> | >>>> half of those rows. What I want to do is interpolate the missing
+> | >>>> data so I do this:
+> | >>>>
+> | >>>> #Generate some data
+> | >>>> ucam_no2$interpolated_data <- na.approx(ucam_data$ucam_no2, na.rm =
+> | >>>> FALSE)
+> | >>>>
+> | >>>> This works well and I now have 10000 rows of data with no empty cells.
+> | >>>> I now want to write this back into my PostgresSQL database. Into the
+> | >>>> same row that I took the data from in the first place. But I don't
+> | >>>> know how. I can write to a new table with something like the below,
+> | >>>> but what I'd really like to do is put the data back into the table I
+> | >>>> got it from.
+> | >>>>
+> | >>>> # Try to write the data back
+> | >>>> dbWriteTable(con, "new_data", ucam_no2$interpolated_data)
+> | >>>
+> | >>> Hi, James.
+> | >>>
+> | >>> You'll need to look into doing a SQL UPDATE.  That is the standard
+> | >>> way to "put data back into the table I got it from".
+> | >>>
+> | >>> Sean
+> | >
+> | > _______________________________________________
+> | > R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> | >
+> | > _______________________________________________
+> | > R-sig-DB mailing list -- R Special Interest Group
+> | > R-sig-DB at r-project.org
+> | > https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> |
+> | _______________________________________________
+> | R-sig-DB mailing list -- R Special Interest Group
+> | R-sig-DB at r-project.org
+> | https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+> --
+> Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+
+
+From edd @end|ng |rom deb|@n@org  Fri Nov 30 16:51:24 2012
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Fri, 30 Nov 2012 09:51:24 -0600
+Subject: [R-sig-DB] R and PostgreSQL - Writing data?
+In-Reply-To: <CAMu32ABuHyCZ49oPMxyx5toEpttVXJTCRjzKRK4o1LDo4H_qaQ@mail.gmail.com>
+References: <CAMu32ACFMBa7Z-6ZepagkdsXvqxi7ObSXCa-hn0FMcLQUZ9Y+g@mail.gmail.com>
+	<CANeAVB=5Rm17sQnfvAThu0X7z3P=gOX5WcqadJjss+0J0QzBZA@mail.gmail.com>
+	<CAMu32ADVRDn=ExeAYnVn-Xv7YDhFJgAe=qAJC4ai0OaQohV3qA@mail.gmail.com>
+	<CANeAVBksja5EyLYNbCk_mz=msidSFjKU8RgCzr09-j9a5y23iQ@mail.gmail.com>
+	<f3b9eca0-6059-440d-b636-729bf05438f0@default>
+	<CAMu32ADKqtR44G6PrOm-GxkropMiuHSoNxpVn1n3rcjjVVUoLw@mail.gmail.com>
+	<20664.53299.715207.913771@max.nulle.part>
+	<CAMu32ABuHyCZ49oPMxyx5toEpttVXJTCRjzKRK4o1LDo4H_qaQ@mail.gmail.com>
+Message-ID: <20664.54780.974734.269822@max.nulle.part>
+
+
+
+On 30 November 2012 at 15:30, James David Smith wrote:
+| Would be interested to know what you mean by 'expand the strings
+| explicitly' please? Would that help me? I want to be able to write
+| data from a dataframe into an existing PostgresSQL table, matching a
+| column to a variable in the dataframe (e.g. like the query I posted).
+
+Nothing fancy -- just paste().  AFAIK we do not have a mechanism to expand
+queries over columns as you asked for.
+
+And that very basic approach had already been suggested to you in this
+thread, as I recall.
+
+Dirk
+
+-- 
+Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+
+
+From j@me@@d@v|d@@m|th @end|ng |rom gm@||@com  Fri Nov 30 16:52:31 2012
+From: j@me@@d@v|d@@m|th @end|ng |rom gm@||@com (James David Smith)
+Date: Fri, 30 Nov 2012 15:52:31 +0000
+Subject: [R-sig-DB] R and PostgreSQL - Writing data?
+In-Reply-To: <20664.54780.974734.269822@max.nulle.part>
+References: <CAMu32ACFMBa7Z-6ZepagkdsXvqxi7ObSXCa-hn0FMcLQUZ9Y+g@mail.gmail.com>
+	<CANeAVB=5Rm17sQnfvAThu0X7z3P=gOX5WcqadJjss+0J0QzBZA@mail.gmail.com>
+	<CAMu32ADVRDn=ExeAYnVn-Xv7YDhFJgAe=qAJC4ai0OaQohV3qA@mail.gmail.com>
+	<CANeAVBksja5EyLYNbCk_mz=msidSFjKU8RgCzr09-j9a5y23iQ@mail.gmail.com>
+	<f3b9eca0-6059-440d-b636-729bf05438f0@default>
+	<CAMu32ADKqtR44G6PrOm-GxkropMiuHSoNxpVn1n3rcjjVVUoLw@mail.gmail.com>
+	<20664.53299.715207.913771@max.nulle.part>
+	<CAMu32ABuHyCZ49oPMxyx5toEpttVXJTCRjzKRK4o1LDo4H_qaQ@mail.gmail.com>
+	<20664.54780.974734.269822@max.nulle.part>
+Message-ID: <CAMu32ABTDCYCLm4a31tov6=_BZi-+PxhzbupF=tkGH-3-zWH9Q@mail.gmail.com>
+
+Oh I see. Ok, thanks.
+
+On 30 November 2012 15:51, Dirk Eddelbuettel <edd at debian.org> wrote:
+>
+>
+> On 30 November 2012 at 15:30, James David Smith wrote:
+> | Would be interested to know what you mean by 'expand the strings
+> | explicitly' please? Would that help me? I want to be able to write
+> | data from a dataframe into an existing PostgresSQL table, matching a
+> | column to a variable in the dataframe (e.g. like the query I posted).
+>
+> Nothing fancy -- just paste().  AFAIK we do not have a mechanism to expand
+> queries over columns as you asked for.
+>
+> And that very basic approach had already been suggested to you in this
+> thread, as I recall.
+>
+> Dirk
+>
+> --
+> Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+
+
+From m@rc_@chw@rtz @end|ng |rom me@com  Fri Nov 30 17:09:26 2012
+From: m@rc_@chw@rtz @end|ng |rom me@com (Marc Schwartz)
+Date: Fri, 30 Nov 2012 10:09:26 -0600
+Subject: [R-sig-DB] oracle database connection issue from R in Linux
+In-Reply-To: <CAF63_=g4vM1qWuTat0qu1NgfGEBHtx0Q_P9EOTU72i1JOjC2PQ@mail.gmail.com>
+References: <CAF63_=g4vM1qWuTat0qu1NgfGEBHtx0Q_P9EOTU72i1JOjC2PQ@mail.gmail.com>
+Message-ID: <DF5F4CF0-B8BF-480C-87DB-B5FCAC79B364@me.com>
+
+
+On Nov 30, 2012, at 4:40 AM, sasidhar M <sasidhar116 at gmail.com> wrote:
+
+> Hi,
+> 
+> This is sasi.
+> I installed R 64 bit and oracle client 64 bit in fedora 17. After R is
+> working fine. Oracle database also working fine. but problem is, If i try
+> to connect oracle from R its not connecting.
+> So, pls guide me how to connect from R to oracle.
+> 
+> 
+> how, i tried:--
+> 
+> odbcinst.ini file code is
+> 
+> [ORACLE2]
+> Description = oracle driver
+> Driver = /ibexis/app/oracle/product/11.2.0/db_1/lib/libsqora.so.11.1
+> DontDLClose = 1
+> FileUsage = 1
+> UsageCount = 1
+> 
+> 
+> I tried in R ...
+>> library(RODBC)
+>> con <- odbcConnect("data source name", uid="username", pwd="password")
+> 
+> after this line i got error,
+> 
+>> odbcConnect("india", uid="data_quality", pwd="data_quality")
+> [1] -1
+> Warning messages:
+> 1: In odbcDriverConnect("DSN=india;UID=data_quality;PWD=data_quality") :
+>  [RODBC] ERROR: state 01000, code 0, message [unixODBC][Driver
+> Manager]Can't open lib '/ibexis/app/oracle/product/
+> 11.2.0/db_1/lib/libsqora.so.11.1' : file not found
+> 2: In odbcDriverConnect("DSN=india;UID=data_quality;PWD=data_quality") :
+>  ODBC connection failed
+> 
+> Please help me .
+> Iam eagerly waiting for reply
+
+
+Hi,
+
+It looks like you finally found the right place to post this, after your two other posts.
+
+One thing to be aware of, at least based upon prior posts here, specifically as it pertains to 64 bit R on 64 bit Linux (primarily RHEL), 64 bit ODBC drivers and RODBC. There have been reports of problems from others and you can go to rseek.org and search the list archives to see further details. Some have moved to RJDBC as a resolution. I no longer run on Fedora, so do not have recent personal experience in attempting to connect on the platform with that combination of apps and drivers. Others may jump in here with more recent experience.
+
+That being said, if you have not done so, you should try to connect to your Oracle server using isql from the CLI, which will help to identify whether or not your connection issues are due to an underlying problem with your unixODBC/ODBC/Instant Client configuration, or are specific to something with R/RODBC. There is information in the vignette for RODBC, which can be accessed via:
+
+  vignette("RODBC")
+
+If you cannot connect via isql, then you have a basic configuration problem, which could be anything from not having the proper information in 'tnsnames.ora' and '~/.odbc.ini', to not having the proper environment variables set (eg. TNS_ADMIN, ORACLE_HOME, etc.). You also need to have LD_LIBRARY_PATH set in /etc/ld.so.conf and then run (as root) ldconfig to update. If you have LD_LIBRARY_PATH set in your bash profile, it may not be found within R, which was a problem I recall from a number of years ago. The file not found error message above would suggest that something is amiss with your configuration.
+
+Lastly, I do hope that none of the above userID and password information is your actual data. If so, you should change them since you have posted them to a public forum. We do not need to see those, so just blank or asterisk them out in future posts anywhere.
+
+Regards,
+
+Marc Schwartz
+
+
+
+From m@rc_@chw@rtz @end|ng |rom me@com  Sat Dec  1 16:28:43 2012
+From: m@rc_@chw@rtz @end|ng |rom me@com (Marc Schwartz)
+Date: Sat, 01 Dec 2012 09:28:43 -0600
+Subject: [R-sig-DB] remote connection to an Oracle database - using RODBC
+In-Reply-To: <DUB106-W10F73BC12F67DC6EE9067BE6420@phx.gbl>
+References: <DUB106-W10F73BC12F67DC6EE9067BE6420@phx.gbl>
+Message-ID: <1D532BC0-DC8B-43EC-913A-512C506F7316@me.com>
+
+Hi Raff,
+
+Based upon the reply from Actual Tech below, you should definitely remove the XML file name from the Setup File entry in the driver configuration. 
+
+I did not see an indication in your communication with them below that you specifically mentioned the need for Kerberos based authentication, which would be a critical omission in the interaction with them, if so. :-)
+
+>From a search this morning, if my read is correct, it would seem that the Kerberos authentication needs to be supported in the ODBC driver, so that the authentication process is transparent to the calling program (eg. R/RODBC). Looking through some sites that I found, there are options in the DSN configuration in ODBC Manager that support Oracle Advanced Security. You may need to confirm the correct settings with your SysAdmin/DBAdmin for Kerberos on your Oracle server.
+
+1. Go into ODBC Manager and select the DSN configuration for your Oracle server. 
+
+2. On the initial page ("Introduction"), select Continue. 
+
+3. That will bring you to a page where you "Enter the data source name". Be sure that information is correct and then press Continue.
+
+4. On the next page ("Select the database"), select "Advanced Options".  That will bring up a dialog window where you can select "Use Oracle Advanced Security". Once you select that, you can then enter the additional parameters for Encryption and Checksum. Once you do that with the correct parameters, press OK.
+
+5. That should then bring you to a "Conclusion" window. On the bottom of that window will be a Test button, which you should press. You should then be prompted for  username and password information. Then press OK, which should then bring up a test results window with information on success/failure. If successful, then press OK and you will be returned to the Conclusion window and you are done.
+
+
+Since I don't have Kerberos on my Oracle server here, I cannot actually test all of this. Based upon some of those same sources I found, I believe that you can leave the 'uid' and 'pwd' arguments to odbcConnect() blank, as the ODBC DSN configuration information for the 'connection' argument should automatically pass that information to Oracle, rather than needing to pass it in the connection string. You will need to test that hypothesis of course.
+
+Hopefully that gets you moving forward.
+
+Regards,
+
+Marc
+
+P.S. "Mr." :-)
+
+
+On Nov 30, 2012, at 6:57 PM, Raffaello Vardavas <r_vardavas at hotmail.com> wrote:
+
+> Dear R-SIG-DB users ,
+> 
+> I am using a Mac OS X 10.6.8 . I have downloaded Oracle and imported an xml file that allows it to remotely connect to a database. The xml file contains the login details (username, password and the encryption used which is Kerberos authentication). I can do all my sql query searches from Oracle. However - I would like to be able to access this info - do sql queries and convert these to dataframes from R. I have so far been unsuccessful in this task.
+> 
+> As can be seen from the correspondence below, Dr./Mr. Marc Schwartz has been very helpful in providing suggestions and ways forward in this. In particular he pointed me to the software at
+> http://www.actualtech.com/product_oracle.php
+> I download their ODBC Manager. In the set up configuration I enter the following:
+> Driver Name: Actual Oracle
+> Driver File: /Library/ODBC/Actual Oracle.bundle/Contents/MacOS/atoradb.so
+> Setup File: /Users/rvardava/Documents/Projects_2012/OCIE/ism.xml
+> Notice that the setup file points to the xml file that contains the userid and password to access the remote database. I however have also recently tried leaving the setup file entry blank.
+> I then go to System DNS tab in the ODBC Manager and configure the DNS connection - naming it OCIE. In the set up I enter the server name and port that are included in the XML file.
+> Then when I go to R I do the following:
+> library(RODBC)
+> aconn<-odbcConnect("OCIE",uid="eusip",pwd="PASS")
+> Where PASS is the actual password that is contained in the xml file. When I run this in R - I get the following error:
+> 
+> Exception in thread "Thread-4" java.lang.NullPointerException
+>     at ATVersion.getDatabaseProductVersion(ATVersion.java:978)
+> Warning messages:
+> 1: In odbcDriverConnect("DSN=OCIE;UID=eusip;PWD=051A46D71C9701D8FB5766C61317DB72E67B108AC0C33ECB2F") :
+>   [RODBC] ERROR: state HY000, code 100, message [Actual][Oracle] Could not connect to the database. Verify the database name and type (SID or service). (could not get message)
+> 2: In odbcDriverConnect("DSN=OCIE;UID=eusip;PWD=051A46D71C9701D8FB5766C61317DB72E67B108AC0C33ECB2F") :
+>   ODBC connection failed
+> 
+> Please help ? I'm a little lost in next steps to take.
+> 
+> Thank you Raff.
+> 
+> 
+> 
+> 
+> 
+> Hi Raff,
+> 
+> Our driver does not support the XML file you mention in your e-mail.  You should not modify the "Setup File" parameter for the driver configuration (the parameter should be empty).
+> 
+> The driver only uses the connection information provided for your DSN (the driver launches a wizard for prompting you for all connection information if the "Setup File" parameter is empty).
+> 
+> Please let me know if you have any questions.
+> 
+> Best regards,
+> 
+> Jonathan Monroe
+> Actual Technologies - ODBC for Mac OS X
+> support at actualtech.com
+> 
+> 
+> On Nov 26, 2012, at 4:53 PM, "Vardavas, Raffaele"  wrote:
+> 
+> Dear Support,
+> I am considering purchasing your software depending on whether I can make R connect to an Oracle database.
+> I am using a Mac OS X 10.6.8 . I have downloaded Oracle and imported an xml file that allows it to remotely connect to a database.
+> I have downloaded and installed ODBC Manager and created a new connection by going to the drivers tab and configuring an actual oracle connection.  In the set up configuration I enter the following:
+> Driver Name: Actual Oracle
+> Driver File: /Library/ODBC/Actual Oracle.bundle/Contents/MacOS/atoradb.so
+> Setup File: /Users/rvardava/Documents/Projects_2012/OCIE/ism.xml
+> Notice that the setup file points to the xml file that contains the userid and password to access the remote database.
+> I then go to System DNS tab in the ODBC Manager and configure the DNS connection naming it OCIE. In the set up I enter the server name and port that are included in the XML file.
+> Then when I go to R I do the following:
+> library(RODBC)
+> aconn<-odbcConnect("OCIE",uid="eusip",pwd="PASS")
+> Where PASS is the actual password that is contained in the xml file.
+> This however doesn't seem to work. Please can you advise on how to set this up so I can connect to this database via R through your ODBC software.
+> Attached is the xml file stripped of the password ? which should provide useful.
+> Thank you.
+> Raff.
+> 
+> 
+> 
+> Subject: Re: [R] remote connection to an Oracle database - using RODBC - RMySQL..?
+> From: marc_schwartz at me.com
+> Date: Mon, 26 Nov 2012 14:00:44 -0600
+> CC: r-help at r-project.org
+> To: r_vardavas at hotmail.com
+> 
+> 
+> On Nov 26, 2012, at 1:47 PM, Raffaello Vardavas <r_vardavas at hotmail.com> wrote:
+> 
+> Thank you Marc,
+> 
+> I will study the material you sent and follow up on this at R-SIG-DB - should I still have problems.
+> 
+> I'm using a Mac OS X 10.6.8
+> 
+> Thanks.
+> Raff.
+> 
+> 
+> In that case, if you use RODBC, you will want to get the Oracle ODBC driver for OSX from Actual Technologies, which is also what I use on 10.8.2. More info here:
+> 
+>   http://www.actualtech.com/product_oracle.php
+> 
+> Note that it is not free ($34.95 US) and Oracle does not provide OSX ODBC drivers. This is covered in the RODBC vignette.
+> 
+> The good news is that it makes it fairly easy to set up the DSN connection to Oracle, as you don't have to worry about a lot of the low level configuration issues. You can download an eval version of the driver for free. The limitation of the free version is that a query will only return the first 3 rows. You would then need to pay for a fully functional license.
+> 
+> Regards,
+> 
+> Marc
+> 
+> 
+> > Subject: Re: [R] remote connection to an Oracle database - using RODBC - RMySQL..?
+> > From: marc_schwartz at me.com
+> > Date: Wed, 21 Nov 2012 14:16:15 -0600
+> > CC: r-help at r-project.org
+> > To: r_vardavas at hotmail.com
+> > 
+> > 
+> > On Nov 21, 2012, at 1:52 PM, Raffaello Vardavas <r_vardavas at hotmail.com> wrote:
+> > 
+> > > 
+> > > Dear users,
+> > > 
+> > > I can access an database oracle database using sql developer. This was done by importing an xml file that contains the login details - username, password and specifies that it uses the KERBEROS_AUTHENTICATION.
+> > > 
+> > > I'm trying to connect R - so that it can access this database - do sql queries and convert the resulting tables into dataframes. 
+> > > 
+> > > I am a novice in SQL and database access - but a friend provided me with the following approach:
+> > > 
+> > > 
+> > > library(DBI)
+> > > library(RMySQL)
+> > > drvr<-dbDriver("MySQL") #Or another driver, say from the RODBC package?
+> > > acon<-dbConnect(drvr, user="ENTER_USERID", dbname="ENTER_NAME", host="ENTER_HOST",
+> > > port=1521,password=NULL) #password maybe non-null?
+> > > cmds<-dbSendQuery(acon,statement="YOUR SQL QUERY HERE")
+> > > yourdata<-fetch(cmds, n=-1) #Collects all rows and columns of data requested query.
+> > > 
+> > > I have provided this info changing the relevant info in the dbConnect command and provided the password. However this doesn't work. I suspect because in this command there is not specification of the encryption of the password (i.e., KERBEROS_AUTHENTICATION)
+> > > 
+> > > 
+> > > When I look at the details of the connection in SQL developer - what is specified is the follow:
+> > > 
+> > > connection name, username, password (that I cannot see), hostname, port and the SID.
+> > > 
+> > > Note that although the password here cannot be seen - 
+> > > I believe it is computed by the longer password displaced the the xml file I use to set up the connection with sql developer using the KERBEROS_AUTHENTICATION.
+> > > 
+> > > Any ideas on how to proceed.
+> > > 
+> > > Please help.
+> > > 
+> > > Thank you.
+> > > 
+> > > Raff.
+> > 
+> > 
+> > Several comments:
+> > 
+> > 1. Future posts on this subject should be made to R-SIG-DB, not here. More info:
+> > 
+> > https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> > 
+> > 2. Why would you expect to use an R package and driver for MySQL when attempting to access an Oracle server?
+> > 
+> > 3. There is a good starting point on this subject generally in the R Data Import/Export manual:
+> > 
+> > http://cran.r-project.org/doc/manuals/r-release/R-data.html#Relational-databases
+> > 
+> > 4. I would recommend using RODBC, which is what I use. You will of course need to have an ODBC driver for Oracle installed on your system and properly configured. You may need to get that from Oracle or other parties depending upon your OS which is unstated here. You may also need to get assistance with that process from your SysAdmin or DBAdmin.
+> > 
+> > 5. If you use RODBC, there is additional, quite good information in the package vignette, which is accessible by using:
+> > 
+> > vignette("RODBC")
+> > 
+> > post package installation.
+> > 
+> > 6. I don't have any experience using Kerberos authentication on my Oracle server here, so you may have to follow up on the R-SIG-DB list on that point. A search of the archives did not reveal anything material on that point.
+> > 
+> > 7. Alternatives to RODBC would include ROracle and RJDBC via CRAN.
+> > 
+> > Regards,
+> > 
+> > Marc Schwartz
+> > 
+> 
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From |zz@h100 @end|ng |rom y@hoo@com  Sat Dec  1 18:54:59 2012
+From: |zz@h100 @end|ng |rom y@hoo@com (Muhammad Abuizzah)
+Date: Sat, 1 Dec 2012 09:54:59 -0800 (PST)
+Subject: [R-sig-DB] RODBC drop work without Error Message
+Message-ID: <1354384499.80807.YahooMailNeo@web45216.mail.sp1.yahoo.com>
+
+I have a large database on sql Server 2012 Developers edition, some tables are upto 10GB in size, ?I have been connecting fine to the database and extracting info. ?
+today was the first time I tried to pull 1/2 gb in one query, nothing fancy a query that always worked with smaller size.
+
+R dropped the work without providing an error message. ?I got the "sand clock" running for a couple of seconds, as if R had stared communication with the database, but?
+then nothing. I looked at my windows task manger, and CPU utilization was at zero.
+
+I ran memory.size() function to confirm availability of memory and it read 24 thousand I don't remember the rest, I have 24GBs of ram on my computer. ?the size of the other R objects in memory was around 2GB
+
+Are there any known issues between RODBC and SQLServer?
+
+
+
+thanks
+
+
+
+From nthdb@ @end|ng |rom gm@||@com  Mon Dec  3 13:02:59 2012
+From: nthdb@ @end|ng |rom gm@||@com (norbert hoeller)
+Date: Mon, 3 Dec 2012 13:02:59 +0100
+Subject: [R-sig-DB] ROracle 1.1-5 and date fields?
+Message-ID: <CAC+wBSJ9rrhm+XPayNurBenif7ow0ihDJm-d4Q0kwe+VS9z9rw@mail.gmail.com>
+
+Hi Don,
+
+i ran into the same error.
+
+A post on stackoverflow was inspiring:
+
+http://stackoverflow.com/questions/7678485/oracle-ora-01805-on-oracle-11g-database
+
+So I  upgraded the timezone-version, and now i, too, can read these
+pretty dates when using "ROracle"...
+
+In short, what i did, to the good old database [as SYS-user]:
+
+
+select version from v$timezone_file;
+/*
+   VERSION
+----------
+        11
+*/
+--- so, i upgraded to (the latest) TZ-version 14:
+--- You have to be in Migrate-mode to run  dbms_dst.begin_upgrade, so first
+
+shutdown immediate
+---- and then
+startup migrate;
+
+begin
+ dbms_dst.begin_upgrade(new_version => 14);
+end;
+/
+---- restart the database (back to normal)
+--  and run dbms_dst.upgrade_database:
+shutdown immediate
+---- and then
+startup;
+
+declare
+  num_err number;
+begin
+   dbms_dst.upgrade_database(num_err);
+   dbms_output.put_line('upgraded running into '||num_err||' errors');
+   dbms_dst.end_upgrade(num_err);
+   dbms_output.put_line('running into '||num_err||' errors to end upgrade');
+end;
+/
+
+select version from v$timezone_file;
+
+/*
+   VERSION
+----------
+        14
+*/
+
+---- you also might have to re-install/re-link the "ROracle"-package
+(as i did that without testing before-hand, i just cannot tell for
+sure :)
+
+hth;
+
+best regards,
+norbert hoeller
+Universitat fur Bodenkultur (BOKU)
+A-1190 Wien
+
+
+========== you wrote
+I updated R and packages today, and am seeing some changes in ROracle
+behavior that I want to ask about. I'll describe the problems first;
+details follow.
+
+1) dbListTables now lists only my personal tables
+previously it listed global tables
+(don't see any way to show an example of this)
+
+2) simple queries to tables with date fields fail.
+For example,
+
+>* dbGetQuery(con,"select * from wdrstats")*Error in .oci.GetQuery(conn, statement, ...) :
+  Error in try({ : ORA-01805: possible error in date/time operation
+
+The table in this example has, among others, two date fields.
+That is, "describe wdrstats;" returns (among others)
+EFFDATE             DATE
+ENTERED   NOT NULL  DATE
+By the way, I'm very happy to see that ROracle is being actively
+maintained. Thank you!
+
+Thanks
+-Don
+
+-------------------------------
+This was a substantial upgrade; previously I had
+  ROracle 0.5-12 with R 2.14.1
+now I have
+  ROracle 1.1-5 and R 2.15.2
+(so ROracle now uses OCI; whereas before it did not)
+
+R itself is built from source on a linux (RHEL5) machine.
+I ran update.packages() and didn't see any problems.
+Reinstalling ROracle using install.packages() succeeds (I can provide a
+log if desired).
+
+Running R on the same machine as the Oracle installation.
+
+>* require(ROracle)*Loading required package: ROracle
+Loading required package: DBI
+
+>* dbm <- Oracle()*>* dbm*Driver name:            Oracle (OCI)
+Driver version:         1.1-5
+Client version:         11.2.0.1.0
+Connections processed:  0
+Open connections:       0
+Interruptible:          FALSE
+
+
+##  'adbname' equals the value of env var ORACLE_SID
+
+>* con <- dbConnect(dbm,user='macq',dbname='adbname',password='my.pwd')*>* con*User name:             macq
+Connect string: adbname
+Server version:        11.2.0.3.0
+Server type:           Oracle RDBMS
+Results processed:     0
+OCI prefetch:          FALSE
+Bulk read:             25
+Statement cache size:  0
+Open results:          0
+
+
+>* dbGetQuery(con,"select * from wdrstats")*Error in .oci.GetQuery(conn, statement, ...) :
+Error in try({ : ORA-01805: possible error in date/time operation
+
+
+>* sessionInfo()*R version 2.15.2 (2012-10-26)
+Platform: x86_64-unknown-linux-gnu (64-bit)
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8
+ [7] LC_PAPER=C                 LC_NAME=C
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] ROracle_1.1-5 DBI_0.2-5
+
+
+-- 
+Don MacQueen
+
+Lawrence Livermore National Laboratory
+7000 East Ave., L-627
+Livermore, CA 94550
+925-423-1062
+
+	[[alternative HTML version deleted]]
+
+
+
+From den|@@x@mukh|n @end|ng |rom or@c|e@com  Thu Dec  6 01:03:19 2012
+From: den|@@x@mukh|n @end|ng |rom or@c|e@com (Denis Mukhin)
+Date: Wed, 5 Dec 2012 16:03:19 -0800 (PST)
+Subject: [R-sig-DB] ROracle 1.1-5 and date fields?
+In-Reply-To: <CAC+wBSJ9rrhm+XPayNurBenif7ow0ihDJm-d4Q0kwe+VS9z9rw@mail.gmail.com>
+References: <CAC+wBSJ9rrhm+XPayNurBenif7ow0ihDJm-d4Q0kwe+VS9z9rw@mail.gmail.com>
+Message-ID: <0cc947a7-5221-4dac-baf2-2550c1e4816e@default>
+
+A new version of ROracle 1.1-7 was uploaded to CRAN earlier today. We added a fix that will allow you to read DATE and TIMSTAMP columns with different versions of timezone files between your client machine and Oracle server. However, to read TIMESTAMP WITH TIMEZONE and TIMESTAMP WITH LOCAL TIMEZONE you will still need to have the same timezone file versions. For more info on this, please, take a look at the man page for dbReadTable. 
+
+I would like to thank Don for posting this issue and Norbert for providing detailed instructions on how to update the timezone file version.
+
+Thanks,
+Denis
+
+-----Original Message-----
+From: norbert hoeller [mailto:nthdba at gmail.com] 
+Sent: Monday, December 03, 2012 7:03 AM
+To: r-sig-db at r-project.org
+Subject: Re: [R-sig-DB] ROracle 1.1-5 and date fields?
+
+Hi Don,
+
+i ran into the same error.
+
+A post on stackoverflow was inspiring:
+
+http://stackoverflow.com/questions/7678485/oracle-ora-01805-on-oracle-11g-database
+
+So I  upgraded the timezone-version, and now i, too, can read these pretty dates when using "ROracle"...
+
+In short, what i did, to the good old database [as SYS-user]:
+
+
+select version from v$timezone_file;
+/*
+   VERSION
+----------
+        11
+*/
+--- so, i upgraded to (the latest) TZ-version 14:
+--- You have to be in Migrate-mode to run  dbms_dst.begin_upgrade, so first
+
+shutdown immediate
+---- and then
+startup migrate;
+
+begin
+ dbms_dst.begin_upgrade(new_version => 14); end; /
+---- restart the database (back to normal)
+--  and run dbms_dst.upgrade_database:
+shutdown immediate
+---- and then
+startup;
+
+declare
+  num_err number;
+begin
+   dbms_dst.upgrade_database(num_err);
+   dbms_output.put_line('upgraded running into '||num_err||' errors');
+   dbms_dst.end_upgrade(num_err);
+   dbms_output.put_line('running into '||num_err||' errors to end upgrade'); end; /
+
+select version from v$timezone_file;
+
+/*
+   VERSION
+----------
+        14
+*/
+
+---- you also might have to re-install/re-link the "ROracle"-package (as i did that without testing before-hand, i just cannot tell for sure :)
+
+hth;
+
+best regards,
+norbert hoeller
+Universitat fur Bodenkultur (BOKU)
+A-1190 Wien
+
+
+========== you wrote
+I updated R and packages today, and am seeing some changes in ROracle behavior that I want to ask about. I'll describe the problems first; details follow.
+
+1) dbListTables now lists only my personal tables previously it listed global tables (don't see any way to show an example of this)
+
+2) simple queries to tables with date fields fail.
+For example,
+
+>* dbGetQuery(con,"select * from wdrstats")*Error in .oci.GetQuery(conn, statement, ...) :
+  Error in try({ : ORA-01805: possible error in date/time operation
+
+The table in this example has, among others, two date fields.
+That is, "describe wdrstats;" returns (among others)
+EFFDATE             DATE
+ENTERED   NOT NULL  DATE
+By the way, I'm very happy to see that ROracle is being actively maintained. Thank you!
+
+Thanks
+-Don
+
+-------------------------------
+This was a substantial upgrade; previously I had
+  ROracle 0.5-12 with R 2.14.1
+now I have
+  ROracle 1.1-5 and R 2.15.2
+(so ROracle now uses OCI; whereas before it did not)
+
+R itself is built from source on a linux (RHEL5) machine.
+I ran update.packages() and didn't see any problems.
+Reinstalling ROracle using install.packages() succeeds (I can provide a log if desired).
+
+Running R on the same machine as the Oracle installation.
+
+>* require(ROracle)*Loading required package: ROracle
+Loading required package: DBI
+
+>* dbm <- Oracle()*>* dbm*Driver name:            Oracle (OCI)
+Driver version:         1.1-5
+Client version:         11.2.0.1.0
+Connections processed:  0
+Open connections:       0
+Interruptible:          FALSE
+
+
+##  'adbname' equals the value of env var ORACLE_SID
+
+>* con <- dbConnect(dbm,user='macq',dbname='adbname',password='my.pwd')*>* con*User name:             macq
+Connect string: adbname
+Server version:        11.2.0.3.0
+Server type:           Oracle RDBMS
+Results processed:     0
+OCI prefetch:          FALSE
+Bulk read:             25
+Statement cache size:  0
+Open results:          0
+
+
+>* dbGetQuery(con,"select * from wdrstats")*Error in .oci.GetQuery(conn, statement, ...) :
+Error in try({ : ORA-01805: possible error in date/time operation
+
+
+>* sessionInfo()*R version 2.15.2 (2012-10-26)
+Platform: x86_64-unknown-linux-gnu (64-bit)
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8
+ [7] LC_PAPER=C                 LC_NAME=C
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] ROracle_1.1-5 DBI_0.2-5
+
+
+--
+Don MacQueen
+
+Lawrence Livermore National Laboratory
+7000 East Ave., L-627
+Livermore, CA 94550
+925-423-1062
+
+	[[alternative HTML version deleted]]
+
+_______________________________________________
+R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From tomo@k|n @end|ng |rom @t@||@k@n@z@w@-u@@c@jp  Thu Dec  6 15:57:22 2012
+From: tomo@k|n @end|ng |rom @t@||@k@n@z@w@-u@@c@jp (NISHIYAMA Tomoaki)
+Date: Thu, 6 Dec 2012 23:57:22 +0900
+Subject: [R-sig-DB] R and PostgreSQL - Writing data?
+In-Reply-To: <20664.53299.715207.913771@max.nulle.part>
+References: <CAMu32ACFMBa7Z-6ZepagkdsXvqxi7ObSXCa-hn0FMcLQUZ9Y+g@mail.gmail.com>
+	<CANeAVB=5Rm17sQnfvAThu0X7z3P=gOX5WcqadJjss+0J0QzBZA@mail.gmail.com>
+	<CAMu32ADVRDn=ExeAYnVn-Xv7YDhFJgAe=qAJC4ai0OaQohV3qA@mail.gmail.com>
+	<CANeAVBksja5EyLYNbCk_mz=msidSFjKU8RgCzr09-j9a5y23iQ@mail.gmail.com>
+	<f3b9eca0-6059-440d-b636-729bf05438f0@default>
+	<CAMu32ADKqtR44G6PrOm-GxkropMiuHSoNxpVn1n3rcjjVVUoLw@mail.gmail.com>
+	<20664.53299.715207.913771@max.nulle.part>
+Message-ID: <B504D445-75F5-4417-A2A2-3D0CA433217D@staff.kanazawa-u.ac.jp>
+
+Hi,
+
+PostgreSQL have library function PQexecParams and also supports prepared statements.
+String expansion in the SQL statement is cumbersome for escaping special characters and
+therefore error prone.
+
+I just commited to the SVN repository a very simple and primitive implementation that
+allows to pass vector of characters as parameters.
+
+A sample statement is like:
+
+    res <- dbGetQuery(con, "SELECT * FROM rockdata WHERE peri > $1 AND shape < $2 LIMIT $3", c(4000, 0.2, 10))
+    print(res)
+
+The syntax for a positional parameter is a dollar sign ($) followed by digits
+rather than a colon followed by digits in PostgreSQL.
+http://www.postgresql.org/docs/9.2/static/sql-syntax-lexical.html#SQL-SYNTAX-SPECIAL-CHARS
+
+This mechanism is required for the support of prepared statements.
+It is nicer if I could make automatic conversions for various type and binary transfer, 
+but this is not implemented right now.
+So all parameters are simply passed as strings at the moment.
+
+Note this is the very initial implementation and the interface may change.
+
+Any enhancement, feedback, or test case/program is welcome.
+Especially, on what would be the best interface/syntax.
+
+Best regards,
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi, 
+Kanazawa, 920-0934, Japan
+
+
+On 2012/12/01, at 0:26, Dirk Eddelbuettel wrote:
+
+> 
+> On 30 November 2012 at 15:05, James David Smith wrote:
+> | Hi all,
+> | 
+> | Sorry for the thread re-activation. I was wondering if anyone has
+> | successfully used the syntax below with the library RPostgreSQL?
+> 
+> Nope. 
+> 
+> I always expand the strings explicitly. It would be news to me of that
+> worked.  Good news, for sure, but still news...
+> 
+> Dirk
+> 
+> 
+> | dbGetQuery(con, "update foo set sal = :1 where empno = :2",
+> |            data = dat[,c("SAL","EMPNO")])
+> | 
+> | I've been messing about with it but can't get it to work. I get the error:
+> | 
+> | Error in postgresqlQuickSQL(conn, statement, ...) :
+> |   unused argument(s) (data = list(bc = c(NA, NA, NA etc.
+> | 
+> | Thanks
+> | 
+> | James
+> | 
+> | 
+> | 
+> | On 28 September 2012 17:13, Denis Mukhin <denis.x.mukhin at oracle.com> wrote:
+> | > James,
+> | >
+> | > I have never tried RPostgreSQL before but in ROracle which is also a DBI based interface you can do something like this:
+> | >
+> | > library(ROracle)
+> | > con <- dbConnect(Oracle(), "scott", "tiger")
+> | > dbGetQuery(con, "create table foo as select * from emp")
+> | >
+> | > dat <- dbGetQuery(con, "select * from foo")
+> | > dat$SAL <- dat$SAL*10
+> | > dbGetQuery(con, "update foo set sal = :1 where empno = :2",
+> | >            data = dat[,c("SAL","EMPNO")])
+> | > dbCommit(con)
+> | > dbGetQuery(con, "select * from foo")
+> | >
+> | > dbGetQuery(con, "drop table foo purge")
+> | > dbDisconnect(con)
+> | >
+> | > Denis
+> | >
+> | > -----Original Message-----
+> | > From: Sean Davis [mailto:sdavis2 at mail.nih.gov]
+> | > Sent: Friday, September 28, 2012 11:43 AM
+> | > To: James David Smith
+> | > Cc: r-sig-db at r-project.org
+> | > Subject: Re: [R-sig-DB] R and PostgreSQL - Writing data?
+> | >
+> | > On Fri, Sep 28, 2012 at 10:36 AM, James David Smith <james.david.smith at gmail.com> wrote:
+> | >> Hi Sean,
+> | >>
+> | >> Thanks for the reply. I'm familiar with UPDATE queries when working in
+> | >> PostgreSQL, but not from within R. Would it look something like this?
+> | >>
+> | >> dbWriteTable(con, " UPDATE table SET ucam_no2 =
+> | >> 'ucam_no2$interpolated_data' ")
+> | >>
+> | >> My problem is how to get the R data 'within' my SQL statement I think.
+> | >
+> | > To do an update, you'll need to loop through your data.frame and issue a dbSendQuery().  To create the SQL string, I often use something
+> | > like:
+> | >
+> | > sprintf("UPDATE originalTable SET ucam_no2=%f WHERE originalTable.id = %d",....)
+> | >
+> | > You can't do this in one step, unfortunately.  This is how UPDATE works and has nothing to do with R.
+> | >
+> | > Sean
+> | >
+> | >
+> | >>
+> | >> On 28 September 2012 15:19, Sean Davis <sdavis2 at mail.nih.gov> wrote:
+> | >>> On Fri, Sep 28, 2012 at 10:14 AM, James David Smith
+> | >>> <james.david.smith at gmail.com> wrote:
+> | >>>> Dear all,
+> | >>>>
+> | >>>> Sorry if this isn't quite the right place, but it's the first time
+> | >> SendSave NowDiscardDraft autosaved at 15:36 (0 minutes ago) 33% full
+> | >> Using 3.4 GB of your 10.1 GB
+> | >> ?2012 Google - Terms & Privacy
+> | >> Last account activity: 50 minutes ago
+> | >> Details
+> | >> People (2)
+> | >> Sean Davis
+> | >> Add to circles
+> | >>
+> | >> Show details
+> | >> Ads ? Why these ads?
+> | >> Big Data Too Slow?
+> | >> Real-Time Analytics for Big Data. Visual Drag & Drop UI. Quick & Easy
+> | >> PentahoBigData.com Talend Open Source ESB Open Source ESB Based on
+> | >> Apache CXF and Apache Camel. Free Download!
+> | >> www.talend.com/Free_ESB_Software
+> | >> Warp I/O for SQL Server
+> | >> Speed SQL Server performance 3x Faster I/O, reduced storage
+> | >> www.confio.com/warp-io Storage Container Sussex Ex-Shipping Containers
+> | >> Sale & Hire Storage Container 0800 043 6311
+> | >> www.CsShippingContainers.co.uk More about...
+> | >> MS Access Database SQL ?
+> | >> Database ?
+> | >> Excel Database Query ?
+> | >> Oracle Database Problems ?
+> | >>
+> | >>>> I've posted here. My issue is to do with writing to a PostgreSQL
+> | >>>> database from within R. My situation is best explained by some R
+> | >>>> code to start:
+> | >>>>
+> | >>>> #Connect to the database
+> | >>>> con <- dbConnect(PostgreSQL(), user="postgres", password="password",
+> | >>>> dbname="database")
+> | >>>>
+> | >>>> #Get some data out of the database.
+> | >>>> ucam_no2$original_data <- dbGetQuery(con, "select ucam_no2 FROM
+> | >>>> table")
+> | >>>>
+> | >>>> This returns say 10000 rows of data, but there is only data in about
+> | >>>> half of those rows. What I want to do is interpolate the missing
+> | >>>> data so I do this:
+> | >>>>
+> | >>>> #Generate some data
+> | >>>> ucam_no2$interpolated_data <- na.approx(ucam_data$ucam_no2, na.rm =
+> | >>>> FALSE)
+> | >>>>
+> | >>>> This works well and I now have 10000 rows of data with no empty cells.
+> | >>>> I now want to write this back into my PostgresSQL database. Into the
+> | >>>> same row that I took the data from in the first place. But I don't
+> | >>>> know how. I can write to a new table with something like the below,
+> | >>>> but what I'd really like to do is put the data back into the table I
+> | >>>> got it from.
+> | >>>>
+> | >>>> # Try to write the data back
+> | >>>> dbWriteTable(con, "new_data", ucam_no2$interpolated_data)
+> | >>>
+> | >>> Hi, James.
+> | >>>
+> | >>> You'll need to look into doing a SQL UPDATE.  That is the standard
+> | >>> way to "put data back into the table I got it from".
+> | >>>
+> | >>> Sean
+> | >
+> | > _______________________________________________
+> | > R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> | >
+> | > _______________________________________________
+> | > R-sig-DB mailing list -- R Special Interest Group
+> | > R-sig-DB at r-project.org
+> | > https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> | 
+> | _______________________________________________
+> | R-sig-DB mailing list -- R Special Interest Group
+> | R-sig-DB at r-project.org
+> | https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> 
+> -- 
+> Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com  
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+

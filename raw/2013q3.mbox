@@ -1,0 +1,1277 @@
+From D@n|e|_Re|@ @end|ng |rom c@rg|||@com  Thu Jul 11 21:29:16 2013
+From: D@n|e|_Re|@ @end|ng |rom c@rg|||@com (Daniel Reis)
+Date: Thu, 11 Jul 2013 16:29:16 -0300
+Subject: [R-sig-DB] [RODBC] Error (ORA-12560 ) when trying to connect to
+	Oracle database
+Message-ID: <47CF4BFE84895047B17252A1823261550743EE39@BRSPCG221M.la.Corp.Cargill.com>
+
+Hello,
+
+ 
+
+I installed the Oracle 11g client on my machine, and tested the
+connection to my target Oracle database through MS Access. All seems to
+be working fine.
+
+When I try to connect to the very same DB using R with:
+
+ 
+
+channel <- odbcConnect(dsn="MyDSN", uid="XXXXX", pwd="XXXXXXXX",
+believeNRows=FALSE)
+
+ 
+
+I get the following error:
+
+In odbcDriverConnect("DSN=MyDSN;UID=XXXX;PWD=XXX",  :
+
+[RODBC] ERROR: state HY000, code 12560, message
+[Oracle][ODBC][Ora]ORA-12560: TNS:protocol adapter error
+
+ 
+
+ 
+
+Am I missing the installation of some component/driver? I read something
+about installing the Oracle Instant Client (free) but thought the Oracle
+11g client would be sufficient. What am I missing?
+
+ 
+
+Dan
+
+ 
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From m@rc_@chw@rtz @end|ng |rom me@com  Fri Jul 12 14:22:20 2013
+From: m@rc_@chw@rtz @end|ng |rom me@com (Marc Schwartz)
+Date: Fri, 12 Jul 2013 07:22:20 -0500
+Subject: [R-sig-DB] [RODBC] Error (ORA-12560 ) when trying to connect
+	to	Oracle database
+In-Reply-To: <47CF4BFE84895047B17252A1823261550743EE39@BRSPCG221M.la.Corp.Cargill.com>
+References: <47CF4BFE84895047B17252A1823261550743EE39@BRSPCG221M.la.Corp.Cargill.com>
+Message-ID: <CD38E3C7-174F-4D4D-9858-2723190476D9@me.com>
+
+On Jul 11, 2013, at 2:29 PM, Daniel Reis <Daniel_Reis at cargill.com> wrote:
+
+> Hello,
+> 
+> 
+> I installed the Oracle 11g client on my machine, and tested the
+> connection to my target Oracle database through MS Access. All seems to
+> be working fine.
+> 
+> When I try to connect to the very same DB using R with:
+> 
+> 
+> channel <- odbcConnect(dsn="MyDSN", uid="XXXXX", pwd="XXXXXXXX",
+> believeNRows=FALSE)
+> 
+> 
+> I get the following error:
+> 
+> In odbcDriverConnect("DSN=MyDSN;UID=XXXX;PWD=XXX",  :
+> 
+> [RODBC] ERROR: state HY000, code 12560, message
+> [Oracle][ODBC][Ora]ORA-12560: TNS:protocol adapter error
+> 
+> 
+> 
+> Am I missing the installation of some component/driver? I read something
+> about installing the Oracle Instant Client (free) but thought the Oracle
+> 11g client would be sufficient. What am I missing?
+> 
+> 
+> 
+> Dan
+
+
+Presuming that you are on a 64 bit version of Windows, my first guess is that this might be a 32 bit/64 bit architecture conflict. 
+
+I am guessing that Access is 32 bit and so is the ODBC driver, hence it works. 
+
+In the case of R/RODBC, if you are running 64 bit R, you need to be running 64 bit ODBC drivers. See:
+
+  vignette("RODBC")
+
+and pay attention to Appendix B on Specifying DSNs, notably footnote 15 at the bottom of page 26. Also the second full paragraph on page 23, discussing Oracle and Windows.
+
+A Google search for the Oracle error code above also brings up some other possibilities if this is not a 32/64 bit issue.
+
+Regards,
+
+Marc Schwartz
+
+
+
+From @zehnder @end|ng |rom un|-bonn@de  Tue Jul 16 10:39:31 2013
+From: @zehnder @end|ng |rom un|-bonn@de (Simon Zehnder)
+Date: Tue, 16 Jul 2013 10:39:31 +0200
+Subject: [R-sig-DB] Serialize data.frame to database
+Message-ID: <CA8EED80-CE93-4288-B2BF-52AF92A73E23@uni-bonn.de>
+
+Dear all,
+
+I need a very fast and reliable database solution so I try to serialize a data.frame (to binary data) and to store this data to an SQLite database (I might be wrong with this approach and a data.frame can be efficiently and faster stored and fetched in a database row in a different manner - please feel free to make suggestions. It is just what I know from Java how to store a matrix). 
+
+This is what I tried to do:
+
+library(RSQLite)
+con <- dbDriver("SQLite")
+db <- dbConnect(con, "test")
+dbSendQuery(db, 'CREATE TABLE frames("simID" INT, "data" BLOB)')
+data.bin <- serialize(iris, NULL, ascii = FALSE)
+dbSendQuery(db, paste("INSERT INTO frames VALUES(1, X'", data.bin, "')", sep = ""))
+data.bin2 <- dbGetQuery(db, "SELECT DATA FROM frames WHERE simID = 1")
+data.bin2
+ data
+1   58
+
+So, only the first entry of data.bin is saved to the database. I tried to first convert the binary data to raw data:
+data.raw <- rawToChar(data.bin)
+Error in rawToChar(data.bin) :
+ embedded nul in string: 'X\n\0\0\0\002\0\003\0\001\0\002\003\0\0\0\003\023\0\0\0\005\0\0\0\016\0\0\0\x96@\024ffffff@\023\x99\x99\x99\x99\x99\x9a@\022\xcc\xcc\xcc\xcc\xcc\xcd@\022ffffff@\024\0\0\0\0\0\0@\025\x99\x99\x99\x99\x99\x9a@\022ffffff@\024\0\0\0\0\0\0@\021\x99\x99\x99\x99\x99\x9a@\023\x99\x99\x99\x99\x99\x9a@\025\x99\x99\x99\x99\x99\x9a@\023333333@\023333333@\021333333@\027333333@\026\xcc\xcc\xcc\xcc\xcc\xcd@\025\x99\x99\x99\x99\x99\x9a@\024ffffff@\026\xcc\xcc\xcc\xcc\xcc\xcd@\024ffffff@\025\x99\x99\x99\x99\x99\x9a@\024ffffff@\022ffffff@\024ffffff@\023333333@\024\0\0\0\0\0\0@\024\0\0\0\0\0\0@\024\xcc\xcc\xcc\xcc\xcc\xcd@\024\xcc\xcc\xcc\xcc\xcc\xcd@\022\xcc\xcc\xcc\xcc\xcc\xcd@\023333333@\025\x99\x99\x99\x99\x99\x9a@\024\xcc\xcc\xcc\xcc\xcc\xcd@\026\0\0\0\0\0\0@\023\x99\x99\x99\x99\x99\x9a@\024\0\0\0\0\0\0@\026\0\0\0\0\0\0@\023\x99\x99\x99\x99\x99\x9a@\021\x99\x99\x99\x99\x99\x9a@\024ffffff@\024\0\0\0\0\0\0@\022\0\0\0\0\0\0@\021\x99\x99\x99\x99\x99\x9a@\024\0\0\0\0\0\0
+
+I don't know what this error should tell me. Then I tried to use the ASCII format
+
+data.ascii <- serialize(iris, NULL, ascii = TRUE)
+data.raw <- rawToChar(data.ascii)
+dbSendQuery(db, "DELETE FROM frames")
+dbSendQuery(db, paste("INSERT INTO frames VALUES(1, X'", data.raw, "')", sep = ""))
+Error in sqliteExecStatement(conn, statement, ...) :
+ RS-DBI driver: (error in statement: unrecognized token: "X'A
+
+This also does not work. It seems the driver does not deal that nicely with the regular INSERT query for BLOB objects in SQLite. Then I used a simpler way:
+
+dbSendQuery(db, "DELETE FROM frames")
+dbSendQuery(db, "DROP TABLE frames")
+dbSendQuery(db, 'CREATE TABLE frames("simID" INT, "data" TEXT DEFAULT NULL)')
+dbSendQuery(db, paste("INSERT INTO frames VALUES(1, '", data.raw, "')", sep = ""))
+data.bin2 <- dbGetQuery(db, "SELECT data FROM frames WHERE simID = 1")
+
+Nice, that worked. Now I want to unserialize the data:
+
+unserialize(data.bin2)
+Error in unserialize(data.bin2) : 'connection' must be a connection
+
+unserialize(data.bin2[1, 'data'])
+Error in unserialize(data.bin2[1, "data"]) :
+ character vectors are no longer accepted by unserialize()
+
+I feel a little stuck here, but I am very sure, that converting data.frames to binary data and storing them to a database is not that unusual. So I hope somebody has already done this and could give me the missing piece.
+
+
+Best
+
+Simon
+
+
+
+From @zehnder @end|ng |rom un|-bonn@de  Tue Jul 16 22:58:33 2013
+From: @zehnder @end|ng |rom un|-bonn@de (Simon Zehnder)
+Date: Tue, 16 Jul 2013 22:58:33 +0200
+Subject: [R-sig-DB] Serialize data.frame to database
+In-Reply-To: <CA8EED80-CE93-4288-B2BF-52AF92A73E23@uni-bonn.de>
+References: <CA8EED80-CE93-4288-B2BF-52AF92A73E23@uni-bonn.de>
+Message-ID: <3B674FB8-C41A-4276-9A64-5D77AAE0DCCA@uni-bonn.de>
+
+So I found finally a way how it can be done.... don't know though if it can be called efficient:
+
+library(RSQLite)
+con <- dbDriver("SQLite")
+db <- dbConnect(con, dbname = "test")
+dbSendQuery("CREATE TABLE frames(simID INT, data TEXT)")
+iris.ascii <- serialize(head(iris), NULL, ascii = TRUE)
+dbSendQuery(db, paste("INSERT INTO frames VALUES(1, '", rawToChar(iris.ascii), "')", sep = ""))
+res <- dbGetQuery("SELECT * FROM frames WHERE simID = 1")
+unserialize(charToRaw(res$data)) 
+
+dbDisconnect(db)
+sqliteCloseDriver(con)
+
+WIth this, an R data.frame can be stored into ONE ROW of a database table and therefore be related to an ID for which it can be searched quickly inside the database. Furthermore a pure character (or long character) does not consume much space (It can also be used a BLOB instead of a TEXT type in the CREATE TABLE query).
+
+Still, there are some questions left to me: 
+
+1. Why isn't it possible to convert a binary raw vector to a character?
+
+iris.bin <- serialize(head(iris), NULL, ascii = FALSE)
+rawToChar(iris.bin)
+Error in rawToChar(iris.bin)
+  embedded nul in string: X'...
+
+2. Is a binary raw more efficient than an ascii? If so why?
+
+	See https://stat.ethz.ch/pipermail/r-sig-db/2008q1/000423.html from Dirk Eddelbuettel 
+
+3. Why aren't BLOBs supported for matrices, vectors, dataframes in R directly? Isn't this the usual way to store for example arrays from Java, C, C++, Python, etc. in databases, like serialize to binary, store, fetch unserialize?
+
+4. How efficient is this solution really (independent from the problem to be solved by a database solution)? It is one simple query: Go to the line with simID = 1 take what is in the second field. 
+
+
+Best 
+
+Simon
+
+On Jul 16, 2013, at 10:39 AM, Simon Zehnder <szehnder at uni-bonn.de> wrote:
+
+> Dear all,
+> 
+> I need a very fast and reliable database solution so I try to serialize a data.frame (to binary data) and to store this data to an SQLite database (I might be wrong with this approach and a data.frame can be efficiently and faster stored and fetched in a database row in a different manner - please feel free to make suggestions. It is just what I know from Java how to store a matrix). 
+> 
+> This is what I tried to do:
+> 
+> library(RSQLite)
+> con <- dbDriver("SQLite")
+> db <- dbConnect(con, "test")
+> dbSendQuery(db, 'CREATE TABLE frames("simID" INT, "data" BLOB)')
+> data.bin <- serialize(iris, NULL, ascii = FALSE)
+> dbSendQuery(db, paste("INSERT INTO frames VALUES(1, X'", data.bin, "')", sep = ""))
+> data.bin2 <- dbGetQuery(db, "SELECT DATA FROM frames WHERE simID = 1")
+> data.bin2
+> data
+> 1   58
+> 
+> So, only the first entry of data.bin is saved to the database. I tried to first convert the binary data to raw data:
+> data.raw <- rawToChar(data.bin)
+> Error in rawToChar(data.bin) :
+> embedded nul in string: 'X\n\0\0\0\002\0\003\0\001\0\002\003\0\0\0\003\023\0\0\0\005\0\0\0\016\0\0\0\x96@\024ffffff@\023\x99\x99\x99\x99\x99\x9a@\022\xcc\xcc\xcc\xcc\xcc\xcd@\022ffffff@\024\0\0\0\0\0\0@\025\x99\x99\x99\x99\x99\x9a@\022ffffff@\024\0\0\0\0\0\0@\021\x99\x99\x99\x99\x99\x9a@\023\x99\x99\x99\x99\x99\x9a@\025\x99\x99\x99\x99\x99\x9a@\023333333@\023333333@\021333333@\027333333@\026\xcc\xcc\xcc\xcc\xcc\xcd@\025\x99\x99\x99\x99\x99\x9a@\024ffffff@\026\xcc\xcc\xcc\xcc\xcc\xcd@\024ffffff@\025\x99\x99\x99\x99\x99\x9a@\024ffffff@\022ffffff@\024ffffff@\023333333@\024\0\0\0\0\0\0@\024\0\0\0\0\0\0@\024\xcc\xcc\xcc\xcc\xcc\xcd@\024\xcc\xcc\xcc\xcc\xcc\xcd@\022\xcc\xcc\xcc\xcc\xcc\xcd@\023333333@\025\x99\x99\x99\x99\x99\x9a@\024\xcc\xcc\xcc\xcc\xcc\xcd@\026\0\0\0\0\0\0@\023\x99\x99\x99\x99\x99\x9a@\024\0\0\0\0\0\0@\026\0\0\0\0\0\0@\023\x99\x99\x99\x99\x99\x9a@\021\x99\x99\x99\x99\x99\x9a@\024ffffff@\024\0\0\0\0\0\0@\022\0\0\0\0\0\0@\021\x99\x99\x99\x99\x99\x9a@\024\0\0\0\0\0!
+> \0
+> 
+> I don't know what this error should tell me. Then I tried to use the ASCII format
+> 
+> data.ascii <- serialize(iris, NULL, ascii = TRUE)
+> data.raw <- rawToChar(data.ascii)
+> dbSendQuery(db, "DELETE FROM frames")
+> dbSendQuery(db, paste("INSERT INTO frames VALUES(1, X'", data.raw, "')", sep = ""))
+> Error in sqliteExecStatement(conn, statement, ...) :
+> RS-DBI driver: (error in statement: unrecognized token: "X'A
+> 
+> This also does not work. It seems the driver does not deal that nicely with the regular INSERT query for BLOB objects in SQLite. Then I used a simpler way:
+> 
+> dbSendQuery(db, "DELETE FROM frames")
+> dbSendQuery(db, "DROP TABLE frames")
+> dbSendQuery(db, 'CREATE TABLE frames("simID" INT, "data" TEXT DEFAULT NULL)')
+> dbSendQuery(db, paste("INSERT INTO frames VALUES(1, '", data.raw, "')", sep = ""))
+> data.bin2 <- dbGetQuery(db, "SELECT data FROM frames WHERE simID = 1")
+> 
+> Nice, that worked. Now I want to unserialize the data:
+> 
+> unserialize(data.bin2)
+> Error in unserialize(data.bin2) : 'connection' must be a connection
+> 
+> unserialize(data.bin2[1, 'data'])
+> Error in unserialize(data.bin2[1, "data"]) :
+> character vectors are no longer accepted by unserialize()
+> 
+> I feel a little stuck here, but I am very sure, that converting data.frames to binary data and storing them to a database is not that unusual. So I hope somebody has already done this and could give me the missing piece.
+> 
+> 
+> Best
+> 
+> Simon
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From gv|@rn@ @end|ng |rom gm@||@com  Tue Aug  6 02:23:20 2013
+From: gv|@rn@ @end|ng |rom gm@||@com (Grant Farnsworth)
+Date: Mon, 5 Aug 2013 20:23:20 -0400
+Subject: [R-sig-DB] RSQLite and transparent compression
+Message-ID: <CAOBt=y_9Crsp_bvC4Lz9HwaB3nZHGJkxEp3z+JRJHVu2uGY2Bg@mail.gmail.com>
+
+I frequently create, write to, and read from large SQLite databases
+from within R using RSQLite, sometimes across the network.  As
+size/performance can be a consideration for me, I find myself wishing
+I could compress my sqlite database files and interact with them
+directly, the way one can interact with a gzipped text file using
+read.table() or scan().  In case anyone wasn't aware, you can read
+from a gzipped  text file without any additional arguments
+
+G <- read.table("myfile.txt.gz")
+
+and so forth.
+
+The syntax doesn't have to be that simple, but does anyone know of a
+workaround to allow me to read from an SQLite database that has been
+compressed?   Or if you have a different solution/workaround, I would
+love to hear it.  Thanks!
+
+
+
+From k@@perd@n|e|h@n@en @end|ng |rom gm@||@com  Tue Aug  6 06:02:02 2013
+From: k@@perd@n|e|h@n@en @end|ng |rom gm@||@com (Kasper Daniel Hansen)
+Date: Tue, 6 Aug 2013 00:02:02 -0400
+Subject: [R-sig-DB] RSQLite and transparent compression
+In-Reply-To: <CAOBt=y_9Crsp_bvC4Lz9HwaB3nZHGJkxEp3z+JRJHVu2uGY2Bg@mail.gmail.com>
+References: <CAOBt=y_9Crsp_bvC4Lz9HwaB3nZHGJkxEp3z+JRJHVu2uGY2Bg@mail.gmail.com>
+Message-ID: <CAC2h7utxuNwmkdjxPSTqJP68X+soBn+iHaoVJJqtxPqB=JQo7Q@mail.gmail.com>
+
+What do you mean by large?  You are aware you can have an in-memory version
+of a SQLite database (whether that helps depends on the size of course)?
+ If you operate on a disk based database, fast I/O helps a lot, perhaps
+even copying the database to a local drive. I don't know anything about
+compression though, but in general I have found the sqlite.org website and
+its mailing list to be super helpful.
+
+Kasper
+
+
+On Mon, Aug 5, 2013 at 8:23 PM, Grant Farnsworth <gvfarns at gmail.com> wrote:
+
+> I frequently create, write to, and read from large SQLite databases
+> from within R using RSQLite, sometimes across the network.  As
+> size/performance can be a consideration for me, I find myself wishing
+> I could compress my sqlite database files and interact with them
+> directly, the way one can interact with a gzipped text file using
+> read.table() or scan().  In case anyone wasn't aware, you can read
+> from a gzipped  text file without any additional arguments
+>
+> G <- read.table("myfile.txt.gz")
+>
+> and so forth.
+>
+> The syntax doesn't have to be that simple, but does anyone know of a
+> workaround to allow me to read from an SQLite database that has been
+> compressed?   Or if you have a different solution/workaround, I would
+> love to hear it.  Thanks!
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From gv|@rn@ @end|ng |rom gm@||@com  Tue Aug  6 06:35:44 2013
+From: gv|@rn@ @end|ng |rom gm@||@com (Grant Farnsworth)
+Date: Tue, 6 Aug 2013 00:35:44 -0400
+Subject: [R-sig-DB] RSQLite and transparent compression
+In-Reply-To: <CAC2h7utxuNwmkdjxPSTqJP68X+soBn+iHaoVJJqtxPqB=JQo7Q@mail.gmail.com>
+References: <CAOBt=y_9Crsp_bvC4Lz9HwaB3nZHGJkxEp3z+JRJHVu2uGY2Bg@mail.gmail.com>
+	<CAC2h7utxuNwmkdjxPSTqJP68X+soBn+iHaoVJJqtxPqB=JQo7Q@mail.gmail.com>
+Message-ID: <CAOBt=y8ZGYn3rqU_tL8RXuFFNazFh1TZM2ri226h_fc13HAbUA@mail.gmail.com>
+
+On Tue, Aug 6, 2013 at 12:02 AM, Kasper Daniel Hansen
+<kasperdanielhansen at gmail.com> wrote:
+> What do you mean by large?  You are aware you can have an in-memory version
+> of a SQLite database (whether that helps depends on the size of course)?  If
+> you operate on a disk based database, fast I/O helps a lot, perhaps even
+> copying the database to a local drive. I don't know anything about
+> compression though, but in general I have found the sqlite.org website and
+> its mailing list to be super helpful.
+
+
+Not outrageously large.  I'd say 10-20GB each as text delimited files.
+ Still, it's too large to put in RAM and work with.  This is why I use
+SQLite.  I get these files as gzipped delimited text files, then I
+read them a million lines or so at a time using scan(), do some basic
+clean up, and stuff them into a big SQLite database.  When I want to
+use the data, I just subset the stuff I need, which fits comfortably
+into RAM.  If the datasets were small enough, I'd just store them in
+an R data file...then I wouldn't have to worry about type conversions
+or variable name issues.
+
+I guess it just seems wasteful to have these huge files sitting around
+(or move them across networks) when the raw data was compressed and I
+know the sqlite databases would compress nicely as well.  That's why
+I'm specifically looking for a compression solution.  I'd be open to
+other approaches, of course.  For example, I could imagine ways to
+append the data into a dataframe in an .rda or .rds file and then
+subset it later without ever having to load the whole thing into ram
+if I used some of the big data packages, but besides the file size I'm
+pretty happy with the SQLite solution---it just seemed like
+transparent zipping might be available and I was surprised to find
+that it wasn't.
+
+By the way, speed isn't a critical issue.  It's not super
+time-sensitive work and the network to my file server is plenty fast.
+It just seems like I might have missed an obvious way to save the
+space and time that lack of compression causes.
+
+
+
+From k@@perd@n|e|h@n@en @end|ng |rom gm@||@com  Tue Aug  6 14:21:25 2013
+From: k@@perd@n|e|h@n@en @end|ng |rom gm@||@com (Kasper Daniel Hansen)
+Date: Tue, 6 Aug 2013 08:21:25 -0400
+Subject: [R-sig-DB] RSQLite and transparent compression
+In-Reply-To: <CAOBt=y8ZGYn3rqU_tL8RXuFFNazFh1TZM2ri226h_fc13HAbUA@mail.gmail.com>
+References: <CAOBt=y_9Crsp_bvC4Lz9HwaB3nZHGJkxEp3z+JRJHVu2uGY2Bg@mail.gmail.com>
+	<CAC2h7utxuNwmkdjxPSTqJP68X+soBn+iHaoVJJqtxPqB=JQo7Q@mail.gmail.com>
+	<CAOBt=y8ZGYn3rqU_tL8RXuFFNazFh1TZM2ri226h_fc13HAbUA@mail.gmail.com>
+Message-ID: <CAC2h7uv5R=pGGq7g635cRDi6yktBnTBoVQzjq6Y-QV4ThW=r8Q@mail.gmail.com>
+
+Well, the technical questions is really whether you can do sqlite
+operations on a compressed database.  Otherwise, all you can do is
+externally compresed the database and then decompress it every time you
+want to access it, which may be tedious and slow.  sqlite is used a lot on
+devices with very limited resources, so it is entirely possible that there
+is some compression possibility, which is why I suggest you read the
+documentation (argh!).
+
+Finally, 10-20GB for a textfile is not that big.  If you do not have enough
+RAM you must be working on a constrained system.
+
+Kasper
+
+
+On Tue, Aug 6, 2013 at 12:35 AM, Grant Farnsworth <gvfarns at gmail.com> wrote:
+
+> On Tue, Aug 6, 2013 at 12:02 AM, Kasper Daniel Hansen
+> <kasperdanielhansen at gmail.com> wrote:
+> > What do you mean by large?  You are aware you can have an in-memory
+> version
+> > of a SQLite database (whether that helps depends on the size of course)?
+>  If
+> > you operate on a disk based database, fast I/O helps a lot, perhaps even
+> > copying the database to a local drive. I don't know anything about
+> > compression though, but in general I have found the sqlite.org website
+> and
+> > its mailing list to be super helpful.
+>
+>
+> Not outrageously large.  I'd say 10-20GB each as text delimited files.
+>  Still, it's too large to put in RAM and work with.  This is why I use
+> SQLite.  I get these files as gzipped delimited text files, then I
+> read them a million lines or so at a time using scan(), do some basic
+> clean up, and stuff them into a big SQLite database.  When I want to
+> use the data, I just subset the stuff I need, which fits comfortably
+> into RAM.  If the datasets were small enough, I'd just store them in
+> an R data file...then I wouldn't have to worry about type conversions
+> or variable name issues.
+>
+> I guess it just seems wasteful to have these huge files sitting around
+> (or move them across networks) when the raw data was compressed and I
+> know the sqlite databases would compress nicely as well.  That's why
+> I'm specifically looking for a compression solution.  I'd be open to
+> other approaches, of course.  For example, I could imagine ways to
+> append the data into a dataframe in an .rda or .rds file and then
+> subset it later without ever having to load the whole thing into ram
+> if I used some of the big data packages, but besides the file size I'm
+> pretty happy with the SQLite solution---it just seemed like
+> transparent zipping might be available and I was surprised to find
+> that it wasn't.
+>
+> By the way, speed isn't a critical issue.  It's not super
+> time-sensitive work and the network to my file server is plenty fast.
+> It just seems like I might have missed an obvious way to save the
+> space and time that lack of compression causes.
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From R@|ner @end|ng |rom krug@@de  Tue Aug  6 15:24:19 2013
+From: R@|ner @end|ng |rom krug@@de (Rainer M Krug)
+Date: Tue, 6 Aug 2013 15:24:19 +0200
+Subject: [R-sig-DB] RSQLite and transparent compression
+References: <CAOBt=y_9Crsp_bvC4Lz9HwaB3nZHGJkxEp3z+JRJHVu2uGY2Bg@mail.gmail.com>
+	<CAC2h7utxuNwmkdjxPSTqJP68X+soBn+iHaoVJJqtxPqB=JQo7Q@mail.gmail.com>
+	<CAOBt=y8ZGYn3rqU_tL8RXuFFNazFh1TZM2ri226h_fc13HAbUA@mail.gmail.com>
+	<CAC2h7uv5R=pGGq7g635cRDi6yktBnTBoVQzjq6Y-QV4ThW=r8Q@mail.gmail.com>
+Message-ID: <m2pptrne9o.fsf@krugs.de>
+
+Kasper Daniel Hansen
+<kasperdanielhansen at gmail.com> writes:
+
+> Well, the technical questions is really whether you can do sqlite
+> operations on a compressed database.  Otherwise, all you can do is
+> externally compresed the database and then decompress it every time you
+> want to access it, which may be tedious and slow.  sqlite is used a lot on
+> devices with very limited resources, so it is entirely possible that there
+> is some compression possibility, which is why I suggest you read the
+> documentation (argh!).
+
+Might this help:
+http://lserinol.blogspot.fr/2008/02/sqlite-compression.html
+
+Cheers,
+
+Rainer
+
+>
+> Finally, 10-20GB for a textfile is not that big.  If you do not have enough
+> RAM you must be working on a constrained system.
+>
+> Kasper
+>
+>
+> On Tue, Aug 6, 2013 at 12:35 AM, Grant Farnsworth <gvfarns at gmail.com> wrote:
+>
+>> On Tue, Aug 6, 2013 at 12:02 AM, Kasper Daniel Hansen
+>> <kasperdanielhansen at gmail.com> wrote:
+>> > What do you mean by large?  You are aware you can have an in-memory
+>> version
+>> > of a SQLite database (whether that helps depends on the size of course)?
+>>  If
+>> > you operate on a disk based database, fast I/O helps a lot, perhaps even
+>> > copying the database to a local drive. I don't know anything about
+>> > compression though, but in general I have found the sqlite.org website
+>> and
+>> > its mailing list to be super helpful.
+>>
+>>
+>> Not outrageously large.  I'd say 10-20GB each as text delimited files.
+>>  Still, it's too large to put in RAM and work with.  This is why I use
+>> SQLite.  I get these files as gzipped delimited text files, then I
+>> read them a million lines or so at a time using scan(), do some basic
+>> clean up, and stuff them into a big SQLite database.  When I want to
+>> use the data, I just subset the stuff I need, which fits comfortably
+>> into RAM.  If the datasets were small enough, I'd just store them in
+>> an R data file...then I wouldn't have to worry about type conversions
+>> or variable name issues.
+>>
+>> I guess it just seems wasteful to have these huge files sitting around
+>> (or move them across networks) when the raw data was compressed and I
+>> know the sqlite databases would compress nicely as well.  That's why
+>> I'm specifically looking for a compression solution.  I'd be open to
+>> other approaches, of course.  For example, I could imagine ways to
+>> append the data into a dataframe in an .rda or .rds file and then
+>> subset it later without ever having to load the whole thing into ram
+>> if I used some of the big data packages, but besides the file size I'm
+>> pretty happy with the SQLite solution---it just seemed like
+>> transparent zipping might be available and I was surprised to find
+>> that it wasn't.
+>>
+>> By the way, speed isn't a critical issue.  It's not super
+>> time-sensitive work and the network to my file server is plenty fast.
+>> It just seems like I might have missed an obvious way to save the
+>> space and time that lack of compression causes.
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at r-project.org
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+>
+> 	[[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+<#secure method=pgpmime mode=sign>
+
+-- 
+Rainer M. Krug
+
+email: RMKrug<at>gmail<dot>com
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Tue Aug  6 16:15:23 2013
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Tue, 6 Aug 2013 10:15:23 -0400
+Subject: [R-sig-DB] RSQLite and transparent compression
+In-Reply-To: <m2pptrne9o.fsf@krugs.de>
+References: <CAOBt=y_9Crsp_bvC4Lz9HwaB3nZHGJkxEp3z+JRJHVu2uGY2Bg@mail.gmail.com>
+	<CAC2h7utxuNwmkdjxPSTqJP68X+soBn+iHaoVJJqtxPqB=JQo7Q@mail.gmail.com>
+	<CAOBt=y8ZGYn3rqU_tL8RXuFFNazFh1TZM2ri226h_fc13HAbUA@mail.gmail.com>
+	<CAC2h7uv5R=pGGq7g635cRDi6yktBnTBoVQzjq6Y-QV4ThW=r8Q@mail.gmail.com>
+	<m2pptrne9o.fsf@krugs.de>
+Message-ID: <CANeAVB=jFtYZdbPwc13EcFc9Ow7Pbb=qmiJ4RsfUe1MbHxTZvw@mail.gmail.com>
+
+On Tue, Aug 6, 2013 at 9:24 AM, Rainer M Krug <Rainer at krugs.de> wrote:
+> Kasper Daniel Hansen
+> <kasperdanielhansen at gmail.com> writes:
+>
+>> Well, the technical questions is really whether you can do sqlite
+>> operations on a compressed database.  Otherwise, all you can do is
+>> externally compresed the database and then decompress it every time you
+>> want to access it, which may be tedious and slow.  sqlite is used a lot on
+>> devices with very limited resources, so it is entirely possible that there
+>> is some compression possibility, which is why I suggest you read the
+>> documentation (argh!).
+>
+> Might this help:
+> http://lserinol.blogspot.fr/2008/02/sqlite-compression.html
+
+Short of an SQLite plugin, you might look at using a FUSE-based
+compressed filesystem to store the SQLite database.  I have no idea
+how well this plays with sqlite or what the performance will be, but
+it should be simple enough to test.
+
+http://sourceforge.net/apps/mediawiki/fuse/?title=CompressedFileSystems
+
+Sean
+
+
+
+> Cheers,
+>
+> Rainer
+>
+>>
+>> Finally, 10-20GB for a textfile is not that big.  If you do not have enough
+>> RAM you must be working on a constrained system.
+>>
+>> Kasper
+>>
+>>
+>> On Tue, Aug 6, 2013 at 12:35 AM, Grant Farnsworth <gvfarns at gmail.com> wrote:
+>>
+>>> On Tue, Aug 6, 2013 at 12:02 AM, Kasper Daniel Hansen
+>>> <kasperdanielhansen at gmail.com> wrote:
+>>> > What do you mean by large?  You are aware you can have an in-memory
+>>> version
+>>> > of a SQLite database (whether that helps depends on the size of course)?
+>>>  If
+>>> > you operate on a disk based database, fast I/O helps a lot, perhaps even
+>>> > copying the database to a local drive. I don't know anything about
+>>> > compression though, but in general I have found the sqlite.org website
+>>> and
+>>> > its mailing list to be super helpful.
+>>>
+>>>
+>>> Not outrageously large.  I'd say 10-20GB each as text delimited files.
+>>>  Still, it's too large to put in RAM and work with.  This is why I use
+>>> SQLite.  I get these files as gzipped delimited text files, then I
+>>> read them a million lines or so at a time using scan(), do some basic
+>>> clean up, and stuff them into a big SQLite database.  When I want to
+>>> use the data, I just subset the stuff I need, which fits comfortably
+>>> into RAM.  If the datasets were small enough, I'd just store them in
+>>> an R data file...then I wouldn't have to worry about type conversions
+>>> or variable name issues.
+>>>
+>>> I guess it just seems wasteful to have these huge files sitting around
+>>> (or move them across networks) when the raw data was compressed and I
+>>> know the sqlite databases would compress nicely as well.  That's why
+>>> I'm specifically looking for a compression solution.  I'd be open to
+>>> other approaches, of course.  For example, I could imagine ways to
+>>> append the data into a dataframe in an .rda or .rds file and then
+>>> subset it later without ever having to load the whole thing into ram
+>>> if I used some of the big data packages, but besides the file size I'm
+>>> pretty happy with the SQLite solution---it just seemed like
+>>> transparent zipping might be available and I was surprised to find
+>>> that it wasn't.
+>>>
+>>> By the way, speed isn't a critical issue.  It's not super
+>>> time-sensitive work and the network to my file server is plenty fast.
+>>> It just seems like I might have missed an obvious way to save the
+>>> space and time that lack of compression causes.
+>>>
+>>> _______________________________________________
+>>> R-sig-DB mailing list -- R Special Interest Group
+>>> R-sig-DB at r-project.org
+>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>>
+>>
+>>       [[alternative HTML version deleted]]
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at r-project.org
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+> <#secure method=pgpmime mode=sign>
+>
+> --
+> Rainer M. Krug
+>
+> email: RMKrug<at>gmail<dot>com
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Sat Sep  7 19:37:39 2013
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Sat, 7 Sep 2013 10:37:39 -0700
+Subject: [R-sig-DB] RSQLite source code has moved to github
+Message-ID: <CANqbw6X1aRWnL12WNKFbd+xAaCLjd64AoPr4GfkzC8p5C4GORg@mail.gmail.com>
+
+Hi all,
+
+I've moved the RSQLite sources to github.
+
+New Location: https://github.com/seth/RSQLite
+
+Old Location: https://hedgehog.fhcrc.org/compbio/r-dbi/SQLite/RSQLite
+
+If you have an issue with RSQLite, please feel free to open an issue via
+the github page -- and pull requests are welcome.
+
++ seth
+
+-- 
+Seth Falcon | @sfalcon | http://userprimary.net/
+
+	[[alternative HTML version deleted]]
+
+
+
+From kr|@@nh@r|@ @end|ng |rom gm@||@com  Mon Sep  9 13:02:18 2013
+From: kr|@@nh@r|@ @end|ng |rom gm@||@com (krisan haria)
+Date: Mon, 9 Sep 2013 12:02:18 +0100
+Subject: [R-sig-DB] Error in connecting R to Postgre
+Message-ID: <CALHdMsWH+7bV=jOtgt+xLuC4Enf3mVEE703bPZa8wROk3T0q7g@mail.gmail.com>
+
+Hi
+
+I have the following version of R installed
+
+R version 3.0.0
+
+I'm trying to connect this to PostGre Version 1.16.1
+
+I have loaded the package RPostgreSQL
+
+I have then tried to run the following
+
+> drv <- dbDriver("PostgreSQL")
+> drv
+<PostgreSQLDriver:(8568)>
+> con <- dbConnect(drv, dbname="postgres")
+Error in postgresqlNewConnection(drv, ...) :
+  RS-DBI driver: (could not connect PLAYER at local on dbname "postgres"
+)
+
+Any idea on what is causing this error?
+
+-- 
+Dr. Krisan Haria
+
+	[[alternative HTML version deleted]]
+
+
+
+From kr|@@nh@r|@ @end|ng |rom gm@||@com  Mon Sep  9 13:09:31 2013
+From: kr|@@nh@r|@ @end|ng |rom gm@||@com (krisan haria)
+Date: Mon, 9 Sep 2013 12:09:31 +0100
+Subject: [R-sig-DB] Error in connecting R to Postgre
+In-Reply-To: <CALHdMsWH+7bV=jOtgt+xLuC4Enf3mVEE703bPZa8wROk3T0q7g@mail.gmail.com>
+References: <CALHdMsWH+7bV=jOtgt+xLuC4Enf3mVEE703bPZa8wROk3T0q7g@mail.gmail.com>
+Message-ID: <CALHdMsU2+ZKFBp6AydWweshqD14zNYz=GQU0Xx6WmgCLo1aicg@mail.gmail.com>
+
+Sorry that is version PostgreSQL 9.2.4
+
+
+
+
+On Mon, Sep 9, 2013 at 12:02 PM, krisan haria <krisanharia at gmail.com> wrote:
+
+> Hi
+>
+> I have the following version of R installed
+>
+> R version 3.0.0
+>
+> I'm trying to connect this to PostGre Version 1.16.1
+>
+> I have loaded the package RPostgreSQL
+>
+> I have then tried to run the following
+>
+> > drv <- dbDriver("PostgreSQL")
+> > drv
+> <PostgreSQLDriver:(8568)>
+> > con <- dbConnect(drv, dbname="postgres")
+> Error in postgresqlNewConnection(drv, ...) :
+>   RS-DBI driver: (could not connect PLAYER at local on dbname "postgres"
+> )
+>
+> Any idea on what is causing this error?
+>
+> --
+> Dr. Krisan Haria
+>
+
+
+
+-- 
+Dr. Krisan Haria
+
+	[[alternative HTML version deleted]]
+
+
+
+From evberghe @end|ng |rom gm@||@com  Mon Sep  9 13:34:47 2013
+From: evberghe @end|ng |rom gm@||@com (Edward Vanden Berghe)
+Date: Mon, 9 Sep 2013 13:34:47 +0200
+Subject: [R-sig-DB] Error in connecting R to Postgre
+In-Reply-To: <CALHdMsWH+7bV=jOtgt+xLuC4Enf3mVEE703bPZa8wROk3T0q7g@mail.gmail.com>
+References: <CALHdMsWH+7bV=jOtgt+xLuC4Enf3mVEE703bPZa8wROk3T0q7g@mail.gmail.com>
+Message-ID: <001c01cead50$97a672e0$c6f358a0$@gmail.com>
+
+Hi Krisan,
+
+Are you able to connect to the database using other tools - command line, pgAdmin?
+
+Edward
+
+-----Original Message-----
+From: r-sig-db-bounces at r-project.org [mailto:r-sig-db-bounces at r-project.org] On Behalf Of krisan haria
+Sent: 09 September 2013 13:02
+To: R-sig-DB at r-project.org
+Subject: [R-sig-DB] Error in connecting R to Postgre
+
+Hi
+
+I have the following version of R installed
+
+R version 3.0.0
+
+I'm trying to connect this to PostGre Version 1.16.1
+
+I have loaded the package RPostgreSQL
+
+I have then tried to run the following
+
+> drv <- dbDriver("PostgreSQL")
+> drv
+<PostgreSQLDriver:(8568)>
+> con <- dbConnect(drv, dbname="postgres")
+Error in postgresqlNewConnection(drv, ...) :
+  RS-DBI driver: (could not connect PLAYER at local on dbname "postgres"
+)
+
+Any idea on what is causing this error?
+
+--
+Dr. Krisan Haria
+
+	[[alternative HTML version deleted]]
+
+_______________________________________________
+R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From kr|@@nh@r|@ @end|ng |rom gm@||@com  Mon Sep  9 13:39:51 2013
+From: kr|@@nh@r|@ @end|ng |rom gm@||@com (krisan haria)
+Date: Mon, 9 Sep 2013 12:39:51 +0100
+Subject: [R-sig-DB] Error in connecting R to Postgre
+In-Reply-To: <001c01cead50$97a672e0$c6f358a0$@gmail.com>
+References: <CALHdMsWH+7bV=jOtgt+xLuC4Enf3mVEE703bPZa8wROk3T0q7g@mail.gmail.com>
+	<001c01cead50$97a672e0$c6f358a0$@gmail.com>
+Message-ID: <CALHdMsV9xafu3dBwiu3H-5fQaC4OjmiGuSCFOVMM5T-K3Ltrfw@mail.gmail.com>
+
+Under pgAdmin yes. No issue there at all
+
+
+On Mon, Sep 9, 2013 at 12:34 PM, Edward Vanden Berghe <evberghe at gmail.com>wrote:
+
+> Hi Krisan,
+>
+> Are you able to connect to the database using other tools - command line,
+> pgAdmin?
+>
+> Edward
+>
+> -----Original Message-----
+> From: r-sig-db-bounces at r-project.org [mailto:
+> r-sig-db-bounces at r-project.org] On Behalf Of krisan haria
+> Sent: 09 September 2013 13:02
+> To: R-sig-DB at r-project.org
+> Subject: [R-sig-DB] Error in connecting R to Postgre
+>
+> Hi
+>
+> I have the following version of R installed
+>
+> R version 3.0.0
+>
+> I'm trying to connect this to PostGre Version 1.16.1
+>
+> I have loaded the package RPostgreSQL
+>
+> I have then tried to run the following
+>
+> > drv <- dbDriver("PostgreSQL")
+> > drv
+> <PostgreSQLDriver:(8568)>
+> > con <- dbConnect(drv, dbname="postgres")
+> Error in postgresqlNewConnection(drv, ...) :
+>   RS-DBI driver: (could not connect PLAYER at local on dbname "postgres"
+> )
+>
+> Any idea on what is causing this error?
+>
+> --
+> Dr. Krisan Haria
+>
+>         [[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+>
+
+
+-- 
+Dr. Krisan Haria
+
+	[[alternative HTML version deleted]]
+
+
+
+From evberghe @end|ng |rom gm@||@com  Mon Sep  9 14:57:14 2013
+From: evberghe @end|ng |rom gm@||@com (Edward Vanden Berghe)
+Date: Mon, 9 Sep 2013 14:57:14 +0200
+Subject: [R-sig-DB] Error in connecting R to Postgre
+In-Reply-To: <CALHdMsV9xafu3dBwiu3H-5fQaC4OjmiGuSCFOVMM5T-K3Ltrfw@mail.gmail.com>
+References: <CALHdMsWH+7bV=jOtgt+xLuC4Enf3mVEE703bPZa8wROk3T0q7g@mail.gmail.com>	<001c01cead50$97a672e0$c6f358a0$@gmail.com>
+	<CALHdMsV9xafu3dBwiu3H-5fQaC4OjmiGuSCFOVMM5T-K3Ltrfw@mail.gmail.com>
+Message-ID: <002c01cead5c$1c4714e0$54d53ea0$@gmail.com>
+
+Seems your user doesn???t have access. Did you get access with the same user and password through pgAdmin? Do you log connections to the database in postgresql.conf? If so, do you find anything in the PostgreSQL log file?
+
+ 
+
+Edward
+
+ 
+
+From: krisan haria [mailto:krisanharia at gmail.com] 
+Sent: 09 September 2013 13:40
+To: Edward Vanden Berghe
+Cc: R-sig-DB at r-project.org
+Subject: Re: [R-sig-DB] Error in connecting R to Postgre
+
+ 
+
+Under pgAdmin yes. No issue there at all
+
+ 
+
+On Mon, Sep 9, 2013 at 12:34 PM, Edward Vanden Berghe <evberghe at gmail.com> wrote:
+
+Hi Krisan,
+
+Are you able to connect to the database using other tools - command line, pgAdmin?
+
+Edward
+
+
+-----Original Message-----
+From: r-sig-db-bounces at r-project.org [mailto:r-sig-db-bounces at r-project.org] On Behalf Of krisan haria
+Sent: 09 September 2013 13:02
+To: R-sig-DB at r-project.org
+Subject: [R-sig-DB] Error in connecting R to Postgre
+
+Hi
+
+I have the following version of R installed
+
+R version 3.0.0
+
+I'm trying to connect this to PostGre Version 1.16.1
+
+I have loaded the package RPostgreSQL
+
+I have then tried to run the following
+
+> drv <- dbDriver("PostgreSQL")
+> drv
+<PostgreSQLDriver:(8568)>
+> con <- dbConnect(drv, dbname="postgres")
+Error in postgresqlNewConnection(drv, ...) :
+  RS-DBI driver: (could not connect PLAYER at local on dbname "postgres"
+)
+
+Any idea on what is causing this error?
+
+--
+Dr. Krisan Haria
+
+        [[alternative HTML version deleted]]
+
+_______________________________________________
+R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+
+-- 
+Dr. Krisan Haria
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From edd @end|ng |rom deb|@n@org  Mon Sep  9 15:14:42 2013
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Mon, 9 Sep 2013 08:14:42 -0500
+Subject: [R-sig-DB] Error in connecting R to Postgre
+In-Reply-To: <002c01cead5c$1c4714e0$54d53ea0$@gmail.com>
+References: <CALHdMsWH+7bV=jOtgt+xLuC4Enf3mVEE703bPZa8wROk3T0q7g@mail.gmail.com>
+	<001c01cead50$97a672e0$c6f358a0$@gmail.com>
+	<CALHdMsV9xafu3dBwiu3H-5fQaC4OjmiGuSCFOVMM5T-K3Ltrfw@mail.gmail.com>
+	<002c01cead5c$1c4714e0$54d53ea0$@gmail.com>
+Message-ID: <21037.51650.532986.812664@max.nulle.part>
+
+
+On 9 September 2013 at 14:57, Edward Vanden Berghe wrote:
+| Seems your user doesn?t have access. Did you get access with the same user and password through pgAdmin? Do you log connections to the database in postgresql.conf? If so, do you find anything in the PostgreSQL log file?
+
+Also:
+ 
+ -- what OS is this hosted on?
+
+ -- are you connecting via the network, or on the same machine?
+
+ -- RPostgreSQL "behaves like psql" in the sense that you MUST provide tcp/ip
+    access to PostgreSQL whereas the other apps may use other means
+
+ -- hence make sure you can, say, connect with psql from another box after
+    which RPostgreSQL will work too.
+
+These are not R-related questions. Check the PostgreSQL documentation for
+'enable network access' etc.
+
+Dirk
+
+  
+ 
+| Edward
+| 
+|  
+| 
+| From: krisan haria [mailto:krisanharia at gmail.com] 
+| Sent: 09 September 2013 13:40
+| To: Edward Vanden Berghe
+| Cc: R-sig-DB at r-project.org
+| Subject: Re: [R-sig-DB] Error in connecting R to Postgre
+| 
+|  
+| 
+| Under pgAdmin yes. No issue there at all
+| 
+|  
+| 
+| On Mon, Sep 9, 2013 at 12:34 PM, Edward Vanden Berghe <evberghe at gmail.com> wrote:
+| 
+| Hi Krisan,
+| 
+| Are you able to connect to the database using other tools - command line, pgAdmin?
+| 
+| Edward
+| 
+| 
+| -----Original Message-----
+| From: r-sig-db-bounces at r-project.org [mailto:r-sig-db-bounces at r-project.org] On Behalf Of krisan haria
+| Sent: 09 September 2013 13:02
+| To: R-sig-DB at r-project.org
+| Subject: [R-sig-DB] Error in connecting R to Postgre
+| 
+| Hi
+| 
+| I have the following version of R installed
+| 
+| R version 3.0.0
+| 
+| I'm trying to connect this to PostGre Version 1.16.1
+| 
+| I have loaded the package RPostgreSQL
+| 
+| I have then tried to run the following
+| 
+| > drv <- dbDriver("PostgreSQL")
+| > drv
+| <PostgreSQLDriver:(8568)>
+| > con <- dbConnect(drv, dbname="postgres")
+| Error in postgresqlNewConnection(drv, ...) :
+|   RS-DBI driver: (could not connect PLAYER at local on dbname "postgres"
+| )
+| 
+| Any idea on what is causing this error?
+| 
+| --
+| Dr. Krisan Haria
+| 
+|         [[alternative HTML version deleted]]
+| 
+| _______________________________________________
+| R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org https://stat.ethz.ch/mailman/listinfo/r-sig-db
+| 
+| 
+| 
+| 
+| -- 
+| Dr. Krisan Haria
+| 
+| 
+| 	[[alternative HTML version deleted]]
+| 
+| 
+| ----------------------------------------------------------------------
+| _______________________________________________
+| R-sig-DB mailing list -- R Special Interest Group
+| R-sig-DB at r-project.org
+| https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+-- 
+Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+
+
+From tomo@k|n @end|ng |rom @t@||@k@n@z@w@-u@@c@jp  Mon Sep  9 15:50:21 2013
+From: tomo@k|n @end|ng |rom @t@||@k@n@z@w@-u@@c@jp (NISHIYAMA Tomoaki)
+Date: Mon, 9 Sep 2013 22:50:21 +0900
+Subject: [R-sig-DB] Error in connecting R to Postgre
+In-Reply-To: <21037.51650.532986.812664@max.nulle.part>
+References: <CALHdMsWH+7bV=jOtgt+xLuC4Enf3mVEE703bPZa8wROk3T0q7g@mail.gmail.com>
+	<001c01cead50$97a672e0$c6f358a0$@gmail.com>
+	<CALHdMsV9xafu3dBwiu3H-5fQaC4OjmiGuSCFOVMM5T-K3Ltrfw@mail.gmail.com>
+	<002c01cead5c$1c4714e0$54d53ea0$@gmail.com>
+	<21037.51650.532986.812664@max.nulle.part>
+Message-ID: <98909DD3-0322-4145-9EAD-DDA1FD3E2FF5@staff.kanazawa-u.ac.jp>
+
+Hi,
+
+While Dirk is right in that psql and RPostgreSQL should behave the same,
+both psql and RPostgreSQL should be able to connect via unix domain socket.
+
+In this case, what you are trying is equivalent to
+
+psql -U PLAYER postgres
+(on the host you are running R)
+
+Does this work?
+
+Best regards,
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi, 
+Kanazawa, 920-0934, Japan
+
+
+On 2013/09/09, at 22:14, Dirk Eddelbuettel wrote:
+
+> 
+> On 9 September 2013 at 14:57, Edward Vanden Berghe wrote:
+> | Seems your user doesn?t have access. Did you get access with the same user and password through pgAdmin? Do you log connections to the database in postgresql.conf? If so, do you find anything in the PostgreSQL log file?
+> 
+> Also:
+> 
+> -- what OS is this hosted on?
+> 
+> -- are you connecting via the network, or on the same machine?
+> 
+> -- RPostgreSQL "behaves like psql" in the sense that you MUST provide tcp/ip
+>    access to PostgreSQL whereas the other apps may use other means
+> 
+> -- hence make sure you can, say, connect with psql from another box after
+>    which RPostgreSQL will work too.
+> 
+> These are not R-related questions. Check the PostgreSQL documentation for
+> 'enable network access' etc.
+> 
+> Dirk
+> 
+> 
+> 
+> | Edward
+> | 
+> |  
+> | 
+> | From: krisan haria [mailto:krisanharia at gmail.com] 
+> | Sent: 09 September 2013 13:40
+> | To: Edward Vanden Berghe
+> | Cc: R-sig-DB at r-project.org
+> | Subject: Re: [R-sig-DB] Error in connecting R to Postgre
+> | 
+> |  
+> | 
+> | Under pgAdmin yes. No issue there at all
+> | 
+> |  
+> | 
+> | On Mon, Sep 9, 2013 at 12:34 PM, Edward Vanden Berghe <evberghe at gmail.com> wrote:
+> | 
+> | Hi Krisan,
+> | 
+> | Are you able to connect to the database using other tools - command line, pgAdmin?
+> | 
+> | Edward
+> | 
+> | 
+> | -----Original Message-----
+> | From: r-sig-db-bounces at r-project.org [mailto:r-sig-db-bounces at r-project.org] On Behalf Of krisan haria
+> | Sent: 09 September 2013 13:02
+> | To: R-sig-DB at r-project.org
+> | Subject: [R-sig-DB] Error in connecting R to Postgre
+> | 
+> | Hi
+> | 
+> | I have the following version of R installed
+> | 
+> | R version 3.0.0
+> | 
+> | I'm trying to connect this to PostGre Version 1.16.1
+> | 
+> | I have loaded the package RPostgreSQL
+> | 
+> | I have then tried to run the following
+> | 
+> | > drv <- dbDriver("PostgreSQL")
+> | > drv
+> | <PostgreSQLDriver:(8568)>
+> | > con <- dbConnect(drv, dbname="postgres")
+> | Error in postgresqlNewConnection(drv, ...) :
+> |   RS-DBI driver: (could not connect PLAYER at local on dbname "postgres"
+> | )
+> | 
+> | Any idea on what is causing this error?
+> | 
+> | --
+> | Dr. Krisan Haria
+> | 
+> |         [[alternative HTML version deleted]]
+> | 
+> | _______________________________________________
+> | R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> | 
+> | 
+> | 
+> | 
+> | -- 
+> | Dr. Krisan Haria
+> | 
+> | 
+> | 	[[alternative HTML version deleted]]
+> | 
+> | 
+> | ----------------------------------------------------------------------
+> | _______________________________________________
+> | R-sig-DB mailing list -- R Special Interest Group
+> | R-sig-DB at r-project.org
+> | https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> 
+> -- 
+> Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+

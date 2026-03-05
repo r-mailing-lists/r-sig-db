@@ -1,0 +1,55 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2013-05",
+  "messages": [
+    {
+      "id": "msg-a44524d1cd34",
+      "message_id": "<CAPOKgUwP60FQNT+a1xd8K19vHyyo2heg9LGdk+K9KNYoU10x9Q@mail.gmail.com>",
+      "from_name": "Chris Colburn",
+      "from_email_hash": "4d30bf0b76a3f9f30fcbc1b669e4b6ec42b0045cd0d9c79f96f27cad753e1aa9",
+      "date": "2013-05-09T05:48:36-07:00",
+      "subject": "[R-sig-DB] RODBC error when connecting to postgres",
+      "subject_clean": "RODBC error when connecting to postgres",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello All,\n\nI?m trying to connect via ODBC to a postgres database. Although I?ve been\nable to test my ODBC configurations using isql I am now getting the\nfollowing error in R.  This seems like a memory issue, but cannot tell if\nthe ?calloc? error is a red herring.  Let me know if you need any more\ninformation.  Many thanks in advance!\n\n> library(RODBC)> myconn <- odbcConnect(\"postgres_dsn\", uid=\"test\",\npwd=\"<PASSWD>\")\n> sqlQuery(myconn,\"select count(*) from test_table;\")\nError in odbcQuery(channel, query, rows_at_time) :  'Calloc' could not\nallocate memory (18446744073709551616 of 22816 bytes)\n\n> versionplatform       x86_64-suse-linux-gnu\narch           x86_64\nos             linux-gnu\nsystem         x86_64, linux-gnu\nstatus\nmajor          3\nminor          0.0\nyear           2013\nmonth          04\nday            03\nsvn rev        62481\nlanguage       R\nversion.string R version 3.0.0 (2013-04-03)\nnickname       Masked Marvel\n\nAny help that you can provide is greatly appreciate, and I will try to\nrespond as quickly as possible.\n\nVery Sincerely,\nChris\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hello All,\n\nI?m trying to connect via ODBC to a postgres database. Although I?ve been\nable to test my ODBC configurations using isql I am now getting the\nfollowing error in R.  This seems like a memor",
+      "thread_id": "thread-a44524d1cd34",
+      "thread_depth": 0,
+      "month": "2013-05"
+    },
+    {
+      "id": "msg-8328b6aaeb8d",
+      "message_id": "<20875.41163.859193.137787@max.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2013-05-09T08:12:43-05:00",
+      "subject": "[R-sig-DB] RODBC error when connecting to postgres",
+      "subject_clean": "RODBC error when connecting to postgres",
+      "in_reply_to": "<CAPOKgUwP60FQNT+a1xd8K19vHyyo2heg9LGdk+K9KNYoU10x9Q@mail.gmail.com>",
+      "references": [
+        "<CAPOKgUwP60FQNT+a1xd8K19vHyyo2heg9LGdk+K9KNYoU10x9Q@mail.gmail.com>"
+      ],
+      "body_plain": "On 9 May 2013 at 05:48, Chris Colburn wrote:\n| Hello All,\n| \n| I?m trying to connect via ODBC to a postgres database. Although I?ve been\n| able to test my ODBC configurations using isql I am now getting the\n| following error in R.  This seems like a memory issue, but cannot tell if\n| the ?calloc? error is a red herring.  Let me know if you need any more\n| information.  Many thanks in advance!\n| \n| > library(RODBC)> myconn <- odbcConnect(\"postgres_dsn\", uid=\"test\",\n| pwd=\"<PASSWD>\")\n| > sqlQuery(myconn,\"select count(*) from test_table;\")\n| Error in odbcQuery(channel, query, rows_at_time) :  'Calloc' could not\n| allocate memory (18446744073709551616 of 22816 bytes)\n\nThat sort of rings a bell.  As the number is HUGE it could be a type\nmismatch.  Are you sure you are not mixing 32 and 64 bit libraries?\n\nAlso note that there is a _native_ connection package in RPostgreSQL which\nyou could try.\n\nDirk\n\n| \n| > versionplatform       x86_64-suse-linux-gnu\n| arch           x86_64\n| os             linux-gnu\n| system         x86_64, linux-gnu\n| status\n| major          3\n| minor          0.0\n| year           2013\n| month          04\n| day            03\n| svn rev        62481\n| language       R\n| version.string R version 3.0.0 (2013-04-03)\n| nickname       Masked Marvel\n| \n| Any help that you can provide is greatly appreciate, and I will try to\n| respond as quickly as possible.\n| \n| Very Sincerely,\n| Chris\n| \n| \t[[alternative HTML version deleted]]\n| \n| \n| ----------------------------------------------------------------------\n| _______________________________________________\n| R-sig-DB mailing list -- R Special Interest Group\n| R-sig-DB at r-project.org\n| https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n-- \nDirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com",
+      "body_snippet": "On 9 May 2013 at 05:48, Chris Colburn wrote:\n| Hello All,\n| \n| I?m trying to connect via ODBC to a postgres database. Although I?ve been\n| able to test my ODBC configurations using isql I am now getti",
+      "thread_id": "thread-a44524d1cd34",
+      "thread_depth": 1,
+      "month": "2013-05"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-a44524d1cd34",
+      "subject": "RODBC error when connecting to postgres",
+      "message_count": 2,
+      "participants": [
+        "Chris Colburn",
+        "Dirk Eddelbuettel"
+      ],
+      "started": "2013-05-09T05:48:36-07:00",
+      "last_reply": "2013-05-09T08:12:43-05:00",
+      "root_message_id": "msg-a44524d1cd34"
+    }
+  ]
+}

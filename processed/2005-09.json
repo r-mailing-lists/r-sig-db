@@ -1,0 +1,444 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2005-09",
+  "messages": [
+    {
+      "id": "msg-336ad1c042ea",
+      "message_id": "<Pine.BSI.4.61.0509050826370.15558@malasada.lava.net>",
+      "from_name": "Tom Dye",
+      "from_email_hash": "3112922926353d6be99e622a386ffa9610c3515c1c9dadadf5cb0ea3e34f2de5",
+      "date": "2005-09-05T08:33:21-10:00",
+      "subject": "[R-sig-DB] PostgreSQL",
+      "subject_clean": "PostgreSQL",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Aloha All,\n\nWhat is the best way to connect R and PostgreSQL?  Documentation for \nthe DBI package (in its various forms) suggests:\n\np <- dbDriver(\"PgSQL\")\np <- dbDriver(\"RPgSQL\")\np <- dbDriver(\"PostgreSQL\")\n\nnone of which appear to work.\n\nA post here last year notes that a PostgreSQL driver wasn't then written \nfor DBI and gives a solution using Rdbi and Rdbi.Pgsql, but I couldn't \nfind Rdbi in the packages on CRAN.  I'm stumped.\n\nAny help will be much appreciated.\n\nTom\n\nThomas S. Dye, Ph.D. \nT. S. Dye & Colleagues, Archaeologists, Inc. \n735 Bishop Street, Suite 315\nHonolulu, Hawai`i 96813 \nVoice (808) 387-9352 \nFax (808) 529-0884\nhttp://www.tsdye.com",
+      "body_snippet": "Aloha All,\n\nWhat is the best way to connect R and PostgreSQL?  Documentation for \nthe DBI package (in its various forms) suggests:\n\np <- dbDriver(\"PgSQL\")\np <- dbDriver(\"RPgSQL\")\np <- dbDriver(\"Postgr",
+      "thread_id": "thread-336ad1c042ea",
+      "thread_depth": 0,
+      "month": "2005-09"
+    },
+    {
+      "id": "msg-cfe34cf42436",
+      "message_id": "<200509051924.j85JO5lu006493@hypatia.math.ethz.ch>",
+      "from_name": "Steve Miller",
+      "from_email_hash": "3b1dfddf256f2ac0826c2c8c1b65e1d5770d94b2451b1ce0a379a72d2a533e39",
+      "date": "2005-09-05T14:23:53-05:00",
+      "subject": "[R-sig-DB] PostgreSQL",
+      "subject_clean": "PostgreSQL",
+      "in_reply_to": "<Pine.BSI.4.61.0509050826370.15558@malasada.lava.net>",
+      "references": [],
+      "body_plain": "Tom --\n\nYou can always use the ODBC driver. I deploy the EnterpriseDB dialect of\nPostgress:\n\nchannel <- odbcConnect(\"EnterpriseDB\",uid=\"enterprisedb\",pwd=\"orioles79\")\nfdaily <- sqlQuery(channel, paste(\"select * from frenchfamadaily\"), as.is=T)\nfor (i in 1:ncol(fdaily))\n{\n\tfdaily[,i] <- as.numeric(fdaily[,i])\n}\n\n\n\nSteve Miller\nSteve.miller at jhu.edu\n\n\n-----Original Message-----\nFrom: r-sig-db-bounces at stat.math.ethz.ch\n[mailto:r-sig-db-bounces at stat.math.ethz.ch] On Behalf Of Tom Dye\nSent: Monday, September 05, 2005 1:33 PM\nTo: R-sig-DB at stat.math.ethz.ch\nSubject: [R-sig-DB] PostgreSQL\n\nAloha All,\n\nWhat is the best way to connect R and PostgreSQL?  Documentation for \nthe DBI package (in its various forms) suggests:\n\np <- dbDriver(\"PgSQL\")\np <- dbDriver(\"RPgSQL\")\np <- dbDriver(\"PostgreSQL\")\n\nnone of which appear to work.\n\nA post here last year notes that a PostgreSQL driver wasn't then written \nfor DBI and gives a solution using Rdbi and Rdbi.Pgsql, but I couldn't \nfind Rdbi in the packages on CRAN.  I'm stumped.\n\nAny help will be much appreciated.\n\nTom\n\nThomas S. Dye, Ph.D. \nT. S. Dye & Colleagues, Archaeologists, Inc. \n735 Bishop Street, Suite 315\nHonolulu, Hawai`i 96813 \nVoice (808) 387-9352 \nFax (808) 529-0884\nhttp://www.tsdye.com\n\n_______________________________________________\nR-sig-DB mailing list -- R Special Interest Group\nR-sig-DB at stat.math.ethz.ch\nhttps://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "Tom --\n\nYou can always use the ODBC driver. I deploy the EnterpriseDB dialect of\nPostgress:\n\nchannel <- odbcConnect(\"EnterpriseDB\",uid=\"enterprisedb\",pwd=\"orioles79\")\nfdaily <- sqlQuery(channel, paste",
+      "thread_id": "thread-336ad1c042ea",
+      "thread_depth": 1,
+      "month": "2005-09"
+    },
+    {
+      "id": "msg-d4ae77832861",
+      "message_id": "<431CA4AD.4070403@joeconway.com>",
+      "from_name": "Joe Conway",
+      "from_email_hash": "0949eac547cfdb5b4f8da255f732c1e0eefbdbedd75144220d850557442c3d4d",
+      "date": "2005-09-05T13:03:57-07:00",
+      "subject": "[R-sig-DB] PostgreSQL",
+      "subject_clean": "PostgreSQL",
+      "in_reply_to": "<Pine.BSI.4.61.0509050826370.15558@malasada.lava.net>",
+      "references": [
+        "<Pine.BSI.4.61.0509050826370.15558@malasada.lava.net>"
+      ],
+      "body_plain": "Tom Dye wrote:\n> \n> What is the best way to connect R and PostgreSQL?\n\nI think you want this:\nhttp://www.bioconductor.org/packages/bioc/stable/src/contrib/html/RdbiPgSQL.html\n\nHTH,\n\nJoe",
+      "body_snippet": "Tom Dye wrote:\n> \n> What is the best way to connect R and PostgreSQL?\n\nI think you want this:\nhttp://www.bioconductor.org/packages/bioc/stable/src/contrib/html/RdbiPgSQL.html\n\nHTH,\n\nJoe",
+      "thread_id": "thread-336ad1c042ea",
+      "thread_depth": 1,
+      "month": "2005-09"
+    },
+    {
+      "id": "msg-310ede9481ec",
+      "message_id": "<431CCD8D.2060307@joeconway.com>",
+      "from_name": "Joe Conway",
+      "from_email_hash": "0949eac547cfdb5b4f8da255f732c1e0eefbdbedd75144220d850557442c3d4d",
+      "date": "2005-09-05T15:58:21-07:00",
+      "subject": "[R-sig-DB] PostgreSQL",
+      "subject_clean": "PostgreSQL",
+      "in_reply_to": "<Pine.BSI.4.61.0509051210330.28931@malasada.lava.net>",
+      "references": [
+        "<Pine.BSI.4.61.0509050826370.15558@malasada.lava.net>",
+        "<431CA4AD.4070403@joeconway.com>",
+        "<Pine.BSI.4.61.0509051210330.28931@malasada.lava.net>"
+      ],
+      "body_plain": "Tom Dye wrote:\n> \n> I think you're right.  Now that I have downloaded the source, are there \n> installation instructions?  I'm working on an eMac, OS 10.3.  Is the \n> package known to compile on this platform?  Running autoconf, then \n> configure --with-pgsql-libraries=/usr/local/pgsql/lib/, yields\n> configure: error: C preprocessor \"/lib/cpp\" fails sanity check.\n\n(posting back to the list so others can join in and/or benefit)\n\nI think it also requires this:\nhttp://www.bioconductor.org/packages/bioc/stable/src/contrib/html/Rdbi.html\n\nI'm afraid I don't have a Mac, and to be honest have not used RdbiPgSQL \nsince before it was moved to Bioconductor. My needs for R are very \nbasic, and usually I use my own connector, PL/R (see \nhttp://www.joeconway.com/plr/). Slightly different approach, but might \nmeet your needs.\n\nAnyway, I followed the instructions here:\nhttp://www.bioconductor.org/docs/install-howto.html\n\nWorked for me after I set two environment variables to point to my \nPostgres headers and libs. I did something like:\n\n\n# export PG_LIB_DIR=/usr/local/pgsql-dev/lib\n# export PG_INCLUDE_DIR=/usr/local/pgsql-dev/include\n# R\n\nR : Copyright 2005, The R Foundation for Statistical Computing\nVersion 2.1.1  (2005-06-20), ISBN 3-900051-07-0\n\n<snip>\n\n[Previously saved workspace restored]\n\n > source(\"http://www.bioconductor.org/biocLite.R\")\n > biocLite(c(\"Rdbi\",\"RdbiPgSQL\"))\n\nI haven't really tested it, but all indications are that they both \ninstalled correctly.\n\nHTH,\n\nJoe",
+      "body_snippet": "Tom Dye wrote:\n> \n> I think you're right.  Now that I have downloaded the source, are there \n> installation instructions?  I'm working on an eMac, OS 10.3.  Is the \n> package known to compile on this ",
+      "thread_id": "thread-310ede9481ec",
+      "thread_depth": 0,
+      "month": "2005-09"
+    },
+    {
+      "id": "msg-8a849df5aa08",
+      "message_id": "<Pine.BSI.4.61.0509052146350.12970@malasada.lava.net>",
+      "from_name": "Tom Dye",
+      "from_email_hash": "3112922926353d6be99e622a386ffa9610c3515c1c9dadadf5cb0ea3e34f2de5",
+      "date": "2005-09-05T21:53:33-10:00",
+      "subject": "[R-sig-DB] PostgreSQL",
+      "subject_clean": "PostgreSQL",
+      "in_reply_to": "<431CCD8D.2060307@joeconway.com>",
+      "references": [
+        "<Pine.BSI.4.61.0509050826370.15558@malasada.lava.net>",
+        "<431CA4AD.4070403@joeconway.com>",
+        "<Pine.BSI.4.61.0509051210330.28931@malasada.lava.net>",
+        "<431CCD8D.2060307@joeconway.com>"
+      ],
+      "body_plain": "Aloha Joe,\n\nRdbi installs just fine.\n\nRdbiPgSQL is available as source, and even with\nexport PG_LIB_DIR=/usr/local/pgsql/lib/ and\nexport PG_INCLUDE_DIR=/usr/local/pgsql/include/\nfails to install with the following messages:\n\ntrying URL \n'http://www.bioconductor.org/src/contrib/RdbiPgSQL_1.1.4.tar.gz'\nContent type 'application/x-gzip' length 28046 bytes\nopened URL\n==================================================\ndownloaded 27Kb\n\n* Installing *source* package 'RdbiPgSQL' ...\ncreating cache ./config.cache\n\nThe downloaded packages are in\n \t/private/tmp/RtmpzKE7wz/downloaded_packages\nchecking for PQconnectdb in -lpq... no\n\nI could not find your PostgreSQL client libraries!\nUse --with-pgsql-libraries=PATH; if running R's INSTALL,\nuse --configure-args='--with-pgsql-libraries=PATH'; or\nset PG_LIB_DIR in your environment to the library path,\nand rerun the configure/install.\n\nERROR: configuration failed for package 'RdbiPgSQL'\n\nI'm in way over my head here and will appreciate any help.\n\nTom\n\nOn Mon, 5 Sep 2005, Joe Conway wrote:\n> (posting back to the list so others can join in and/or benefit)\n>\n> I think it also requires this:\n> http://www.bioconductor.org/packages/bioc/stable/src/contrib/html/Rdbi.html\n>\n> I'm afraid I don't have a Mac, and to be honest have not used RdbiPgSQL since \n> before it was moved to Bioconductor. My needs for R are very basic, and \n> usually I use my own connector, PL/R (see http://www.joeconway.com/plr/). \n> Slightly different approach, but might meet your needs.\n>\n> Anyway, I followed the instructions here:\n> http://www.bioconductor.org/docs/install-howto.html\n>\n> Worked for me after I set two environment variables to point to my Postgres \n> headers and libs. I did something like:\n>\n>\n> # export PG_LIB_DIR=/usr/local/pgsql-dev/lib\n> # export PG_INCLUDE_DIR=/usr/local/pgsql-dev/include\n> # R\n>\n> R : Copyright 2005, The R Foundation for Statistical Computing\n> Version 2.1.1  (2005-06-20), ISBN 3-900051-07-0\n>\n> <snip>\n>\n> [Previously saved workspace restored]\n>\n>> source(\"http://www.bioconductor.org/biocLite.R\")\n>> biocLite(c(\"Rdbi\",\"RdbiPgSQL\"))\n>\n> I haven't really tested it, but all indications are that they both installed \n> correctly.\n>\n> HTH,\n>\n> Joe\n>\n\nThomas S. Dye, Ph.D. \nT. S. Dye & Colleagues, Archaeologists, Inc. \n735 Bishop Street, Suite 315\nHonolulu, Hawai`i 96813 \nVoice (808) 387-9352 \nFax (808) 529-0884\nhttp://www.tsdye.com",
+      "body_snippet": "Aloha Joe,\n\nRdbi installs just fine.\n\nRdbiPgSQL is available as source, and even with\nexport PG_LIB_DIR=/usr/local/pgsql/lib/ and\nexport PG_INCLUDE_DIR=/usr/local/pgsql/include/\nfails to install with ",
+      "thread_id": "thread-310ede9481ec",
+      "thread_depth": 1,
+      "month": "2005-09"
+    },
+    {
+      "id": "msg-224362a3f8c0",
+      "message_id": "<431E6477.4060703@joeconway.com>",
+      "from_name": "Joe Conway",
+      "from_email_hash": "0949eac547cfdb5b4f8da255f732c1e0eefbdbedd75144220d850557442c3d4d",
+      "date": "2005-09-06T20:54:31-07:00",
+      "subject": "[R-sig-DB] PostgreSQL",
+      "subject_clean": "PostgreSQL",
+      "in_reply_to": "<Pine.BSI.4.61.0509052146350.12970@malasada.lava.net>",
+      "references": [
+        "<Pine.BSI.4.61.0509050826370.15558@malasada.lava.net>",
+        "<431CA4AD.4070403@joeconway.com>",
+        "<Pine.BSI.4.61.0509051210330.28931@malasada.lava.net>",
+        "<431CCD8D.2060307@joeconway.com>",
+        "<Pine.BSI.4.61.0509052146350.12970@malasada.lava.net>"
+      ],
+      "body_plain": "Tom Dye wrote:\n> \n> RdbiPgSQL is available as source, and even with\n> export PG_LIB_DIR=/usr/local/pgsql/lib/ and\n> export PG_INCLUDE_DIR=/usr/local/pgsql/include/\n> fails to install with the following messages:\n\n[snip]\n\n> I could not find your PostgreSQL client libraries!\n> Use --with-pgsql-libraries=PATH; if running R's INSTALL,\n> use --configure-args='--with-pgsql-libraries=PATH'; or\n> set PG_LIB_DIR in your environment to the library path,\n> and rerun the configure/install.\n> \n> ERROR: configuration failed for package 'RdbiPgSQL'\n\nIs libpq.so really in /usr/local/pgsql/lib (R doesn't think so)? If not, \nfind it, and point PG_LIB_DIR to that location. Unfortunately I can't \nreally help you in terms of finding where the Postgres client libraries \nare located on a Mac. You may have a similar issue with PG_INCLUDE_DIR.\n\nJoe",
+      "body_snippet": "Tom Dye wrote:\n> \n> RdbiPgSQL is available as source, and even with\n> export PG_LIB_DIR=/usr/local/pgsql/lib/ and\n> export PG_INCLUDE_DIR=/usr/local/pgsql/include/\n> fails to install with the followin",
+      "thread_id": "thread-310ede9481ec",
+      "thread_depth": 2,
+      "month": "2005-09"
+    },
+    {
+      "id": "msg-dce812371565",
+      "message_id": "<Pine.BSI.4.61.0509062053420.21352@malasada.lava.net>",
+      "from_name": "Tom Dye",
+      "from_email_hash": "3112922926353d6be99e622a386ffa9610c3515c1c9dadadf5cb0ea3e34f2de5",
+      "date": "2005-09-06T21:07:15-10:00",
+      "subject": "[R-sig-DB] PostgreSQL",
+      "subject_clean": "PostgreSQL",
+      "in_reply_to": "<431E6477.4060703@joeconway.com>",
+      "references": [
+        "<Pine.BSI.4.61.0509050826370.15558@malasada.lava.net>",
+        "<431CA4AD.4070403@joeconway.com>",
+        "<Pine.BSI.4.61.0509051210330.28931@malasada.lava.net>",
+        "<431CCD8D.2060307@joeconway.com>",
+        "<Pine.BSI.4.61.0509052146350.12970@malasada.lava.net>",
+        "<431E6477.4060703@joeconway.com>"
+      ],
+      "body_plain": "Aloha Joe,\n\nIt is really good of you to stick with this.  libpq is where it should \nbe, I think:\n\n/usr/local/pgsql/lib tomdye$ ll libpq*\n-rw-r--r--  1 tomdye  tomdye  161792  3 May  2004 libpq.a\nlrwxr-xr-x  1 tomdye  tomdye      12 26 Dec  2004 libpq.so@ -> \nlibpq.so.3.1\nlrwxr-xr-x  1 tomdye  tomdye      12 26 Dec  2004 libpq.so.3@ -> \nlibpq.so.3.1\n-rwxr-xr-x  1 tomdye  tomdye   90812  3 May  2004 libpq.so.3.1*\n\nI don't know what this line of the error message means:\nchecking for PQconnectdb in -lpq... no\n\nCould it be that my libpq is missing something that RdbiPgSQL needs?\n\nTom\n\nOn Tue, 6 Sep 2005, Joe Conway wrote:\n\n> Tom Dye wrote:\n>> \n>> RdbiPgSQL is available as source, and even with\n>> export PG_LIB_DIR=/usr/local/pgsql/lib/ and\n>> export PG_INCLUDE_DIR=/usr/local/pgsql/include/\n>> fails to install with the following messages:\n>\n> [snip]\n>\n>> I could not find your PostgreSQL client libraries!\n>> Use --with-pgsql-libraries=PATH; if running R's INSTALL,\n>> use --configure-args='--with-pgsql-libraries=PATH'; or\n>> set PG_LIB_DIR in your environment to the library path,\n>> and rerun the configure/install.\n>> \n>> ERROR: configuration failed for package 'RdbiPgSQL'\n>\n> Is libpq.so really in /usr/local/pgsql/lib (R doesn't think so)? If not, find \n> it, and point PG_LIB_DIR to that location. Unfortunately I can't really help \n> you in terms of finding where the Postgres client libraries are located on a \n> Mac. You may have a similar issue with PG_INCLUDE_DIR.\n>\n> Joe\n>\n\nThomas S. Dye, Ph.D. \nT. S. Dye & Colleagues, Archaeologists, Inc. \n735 Bishop Street, Suite 315\nHonolulu, Hawai`i 96813 \nVoice (808) 387-9352 \nFax (808) 529-0884\nhttp://www.tsdye.com",
+      "body_snippet": "Aloha Joe,\n\nIt is really good of you to stick with this.  libpq is where it should \nbe, I think:\n\n/usr/local/pgsql/lib tomdye$ ll libpq*\n-rw-r--r--  1 tomdye  tomdye  161792  3 May  2004 libpq.a\nlrwxr",
+      "thread_id": "thread-310ede9481ec",
+      "thread_depth": 3,
+      "month": "2005-09"
+    },
+    {
+      "id": "msg-c4bd024aa5b9",
+      "message_id": "<1126103273.22595.17.camel@patagonicus.keittlab.net>",
+      "from_name": "Tim Keitt",
+      "from_email_hash": "54384dd522cf32f9972d11e07f32d774852eb69d44e8d273f0fcabf4c0e2144f",
+      "date": "2005-09-07T09:27:53-05:00",
+      "subject": "[R-sig-DB] PostgreSQL",
+      "subject_clean": "PostgreSQL",
+      "in_reply_to": "<Pine.BSI.4.61.0509062053420.21352@malasada.lava.net>",
+      "references": [
+        "<Pine.BSI.4.61.0509050826370.15558@malasada.lava.net>",
+        "<431CA4AD.4070403@joeconway.com>",
+        "<Pine.BSI.4.61.0509051210330.28931@malasada.lava.net>",
+        "<431CCD8D.2060307@joeconway.com>",
+        "<Pine.BSI.4.61.0509052146350.12970@malasada.lava.net>",
+        "<431E6477.4060703@joeconway.com>",
+        "<Pine.BSI.4.61.0509062053420.21352@malasada.lava.net>"
+      ],
+      "body_plain": "These are the reasons I no longer maintain the package. Everyone's setup\nis completely different. I did get the postgresql folks to implement the\npg_config command to make this easier. What is the output of \"pg_config\n--configure\"?\n\nTHK\n\nOn Tue, 2005-09-06 at 21:07 -1000, Tom Dye wrote:\n> Aloha Joe,\n> \n> It is really good of you to stick with this.  libpq is where it should \n> be, I think:\n> \n> /usr/local/pgsql/lib tomdye$ ll libpq*\n> -rw-r--r--  1 tomdye  tomdye  161792  3 May  2004 libpq.a\n> lrwxr-xr-x  1 tomdye  tomdye      12 26 Dec  2004 libpq.so@ -> \n> libpq.so.3.1\n> lrwxr-xr-x  1 tomdye  tomdye      12 26 Dec  2004 libpq.so.3@ -> \n> libpq.so.3.1\n> -rwxr-xr-x  1 tomdye  tomdye   90812  3 May  2004 libpq.so.3.1*\n> \n> I don't know what this line of the error message means:\n> checking for PQconnectdb in -lpq... no\n> \n> Could it be that my libpq is missing something that RdbiPgSQL needs?\n> \n> Tom\n> \n> On Tue, 6 Sep 2005, Joe Conway wrote:\n> \n> > Tom Dye wrote:\n> >> \n> >> RdbiPgSQL is available as source, and even with\n> >> export PG_LIB_DIR=/usr/local/pgsql/lib/ and\n> >> export PG_INCLUDE_DIR=/usr/local/pgsql/include/\n> >> fails to install with the following messages:\n> >\n> > [snip]\n> >\n> >> I could not find your PostgreSQL client libraries!\n> >> Use --with-pgsql-libraries=PATH; if running R's INSTALL,\n> >> use --configure-args='--with-pgsql-libraries=PATH'; or\n> >> set PG_LIB_DIR in your environment to the library path,\n> >> and rerun the configure/install.\n> >> \n> >> ERROR: configuration failed for package 'RdbiPgSQL'\n> >\n> > Is libpq.so really in /usr/local/pgsql/lib (R doesn't think so)? If not, find \n> > it, and point PG_LIB_DIR to that location. Unfortunately I can't really help \n> > you in terms of finding where the Postgres client libraries are located on a \n> > Mac. You may have a similar issue with PG_INCLUDE_DIR.\n> >\n> > Joe\n> >\n> \n> Thomas S. Dye, Ph.D. \n> T. S. Dye & Colleagues, Archaeologists, Inc. \n> 735 Bishop Street, Suite 315\n> Honolulu, Hawai`i 96813 \n> Voice (808) 387-9352 \n> Fax (808) 529-0884\n> http://www.tsdye.com\n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n-- \nTimothy H. Keitt                 University of Texas\nIntegrative Biology                        at Austin\nhttp://www.keittlab.org/",
+      "body_snippet": "These are the reasons I no longer maintain the package. Everyone's setup\nis completely different. I did get the postgresql folks to implement the\npg_config command to make this easier. What is the out",
+      "thread_id": "thread-310ede9481ec",
+      "thread_depth": 4,
+      "month": "2005-09"
+    },
+    {
+      "id": "msg-247deb1b1929",
+      "message_id": "<431F0363.2010500@joeconway.com>",
+      "from_name": "Joe Conway",
+      "from_email_hash": "0949eac547cfdb5b4f8da255f732c1e0eefbdbedd75144220d850557442c3d4d",
+      "date": "2005-09-07T08:12:35-07:00",
+      "subject": "[R-sig-DB] PostgreSQL",
+      "subject_clean": "PostgreSQL",
+      "in_reply_to": "<1126103273.22595.17.camel@patagonicus.keittlab.net>",
+      "references": [
+        "<Pine.BSI.4.61.0509050826370.15558@malasada.lava.net>",
+        "<431CA4AD.4070403@joeconway.com>",
+        "<Pine.BSI.4.61.0509051210330.28931@malasada.lava.net>",
+        "<431CCD8D.2060307@joeconway.com>",
+        "<Pine.BSI.4.61.0509052146350.12970@malasada.lava.net>",
+        "<431E6477.4060703@joeconway.com>",
+        "<Pine.BSI.4.61.0509062053420.21352@malasada.lava.net>",
+        "<1126103273.22595.17.camel@patagonicus.keittlab.net>"
+      ],
+      "body_plain": "Tim Keitt wrote:\n> These are the reasons I no longer maintain the package. Everyone's setup\n> is completely different. I did get the postgresql folks to implement the\n> pg_config command to make this easier. What is the output of \"pg_config\n> --configure\"?\n\nThat's a good point. Also can you show us:\npg_config --libdir\npg_config --version\n\n>>/usr/local/pgsql/lib tomdye$ ll libpq*\n>>-rw-r--r--  1 tomdye  tomdye  161792  3 May  2004 libpq.a\n>>lrwxr-xr-x  1 tomdye  tomdye      12 26 Dec  2004 libpq.so@ ->\n\nIs there really an \"@\" on the end of \"libpq.so\"? Is that a Mac thing?\n\n>>\n>>I don't know what this line of the error message means:\n>>checking for PQconnectdb in -lpq... no\n>>\n>>Could it be that my libpq is missing something that RdbiPgSQL needs?\n\nWell, yes, it means that RdbiPgSQL cannot find libpq in order to link to \nit. What I wonder about is whether it is really looking for libpq.so, or \nis it looking for libpq.dylib. This is another of those Mac OS X things \nI've run into before -- but I don't really understand when an so is \nrequired and when a dylib is required.\n\nJoe",
+      "body_snippet": "Tim Keitt wrote:\n> These are the reasons I no longer maintain the package. Everyone's setup\n> is completely different. I did get the postgresql folks to implement the\n> pg_config command to make this ",
+      "thread_id": "thread-310ede9481ec",
+      "thread_depth": 5,
+      "month": "2005-09"
+    },
+    {
+      "id": "msg-41b0a7bcbf55",
+      "message_id": "<BF447CE1.DD4C%sdavis2@mail.nih.gov>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2005-09-07T11:17:53-04:00",
+      "subject": "[R-sig-DB] PostgreSQL",
+      "subject_clean": "PostgreSQL",
+      "in_reply_to": "<431F0363.2010500@joeconway.com>",
+      "references": [],
+      "body_plain": "On 9/7/05 11:12 AM, \"Joe Conway\" <mail at joeconway.com> wrote:\n\n> Tim Keitt wrote:\n>> These are the reasons I no longer maintain the package. Everyone's setup\n>> is completely different. I did get the postgresql folks to implement the\n>> pg_config command to make this easier. What is the output of \"pg_config\n>> --configure\"?\n> \n> That's a good point. Also can you show us:\n> pg_config --libdir\n> pg_config --version\n> \n>>> /usr/local/pgsql/lib tomdye$ ll libpq*\n>>> -rw-r--r--  1 tomdye  tomdye  161792  3 May  2004 libpq.a\n>>> lrwxr-xr-x  1 tomdye  tomdye      12 26 Dec  2004 libpq.so@ ->\n> \n> Is there really an \"@\" on the end of \"libpq.so\"? Is that a Mac thing?\n> \n>>> \n>>> I don't know what this line of the error message means:\n>>> checking for PQconnectdb in -lpq... no\n>>> \n>>> Could it be that my libpq is missing something that RdbiPgSQL needs?\n> \n> Well, yes, it means that RdbiPgSQL cannot find libpq in order to link to\n> it. What I wonder about is whether it is really looking for libpq.so, or\n> is it looking for libpq.dylib. This is another of those Mac OS X things\n> I've run into before -- but I don't really understand when an so is\n> required and when a dylib is required.\n\nOn my mac, both .dylib and .so are in /usr/local/pgsql/lib.  And there is no\n@ sign there, at least under bash.\n\nSean",
+      "body_snippet": "On 9/7/05 11:12 AM, \"Joe Conway\" <mail at joeconway.com> wrote:\n\n> Tim Keitt wrote:\n>> These are the reasons I no longer maintain the package. Everyone's setup\n>> is completely different. I did get th",
+      "thread_id": "thread-310ede9481ec",
+      "thread_depth": 6,
+      "month": "2005-09"
+    },
+    {
+      "id": "msg-7d3ab8083b8e",
+      "message_id": "<Pine.BSI.4.61.0509070625510.259@malasada.lava.net>",
+      "from_name": "Tom Dye",
+      "from_email_hash": "3112922926353d6be99e622a386ffa9610c3515c1c9dadadf5cb0ea3e34f2de5",
+      "date": "2005-09-07T06:31:01-10:00",
+      "subject": "[R-sig-DB] PostgreSQL",
+      "subject_clean": "PostgreSQL",
+      "in_reply_to": "<431F0363.2010500@joeconway.com>",
+      "references": [
+        "<Pine.BSI.4.61.0509050826370.15558@malasada.lava.net>",
+        "<431CA4AD.4070403@joeconway.com>",
+        "<Pine.BSI.4.61.0509051210330.28931@malasada.lava.net>",
+        "<431CCD8D.2060307@joeconway.com>",
+        "<Pine.BSI.4.61.0509052146350.12970@malasada.lava.net>",
+        "<431E6477.4060703@joeconway.com>",
+        "<Pine.BSI.4.61.0509062053420.21352@malasada.lava.net>",
+        "<1126103273.22595.17.camel@patagonicus.keittlab.net>",
+        "<431F0363.2010500@joeconway.com>"
+      ],
+      "body_plain": "Aloha all,\n\nI can imagine it is impossible to keep up with all the different setups, \nand I appreciate all the help that I've been getting.  Here are the \nvarious outputs from pg_config:\n\npg_config --configure\n'--without-readline' 'LDFLAGS=-framework CoreFoundation'\n\npg_config --libdir\n/usr/local/pgsql/lib\n\npg_config --version\nPostgreSQL 7.4.2\n\nTom\n  On Wed, 7 Sep 2005, Joe Conway wrote:\n\n> Tim Keitt wrote:\n>> These are the reasons I no longer maintain the package. Everyone's setup\n>> is completely different. I did get the postgresql folks to implement the\n>> pg_config command to make this easier. What is the output of \"pg_config\n>> --configure\"?\n>\n> That's a good point. Also can you show us:\n> pg_config --libdir\n> pg_config --version\n>\n>>> /usr/local/pgsql/lib tomdye$ ll libpq*\n>>> -rw-r--r--  1 tomdye  tomdye  161792  3 May  2004 libpq.a\n>>> lrwxr-xr-x  1 tomdye  tomdye      12 26 Dec  2004 libpq.so@ ->\n>\n> Is there really an \"@\" on the end of \"libpq.so\"? Is that a Mac thing?\n>\n>>> \n>>> I don't know what this line of the error message means:\n>>> checking for PQconnectdb in -lpq... no\n>>> \n>>> Could it be that my libpq is missing something that RdbiPgSQL needs?\n>\n> Well, yes, it means that RdbiPgSQL cannot find libpq in order to link to it. \n> What I wonder about is whether it is really looking for libpq.so, or is it \n> looking for libpq.dylib. This is another of those Mac OS X things I've run \n> into before -- but I don't really understand when an so is required and when \n> a dylib is required.\n>\n> Joe\n>\n\nThomas S. Dye, Ph.D. \nT. S. Dye & Colleagues, Archaeologists, Inc. \n735 Bishop Street, Suite 315\nHonolulu, Hawai`i 96813 \nVoice (808) 387-9352 \nFax (808) 529-0884\nhttp://www.tsdye.com",
+      "body_snippet": "Aloha all,\n\nI can imagine it is impossible to keep up with all the different setups, \nand I appreciate all the help that I've been getting.  Here are the \nvarious outputs from pg_config:\n\npg_config --",
+      "thread_id": "thread-310ede9481ec",
+      "thread_depth": 6,
+      "month": "2005-09"
+    },
+    {
+      "id": "msg-107b20d4c5fc",
+      "message_id": "<21064AA7-B640-4511-BCBA-DC904DB6ECEE@earthlink.net>",
+      "from_name": "Jim McLoughlin",
+      "from_email_hash": "7893d0aa2392a0ef099545e937a6da20e8730f91d3dcb9a302a31de3022aabac",
+      "date": "2005-09-07T09:43:56-07:00",
+      "subject": "[R-sig-DB] PostgreSQL",
+      "subject_clean": "PostgreSQL",
+      "in_reply_to": "<Pine.BSI.4.61.0509052146350.12970@malasada.lava.net>",
+      "references": [
+        "<Pine.BSI.4.61.0509050826370.15558@malasada.lava.net>",
+        "<431CA4AD.4070403@joeconway.com>",
+        "<Pine.BSI.4.61.0509051210330.28931@malasada.lava.net>",
+        "<431CCD8D.2060307@joeconway.com>",
+        "<Pine.BSI.4.61.0509052146350.12970@malasada.lava.net>"
+      ],
+      "body_plain": "On Sep 6, 2005, at 12:53 AM, Tom Dye wrote:\n\n> RdbiPgSQL is available as source, and even with\n> export PG_LIB_DIR=/usr/local/pgsql/lib/ and\n> export PG_INCLUDE_DIR=/usr/local/pgsql/include/\n> fails to install with the following messages:\n>\n> The downloaded packages are in\n>      /private/tmp/RtmpzKE7wz/downloaded_packages\n> checking for PQconnectdb in -lpq... no\n>\n> I could not find your PostgreSQL client libraries!\n> Use --with-pgsql-libraries=PATH; if running R's INSTALL,\n> use --configure-args='--with-pgsql-libraries=PATH'; or\n> set PG_LIB_DIR in your environment to the library path,\n> and rerun the configure/install.\n\nI have not installed this on my mac in a while, but my guess is that  \nwhile these variables are set in you environment, they are not  \navailable in R for some reason.\n\nYou could check whether they are set in the session by looking at  \nSys.getenv()\n\nIf they are not there, I would try setting them directly in your R  \nsession before installing.  I think you would do that with:\n\nSys.setenv(\"PG_LIB_DIR\"=\"/usr/local/pgsql/lib\")\nSys.setenv(\"PG_INCLUDE_DIR\"=\"/usr/local/pgsql/include\")\n\nBut I could be off on whether the variable names need to be quoted.\n\nJim\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "On Sep 6, 2005, at 12:53 AM, Tom Dye wrote:\n\n> RdbiPgSQL is available as source, and even with\n> export PG_LIB_DIR=/usr/local/pgsql/lib/ and\n> export PG_INCLUDE_DIR=/usr/local/pgsql/include/\n> fails t",
+      "thread_id": "thread-310ede9481ec",
+      "thread_depth": 2,
+      "month": "2005-09"
+    },
+    {
+      "id": "msg-a7a190af26e0",
+      "message_id": "<021e01c5b3fd$d08e9470$01c8a8c0@didp02>",
+      "from_name": "ur",
+      "from_email_hash": "aede4fe3a502ed843f1520cb07346d42de636a49f0a32bd8b90a6d5238b6ed5b",
+      "date": "2005-09-08T00:45:10+02:00",
+      "subject": "[R-sig-DB] request of info",
+      "subject_clean": "request of info",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello\n\nI'm trying to set up a ROracle package and I get some problems:\n\nContext:\nServer: Oracle 10.1.0.2.0 database\nClient:  Oracle tools 10.2.0.1.0  running on Scientific Linux 4, which is a clone of RHEL4\n    sqlnet running like it is shown here:\n  bash-3.00$ sqlplus user/pass at oracle\n\n  SQL*Plus: Release 10.2.0.1.0 - Production on Wed Sep 7 19:15:16 2005\n\n  Copyright (c) 1982, 2005, Oracle.  All rights reserved.\n\n\n  Connected to:\n  Oracle Database 10g Enterprise Edition Release 10.1.0.2.0 - Production\n  With the Partitioning, OLAP and Data Mining options\n\n  SQL> select max(fecha) from extrusoras;\n\n  MAX(FECHA\n  ---------\n  03-JUN-05",
+      "body_snippet": "Hello\n\nI'm trying to set up a ROracle package and I get some problems:\n\nContext:\nServer: Oracle 10.1.0.2.0 database\nClient:  Oracle tools 10.2.0.1.0  running on Scientific Linux 4, which is a clone of",
+      "thread_id": "thread-a7a190af26e0",
+      "thread_depth": 0,
+      "month": "2005-09"
+    },
+    {
+      "id": "msg-25553d85dea0",
+      "message_id": "<Pine.BSI.4.61.0509072030320.9930@malasada.lava.net>",
+      "from_name": "Tom Dye",
+      "from_email_hash": "3112922926353d6be99e622a386ffa9610c3515c1c9dadadf5cb0ea3e34f2de5",
+      "date": "2005-09-07T20:35:43-10:00",
+      "subject": "[R-sig-DB] PostgreSQL",
+      "subject_clean": "PostgreSQL",
+      "in_reply_to": "<21064AA7-B640-4511-BCBA-DC904DB6ECEE@earthlink.net>",
+      "references": [
+        "<Pine.BSI.4.61.0509050826370.15558@malasada.lava.net>",
+        "<431CA4AD.4070403@joeconway.com>",
+        "<Pine.BSI.4.61.0509051210330.28931@malasada.lava.net>",
+        "<431CCD8D.2060307@joeconway.com>",
+        "<Pine.BSI.4.61.0509052146350.12970@malasada.lava.net>",
+        "<21064AA7-B640-4511-BCBA-DC904DB6ECEE@earthlink.net>"
+      ],
+      "body_plain": "Aloha all,\n\nThank you all so much for your help with installing RdbiPgSQL.  The \nproblem turned out to be the one Jim McLoughlin describes below.  R wasn't \npicking up the environment variables PG_LIB_DIR and PG_INCLUDE_DIR.  I set \nthese with:\n\nSys.putenv(\"PG_LIB_DIR\"=\"/usr/local/pgsql/lib\")\nSys.putenv(\"PG_INCLUDE_DIR\"=\"/usr/local/pgsql/include\"),\n\nthen gave R permission to run system commands as root, and the source \ninstall from BioConductor ran without a hitch.\n\nI very much appreciate your time and effort.  It has been a pleasure \ninteracting with you all.\n\nTom\n\n  On Wed, 7 Sep 2005, Jim McLoughlin wrote:\n\n> On Sep 6, 2005, at 12:53 AM, Tom Dye wrote:\n>\n>> RdbiPgSQL is available as source, and even with\n>> export PG_LIB_DIR=/usr/local/pgsql/lib/ and\n>> export PG_INCLUDE_DIR=/usr/local/pgsql/include/\n>> fails to install with the following messages:\n>>\n>> The downloaded packages are in\n>>      /private/tmp/RtmpzKE7wz/downloaded_packages\n>> checking for PQconnectdb in -lpq... no\n>>\n>> I could not find your PostgreSQL client libraries!\n>> Use --with-pgsql-libraries=PATH; if running R's INSTALL,\n>> use --configure-args='--with-pgsql-libraries=PATH'; or\n>> set PG_LIB_DIR in your environment to the library path,\n>> and rerun the configure/install.\n>\n> I have not installed this on my mac in a while, but my guess is that\n> while these variables are set in you environment, they are not\n> available in R for some reason.\n>\n> You could check whether they are set in the session by looking at\n> Sys.getenv()\n>\n> If they are not there, I would try setting them directly in your R\n> session before installing.  I think you would do that with:\n>\n> Sys.setenv(\"PG_LIB_DIR\"=\"/usr/local/pgsql/lib\")\n> Sys.setenv(\"PG_INCLUDE_DIR\"=\"/usr/local/pgsql/include\")\n>\n> But I could be off on whether the variable names need to be quoted.\n>\n> Jim\n>\n> \t[[alternative HTML version deleted]]\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\nThomas S. Dye, Ph.D. \nT. S. Dye & Colleagues, Archaeologists, Inc. \n735 Bishop Street, Suite 315\nHonolulu, Hawai`i 96813 \nVoice (808) 387-9352 \nFax (808) 529-0884\nhttp://www.tsdye.com",
+      "body_snippet": "Aloha all,\n\nThank you all so much for your help with installing RdbiPgSQL.  The \nproblem turned out to be the one Jim McLoughlin describes below.  R wasn't \npicking up the environment variables PG_LIB",
+      "thread_id": "thread-310ede9481ec",
+      "thread_depth": 3,
+      "month": "2005-09"
+    },
+    {
+      "id": "msg-e61fdadffe7f",
+      "message_id": "<7FFEE688B57D7346BC6241C55900E730F31A40@pollux.bfro.uni-lj.si>",
+      "from_name": "Gorjanc Gregor",
+      "from_email_hash": "b2710b12e028accb1a6fc8d4ca8b9902ca93a78b9b099c999828d21c69be5b38",
+      "date": "2005-09-09T08:11:56+02:00",
+      "subject": "[R-sig-DB] Does anyone have compiled ROracle for i386s?",
+      "subject_clean": "Does anyone have compiled ROracle for i386s?",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello!\n\nI have a Debian GNU/Linux on i386 platform with Oracle instant client to \nconnect to Oracle on Windows. Bellow is the prompt I get when I connect \nto the with  version numbers. I would like to connect to that database via \nR. I found a way described in README.client of ROracle package i.e. I need \nto compile ROracle on Linux machine with Oracle, but I do not have an access\nto such machine. \n\nIs there anyone out there who has compiled ROracle under i386 platform \n(I have Intel(R) Celeron(R) M processor) and is willing to share the binary \npackage?\n\nI just found out that Oracle has also and ODBC driver for client and I will\ntry to install it and then connect to Oracle via RODBC. Does anyone have\nany comments on this approach? I will report what I have done.\n\nThank you very much in advance.\n\nSQL*Plus: Release 10.1.0.4.0 - Production on Fri Sep 9 07:41:50 2005\nCopyright (c) 1982, 2005, Oracle.  All rights reserved.\n\nConnected to:\nOracle8i Enterprise Edition Release 8.1.7.0.0 - Production\nWith the Partitioning option\nJServer Release 8.1.7.0.0 - Production\n\nLep pozdrav / With regards,\n    Gregor Gorjanc\n\n----------------------------------------------------------------------\nUniversity of Ljubljana\nBiotechnical Faculty        URI: http://www.bfro.uni-lj.si/MR/ggorjan\nZootechnical Department     mail: gregor.gorjanc <at> bfro.uni-lj.si\nGroblje 3                   tel: +386 (0)1 72 17 861\nSI-1230 Domzale             fax: +386 (0)1 72 17 888\nSlovenia, Europe\n----------------------------------------------------------------------\n\"One must learn by doing the thing; for though you think you know it,\n you have no certainty until you try.\" Sophocles ~ 450 B.C.",
+      "body_snippet": "Hello!\n\nI have a Debian GNU/Linux on i386 platform with Oracle instant client to \nconnect to Oracle on Windows. Bellow is the prompt I get when I connect \nto the with  version numbers. I would like to",
+      "thread_id": "thread-e61fdadffe7f",
+      "thread_depth": 0,
+      "month": "2005-09"
+    },
+    {
+      "id": "msg-8ddca5905e99",
+      "message_id": "<1126278735.4321a64fb7dca@webmail.cmima.csic.es>",
+      "from_name": "mruii@o m@iii@g oii cmim@@csic@es",
+      "from_email_hash": "58d9572f711ae42c146fb1568dee86960f3d561cd32a3e72dde2362b64c57995",
+      "date": "2005-09-09T17:12:15+02:00",
+      "subject": "[R-sig-DB] postgresql, r and windows",
+      "subject_clean": "postgresql, r and windows",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear R-DB users,\n\nI have  a problem in accessing postgresql from r.\nI can only use library(RDOBC), because the drivers for postgresql (RdbiPgSQL)\nfrom DBI are not available in windows (does anyone has tham?), so, using th ODBC...\n\nlibrary(RDOBC)\n> chanel1=odbcDriverConnect(\"DRIVER=PostgreSQL; DBQ=campanhas\") # it connects\n> sqlTables(chanel1, \"tbl_taxon\")\n   TABLE_QUALIFIER        TABLE_OWNER                      TABLE_NAME TABLE_TYPE\n1             <NA>            cripsul                           prova      TABLE\n2             <NA>            cripsul                       tbl_biolo      TABLE\n3             <NA>            cripsul                       tbl_dredg      TABLE\n(...)\n\n> sqlColumns(chanel1, \"tbl_taxon\")\n [1] TABLE_QUALIFIER   TABLE_OWNER       TABLE_NAME        COLUMN_NAME      \n [5] DATA_TYPE         TYPE_NAME         PRECISION         LENGTH           \n [9] SCALE             RADIX             NULLABLE          REMARKS          \n<0 rows> (or 0-length row.names)\n\n> sqlFetch(chanel1, sqtable=\"tbl_taxon\") ## nao funciona\n[1] \"[RODBC] ERROR: Could not SQLExecDirect\"               \n[2] \"S1000 7 ERROR:  relation \\\"tbl_taxon\\\" does not exist\"\n\nSo, it does not access the data, although it knows that the table is there!!!\nHowever, it does the connection with access or excell well\n\n\nThank you very much in advance,\nAny light will be strongly apretiates,\nBest wishes,\nMarta\n\nPS: I am working on a windows XP professional and R 2.1, postgresql 8.0.",
+      "body_snippet": "Dear R-DB users,\n\nI have  a problem in accessing postgresql from r.\nI can only use library(RDOBC), because the drivers for postgresql (RdbiPgSQL)\nfrom DBI are not available in windows (does anyone has",
+      "thread_id": "thread-8ddca5905e99",
+      "thread_depth": 0,
+      "month": "2005-09"
+    },
+    {
+      "id": "msg-55132d4b3317",
+      "message_id": "<Pine.BSI.4.61.0509100734470.25003@malasada.lava.net>",
+      "from_name": "Tom Dye",
+      "from_email_hash": "3112922926353d6be99e622a386ffa9610c3515c1c9dadadf5cb0ea3e34f2de5",
+      "date": "2005-09-10T07:44:57-10:00",
+      "subject": "[R-sig-DB] RdbiPgSQL on Mac",
+      "subject_clean": "RdbiPgSQL on Mac",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Aloha all,\n\nThis is an informational post that other Mac users of RdbiPgSQL might wish \nto augment for the benefit of future users.\n\nAfter a recent successful source installation of RdbiPgSQL from \nBioConductor, I tried to install it on a second Mac.  This installation \nfailed to find bundle1.so.  I found this file in \\usr\\lib\\ on the first \nMac and copied it over to the second Mac.  Once this was done RdbiPgSQL \ninstalled properly.\n\nI had thought the two Macs were set up the same, though the setups took \nplace about a year apart.  If someone knows where /usr/lib/bundle1.so \ncomes from, this information might help other Mac users down the road.\n\nThanks again for your earlier help.\n\nTom\n\nThomas S. Dye, Ph.D. \nT. S. Dye & Colleagues, Archaeologists, Inc. \n735 Bishop Street, Suite 315\nHonolulu, Hawai`i 96813 \nVoice (808) 387-9352 \nFax (808) 529-0884\nhttp://www.tsdye.com",
+      "body_snippet": "Aloha all,\n\nThis is an informational post that other Mac users of RdbiPgSQL might wish \nto augment for the benefit of future users.\n\nAfter a recent successful source installation of RdbiPgSQL from \nBi",
+      "thread_id": "thread-55132d4b3317",
+      "thread_depth": 0,
+      "month": "2005-09"
+    },
+    {
+      "id": "msg-586bb136dfa7",
+      "message_id": "<1BA37DD3-DEE2-4195-B652-3572D4CEF097@mac.com>",
+      "from_name": "th@ts@@iceh@tyouh@ve m@iii@g oii m@c@com",
+      "from_email_hash": "987d6516190e830b45e4a4336c7f6374a2cf82b67e10b163b093b2025f713566",
+      "date": "2005-09-13T20:13:50+01:00",
+      "subject": "[R-sig-DB] PostgreSQL problem (& solution)",
+      "subject_clean": "PostgreSQL problem (& solution)",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello,\n\nI'm having a problem installing RdbiPgSQL on my Linux server. I read  \nthe recent thread on the issue, but I haven't been able to sort it out.\n\nI've installed exactly this configuration about four months ago with  \nno issue at all - Rdbi 1.2.0 and RdbiPgSQL 1.2.0. I'm reinstalling as  \nwe've moved to a new server. I also have the exact same configuration  \non my Mac OS X box. For some reason now I am getting this error:\n\n------\n\n > library(RdbiPgSQL)\nLoading required package: Rdbi\nError in dyn.load(x, as.logical(local), as.logical(now)) :\n         unable to load shared library '/usr/local/R/lib/R/library/ \nRdbiPgSQL/libs/RdbiPgSQL.so':\n   libpq.so.4: cannot open shared object file: No such file or directory\nError in library(RdbiPgSQL) : .First.lib failed for 'RdbiPgSQL'\n\n------\n\n.... and after a day or so, I've solved the problem. I thought I'd  \nfinished this email with the solution in the hope that it might help  \nsomeone else. The environment variable LD_LIBRARY_PATH needed to be  \ndefined:\n\nSys.putenv(\"LD_LIBRARY_PATH\"=\"/usr/local/pgsql/lib\")\n\nThis can also be defined from the shell rather than in R.\n\nCheers,\n\nDemitri",
+      "body_snippet": "Hello,\n\nI'm having a problem installing RdbiPgSQL on my Linux server. I read  \nthe recent thread on the issue, but I haven't been able to sort it out.\n\nI've installed exactly this configuration about ",
+      "thread_id": "thread-586bb136dfa7",
+      "thread_depth": 0,
+      "month": "2005-09"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-336ad1c042ea",
+      "subject": "PostgreSQL",
+      "message_count": 3,
+      "participants": [
+        "Joe Conway",
+        "Steve Miller",
+        "Tom Dye"
+      ],
+      "started": "2005-09-05T08:33:21-10:00",
+      "last_reply": "2005-09-05T13:03:57-07:00",
+      "root_message_id": "msg-336ad1c042ea"
+    },
+    {
+      "id": "thread-310ede9481ec",
+      "subject": "PostgreSQL",
+      "message_count": 10,
+      "participants": [
+        "Jim McLoughlin",
+        "Joe Conway",
+        "Sean Davis",
+        "Tim Keitt",
+        "Tom Dye"
+      ],
+      "started": "2005-09-05T15:58:21-07:00",
+      "last_reply": "2005-09-07T20:35:43-10:00",
+      "root_message_id": "msg-310ede9481ec"
+    },
+    {
+      "id": "thread-a7a190af26e0",
+      "subject": "request of info",
+      "message_count": 1,
+      "participants": [
+        "ur"
+      ],
+      "started": "2005-09-08T00:45:10+02:00",
+      "last_reply": "2005-09-08T00:45:10+02:00",
+      "root_message_id": "msg-a7a190af26e0"
+    },
+    {
+      "id": "thread-e61fdadffe7f",
+      "subject": "Does anyone have compiled ROracle for i386s?",
+      "message_count": 1,
+      "participants": [
+        "Gorjanc Gregor"
+      ],
+      "started": "2005-09-09T08:11:56+02:00",
+      "last_reply": "2005-09-09T08:11:56+02:00",
+      "root_message_id": "msg-e61fdadffe7f"
+    },
+    {
+      "id": "thread-8ddca5905e99",
+      "subject": "postgresql, r and windows",
+      "message_count": 1,
+      "participants": [
+        "mruii@o m@iii@g oii cmim@@csic@es"
+      ],
+      "started": "2005-09-09T17:12:15+02:00",
+      "last_reply": "2005-09-09T17:12:15+02:00",
+      "root_message_id": "msg-8ddca5905e99"
+    },
+    {
+      "id": "thread-55132d4b3317",
+      "subject": "RdbiPgSQL on Mac",
+      "message_count": 1,
+      "participants": [
+        "Tom Dye"
+      ],
+      "started": "2005-09-10T07:44:57-10:00",
+      "last_reply": "2005-09-10T07:44:57-10:00",
+      "root_message_id": "msg-55132d4b3317"
+    },
+    {
+      "id": "thread-586bb136dfa7",
+      "subject": "PostgreSQL problem (& solution)",
+      "message_count": 1,
+      "participants": [
+        "th@ts@@iceh@tyouh@ve m@iii@g oii m@c@com"
+      ],
+      "started": "2005-09-13T20:13:50+01:00",
+      "last_reply": "2005-09-13T20:13:50+01:00",
+      "root_message_id": "msg-586bb136dfa7"
+    }
+  ]
+}

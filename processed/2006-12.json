@@ -1,0 +1,128 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2006-12",
+  "messages": [
+    {
+      "id": "msg-53e91888742d",
+      "message_id": "<d4327f7e0612050051r471386e1hada8d1fe9c187adb@mail.gmail.com>",
+      "from_name": "d. sarthi maheshwari",
+      "from_email_hash": "6c65eb4b994471b9bd0a999dc730ef8936ac75b4e41dfbd04c6d6815919153f5",
+      "date": "2006-12-05T14:21:29+05:30",
+      "subject": "[R-sig-DB] binding variable in sqlQuery",
+      "subject_clean": "binding variable in sqlQuery",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear Sir/Madam,\n\nHow can we bind a variable value with sqlQuery. For example:\n\ni am trying to run following command ::\n\nlibrary(RODBC)\ninchannel <- odbcConnect(\"my_server\", uid=\"samay\")\nsqlQuery(inchannel, 'select item1, item2 from _my_table\n            where item3 >= 10\n            and dbid = 10')\n\nhowever for introducing flexibility i want to write this command as\n\nmy_value = 10\nlibrary(RODBC)\ninchannel <- odbcConnect(\"my_server\", uid=\"samay\")\nsqlQuery(inchannel, 'select item1, item2 from _my_table\n            where item3 >= 10\n            and dbid = my_value')\n\n\nHow can I bind the my_value with the query in sqlQuery?\n\nPlease suggest and help me. I am in need.\n\n-- \n...I am learning from my life...\n\ns..a..r\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Dear Sir/Madam,\n\nHow can we bind a variable value with sqlQuery. For example:\n\ni am trying to run following command ::\n\nlibrary(RODBC)\ninchannel <- odbcConnect(\"my_server\", uid=\"samay\")\nsqlQuery(incha",
+      "thread_id": "thread-53e91888742d",
+      "thread_depth": 0,
+      "month": "2006-12"
+    },
+    {
+      "id": "msg-7601c7e9c831",
+      "message_id": "<1165315003.2628635600.404.sendItem@bloglines.com>",
+      "from_name": "ggorj@@@34155694 m@iii@g oii biogii@es@com",
+      "from_email_hash": "3d2d6951940e92322da3da5f10059bdae8a2c6bab0f46e1fa7fce1ab3ec70241",
+      "date": "2006-12-05T10:36:43Z",
+      "subject": "[R-sig-DB] binding variable in sqlQuery",
+      "subject_clean": "binding variable in sqlQuery",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Try paste() i.e.\n\nmy_value = 10\nlibrary(RODBC)\ninchannel <- odbcConnect(\"my_server\",\nuid=\"samay\")\nquery <- paste(\"select item1, item2 from _my_table\n       \n    where item3 >= 10\n            and dbid = \", my_value)\n\nsqlQuery(inchannel,\nquery)",
+      "body_snippet": "Try paste() i.e.\n\nmy_value = 10\nlibrary(RODBC)\ninchannel <- odbcConnect(\"my_server\",\nuid=\"samay\")\nquery <- paste(\"select item1, item2 from _my_table\n       \n    where item3 >= 10\n            and dbid ",
+      "thread_id": "thread-7601c7e9c831",
+      "thread_depth": 0,
+      "month": "2006-12"
+    },
+    {
+      "id": "msg-4d444f237858",
+      "message_id": "<200612050849.17898.sdavis2@mail.nih.gov>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2006-12-05T08:49:17-05:00",
+      "subject": "[R-sig-DB] binding variable in sqlQuery",
+      "subject_clean": "binding variable in sqlQuery",
+      "in_reply_to": "<1165315003.2628635600.404.sendItem@bloglines.com>",
+      "references": [
+        "<1165315003.2628635600.404.sendItem@bloglines.com>"
+      ],
+      "body_plain": "On Tuesday 05 December 2006 05:36, ggorjan.34155694 at bloglines.com wrote:\n> Try paste() i.e.\n>\n> my_value = 10\n> library(RODBC)\n> inchannel <- odbcConnect(\"my_server\",\n> uid=\"samay\")\n> query <- paste(\"select item1, item2 from _my_table\n>\n>     where item3 >= 10\n>             and dbid = \", my_value)\n>\n> sqlQuery(inchannel,\n> query)\n\nI've been using sprintf more recently; I find it makes the queries much easier \nto read when there are multiple values that need to be inserted.  \n\nSean",
+      "body_snippet": "On Tuesday 05 December 2006 05:36, ggorjan.34155694 at bloglines.com wrote:\n> Try paste() i.e.\n>\n> my_value = 10\n> library(RODBC)\n> inchannel <- odbcConnect(\"my_server\",\n> uid=\"samay\")\n> query <- past",
+      "thread_id": "thread-7601c7e9c831",
+      "thread_depth": 1,
+      "month": "2006-12"
+    },
+    {
+      "id": "msg-df23f6d64910",
+      "message_id": "<Pine.LNX.4.64.0612061103570.6922@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2006-12-06T11:04:24Z",
+      "subject": "[R-sig-DB] binding variable in sqlQuery",
+      "subject_clean": "binding variable in sqlQuery",
+      "in_reply_to": "<d4327f7e0612050051r471386e1hada8d1fe9c187adb@mail.gmail.com>",
+      "references": [
+        "<d4327f7e0612050051r471386e1hada8d1fe9c187adb@mail.gmail.com>"
+      ],
+      "body_plain": "Simply in R: use paste() to prepare the query,\n\nOn Tue, 5 Dec 2006, d. sarthi maheshwari wrote:\n\n> Dear Sir/Madam,\n>\n> How can we bind a variable value with sqlQuery. For example:\n>\n> i am trying to run following command ::\n>\n> library(RODBC)\n> inchannel <- odbcConnect(\"my_server\", uid=\"samay\")\n> sqlQuery(inchannel, 'select item1, item2 from _my_table\n>            where item3 >= 10\n>            and dbid = 10')\n>\n> however for introducing flexibility i want to write this command as\n>\n> my_value = 10\n> library(RODBC)\n> inchannel <- odbcConnect(\"my_server\", uid=\"samay\")\n> sqlQuery(inchannel, 'select item1, item2 from _my_table\n>            where item3 >= 10\n>            and dbid = my_value')\n>\n>\n> How can I bind the my_value with the query in sqlQuery?\n>\n> Please suggest and help me. I am in need.\n>\n>\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "Simply in R: use paste() to prepare the query,\n\nOn Tue, 5 Dec 2006, d. sarthi maheshwari wrote:\n\n> Dear Sir/Madam,\n>\n> How can we bind a variable value with sqlQuery. For example:\n>\n> i am trying to r",
+      "thread_id": "thread-53e91888742d",
+      "thread_depth": 1,
+      "month": "2006-12"
+    },
+    {
+      "id": "msg-642d2a211618",
+      "message_id": "<m2wt4tfyi4.fsf@ziti.local>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2006-12-14T22:45:39-08:00",
+      "subject": "[R-sig-DB] RSQLite release candidate",
+      "subject_clean": "RSQLite release candidate",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello all,\n\nI've made a number of improvements to RSQLite and would welcome any\nbrave testers out there to give it a try before we push the update to\nCRAN.\n\nCandidate is available here (source and Windows binary):\n\n    http://www.bioconductor.org/packages/misc/\n\nSummary of changes:\n\n1. Improved behavior when multiple connections are made to the same\n   database file.  At least one case that resulted in an unclosable DB\n   connection is now fixed.  I'm not sure we have this 100% yet, but I\n   think we are on the right track.  Feedback, especially with\n   reproducible examples, is welcome.\n\n2. New implementation for dbWriteTable.  Instead of writing to temp\n   files, use prepared queries.  This resolves issues related to\n   embedded separator characters and eol issues on Windows.  There is\n   also a nice performance benefit as the timings below demonstrate.\n\n   For a data.frame containing 1e6 rows and 3 columns:\n\n   current:\n    > system.time(dbWriteTable(db, \"t1\", df, row.names=FALSE))\n    [1] 27.062  1.680 28.768  0.000  0.000\n\n   new:\n    > system.time(dbWriteTable(db, \"t1\", df, row.names=FALSE))\n    [1] 3.524 0.200 3.721 0.000 0.000\n\n\n+ seth\n\n\n--\nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "Hello all,\n\nI've made a number of improvements to RSQLite and would welcome any\nbrave testers out there to give it a try before we push the update to\nCRAN.\n\nCandidate is available here (source and Win",
+      "thread_id": "thread-642d2a211618",
+      "thread_depth": 0,
+      "month": "2006-12"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-7601c7e9c831",
+      "subject": "binding variable in sqlQuery",
+      "message_count": 2,
+      "participants": [
+        "Sean Davis",
+        "ggorj@@@34155694 m@iii@g oii biogii@es@com"
+      ],
+      "started": "2006-12-05T10:36:43+00:00",
+      "last_reply": "2006-12-05T08:49:17-05:00",
+      "root_message_id": "msg-7601c7e9c831"
+    },
+    {
+      "id": "thread-53e91888742d",
+      "subject": "binding variable in sqlQuery",
+      "message_count": 2,
+      "participants": [
+        "Prof Brian Ripley",
+        "d. sarthi maheshwari"
+      ],
+      "started": "2006-12-05T14:21:29+05:30",
+      "last_reply": "2006-12-06T11:04:24+00:00",
+      "root_message_id": "msg-53e91888742d"
+    },
+    {
+      "id": "thread-642d2a211618",
+      "subject": "RSQLite release candidate",
+      "message_count": 1,
+      "participants": [
+        "Seth Falcon"
+      ],
+      "started": "2006-12-14T22:45:39-08:00",
+      "last_reply": "2006-12-14T22:45:39-08:00",
+      "root_message_id": "msg-642d2a211618"
+    }
+  ]
+}

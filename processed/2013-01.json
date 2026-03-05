@@ -1,0 +1,74 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2013-01",
+  "messages": [
+    {
+      "id": "msg-108851c51a7f",
+      "message_id": "<CAOo3SQgJ5OgobM9eBNecvhPQwYOhjEtmj2L+rqE4U9YnaNorGg@mail.gmail.com>",
+      "from_name": "Jim Porzak",
+      "from_email_hash": "d1a1c6999a476b8b1f6e01b0940a8b536770bceb1c1d77be2218c63d2a249e2b",
+      "date": "2013-01-23T11:08:53-08:00",
+      "subject": "[R-sig-DB] RpgSQL/RJDBC(?) on R15.2(64) Win7 throws can't find .verify.JDBC.result",
+      "subject_clean": "RpgSQL/RJDBC(?) on R15.2(64) Win7 throws can't find .verify.JDBC.result",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "All, I see:\n\n> options(RpgSQL.user = \"tableau\", RpgSQL.password = \"******\",\n+         RpgSQL.host = \"10.8.0.1\", RpgSQL.port = 5432,\n+         RpgSQL.JAR = \"C:/Drivers/JDBC\")\n>\n> library(RpgSQL)                                  ## Version: 0.1-6\nLoading required package: RJDBC           ## Version: 0.2-1\nLoading required package: DBI                ## Version: 0.2-5\nLoading required package: rJava              ## Version: 0.9-3\n\n> con <- dbConnect(pgSQL(), dbname = \"bidata_pg\")\nError in .local(drv, ...) : could not find function \".verify.JDBC.result\"\n\nThe above works just fine with R14.2 & prior versions of PpgSQL & RJDBC.\n\nI noticed H2 user had a similar error which they worked around by\nrolling back to RJDBC 0.2-0\nI tried hacking a roll-back using files from my 14.2 install but that\ndidn't work.\nI did not see any window binaries for RJDBC 0.2-0\n\nSuggestions?\n\n\nJim Porzak\nMinted.com\nSan Francisco, CA\nwww.linkedin.com/in/jimporzak\nuse R! Group SF: www.meetup.com/R-Users/",
+      "body_snippet": "All, I see:\n\n> options(RpgSQL.user = \"tableau\", RpgSQL.password = \"******\",\n+         RpgSQL.host = \"10.8.0.1\", RpgSQL.port = 5432,\n+         RpgSQL.JAR = \"C:/Drivers/JDBC\")\n>\n> library(RpgSQL)       ",
+      "thread_id": "thread-108851c51a7f",
+      "thread_depth": 0,
+      "month": "2013-01"
+    },
+    {
+      "id": "msg-38c87788e4ef",
+      "message_id": "<CAP01uRmOtnhy1XPtnvCYvBVO6dK5Kc+DP4fhn4uApOwbdbP8pA@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2013-01-23T15:22:51-05:00",
+      "subject": "[R-sig-DB] RpgSQL/RJDBC(?) on R15.2(64) Win7 throws can't find .verify.JDBC.result",
+      "subject_clean": "RpgSQL/RJDBC(?) on R15.2(64) Win7 throws can't find .verify.JDBC.result",
+      "in_reply_to": "<CAOo3SQgJ5OgobM9eBNecvhPQwYOhjEtmj2L+rqE4U9YnaNorGg@mail.gmail.com>",
+      "references": [
+        "<CAOo3SQgJ5OgobM9eBNecvhPQwYOhjEtmj2L+rqE4U9YnaNorGg@mail.gmail.com>"
+      ],
+      "body_plain": "I tried the same fix that worked for RH2 but it seems its something\nelse as you found too.  I will have a look next week.\n\nOn Wed, Jan 23, 2013 at 2:08 PM, Jim Porzak <jporzak at gmail.com> wrote:\n> All, I see:\n>\n>> options(RpgSQL.user = \"tableau\", RpgSQL.password = \"******\",\n> +         RpgSQL.host = \"10.8.0.1\", RpgSQL.port = 5432,\n> +         RpgSQL.JAR = \"C:/Drivers/JDBC\")\n>>\n>> library(RpgSQL)                                  ## Version: 0.1-6\n> Loading required package: RJDBC           ## Version: 0.2-1\n> Loading required package: DBI                ## Version: 0.2-5\n> Loading required package: rJava              ## Version: 0.9-3\n>\n>> con <- dbConnect(pgSQL(), dbname = \"bidata_pg\")\n> Error in .local(drv, ...) : could not find function \".verify.JDBC.result\"\n>\n> The above works just fine with R14.2 & prior versions of PpgSQL & RJDBC.\n>\n> I noticed H2 user had a similar error which they worked around by\n> rolling back to RJDBC 0.2-0\n> I tried hacking a roll-back using files from my 14.2 install but that\n> didn't work.\n> I did not see any window binaries for RJDBC 0.2-0\n>\n> Suggestions?\n>\n>\n> Jim Porzak\n> Minted.com\n> San Francisco, CA\n> www.linkedin.com/in/jimporzak\n> use R! Group SF: www.meetup.com/R-Users/\n\n\n\n--\nStatistics & Software Consulting\nGKX Group, GKX Associates Inc.\ntel: 1-877-GKX-GROUP\nemail: ggrothendieck at gmail.com",
+      "body_snippet": "I tried the same fix that worked for RH2 but it seems its something\nelse as you found too.  I will have a look next week.\n\nOn Wed, Jan 23, 2013 at 2:08 PM, Jim Porzak <jporzak at gmail.com> wrote:\n> A",
+      "thread_id": "thread-108851c51a7f",
+      "thread_depth": 1,
+      "month": "2013-01"
+    },
+    {
+      "id": "msg-947b72a5fbdd",
+      "message_id": "<CAOo3SQipSCStjbdFpWarxahdrbcJaN6hMS3BcJw981_ZFr0i7Q@mail.gmail.com>",
+      "from_name": "Jim Porzak",
+      "from_email_hash": "d1a1c6999a476b8b1f6e01b0940a8b536770bceb1c1d77be2218c63d2a249e2b",
+      "date": "2013-01-23T13:16:33-08:00",
+      "subject": "[R-sig-DB] RpgSQL/RJDBC(?) on R15.2(64) Win7 throws can't find .verify.JDBC.result",
+      "subject_clean": "RpgSQL/RJDBC(?) on R15.2(64) Win7 throws can't find .verify.JDBC.result",
+      "in_reply_to": "<CAP01uRmOtnhy1XPtnvCYvBVO6dK5Kc+DP4fhn4uApOwbdbP8pA@mail.gmail.com>",
+      "references": [
+        "<CAOo3SQgJ5OgobM9eBNecvhPQwYOhjEtmj2L+rqE4U9YnaNorGg@mail.gmail.com>",
+        "<CAP01uRmOtnhy1XPtnvCYvBVO6dK5Kc+DP4fhn4uApOwbdbP8pA@mail.gmail.com>"
+      ],
+      "body_plain": "Thanks Gabor,\nNot a panic, since I'm doing this work in 2.14.2, but would be good to\nget cleaned up.\nJim\n\n\nOn Wed, Jan 23, 2013 at 12:22 PM, Gabor Grothendieck\n<ggrothendieck at gmail.com> wrote:\n> I tried the same fix that worked for RH2 but it seems its something\n> else as you found too.  I will have a look next week.\n>\n> On Wed, Jan 23, 2013 at 2:08 PM, Jim Porzak <jporzak at gmail.com> wrote:\n>> All, I see:\n>>\n>>> options(RpgSQL.user = \"tableau\", RpgSQL.password = \"******\",\n>> +         RpgSQL.host = \"10.8.0.1\", RpgSQL.port = 5432,\n>> +         RpgSQL.JAR = \"C:/Drivers/JDBC\")\n>>>\n>>> library(RpgSQL)                                  ## Version: 0.1-6\n>> Loading required package: RJDBC           ## Version: 0.2-1\n>> Loading required package: DBI                ## Version: 0.2-5\n>> Loading required package: rJava              ## Version: 0.9-3\n>>\n>>> con <- dbConnect(pgSQL(), dbname = \"bidata_pg\")\n>> Error in .local(drv, ...) : could not find function \".verify.JDBC.result\"\n>>\n>> The above works just fine with R14.2 & prior versions of PpgSQL & RJDBC.\n>>\n>> I noticed H2 user had a similar error which they worked around by\n>> rolling back to RJDBC 0.2-0\n>> I tried hacking a roll-back using files from my 14.2 install but that\n>> didn't work.\n>> I did not see any window binaries for RJDBC 0.2-0\n>>\n>> Suggestions?\n>>\n>>\n>> Jim Porzak\n>> Minted.com\n>> San Francisco, CA\n>> www.linkedin.com/in/jimporzak\n>> use R! Group SF: www.meetup.com/R-Users/\n>\n>\n>\n> --\n> Statistics & Software Consulting\n> GKX Group, GKX Associates Inc.\n> tel: 1-877-GKX-GROUP\n> email: ggrothendieck at gmail.com",
+      "body_snippet": "Thanks Gabor,\nNot a panic, since I'm doing this work in 2.14.2, but would be good to\nget cleaned up.\nJim\n\n\nOn Wed, Jan 23, 2013 at 12:22 PM, Gabor Grothendieck\n<ggrothendieck at gmail.com> wrote:\n> I ",
+      "thread_id": "thread-108851c51a7f",
+      "thread_depth": 2,
+      "month": "2013-01"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-108851c51a7f",
+      "subject": "RpgSQL/RJDBC(?) on R15.2(64) Win7 throws can't find .verify.JDBC.result",
+      "message_count": 3,
+      "participants": [
+        "Gabor Grothendieck",
+        "Jim Porzak"
+      ],
+      "started": "2013-01-23T11:08:53-08:00",
+      "last_reply": "2013-01-23T13:16:33-08:00",
+      "root_message_id": "msg-108851c51a7f"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2019-05",
+  "messages": [
+    {
+      "id": "msg-abe49cacec35",
+      "message_id": "<CABSSfpcHDPTj2FcdD58QAmGsgMhT+GEke-dJNmr21HHNhyaZog@mail.gmail.com>",
+      "from_name": "Luis Aparicio",
+      "from_email_hash": "79e453c123f0d16bb04cd7a72d9511cf75612c893022917d443be993608e40f8",
+      "date": "2019-05-08T09:53:01-04:00",
+      "subject": "[R-sig-DB] Importing data into a MySQL table from a data.frame with R",
+      "subject_clean": "Importing data into a MySQL table from a data.frame with R",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Greetings.  I'm trying to update a MySQL table with new data from a data\nframe using R. The data frame has several thousand rows, but only three\ncolumns.  The table has approximately five attributes (columns) so I only\nwant to update the specific columns that the data frame provides.  I've\nbeen attempting to use the RMySQLDB or RMariaDB package and the dbx\npackage.  I'm posting the relevant sections of the code.  The lines that\nconnect to the database are fine.\n\nI'm having trouble because of the different number of columns between the\ndata frame and the target table.  Also, note that the order the data frame\ncolumns are different than the location of the same columns in the table.\nThe five columns in the table are:  INTERNAL_ID,  AA_CLONOTYPE,\nNT_CLONOTYPE, COUNT, and SAMPLE_ID.  The headers in the data frame are\nINTERNAL_ID, NT_CLONOTYPE, and SAMPLE_ID.\n\nThe target table may be empty or may have already had rows totally\ncompleted or partially completed with prior data.\n\nI'm posting the code snippet, the error message, and an example of what I\nexpect to be the result below.  Any ideas how I can approach this problem?\nAny help is appreciated.  Thank you. Regards.\n\n*Code snippet*:\n\ntable <- \"TCR\"  #name of the MySQL table\nrecords <- newdf  # data frame with new records\n\n# Insert or update new rows with specific column data\ndbxUpsert(conx, table, records, where_cols = c(\"INTERNAL_ID\"))\n\n*The error message:*\nError in .local(conn, statement, ...) :\n  could not run statement: Field 'COUNT' doesn't have a default value\n\n*Example of expected output:*\n\nINTERNAL_ID    AA_CLONOTYPE   NT_CLONOTYPE   COUNT   SAMPLE_ID\nP28.10.1\nACCGTCTCCTT                  P28.10\nP28.10.2\nCGGTTTAAAG                   P28.10\n\n-Luis\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Greetings.  I'm trying to update a MySQL table with new data from a data\nframe using R. The data frame has several thousand rows, but only three\ncolumns.  The table has approximately five attributes (",
+      "thread_id": "thread-abe49cacec35",
+      "thread_depth": 0,
+      "month": "2019-05"
+    },
+    {
+      "id": "msg-ae38696b6962",
+      "message_id": "<CAM9kYqhUb3=rHSUiMn2m9sJ2Bad4vgdAJwav=esYm2Tr6S7-Dg@mail.gmail.com>",
+      "from_name": "Philippi, Tom",
+      "from_email_hash": "55b3cd45b6eb1b9566e69fb964e1bc6799937de522fffd7cbb1c1643244df05c",
+      "date": "2019-05-08T09:51:52-07:00",
+      "subject": "[R-sig-DB] [EXTERNAL] Importing data into a MySQL table from a data.frame with R",
+      "subject_clean": "[EXTERNAL] Importing data into a MySQL table from a data.frame with R",
+      "in_reply_to": "<CABSSfpcHDPTj2FcdD58QAmGsgMhT+GEke-dJNmr21HHNhyaZog@mail.gmail.com>",
+      "references": [
+        "<CABSSfpcHDPTj2FcdD58QAmGsgMhT+GEke-dJNmr21HHNhyaZog@mail.gmail.com>"
+      ],
+      "body_plain": "Luis--\nUnless I'm missing something, that's not specifically a MySQL or database\nissue.  For any form of update or append you need to make your \"records\"\nobject have the same variables (columns) in the same order as the table\nyou're updating.\n\nIf your table has 5 variables and your update dataframe only has 3, do you\nwant the other 2 variables to have missing values?\nrecords <- newdf\nrecords$AA_CLONETYPE <- NA   # probably needs to match type, so\nna_character_ or na_numeric_\nrecords$COUNT <- na_integer_  # assuming COUNT is integer type\nrecords <- records[,c(\"INTERNAL_ID\", \"AA_CLONOTYPE\", \"NT_CLONOTYPE\",\n\"COUNT\", \"SAMPLE_ID\")]\ndbxUpsert(conx, table, records, where_cols = c(\"INTERNAL_ID\"))\n\nTom\n\nOn Wed, May 8, 2019 at 6:53 AM Luis Aparicio <aparicio2457 at gmail.com> wrote:\n\n>  Greetings.  I'm trying to update a MySQL table with new data from a data\n> frame using R. The data frame has several thousand rows, but only three\n> columns.  The table has approximately five attributes (columns) so I only\n> want to update the specific columns that the data frame provides.  I've\n> been attempting to use the RMySQLDB or RMariaDB package and the dbx\n> package.  I'm posting the relevant sections of the code.  The lines that\n> connect to the database are fine.\n>\n> I'm having trouble because of the different number of columns between the\n> data frame and the target table.  Also, note that the order the data frame\n> columns are different than the location of the same columns in the table.\n> The five columns in the table are:  INTERNAL_ID,  AA_CLONOTYPE,\n> NT_CLONOTYPE, COUNT, and SAMPLE_ID.  The headers in the data frame are\n> INTERNAL_ID, NT_CLONOTYPE, and SAMPLE_ID.\n>\n> The target table may be empty or may have already had rows totally\n> completed or partially completed with prior data.\n>\n> I'm posting the code snippet, the error message, and an example of what I\n> expect to be the result below.  Any ideas how I can approach this problem?\n> Any help is appreciated.  Thank you. Regards.\n>\n> *Code snippet*:\n>\n> table <- \"TCR\"  #name of the MySQL table\n> records <- newdf  # data frame with new records\n>\n> # Insert or update new rows with specific column data\n> dbxUpsert(conx, table, records, where_cols = c(\"INTERNAL_ID\"))\n>\n> *The error message:*\n> Error in .local(conn, statement, ...) :\n>   could not run statement: Field 'COUNT' doesn't have a default value\n>\n> *Example of expected output:*\n>\n> INTERNAL_ID    AA_CLONOTYPE   NT_CLONOTYPE   COUNT   SAMPLE_ID\n> P28.10.1\n> ACCGTCTCCTT                  P28.10\n> P28.10.2\n> CGGTTTAAAG                   P28.10\n>\n> -Luis\n>\n>         [[alternative HTML version deleted]]\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Luis--\nUnless I'm missing something, that's not specifically a MySQL or database\nissue.  For any form of update or append you need to make your \"records\"\nobject have the same variables (columns) in th",
+      "thread_id": "thread-abe49cacec35",
+      "thread_depth": 1,
+      "month": "2019-05"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-abe49cacec35",
+      "subject": "Importing data into a MySQL table from a data.frame with R",
+      "message_count": 2,
+      "participants": [
+        "Luis Aparicio",
+        "Philippi, Tom"
+      ],
+      "started": "2019-05-08T09:53:01-04:00",
+      "last_reply": "2019-05-08T09:51:52-07:00",
+      "root_message_id": "msg-abe49cacec35"
+    }
+  ]
+}

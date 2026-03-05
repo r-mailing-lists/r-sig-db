@@ -1,0 +1,178 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2007-09",
+  "messages": [
+    {
+      "id": "msg-b5bdd06aa9a1",
+      "message_id": "<46DD649E.8030503@mail.nih.gov>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2007-09-04T09:58:54-04:00",
+      "subject": "[R-sig-DB] RODBC and datadirect 64bit on linux",
+      "subject_clean": "RODBC and datadirect 64bit on linux",
+      "in_reply_to": "<Pine.LNX.4.64.0708282201500.21063@gannet.stats.ox.ac.uk>",
+      "references": [
+        "<46D46F0D.8000104@mail.nih.gov>",
+        "<Pine.LNX.4.64.0708282041290.19212@gannet.stats.ox.ac.uk>",
+        "<46D47CC2.60601@mail.nih.gov>",
+        "<Pine.LNX.4.64.0708282201500.21063@gannet.stats.ox.ac.uk>"
+      ],
+      "body_plain": "Prof Brian Ripley wrote:\n> On Tue, 28 Aug 2007, Sean Davis wrote:\n> \n>> Prof Brian Ripley wrote:\n>>> unixODBC and iodbc are driver managers, not drivers.  Looks like\n>>> DataDirect (http://www.datadirect.com/products/odbc/index.ssp) is also a\n>>> (commercial) driver manager that as far as I know no one has ever\n>>> tested.\n>>\n>> Thanks for the clarified language.  Yes, that is indeed the case.  I\n>> have a database vendor that is stating that the datadirect driver\n>> manager is more stable than unixODBC and iODBC, so I am looking for how\n>> to tell RODBC to use the datadirect driver manager.  Is this something\n>> that even makes sense to ask?\n> \n> Yes.  You need to tell configure how to link to it, and that will need\n> reading both sets of manuals.\n\n\nJust to complete the mail archives, the solution to my original problem\nis pretty simple.  Specify configure-args when running R CMD INSTALL as:\n\n--with-odbc-include=/path/to/datadirect-installation/include\n--with-odbc-lib=/path/to/datadirect-installation/lib\n\nThanks for the help.\n\nSean",
+      "body_snippet": "Prof Brian Ripley wrote:\n> On Tue, 28 Aug 2007, Sean Davis wrote:\n> \n>> Prof Brian Ripley wrote:\n>>> unixODBC and iodbc are driver managers, not drivers.  Looks like\n>>> DataDirect (http://www.datadir",
+      "thread_id": "thread-b5bdd06aa9a1",
+      "thread_depth": 0,
+      "month": "2007-09"
+    },
+    {
+      "id": "msg-ec785db5ba62",
+      "message_id": "<d4327f7e0709110551r5cbb7332ueeb6ea10769619c2@mail.gmail.com>",
+      "from_name": "d. sarthi maheshwari",
+      "from_email_hash": "6c65eb4b994471b9bd0a999dc730ef8936ac75b4e41dfbd04c6d6815919153f5",
+      "date": "2007-09-11T18:21:46+05:30",
+      "subject": "[R-sig-DB] odbcDriverConnect not working in UNIX",
+      "subject_clean": "odbcDriverConnect not working in UNIX",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\nI apologized for my not so good english.\n\nI am working on R-2.5.0 on Sun Solaris 10 machine. I have successfully\ninstalled R and RODBC library in it.\n\nWhen i am trying to connect to Sybase server using odbcDriverConnect\ncommand, the execution is getting hang (No error is coming, no handle has\nbeen returned back; the code execution stopped at odbcDriverConnect\nstatement). Following is the piece of code i am trying executing:\n\nlibrary(RODBC)\ninchannel <- odbcDriverConnect(\"Driver={SYBASE ASE ODBC\nDriver};srvr=\"tt_lyb\";db=archive;uid=guest;pwd=guest\")\n....\n....\n....\n\nWhen I tested this connection in Windows on R-2.5.0, it worked well and\nreturned me the connection's handle.\n\nKindly help me.\n\nThanks in advance.\n\nRegards\nSar\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi,\n\nI apologized for my not so good english.\n\nI am working on R-2.5.0 on Sun Solaris 10 machine. I have successfully\ninstalled R and RODBC library in it.\n\nWhen i am trying to connect to Sybase server",
+      "thread_id": "thread-ec785db5ba62",
+      "thread_depth": 0,
+      "month": "2007-09"
+    },
+    {
+      "id": "msg-7b06c070822b",
+      "message_id": "<d4327f7e0709110618q22cf3146mb123ed52a710f8b1@mail.gmail.com>",
+      "from_name": "d. sarthi maheshwari",
+      "from_email_hash": "6c65eb4b994471b9bd0a999dc730ef8936ac75b4e41dfbd04c6d6815919153f5",
+      "date": "2007-09-11T18:48:12+05:30",
+      "subject": "[R-sig-DB] odbcDriverConnect not working in UNIX",
+      "subject_clean": "odbcDriverConnect not working in UNIX",
+      "in_reply_to": "<d4327f7e0709110551r5cbb7332ueeb6ea10769619c2@mail.gmail.com>",
+      "references": [
+        "<d4327f7e0709110551r5cbb7332ueeb6ea10769619c2@mail.gmail.com>"
+      ],
+      "body_plain": "I also getting following warnings ::\n\n[RODBC] ERROR: state IM002, code 0, message [unixODBC][Driver Manager]Data\nsource name not found, and no default driver specified\n\nKindly suggest what could be the problem.\n\nThanks in advance.\n\nRegards\nSar\n\nOn 9/11/07, d. sarthi maheshwari <samay.sar at gmail.com> wrote:\n>\n> Hi,\n>\n> I apologized for my not so good english.\n>\n> I am working on R-2.5.0 on Sun Solaris 10 machine. I have successfully\n> installed R and RODBC library in it.\n>\n> When i am trying to connect to Sybase server using odbcDriverConnect\n> command, the execution is getting hang (No error is coming, no handle has\n> been returned back; the code execution stopped at odbcDriverConnect\n> statement). Following is the piece of code i am trying executing:\n>\n> library(RODBC)\n> inchannel <- odbcDriverConnect(\"Driver={SYBASE ASE ODBC\n> Driver};srvr=\"tt_lyb\";db=archive;uid=guest;pwd=guest\")\n> ....\n> ....\n> ....\n>\n> When I tested this connection in Windows on R-2.5.0, it worked well and\n> returned me the connection's handle.\n>\n> Kindly help me.\n>\n> Thanks in advance.\n>\n> Regards\n> Sar\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "I also getting following warnings ::\n\n[RODBC] ERROR: state IM002, code 0, message [unixODBC][Driver Manager]Data\nsource name not found, and no default driver specified\n\nKindly suggest what could be th",
+      "thread_id": "thread-ec785db5ba62",
+      "thread_depth": 1,
+      "month": "2007-09"
+    },
+    {
+      "id": "msg-a17ee39013d8",
+      "message_id": "<434a8fc00709210142n664be0cau3e78bafb7d7d8b78@mail.gmail.com>",
+      "from_name": "Matteo Fornasier",
+      "from_email_hash": "21df41428731264a3c901fe4a07cdf1dbe7cbbf8d6edccfd220558155e635d69",
+      "date": "2007-09-21T10:42:05+02:00",
+      "subject": "[R-sig-DB] MS SQL",
+      "subject_clean": "MS SQL",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi all,\nCan I storage and read data from a MS SQL database?\nIf yes wich package I have to use? How can I find some documentations\nand an example script?\nThanks all,\n\nregards\n\nMatteo Fornasier",
+      "body_snippet": "Hi all,\nCan I storage and read data from a MS SQL database?\nIf yes wich package I have to use? How can I find some documentations\nand an example script?\nThanks all,\n\nregards\n\nMatteo Fornasier",
+      "thread_id": "thread-a17ee39013d8",
+      "thread_depth": 0,
+      "month": "2007-09"
+    },
+    {
+      "id": "msg-7fabf5d3ff59",
+      "message_id": "<Pine.LNX.4.64.0709210945210.30638@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2007-09-21T09:48:47+01:00",
+      "subject": "[R-sig-DB] MS SQL",
+      "subject_clean": "MS SQL",
+      "in_reply_to": "<434a8fc00709210142n664be0cau3e78bafb7d7d8b78@mail.gmail.com>",
+      "references": [
+        "<434a8fc00709210142n664be0cau3e78bafb7d7d8b78@mail.gmail.com>"
+      ],
+      "body_plain": "On Fri, 21 Sep 2007, Matteo Fornasier wrote:\n\n> Hi all,\n> Can I storage and read data from a MS SQL database?\n\nWhat is a 'MS SQL database'?  And on what OS?\n\n> If yes wich package I have to use? How can I find some documentations\n> and an example script?\n\nPlease read the R posting guide at\n\nhttp://www.r-project.org/posting-guide.html\n\nand try to ask a question that people will be able to answer for you.\n\nAs a guess, if you are on Windows and using a version of SQL Server, \npackage RODBC will do this for you, *and* it comes with test scripts for \nSQL Server Express.\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "On Fri, 21 Sep 2007, Matteo Fornasier wrote:\n\n> Hi all,\n> Can I storage and read data from a MS SQL database?\n\nWhat is a 'MS SQL database'?  And on what OS?\n\n> If yes wich package I have to use? How c",
+      "thread_id": "thread-a17ee39013d8",
+      "thread_depth": 1,
+      "month": "2007-09"
+    },
+    {
+      "id": "msg-0b4ef99bc7ae",
+      "message_id": "<dba1e14b0709290730u552239d5y7074f9fd5758751e@mail.gmail.com>",
+      "from_name": "Iago Mosqueira",
+      "from_email_hash": "cf0332286e5fbcb107d63cd9ef75b630922548627e42d5a2e04f259135271bd7",
+      "date": "2007-09-29T16:30:11+02:00",
+      "subject": "[R-sig-DB] Storing data.frame attirbutes in SQL through DBI",
+      "subject_clean": "Storing data.frame attirbutes in SQL through DBI",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello,\n\nWhat would be the best way of storing some extra attributes of a\ndata.frame on an SQLite database? Am I forced to use a separate table\nfor this?\n\nThanks,\n\n\nIago",
+      "body_snippet": "Hello,\n\nWhat would be the best way of storing some extra attributes of a\ndata.frame on an SQLite database? Am I forced to use a separate table\nfor this?\n\nThanks,\n\n\nIago",
+      "thread_id": "thread-0b4ef99bc7ae",
+      "thread_depth": 0,
+      "month": "2007-09"
+    },
+    {
+      "id": "msg-6a841ad4f2f6",
+      "message_id": "<46FE64FB.606@mail.nih.gov>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2007-09-29T10:45:15-04:00",
+      "subject": "[R-sig-DB] Storing data.frame attirbutes in SQL through DBI",
+      "subject_clean": "Storing data.frame attirbutes in SQL through DBI",
+      "in_reply_to": "<dba1e14b0709290730u552239d5y7074f9fd5758751e@mail.gmail.com>",
+      "references": [
+        "<dba1e14b0709290730u552239d5y7074f9fd5758751e@mail.gmail.com>"
+      ],
+      "body_plain": "Iago Mosqueira wrote:\n> Hello,\n>\n> What would be the best way of storing some extra attributes of a\n> data.frame on an SQLite database? Am I forced to use a separate table\n> for this?\n>   \n\nThat is probably the best way to do it, yes.  I would imagine making a \n\"saveDataFrame\" function which would accept a data frame, pull off the \nattributes that you want to save, write them into a separate table, then \nsave the data in the data frame.  You might need a third table to store \nthe name or id of the data frame.  You would, of course, need a \n\"loadDataFrame\" function as well as a \"deleteDataFrame\" function.  If \nyou can abstract all the SQL into a function, then using a three-table \nstructure for a data frame becomes quite feasible.\n\nYou could also look into using something like HDF5 (see the HDF5 package \non cran--I have never used it, though) or the ncdf package, which reads \nand writes netcdf files.  Both of these provide a way of writing \"rich\" \ndata files.\n\nSean",
+      "body_snippet": "Iago Mosqueira wrote:\n> Hello,\n>\n> What would be the best way of storing some extra attributes of a\n> data.frame on an SQLite database? Am I forced to use a separate table\n> for this?\n>   \n\nThat is pr",
+      "thread_id": "thread-0b4ef99bc7ae",
+      "thread_depth": 1,
+      "month": "2007-09"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-b5bdd06aa9a1",
+      "subject": "RODBC and datadirect 64bit on linux",
+      "message_count": 1,
+      "participants": [
+        "Sean Davis"
+      ],
+      "started": "2007-09-04T09:58:54-04:00",
+      "last_reply": "2007-09-04T09:58:54-04:00",
+      "root_message_id": "msg-b5bdd06aa9a1"
+    },
+    {
+      "id": "thread-ec785db5ba62",
+      "subject": "odbcDriverConnect not working in UNIX",
+      "message_count": 2,
+      "participants": [
+        "d. sarthi maheshwari"
+      ],
+      "started": "2007-09-11T18:21:46+05:30",
+      "last_reply": "2007-09-11T18:48:12+05:30",
+      "root_message_id": "msg-ec785db5ba62"
+    },
+    {
+      "id": "thread-a17ee39013d8",
+      "subject": "MS SQL",
+      "message_count": 2,
+      "participants": [
+        "Matteo Fornasier",
+        "Prof Brian Ripley"
+      ],
+      "started": "2007-09-21T10:42:05+02:00",
+      "last_reply": "2007-09-21T09:48:47+01:00",
+      "root_message_id": "msg-a17ee39013d8"
+    },
+    {
+      "id": "thread-0b4ef99bc7ae",
+      "subject": "Storing data.frame attirbutes in SQL through DBI",
+      "message_count": 2,
+      "participants": [
+        "Iago Mosqueira",
+        "Sean Davis"
+      ],
+      "started": "2007-09-29T16:30:11+02:00",
+      "last_reply": "2007-09-29T10:45:15-04:00",
+      "root_message_id": "msg-0b4ef99bc7ae"
+    }
+  ]
+}

@@ -1,0 +1,344 @@
+From tk||@t@ddr @end|ng |rom ke|tt|@b@b|o@@uny@b@edu  Wed Aug 29 20:51:20 2001
+From: tk||@t@ddr @end|ng |rom ke|tt|@b@b|o@@uny@b@edu (Timothy H. Keitt)
+Date: Wed, 29 Aug 2001 14:51:20 -0400
+Subject: [R-sig-DB] Rdbi
+Message-ID: <3B8D39A8.6080007@keittlab.bio.sunysb.edu>
+
+I've had some requests for my Rdbi packages, so I've uploaded them to 
+CRAN.  The source is also in CVS at http://rdbi.sourceforge.net/.
+
+Cheers,
+Tim
+
+-- 
+Timothy H. Keitt
+Department of Ecology and Evolution
+State University of New York at Stony Brook
+Stony Brook, New York 11794 USA
+Phone: 631-632-1101, FAX: 631-632-7626
+http://life.bio.sunysb.edu/ee/keitt/
+
+
+
+From m@ech|er @end|ng |rom @t@t@m@th@ethz@ch  Wed Sep  5 09:29:14 2001
+From: m@ech|er @end|ng |rom @t@t@m@th@ethz@ch (Martin Maechler)
+Date: Wed, 5 Sep 2001 09:29:14 +0200
+Subject: [R-sig-DB] Rdbi package [forwarded msg]
+Message-ID: <15253.54346.694465.704855@gargle.gargle.HOWL>
+
+This definitely belongs to the SIG (special interest group) mailing list,
+as well {to which probably all in "CC" are subscribed, 
+	 but then I want to be sure ..}
+BTW, as a reminder : http://www.stat.math.ethz.ch/mailman/listinfo/r-sig-db
+
+Martin
+
+------- start of forwarded message -------
+ From: Kurt Hornik <Kurt.Hornik at ci.tuwien.ac.at>
+ To: R-core at r-project.org, "Timothy H. Keitt" <Timothy.Keitt at stonybrook.edu>,
+	 David James <dj at research.bell-labs.com>,
+	 Saikat DebRoy <saikat at stat.wisc.edu>,
+	 Torsten Hothorn <Torsten.Hothorn at rzmail.uni-erlangen.de>
+ Subject: Rdbi package
+ Date: Tue, 4 Sep 2001 22:54:53 +0200
+
+Tim Keitt has created a new package called `Rdbi', which implements
+`a generic framework for database access in R', plus another packaeg
+called `Rdbi.PgSQL' which implements a PostgreSQL driver using the
+generic tools, and is a complete rewrite of the former RPgSQL package.
+
+As far as I understand it, Rdbi uses ideas from the RS-DBI draft, but
+does not provide an implementation of it.  My understanding/hope based
+on discussions in Vienna was that we would have a working group (SIG)
+which would improve the standard, and maybe also provide code that works
+under all implementations of the S language.  Tim only uses R, and it is
+not clear whether his code works under Splus (hence also `Rdbi' versus
+`RSdbi').
+
+As the new package might very well constitute a de-facto standard, I
+have put the packages into the CRAN contrib/Devel section for the time
+being, so that in particular the maintainers of the other DBMS access
+packages can have a look, and maybe can give some comments.
+
+Waiting for feedback and instructions on how to proceed further ...
+
+-k
+------- end of forwarded message -------
+
+
+From dj @end|ng |rom re@e@rch@be||-|@b@@com  Wed Sep  5 22:22:26 2001
+From: dj @end|ng |rom re@e@rch@be||-|@b@@com (David James)
+Date: Wed, 5 Sep 2001 16:22:26 -0400
+Subject: [R-sig-DB] Re: Rdbi package [forwarded msg]
+In-Reply-To: <15253.54346.694465.704855@gargle.gargle.HOWL>; from maechler@stat.math.ethz.ch on Wed, Sep 05, 2001 at 09:29:14AM +0200
+References: <15253.54346.694465.704855@gargle.gargle.HOWL>
+Message-ID: <20010905162226.E14788@jessie.research.bell-labs.com>
+
+Hi,
+  
+We did start an informal discussion back in April, right after Tim
+submitted his proposal.  I think that we agreed that writing some
+kind of draft "request for comments" (RFC) based on his initial Rdbi
+was a good idea.  At the time, Brian correctly pointed out that we
+had no framework for discussion, and that there were many other
+pressing issues that came up at the Vienna conference requiring
+attention for the members of the r-core group.  Since then, a
+lot of good things have happened: Martin has setup the R-SIG-DB,
+and versions 1.3.0 and 1.3.1 have been released (among other nice
+things).  I'd agree with Kurt that it's probably a good time to
+get back to Tim's proposal.
+
+Is there a consensus that an RFC based on the Rdbi is the next
+logical step?  
+
+Martin Maechler wrote:
+> This definitely belongs to the SIG (special interest group) mailing list,
+> as well {to which probably all in "CC" are subscribed, 
+> 	 but then I want to be sure ..}
+> BTW, as a reminder : http://www.stat.math.ethz.ch/mailman/listinfo/r-sig-db
+> 
+> Martin
+> 
+> ------- start of forwarded message -------
+>  From: Kurt Hornik <Kurt.Hornik at ci.tuwien.ac.at>
+>  To: R-core at r-project.org, "Timothy H. Keitt" <Timothy.Keitt at stonybrook.edu>,
+> 	 David James <dj at research.bell-labs.com>,
+> 	 Saikat DebRoy <saikat at stat.wisc.edu>,
+> 	 Torsten Hothorn <Torsten.Hothorn at rzmail.uni-erlangen.de>
+>  Subject: Rdbi package
+>  Date: Tue, 4 Sep 2001 22:54:53 +0200
+> 
+> Tim Keitt has created a new package called `Rdbi', which implements
+> `a generic framework for database access in R', plus another packaeg
+> called `Rdbi.PgSQL' which implements a PostgreSQL driver using the
+> generic tools, and is a complete rewrite of the former RPgSQL package.
+> 
+> As far as I understand it, Rdbi uses ideas from the RS-DBI draft, but
+> does not provide an implementation of it.  My understanding/hope based
+> on discussions in Vienna was that we would have a working group (SIG)
+> which would improve the standard, and maybe also provide code that works
+> under all implementations of the S language.  Tim only uses R, and it is
+> not clear whether his code works under Splus (hence also `Rdbi' versus
+> `RSdbi').
+> 
+> As the new package might very well constitute a de-facto standard, I
+> have put the packages into the CRAN contrib/Devel section for the time
+> being, so that in particular the maintainers of the other DBMS access
+> packages can have a look, and maybe can give some comments.
+> 
+> Waiting for feedback and instructions on how to proceed further ...
+> 
+> -k
+> ------- end of forwarded message -------
+
+-- 
+David A. James
+Statistics Research, Room 2C-253            Phone:  (908) 582-3082       
+Bell Labs, Lucent Technologies              Fax:    (908) 582-3340
+Murray Hill, NJ 09794-0636
+
+
+From Kurt@Horn|k @end|ng |rom c|@tuw|en@@c@@t  Thu Sep  6 12:02:53 2001
+From: Kurt@Horn|k @end|ng |rom c|@tuw|en@@c@@t (Kurt Hornik)
+Date: Thu, 6 Sep 2001 12:02:53 +0200
+Subject: [R-sig-DB] Re: Rdbi package [forwarded msg]
+In-Reply-To: <20010905162226.E14788@jessie.research.bell-labs.com>
+References: <15253.54346.694465.704855@gargle.gargle.HOWL>
+	<20010905162226.E14788@jessie.research.bell-labs.com>
+Message-ID: <15255.18893.501924.499200@mithrandir.hornik.net>
+
+>>>>> David James writes:
+
+> Hi,
+
+> We did start an informal discussion back in April, right after Tim
+> submitted his proposal.  I think that we agreed that writing some
+> kind of draft "request for comments" (RFC) based on his initial Rdbi
+> was a good idea.  At the time, Brian correctly pointed out that we
+> had no framework for discussion, and that there were many other
+> pressing issues that came up at the Vienna conference requiring
+> attention for the members of the r-core group.  Since then, a
+> lot of good things have happened: Martin has setup the R-SIG-DB,
+> and versions 1.3.0 and 1.3.1 have been released (among other nice
+> things).  I'd agree with Kurt that it's probably a good time to
+> get back to Tim's proposal.
+
+> Is there a consensus that an RFC based on the Rdbi is the next
+> logical step?
+
+I think so.  Otoh one could argue that Tim's package *is* the RFC.
+Which is what I meant by de facto standard.
+
+-k
+
+> Martin Maechler wrote:
+>> This definitely belongs to the SIG (special interest group) mailing list,
+>> as well {to which probably all in "CC" are subscribed, 
+>> but then I want to be sure ..}
+>> BTW, as a reminder : http://www.stat.math.ethz.ch/mailman/listinfo/r-sig-db
+>> 
+>> Martin
+>> 
+>> ------- start of forwarded message -------
+>> From: Kurt Hornik <Kurt.Hornik at ci.tuwien.ac.at>
+>> To: R-core at r-project.org, "Timothy H. Keitt" <Timothy.Keitt at stonybrook.edu>,
+>> David James <dj at research.bell-labs.com>,
+>> Saikat DebRoy <saikat at stat.wisc.edu>,
+>> Torsten Hothorn <Torsten.Hothorn at rzmail.uni-erlangen.de>
+>> Subject: Rdbi package
+>> Date: Tue, 4 Sep 2001 22:54:53 +0200
+>> 
+>> Tim Keitt has created a new package called `Rdbi', which implements
+>> `a generic framework for database access in R', plus another packaeg
+>> called `Rdbi.PgSQL' which implements a PostgreSQL driver using the
+>> generic tools, and is a complete rewrite of the former RPgSQL package.
+>> 
+>> As far as I understand it, Rdbi uses ideas from the RS-DBI draft, but
+>> does not provide an implementation of it.  My understanding/hope based
+>> on discussions in Vienna was that we would have a working group (SIG)
+>> which would improve the standard, and maybe also provide code that works
+>> under all implementations of the S language.  Tim only uses R, and it is
+>> not clear whether his code works under Splus (hence also `Rdbi' versus
+>> `RSdbi').
+>> 
+>> As the new package might very well constitute a de-facto standard, I
+>> have put the packages into the CRAN contrib/Devel section for the time
+>> being, so that in particular the maintainers of the other DBMS access
+>> packages can have a look, and maybe can give some comments.
+>> 
+>> Waiting for feedback and instructions on how to proceed further ...
+>> 
+>> -k
+>> ------- end of forwarded message -------
+
+> -- 
+> David A. James
+> Statistics Research, Room 2C-253            Phone:  (908) 582-3082       
+> Bell Labs, Lucent Technologies              Fax:    (908) 582-3340
+> Murray Hill, NJ 09794-0636
+
+
+
+From Kurt@Horn|k @end|ng |rom c|@tuw|en@@c@@t  Sun Sep 30 11:58:01 2001
+From: Kurt@Horn|k @end|ng |rom c|@tuw|en@@c@@t (Kurt Hornik)
+Date: Sun, 30 Sep 2001 11:58:01 +0200
+Subject: [R-sig-DB] Re: Rdbi package [forwarded msg]
+In-Reply-To: <15255.18893.501924.499200@mithrandir.hornik.net>
+References: <15253.54346.694465.704855@gargle.gargle.HOWL>
+	<20010905162226.E14788@jessie.research.bell-labs.com>
+	<15255.18893.501924.499200@mithrandir.hornik.net>
+Message-ID: <15286.60585.577834.308709@mithrandir.hornik.net>
+
+>>>>> Kurt Hornik writes:
+
+>>>>> David James writes:
+
+>> Hi,
+
+>> We did start an informal discussion back in April, right after Tim
+>> submitted his proposal.  I think that we agreed that writing some
+>> kind of draft "request for comments" (RFC) based on his initial Rdbi
+>> was a good idea.  At the time, Brian correctly pointed out that we
+>> had no framework for discussion, and that there were many other
+>> pressing issues that came up at the Vienna conference requiring
+>> attention for the members of the r-core group.  Since then, a
+>> lot of good things have happened: Martin has setup the R-SIG-DB,
+>> and versions 1.3.0 and 1.3.1 have been released (among other nice
+>> things).  I'd agree with Kurt that it's probably a good time to
+>> get back to Tim's proposal.
+
+>> Is there a consensus that an RFC based on the Rdbi is the next
+>> logical step?
+
+> I think so.  Otoh one could argue that Tim's package *is* the RFC.
+> Which is what I meant by de facto standard.
+
+I have not seen any followup on this for almost a month.
+
+Hence, I assume that everyone is happy with the new design, and suggest
+to move Tim's package from contrib/Devel to contrib.
+
+-k
+
+>> Martin Maechler wrote:
+>>> This definitely belongs to the SIG (special interest group) mailing list,
+>>> as well {to which probably all in "CC" are subscribed, 
+>>> but then I want to be sure ..}
+>>> BTW, as a reminder : http://www.stat.math.ethz.ch/mailman/listinfo/r-sig-db
+>>> 
+>>> Martin
+>>> 
+>>> ------- start of forwarded message -------
+>>> From: Kurt Hornik <Kurt.Hornik at ci.tuwien.ac.at>
+>>> To: R-core at r-project.org, "Timothy H. Keitt" <Timothy.Keitt at stonybrook.edu>,
+>>> David James <dj at research.bell-labs.com>,
+>>> Saikat DebRoy <saikat at stat.wisc.edu>,
+>>> Torsten Hothorn <Torsten.Hothorn at rzmail.uni-erlangen.de>
+>>> Subject: Rdbi package
+>>> Date: Tue, 4 Sep 2001 22:54:53 +0200
+>>> 
+>>> Tim Keitt has created a new package called `Rdbi', which implements
+>>> `a generic framework for database access in R', plus another packaeg
+>>> called `Rdbi.PgSQL' which implements a PostgreSQL driver using the
+>>> generic tools, and is a complete rewrite of the former RPgSQL package.
+>>> 
+>>> As far as I understand it, Rdbi uses ideas from the RS-DBI draft, but
+>>> does not provide an implementation of it.  My understanding/hope based
+>>> on discussions in Vienna was that we would have a working group (SIG)
+>>> which would improve the standard, and maybe also provide code that works
+>>> under all implementations of the S language.  Tim only uses R, and it is
+>>> not clear whether his code works under Splus (hence also `Rdbi' versus
+>>> `RSdbi').
+>>> 
+>>> As the new package might very well constitute a de-facto standard, I
+>>> have put the packages into the CRAN contrib/Devel section for the time
+>>> being, so that in particular the maintainers of the other DBMS access
+>>> packages can have a look, and maybe can give some comments.
+>>> 
+>>> Waiting for feedback and instructions on how to proceed further ...
+>>> 
+>>> -k
+>>> ------- end of forwarded message -------
+
+>> -- 
+>> David A. James
+>> Statistics Research, Room 2C-253            Phone:  (908) 582-3082       
+>> Bell Labs, Lucent Technologies              Fax:    (908) 582-3340
+>> Murray Hill, NJ 09794-0636
+
+
+
+From znmeb @end|ng |rom @r@cnet@com  Sun Sep 30 19:46:18 2001
+From: znmeb @end|ng |rom @r@cnet@com (M. Edward Borasky)
+Date: Sun, 30 Sep 2001 10:46:18 -0700
+Subject: [R-sig-DB] Re: Rdbi package [forwarded msg]
+In-Reply-To: <15286.60585.577834.308709@mithrandir.hornik.net>
+Message-ID: <HBEHIIBBKKNOBLMPKCBBCENGDNAA.znmeb@aracnet.com>
+
+Sounds good to me. At some point in the near future I may get a chance to
+test it on a Windows box with MS Access; I've been using RODBC for that.
+--
+M. Edward (Ed) Borasky, Chief Scientist, Borasky Research
+http://www.borasky-research.net  http://www.aracnet.com/~znmeb
+mailto:znmeb at borasky-research.net  mailto:znmeb at aracnet.com
+
+Q: How do you tell when a pineapple is ready to eat?
+A: It picks up its knife and fork.
+
+> -----Original Message-----
+> From: r-sig-db-admin at stat.math.ethz.ch
+> [mailto:r-sig-db-admin at stat.math.ethz.ch]On Behalf Of Kurt Hornik
+> Sent: Sunday, September 30, 2001 2:58 AM
+> To: Kurt.Hornik at ci.tuwien.ac.at
+> Cc: David James; R-SIG-DB at stat.math.ethz.ch; Timothy H. Keitt; Saikat
+> DebRoy; Torsten Hothorn
+> Subject: [R-sig-DB] Re: Rdbi package [forwarded msg]
+> I have not seen any followup on this for almost a month.
+>
+> Hence, I assume that everyone is happy with the new design, and suggest
+> to move Tim's package from contrib/Devel to contrib.
+>
+> -k
+
+
+

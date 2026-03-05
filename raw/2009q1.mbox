@@ -1,0 +1,2665 @@
+From je||@horner @end|ng |rom v@nderb||t@edu  Wed Jan  7 16:41:49 2009
+From: je||@horner @end|ng |rom v@nderb||t@edu (Jeffrey Horner)
+Date: Wed, 07 Jan 2009 09:41:49 -0600
+Subject: [R-sig-DB] Problems with RMySQL and MySQL server version 5.1
+Message-ID: <4964CD3D.9000705@vanderbilt.edu>
+
+An FYI to those users having problems with windows RMySQL CRAN binaries.
+
+-------- Original Message --------
+Subject: Problems with RMySQL and MySQL server version 5.1
+Date: Wed, 7 Jan 2009 09:12:56 +0100
+From: Erik J?rgensen <Erik.Jorgensen at agrsci.dk>
+To: jeff.horner at vanderbilt.edu
+
+Hi Jeffrey
+
+I have some problems with the use of RMySQL since upgrading to RMySQL
+version 0.7-2 and MySQL server version 5.1. The RGUI crashes, when I
+e.g. call the function dbGetQuery(conn, sqlstring) (but not e.g.
+dbListTables(conn)).
+
+It seems that it is due to incompatibility with MySQL version 5.1.
+When I replace the libMySQL.dll file from version 5.1 with the 5.0
+version of the file, the problem disappears.
+
+Best regards
+
+Erik J?rgensen
+Faculty of Agricultural Sciences,
+Aarhus University,
+Denmark
+
+PS. R - version 2.8.1 - Windows XP Professional Service Pack3. I
+specify the path to the DLL-file manually  via the environment
+variable  MYSQL_HOME.
+
+-- 
+http://biostat.mc.vanderbilt.edu/JeffreyHorner
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Wed Jan  7 17:36:48 2009
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Wed, 07 Jan 2009 16:36:48 +0000
+Subject: [R-sig-DB] Problems with RMySQL and MySQL server version 5.1
+In-Reply-To: <4964CD3D.9000705@vanderbilt.edu>
+References: <4964CD3D.9000705@vanderbilt.edu>
+Message-ID: <4964DA20.4090903@stats.ox.ac.uk>
+
+There is a long, long history of precisely this (version mismatches
+in MySQL binaries cause crashes).  We had it at 4.x, so I am not
+surprised to see it at 5.x now 'x' is no longer unique.
+
+When I distributed binaries, the README on my site pointed this out:
+I suggest you ask Uwe to put it in his README, and if possible do a
+version check at run time.
+
+Jeffrey Horner wrote:
+> An FYI to those users having problems with windows RMySQL CRAN binaries.
+> 
+> -------- Original Message --------
+> Subject: Problems with RMySQL and MySQL server version 5.1
+> Date: Wed, 7 Jan 2009 09:12:56 +0100
+> From: Erik J?rgensen <Erik.Jorgensen at agrsci.dk>
+> To: jeff.horner at vanderbilt.edu
+> 
+> Hi Jeffrey
+> 
+> I have some problems with the use of RMySQL since upgrading to RMySQL
+> version 0.7-2 and MySQL server version 5.1. The RGUI crashes, when I
+> e.g. call the function dbGetQuery(conn, sqlstring) (but not e.g.
+> dbListTables(conn)).
+> 
+> It seems that it is due to incompatibility with MySQL version 5.1.
+> When I replace the libMySQL.dll file from version 5.1 with the 5.0
+> version of the file, the problem disappears.
+> 
+> Best regards
+> 
+> Erik J?rgensen
+> Faculty of Agricultural Sciences,
+> Aarhus University,
+> Denmark
+> 
+> PS. R - version 2.8.1 - Windows XP Professional Service Pack3. I
+> specify the path to the DLL-file manually  via the environment
+> variable  MYSQL_HOME.
+> 
+
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Thu Jan  8 16:10:33 2009
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Thu, 8 Jan 2009 15:10:33 +0000 (GMT)
+Subject: [R-sig-DB] [R] Reading UTF-8 from MySQL in Windows (using
+	RMySQL)
+In-Reply-To: <49660E54.6050705@gmail.com>
+References: <49660E54.6050705@gmail.com>
+Message-ID: <alpine.LFD.2.00.0901081504370.24830@auk.stats.ox.ac.uk>
+
+You are using package RMySQL, not in your subject line.  You would have 
+done better to ask on R-sig-db and I am moving this there.
+
+AFAIK, RMySQL does not support encodings, whereas RODBC does.
+
+On Thu, 8 Jan 2009, Tomas Krilavi?ius wrote:
+
+> Dear R-help,
+>
+> I am reading strings (varchar) from MySQL database
+> and instead of some characters get garbled chars.
+> Strings are encoded in UTF-8. I have tried to change
+> encoding in MySQL to latin7, but it does not help.
+
+If you run MySQL in latin7, it will not be a problem but that maybe an 
+installation issue.
+
+> I was not able to find solution, how to get strings
+> in proper encoding/form.
+
+Which is?
+
+a) If you want UTF-8 strings in R, see ?Encoding.
+b) If you want latin7 strings in R, see ?iconv.
+
+>
+>
+> ------ OS
+> windows xp
+>
+> ------ R info
+
+We actually asked you for sessionInfo(), which is much easier to read.
+
+> MySQL connection commands
+> library( RMySQL ) ## load RMySQL and DBI packages
+> drv <- dbDriver( "MySQL" )
+>
+>> l10n_info()
+> $MBCS
+> [1] FALSE
+> $`UTF-8`
+> [1] FALSE
+> $`Latin-1`
+> [1] FALSE
+> $codepage
+> [1] 1257
+>> Sys.getlocale()
+> [1] 
+> "LC_COLLATE=Lithuanian_Lithuania.1257;LC_CTYPE=Lithuanian_Lithuania.1257;LC_MONETARY=Lithuanian_Lithuania.1257;LC_NUMERIC=C;LC_TIME=Lithuanian_Lithuania.1257"
+>
+>> R.Version()
+> $platform
+> [1] "i386-pc-mingw32"
+> $arch
+> [1] "i386"
+> $os
+> [1] "mingw32"
+> $system
+> [1] "i386, mingw32"
+> $status
+> [1] ""
+> $major
+> [1] "2"
+> $minor
+> [1] "8.0"
+> $year
+> [1] "2008"
+> $month
+> [1] "10"
+> $day
+> [1] "20"
+> $`svn rev`
+> [1] "46754"
+> $language
+> [1] "R"
+> $version.string
+> [1] "R version 2.8.0 (2008-10-20)"
+>
+> -- 
+> regards,
+> tomas krilavi?ius
+> http://www.surface.lt/krilaviciust
+>
+> ______________________________________________
+> R-help at r-project.org mailing list
+> https://stat.ethz.ch/mailman/listinfo/r-help
+> PLEASE do read the posting guide http://www.R-project.org/posting-guide.html
+> and provide commented, minimal, self-contained, reproducible code.
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+From m@yeu|@k@u||m@nn @end|ng |rom eco|ede|@p@|x@org  Fri Jan  9 11:47:46 2009
+From: m@yeu|@k@u||m@nn @end|ng |rom eco|ede|@p@|x@org (Mayeul Kauffmann)
+Date: Fri, 09 Jan 2009 11:47:46 +0100
+Subject: [R-sig-DB] [R] [R-pkgs] New package RPostgreSQL 0.1.0
+In-Reply-To: <8763nllrbu.fsf@patagonia.sebmags.homelinux.org>
+Message-ID: <1231498066.27761.53.camel@mk-desktop>
+
+Hi,
+A reply to a request by Sebastian P. Luque about an "r-cran-rpostgresql"
+package in Debian (this may interest other users, I hope):
+
+
+I'm not sure on Debian, but on Ubuntu compilation on the fly is very
+easy (tested on Hardy 8.04, 64 bits):
+
+#You need this in /etc/apt/sources.list (for Hardy 8.04)
+deb http://cran.r-project.org/bin/linux/ubuntu hardy/
+deb-src http://cran.r-project.org/bin/linux/ubuntu hardy/
+
+#THen you have R 2.8.1. Then, in order to compile:
+$ sudo  apt-get update
+$ sudo  apt-get install postgresql-server-dev-8.3
+
+$ sudo /usr/lib/R/bin/R
+> install.packages("RPostgreSQL")
+
+Thanks to all who contributed to RPostgreSQL !
+
+Cheers,
+Mayeul
+
+
+Sebastian P. Luque spluque at gmail.com 
+wrote :
+Tue Oct 21 20:45:57 CEST 2008 
+
+________________________________________________________________________
+Hi,
+
+This is great!  Any chance we'll see an r-cran-rpostgresql package in
+Debian?
+
+
+Cheers,
+
+-- 
+Seb
+
+-- 
+Dr. Mayeul KAUFFMANN
+Directeur de Recherche
+Charg? de missions R?seau universitaire UNESCO-Ecole de la paix "Gouvernance et paix"
+
+Ecole de la paix
+7, rue Tr?s-Clo?tres
+38000 GRENOBLE - FRANCE
+T?l.: 04 76 63 81 41
+Fax : 04 76 63 81 42
+(T?l. de l'?tranger: + 33 4 76 63 81 41)
+
+
+
+From je||@horner @end|ng |rom v@nderb||t@edu  Sat Jan 10 17:49:41 2009
+From: je||@horner @end|ng |rom v@nderb||t@edu (Jeffrey Horner)
+Date: Sat, 10 Jan 2009 10:49:41 -0600
+Subject: [R-sig-DB] [R] RMySQL CREATE TABLE error
+In-Reply-To: <496804AC.40802@uchicago.edu>
+References: <496804AC.40802@uchicago.edu>
+Message-ID: <4968D1A5.4030405@vanderbilt.edu>
+
+Not sure why you need to use temporary tables, but if you do you may 
+want to add a "COMMIT" statement immediately after your "CREATE 
+TEMPORARY TABLE" statement. Using your code, something like this may work:
+
+dbSendQuery(con,"COMMIT")
+
+Scope out this page in the MySQL 5.0 manual:
+
+http://dev.mysql.com/doc/refman/5.0/en/implicit-commit.html
+
+Three notes:
+
+1) It's best to provide small reproducible examples WITHOUT personal 
+information such as usernames and passwords (You may want to inform the 
+administrators of db.ci.uchicago.edu that you just posted your 
+credentials to a publicly available mailing list).
+
+2) It's best to provide software versions, and in particular which 
+storage engine you are using with MySQL. For instance innodb tables are 
+transaction-safe whereas MyISAM tables are not.
+
+3) Database related questions are best posted to the R-sig-db mailing 
+list which you can find here:
+
+http://www.r-project.org/mail.html
+
+Best,
+
+Jeff
+
+Anthony Dick wrote:
+> Hi all-
+> 
+> I am stumped. The code in A. returns errors at lines 14 and 15 and fails 
+> to load series1 and series2. However, in B., if temp1 and temp2 are 
+> called again (which returns a "Table exists" error; see lines 14-17 in 
+> B.) series1 and series2 load correctly. Any ideas? Also-I am open to any 
+> suggestions to improve the code as I am a horrific programmer. Thanks
+> 
+> A.
+> 
+> 1 > library(RMySQL)
+> 2 > library(psych)
+> 3 > drv=dbDriver("MySQL")
+> 4 > con = dbConnect(drv, user="tsgcst", password = "sOy9Nays", 
+> dbname="tsgcst", host="db.ci.uchicago.edu")
+> 5 > dbListTables(con)
+> [1] "TS_descript_spec"        "participant_TS_descript" 
+> "snr_adultsTS1"           "snr_adultsTS2"           
+> "time_series_small"       "tvalFDR_small"         6 > temp1 <- 
+> paste("CREATE TEMPORARY TABLE MyTemporaryTable1 SELECT * FROM 
+> time_series_small WHERE participant = '005_avg' AND roi = '1033' AND 
+> timeseries_run = '1';")
+> 7 > temp2 <- paste("CREATE TEMPORARY TABLE MyTemporaryTable2 SELECT * 
+> FROM time_series_small WHERE participant = '005_avg' AND roi = '1033' 
+> AND timeseries_run = '2';")
+> 8 > temp3 <- paste("CREATE TEMPORARY TABLE MyTemporaryTable3 SELECT * 
+> FROM tvalFDR_small WHERE participant = '005_avg' AND roi = '1033' AND 
+> nogestureFDR > 1.95;")
+> 9 > dbSendQuery(con, temp1)
+> <MySQLResult:(436,20,1)>
+> 10 > dbSendQuery(con, temp2)
+> <MySQLResult:(436,20,2)>
+> 11 > dbSendQuery(con, temp3)
+> <MySQLResult:(436,20,3)>
+> 12 > query.string1 <- paste("SELECT t.timeseries_id, t.timeseries_signal 
+> FROM MyTemporaryTable1 t, MyTemporaryTable3 v WHERE t.participant = 
+> v.participant AND t.roi = v.roi AND t.voxel_id = v.voxel_id;",sep="")
+> 13 > query.string2 <- paste("SELECT t.timeseries_id, t.timeseries_signal 
+> FROM MyTemporaryTable2 t, MyTemporaryTable3 v WHERE t.participant = 
+> v.participant AND t.roi = v.roi AND t.voxel_id = v.voxel_id;",sep="")
+> 14 > series1 <- dbGetQuery(con, query.string1)
+> Error in mysqlExecStatement(conn, statement, ...) :
+>  RS-DBI driver: (could not run statement: Table 
+> 'tsgcst.MyTemporaryTable1' doesn't exist)
+> 15 > series2 <- dbGetQuery(con, query.string2)
+> Error in mysqlExecStatement(conn, statement, ...) :
+>  RS-DBI driver: (could not run statement: Table 
+> 'tsgcst.MyTemporaryTable2' doesn't exist)
+>  >
+> 
+> B.
+> 
+> 1 > library(RMySQL)
+> 2 > library(psych)
+> 3 > drv=dbDriver("MySQL")
+> 4 > con = dbConnect(drv, user="tsgcst", password = "sOy9Nays", 
+> dbname="tsgcst", host="db.ci.uchicago.edu")
+> 5 > dbListTables(con)
+> [1] "TS_descript_spec"        "participant_TS_descript" 
+> "snr_adultsTS1"           "snr_adultsTS2"           
+> "time_series_small"       "tvalFDR_small"         6 > temp1 <- 
+> paste("CREATE TEMPORARY TABLE MyTemporaryTable1 SELECT * FROM 
+> time_series_small WHERE participant = '005_avg' AND roi = '1033' AND 
+> timeseries_run = '1';")
+> 7 > temp2 <- paste("CREATE TEMPORARY TABLE MyTemporaryTable2 SELECT * 
+> FROM time_series_small WHERE participant = '005_avg' AND roi = '1033' 
+> AND timeseries_run = '2';")
+> 8 > temp3 <- paste("CREATE TEMPORARY TABLE MyTemporaryTable3 SELECT * 
+> FROM tvalFDR_small WHERE participant = '005_avg' AND roi = '1033' AND 
+> nogestureFDR > 1.95;")
+> 9 > dbSendQuery(con, temp1)
+> <MySQLResult:(436,19,1)>
+> 10 > dbSendQuery(con, temp2)
+> <MySQLResult:(436,19,2)>
+> 11 > dbSendQuery(con, temp3)
+> <MySQLResult:(436,19,3)>
+> 12 > query.string1 <- paste("SELECT t.timeseries_id, t.timeseries_signal 
+> FROM MyTemporaryTable1 t, MyTemporaryTable3 v WHERE t.participant = 
+> v.participant AND t.roi = v.roi AND t.voxel_id = v.voxel_id;",sep="")
+> 13 > query.string2 <- paste("SELECT t.timeseries_id, t.timeseries_signal 
+> FROM MyTemporaryTable2 t, MyTemporaryTable3 v WHERE t.participant = 
+> v.participant AND t.roi = v.roi AND t.voxel_id = v.voxel_id;",sep="")
+> 14 > dbSendQuery(con, temp1)
+> Error in mysqlExecStatement(conn, statement, ...) :
+>  RS-DBI driver: (could not run statement: Table 'MyTemporaryTable1' 
+> already exists)
+> 15 > series1 <- dbGetQuery(con, query.string1)
+> 16 > dbSendQuery(con, temp2)
+> Error in mysqlExecStatement(conn, statement, ...) :
+>  RS-DBI driver: (could not run statement: Table 'MyTemporaryTable2' 
+> already exists)
+> 17 > series2 <- dbGetQuery(con, query.string2)
+> 
+
+
+-- 
+http://biostat.mc.vanderbilt.edu/JeffreyHorner
+
+
+
+From @d|ck @end|ng |rom uch|c@go@edu  Sat Jan 10 18:08:29 2009
+From: @d|ck @end|ng |rom uch|c@go@edu (Anthony Dick)
+Date: Sat, 10 Jan 2009 11:08:29 -0600
+Subject: [R-sig-DB] [R] RMySQL CREATE TABLE error
+In-Reply-To: <4968D1A5.4030405@vanderbilt.edu>
+References: <496804AC.40802@uchicago.edu> <4968D1A5.4030405@vanderbilt.edu>
+Message-ID: <4968D60D.1020104@uchicago.edu>
+
+Hi Jeff-
+
+Thanks for the tips. Posting my password information is just stupid, and 
+I have contacted my administrator.
+
+I am using temporary tables because I am dealing with very large tables 
+and using JOINs, and for joining smaller temporary tables is much faster.
+
+Thanks again.
+
+Anthony
+
+Jeffrey Horner wrote:
+> Not sure why you need to use temporary tables, but if you do you may 
+> want to add a "COMMIT" statement immediately after your "CREATE 
+> TEMPORARY TABLE" statement. Using your code, something like this may 
+> work:
+>
+> dbSendQuery(con,"COMMIT")
+>
+> Scope out this page in the MySQL 5.0 manual:
+>
+> http://dev.mysql.com/doc/refman/5.0/en/implicit-commit.html
+>
+> Three notes:
+>
+> 1) It's best to provide small reproducible examples WITHOUT personal 
+> information such as usernames and passwords (You may want to inform 
+> the administrators of db.ci.uchicago.edu that you just posted your 
+> credentials to a publicly available mailing list).
+>
+> 2) It's best to provide software versions, and in particular which 
+> storage engine you are using with MySQL. For instance innodb tables 
+> are transaction-safe whereas MyISAM tables are not.
+>
+> 3) Database related questions are best posted to the R-sig-db mailing 
+> list which you can find here:
+>
+> http://www.r-project.org/mail.html
+>
+> Best,
+>
+> Jeff
+>
+> Anthony Dick wrote:
+>> Hi all-
+>>
+>> I am stumped. The code in A. returns errors at lines 14 and 15 and 
+>> fails to load series1 and series2. However, in B., if temp1 and temp2 
+>> are called again (which returns a "Table exists" error; see lines 
+>> 14-17 in B.) series1 and series2 load correctly. Any ideas? Also-I am 
+>> open to any suggestions to improve the code as I am a horrific 
+>> programmer. Thanks
+>>
+>> A.
+>>
+>> 1 > library(RMySQL)
+>> 2 > library(psych)
+>> 3 > drv=dbDriver("MySQL")
+>> 4 > con = dbConnect(drv, user="tsgcst", password = "sOy9Nays", 
+>> dbname="tsgcst", host="db.ci.uchicago.edu")
+>> 5 > dbListTables(con)
+>> [1] "TS_descript_spec"        "participant_TS_descript" 
+>> "snr_adultsTS1"           "snr_adultsTS2"           
+>> "time_series_small"       "tvalFDR_small"         6 > temp1 <- 
+>> paste("CREATE TEMPORARY TABLE MyTemporaryTable1 SELECT * FROM 
+>> time_series_small WHERE participant = '005_avg' AND roi = '1033' AND 
+>> timeseries_run = '1';")
+>> 7 > temp2 <- paste("CREATE TEMPORARY TABLE MyTemporaryTable2 SELECT * 
+>> FROM time_series_small WHERE participant = '005_avg' AND roi = '1033' 
+>> AND timeseries_run = '2';")
+>> 8 > temp3 <- paste("CREATE TEMPORARY TABLE MyTemporaryTable3 SELECT * 
+>> FROM tvalFDR_small WHERE participant = '005_avg' AND roi = '1033' AND 
+>> nogestureFDR > 1.95;")
+>> 9 > dbSendQuery(con, temp1)
+>> <MySQLResult:(436,20,1)>
+>> 10 > dbSendQuery(con, temp2)
+>> <MySQLResult:(436,20,2)>
+>> 11 > dbSendQuery(con, temp3)
+>> <MySQLResult:(436,20,3)>
+>> 12 > query.string1 <- paste("SELECT t.timeseries_id, 
+>> t.timeseries_signal FROM MyTemporaryTable1 t, MyTemporaryTable3 v 
+>> WHERE t.participant = v.participant AND t.roi = v.roi AND t.voxel_id 
+>> = v.voxel_id;",sep="")
+>> 13 > query.string2 <- paste("SELECT t.timeseries_id, 
+>> t.timeseries_signal FROM MyTemporaryTable2 t, MyTemporaryTable3 v 
+>> WHERE t.participant = v.participant AND t.roi = v.roi AND t.voxel_id 
+>> = v.voxel_id;",sep="")
+>> 14 > series1 <- dbGetQuery(con, query.string1)
+>> Error in mysqlExecStatement(conn, statement, ...) :
+>>  RS-DBI driver: (could not run statement: Table 
+>> 'tsgcst.MyTemporaryTable1' doesn't exist)
+>> 15 > series2 <- dbGetQuery(con, query.string2)
+>> Error in mysqlExecStatement(conn, statement, ...) :
+>>  RS-DBI driver: (could not run statement: Table 
+>> 'tsgcst.MyTemporaryTable2' doesn't exist)
+>>  >
+>>
+>> B.
+>>
+>> 1 > library(RMySQL)
+>> 2 > library(psych)
+>> 3 > drv=dbDriver("MySQL")
+>> 4 > con = dbConnect(drv, user="tsgcst", password = "sOy9Nays", 
+>> dbname="tsgcst", host="db.ci.uchicago.edu")
+>> 5 > dbListTables(con)
+>> [1] "TS_descript_spec"        "participant_TS_descript" 
+>> "snr_adultsTS1"           "snr_adultsTS2"           
+>> "time_series_small"       "tvalFDR_small"         6 > temp1 <- 
+>> paste("CREATE TEMPORARY TABLE MyTemporaryTable1 SELECT * FROM 
+>> time_series_small WHERE participant = '005_avg' AND roi = '1033' AND 
+>> timeseries_run = '1';")
+>> 7 > temp2 <- paste("CREATE TEMPORARY TABLE MyTemporaryTable2 SELECT * 
+>> FROM time_series_small WHERE participant = '005_avg' AND roi = '1033' 
+>> AND timeseries_run = '2';")
+>> 8 > temp3 <- paste("CREATE TEMPORARY TABLE MyTemporaryTable3 SELECT * 
+>> FROM tvalFDR_small WHERE participant = '005_avg' AND roi = '1033' AND 
+>> nogestureFDR > 1.95;")
+>> 9 > dbSendQuery(con, temp1)
+>> <MySQLResult:(436,19,1)>
+>> 10 > dbSendQuery(con, temp2)
+>> <MySQLResult:(436,19,2)>
+>> 11 > dbSendQuery(con, temp3)
+>> <MySQLResult:(436,19,3)>
+>> 12 > query.string1 <- paste("SELECT t.timeseries_id, 
+>> t.timeseries_signal FROM MyTemporaryTable1 t, MyTemporaryTable3 v 
+>> WHERE t.participant = v.participant AND t.roi = v.roi AND t.voxel_id 
+>> = v.voxel_id;",sep="")
+>> 13 > query.string2 <- paste("SELECT t.timeseries_id, 
+>> t.timeseries_signal FROM MyTemporaryTable2 t, MyTemporaryTable3 v 
+>> WHERE t.participant = v.participant AND t.roi = v.roi AND t.voxel_id 
+>> = v.voxel_id;",sep="")
+>> 14 > dbSendQuery(con, temp1)
+>> Error in mysqlExecStatement(conn, statement, ...) :
+>>  RS-DBI driver: (could not run statement: Table 'MyTemporaryTable1' 
+>> already exists)
+>> 15 > series1 <- dbGetQuery(con, query.string1)
+>> 16 > dbSendQuery(con, temp2)
+>> Error in mysqlExecStatement(conn, statement, ...) :
+>>  RS-DBI driver: (could not run statement: Table 'MyTemporaryTable2' 
+>> already exists)
+>> 17 > series2 <- dbGetQuery(con, query.string2)
+>>
+>
+>
+
+
+-- 
+Anthony Steven Dick, Ph.D.
+Post-Doctoral Fellow
+Human Neuroscience Laboratory
+Department of Neurology
+The University of Chicago
+5841 S. Maryland Ave. MC-2030
+Chicago, IL 60637
+Phone: (773)-834-7770
+Email: adick at uchicago.edu
+Web: http://home.uchicago.edu/~adick/
+
+
+
+From @v@m|th @end|ng |rom gm@||@com  Wed Jan 21 12:42:18 2009
+From: @v@m|th @end|ng |rom gm@||@com (Albert Vernon Smith)
+Date: Wed, 21 Jan 2009 11:42:18 +0000
+Subject: [R-sig-DB] SQLiteDF load errors
+Message-ID: <98f4dd5f0901210342o1a502033i99493bcc4e116660@mail.gmail.com>
+
+I am interested in working with the package "SQLiteDF".  However,
+while I supposedly am building it fine, I have errors when trying to
+load, with "undefined symbol: _expand_buf".  Looking at
+http://cran.r-project.org/web/checks/check_results_SQLiteDF.html, I
+can see this issue is at least common to both Mac and Linux versions.
+Various Goggle searches has not revealed a solution to this issue.  Is
+anyone on this list aware of a solution to this issue?
+
+Cheers,
+-albert
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Wed Jan 21 13:02:37 2009
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Wed, 21 Jan 2009 12:02:37 +0000 (GMT)
+Subject: [R-sig-DB] SQLiteDF load errors
+In-Reply-To: <98f4dd5f0901210342o1a502033i99493bcc4e116660@mail.gmail.com>
+References: <98f4dd5f0901210342o1a502033i99493bcc4e116660@mail.gmail.com>
+Message-ID: <alpine.OSX.1.00.0901211150330.2792@tystie.local>
+
+Actually, the issue is the compiler.  It works for others on Linux.
+
+You have not given us any of the 'at a minimum' information requested 
+in the posting guide (including your compier info)
+
+The issue is the misuse of R_INLINE at
+
+R_INLINE void  _expand_buf(int i, int size) {
+
+which is not correct for a C99-compliant compiler (gcc >= 4.3, but 
+Apple modify theirs.  Try removing it.
+
+On Wed, 21 Jan 2009, Albert Vernon Smith wrote:
+
+> I am interested in working with the package "SQLiteDF".  However,
+> while I supposedly am building it fine, I have errors when trying to
+> load, with "undefined symbol: _expand_buf".  Looking at
+> http://cran.r-project.org/web/checks/check_results_SQLiteDF.html, I
+> can see this issue is at least common to both Mac and Linux versions.
+> Various Goggle searches has not revealed a solution to this issue.  Is
+> anyone on this list aware of a solution to this issue?
+>
+> Cheers,
+> -albert
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From krzy@zto|@@@krejd@ @end|ng |rom gm@||@com  Fri Jan 23 11:31:17 2009
+From: krzy@zto|@@@krejd@ @end|ng |rom gm@||@com (Krzysztof Sakrejda)
+Date: Fri, 23 Jan 2009 05:31:17 -0500
+Subject: [R-sig-DB] [R] RMySQL crashes R
+In-Reply-To: <21419908.post@talk.nabble.com>
+References: <21419908.post@talk.nabble.com>
+Message-ID: <f1cec0580901230231l1df774cfx84ba7aa58f001eaa@mail.gmail.com>
+
+Hi,
+
+I've had great experiences with the RMySQL library and MySQL from windows XP
+and Gentoo/Linux environments with R-2.7.2 so I'm happy to test solutions or
+to try to find out more about the problem.  I've (unfortunately) had the
+same (previous report appended) experience with a new install of Vista on a
+Vaio/VGN-NS255J laptop, running R (I checked 2.7.2 and 2.8 both exhibit the
+same behavior).  My MySQL binaries are from a fresh install of MySQL server
+(32bit) 5.1. The MySQL server is separate and plays well with other
+Windows/Linux R installations.
+
+The download/install is clean, I can connect and run dbGetQuery(conn, "SHOW
+TABLES;") at least a few times, but when I run a query against any table,
+even one which returns limited data (conn, "SELECT * FROM blah LIMIT 6;")
+Vista says "there has been a problem with R and it needs to close"
+(paraphrased).  The message is completely uninformative.  It then proceeds
+to close R with no further comment.  I will let you know if I find any more
+information but I don't know if there are better error logs somewhere on
+Vista.... any suggestions would be appreciated in dealing with this.
+
+Best regards,
+
+Krzysztof Sakrejda-Leavitt
+
+-----------------------------------------------
+Krzysztof Sakrejda-Leavitt
+
+Organismic and Evolutionary Biology
+University of Massachusetts, Amherst
+319 Morrill Science Center South
+611 N. Pleasant Street
+Amherst, MA 01003
+
+work #: 413-325-6555
+email: sakrejda at nsm.umass.edu
+-----------------------------------------------
+
+On Mon, Jan 12, 2009 at 1:02 PM, auburneconomics
+<nathan_forczyk at yahoo.com>wrote:
+
+>
+> This is similar to another current post about RMySQL crashing R, except on
+> the other post it crashed on connection to the database.  I can
+> successfully
+> connect, and even can do dbListTables().  But, if I send a query or
+> anything
+> to actually see the data, R crashes to desktop.
+>
+> I have tried this on two computers, one Vista, one XP.  Both crashed.  I am
+> running 2.8.1, and am using the correct version of DBI and RMySQL.  They
+> are
+> both loaded with the library() function beforehand.  Versions of MySQL that
+> it was tried are 5.1 and 6.0a.
+>
+> I have searched on the internet and haven't found any answers, and would be
+> grateful for any help,
+>
+> Nathan Forczyk
+> Auburn University
+> --
+> View this message in context:
+> http://www.nabble.com/RMySQL-crashes-R-tp21419908p21419908.html
+> Sent from the R help mailing list archive at Nabble.com.
+>
+> ______________________________________________
+> R-help at r-project.org mailing list
+> https://stat.ethz.ch/mailman/listinfo/r-help
+> PLEASE do read the posting guide
+> http://www.R-project.org/posting-guide.html
+> and provide commented, minimal, self-contained, reproducible code.
+>
+
+
+
+--
+
+	[[alternative HTML version deleted]]
+
+
+
+From krzy@zto|@@@krejd@ @end|ng |rom gm@||@com  Fri Jan 23 12:19:42 2009
+From: krzy@zto|@@@krejd@ @end|ng |rom gm@||@com (Krzysztof Sakrejda)
+Date: Fri, 23 Jan 2009 06:19:42 -0500
+Subject: [R-sig-DB] [R] RMySQL crashes R / incompatible MySQL 5.1 client
+	libraries / vista solution
+Message-ID: <f1cec0580901230319p4f5560dcx5d378907ca38d6bb@mail.gmail.com>
+
+Further searching on R-help and R-sig-db shows that the problem is the MySQL
+client libraries in the 5.1 series which cause R/RMySQL to crash.  I wanted
+to keep the 5.1 server on my machine, but the 5.0 client libraries will
+happily coexist with it:
+
+- Download the current 5.0 series "essentials" package client/C libraries
+for _32-bit_. (Still 5.0.67)
+- Do custom install, install only client/C libraries, don't install the
+server unless you know you want it.
+- Set MySQL_HOME, note that the path has to be to the 32-bit version of the
+MySQL client libraries under Vista, thus the extra (x86):
+Sys.setenv(MYSQL_HOME="C:/Program Files (x86)/MySQL/MySQL Server 5.0")
+
+Apologies for the earlier email, I did not realize it was the same old
+problem.
+
+Best,
+
+Krzysztof
+
+On Fri, Jan 23, 2009 at 5:31 AM, Krzysztof Sakrejda <
+krzysztof.sakrejda at gmail.com> wrote:
+
+> Hi,
+>
+> I've had great experiences with the RMySQL library and MySQL from windows
+> XP and Gentoo/Linux environments with R-2.7.2 so I'm happy to test solutions
+> or to try to find out more about the problem.  I've (unfortunately) had the
+> same (previous report appended) experience with a new install of Vista on a
+> Vaio/VGN-NS255J laptop, running R (I checked 2.7.2 and 2.8 both exhibit the
+> same behavior).  My MySQL binaries are from a fresh install of MySQL server
+> (32bit) 5.1. The MySQL server is separate and plays well with other
+> Windows/Linux R installations.
+>
+> The download/install is clean, I can connect and run dbGetQuery(conn, "SHOW
+> TABLES;") at least a few times, but when I run a query against any table,
+> even one which returns limited data (conn, "SELECT * FROM blah LIMIT 6;")
+> Vista says "there has been a problem with R and it needs to close"
+> (paraphrased).  The message is completely uninformative.  It then proceeds
+> to close R with no further comment.  I will let you know if I find any more
+> information but I don't know if there are better error logs somewhere on
+> Vista.... any suggestions would be appreciated in dealing with this.
+>
+> Best regards,
+>
+> Krzysztof Sakrejda-Leavitt
+>
+> -----------------------------------------------
+> Krzysztof Sakrejda-Leavitt
+>
+> Organismic and Evolutionary Biology
+> University of Massachusetts, Amherst
+> 319 Morrill Science Center South
+> 611 N. Pleasant Street
+> Amherst, MA 01003
+>
+> work #: 413-325-6555
+> email: sakrejda at nsm.umass.edu
+> -----------------------------------------------
+>
+>
+> On Mon, Jan 12, 2009 at 1:02 PM, auburneconomics <nathan_forczyk at yahoo.com
+> > wrote:
+>
+>>
+>> This is similar to another current post about RMySQL crashing R, except on
+>> the other post it crashed on connection to the database.  I can
+>> successfully
+>> connect, and even can do dbListTables().  But, if I send a query or
+>> anything
+>> to actually see the data, R crashes to desktop.
+>>
+>> I have tried this on two computers, one Vista, one XP.  Both crashed.  I
+>> am
+>> running 2.8.1, and am using the correct version of DBI and RMySQL.  They
+>> are
+>> both loaded with the library() function beforehand.  Versions of MySQL
+>> that
+>> it was tried are 5.1 and 6.0a.
+>>
+>> I have searched on the internet and haven't found any answers, and would
+>> be
+>> grateful for any help,
+>>
+>> Nathan Forczyk
+>> Auburn University
+>> --
+>> View this message in context:
+>> http://www.nabble.com/RMySQL-crashes-R-tp21419908p21419908.html
+>> Sent from the R help mailing list archive at Nabble.com.
+>>
+>> ______________________________________________
+>> R-help at r-project.org mailing list
+>> https://stat.ethz.ch/mailman/listinfo/r-help
+>> PLEASE do read the posting guide
+>> http://www.R-project.org/posting-guide.html
+>> and provide commented, minimal, self-contained, reproducible code.
+>>
+>
+>
+>
+> --
+>
+>
+
+
+-- 
+-----------------------------------------------
+Krzysztof Sakrejda-Leavitt
+
+Organismic and Evolutionary Biology
+University of Massachusetts, Amherst
+319 Morrill Science Center South
+611 N. Pleasant Street
+Amherst, MA 01003
+
+work #: 413-325-6555
+email: sakrejda at nsm.umass.edu
+-----------------------------------------------
+
+	[[alternative HTML version deleted]]
+
+
+
+From je||@horner @end|ng |rom v@nderb||t@edu  Wed Jan 28 18:03:55 2009
+From: je||@horner @end|ng |rom v@nderb||t@edu (Jeffrey Horner)
+Date: Wed, 28 Jan 2009 11:03:55 -0600
+Subject: [R-sig-DB] Recommendations for next maintenance release of RMySQL
+Message-ID: <49808FFB.2080804@vanderbilt.edu>
+
+Hi,
+
+Due to the recent release of RMySQL 0.7-2 and incompatibilities with the 
+MySQL client libraries, I'm planning the following change:
+
+Load-time check of compiled vs. loaded MySQL client library version.
+
+The client library version is an integer value with the format XYYZZ 
+where X is the major version, YY  is the release level, and ZZ is the 
+version number within the release level. RMySQL has been checking for 
+equivalence in the major version and release level (supposedly, but I 
+just found the source code for this and it may not have been working 
+correctly), but I want to test for equivalence across the entire integer 
+value and call warning() if equivalence fails. Those users who wish to 
+suppress this message can then call suppressWarnings(library(RMySQL)).
+
+I wouldn't mind doing this just for the windows version, as I haven't 
+had any reports on the UNIX side, but that may be unfair and biased?
+
+Comments?
+
+Jeff
+-- 
+http://biostat.mc.vanderbilt.edu/JeffreyHorner
+
+
+
+From @@e||ck @end|ng |rom gm@||@com  Wed Jan 28 21:46:43 2009
+From: @@e||ck @end|ng |rom gm@||@com (stephen sefick)
+Date: Wed, 28 Jan 2009 15:46:43 -0500
+Subject: [R-sig-DB] [R] R compilation
+In-Reply-To: <AD34C27D4F3A0649ACE5DB999EC62E50E050BA@LCPPW1089.corp.statestr.com>
+References: <5dff5a0d0901041731s686a4fccoc9d1c462b4a0f25b@mail.gmail.com>
+	<AD34C27D4F3A0649ACE5DB999EC62E50E050BA@LCPPW1089.corp.statestr.com>
+Message-ID: <c502a9e10901281246u2d14b1d7od4161f733f9bfc0f@mail.gmail.com>
+
+yes, first don't crosspost.  It all depends on what OS .. blah, blah,
+blah.  You must read the posting guide because it will up your chances
+of a reply.
+
+On Wed, Jan 28, 2009 at 1:37 PM, Attiglah, Mama <Mama_Attiglah at ssga.com> wrote:
+>
+> Hi Mates,
+> I have a very long R code that needs to go to production but my portfolio managers do not use R language and the software is not supported by my bank.
+> Is there any way I can compile the code to an executable file and make it usable to my portfolio managers who have no knowledge at all of R?
+>
+> Thanks
+>
+> Mama
+>  -----
+> Mama Attiglah, PhD
+> Quantitative Strategist
+> Liability Driven Investment
+> State Street Global Advisors
+> 25 Bank Street, London E14 5NU
+> +44(0)20 7698 6290 (Direct Line)
+> +44 (0)207 004 2968 (Direct Fax)
+> Authorised and regulated by the Financial Services Authority.
+> State Street Global Advisors Limited, a company registered in England with company number 2509928
+> and VAT number 5576591 81 and whose registered office ...{{dropped:21}}
+
+
+
+From rp@@te| @end|ng |rom mtu@edu  Fri Jan 30 01:50:45 2009
+From: rp@@te| @end|ng |rom mtu@edu (Robert Pastel)
+Date: Thu, 29 Jan 2009 19:50:45 -0500
+Subject: [R-sig-DB] RMySQL: Error in fun(...) : MySQL is not installed
+ according to a Registry search
+Message-ID: <49824EE5.1060202@mtu.edu>
+
+Hello,
+
+I have upgraded to R 2.8 on my WindowsXP machine and installed RMySQL.
+Running library("RMySQL") I get the error:
+
+Loading required package: DBI
+Error in fun(...) : MySQL is not installed according to a Registry search
+Error : .onLoad failed in 'loadNamespace' for 'RMySQL'
+Error: package/namespace load failed for 'RMySQL'
+
+I have tried to loading libmySQL.dll several ways
+
+1. copy libmySQL.dll to \WINDOWS\Systems\ and \WINDOWS\Systems32\ and in 
+my R bin\
+2. Install newer version of MySQL 5.0 on my machine
+3. run regsvr32 libmySQL.dll, which generates the error:
+
+librarymySQL.dll was loaded, but the DLLRegisterServer entry point was 
+not found.
+This file can not be registered.
+
+Thank you for the help,
+Robert Pastel
+
+
+
+From h|w|ttm@nn @end|ng |rom goog|em@||@com  Thu Feb  5 23:19:28 2009
+From: h|w|ttm@nn @end|ng |rom goog|em@||@com (H. Felix Wittmann)
+Date: Thu, 5 Feb 2009 23:19:28 +0100
+Subject: [R-sig-DB] [R] Reading UTF-8 from MySQL in Windows (using RMySQL)
+	etc
+Message-ID: <a085c89f0902051419k216226fao85d27115a18c56d7@mail.gmail.com>
+
+this is what works for me you can set a connection's encoding, after you've
+opened the connection, simply by sending e.g.
+
+*SET NAMES 'utf8'
+
+*Felix Wittmann*
+*
+
+	[[alternative HTML version deleted]]
+
+
+
+From jon@th@n@be@r@k @end|ng |rom gm@||@com  Sun Feb 15 02:51:07 2009
+From: jon@th@n@be@r@k @end|ng |rom gm@||@com (Jonathan Marc Bearak)
+Date: Sat, 14 Feb 2009 20:51:07 -0500
+Subject: [R-sig-DB] RMySQL with 64-bit R on Mac OS X
+Message-ID: <8E41F9A5-80DB-44FB-8AE8-6497758BB071@gmail.com>
+
+Hi,
+
+I have been trying to run RMySQL under 64-bit R on Mac OS X (Leopard).
+
+It works fine when I run R as a 32-bit application.  As a 64-bit  
+application, however, I cannot load it.
+
+I have a 64-bit MySQL server installed.  I don't even have 32-bit  
+MySQL binaries on my computer (not that I can find anyway, so I'm not  
+sure why this is working at all when I switch to 32-bit R (/usr/local/ 
+mysql/bin/mysql: Mach-O 64-bit executable x86_64).
+
+If anyone on this list has an idea what might be wrong, I would  
+appreciate any advice.
+
+(Btw, I've searched the archives trying to figure this out.  I saw the  
+notes about Windows and MySQL 5.1, and just in case, I checked -- I am  
+running MySQL 5.0.67, not 5.1.)
+
+My life will not end if I have to run 32-bit R (especially since I can  
+just run the db queries in 32-bit and then switch back to 64-bit R  
+when I'm done), and arguably I should have spent my time running  
+statistics rather than trying to figure this out ... but it is gnawing  
+at me...
+
+Thank you.
+
+ > require (RMySQL)
+Loading required package: RMySQL
+Loading required package: DBI
+Error in dyn.load(file, DLLpath = DLLpath, ...) :
+   unable to load shared library '/Users/jonathan/Library/R/2.8/ 
+library/RMySQL/libs/x86_64/RMySQL.so':
+   dlopen(/Users/jonathan/Library/R/2.8/library/RMySQL/libs/x86_64/ 
+RMySQL.so, 6): Symbol not found: _mysql_affected_rows
+   Referenced from: /Users/jonathan/Library/R/2.8/library/RMySQL/libs/ 
+x86_64/RMySQL.so
+   Expected in: dynamic lookup
+
+Error : .onLoad failed in 'loadNamespace' for 'RMySQL'
+
+--
+Jonathan Marc Bearak
+jonathan.bearak at gmail.com
+
+
+
+From cont@ct @end|ng |rom zugr@ve||@org  Tue Feb 17 22:56:51 2009
+From: cont@ct @end|ng |rom zugr@ve||@org (Westfloor)
+Date: Tue, 17 Feb 2009 23:56:51 +0200
+Subject: [R-sig-DB] Amenajari interioare pentru casa dumneavoastra!!!
+Message-ID: <00c2b086$39861$c7e69978053241@westfloor>
+
+
+www.zugraveli.home.ro
+
+Venind in intampinarea dorintelor dvs. o echipa de profesionisti cu experienta in amenajarea vilelor de lux va sta la dispozitie. 
+    
+Va oferim o gama variata de servicii pornind de la renovari pana la ultimul detaliu, toate realizate la cele mai inalte standarde occidentale :
+
+amenajari interioare, decoratiuni, renovari, zugraveli, finisaje, compartimentari rigips, termoizolatii cu polistiren expandat, montaj gresie & faianta, montaj parchet & linileum PVC, instalatii electrice si sanitare, proiectare si executie mobilier la comanda.
+
+Specialistii nostri isi indreapta atentia in directia calitatii si garantiei serviciilor oferite.
+
+Seriozitatea, promptitudinea, profesionalismul, experienta si garantia lucrarilor sunt doar cateva din cuvintele care ne caracterizeaza.Societatile noastre au ca domenii de activitate: constructiile civile, amenajarile interioare(zugraveli, tencuieli, placari gresie faianta, izolatii polistiren, montaje rigipe, parchet laminat), amenajarile exterioare(termosistem din polistiren expandat, tencuieli decorative, tinci, vopsitori lavabile etc), mobila la comanda( bucatarii, dormitoare, birouri din pal melaminat), Instalatii Electrice(proiectare, executie, reparatii instalatii electrice, montaje spoturi, prize, tablouri electrice) si Consultanta.
+
+Din dorinta de a fi transparenti am afisat preturile actualizate pe pagina "PRETURI" din meniul de pe website.
+
+Pentru mai multe detalii, poze si preturi va asteptam pe WWW.ZUGRAVELI.HOME.RO Tel:  0765451480
+
+
+
+
+
+
+PENTRU DEZABONARE TRIMITETI UN MESAJ TITLU Dezabonare
+Acesta nu este un email tip SPAM.Contine referiri la datele noastre de identificare si instructiuni pentru evitarea unor viitoare corespondente nesolicitate.
+V-a fost oferit din urmatoarele motive:
+
+* sunteti un client al firmei noastre;
+* adresa Dvs. a fost selectata dintr-o baza de date la care ati   subscris;
+* ati solicitat primirea ofertei noastre;  
+* adresa Dvs. a fost facuta publica de catre Dvs. prin afisari cu caracter publicitar;
+* sunteti in baza noastra de date, ca urmare a unor corespondente anterioare.
+
+
+
+From j@burke @end|ng |rom e@rth||nk@net  Thu Feb 19 06:17:35 2009
+From: j@burke @end|ng |rom e@rth||nk@net (Jim Burke)
+Date: Wed, 18 Feb 2009 23:17:35 -0600
+Subject: [R-sig-DB] R 2.81 crashes with MYSQL 5.31
+Message-ID: <499CEB6F.7000901@earthlink.net>
+
+R crashes with the following code. Lots of us would really would like to 
+use R with MYSQL. 
+
+So please help. As mentioned in another note, where might I find a 5.0 
+libmySQL.dll?
+
+PROBLEM A: the dbSendQuery (see below) SQL crashes R. Wants to send an 
+error report to Microsoft. (MAJOR)
+PROBLEM B: the initial library load points to an ancient mysql version. 
+(minor)
+
+OPERATING SYSTEM INFORMATION
+----------------------------
+OS..........: Win XP sp3
+R...........: 2.8.1
+RMySQL.dll..: 0.7-3
+MYSQL.......: 5.31
+libmySQL.dll: 1/23/2009 3:45am (no version info, tsk tsk tsk Sun 
+Microsystems)
+
+
+R WINDOW EXECUTION
+----------------------------
+ > library(RMySQL)
+Loading required package: DBI
+Warning message:
+In inDL(x, as.logical(local), as.logical(now), ...) :
+
+   RMySQL was compiled with MySQL 5.0.67 but loading MySQL 5.1.31 instead!
+   This may cause problems with your database connections.
+
+   Please install MySQL 5.0.67.
+
+   If you have already done so, you may need to set your environment
+   variable MYSQL_HOME to the proper install directory.
+ > mycon <- dbConnect(MySQL(), user='root', dbname="mysql", 
+password='f5^b678&')
+ > rs <- dbSendQuery(mycon,
++      "SELECT *
++      FROM precinct
++      WHERE `Precinct-Ballot Style` LIKE '1120%';"
++      )
+
+Thanks,
+Jim Burke
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Thu Feb 19 07:40:37 2009
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Thu, 19 Feb 2009 06:40:37 +0000 (GMT)
+Subject: [R-sig-DB] R 2.81 crashes with MYSQL 5.31
+In-Reply-To: <499CEB6F.7000901@earthlink.net>
+References: <499CEB6F.7000901@earthlink.net>
+Message-ID: <alpine.OSX.1.00.0902190636400.60510@tystie.local>
+
+I think you have MySQL 5.1.31, not 5.31.   You need to build RMySQL 
+from the sources to match your version of MySQL.
+
+On Wed, 18 Feb 2009, Jim Burke wrote:
+
+> R crashes with the following code. Lots of us would really would like to use 
+> R with MYSQL. 
+> So please help. As mentioned in another note, where might I find a 5.0 
+> libmySQL.dll?
+>
+> PROBLEM A: the dbSendQuery (see below) SQL crashes R. Wants to send an error 
+> report to Microsoft. (MAJOR)
+> PROBLEM B: the initial library load points to an ancient mysql version. 
+> (minor)
+
+It is not 'ancient': it was current a few weeks ago.  And that is the 
+cause of problem A.
+
+>
+> OPERATING SYSTEM INFORMATION
+> ----------------------------
+> OS..........: Win XP sp3
+> R...........: 2.8.1
+> RMySQL.dll..: 0.7-3
+> MYSQL.......: 5.31
+> libmySQL.dll: 1/23/2009 3:45am (no version info, tsk tsk tsk Sun 
+> Microsystems)
+>
+>
+> R WINDOW EXECUTION
+> ----------------------------
+>> library(RMySQL)
+> Loading required package: DBI
+> Warning message:
+> In inDL(x, as.logical(local), as.logical(now), ...) :
+>
+>  RMySQL was compiled with MySQL 5.0.67 but loading MySQL 5.1.31 instead!
+>  This may cause problems with your database connections.
+>
+>  Please install MySQL 5.0.67.
+>
+>  If you have already done so, you may need to set your environment
+>  variable MYSQL_HOME to the proper install directory.
+>> mycon <- dbConnect(MySQL(), user='root', dbname="mysql", 
+> password='f5^b678&')
+>> rs <- dbSendQuery(mycon,
+> +      "SELECT *
+> +      FROM precinct
+> +      WHERE `Precinct-Ballot Style` LIKE '1120%';"
+> +      )
+>
+> Thanks,
+> Jim Burke
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From j@burke @end|ng |rom e@rth||nk@net  Thu Feb 19 14:31:57 2009
+From: j@burke @end|ng |rom e@rth||nk@net (Jim Burke)
+Date: Thu, 19 Feb 2009 07:31:57 -0600
+Subject: [R-sig-DB] R 2.81 crashes with MYSQL 5.31
+In-Reply-To: <alpine.OSX.1.00.0902190636400.60510@tystie.local>
+References: <499CEB6F.7000901@earthlink.net>
+	<alpine.OSX.1.00.0902190636400.60510@tystie.local>
+Message-ID: <499D5F4D.4020302@earthlink.net>
+
+Hi everyone, I have some c++ odbc coding experience. How about either of 
+the below to help get this error out of the way?
+
+1. I have VC++ 6.0 Its old but works. So perhaps the build environment 
+plus source.
+2. Just the debug version of the dll. At least we might could get some 
+information.
+
+Just wondering, do we need the debug mysql version of their libmySQL.dll?
+
+Thanks,
+Jim Burke
+
+Prof Brian Ripley wrote:
+> I think you have MySQL 5.1.31, not 5.31.   You need to build RMySQL 
+> from the sources to match your version of MySQL.
+>
+> On Wed, 18 Feb 2009, Jim Burke wrote:
+>
+>> R crashes with the following code. Lots of us would really would like 
+>> to use R with MYSQL. So please help. As mentioned in another note, 
+>> where might I find a 5.0 libmySQL.dll?
+>>
+>> PROBLEM A: the dbSendQuery (see below) SQL crashes R. Wants to send 
+>> an error report to Microsoft. (MAJOR)
+>> PROBLEM B: the initial library load points to an ancient mysql 
+>> version. (minor)
+>
+> It is not 'ancient': it was current a few weeks ago.  And that is the 
+> cause of problem A.
+>
+>>
+>> OPERATING SYSTEM INFORMATION
+>> ----------------------------
+>> OS..........: Win XP sp3
+>> R...........: 2.8.1
+>> RMySQL.dll..: 0.7-3
+>> MYSQL.......: 5.31
+>> libmySQL.dll: 1/23/2009 3:45am (no version info, tsk tsk tsk Sun 
+>> Microsystems)
+>>
+>>
+>> R WINDOW EXECUTION
+>> ----------------------------
+>>> library(RMySQL)
+>> Loading required package: DBI
+>> Warning message:
+>> In inDL(x, as.logical(local), as.logical(now), ...) :
+>>
+>>  RMySQL was compiled with MySQL 5.0.67 but loading MySQL 5.1.31 instead!
+>>  This may cause problems with your database connections.
+>>
+>>  Please install MySQL 5.0.67.
+>>
+>>  If you have already done so, you may need to set your environment
+>>  variable MYSQL_HOME to the proper install directory.
+>>> mycon <- dbConnect(MySQL(), user='root', dbname="mysql", 
+>> password='f5^b678&')
+>>> rs <- dbSendQuery(mycon,
+>> +      "SELECT *
+>> +      FROM precinct
+>> +      WHERE `Precinct-Ballot Style` LIKE '1120%';"
+>> +      )
+>>
+>> Thanks,
+>> Jim Burke
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at stat.math.ethz.ch
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+>
+
+
+
+From je||@horner @end|ng |rom v@nderb||t@edu  Thu Feb 19 16:45:58 2009
+From: je||@horner @end|ng |rom v@nderb||t@edu (Jeffrey Horner)
+Date: Thu, 19 Feb 2009 09:45:58 -0600
+Subject: [R-sig-DB] R 2.81 crashes with MYSQL 5.31
+In-Reply-To: <499CEB6F.7000901@earthlink.net>
+References: <499CEB6F.7000901@earthlink.net>
+Message-ID: <499D7EB6.6070304@vanderbilt.edu>
+
+Jim Burke wrote on 02/18/2009 11:17 PM:
+> R crashes with the following code. Lots of us would really would like to 
+> use R with MYSQL.
+> So please help. As mentioned in another note, where might I find a 5.0 
+> libmySQL.dll?
+> 
+> PROBLEM A: the dbSendQuery (see below) SQL crashes R. Wants to send an 
+> error report to Microsoft. (MAJOR)
+> PROBLEM B: the initial library load points to an ancient mysql version. 
+> (minor)
+> 
+> OPERATING SYSTEM INFORMATION
+> ----------------------------
+> OS..........: Win XP sp3
+> R...........: 2.8.1
+> RMySQL.dll..: 0.7-3
+> MYSQL.......: 5.31
+> libmySQL.dll: 1/23/2009 3:45am (no version info, tsk tsk tsk Sun 
+> Microsystems)
+> 
+> 
+> R WINDOW EXECUTION
+> ----------------------------
+>  > library(RMySQL)
+> Loading required package: DBI
+> Warning message:
+> In inDL(x, as.logical(local), as.logical(now), ...) :
+> 
+>   RMySQL was compiled with MySQL 5.0.67 but loading MySQL 5.1.31 instead!
+>   This may cause problems with your database connections.
+> 
+>   Please install MySQL 5.0.67.
+> 
+>   If you have already done so, you may need to set your environment
+>   variable MYSQL_HOME to the proper install directory.
+
+Sigh... I was really hoping the above warning would be helpful.
+
+The web address for the RMySQL package is:
+
+http://biostat.mc.vanderbilt.edu/RMySQL
+
+Please read that and follow the recommendations.
+
+For MySQL 5.0, downloads are here:
+
+http://dev.mysql.com/downloads/mysql/5.0.html
+
+Best,
+
+Jeff
+
+
+>  > mycon <- dbConnect(MySQL(), user='root', dbname="mysql", 
+> password='f5^b678&')
+>  > rs <- dbSendQuery(mycon,
+> +      "SELECT *
+> +      FROM precinct
+> +      WHERE `Precinct-Ballot Style` LIKE '1120%';"
+> +      )
+> 
+> Thanks,
+> Jim Burke
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+-- 
+http://biostat.mc.vanderbilt.edu/JeffreyHorner
+
+
+
+From mdkh@||d|qb@| @end|ng |rom gm@||@com  Sun Feb 22 11:42:02 2009
+From: mdkh@||d|qb@| @end|ng |rom gm@||@com (Khalid Iqbal)
+Date: Sun, 22 Feb 2009 16:12:02 +0530
+Subject: [R-sig-DB] Connection with MySQL usin RMySQL package
+Message-ID: <ded8d49c0902220242y1fdd2be7w97b575051832b322@mail.gmail.com>
+
+hi,
+i am new to R environment. I tried connecting to MySQL databases, but it is
+not getting connected. I am using Windows XP. I got this when i tried to
+incude RMySQL library. Please help me.
+
+Regards,
+khalid
+
+	[[alternative HTML version deleted]]
+
+
+
+From dut@ngc @end|ng |rom gm@||@com  Sun Feb 22 11:50:45 2009
+From: dut@ngc @end|ng |rom gm@||@com (Christophe Dutang)
+Date: Sun, 22 Feb 2009 11:50:45 +0100
+Subject: [R-sig-DB] Connection with MySQL usin RMySQL package
+In-Reply-To: <ded8d49c0902220242y1fdd2be7w97b575051832b322@mail.gmail.com>
+References: <ded8d49c0902220242y1fdd2be7w97b575051832b322@mail.gmail.com>
+Message-ID: <80956916-F659-499D-97D8-016A4A76AFFA@gmail.com>
+
+Hi,
+
+we have nothing about your problem cf. below. Explain clearly your  
+problem, please.
+
+Christophe
+
+Le 22 f?vr. 09 ? 11:42, Khalid Iqbal a ?crit :
+
+> hi,
+> i am new to R environment. I tried connecting to MySQL databases,  
+> but it is
+> not getting connected. I am using Windows XP. I got this when i  
+> tried to
+> incude RMySQL library. Please help me.
+>
+> Regards,
+> khalid
+>
+> 	[[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+--
+Christophe Dutang
+Ph. D. student at ISFA, Lyon, France
+website: http://dutangc.free.fr
+
+
+
+From mdkh@||d|qb@| @end|ng |rom gm@||@com  Sun Feb 22 12:08:14 2009
+From: mdkh@||d|qb@| @end|ng |rom gm@||@com (Khalid Iqbal)
+Date: Sun, 22 Feb 2009 16:38:14 +0530
+Subject: [R-sig-DB] Connection with MySQL usin RMySQL package
+Message-ID: <ded8d49c0902220308q6992be2fr5a2ff65d2eb5c25@mail.gmail.com>
+
+hi,
+i am new to R environment. I tried connecting to MySQL databases, but it is
+not getting connected. I am using Windows XP. I got this when i tried to
+incude RMySQL library.
+
+ > library(RMySQL)
+Loading required package: DBI
+Error in inDL(x, as.logical(local), as.logical(now), ...) :
+  unable to load shared library
+'C:/PROGRA~1/R/R-28~1.1/library/RMySQL/libs/RMySQL.dll':
+  LoadLibrary failure:  Invalid access to memory location.
+
+Error : .onLoad failed in 'loadNamespace' for 'RMySQL'
+Error: package/namespace load failed for 'RMySQL'
+
+Please help me.
+
+Regards,
+khalid
+
+	[[alternative HTML version deleted]]
+
+
+
+From dut@ngc @end|ng |rom gm@||@com  Sun Feb 22 12:13:56 2009
+From: dut@ngc @end|ng |rom gm@||@com (Christophe Dutang)
+Date: Sun, 22 Feb 2009 12:13:56 +0100
+Subject: [R-sig-DB] Connection with MySQL usin RMySQL package
+In-Reply-To: <ded8d49c0902220308q6992be2fr5a2ff65d2eb5c25@mail.gmail.com>
+References: <ded8d49c0902220308q6992be2fr5a2ff65d2eb5c25@mail.gmail.com>
+Message-ID: <83763543-7FF0-4972-B2D3-3ED2D4CFA736@gmail.com>
+
+Give us information about your configuration the R version, the  
+version of RMySQL, the version of MySQL...
+
+Le 22 f?vr. 09 ? 12:08, Khalid Iqbal a ?crit :
+
+> hi,
+> i am new to R environment. I tried connecting to MySQL databases,  
+> but it is
+> not getting connected. I am using Windows XP. I got this when i  
+> tried to
+> incude RMySQL library.
+>
+>> library(RMySQL)
+> Loading required package: DBI
+> Error in inDL(x, as.logical(local), as.logical(now), ...) :
+>  unable to load shared library
+> 'C:/PROGRA~1/R/R-28~1.1/library/RMySQL/libs/RMySQL.dll':
+>  LoadLibrary failure:  Invalid access to memory location.
+>
+> Error : .onLoad failed in 'loadNamespace' for 'RMySQL'
+> Error: package/namespace load failed for 'RMySQL'
+>
+> Please help me.
+>
+> Regards,
+> khalid
+>
+> 	[[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+--
+Christophe Dutang
+Ph. D. student at ISFA, Lyon, France
+website: http://dutangc.free.fr
+
+
+
+From dut@ngc @end|ng |rom gm@||@com  Sun Feb 22 13:46:13 2009
+From: dut@ngc @end|ng |rom gm@||@com (Christophe Dutang)
+Date: Sun, 22 Feb 2009 13:46:13 +0100
+Subject: [R-sig-DB] Connection with MySQL usin RMySQL package
+In-Reply-To: <ded8d49c0902220357w64058274o958ce36ff185e06c@mail.gmail.com>
+References: <ded8d49c0902220308q6992be2fr5a2ff65d2eb5c25@mail.gmail.com>
+	<83763543-7FF0-4972-B2D3-3ED2D4CFA736@gmail.com>
+	<ded8d49c0902220357w64058274o958ce36ff185e06c@mail.gmail.com>
+Message-ID: <BE2ABA8C-B670-4F64-B0AF-456E42B24A54@gmail.com>
+
+I think there is problem of compatibility between the MySQL version  
+5.0 and RMySQL. I think you should use MySQL 5.1. Take a look to https://stat.ethz.ch/pipermail/r-sig-db/2008q4/000520.html
+
+
+Le 22 f?vr. 09 ? 12:57, Khalid Iqbal a ?crit :
+
+> R v 2.8.1
+> RMySQL v 0.7-3
+> MySQL v 5.0
+>
+> On Sun, Feb 22, 2009 at 4:43 PM, Christophe Dutang  
+> <dutangc at gmail.com> wrote:
+> Give us information about your configuration the R version, the  
+> version of RMySQL, the version of MySQL...
+>
+> Le 22 f?vr. 09 ? 12:08, Khalid Iqbal a ?crit :
+>
+> hi,
+> i am new to R environment. I tried connecting to MySQL databases,  
+> but it is
+> not getting connected. I am using Windows XP. I got this when i  
+> tried to
+> incude RMySQL library.
+>
+> library(RMySQL)
+> Loading required package: DBI
+> Error in inDL(x, as.logical(local), as.logical(now), ...) :
+>  unable to load shared library
+> 'C:/PROGRA~1/R/R-28~1.1/library/RMySQL/libs/RMySQL.dll':
+>  LoadLibrary failure:  Invalid access to memory location.
+>
+> Error : .onLoad failed in 'loadNamespace' for 'RMySQL'
+> Error: package/namespace load failed for 'RMySQL'
+>
+> Please help me.
+>
+> Regards,
+> khalid
+>
+>        [[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+> --
+> Christophe Dutang
+> Ph. D. student at ISFA, Lyon, France
+> website: http://dutangc.free.fr
+>
+>
+>
+>
+>
+
+--
+Christophe Dutang
+Ph. D. student at ISFA, Lyon, France
+website: http://dutangc.free.fr
+
+
+
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From j@burke @end|ng |rom e@rth||nk@net  Sun Feb 22 20:50:30 2009
+From: j@burke @end|ng |rom e@rth||nk@net (Jim Burke)
+Date: Sun, 22 Feb 2009 13:50:30 -0600
+Subject: [R-sig-DB] Connection with MySQL usin RMySQL package
+In-Reply-To: <BE2ABA8C-B670-4F64-B0AF-456E42B24A54@gmail.com>
+References: <ded8d49c0902220308q6992be2fr5a2ff65d2eb5c25@mail.gmail.com>	<83763543-7FF0-4972-B2D3-3ED2D4CFA736@gmail.com>	<ded8d49c0902220357w64058274o958ce36ff185e06c@mail.gmail.com>
+	<BE2ABA8C-B670-4F64-B0AF-456E42B24A54@gmail.com>
+Message-ID: <49A1AC86.8050203@earthlink.net>
+
+Everyone,
+
+Two things that might help. First the version of your computer when 
+connecting. Second how to connect. Also I do not think that MYSQL 5.1 
+will work with R at as of today 22.02.2009.
+
+MY PC VERSIONS THAT **DID NOT WORK** ARE BELOW
+----------------------------------------------
+
+OPERATING SYSTEM INFORMATION
+----------------------------
+OS..........: Win XP sp3
+R...........: 2.8.1
+RMySQL.dll..: 0.7-3
+MYSQL.......: 5.31  (problem, has new version of libmySQL.dll that does 
+not work in R yet).
+libmySQL.dll: 1/23/2009 3:45am
+
+My SOLUTION from Jeffrey Horner was to roll back to MYSQL 5.0 which 
+worked just fine. Be sure to export your databases and tables using 
+something like Navicat 8.0 first.
+
+
+HOW TO CONNECT.
+----------------------------------------------
+
+0. Your invalid memory sequence rather sounds like your current session 
+system memory is messed up. REBOOT YOUR PC then try the following.
+
+1. You probably do not need this since you have 5.0 already. But just in 
+case you could load MYSQL 5.0 found here (from Jeffry Horner). If you 
+have MYSQL 5.1 installed, the MYSQL 5.0 install will complain about 
+already having a mysql service running. So this means that MYSQL 5.1 
+needs to be removed before installing MYSQL 5.0 (save your databases 
+first).
+http://dev.mysql.com/downloads/mysql/5.0.html
+
+2. MY SQL 5.0 installation instructions. These are very helpful and 
+saved me lots of trouble.
+
+2A.  You might want to "REMOVE INSTANCE" of your current 5.0 settings in 
+the MYSQL Server Instance Configuration Wizard. Then establish a new one 
+with the instructions below. Note the mysql 5.0 setup wants a root 
+password. That is what it is requesting but it does not quit tell you. 
+So type in a simple password for root. Then when you connect its account 
+root and password simple.
+
+2B. Set up MYSQL 5.0
+http://www.iis-aid.com/articles/how_to_guides/install_and_configure_mysql_5_on_windows?page=0%2C0
+
+R SQL call examples.
+http://www.phaget4.org/R/R_notes.html
+
+Hope this helps,
+Jim Burke
+
+
+
+
+Christophe Dutang wrote:
+> I think there is problem of compatibility between the MySQL version  
+> 5.0 and RMySQL. I think you should use MySQL 5.1. Take a look to https://stat.ethz.ch/pipermail/r-sig-db/2008q4/000520.html
+>
+>
+> Le 22 f?vr. 09 ? 12:57, Khalid Iqbal a ?crit :
+>
+>   
+>> R v 2.8.1
+>> RMySQL v 0.7-3
+>> MySQL v 5.0
+>>
+>> On Sun, Feb 22, 2009 at 4:43 PM, Christophe Dutang  
+>> <dutangc at gmail.com> wrote:
+>> Give us information about your configuration the R version, the  
+>> version of RMySQL, the version of MySQL...
+>>
+>> Le 22 f?vr. 09 ? 12:08, Khalid Iqbal a ?crit :
+>>
+>> hi,
+>> i am new to R environment. I tried connecting to MySQL databases,  
+>> but it is
+>> not getting connected. I am using Windows XP. I got this when i  
+>> tried to
+>> incude RMySQL library.
+>>
+>> library(RMySQL)
+>> Loading required package: DBI
+>> Error in inDL(x, as.logical(local), as.logical(now), ...) :
+>>  unable to load shared library
+>> 'C:/PROGRA~1/R/R-28~1.1/library/RMySQL/libs/RMySQL.dll':
+>>  LoadLibrary failure:  Invalid access to memory location.
+>>
+>> Error : .onLoad failed in 'loadNamespace' for 'RMySQL'
+>> Error: package/namespace load failed for 'RMySQL'
+>>
+>> Please help me.
+>>
+>> Regards,
+>> khalid
+>>
+>>        [[alternative HTML version deleted]]
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at stat.math.ethz.ch
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+>> --
+>> Christophe Dutang
+>> Ph. D. student at ISFA, Lyon, France
+>> website: http://dutangc.free.fr
+>>
+>>
+>>
+>>
+>>
+>>     
+>
+> --
+> Christophe Dutang
+> Ph. D. student at ISFA, Lyon, France
+> website: http://dutangc.free.fr
+>
+>
+>
+>
+>
+> 	[[alternative HTML version deleted]]
+>
+>   
+> ------------------------------------------------------------------------
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Mon Feb 23 07:44:31 2009
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Mon, 23 Feb 2009 06:44:31 +0000 (GMT)
+Subject: [R-sig-DB] Connection with MySQL usin RMySQL package
+In-Reply-To: <49A1AC86.8050203@earthlink.net>
+References: <ded8d49c0902220308q6992be2fr5a2ff65d2eb5c25@mail.gmail.com>
+	<83763543-7FF0-4972-B2D3-3ED2D4CFA736@gmail.com>
+	<ded8d49c0902220357w64058274o958ce36ff185e06c@mail.gmail.com>
+	<BE2ABA8C-B670-4F64-B0AF-456E42B24A54@gmail.com>
+	<49A1AC86.8050203@earthlink.net>
+Message-ID: <alpine.OSX.1.00.0902230641520.25878@tystie.local>
+
+On Sun, 22 Feb 2009, Jim Burke wrote:
+
+> Everyone,
+>
+> Two things that might help. First the version of your computer when 
+> connecting. Second how to connect. Also I do not think that MYSQL 5.1 will 
+> work with R at as of today 22.02.2009.
+
+I certainly does.  But the R Windows binary on CRAN was compiled 
+agiant MySQL 5.0.x, and so you need to compile RySQ from the sources.
+
+See the arhives of this lists, R-help ....
+
+> MY PC VERSIONS THAT **DID NOT WORK** ARE BELOW
+> ----------------------------------------------
+>
+> OPERATING SYSTEM INFORMATION
+> ----------------------------
+> OS..........: Win XP sp3
+> R...........: 2.8.1
+> RMySQL.dll..: 0.7-3
+> MYSQL.......: 5.31  (problem, has new version of libmySQL.dll that does not 
+> work in R yet).
+
+There is no such version. and you have been told so before. 
+Presumably you mean 5.1.31.
+
+> libmySQL.dll: 1/23/2009 3:45am
+>
+> My SOLUTION from Jeffrey Horner was to roll back to MYSQL 5.0 which worked 
+> just fine. Be sure to export your databases and tables using something like 
+> Navicat 8.0 first.
+>
+>
+> HOW TO CONNECT.
+> ----------------------------------------------
+>
+> 0. Your invalid memory sequence rather sounds like your current session 
+> system memory is messed up. REBOOT YOUR PC then try the following.
+>
+> 1. You probably do not need this since you have 5.0 already. But just in case 
+> you could load MYSQL 5.0 found here (from Jeffry Horner). If you have MYSQL 
+> 5.1 installed, the MYSQL 5.0 install will complain about already having a 
+> mysql service running. So this means that MYSQL 5.1 needs to be removed 
+> before installing MYSQL 5.0 (save your databases first).
+> http://dev.mysql.com/downloads/mysql/5.0.html
+>
+> 2. MY SQL 5.0 installation instructions. These are very helpful and saved me 
+> lots of trouble.
+>
+> 2A.  You might want to "REMOVE INSTANCE" of your current 5.0 settings in the 
+> MYSQL Server Instance Configuration Wizard. Then establish a new one with the 
+> instructions below. Note the mysql 5.0 setup wants a root password. That is 
+> what it is requesting but it does not quit tell you. So type in a simple 
+> password for root. Then when you connect its account root and password 
+> simple.
+>
+> 2B. Set up MYSQL 5.0
+> http://www.iis-aid.com/articles/how_to_guides/install_and_configure_mysql_5_on_windows?page=0%2C0
+>
+> R SQL call examples.
+> http://www.phaget4.org/R/R_notes.html
+>
+> Hope this helps,
+> Jim Burke
+>
+>
+>
+>
+> Christophe Dutang wrote:
+>> I think there is problem of compatibility between the MySQL version  5.0 
+>> and RMySQL. I think you should use MySQL 5.1. Take a look to 
+>> https://stat.ethz.ch/pipermail/r-sig-db/2008q4/000520.html
+>> 
+>> 
+>> Le 22 f?vr. 09 ? 12:57, Khalid Iqbal a ?crit :
+>>
+>> 
+>>> R v 2.8.1
+>>> RMySQL v 0.7-3
+>>> MySQL v 5.0
+>>> 
+>>> On Sun, Feb 22, 2009 at 4:43 PM, Christophe Dutang  <dutangc at gmail.com> 
+>>> wrote:
+>>> Give us information about your configuration the R version, the  version 
+>>> of RMySQL, the version of MySQL...
+>>> 
+>>> Le 22 f?vr. 09 ? 12:08, Khalid Iqbal a ?crit :
+>>> 
+>>> hi,
+>>> i am new to R environment. I tried connecting to MySQL databases,  but it 
+>>> is
+>>> not getting connected. I am using Windows XP. I got this when i  tried to
+>>> incude RMySQL library.
+>>> 
+>>> library(RMySQL)
+>>> Loading required package: DBI
+>>> Error in inDL(x, as.logical(local), as.logical(now), ...) :
+>>>  unable to load shared library
+>>> 'C:/PROGRA~1/R/R-28~1.1/library/RMySQL/libs/RMySQL.dll':
+>>>  LoadLibrary failure:  Invalid access to memory location.
+>>> 
+>>> Error : .onLoad failed in 'loadNamespace' for 'RMySQL'
+>>> Error: package/namespace load failed for 'RMySQL'
+>>> 
+>>> Please help me.
+>>> 
+>>> Regards,
+>>> khalid
+>>>
+>>>        [[alternative HTML version deleted]]
+>>> 
+>>> _______________________________________________
+>>> R-sig-DB mailing list -- R Special Interest Group
+>>> R-sig-DB at stat.math.ethz.ch
+>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>> 
+>>> --
+>>> Christophe Dutang
+>>> Ph. D. student at ISFA, Lyon, France
+>>> website: http://dutangc.free.fr
+>>> 
+>>> 
+>>> 
+>>> 
+>>>
+>>> 
+>> 
+>> --
+>> Christophe Dutang
+>> Ph. D. student at ISFA, Lyon, France
+>> website: http://dutangc.free.fr
+>> 
+>> 
+>> 
+>> 
+>>
+>> 	[[alternative HTML version deleted]]
+>>
+>>   ------------------------------------------------------------------------
+>> 
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at stat.math.ethz.ch
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>> 
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+From je||@horner @end|ng |rom v@nderb||t@edu  Mon Feb 23 15:53:51 2009
+From: je||@horner @end|ng |rom v@nderb||t@edu (Jeffrey Horner)
+Date: Mon, 23 Feb 2009 08:53:51 -0600
+Subject: [R-sig-DB] Connection with MySQL usin RMySQL package
+In-Reply-To: <alpine.OSX.1.00.0902230641520.25878@tystie.local>
+References: <ded8d49c0902220308q6992be2fr5a2ff65d2eb5c25@mail.gmail.com>	<83763543-7FF0-4972-B2D3-3ED2D4CFA736@gmail.com>	<ded8d49c0902220357w64058274o958ce36ff185e06c@mail.gmail.com>	<BE2ABA8C-B670-4F64-B0AF-456E42B24A54@gmail.com>	<49A1AC86.8050203@earthlink.net>
+	<alpine.OSX.1.00.0902230641520.25878@tystie.local>
+Message-ID: <49A2B87F.7030404@vanderbilt.edu>
+
+Prof Brian Ripley wrote:
+> On Sun, 22 Feb 2009, Jim Burke wrote:
+> 
+>> Everyone,
+>>
+>> Two things that might help. First the version of your computer when 
+>> connecting. Second how to connect. Also I do not think that MYSQL 5.1 
+>> will work with R at as of today 22.02.2009.
+> 
+> I certainly does.  But the R Windows binary on CRAN was compiled agiant 
+> MySQL 5.0.x, and so you need to compile RySQ from the sources.
+
+In fact, I have provided a binary compiled against MySQL 5.1 on the 
+RMySQL website:
+
+http://biostat.mc.vanderbilt.edu/RMySQL
+
+Jeff
+
+> 
+> See the arhives of this lists, R-help ....
+> 
+>> MY PC VERSIONS THAT **DID NOT WORK** ARE BELOW
+>> ----------------------------------------------
+>>
+>> OPERATING SYSTEM INFORMATION
+>> ----------------------------
+>> OS..........: Win XP sp3
+>> R...........: 2.8.1
+>> RMySQL.dll..: 0.7-3
+>> MYSQL.......: 5.31  (problem, has new version of libmySQL.dll that 
+>> does not work in R yet).
+> 
+> There is no such version. and you have been told so before. Presumably 
+> you mean 5.1.31.
+> 
+>> libmySQL.dll: 1/23/2009 3:45am
+>>
+>> My SOLUTION from Jeffrey Horner was to roll back to MYSQL 5.0 which 
+>> worked just fine. Be sure to export your databases and tables using 
+>> something like Navicat 8.0 first.
+>>
+>>
+>> HOW TO CONNECT.
+>> ----------------------------------------------
+>>
+>> 0. Your invalid memory sequence rather sounds like your current 
+>> session system memory is messed up. REBOOT YOUR PC then try the 
+>> following.
+>>
+>> 1. You probably do not need this since you have 5.0 already. But just 
+>> in case you could load MYSQL 5.0 found here (from Jeffry Horner). If 
+>> you have MYSQL 5.1 installed, the MYSQL 5.0 install will complain 
+>> about already having a mysql service running. So this means that MYSQL 
+>> 5.1 needs to be removed before installing MYSQL 5.0 (save your 
+>> databases first).
+>> http://dev.mysql.com/downloads/mysql/5.0.html
+>>
+>> 2. MY SQL 5.0 installation instructions. These are very helpful and 
+>> saved me lots of trouble.
+>>
+>> 2A.  You might want to "REMOVE INSTANCE" of your current 5.0 settings 
+>> in the MYSQL Server Instance Configuration Wizard. Then establish a 
+>> new one with the instructions below. Note the mysql 5.0 setup wants a 
+>> root password. That is what it is requesting but it does not quit tell 
+>> you. So type in a simple password for root. Then when you connect its 
+>> account root and password simple.
+>>
+>> 2B. Set up MYSQL 5.0
+>> http://www.iis-aid.com/articles/how_to_guides/install_and_configure_mysql_5_on_windows?page=0%2C0 
+>>
+>>
+>> R SQL call examples.
+>> http://www.phaget4.org/R/R_notes.html
+>>
+>> Hope this helps,
+>> Jim Burke
+>>
+>>
+>>
+>>
+>> Christophe Dutang wrote:
+>>> I think there is problem of compatibility between the MySQL version  
+>>> 5.0 and RMySQL. I think you should use MySQL 5.1. Take a look to 
+>>> https://stat.ethz.ch/pipermail/r-sig-db/2008q4/000520.html
+>>>
+>>>
+>>> Le 22 f?vr. 09 ? 12:57, Khalid Iqbal a ?crit :
+>>>
+>>>
+>>>> R v 2.8.1
+>>>> RMySQL v 0.7-3
+>>>> MySQL v 5.0
+>>>>
+>>>> On Sun, Feb 22, 2009 at 4:43 PM, Christophe Dutang  
+>>>> <dutangc at gmail.com> wrote:
+>>>> Give us information about your configuration the R version, the  
+>>>> version of RMySQL, the version of MySQL...
+>>>>
+>>>> Le 22 f?vr. 09 ? 12:08, Khalid Iqbal a ?crit :
+>>>>
+>>>> hi,
+>>>> i am new to R environment. I tried connecting to MySQL databases,  
+>>>> but it is
+>>>> not getting connected. I am using Windows XP. I got this when i  
+>>>> tried to
+>>>> incude RMySQL library.
+>>>>
+>>>> library(RMySQL)
+>>>> Loading required package: DBI
+>>>> Error in inDL(x, as.logical(local), as.logical(now), ...) :
+>>>>  unable to load shared library
+>>>> 'C:/PROGRA~1/R/R-28~1.1/library/RMySQL/libs/RMySQL.dll':
+>>>>  LoadLibrary failure:  Invalid access to memory location.
+>>>>
+>>>> Error : .onLoad failed in 'loadNamespace' for 'RMySQL'
+>>>> Error: package/namespace load failed for 'RMySQL'
+>>>>
+>>>> Please help me.
+>>>>
+>>>> Regards,
+>>>> khalid
+>>>>
+>>>>        [[alternative HTML version deleted]]
+>>>>
+>>>> _______________________________________________
+>>>> R-sig-DB mailing list -- R Special Interest Group
+>>>> R-sig-DB at stat.math.ethz.ch
+>>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>>>
+>>>> -- 
+>>>> Christophe Dutang
+>>>> Ph. D. student at ISFA, Lyon, France
+>>>> website: http://dutangc.free.fr
+>>>>
+>>>>
+>>>>
+>>>>
+>>>>
+>>>>
+>>>
+>>> -- 
+>>> Christophe Dutang
+>>> Ph. D. student at ISFA, Lyon, France
+>>> website: http://dutangc.free.fr
+>>>
+>>>
+>>>
+>>>
+>>>
+>>>     [[alternative HTML version deleted]]
+>>>
+>>>   
+>>> ------------------------------------------------------------------------
+>>>
+>>> _______________________________________________
+>>> R-sig-DB mailing list -- R Special Interest Group
+>>> R-sig-DB at stat.math.ethz.ch
+>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>>
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at stat.math.ethz.ch
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+-- 
+http://biostat.mc.vanderbilt.edu/JeffreyHorner
+
+
+
+From @p|uque @end|ng |rom gm@||@com  Mon Feb 23 16:40:38 2009
+From: @p|uque @end|ng |rom gm@||@com (Sebastian P. Luque)
+Date: Mon, 23 Feb 2009 09:40:38 -0600
+Subject: [R-sig-DB] RPostgreSQL
+Message-ID: <87wsbh6u15.fsf@patagonia.sebmags.homelinux.org>
+
+Hi,
+
+I'm planning on working with RPostgreSQL more intensively, and was
+wondering whether there's some place to keep up to date with stuff to
+watch out for, recommendations, etc., other than what's already in the
+package?  BTW, I found that the URL in the DESCRIPTION doesn't work:
+
+http://www.stat.bell-labs.com/RS-DBI
+
+Maybe a temporary thing, but thought you'd like to know.
+
+
+Cheers,
+
+-- 
+Seb
+
+
+
+From @p|uque @end|ng |rom gm@||@com  Mon Feb 23 17:41:37 2009
+From: @p|uque @end|ng |rom gm@||@com (Sebastian P. Luque)
+Date: Mon, 23 Feb 2009 10:41:37 -0600
+Subject: [R-sig-DB] RPostgreSQL and views
+Message-ID: <87ocwt6r7i.fsf@patagonia.sebmags.homelinux.org>
+
+Hi,
+
+Is there some way to access PosgreSQL Views with RPostgreSQL?
+dbListTables only lists the tables, and I cannot find a similar function
+in the DBI nor RPostgreSQL packages that would do this nor access the
+view directly.  Any advice welcome.  Thanks.
+
+
+Cheers,
+
+-- 
+Seb
+
+
+
+From @d@m_pg@q| @end|ng |rom w|tneyweb@org  Mon Feb 23 18:05:16 2009
+From: @d@m_pg@q| @end|ng |rom w|tneyweb@org (adam_pgsql)
+Date: Mon, 23 Feb 2009 17:05:16 +0000
+Subject: [R-sig-DB] RPostgreSQL and views
+In-Reply-To: <87ocwt6r7i.fsf@patagonia.sebmags.homelinux.org>
+References: <87ocwt6r7i.fsf@patagonia.sebmags.homelinux.org>
+Message-ID: <15FB564D-5D88-43E2-9989-1B3738EB7516@witneyweb.org>
+
+
+On 23 Feb 2009, at 16:41, Sebastian P. Luque wrote:
+
+> Hi,
+>
+> Is there some way to access PosgreSQL Views with RPostgreSQL?
+> dbListTables only lists the tables, and I cannot find a similar  
+> function
+> in the DBI nor RPostgreSQL packages that would do this nor access the
+> view directly.  Any advice welcome.  Thanks.
+
+I have not used RPostgreSQL before, and this is untested, but i guess  
+you could add this function to RPostgreSQL/R/PostgreSQL.R
+
+setMethod("dbListViews", "PostgreSQLConnection",
+           def = function(conn, ...){
+               out <- dbGetQuery(conn,
+                                 "select viewname from pg_views where  
+schemaname !='information_schema' and schemaname !='pg_catalog'",
+                                 ...)
+               if (is.null(out) || nrow(out) == 0)
+                   out <- character(0)
+               else
+                   out <- out[, 1]
+               out
+           },
+           valueClass = "character"
+           )
+
+HTH
+
+adam
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Mon Feb 23 18:12:53 2009
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Mon, 23 Feb 2009 12:12:53 -0500
+Subject: [R-sig-DB] RPostgreSQL and views
+In-Reply-To: <87ocwt6r7i.fsf@patagonia.sebmags.homelinux.org>
+References: <87ocwt6r7i.fsf@patagonia.sebmags.homelinux.org>
+Message-ID: <264855a00902230912j58a86eb5ta7c8368058588f9c@mail.gmail.com>
+
+On Mon, Feb 23, 2009 at 11:41 AM, Sebastian P. Luque <spluque at gmail.com>wrote:
+
+> Hi,
+>
+> Is there some way to access PosgreSQL Views with RPostgreSQL?
+> dbListTables only lists the tables, and I cannot find a similar function
+> in the DBI nor RPostgreSQL packages that would do this nor access the
+> view directly.  Any advice welcome.  Thanks.
+>
+
+RPostgreSQL is simply an interface to work with Postgresql.  There are a few
+convenience features, but you can, of course, build more of your own.  The
+SQL for listing views is something like:
+
+SELECT n.nspname as "Schema",
+  c.relname as "Name",
+  CASE c.relkind WHEN 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'i' THEN
+'index' WHEN 'S' THEN 'sequence' WHEN 's' THEN 'special' END as "Type",
+  r.rolname as "Owner"
+FROM pg_catalog.pg_class c
+     JOIN pg_catalog.pg_roles r ON r.oid = c.relowner
+     LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+WHERE c.relkind IN ('v','')
+  AND n.nspname <> 'pg_catalog'
+  AND n.nspname !~ '^pg_toast'
+  AND pg_catalog.pg_table_is_visible(c.oid)
+ORDER BY 1,2;
+
+You could wrap that into a function, if you like, and have something like
+dbListViews.
+
+As for working with views in Postgresql, they work just like tables.  You
+can use dbReadTable() with a view as well as a table.  Of course, you cannot
+insert into views without further database logic in place, but reading is
+identical to tables.
+
+If you have not used postgresql much before, a good place to start is by
+using psql with the -E option:
+
+psql -E
+
+Then, you can see the SQL generated when you look at tables, views, indexes,
+etc.
+
+Sean
+
+	[[alternative HTML version deleted]]
+
+
+
+From @p|uque @end|ng |rom gm@||@com  Mon Feb 23 19:22:17 2009
+From: @p|uque @end|ng |rom gm@||@com (Sebastian P. Luque)
+Date: Mon, 23 Feb 2009 12:22:17 -0600
+Subject: [R-sig-DB] RPostgreSQL and views
+References: <87ocwt6r7i.fsf@patagonia.sebmags.homelinux.org>
+	<264855a00902230912j58a86eb5ta7c8368058588f9c@mail.gmail.com>
+Message-ID: <87fxi56mjq.fsf@patagonia.sebmags.homelinux.org>
+
+On Mon, 23 Feb 2009 12:12:53 -0500,
+Sean Davis <sdavis2 at mail.nih.gov> wrote:
+
+> On Mon, Feb 23, 2009 at 11:41 AM, Sebastian P. Luque <spluque at gmail.com>wrote:
+>> Hi,
+
+>> Is there some way to access PosgreSQL Views with RPostgreSQL?
+>> dbListTables only lists the tables, and I cannot find a similar
+>> function in the DBI nor RPostgreSQL packages that would do this nor
+>> access the view directly.  Any advice welcome.  Thanks.
+
+
+> RPostgreSQL is simply an interface to work with Postgresql.  There are
+> a few convenience features, but you can, of course, build more of your
+> own.  The SQL for listing views is something like:
+
+> SELECT n.nspname as "Schema", c.relname as "Name", CASE c.relkind WHEN
+> 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'i' THEN 'index' WHEN 'S'
+> THEN 'sequence' WHEN 's' THEN 'special' END as "Type", r.rolname as
+> "Owner" FROM pg_catalog.pg_class c JOIN pg_catalog.pg_roles r ON r.oid
+> = c.relowner LEFT JOIN pg_catalog.pg_namespace n ON n.oid =
+> c.relnamespace WHERE c.relkind IN ('v','') AND n.nspname <>
+> 'pg_catalog' AND n.nspname !~ '^pg_toast' AND
+> pg_catalog.pg_table_is_visible(c.oid) ORDER BY 1,2;
+
+Thanks Sean, this sounds similar to what Adam was suggesting.  It would
+be nice to have a method dbListViews() in RPostgreSQL, if the developers
+agree. For now, I'll just wrap this into a local dbListViews() function.
+
+
+> You could wrap that into a function, if you like, and have something
+> like dbListViews.
+
+> As for working with views in Postgresql, they work just like tables.
+> You can use dbReadTable() with a view as well as a table.  Of course,
+> you cannot insert into views without further database logic in place,
+> but reading is identical to tables.
+
+> If you have not used postgresql much before, a good place to start is
+> by using psql with the -E option:
+
+> psql -E
+
+> Then, you can see the SQL generated when you look at tables, views,
+> indexes, etc.
+
+Thanks for the tips, I've been using PostgreSQL for a couple of years
+now, but my SQL gets rusty soon after using it, especially for anything
+beyond the simplest queries!
+
+
+-- 
+Seb
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Mon Feb 23 20:44:38 2009
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Mon, 23 Feb 2009 14:44:38 -0500
+Subject: [R-sig-DB] RPostgreSQL and views
+In-Reply-To: <87fxi56mjq.fsf@patagonia.sebmags.homelinux.org>
+References: <87ocwt6r7i.fsf@patagonia.sebmags.homelinux.org>
+	<264855a00902230912j58a86eb5ta7c8368058588f9c@mail.gmail.com>
+	<87fxi56mjq.fsf@patagonia.sebmags.homelinux.org>
+Message-ID: <264855a00902231144m4039782fo57f9d2cf6e0ab4b6@mail.gmail.com>
+
+On Mon, Feb 23, 2009 at 1:22 PM, Sebastian P. Luque <spluque at gmail.com>wrote:
+
+> On Mon, 23 Feb 2009 12:12:53 -0500,
+> Sean Davis <sdavis2 at mail.nih.gov> wrote:
+>
+> > On Mon, Feb 23, 2009 at 11:41 AM, Sebastian P. Luque <spluque at gmail.com
+> >wrote:
+> >> Hi,
+>
+> >> Is there some way to access PosgreSQL Views with RPostgreSQL?
+> >> dbListTables only lists the tables, and I cannot find a similar
+> >> function in the DBI nor RPostgreSQL packages that would do this nor
+> >> access the view directly.  Any advice welcome.  Thanks.
+>
+>
+> > RPostgreSQL is simply an interface to work with Postgresql.  There are
+> > a few convenience features, but you can, of course, build more of your
+> > own.  The SQL for listing views is something like:
+>
+> > SELECT n.nspname as "Schema", c.relname as "Name", CASE c.relkind WHEN
+> > 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'i' THEN 'index' WHEN 'S'
+> > THEN 'sequence' WHEN 's' THEN 'special' END as "Type", r.rolname as
+> > "Owner" FROM pg_catalog.pg_class c JOIN pg_catalog.pg_roles r ON r.oid
+> > = c.relowner LEFT JOIN pg_catalog.pg_namespace n ON n.oid =
+> > c.relnamespace WHERE c.relkind IN ('v','') AND n.nspname <>
+> > 'pg_catalog' AND n.nspname !~ '^pg_toast' AND
+> > pg_catalog.pg_table_is_visible(c.oid) ORDER BY 1,2;
+>
+> Thanks Sean, this sounds similar to what Adam was suggesting.  It would
+> be nice to have a method dbListViews() in RPostgreSQL, if the developers
+> agree. For now, I'll just wrap this into a local dbListViews() function.
+>
+
+It is possible to add these DB-specific things to the package and this has
+probably been done with other drivers.  However, the DBI interface does not
+specify that there should be a dbListViews() (to my knowledge, anyway),
+which might be why it is not implemented, but I am only speculating.
+
+Sean
+
+
+
+>
+>
+> > You could wrap that into a function, if you like, and have something
+> > like dbListViews.
+>
+> > As for working with views in Postgresql, they work just like tables.
+> > You can use dbReadTable() with a view as well as a table.  Of course,
+> > you cannot insert into views without further database logic in place,
+> > but reading is identical to tables.
+>
+> > If you have not used postgresql much before, a good place to start is
+> > by using psql with the -E option:
+>
+> > psql -E
+>
+> > Then, you can see the SQL generated when you look at tables, views,
+> > indexes, etc.
+>
+> Thanks for the tips, I've been using PostgreSQL for a couple of years
+> now, but my SQL gets rusty soon after using it, especially for anything
+> beyond the simplest queries!
+>
+>
+> --
+> Seb
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From nxr@dh@k @end|ng |rom y@hoo@com  Thu Feb 26 03:03:39 2009
+From: nxr@dh@k @end|ng |rom y@hoo@com (Rad Nag)
+Date: Wed, 25 Feb 2009 18:03:39 -0800 (PST)
+Subject: [R-sig-DB] Welcome to the "R-sig-DB" mailing list
+In-Reply-To: <mailman.0.1235613561.22879.r-sig-db@stat.math.ethz.ch>
+Message-ID: <11630.94503.qm@web33402.mail.mud.yahoo.com>
+
+I am using R to access (.mdb) files (created in Microsoft access 2003) through RODBC.
+
+I
+am able to view the Tables and also list their attributes through the
+sql............. commands. However, when try to acces the primary keys
+(using sqlPrimaryKeys /odbcPrimaryKeys) I get a value of? '-1' on my command line, 
+
+i.e. I am unable to identify the PrimaryKeys in the Tables.
+
+Any suggestions why this would happen.
+
+The same problem persists for files created by Access 2007.
+
+
+
+
+      
+	[[alternative HTML version deleted]]
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Thu Feb 26 08:02:28 2009
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Thu, 26 Feb 2009 07:02:28 +0000 (GMT)
+Subject: [R-sig-DB] Pruary keys in an Access database via RODBC
+In-Reply-To: <11630.94503.qm@web33402.mail.mud.yahoo.com>
+References: <11630.94503.qm@web33402.mail.mud.yahoo.com>
+Message-ID: <alpine.OSX.1.00.0902260635270.76263@tystie.local>
+
+>From the help (but please read for yourself)
+
+Value:
+
+      A data frame on success, or character/numeric on error depending
+      on the 'errors' parameter.  If no data is returned, either a
+      zero-row data frame or an error. (For example, if there are no
+      primary keys or special column(s) in this table an empty data
+      frame is returned, but if primary keys are not supported by the
+      DBMS, an error code results.)
+
+Try errors=TRUE for a text error message: on my system it says that 
+the ODBC driver does not support primary keys.
+
+If that is the case for you (and I belive my drivers are up to date), 
+you need to ask Microsoft why.  (I do not cosider Access to be a 
+serious DBMS, and SQL Server's ODBC driver does support primary keys.)
+
+Plese use a sensinle subject line (I've changes it): see the R posting 
+guide.
+
+On Wed, 25 Feb 2009, Rad Nag wrote:
+
+> I am using R to access (.mdb) files (created in Microsoft access 2003) through RODBC.
+>
+> I
+> am able to view the Tables and also list their attributes through the
+> sql............. commands. However, when try to acces the primary keys
+> (using sqlPrimaryKeys /odbcPrimaryKeys) I get a value of? '-1' on my command line,
+>
+> i.e. I am unable to identify the PrimaryKeys in the Tables.
+>
+> Any suggestions why this would happen.
+>
+> The same problem persists for files created by Access 2007.
+>
+>
+>
+>
+>
+> 	[[alternative HTML version deleted]]
+>
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From hhu @end|ng |rom u||@edu  Tue Mar 10 22:32:40 2009
+From: hhu @end|ng |rom u||@edu (HU,ZHENGJUN)
+Date: Tue, 10 Mar 2009 17:32:40 -0400 (EDT)
+Subject: [R-sig-DB] A question about dbWriteTable command in R under MS
+	Windows
+Message-ID: <524377139.35891236720760617.JavaMail.osg@osgjas02.cns.ufl.edu>
+
+Dear Sir/Madam,
+
+  I wrote the following R code (see below) to store the data frame 
+of "test.01" into the table of "ttest01" in my database which is 
+located on a Linux machine. If the code was run under MS Windows 
+XP, I have found that the values in the last column (i.e. column 
+f5) in the table are all zeros instead of NULLs. If the same R 
+code was run under Linux, however, everything is OK. The R version 
+is 2.6.0 under both MS Windows XP and Linux.
+
+  Does anyone know how to solve this problem under MS Windows XP?
+
+  Thank you very much for the help and time in advance. Howard
+
+********************************************************************************************
+library(DBI)
+library(RMySQL)
+mysqldrv <- dbDriver("MySQL")
+conn.2.database<- 
+dbConnect('myHostName','myUserName','myPassword','myDatabaseName')
+test.01=data.frame(f1=c("A","B","C"),f2=c(1,2,3),f3=c(NA,NA,NA),f4=c(NA,NA,NA),f5=c(NA,NA,NA))
+dbWriteTable(conn.2.database, "ttest01", test.01, row.names=F, 
+eol='\r\n')
+dbDisconnect(conn.2.database)
+
+
+
+From dut@ngc @end|ng |rom gm@||@com  Tue Mar 10 22:41:36 2009
+From: dut@ngc @end|ng |rom gm@||@com (Christophe Dutang)
+Date: Tue, 10 Mar 2009 22:41:36 +0100
+Subject: [R-sig-DB] A question about dbWriteTable command in R under MS
+	Windows
+In-Reply-To: <524377139.35891236720760617.JavaMail.osg@osgjas02.cns.ufl.edu>
+References: <524377139.35891236720760617.JavaMail.osg@osgjas02.cns.ufl.edu>
+Message-ID: <A985E388-A0FE-4019-9B78-F8D1E10AA816@gmail.com>
+
+Hi,
+
+try with the latest version R, i.e. 2.8.1 and tell us which version of  
+mysql and rmysql do you use.
+
+Le 10 mars 09 ? 22:32, HU,ZHENGJUN a ?crit :
+
+> Dear Sir/Madam,
+>
+> I wrote the following R code (see below) to store the data frame of  
+> "test.01" into the table of "ttest01" in my database which is  
+> located on a Linux machine. If the code was run under MS Windows XP,  
+> I have found that the values in the last column (i.e. column f5) in  
+> the table are all zeros instead of NULLs. If the same R code was run  
+> under Linux, however, everything is OK. The R version is 2.6.0 under  
+> both MS Windows XP and Linux.
+>
+> Does anyone know how to solve this problem under MS Windows XP?
+>
+> Thank you very much for the help and time in advance. Howard
+>
+> ********************************************************************************************
+> library(DBI)
+> library(RMySQL)
+> mysqldrv <- dbDriver("MySQL")
+> conn.2.database<-  
+> dbConnect('myHostName','myUserName','myPassword','myDatabaseName')
+> test. 
+> 01 
+> = 
+> data 
+> .frame 
+> (f1 
+> = 
+> c 
+> ("A 
+> ","B","C"),f2=c(1,2,3),f3=c(NA,NA,NA),f4=c(NA,NA,NA),f5=c(NA,NA,NA))
+> dbWriteTable(conn.2.database, "ttest01", test.01, row.names=F,  
+> eol='\r\n')
+> dbDisconnect(conn.2.database)
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+--
+Christophe Dutang
+Ph. D. student at ISFA, Lyon, France
+website: http://dutangc.free.fr
+
+
+
+From je||@horner @end|ng |rom v@nderb||t@edu  Tue Mar 10 22:43:02 2009
+From: je||@horner @end|ng |rom v@nderb||t@edu (Jeffrey Horner)
+Date: Tue, 10 Mar 2009 16:43:02 -0500
+Subject: [R-sig-DB] A question about dbWriteTable command in R under MS
+ Windows
+In-Reply-To: <524377139.35891236720760617.JavaMail.osg@osgjas02.cns.ufl.edu>
+References: <524377139.35891236720760617.JavaMail.osg@osgjas02.cns.ufl.edu>
+Message-ID: <49B6DEE6.1060406@vanderbilt.edu>
+
+Hi,
+
+HU,ZHENGJUN wrote on 03/10/2009 04:32 PM:
+> Dear Sir/Madam,
+> 
+>  I wrote the following R code (see below) to store the data frame of 
+> "test.01" into the table of "ttest01" in my database which is located on 
+> a Linux machine. If the code was run under MS Windows XP, I have found 
+> that the values in the last column (i.e. column f5) in the table are all 
+> zeros instead of NULLs. If the same R code was run under Linux, however, 
+> everything is OK. The R version is 2.6.0 under both MS Windows XP and 
+> Linux.
+> 
+>  Does anyone know how to solve this problem under MS Windows XP?
+
+I suggest you upgrade to the latest version of R and the latest version 
+of RMySQL and run your test again. I doubt R 2.6.0 is the problem, but 
+you haven't told us which version of RMySQL you are using. The latest 
+version of RMySQL is 0.7-3, and a fix was made to dbWriteTable() in the 
+0.7-2 version.
+
+Best,
+
+Jeff
+
+> 
+>  Thank you very much for the help and time in advance. Howard
+> 
+> ******************************************************************************************** 
+> 
+> library(DBI)
+> library(RMySQL)
+> mysqldrv <- dbDriver("MySQL")
+> conn.2.database<- 
+> dbConnect('myHostName','myUserName','myPassword','myDatabaseName')
+> test.01=data.frame(f1=c("A","B","C"),f2=c(1,2,3),f3=c(NA,NA,NA),f4=c(NA,NA,NA),f5=c(NA,NA,NA)) 
+> 
+> dbWriteTable(conn.2.database, "ttest01", test.01, row.names=F, eol='\r\n')
+> dbDisconnect(conn.2.database)
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+-- 
+http://biostat.mc.vanderbilt.edu/JeffreyHorner
+
+
+
+From hot-de@|@ @end|ng |rom |@@p@|m@@c|ub@com  Thu Mar 12 22:40:49 2009
+From: hot-de@|@ @end|ng |rom |@@p@|m@@c|ub@com (Las Palmas By The Sea)
+Date: Thu, 12 Mar 2009 17:40:49 -0400
+Subject: [R-sig-DB] Mexico Vacations all year
+Message-ID: <f727c96459814967dfbe8c3bc0bf4137@www.extreme2web.com>
+
+An HTML attachment was scrubbed...
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20090312/78ea3f86/attachment.html>
+
+From corne| @end|ng |rom up|o@d-ro@ro  Wed Mar 25 18:04:43 2009
+From: corne| @end|ng |rom up|o@d-ro@ro (cornel)
+Date: Wed, 25 Mar 2009 19:04:43 +0200
+Subject: [R-sig-DB] Untitled-1
+Message-ID: <20090325.MYOIDSQJGBFHLXZM@upload-ro.ro>
+
+An HTML attachment was scrubbed...
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20090325/a329e5c1/attachment.html>
+

@@ -1,0 +1,55 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2003-11",
+  "messages": [
+    {
+      "id": "msg-0204c6b0c537",
+      "message_id": "<C698D707214E6F4AB39AB7096C3DE5A50C3E66@phost015.intermedia.net>",
+      "from_name": "Vadim Ogranovich",
+      "from_email_hash": "7b0419c2459f70399314e961beb6f68e14a59b4d3abb7b970b147e873edabb9c",
+      "date": "2003-11-06T15:49:40-08:00",
+      "subject": "[R-sig-DB] dbListTables fails with Oracle",
+      "subject_clean": "dbListTables fails with Oracle",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n \nI just installed ROracle under R1.8.1 alpha. There is a funny error in\ndbListTables(). When you run dbListTables just after establishing a\nconnection it fails at oraQuickSQL(conn, \"select table_name from\nall_tables\")[, 1], see below. However if you execute oraQuickSQL(conn,\n\"select table_name from all_tables\")[, 1] from the prompt it will work\nfine and, moreover, the dbListTables() will work fine after that too.\n \n> library(\"DBI\"); library(\"ROracle\")\n> con <- dbConnect(dbDriver(\"Oracle\"), user=\"...\")\n> dbListTables(con)\nError in oraQuickSQL(conn, \"select table_name from all_tables\")[, 1] : \n incorrect number of dimensions\n> oraQuickSQL(conn, \"select table_name from all_tables\")[, 1]\nError in .class1(object) : Object \"conn\" not found\n> oraQuickSQL(con, \"select table_name from all_tables\")[, 1]\n*** works fine:output flushed ***\n> dbListTables(con)\n*** works fine:output flushed ***\n \n \nAny clue?\n \nThanks,\nVadim\n \n\n \n> version\n         _                \nplatform i686-pc-linux-gnu\narch     i686             \nos       linux-gnu        \nsystem   i686, linux-gnu  \nstatus   alpha            \nmajor    1                \nminor    8.1              \nyear     2003             \nmonth    11               \nday      05               \nlanguage R                \n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi,\n \nI just installed ROracle under R1.8.1 alpha. There is a funny error in\ndbListTables(). When you run dbListTables just after establishing a\nconnection it fails at oraQuickSQL(conn, \"select table_",
+      "thread_id": "thread-0204c6b0c537",
+      "thread_depth": 0,
+      "month": "2003-11"
+    },
+    {
+      "id": "msg-bdcdba16fcf0",
+      "message_id": "<20031106212407.A14919@jessie.research.bell-labs.com>",
+      "from_name": "David James",
+      "from_email_hash": "50db14ff16dfd88fa0516d6b3379e8ac0537ba1ef3b84fa4345e8a2fec6698f9",
+      "date": "2003-11-06T21:24:07-05:00",
+      "subject": "[R-sig-DB] dbListTables fails with Oracle",
+      "subject_clean": "dbListTables fails with Oracle",
+      "in_reply_to": "<C698D707214E6F4AB39AB7096C3DE5A50C3E66@phost015.intermedia.net>; from vograno@sbcglobal.net on Thu, Nov 06, 2003 at 03:49:40PM -0800",
+      "references": [
+        "<C698D707214E6F4AB39AB7096C3DE5A50C3E66@phost015.intermedia.net>"
+      ],
+      "body_plain": "Hi,\n\nThat problem appears(?) to be coming from the generated code by\nthe pre-compiler Pro*C/C++.  In any event I've put a workaround\n(plus a couple of other bug fixes) in the latest version which will\nappear in CRAN sometime soon.  In the meantime you may download a\npre-release version at http://stat.bell-labs.com/RS-DBI\n\nHope this helps,\n\n--\nDavid\n\nVadim Ogranovich wrote:\n> Hi,\n>  \n> I just installed ROracle under R1.8.1 alpha. There is a funny error in\n> dbListTables(). When you run dbListTables just after establishing a\n> connection it fails at oraQuickSQL(conn, \"select table_name from\n> all_tables\")[, 1], see below. However if you execute oraQuickSQL(conn,\n> \"select table_name from all_tables\")[, 1] from the prompt it will work\n> fine and, moreover, the dbListTables() will work fine after that too.\n>  \n> > library(\"DBI\"); library(\"ROracle\")\n> > con <- dbConnect(dbDriver(\"Oracle\"), user=\"...\")\n> > dbListTables(con)\n> Error in oraQuickSQL(conn, \"select table_name from all_tables\")[, 1] : \n>  incorrect number of dimensions\n> > oraQuickSQL(conn, \"select table_name from all_tables\")[, 1]\n> Error in .class1(object) : Object \"conn\" not found\n> > oraQuickSQL(con, \"select table_name from all_tables\")[, 1]\n> *** works fine:output flushed ***\n> > dbListTables(con)\n> *** works fine:output flushed ***\n>  \n>  \n> Any clue?\n>  \n> Thanks,\n> Vadim\n>  \n> \n>  \n> > version\n>          _                \n> platform i686-pc-linux-gnu\n> arch     i686             \n> os       linux-gnu        \n> system   i686, linux-gnu  \n> status   alpha            \n> major    1                \n> minor    8.1              \n> year     2003             \n> month    11               \n> day      05               \n> language R                \n> \n> \n> \t[[alternative HTML version deleted]]\n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://www.stat.math.ethz.ch/mailman/listinfo/r-sig-db\n\n-- \nDavid A. James\nStatistics Research, Room 2C-253            Phone:  (908) 582-3082       \nBell Labs, Lucent Technologies              Fax:    (908) 582-3340\nMurray Hill, NJ 09794-0636",
+      "body_snippet": "Hi,\n\nThat problem appears(?) to be coming from the generated code by\nthe pre-compiler Pro*C/C++.  In any event I've put a workaround\n(plus a couple of other bug fixes) in the latest version which will",
+      "thread_id": "thread-0204c6b0c537",
+      "thread_depth": 1,
+      "month": "2003-11"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-0204c6b0c537",
+      "subject": "dbListTables fails with Oracle",
+      "message_count": 2,
+      "participants": [
+        "David James",
+        "Vadim Ogranovich"
+      ],
+      "started": "2003-11-06T15:49:40-08:00",
+      "last_reply": "2003-11-06T21:24:07-05:00",
+      "root_message_id": "msg-0204c6b0c537"
+    }
+  ]
+}

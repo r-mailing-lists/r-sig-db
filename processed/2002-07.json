@@ -1,0 +1,218 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2002-07",
+  "messages": [
+    {
+      "id": "msg-ad6023d3005e",
+      "message_id": "<3D2976CF.B12CE59F@gsf.de>",
+      "from_name": "Michael Mader",
+      "from_email_hash": "e22b784093a19b4aef4ed944103055c8820cf5c1208317196c75c1db40d28d1a",
+      "date": "2002-07-08T13:26:07+02:00",
+      "subject": "[R-sig-DB] Oracle: SELECT CLOB",
+      "subject_clean": "Oracle: SELECT CLOB",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi all,\n\nis there anybody working on a stable/fast way to select entire CLOBs via\nROracle?\n\nSounds nasty? \nWhat I am thinking about is to store vectors (5k to 30k elements) in\nCLOBs which would speed up retrieval.\n\nCheers\n\nMichael\n-- \nMichael T. Mader\nInstitute for Bioinformatics/MIPS, GSF\n0049-89-3187-3576",
+      "body_snippet": "Hi all,\n\nis there anybody working on a stable/fast way to select entire CLOBs via\nROracle?\n\nSounds nasty? \nWhat I am thinking about is to store vectors (5k to 30k elements) in\nCLOBs which would speed ",
+      "thread_id": "thread-ad6023d3005e",
+      "thread_depth": 0,
+      "month": "2002-07"
+    },
+    {
+      "id": "msg-676a02e0f1bf",
+      "message_id": "<20020708100629.C26800@jessie.research.bell-labs.com>",
+      "from_name": "David James",
+      "from_email_hash": "50db14ff16dfd88fa0516d6b3379e8ac0537ba1ef3b84fa4345e8a2fec6698f9",
+      "date": "2002-07-08T10:06:29-04:00",
+      "subject": "[R-sig-DB] Re: Oracle: SELECT CLOB",
+      "subject_clean": "Oracle: SELECT CLOB",
+      "in_reply_to": "<3D2976CF.B12CE59F@gsf.de>; from m.mader@gsf.de on Mon, Jul 08, 2002 at 01:26:07PM +0200",
+      "references": [
+        "<3D2976CF.B12CE59F@gsf.de>"
+      ],
+      "body_plain": "Michael Mader wrote:\n> Hi all,\n> \n> is there anybody working on a stable/fast way to select entire CLOBs via\n> ROracle?\n> \n> Sounds nasty? \n\nYes, it does.  I'm not aware of any work on this.  Large objects\n(both character and binary) pose some interesting problems to R\nand Splus -- from buffer overruns in the various libraries and\ninterface layers all the way to the lack of suitable containers\nin R and Splus.  R has the concept of foreign references (external\npointers), and Splus has \"raw\" objects that could perhaps be used\nto implement proxy objects (objects that defer their operations\nto other systems/languages, as in the various inter-system\npackages RPgSQL, RS-Perl, RS-Python, RS-Java, RS-Corba, ...)\nAnother potential hurdle is the S language \"whole-object\" view\n(as compared to \"one-record-at-a-time\") that makes it difficult to\nworking with data larger than physical memory.  Some attempts have\nbeen made in the past to handle large external objects (e.g., John\nChambers and Neil Crellin's work on images and external objects,\nhttp://cm.bell-labs.com/stat/doc/93.1.ps) but I believe that a\ngeneral framework is yet to be defined.\n\n> What I am thinking about is to store vectors (5k to 30k elements) in\n> CLOBs which would speed up retrieval.\n\nThe biggest risk I see is that you may run into some buffer limit\nsomewhere (probably sooner rather than later).  At first glance\nit appears to me that packing vectors into CLOBs for the sake\nof retrieval speed may carry hidden costs for other calculations\n(not to mention that it may violate good relational database design\nprinciples).\n\nPerhaps you may want to consult with an experienced RDBMS programmer \nas to how to solve this type of database design problem? \n\nRegards,\n\n> \n> Cheers\n> \n> Michael\n> -- \n> Michael T. Mader\n> Institute for Bioinformatics/MIPS, GSF\n> 0049-89-3187-3576\n\n-- \nDavid A. James\nStatistics Research, Room 2C-253            Phone:  (908) 582-3082       \nBell Labs, Lucent Technologies              Fax:    (908) 582-3340\nMurray Hill, NJ 09794-0636",
+      "body_snippet": "Michael Mader wrote:\n> Hi all,\n> \n> is there anybody working on a stable/fast way to select entire CLOBs via\n> ROracle?\n> \n> Sounds nasty? \n\nYes, it does.  I'm not aware of any work on this.  Large ob",
+      "thread_id": "thread-ad6023d3005e",
+      "thread_depth": 1,
+      "month": "2002-07"
+    },
+    {
+      "id": "msg-fb0a4cebc77c",
+      "message_id": "<000101c227a7$cf3df100$f0a410ac@s464>",
+      "from_name": "Vikram Khurana",
+      "from_email_hash": "2262ae5afd2d57c004aa143fc222828ff7388ea972f790f505b57275a2dbd2c3",
+      "date": "2002-07-09T14:22:00-10:00",
+      "subject": "[R-sig-DB] RODBC",
+      "subject_clean": "RODBC",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\nI'm new to R & Linux. I have used RODBC on Windows to access Oracle with\nno problems whatsoever. However I tried using the same RODBC zip file\navailable under the contrib section for Windows, on Linux with no\nsuccess. When I type library(RODBC) I get the following error\n\n \n\nlibrary(RODBC)\n\nError in library.dynam(pkg,lib.loc=lib):\n\n                  Dynamic library 'RODBC' not found\n\n      Error in library(RODBC): .First.lib failed     \n\n \n\nI also tried to find a Linux specific RODBC package, but can't find one\neither under 'Package Sources' on CRAN or the Linux subdirectory\n\n \n\nI'm running Red Hat Linux 7.3 using VMware & have the R version 1.5.1\n\n \n\nDoes somebody know what I'm doing wrong. \n\n \n\nThanks for your help!\n\nVikram\n\n \n\n\n-------------- next part --------------\nAn HTML attachment was scrubbed...\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20020709/db5f6714/attachment.html>",
+      "body_snippet": "Hi,\n\nI'm new to R & Linux. I have used RODBC on Windows to access Oracle with\nno problems whatsoever. However I tried using the same RODBC zip file\navailable under the contrib section for Windows, on ",
+      "thread_id": "thread-fb0a4cebc77c",
+      "thread_depth": 0,
+      "month": "2002-07"
+    },
+    {
+      "id": "msg-d85e975f0f6f",
+      "message_id": "<000601c227a9$e8689700$f0a410ac@s464>",
+      "from_name": "Vikram Khurana",
+      "from_email_hash": "2262ae5afd2d57c004aa143fc222828ff7388ea972f790f505b57275a2dbd2c3",
+      "date": "2002-07-09T14:37:02-10:00",
+      "subject": "[R-sig-DB] RODBC",
+      "subject_clean": "RODBC",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\nI'm a R & Linux newbie.\nI have been able to use RODBC to access Oracle RDBMS from R. However the\nsame RODBC zip package(downloaded from the contrib folder under Windows\non CRAN) doesn't work properly on Linux. I get the following error\nmessage when I type library(RODBC)\n\nError in library.dynam(pkg, lib.loc=lib) :\n\tDynamic library 'RODBC' not found\nError in library(RODBC): .First.lib failed\n\nI also tried searching for the LINUX version of ODBC with no\nsuccess(can't find it under 'Package Sources' on CRAN or under the LINUX\ndirectory.\n\nCan anyone guide me in the right direction please.\n\nThanks,\nVikram",
+      "body_snippet": "Hi,\n\nI'm a R & Linux newbie.\nI have been able to use RODBC to access Oracle RDBMS from R. However the\nsame RODBC zip package(downloaded from the contrib folder under Windows\non CRAN) doesn't work prop",
+      "thread_id": "thread-d85e975f0f6f",
+      "thread_depth": 0,
+      "month": "2002-07"
+    },
+    {
+      "id": "msg-379a37dca5da",
+      "message_id": "<3D2B8227.DEEBD625@noaa.gov>",
+      "from_name": "Vikram Khurana",
+      "from_email_hash": "1eb67d39e3ed2ef28309d2fb5445d30c81fbb2691337f960e48e5e0b8177f96d",
+      "date": "2002-07-09T14:39:03-10:00",
+      "subject": "[R-sig-DB] RODBC",
+      "subject_clean": "RODBC",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\nI'm a R & Linux newbie.\nI have been able to use RODBC to access Oracle RDBMS from R. However the\nsame RODBC zip package(downloaded from the contrib folder under Windows\non CRAN) doesn't work properly on Linux. I get the following error\nmessage when I type library(RODBC)\n\nError in library.dynam(pkg, lib.loc=lib) :\n\tDynamic library 'RODBC' not found\nError in library(RODBC): .First.lib failed\n\nI also tried searching for the LINUX version of ODBC with no\nsuccess(can't find it under 'Package Sources' on CRAN or under the LINUX\ndirectory.\n\nCan anyone guide me in the right direction please.\n\nThanks,\nVikram",
+      "body_snippet": "Hi,\n\nI'm a R & Linux newbie.\nI have been able to use RODBC to access Oracle RDBMS from R. However the\nsame RODBC zip package(downloaded from the contrib folder under Windows\non CRAN) doesn't work prop",
+      "thread_id": "thread-379a37dca5da",
+      "thread_depth": 0,
+      "month": "2002-07"
+    },
+    {
+      "id": "msg-bb318d578cf2",
+      "message_id": "<200207200058.UAA28110@capecod.bwh.harvard.edu>",
+      "from_name": "Vincent J. Carey, Jr.",
+      "from_email_hash": "1f30b100cde9943e1e1ddf5cbc4bfa9be4dd0799b0874f12e42d19f46a8f3d2e",
+      "date": "2002-07-19T20:58:49-04:00",
+      "subject": "[R-sig-DB] general status query on DBI etc",
+      "subject_clean": "general status query on DBI etc",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Here's my understanding of the R-RDBMS interface situation,\nafter poking around CRAN and the SIG page/mailing list.\n\n1) DBI is available on CRAN but it is not clear if any\ncompliant drivers are on hand; of particular interest\nare postgres and oracle drivers\n\n2) Rdbi is available on sourceforge; Rdbi.PgSQL is\nalso available there and the latter provides the postgres\ndriver for the Rdbi (not DBI) API.  Tim Keitt indicates\nthat all the C code that would be necessary for a postgres\ndriver for DBI is present in Rdbi.PgSQL, but DBI-compliant\nR code needs to be written\n\n3) ROracle is available on CRAN, and 0.3-3 DESCRIPTION\nidentifies it as transitional; the next version will\nsatisfy the DBI API.\n\n4) RODBC is at CRAN devel (not on the main package distribution\npage) and the RS-DBI.pdf document suggests that unix ODBC\nis inadequately developed.  Based on my limited web searching,\nODBC does not seem a viable approach for unix at present.\n\nNote: Bioconductor has made substantial use of RPgSQL for\ndatabasing genomic annotation data.  The fact that RPgSQL has\nbeen abandoned by its maintainer is a source of concern.\nWe are starting to strategize on the problem of storing and\nanalyzing large quantities of expression data in RDBMS and\nwe look to the DB-SIG for guidance on resources related\nto this problem.\n\nQuestions\n\n1) How far off is the DBI-compliant ROracle?  Are there \nrisks that code developed using the transitional version will\nrequire substantial reworking when the new version emerges?\n\n2) Is anyone working on the postgres driver for DBI?\nApparently most of the C code is available.\n\n3) RS-DBI.pdf suggests a number of alternative architectures\n(e.g., ODBC, JDBC).  Is the slow emergence of drivers for DBI\nascribable to uncertainty about the long-term viability of\nthe DBI approach?  Has RSJava matured to the point where\none might prefer a JDBC-centered approach?\n\nThanks\n-- \n---\nVince Carey, PhD\nAss't Prof Med (Biostatistics)\nHarvard Medical School\nChanning Laboratory - ph 6175252265 fa 6177311541 cell 8572126768\n181 Longwood Ave Boston MA 02115 USA\n\nstvjc at channing.harvard.edu",
+      "body_snippet": "Here's my understanding of the R-RDBMS interface situation,\nafter poking around CRAN and the SIG page/mailing list.\n\n1) DBI is available on CRAN but it is not clear if any\ncompliant drivers are on han",
+      "thread_id": "thread-bb318d578cf2",
+      "thread_depth": 0,
+      "month": "2002-07"
+    },
+    {
+      "id": "msg-5e8a77778e1c",
+      "message_id": "<1027178612.28623.9.camel@keittlab-6>",
+      "from_name": "Timothy H. Keitt",
+      "from_email_hash": "d224c0af66f953bface32ac4f3757a048544784ece1599739e0b81c7642b38ef",
+      "date": "2002-07-20T11:23:32-04:00",
+      "subject": "[R-sig-DB] general status query on DBI etc",
+      "subject_clean": "general status query on DBI etc",
+      "in_reply_to": "<200207200058.UAA28110@capecod.bwh.harvard.edu>",
+      "references": [
+        "<200207200058.UAA28110@capecod.bwh.harvard.edu>"
+      ],
+      "body_plain": "The intention, as far as I can tell, is to support DBI, and I imagine we\nwill have drivers available sometime in the next year. I do think\nprogress has been slowed by the transition to v4 methods, which are\nconsiderably more complex to implement and not many developers are\nfamiliar with the new approach. David did a nice job putting together\nthe DBI core. It will make a strong and stable base for future\ndevelopment. But we all have day jobs, so to speak, so its hard to\npredict when new code will get written. (I can only really work on\ncoding when my research projects demand it.)\n\nTim\n\nOn Fri, 2002-07-19 at 20:58, Vincent J. Carey, Jr. wrote:\n> \n> Here's my understanding of the R-RDBMS interface situation,\n> after poking around CRAN and the SIG page/mailing list.\n> \n> 1) DBI is available on CRAN but it is not clear if any\n> compliant drivers are on hand; of particular interest\n> are postgres and oracle drivers\n> \n> 2) Rdbi is available on sourceforge; Rdbi.PgSQL is\n> also available there and the latter provides the postgres\n> driver for the Rdbi (not DBI) API.  Tim Keitt indicates\n> that all the C code that would be necessary for a postgres\n> driver for DBI is present in Rdbi.PgSQL, but DBI-compliant\n> R code needs to be written\n> \n> 3) ROracle is available on CRAN, and 0.3-3 DESCRIPTION\n> identifies it as transitional; the next version will\n> satisfy the DBI API.\n> \n> 4) RODBC is at CRAN devel (not on the main package distribution\n> page) and the RS-DBI.pdf document suggests that unix ODBC\n> is inadequately developed.  Based on my limited web searching,\n> ODBC does not seem a viable approach for unix at present.\n> \n> Note: Bioconductor has made substantial use of RPgSQL for\n> databasing genomic annotation data.  The fact that RPgSQL has\n> been abandoned by its maintainer is a source of concern.\n> We are starting to strategize on the problem of storing and\n> analyzing large quantities of expression data in RDBMS and\n> we look to the DB-SIG for guidance on resources related\n> to this problem.\n> \n> Questions\n> \n> 1) How far off is the DBI-compliant ROracle?  Are there \n> risks that code developed using the transitional version will\n> require substantial reworking when the new version emerges?\n> \n> 2) Is anyone working on the postgres driver for DBI?\n> Apparently most of the C code is available.\n> \n> 3) RS-DBI.pdf suggests a number of alternative architectures\n> (e.g., ODBC, JDBC).  Is the slow emergence of drivers for DBI\n> ascribable to uncertainty about the long-term viability of\n> the DBI approach?  Has RSJava matured to the point where\n> one might prefer a JDBC-centered approach?\n> \n> Thanks\n> -- \n> ---\n> Vince Carey, PhD\n> Ass't Prof Med (Biostatistics)\n> Harvard Medical School\n> Channing Laboratory - ph 6175252265 fa 6177311541 cell 8572126768\n> 181 Longwood Ave Boston MA 02115 USA\n> \n> stvjc at channing.harvard.edu\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> http://www.stat.math.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "The intention, as far as I can tell, is to support DBI, and I imagine we\nwill have drivers available sometime in the next year. I do think\nprogress has been slowed by the transition to v4 methods, whi",
+      "thread_id": "thread-bb318d578cf2",
+      "thread_depth": 1,
+      "month": "2002-07"
+    },
+    {
+      "id": "msg-f047d0f47858",
+      "message_id": "<20020720231630.A18676@jessie.research.bell-labs.com>",
+      "from_name": "David James",
+      "from_email_hash": "50db14ff16dfd88fa0516d6b3379e8ac0537ba1ef3b84fa4345e8a2fec6698f9",
+      "date": "2002-07-20T23:16:30-04:00",
+      "subject": "[R-sig-DB] general status query on DBI etc",
+      "subject_clean": "general status query on DBI etc",
+      "in_reply_to": "<200207200058.UAA28110@capecod.bwh.harvard.edu>; from stvjc@channing.harvard.edu on Fri, Jul 19, 2002 at 08:58:49PM -0400",
+      "references": [
+        "<200207200058.UAA28110@capecod.bwh.harvard.edu>"
+      ],
+      "body_plain": "Vincent J. Carey, Jr. wrote:\n> \n> Here's my understanding of the R-RDBMS interface situation,\n> after poking around CRAN and the SIG page/mailing list.\n> \n> 1) DBI is available on CRAN but it is not clear if any\n> compliant drivers are on hand; of particular interest\n> are postgres and oracle drivers\n\nCorrect.  As of today no driver is compliant.\n\n> \n> 2) Rdbi is available on sourceforge; Rdbi.PgSQL is\n> also available there and the latter provides the postgres\n> driver for the Rdbi (not DBI) API.  Tim Keitt indicates\n> that all the C code that would be necessary for a postgres\n> driver for DBI is present in Rdbi.PgSQL, but DBI-compliant\n> R code needs to be written\n> \n> 3) ROracle is available on CRAN, and 0.3-3 DESCRIPTION\n> identifies it as transitional; the next version will\n> satisfy the DBI API.\n\nYes, those plans are current.\n\n> \n> 4) RODBC is at CRAN devel (not on the main package distribution\n> page) and the RS-DBI.pdf document suggests that unix ODBC\n> is inadequately developed.  Based on my limited web searching,\n> ODBC does not seem a viable approach for unix at present.\n\nHmm, that was written sometime ago.  The unixODBC project has\nbeen making quite a bit of progress, and the driver manager \nseems to be getting quite good (although I haven't tested it too\nmuch).  My main concern back then was the lack of ODBC drivers.\nCurrently the open source DBMS (at least PostsgreSQL and MySQL)\nseem to provide quite decent ODBC drivers.  The availability of\nfree/open source drivers on Linux/Unix/MacOS for Oracle, MS SQL\nserver, and others is still an issue, AFAIK; (there are good\ncommercial drivers for Unix, though).\n\nMy feeling is that an R-ODBC interface is critical -- certainly\non Windows, but also on Unix and probably on Mac (I'm not sure how\nMac deals w. DBMSs).\n\n> \n> Note: Bioconductor has made substantial use of RPgSQL for\n> databasing genomic annotation data.  The fact that RPgSQL has\n> been abandoned by its maintainer is a source of concern.\n> We are starting to strategize on the problem of storing and\n> analyzing large quantities of expression data in RDBMS and\n> we look to the DB-SIG for guidance on resources related\n> to this problem.\n> \n> Questions\n> \n> 1) How far off is the DBI-compliant ROracle?  Are there \n> risks that code developed using the transitional version will\n> require substantial reworking when the new version emerges?\n\nThe current ROracle (same for RMySQL and, of less interest, RSQLite) \nis fairly close to the DBI.  All the functionality in the\nDBI is available in these other packages.  From the user's point\nof view, the only difference is the function names (close(con)\nvs dbDisconnect(con), etc.).  These do not require very extensive\nwork to have them compliant with the DBI.  At the programming level\nthe issue is also straightforward -- the current implementations\nare done using S3 style classes and probably should be migrated\nto S4 classes.  (Somewhat ironically, both the Oracle and MySQL\ninterfaces were originally implemented in S4, ported backwards\nto S3 style classes for R compatibility and now they can finally be\nfully implemented with S4 classes.)   In terms of programming, I\nthink we're talking about a week's effort, or less. \n\n> \n> 2) Is anyone working on the postgres driver for DBI?\n> Apparently most of the C code is available.\n\nWhen implementing a driver, the C portion is probably where the\nmost work is required.  I'm not very familiar with this code, but\nperhaps moving to the DBI wouldn't be too difficult.  \n\nLast december I wrote DBI interfaces on top of both the existing\nRPgSQL and RODBC, but I thought (and Tim agreed with me) that\nthe resulting layering of S4 on top of S3 classes wasn't ideal,\nso these DBI.RpSQL and DBI.RODBC packages were not made public.\n\n> \n> 3) RS-DBI.pdf suggests a number of alternative architectures\n> (e.g., ODBC, JDBC).  Is the slow emergence of drivers for DBI\n> ascribable to uncertainty about the long-term viability of\n> the DBI approach?  Has RSJava matured to the point where\n> one might prefer a JDBC-centered approach?\n\nRe: ODBC, see my comments above.\n\nRe: R/JDBC, I'm not sure -- I have little experience with Java, so perhaps\nothers can comment.\n\nThe slow emergence of drivers for the DBI, in my opinion, is\nthe lack of volunteers.  Even when we were drafting the DBI the\nparticipation was not exactly overwhelming, as you probably noticed\nwhen you looked at the r-sig-db archives.  But I feel that it is\nimportant to have a common interface to DBMS, one reason being\nto abstract out (at least as far as R is concerned) the details\nof getting your data into your analysis.  Thus in the long run we\nshould be deciding what DBMS to use based on their merits and not\non whether the R API to DBMS \"A\" is well thought out but not for \"B\"\n(asumming they provide more or less similar functionality).\n\nMoreover, I think that Perl's DBI/DBD, Java's JDBC, ODBC, and\nPython's DB-API have proved the viability of this approach.\nOf course, any flaws in the R/S DBI should be fixed -- but that's\njust implementation:-)\n\n> \n> Thanks\n> -- \n> ---\n> Vince Carey, PhD\n> Ass't Prof Med (Biostatistics)\n> Harvard Medical School\n> Channing Laboratory - ph 6175252265 fa 6177311541 cell 8572126768\n> 181 Longwood Ave Boston MA 02115 USA\n> \n> stvjc at channing.harvard.edu\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> http://www.stat.math.ethz.ch/mailman/listinfo/r-sig-db\n\n-- \nDavid A. James\nStatistics Research, Room 2C-253            Phone:  (908) 582-3082       \nBell Labs, Lucent Technologies              Fax:    (908) 582-3340\nMurray Hill, NJ 09794-0636",
+      "body_snippet": "Vincent J. Carey, Jr. wrote:\n> \n> Here's my understanding of the R-RDBMS interface situation,\n> after poking around CRAN and the SIG page/mailing list.\n> \n> 1) DBI is available on CRAN but it is not c",
+      "thread_id": "thread-bb318d578cf2",
+      "thread_depth": 1,
+      "month": "2002-07"
+    },
+    {
+      "id": "msg-94d70223cecf",
+      "message_id": "<Pine.LNX.4.31.0207210822380.18587-100000@gannet.stats>",
+      "from_name": "ripiey m@iii@g oii st@ts@ox@@c@uk",
+      "from_email_hash": "591de328c8c23f46c81088f1883bd314dc2679ba47d4c9909b972db910ad5a3d",
+      "date": "2002-07-21T08:25:24+01:00",
+      "subject": "[R-sig-DB] general status query on DBI etc",
+      "subject_clean": "general status query on DBI etc",
+      "in_reply_to": "<20020720231630.A18676@jessie.research.bell-labs.com>",
+      "references": [],
+      "body_plain": "On Sat, 20 Jul 2002, David James wrote:\n\n> > 4) RODBC is at CRAN devel (not on the main package distribution\n> > page) and the RS-DBI.pdf document suggests that unix ODBC\n> > is inadequately developed.  Based on my limited web searching,\n> > ODBC does not seem a viable approach for unix at present.\n>\n> Hmm, that was written sometime ago.  The unixODBC project has\n> been making quite a bit of progress, and the driver manager\n> seems to be getting quite good (although I haven't tested it too\n> much).  My main concern back then was the lack of ODBC drivers.\n> Currently the open source DBMS (at least PostsgreSQL and MySQL)\n> seem to provide quite decent ODBC drivers.  The availability of\n\nI beg to differ. MySQL's released driver is awful and non compilant even\nwith the years old version of ODBC it `supports'.  Perhaps the development\nversion (MyODBC 3.51.03) will be better.\n\n> free/open source drivers on Linux/Unix/MacOS for Oracle, MS SQL\n> server, and others is still an issue, AFAIK; (there are good\n> commercial drivers for Unix, though).\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272860 (secr)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "On Sat, 20 Jul 2002, David James wrote:\n\n> > 4) RODBC is at CRAN devel (not on the main package distribution\n> > page) and the RS-DBI.pdf document suggests that unix ODBC\n> > is inadequately developed",
+      "thread_id": "thread-bb318d578cf2",
+      "thread_depth": 2,
+      "month": "2002-07"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-ad6023d3005e",
+      "subject": "Oracle: SELECT CLOB",
+      "message_count": 2,
+      "participants": [
+        "David James",
+        "Michael Mader"
+      ],
+      "started": "2002-07-08T13:26:07+02:00",
+      "last_reply": "2002-07-08T10:06:29-04:00",
+      "root_message_id": "msg-ad6023d3005e"
+    },
+    {
+      "id": "thread-fb0a4cebc77c",
+      "subject": "RODBC",
+      "message_count": 1,
+      "participants": [
+        "Vikram Khurana"
+      ],
+      "started": "2002-07-09T14:22:00-10:00",
+      "last_reply": "2002-07-09T14:22:00-10:00",
+      "root_message_id": "msg-fb0a4cebc77c"
+    },
+    {
+      "id": "thread-d85e975f0f6f",
+      "subject": "RODBC",
+      "message_count": 1,
+      "participants": [
+        "Vikram Khurana"
+      ],
+      "started": "2002-07-09T14:37:02-10:00",
+      "last_reply": "2002-07-09T14:37:02-10:00",
+      "root_message_id": "msg-d85e975f0f6f"
+    },
+    {
+      "id": "thread-379a37dca5da",
+      "subject": "RODBC",
+      "message_count": 1,
+      "participants": [
+        "Vikram Khurana"
+      ],
+      "started": "2002-07-09T14:39:03-10:00",
+      "last_reply": "2002-07-09T14:39:03-10:00",
+      "root_message_id": "msg-379a37dca5da"
+    },
+    {
+      "id": "thread-bb318d578cf2",
+      "subject": "general status query on DBI etc",
+      "message_count": 4,
+      "participants": [
+        "David James",
+        "Timothy H. Keitt",
+        "Vincent J. Carey, Jr.",
+        "ripiey m@iii@g oii st@ts@ox@@c@uk"
+      ],
+      "started": "2002-07-19T20:58:49-04:00",
+      "last_reply": "2002-07-21T08:25:24+01:00",
+      "root_message_id": "msg-bb318d578cf2"
+    }
+  ]
+}

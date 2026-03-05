@@ -1,0 +1,182 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2009-06",
+  "messages": [
+    {
+      "id": "msg-c1b212071da7",
+      "message_id": "<7fdb70c50906050634q6c8600a2j6bcc55dc84a1546c@mail.gmail.com>",
+      "from_name": "Jean-Christophe Domenge",
+      "from_email_hash": "41929fd81fb73c3f7da44c7bb67a0b50dad3ceefe76820c967a425204b577c68",
+      "date": "2009-06-05T15:34:40+02:00",
+      "subject": "[R-sig-DB] ROracle: basic insert fails",
+      "subject_clean": "ROracle: basic insert fails",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi all,\nI've been playing with ROracle (0.5-9) for a few days\nand I can't wrap my mind around this one.\nHere's a sample of my R (2.4.0) session.\n\nmy.df<-data.frame(prd_id=c(123,456),vol_factor=c(.123,.456))\n> my.df\nprd_id vol_factor\n1    123      0.123\n2    456      0.456\n\n> library(ROracle)\nLoading required package: DBI\n> conn<-dbConnect(\"Oracle\",\"***/***@***\")\n> dbGetQuery(conn,\"create table mytable (prd_id number, vol_factor\nnumber)\")\n> dbGetQuery(conn,\"insert into mytable (prd_id,vol_factor)\nvalues(123,.123)\")\n> dbGetQuery(conn,\"insert into mytable (prd_id,vol_factor)\nvalues(456,.456)\")\n> dbGetQuery(conn,\"select * from mytable\")\n  PRD_ID VOL_FACTOR\n0    123      0.123\n1    456      0.456\n\nthe above works as expected. Now let's try to insert new rows into\nmytable\nusing a prepared statement and bind variables:\n\n> ps<-dbPrepareStatement(conn,\"insert into mytable (prd_id,vol_factor)\nvalues (:1,:2)\",bind=c(rep(\"numeric\",2)))\n> res<-dbExecStatement(ps,my.df)\n> dbCommit(conn)\n[1] TRUE\n> dbGetQuery(conn,\"select * from jdomenge_test\")\n  PRD_ID VOL_FACTOR\n0    123      0.123\n1    456      0.456\n2    123         NA\n3    456         NA\n\nso the 2 new rows were appended, except the values in the second\ncolumn were seemingly not read...\nthe same happens with dbWriteTable:\n\n> dbWriteTable(conn,\"mytable\",df,append=T,row.names=F)\n[1] TRUE\n> dbGetQuery(conn,\"select * from mytable\")\n  PRD_ID VOL_FACTOR\n0    123      0.123\n1    456      0.456\n2    123         NA\n3    456         NA\n4    123         NA\n5    456         NA\n\nIt seems the only way I can insert rows in a table is to build a query\nstring\nand pass it into dbGetQuery.\nNote that SELECT queries pose no problem, only INSERT.\n\nI'm clueless at this point, I don't know what I'm doing wrong.\nI could find no answer in the help files nor on the web...\n\n\nAny help would be *greatly* appreciated.\n\nThanks in advance,\n\nJean-Christophe\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi all,\nI've been playing with ROracle (0.5-9) for a few days\nand I can't wrap my mind around this one.\nHere's a sample of my R (2.4.0) session.\n\nmy.df<-data.frame(prd_id=c(123,456),vol_factor=c(.123,",
+      "thread_id": "thread-c1b212071da7",
+      "thread_depth": 0,
+      "month": "2009-06"
+    },
+    {
+      "id": "msg-98799f4cff31",
+      "message_id": "<5839b3cd708baa3ec208130956ff08ae@vallarta-paradise.com>",
+      "from_name": "Club Vacation Deals",
+      "from_email_hash": "96d02889f453ff2eedbc8a9f0af418171954c925a662b3799c6e79a8a9529e6b",
+      "date": "2009-06-10T13:15:19-04:00",
+      "subject": "[R-sig-DB] Summer Vacations in Puerto Vallarta",
+      "subject_clean": "Summer Vacations in Puerto Vallarta",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "An HTML attachment was scrubbed...\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20090610/fd37a98d/attachment.html>",
+      "body_snippet": "An HTML attachment was scrubbed...\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20090610/fd37a98d/attachment.html>",
+      "thread_id": "thread-98799f4cff31",
+      "thread_depth": 0,
+      "month": "2009-06"
+    },
+    {
+      "id": "msg-b726b60f9ee3",
+      "message_id": "<773cea9e0906110835q280a23fdk97763266d28c7bf9@mail.gmail.com>",
+      "from_name": "Rajarshi Guha",
+      "from_email_hash": "462ee177cf26c69aaa4597a4b5b68258c5ae901dde8a1e3090bea8c32f3ccd99",
+      "date": "2009-06-11T11:35:23-04:00",
+      "subject": "[R-sig-DB] trouble connecting to an Oracle DB",
+      "subject_clean": "trouble connecting to an Oracle DB",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi, I'm discovering the DBI methods in R and am trying to connect to a\nremote Oracle DB using ROracle. However, I'm getting stumped by rthe\nconnection step. I'm using code of the form:\n\ndrv <- dbDriver(\"Oracle\")\ncon <- dbConnect(drv, 'user/passwd at host:port/SID')\n\nbut I get the following error:\n\nError in oraNewConnection(drv, ...) :\n  RS-DBI driver: (ORA-12514: TNS:listener does not currently know of service\nrequested in connect descriptor\n)\n\nIs this an issue with my connection statement? Or is it a problem with\nOracle? I'm using ROracle 0.5.9 and R 2.9.0 (64 bit on OS X Leopard). The\nOracle DB is 10.2.0.3.0\n\nAny pointers would be appreciated\n\n-- \nRajarshi Guha\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi, I'm discovering the DBI methods in R and am trying to connect to a\nremote Oracle DB using ROracle. However, I'm getting stumped by rthe\nconnection step. I'm using code of the form:\n\ndrv <- dbDrive",
+      "thread_id": "thread-b726b60f9ee3",
+      "thread_depth": 0,
+      "month": "2009-06"
+    },
+    {
+      "id": "msg-09c0c86f8f4b",
+      "message_id": "<86DD8552-8360-4999-98A9-52FD24283181@me.com>",
+      "from_name": "Marc Schwartz",
+      "from_email_hash": "040b2d09159b27cfd2853bc2dbb476bd637811586f307d9583c9ef7f806f3692",
+      "date": "2009-06-11T11:04:05-05:00",
+      "subject": "[R-sig-DB] trouble connecting to an Oracle DB",
+      "subject_clean": "trouble connecting to an Oracle DB",
+      "in_reply_to": "<773cea9e0906110835q280a23fdk97763266d28c7bf9@mail.gmail.com>",
+      "references": [
+        "<773cea9e0906110835q280a23fdk97763266d28c7bf9@mail.gmail.com>"
+      ],
+      "body_plain": "On Jun 11, 2009, at 10:35 AM, Rajarshi Guha wrote:\n\n> Hi, I'm discovering the DBI methods in R and am trying to connect to a\n> remote Oracle DB using ROracle. However, I'm getting stumped by rthe\n> connection step. I'm using code of the form:\n>\n> drv <- dbDriver(\"Oracle\")\n> con <- dbConnect(drv, 'user/passwd at host:port/SID')\n>\n> but I get the following error:\n>\n> Error in oraNewConnection(drv, ...) :\n>  RS-DBI driver: (ORA-12514: TNS:listener does not currently know of  \n> service\n> requested in connect descriptor\n> )\n>\n> Is this an issue with my connection statement? Or is it a problem with\n> Oracle? I'm using ROracle 0.5.9 and R 2.9.0 (64 bit on OS X  \n> Leopard). The\n> Oracle DB is 10.2.0.3.0\n>\n> Any pointers would be appreciated\n\nGenerally, when I get errors related to the Oracle TNS listener  \nservice (using RODBC), it is either an error on the server (service  \nnot enabled) or on my end with a server configuration issue such as  \nthe IP address or port setting. Every now and then, our SysAdmin  \nforgets to tell me that they did a server upgrade and changed something.\n\nIf you have the Oracle instant client installed locally, you might  \nwant to try using that to see if you can login successfully that way.  \nIt can be helpful in identifying where the issue might be based upon  \nthe success or failure of that approach.\n\nOtherwise, you might want to check with your SysAdmin to verify your  \nconfig/settings and that the TNS listener service is enabled on the  \nserver.\n\nHTH,\n\nMarc Schwartz",
+      "body_snippet": "On Jun 11, 2009, at 10:35 AM, Rajarshi Guha wrote:\n\n> Hi, I'm discovering the DBI methods in R and am trying to connect to a\n> remote Oracle DB using ROracle. However, I'm getting stumped by rthe\n> co",
+      "thread_id": "thread-b726b60f9ee3",
+      "thread_depth": 1,
+      "month": "2009-06"
+    },
+    {
+      "id": "msg-2646d54548f2",
+      "message_id": "<773cea9e0906110910h60c04ab0nafb3734e112390a5@mail.gmail.com>",
+      "from_name": "Rajarshi Guha",
+      "from_email_hash": "462ee177cf26c69aaa4597a4b5b68258c5ae901dde8a1e3090bea8c32f3ccd99",
+      "date": "2009-06-11T12:10:57-04:00",
+      "subject": "[R-sig-DB] trouble connecting to an Oracle DB",
+      "subject_clean": "trouble connecting to an Oracle DB",
+      "in_reply_to": "<86DD8552-8360-4999-98A9-52FD24283181@me.com>",
+      "references": [
+        "<773cea9e0906110835q280a23fdk97763266d28c7bf9@mail.gmail.com>",
+        "<86DD8552-8360-4999-98A9-52FD24283181@me.com>"
+      ],
+      "body_plain": "On Thu, Jun 11, 2009 at 12:04 PM, Marc Schwartz <marc_schwartz at me.com>wrote:\n\n> On Jun 11, 2009, at 10:35 AM, Rajarshi Guha wrote:\n>\n> Otherwise, you might want to check with your SysAdmin to verify your\n> config/settings and that the TNS listener service is enabled on the server.\n\n\nThanks for the pointer. It turns out that I needed to create a tnsnames.ora\nwith the appropriate alias in it.\n\n\n-- \nRajarshi Guha\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "On Thu, Jun 11, 2009 at 12:04 PM, Marc Schwartz <marc_schwartz at me.com>wrote:\n\n> On Jun 11, 2009, at 10:35 AM, Rajarshi Guha wrote:\n>\n> Otherwise, you might want to check with your SysAdmin to verif",
+      "thread_id": "thread-b726b60f9ee3",
+      "thread_depth": 2,
+      "month": "2009-06"
+    },
+    {
+      "id": "msg-e22a838a6013",
+      "message_id": "<e1d6a9cc12d28a29e50fccc377b7c53d@vallarta-paradise.com>",
+      "from_name": "Club Vacation Deals",
+      "from_email_hash": "96d02889f453ff2eedbc8a9f0af418171954c925a662b3799c6e79a8a9529e6b",
+      "date": "2009-06-20T04:31:36-04:00",
+      "subject": "[R-sig-DB] WBC Superfly Championship fight in Puerto Vallarta",
+      "subject_clean": "WBC Superfly Championship fight in Puerto Vallarta",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "An HTML attachment was scrubbed...\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20090620/3c57e296/attachment.html>",
+      "body_snippet": "An HTML attachment was scrubbed...\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20090620/3c57e296/attachment.html>",
+      "thread_id": "thread-e22a838a6013",
+      "thread_depth": 0,
+      "month": "2009-06"
+    },
+    {
+      "id": "msg-89f39adb4da0",
+      "message_id": "<9ED53B669FD50049AE0CE1168CD3C4BD018C38B4E351@mtnexmb01.perlegen.com>",
+      "from_name": "David Hinds",
+      "from_email_hash": "e67fa025455d438555e02c2986eeb5ad536e6df4cfc10661b8a324c69ba2c441",
+      "date": "2009-06-25T15:35:53-07:00",
+      "subject": "[R-sig-DB] Fixes for two bugs in ROracle string handling",
+      "subject_clean": "Fixes for two bugs in ROracle string handling",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I've sent these to David James, who is nominally the maintainer for ROracle,\nbut he hasn't responded, so I thought I'd at least post these here in case\nanyone else runs into them:\n\nBug 1: the code for trimming trailing blanks and null terminating strings in\nRS-DBI.c has a bad boundary condition.  If a string pulled from the database is\ncomposed entirely of blanks, then the code places the terminal null one byte\nbefore the start of the buffer.  So the string isn't actually null terminated at\nall, and bad things can happen.  Here is a test case that shows the problem:\n\n> dbClearResult(dbSendQuery(db, 'create table x(v varchar2(20))'))\n[1] TRUE\n> d <- data.frame(v=c('string1',' ','string2'), stringsAsFactors=FALSE)\n> ps <- dbPrepareStatement(db, 'insert into x values(:1)', d)\n> dbGetRowsAffected(dbExecStatement(ps, d))\n[1] 3\n> dbClearResult(ps)\n> r <- dbSendQuery(db, 'select * from x')\n> str(fetch(r))\n'data.frame':   3 obs. of  1 variable:\n $ V: chr  \"string1\" \"                    \" \"string2\"\n\nIn this case the bogus second string came through as all blank, but it can also\nrun on into la-la land.\n\nBug 2: the code for sizing the buffers used for sending character string data to\nOracle mishandles NA values.  The code determines a maximum string length for\neach bind variable but does not check for NA strings.  NA strings are internally\nrepresented as 'NA' and hence have an apparent length of 2.  If you try to store\nan NA into a column defined as char(1), Oracle complains:\n\n> dbClearResult(dbSendQuery(db, 'create table x (v char(1))'))\n> d <- data.frame(v=c('x',NA,'y'), stringsAsFactors=FALSE)\n> ps <- dbPrepareStatement(db, 'insert into x values(:1)', d)\n> dbExecStatement(ps, d)\nError in oraExecStatement(ps, data, ...) :\n  RS-DBI driver: (ORA-12899: value too large for column \"OPS$DHINDS\".\"X\".\"V\"\n(actual: 2, maximum: 1)\n)\n\nAnd here is a patch that fixes both bugs.  I happened to be using version 0.5-8\nbut the patch applies cleanly to 0.5-9 as well.  I hope that Outlook doesn't\nmunge it up...\n\n-- David Hinds\n\n\n\n--- ROracle_0.5-8/src/RS-DBI.c  2006-09-18 15:20:17.000000000 -0700\n+++ ROracle/src/RS-DBI.c        2009-06-15 13:18:27.451250000 -0700\n@@ -630,7 +630,8 @@\n   /* null terminate string whether we delete trailing blanks or not*/\n   if(del_blanks){\n     for(end = str_buffer+len-1; end>=str_buffer; end--)\n-      if(*end != ' ') { end++; break; }\n+      if(*end != ' ') { break; }\n+    end++;\n     *end = '\\0';\n   }\n   else {\n--- ROracle_0.5-8/src/RS-Oracle.pc      2006-09-18 15:20:17.000000000 -0700\n+++ ROracle/src/RS-Oracle.pc    2009-06-25 14:50:24.696063000 -0700\n@@ -1285,8 +1285,14 @@\n       if(Sclass[j]==CHARACTER_TYPE){\n          n = 0;\n          for(i=0; i<n_rows; i++){\n-            nc = strlen(LST_CHR_EL(input, df_field, from+i));\n-            n = RS_Ora_Max(n, nc);\n+#ifdef USING_R\n+            if(STRING_ELT(LST_EL(input,df_field),from+i)!=NA_STRING) {\n+#else\n+            if(!IS_NA(schars, CHARACTER_TYPE)) {  /* S-Plus specific */\n+#endif\n+               nc = strlen(LST_CHR_EL(input, df_field, from+i));\n+               n = RS_Ora_Max(n, nc);\n+            }\n          }\n          bind_dp->V[j] = (char *) calloc(bufferSize, n+1);  /* plus '\\0' */\n          bind_dp->L[j] = fld_len[j] = n+1;",
+      "body_snippet": "I've sent these to David James, who is nominally the maintainer for ROracle,\nbut he hasn't responded, so I thought I'd at least post these here in case\nanyone else runs into them:\n\nBug 1: the code for",
+      "thread_id": "thread-89f39adb4da0",
+      "thread_depth": 0,
+      "month": "2009-06"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-c1b212071da7",
+      "subject": "ROracle: basic insert fails",
+      "message_count": 1,
+      "participants": [
+        "Jean-Christophe Domenge"
+      ],
+      "started": "2009-06-05T15:34:40+02:00",
+      "last_reply": "2009-06-05T15:34:40+02:00",
+      "root_message_id": "msg-c1b212071da7"
+    },
+    {
+      "id": "thread-98799f4cff31",
+      "subject": "Summer Vacations in Puerto Vallarta",
+      "message_count": 1,
+      "participants": [
+        "Club Vacation Deals"
+      ],
+      "started": "2009-06-10T13:15:19-04:00",
+      "last_reply": "2009-06-10T13:15:19-04:00",
+      "root_message_id": "msg-98799f4cff31"
+    },
+    {
+      "id": "thread-b726b60f9ee3",
+      "subject": "trouble connecting to an Oracle DB",
+      "message_count": 3,
+      "participants": [
+        "Marc Schwartz",
+        "Rajarshi Guha"
+      ],
+      "started": "2009-06-11T11:35:23-04:00",
+      "last_reply": "2009-06-11T12:10:57-04:00",
+      "root_message_id": "msg-b726b60f9ee3"
+    },
+    {
+      "id": "thread-e22a838a6013",
+      "subject": "WBC Superfly Championship fight in Puerto Vallarta",
+      "message_count": 1,
+      "participants": [
+        "Club Vacation Deals"
+      ],
+      "started": "2009-06-20T04:31:36-04:00",
+      "last_reply": "2009-06-20T04:31:36-04:00",
+      "root_message_id": "msg-e22a838a6013"
+    },
+    {
+      "id": "thread-89f39adb4da0",
+      "subject": "Fixes for two bugs in ROracle string handling",
+      "message_count": 1,
+      "participants": [
+        "David Hinds"
+      ],
+      "started": "2009-06-25T15:35:53-07:00",
+      "last_reply": "2009-06-25T15:35:53-07:00",
+      "root_message_id": "msg-89f39adb4da0"
+    }
+  ]
+}

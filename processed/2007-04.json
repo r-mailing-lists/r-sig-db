@@ -1,0 +1,155 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2007-04",
+  "messages": [
+    {
+      "id": "msg-c9af2dadcfcd",
+      "message_id": "<m21wilfxlm.fsf@fhcrc.org>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2007-04-15T08:47:49-07:00",
+      "subject": "[R-sig-DB] New version of DBI package uploaded to CRAN",
+      "subject_clean": "New version of DBI package uploaded to CRAN",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello all,\n\nI've just uploaded a minor update to DBI, version 0.2-2 after\ndiscovering that there were a couple of methods listed in\nexportMethods directives in the new NAMESPACE file which were not\nactually defined/used in the packge code.  These have been removed in\nthe new version.\n\nThe new package should be available in a few days from a CRAN mirror\nnear you.\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "Hello all,\n\nI've just uploaded a minor update to DBI, version 0.2-2 after\ndiscovering that there were a couple of methods listed in\nexportMethods directives in the new NAMESPACE file which were not\nac",
+      "thread_id": "thread-c9af2dadcfcd",
+      "thread_depth": 0,
+      "month": "2007-04"
+    },
+    {
+      "id": "msg-fca631e48c84",
+      "message_id": "<462904EC.6070803@fhcrc.org>",
+      "from_name": "Herve Pages",
+      "from_email_hash": "fd1d1d7a6264909f0236d26dfae51520f3d3455c869422fce43a45549d197dbf",
+      "date": "2007-04-20T11:22:36-07:00",
+      "subject": "[R-sig-DB] DBI+RSQLite NAMESPACE problem",
+      "subject_clean": "DBI+RSQLite NAMESPACE problem",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\nWith DBI and RSQlite now having namespaces, if I want to do this in my package:\n\n\n.onLoad <- function(libname, pkgname)\n{\n    drv <- dbDriver(\"SQLite\")\n    ...\n}\n\nthen I need to import DBI in my NAMESPACE which is fine.\n\nNow at load time, my package will be able to call DBI::dbDriver() but\nDBI::dbDriver() itself will fail because it tries to call the SQLite()\nfunction. SQLite() is defined in the RSQLite package but DBI doesn't\nimport RSQLite hence the load-time error.\n\nIt seems that the workaround is to put RSQLite in the Depends field\nof my package. With this addition, it loads :-)\n\nHowever, 'R CMD check mypackage' will still complain with the following\nwarning:\n\n  * checking whether the name space can be loaded with stated dependencies ... WARNING\n  Error in do.call(as.character(drvName), list(...)) :\n          could not find function \"SQLite\"\n  Error: .onLoad failed in 'loadNamespace' for 'mypackage'\n  Execution halted\n\n  A namespace must be able to be loaded with just the base namespace loaded:\n  otherwise if the namespace gets loaded by a saved object, the session will\n  be unable to start.\n\n  Probably some imports need to be declared in the NAMESPACE file.\n\nThis error occurs in the DBI::dbDriver() method: 'drvName' contains the \"SQLite\"\nstring so do.call() tries to call the SQLite() function which is of course not\ndefined.\n\nAny idea how this could be addressed?\n\nThanks,\nH.",
+      "body_snippet": "Hi,\n\nWith DBI and RSQlite now having namespaces, if I want to do this in my package:\n\n\n.onLoad <- function(libname, pkgname)\n{\n    drv <- dbDriver(\"SQLite\")\n    ...\n}\n\nthen I need to import DBI in my ",
+      "thread_id": "thread-fca631e48c84",
+      "thread_depth": 0,
+      "month": "2007-04"
+    },
+    {
+      "id": "msg-50444abbfd6a",
+      "message_id": "<m23b2un23t.fsf@ziti.local>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2007-04-20T14:54:30-07:00",
+      "subject": "[R-sig-DB] DBI+RSQLite NAMESPACE problem",
+      "subject_clean": "DBI+RSQLite NAMESPACE problem",
+      "in_reply_to": "<462904EC.6070803@fhcrc.org> (Herve Pages's message of \"Fri, 20 Apr 2007 11:22:36 -0700\")",
+      "references": [
+        "<462904EC.6070803@fhcrc.org>"
+      ],
+      "body_plain": "Herve Pages <hpages at fhcrc.org> writes:\n\n> Hi,\n>\n> With DBI and RSQlite now having namespaces, if I want to do this in my package:\n>\n>\n> .onLoad <- function(libname, pkgname)\n> {\n>     drv <- dbDriver(\"SQLite\")\n>     ...\n> }\n\nAfter some discussion, I think the best answer is: don't do it like\nthat.  Instead, create a driver instance directly:\n\n    drv <- SQLite()\n\nThis avoid any name space confusion.\n\nAt the same time, this prompted a closer look at the recently added\nNAMESPACE files and I found some things that need fixing.  After a bit\nmore testing I will be pushing out updates for DBI and RSQLite.  It\nremains to be seen whether these fixes would resolve this particular\nissue or not.\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "Herve Pages <hpages at fhcrc.org> writes:\n\n> Hi,\n>\n> With DBI and RSQlite now having namespaces, if I want to do this in my package:\n>\n>\n> .onLoad <- function(libname, pkgname)\n> {\n>     drv <- dbDriv",
+      "thread_id": "thread-fca631e48c84",
+      "thread_depth": 1,
+      "month": "2007-04"
+    },
+    {
+      "id": "msg-b22cd490b0c7",
+      "message_id": "<005101c7860e$d49b4c40$0a00a8c0@cosmo>",
+      "from_name": "Daniel J McGoldrick",
+      "from_email_hash": "fe53755b6efb719d48bd4333e353fdab0f60c2d9f6c3a86dd25164017ddfee31",
+      "date": "2007-04-23T19:21:04-06:00",
+      "subject": "[R-sig-DB] RMySQL for R version 2.4.1?",
+      "subject_clean": "RMySQL for R version 2.4.1?",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello :-)\n\nI am running R version 2.4.1 on windows XP, and was looking for a way to get my RMySQL interface back together...\n\nApparently the upgrade from my previous R versions broke this interface? Is there a RMySQL binary for windows\nthat works with R 2.4.1?\n\nThe kicker is that the XML package requires R 2.4.1 so either I get a system that can parse XML \nnicely or I can have a MySQL API but not both in the same R instance?\n\nI would be very grateful if anyone knew how I could fix this problem either by installing from source \nor finding a windows binary, or even switching to another package and interface???\n\nAny News about this?\n\nRegards,\n\nDaniel J McGoldrick Ph.D.\nSentient Solutions Inc\n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hello :-)\n\nI am running R version 2.4.1 on windows XP, and was looking for a way to get my RMySQL interface back together...\n\nApparently the upgrade from my previous R versions broke this interface? I",
+      "thread_id": "thread-b22cd490b0c7",
+      "thread_depth": 0,
+      "month": "2007-04"
+    },
+    {
+      "id": "msg-6c3c245e191f",
+      "message_id": "<74c69e370704231839y2062c7f8j7cc355aedf755af8@mail.gmail.com>",
+      "from_name": "David James",
+      "from_email_hash": "5a98c7bb5df85f08e6bfd2fddc1835f5d02f0963da6236b12659868f2772176d",
+      "date": "2007-04-23T21:39:54-04:00",
+      "subject": "[R-sig-DB] RMySQL for R version 2.4.1?",
+      "subject_clean": "RMySQL for R version 2.4.1?",
+      "in_reply_to": "<005101c7860e$d49b4c40$0a00a8c0@cosmo>",
+      "references": [
+        "<005101c7860e$d49b4c40$0a00a8c0@cosmo>"
+      ],
+      "body_plain": "Hi,\n\nThanks to Joe Byers, Seth Falcon, and a few other kind souls, a binary version\nis available at\n\n    http://bioconductor.org/packages/omegahat/html/RMySQL.html\n\nRegards,\n\n--\n\nDavid\n\n\n\nOn 4/23/07, Daniel J McGoldrick <djmcgoldrick at comcast.net> wrote:\n> Hello :-)\n>\n> I am running R version 2.4.1 on windows XP, and was looking for a way to get my RMySQL interface back together...\n>\n> Apparently the upgrade from my previous R versions broke this interface? Is there a RMySQL binary for windows\n> that works with R 2.4.1?\n>\n> The kicker is that the XML package requires R 2.4.1 so either I get a system that can parse XML\n> nicely or I can have a MySQL API but not both in the same R instance?\n>\n> I would be very grateful if anyone knew how I could fix this problem either by installing from source\n> or finding a windows binary, or even switching to another package and interface???\n>\n> Any News about this?\n>\n> Regards,\n>\n> Daniel J McGoldrick Ph.D.\n> Sentient Solutions Inc\n>\n>\n>        [[alternative HTML version deleted]]\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "Hi,\n\nThanks to Joe Byers, Seth Falcon, and a few other kind souls, a binary version\nis available at\n\n    http://bioconductor.org/packages/omegahat/html/RMySQL.html\n\nRegards,\n\n--\n\nDavid\n\n\n\nOn 4/23/07, ",
+      "thread_id": "thread-b22cd490b0c7",
+      "thread_depth": 1,
+      "month": "2007-04"
+    },
+    {
+      "id": "msg-21bdad02a9de",
+      "message_id": "<m2lkgcc4p8.fsf@ziti.fhcrc.org>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2007-04-28T19:08:51-07:00",
+      "subject": "[R-sig-DB] New versions of DBI and RSQLite uploaded to CRAN",
+      "subject_clean": "New versions of DBI and RSQLite uploaded to CRAN",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello all,\n\nDBI_0.2-3.tar.gz and RSQLite_0.5-4.tar.gz should be available on a\nCRAN mirror near you in few days.\n\nChanges include minor fixes for the recently added NAMESPACE files in\nboth packages.\n\nBest Wishes,\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "Hello all,\n\nDBI_0.2-3.tar.gz and RSQLite_0.5-4.tar.gz should be available on a\nCRAN mirror near you in few days.\n\nChanges include minor fixes for the recently added NAMESPACE files in\nboth packages.\n\n",
+      "thread_id": "thread-21bdad02a9de",
+      "thread_depth": 0,
+      "month": "2007-04"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-c9af2dadcfcd",
+      "subject": "New version of DBI package uploaded to CRAN",
+      "message_count": 1,
+      "participants": [
+        "Seth Falcon"
+      ],
+      "started": "2007-04-15T08:47:49-07:00",
+      "last_reply": "2007-04-15T08:47:49-07:00",
+      "root_message_id": "msg-c9af2dadcfcd"
+    },
+    {
+      "id": "thread-fca631e48c84",
+      "subject": "DBI+RSQLite NAMESPACE problem",
+      "message_count": 2,
+      "participants": [
+        "Herve Pages",
+        "Seth Falcon"
+      ],
+      "started": "2007-04-20T11:22:36-07:00",
+      "last_reply": "2007-04-20T14:54:30-07:00",
+      "root_message_id": "msg-fca631e48c84"
+    },
+    {
+      "id": "thread-b22cd490b0c7",
+      "subject": "RMySQL for R version 2.4.1?",
+      "message_count": 2,
+      "participants": [
+        "Daniel J McGoldrick",
+        "David James"
+      ],
+      "started": "2007-04-23T19:21:04-06:00",
+      "last_reply": "2007-04-23T21:39:54-04:00",
+      "root_message_id": "msg-b22cd490b0c7"
+    },
+    {
+      "id": "thread-21bdad02a9de",
+      "subject": "New versions of DBI and RSQLite uploaded to CRAN",
+      "message_count": 1,
+      "participants": [
+        "Seth Falcon"
+      ],
+      "started": "2007-04-28T19:08:51-07:00",
+      "last_reply": "2007-04-28T19:08:51-07:00",
+      "root_message_id": "msg-21bdad02a9de"
+    }
+  ]
+}

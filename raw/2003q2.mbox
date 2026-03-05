@@ -1,0 +1,355 @@
+From p@@c@|  Tue Apr  8 05:25:19 2003
+From: p@@c@| (Pascal Heus)
+Date: Mon, 7 Apr 2003 23:25:19 -0400
+Subject: [R-sig-DB] OLAP
+Message-ID: <002001c2fd7e$7b8a8f20$0301a8c0@Papito>
+
+Greetings:
+has anyone ever tried to retrieve data in R from an OLAP cube? Any
+library available or thought on how this could be accompished?
+thanks
+Pascal
+
+	[[alternate HTML version deleted]]
+
+
+From j|@ndgr1 @end|ng |rom gwdg@de  Thu May  8 13:12:16 2003
+From: j|@ndgr1 @end|ng |rom gwdg@de (jobst landgrebe)
+Date: Thu, 08 May 2003 13:12:16 +0200
+Subject: [R-sig-DB] trouble with R postgreSQL
+In-Reply-To: <3EB7D273.7070602@biochem.mpg.de>
+Message-ID: <E19DjJx-0006gI-7v@mailer.gwdg.de>
+
+Dear List,
+
+since I installed R 1.7.0 on my machines, the interface to postgreSQL does not
+work anymore. Till now, I used RPgSQL, but because it stopped working, I tried
+Rdbi.PgSQL and DBI, which were both installed easily but did not work:
+
+Rdbi.PgSQL could not be loaded via library()
+> library(Rdbi.PgSQL)
+Loading required package: Rdbi 
+Error in firstlib(which.lib.loc, package) : 
+        Could not load package Rdbi
+In addition: Warning message: 
+There is no package called 'Rdbi' in: library(package, character.only = TRUE,
+logical = TRUE, warn.conflicts = warn.conflicts,  
+Error in library(Rdbi.PgSQL) : .First.lib failed
+
+And DBI did not allow loading of a postgreSQL driver:
+
+ > dbDriver("PostgreSQL")
+Error in do.call(as.character(drvName), list(...)) : 
+        couldn't find function "PostgreSQL"
+
+
+Can anyone help me to get to work one of the interfaces with R version 1.7.0?
+I have postgreSQL 7.2
+
+Thank you very much in advance.
+
+J. Landgrebe
+
+
+
+Dr. Jobst Landgrebe
+Universitaet Goettingen
+Zentrum Biochemie
+Humboldtallee 23
+37073 Goettingen
+Germany
+
+tel: 0551/39-2316 oder -2223
+fax: 0551/39-5960
+web: http://www.microarrays.med.uni-goettingen.de
+mail: jlandgr1 at gwdg.de
+
+
+
+From dj @end|ng |rom re@e@rch@be||-|@b@@com  Thu May  8 15:33:40 2003
+From: dj @end|ng |rom re@e@rch@be||-|@b@@com (David James)
+Date: Thu, 8 May 2003 09:33:40 -0400
+Subject: [R-sig-DB] Re: DBI and postgreSQL
+In-Reply-To: <E19Dj1m-00035f-BS@mailer.gwdg.de>;
+	from jlandgr1@gwdg.de on Thu, May 08, 2003 at 12:53:29PM +0200
+References: <3EB7D273.7070602@biochem.mpg.de>
+	<E19Dj1m-00035f-BS@mailer.gwdg.de>
+Message-ID: <20030508093340.A18193@jessie.research.bell-labs.com>
+
+Hi,
+
+The RPgSQL package and its rdbi (not DBI) interface was
+written by Tim Keitt and only available through sourceforge
+http://rdbi.sourceforge.net (as far as I know).  You may want to
+contact him directly.
+
+Hope this helps,
+
+--
+David
+
+jobst landgrebe wrote:
+> Dear Mr. James,
+> 
+> since installing R 1.7.0 this morning, the postgreSQLinterface RPgSQL which
+> I'm using since several years does not work anymore. I installed your DBI
+> (which got installed without complaining), but dbDriver("PostgreSQL") gives me
+> 
+> 
+> 
+> > dbDriver("PostgreSQL")
+> Error in do.call(as.character(drvName), list(...)) : 
+>         couldn't find function "PostgreSQL"
+> 
+> How can I get a driver for postgreSQL that works with DBI? How is it
+> installed?
+> What would you advise me to do? Downgrading R is surely a bad solution...
+> 
+> As I really need the R-Postgres-interface for my daily work, I would be very
+> happt to hear from you.
+> 
+> Thanks in advance,
+> 
+> Jobst Landgrebe
+> 
+> Dr. Jobst Landgrebe
+> Universitaet Goettingen
+> Zentrum Biochemie
+> Humboldtallee 23
+> 37073 Goettingen
+> Germany
+> 
+> tel: 0551/39-2316 oder -2223
+> fax: 0551/39-5960
+> web: http://www.microarrays.med.uni-goettingen.de
+> mail: jlandgr1 at gwdg.de
+
+-- 
+David A. James
+Statistics Research, Room 2C-253            Phone:  (908) 582-3082       
+Bell Labs, Lucent Technologies              Fax:    (908) 582-3340
+Murray Hill, NJ 09794-0636
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Thu May  8 18:40:58 2003
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Thu, 8 May 2003 17:40:58 +0100 (BST)
+Subject: [R-sig-DB] trouble with R postgreSQL
+In-Reply-To: <E19DjJx-0006gI-7v@mailer.gwdg.de>
+Message-ID: <Pine.LNX.4.44.0305081241390.18826-100000@gannet.stats>
+
+On Thu, 8 May 2003, jobst landgrebe wrote:
+
+> since I installed R 1.7.0 on my machines, the interface to postgreSQL does not
+> work anymore.  Till now, I used RPgSQL, but because it stopped working, 
+I tried
+> Rdbi.PgSQL and DBI, which were both installed easily but did not work:
+> 
+> Rdbi.PgSQL could not be loaded via library()
+> > library(Rdbi.PgSQL)
+> Loading required package: Rdbi 
+> Error in firstlib(which.lib.loc, package) : 
+>         Could not load package Rdbi
+> In addition: Warning message: 
+> There is no package called 'Rdbi' in: library(package, character.only = TRUE,
+> logical = TRUE, warn.conflicts = warn.conflicts,  
+> Error in library(Rdbi.PgSQL) : .First.lib failed
+
+You do need to install Rdbi *as well*, as the error messaage says:
+and I think Rdbi is obselete.
+ 
+> And DBI did not allow loading of a postgreSQL driver:
+> 
+>  > dbDriver("PostgreSQL")
+> Error in do.call(as.character(drvName), list(...)) : 
+>         couldn't find function "PostgreSQL"
+
+DBI requires another package to provide a driver, and you didn't install 
+one (and AFAIK there is none for PostgreSQL).
+
+> Can anyone help me to get to work one of the interfaces with R version 1.7.0?
+> I have postgreSQL 7.2
+
+Well, you could ask their authors: except for DBI (which needs a backend) 
+none of these have current supported versions on CRAN.
+
+I can point out that RODBC does work with PostgreSQL 7.2 and R 1.7.0
+provided you get a working ODBC driver: see the notes in the RODBC 
+sources.
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From dj @end|ng |rom re@e@rch@be||-|@b@@com  Fri May  9 00:38:24 2003
+From: dj @end|ng |rom re@e@rch@be||-|@b@@com (David James)
+Date: Thu, 8 May 2003 18:38:24 -0400
+Subject: [R-sig-DB] Re: RMySQL connections speed
+In-Reply-To: <3EB93B3E.8060500@ariase.com>;
+	from laurent.faisnel@ariase.com on Wed, May 07, 2003 at
+	06:58:38PM +0200
+References: <3EB62755.3030807@ariase.com>
+	<20030505120641.B30@jessie.research.bell-labs.com>
+	<3EB76CB0.5070508@ariase.com>
+	<20030506083402.A17326@jessie.research.bell-labs.com>
+	<3EB7B66B.8050908@ariase.com>
+	<20030507122802.A8525@jessie.research.bell-labs.com>
+	<3EB93B3E.8060500@ariase.com>
+Message-ID: <20030508183824.A11300@jessie.research.bell-labs.com>
+
+Hi,
+
+The problem with long delays turned out to be in the coercion
+function as() that I use to coerce connection and result objects into
+integers (the underlying C codes uses integers as handles).
+Thanks to John Chambers for quickly fixing the problem (see his
+earlier posting today in r-devel).
+
+--
+David
+
+Laurent Faisnel wrote:
+> Hi,
+> I've just tried your new function lean.exec, and I'mvery surprise such a 
+> short code can have so devastating effects ! The result (at least, after 
+> the first tests) is fantastic. The request takes just an instant 
+> (unix.time: less than 0.01 sec.), instead of the 2 seconds dbGetQuery 
+> used to take.
+> If this is confirmed you brought very good a piece of news to me, thanks 
+> ! But how do you explain there is such a speed difference between the 
+> two functions ?
+> Keep me informed of any further test you could make.
+> 
+> Laurent
+
+
+
+From @ty@ng @end|ng |rom ebtnet@net  Sat May 31 17:47:32 2003
+From: @ty@ng @end|ng |rom ebtnet@net (Shih-Te Yang)
+Date: Sat, 31 May 2003 23:47:32 +0800
+Subject: [R-sig-DB] ROracle--errors happen while connecting to oracle
+	database--enclose three setting files
+Message-ID: <KPELICGFKMGCMOOEDEPPGEINCKAA.styang@ebtnet.net>
+
+Dear Dr. Sir and Madam:
+
+It's very convenient to apply ROracle package to connect and retrieve data
+from Oracle database. After successful installation, I still meet the error
+connecting to oracle database. Please check the operational commands and
+response in R environment below:
+
+============================================================================
+R : Copyright 2003, The R Development Core Team
+Version 1.7.0  (2003-04-16)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type `license()' or `licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type `contributors()' for more information.
+
+Type `demo()' for some demos, `help()' for on-line help, or
+`help.start()' for a HTML browser interface to help.
+Type `q()' to quit R.
+
+[Previously saved workspace restored]
+
+> options(STERM='iESS', editor='emacsclient')
+> library(ROracle)
+> ora <- dbDriver("Oracle")
+> ora
+<OraDriver:(18392)>
+> con <- dbConnect(ora,user='ae',password='AE',dbname="marray")
+Error in oraNewConnection(drv, ...) : RS-DBI driver: (Error while trying to
+retrieve text for error ORA-12154
+)
+============================================================================
+I also enclose three setting files about ROracle.
+Thus, can you help me to solve this problem? Thank you for the kind
+response!
+
+Your truly,
+Shih-Te
+------------------------------------------------
+Shih-Te Yang, Ph.D. student
+Bioinformatics Research Center
+Institute of Biochemistry
+School of Life Science
+National Yang-Ming University
+Tel:+886-2-28267000*5666
+Fax:+886-2-81461062
+E-mail:g38903040 at ym.edu.tw
+MyWeb: http://binfo.ym.edu.tw/styang/
+------------------------------------------------
+
+
+begin 666 bash_profile.dat
+M(R N8F%S:%]P<F]F:6QE#0H-"B, at 1V5T('1H92!A;&EA<V5S(&%N9"!F=6YC
+M=&EO;G,-"FEF(%L at +68@?B\N8F%S:')C(%T[('1H96X-"B @(" @(" @+B!^
+M+RYB87-H<F,-"F9I#0H-"B, at 57-E<B!S<&5C:69I8R!E;G9I<F]N;65N="!A
+M;F0@<W1A<G1U<"!P<F]G<F%M<PT*#0I0051(/210051(.B1(3TU%+V)I;@T*
+M#0IE>'!O<G0 at 4$%42 T*=6YS970 at 55-%4DY!344-"@T*97AP;W)T($Q$7T%3
+M4U5-15]+15).14P],BXR+C4-"F5X<&]R="!,04Y'/65N7U53#0IE>'!O<G0@
+M3$-?04Q,/65N7U53#0IE>'!O<G0 at 3$-?3$%.1SUE;E]54PT*97AP;W)T($]2
+M04-,15]3240];6%R<F%Y#0IE>'!O<G0 at 3U)!0TQ%7T)!4T4]+VAO;64O;W)A
+M8VQE#0IE>'!O<G0 at 3U)!0TQ%7TA/344]+VAO;64O;W)A8VQE+W!R;V1U8W0O
+M."XQ+C<-"F5X<&]R="!,1%],24)205)97U!!5$@])$]204-,15](3TU%+VQI
+M8CHO;&EB.B]U<W(O;&EB.B]U<W(O;&]C86PO;&EB.B]U<W(O;&]C86PO:F%V
+M83HO=7-R+VQO8V%L+VIA=F$O8FEN#0IE>'!O<G0 at 5$Y37T%$34E./21/4D%#
+M3$5?2$]-12]N971W;W)K+V%D;6EN#0IE>'!O<G0 at 3U)!7TY,4S,S/21/4D%#
+M3$5?2$]-12]O8V]M;6]N+VYL<R]A9&UI;B]D871A#0IE>'!O<G0 at 3U)!0TQ%
+M7T]73D52/6]R86-L90T*97AP;W)T($]204-,15]415)-/7AT97)M#0H-"F5X
+M<&]R="!0051(/21/4D%#3$5?2$]-12]B:6XZ+V]P="]B:6XZ+V)I;CHO=7-R
+M+V)I;CHO=7-R+VQO8V%L+V)I;CHO=7-R+W-B:6XZ#0IE>'!O<G0 at 4$%42#TD
+M4$%42#HO=7-R+U at Q,5(V+V)I;CHO=7-R+VQO8V%L+VIA=F$O8FEN.B1*059!
+M7TA/344O8FEN#0H-"@T*97AP;W)T($I!5D%?2$]-13TO=7-R+VQO8V%L+VIA
+M=F$-"F5X<&]R="!#3$%34U!!5$@])$]204-,15](3TU%+VID8F,O;&EB+V-L
+M87-S97,Q,BYZ:7 Z)$]204-,15](3TU%+SHD>TI!5D%?2$]-17TO;&EB+V-L
++87-S97,N>FEP#0H`
+`
+end
+
+begin 666 sqlnet.ora
+M(R!S<6QN970N;W)A#0H-"DY!3453+D1%1D%53%1?1$]-04E.(#T at 34%24D%9
+M7TU!4E)!62Y932Y%1%4N5%<-"DY!3453+D1)4D5#5$]265]0051(/2 H5$Y3
+83D%-15,L($].04U%4RP at 2$]35$Y!344I
+`
+end
+
+begin 666 tnsnames.ora
+M(R,C(R,C(R,C(R,C(R,C(R,C(R,C(R,C(R,C(R,C(R,C(R,C#0HC(%1.4TY!
+M3453+D]202!#;VYF:6=U<F%T:6]N($9I;&4Z+VAO;64O;W)A8VQE+W!R;V1U
+M8W0O."XQ+C<O;F5T=V]R:R]A9&UI;B]T;G-N86UE<RYO<F$-"B, at 1V5N97)A
+M=&5D(&)Y($]R86-L92!%;G1E<G!R:7-E($UA;F%G97(@5C(-"B, at 1&%T92XN
+M+BXN+BXN+BXZ($UO;B!-87D@,3(@,#@Z,#@Z,SD at 0T14(#(P,#,-"B,C(R,C
+M(R,C(R,C(R,C(R,C(R,C(R,C(R,C(R,C(R,C(R,C(PT*#0I-05)205E?34%2
+M4D%9+EE-+D5$52Y45R ]#0H@("A$15-#4DE05$E/3B ]#0H@(" @*$%$1%)%
+M4U-?3$E35" ]#0H@(" @(" H041$4D534R ]("A04D]43T-/3" ](%1#4"DH
+M2$]35" ](&UA<G)A>2YY;2YE9'4N='<I*%!/4E0@/2 Q-3(Q*2D-"B @(" I
+M#0H@(" @*$-/3DY%0U1?1$%402 ]("A3240@/2!M87)R87DI*%-%4E9%4B ]
+M($1%1$E#051%1"DI#0H@("D-"@T*34%24D%97TU!4E)!62 ]#0H@("A$15-#
+M4DE05$E/3B ]#0H@(" @*$%$1%)%4U-?3$E35" ]#0H@(" @(" H041$4D53
+M4R ]("A04D]43T-/3" ](%1#4"DH2$]35" ](&UA<G)A>2DH4$]25" ](#$U
+M,C$I*0T*(" @("D-"B @(" H0T].3D5#5%]$051!(#T@*%-)1" ](&UA<G)A
+M>2DH4T525D52(#T at 1$5$24-!5$5$*2D-"B @*0T*#0I/4D%,7TU!4E)!62 ]
+M#0H@("A$15-#4DE05$E/3B ]#0H@(" @*$%$1%)%4U-?3$E35" ]#0H@(" @
+M(" H041$4D534R ]("A04D]43T-/3" ](%1#4"DH2$]35" ](&UA<G)A>2DH
+M4$]25" ](#$U,C$I*0T*(" @("D-"B @(" H0T].3D5#5%]$051!(#T@*%-)
+M1" ](&]R86PI*%-%4E9%4B ]($1%1$E#051%1"DI#0H@("D-"@T*3U)!3%]-
+M05 @/0T*(" H1$530U))4%1)3TX@/0T*(" @("A!1$1215-37TQ)4U0@/0T*
+M(" @(" @*$%$1%)%4U,@/2 H4%)/5$]#3TP@/2!40U I*$A/4U0@/2 Q-# N
+M,3(Y+C$U,2XS-2DH4$]25" ](#$U,C$I*0T*(" @("D-"B @(" H0T].3D5#
+M5%]$051!(#T@*%-)1" ](&]R86PI*%-%4E9%4B ]($1%1$E#051%1"DI#0H@
+&("D-"@T*
+`
+end
+
+
+

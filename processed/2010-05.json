@@ -1,0 +1,238 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2010-05",
+  "messages": [
+    {
+      "id": "msg-537d7dd10cc9",
+      "message_id": "<4BDDEBFE.1060704@userprimary.net>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2010-05-02T14:17:50-07:00",
+      "subject": "[R-sig-DB] Request for testers for RSQLite release candidate",
+      "subject_clean": "Request for testers for RSQLite release candidate",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi all,\n\nI've been working on the next release of RSQLite and would appreciate\nfeedback on the release candidate from anyone willing to take it for a\ntest drive.\n\nThe NEWS items for what I hope will be the 0.9-0 release are at the end\nof this mail.  Highlights in brief:\n\n* Better compatibility with multicore, driver handle no longer needs to\nmatch current process ID.\n\n* Support for SQLite BLOBs via raw vectors\n\n* Reworked memory model for DB connections to tie into R's garbage\ncollector.  When a db connection is no longer referenced by an R\nvariable, it will be closed and cleaned up.\n\nYou can grab the source package for the release candidate here:\n\n    http://userprimary.net/software/RSQLite_0.8-99.tar.gz\n\nThanks,\n\n+ seth\n\n\nVersion 0.9-0\n\n- The SQLite driver handle validation code, is_ValidHandle, no longer\n  requires the driver ID to be equal to the current process ID.\n  SQLite supports multiple processes accessing the same SQLite file\n  via locking (however, results are known to be unreliable on NFS).\n  This change should make using RSQLite with the multicore package\n  easier.  For an example of the issue that the PID check causes see:\n  https://stat.ethz.ch/pipermail/r-sig-hpc/2009-August/000335.html\n\n- Refactor to use external pointers to wrap handle IDs; remove handle\n  ID coerce code (e.g. as(obj at Id, \"integer\")).  For now, the old\n  scheme of storing handle IDs in an integer vector is mostly\n  maintained only these integer vectors are stored in the protection\n  slot of an external pointer.  Using external pointers will allow the\n  use of finalizer code so that, for example, unreferenced result sets\n  can be cleaned up.\n\n- Upgrade to SQLite 3.6.23.1.\n\n- The memory mangement code for keeping track of database connections\n  was significantly refactored.  Instead of tracking connections in a\n  pre-allocated array attached to the driver manager, connections are\n  now managed dynamically using R's external pointers and finalizers.\n  Consequences of this change are as follows:\n\n    * There is no longer a maximum connection limit (values specified\n      using the max.con argument to SQLite() are now ignored).\n\n    * The dbGetInfo(mgr) method no longer lists open connections and\n      dbListConnections will now always return an empty list.  This\n      functionality was only needed because one needed a reference to\n      a connection in order to finalize the resource via\n      dbDisconnect().  While calling dbDisconnect() is still the\n      recommended approach, database connections that are no longer\n      referenced by any R variables will be finalized by R's garbage\n      collector.\n\n    * The behavior of SQLiteConnection objects now follows typical R\n      semantics.  If no R variables reference a given connection, it\n      will be finalized by R's garbage collector.\n\n- Add support for SQLite BLOBs.  You can now insert and retrieve BLOBs\n  using raw vectors.  For parameterized queries using\n  dbSendPreparedQuery the BLOB column should be a list.  When a query\n  returns a result set with a BLOB column, that column will be a list\n  of raw vectors.  Lists as columns in data.frames work for simple\n  access, but may break some code that expects columns to be atomic\n  vectors.\n\n- RSQLite now depends on R >= 2.10.0.",
+      "body_snippet": "Hi all,\n\nI've been working on the next release of RSQLite and would appreciate\nfeedback on the release candidate from anyone willing to take it for a\ntest drive.\n\nThe NEWS items for what I hope will b",
+      "thread_id": "thread-537d7dd10cc9",
+      "thread_depth": 0,
+      "month": "2010-05"
+    },
+    {
+      "id": "msg-438b1522633e",
+      "message_id": "<4BE04E1E.70802@userprimary.net>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2010-05-04T09:41:02-07:00",
+      "subject": "[R-sig-DB] RSQLite Issue",
+      "subject_clean": "RSQLite Issue",
+      "in_reply_to": "<3BB38AB7-2C35-4FE9-8C90-2CF33E415A96@wisc.edu>",
+      "references": [
+        "<3BB38AB7-2C35-4FE9-8C90-2CF33E415A96@wisc.edu>"
+      ],
+      "body_plain": "Hi Erik,\n\nOn 5/4/10 8:33 AM, Erik Wright wrote:\n> I couldn't find a user forum for RSQLite, so I decided to email you directly.  Here is my problem:\n\nNext time, you can send email to r-sig-db at stat.math.ethz.ch\nhttps://stat.ethz.ch/mailman/listinfo/r-sig-db\nfor RSQLite related questions.\n\n> 1.  Loop updating values of a column in a table.\n> 2.  Immediately after finishing the loop, query that column.\n>\n> In step 2, I get an error \"no such column\".  It is almost like the database is still in the middle of updating the column.  When I go look at the database, the column is most definitely there.  Obviously it must be there because I have been updating it repeatedly without any problems.\n>\n> Any ideas for a fix?  I tried implementing a delay with Sys.sleep before querying the column, but that didn't work.\n\nYou'll need to send along a bit more information for me to help you.  Is \nthere a way you can create a small reproducible example script?  Please \nalso include sessionInfo() output so I know what version of R and \nRSQLite you are using.\n\nYou might find it useful to review the examples of prepared queries in \nthe RSQLite docs.  For example, try help(\"dbSendPreparedQuery\"), and \nthen scroll down to look at the examples.\n\n+ seth\n\n-- \nSeth Falcon | @sfalcon | http://userprimary.net/",
+      "body_snippet": "Hi Erik,\n\nOn 5/4/10 8:33 AM, Erik Wright wrote:\n> I couldn't find a user forum for RSQLite, so I decided to email you directly.  Here is my problem:\n\nNext time, you can send email to r-sig-db at stat.",
+      "thread_id": "thread-438b1522633e",
+      "thread_depth": 0,
+      "month": "2010-05"
+    },
+    {
+      "id": "msg-c3ca0c91c0fc",
+      "message_id": "<4BE450F7.2090705@userprimary.net>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2010-05-07T10:42:15-07:00",
+      "subject": "[R-sig-DB] Release announcement: RSQLite 0.9-0 now with more BLOBs",
+      "subject_clean": "Release announcement: RSQLite 0.9-0 now with more BLOBs",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "RSQLite is an R package conforming to the R DBI interface that allows \nfor interaction with SQLite.\n\nVersion 0.9-0 highlights:\n\n* Support for SQLite BLOBs using raw vectors in R\n\n* New memory model for db connections allows for more familiar R \nsemantics and no predefined limit to the number of connections you can \nhave in an R session.\n\n* Upgrade to SQLite 3.6.23.1\n\n* Removed an unnecessary validity check on process ID for the manager \nhandle.  This should make use of RSQLite with the multicore package easier.\n\n* RSQLite now depends on R >= 2.10.0\n\nYou can read more details about these and other changes here:\n\n    http://cran.r-project.org/web/packages/RSQLite/NEWS\n\n\n+ seth\n\n\n-- \nSeth Falcon | @sfalcon | http://userprimary.net/",
+      "body_snippet": "RSQLite is an R package conforming to the R DBI interface that allows \nfor interaction with SQLite.\n\nVersion 0.9-0 highlights:\n\n* Support for SQLite BLOBs using raw vectors in R\n\n* New memory model fo",
+      "thread_id": "thread-c3ca0c91c0fc",
+      "thread_depth": 0,
+      "month": "2010-05"
+    },
+    {
+      "id": "msg-e97a2a4d9452",
+      "message_id": "<AANLkTilxBQZjyj9XhE8AK_oyQDrOehVFZzazz7jw3IL6@mail.gmail.com>",
+      "from_name": "Boris Leroy",
+      "from_email_hash": "1a985cd2c757b124a01f9786d045091147c79380b120e68311d83165fd6b7b09",
+      "date": "2010-05-10T13:26:13+02:00",
+      "subject": "[R-sig-DB] RODBC and MySQL: problem with sqlSave function",
+      "subject_clean": "RODBC and MySQL: problem with sqlSave function",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello,\n\nI have trouble using RODBC with MySQL. (R version : 2.9.2 ; MySQL version :\n5.1.37 (embedded with xampp on a remote server))\n\nThe main problem is that I can't use the function sqlSave, since it seems to\nsend \"?\" to the server instead of the correct values in tables.\n\nHere is my code :\nnote: I extract from the database a table, and then I try to write it into\nthe database.\nThis is because I want to be sure that the table is in a correct format, and\nI can therefore try to understand why the function sqlSave doesn't work.\n\n> require(RODBC)\nLe chargement a n?cessit? le package : RODBC\n\n> channel<-odbcDriverConnect() #I do not specify the database name here\n\n> stationsData<-sqlFetch(channel, \"baseimport.importstations\")\nErreur dans fromchar(x) :\n  character string is not in a standard unambiguous format\n\nThis does not work because I have null dates in my table : \"00-00-0000\" and\nR does not manage to convert them\nThe solution is:\n\n> stationsData<-sqlFetch(channel, \"baseimport.importstations\", as.is=T)\n\nNow, I would like to write the table \"stationsData\" in my database:\n\n> sqlSave(channel, stationsData, \"baseimport.test1\")\nErreur dans odbcUpdate(channel, query, mydata, coldata[m, ], test = test,  :\n\n  no parameters, so nothing to update\n\nDidn't work..\n\n> sqlSave(channel, stationsData, \"baseimport.test2\", verbose=T)\nQuery: CREATE TABLE baseimport.test2  (`rownames` varchar(255), `station_id`\ninteger, `dept` varchar(255), `commune` varchar(255), `corine` varchar(255),\n`c1` varchar(255), `c2` varchar(255), `c3` varchar(255), `c4` varchar(255),\n`c5` varchar(255), `c6` varchar(255), `c7` varchar(255), `c8` varchar(255),\n`lieudit` varchar(255), `reservelabel` varchar(255), `milieu` varchar(255),\n`dateech` varchar(255), `datedebutech` varchar(255), `datefinech`\nvarchar(255), `anneeech` integer, `anneedebutech` integer, `anneefinech`\ninteger, `anneepub` integer, `typeech` varchar(255), `xreleve` integer,\n`yreleve` integer)\nQuery: INSERT INTO baseimport.test2 ( `` ) VALUES (\n?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )\nErreur dans odbcUpdate(channel, query, mydata, coldata[m, ], test = test,  :\n\n  no parameters, so nothing to update\n\nSo, the function seems to be able to create the table, but the INSERT INTO\nquery does contain any correct value.\nDo you have any idea about this problem, or where did I fail ?\nI tried to add columns in an existing table with append=T, I had the same\nerror.\n\nnote: Another function of RODBC did not want to work with MySQL: sqlColumns,\nwhich never gave any results, but this is not my major concern.\n\nMany thanks in advance,\n\nBoris\n\n-- \nBoris Leroy,\nPhD Student\nURU 420 Biodiversity and Territory Management\nUniversity of Rennes 1 / Mus?um National d'Histoire Naturelle\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hello,\n\nI have trouble using RODBC with MySQL. (R version : 2.9.2 ; MySQL version :\n5.1.37 (embedded with xampp on a remote server))\n\nThe main problem is that I can't use the function sqlSave, since i",
+      "thread_id": "thread-e97a2a4d9452",
+      "thread_depth": 0,
+      "month": "2010-05"
+    },
+    {
+      "id": "msg-534b03b24e69",
+      "message_id": "<alpine.LFD.2.00.1005101352140.11821@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2010-05-10T13:53:00+01:00",
+      "subject": "[R-sig-DB] RODBC and MySQL: problem with sqlSave function",
+      "subject_clean": "RODBC and MySQL: problem with sqlSave function",
+      "in_reply_to": "<AANLkTilxBQZjyj9XhE8AK_oyQDrOehVFZzazz7jw3IL6@mail.gmail.com>",
+      "references": [
+        "<AANLkTilxBQZjyj9XhE8AK_oyQDrOehVFZzazz7jw3IL6@mail.gmail.com>"
+      ],
+      "body_plain": "Please do study the posting guide and post again with the information \nrequested there.\n\nThe list moderator\n\nOn Mon, 10 May 2010, Boris Leroy wrote:\n\n> Hello,\n>\n> I have trouble using RODBC with MySQL. (R version : 2.9.2 ; MySQL version :\n> 5.1.37 (embedded with xampp on a remote server))\n>\n> The main problem is that I can't use the function sqlSave, since it seems to\n> send \"?\" to the server instead of the correct values in tables.\n>\n> Here is my code :\n> note: I extract from the database a table, and then I try to write it into\n> the database.\n> This is because I want to be sure that the table is in a correct format, and\n> I can therefore try to understand why the function sqlSave doesn't work.\n>\n>> require(RODBC)\n> Le chargement a n?cessit? le package : RODBC\n>\n>> channel<-odbcDriverConnect() #I do not specify the database name here\n>\n>> stationsData<-sqlFetch(channel, \"baseimport.importstations\")\n> Erreur dans fromchar(x) :\n>  character string is not in a standard unambiguous format\n>\n> This does not work because I have null dates in my table : \"00-00-0000\" and\n> R does not manage to convert them\n> The solution is:\n>\n>> stationsData<-sqlFetch(channel, \"baseimport.importstations\", as.is=T)\n>\n> Now, I would like to write the table \"stationsData\" in my database:\n>\n>> sqlSave(channel, stationsData, \"baseimport.test1\")\n> Erreur dans odbcUpdate(channel, query, mydata, coldata[m, ], test = test,  :\n>\n>  no parameters, so nothing to update\n>\n> Didn't work..\n>\n>> sqlSave(channel, stationsData, \"baseimport.test2\", verbose=T)\n> Query: CREATE TABLE baseimport.test2  (`rownames` varchar(255), `station_id`\n> integer, `dept` varchar(255), `commune` varchar(255), `corine` varchar(255),\n> `c1` varchar(255), `c2` varchar(255), `c3` varchar(255), `c4` varchar(255),\n> `c5` varchar(255), `c6` varchar(255), `c7` varchar(255), `c8` varchar(255),\n> `lieudit` varchar(255), `reservelabel` varchar(255), `milieu` varchar(255),\n> `dateech` varchar(255), `datedebutech` varchar(255), `datefinech`\n> varchar(255), `anneeech` integer, `anneedebutech` integer, `anneefinech`\n> integer, `anneepub` integer, `typeech` varchar(255), `xreleve` integer,\n> `yreleve` integer)\n> Query: INSERT INTO baseimport.test2 ( `` ) VALUES (\n> ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )\n> Erreur dans odbcUpdate(channel, query, mydata, coldata[m, ], test = test,  :\n>\n>  no parameters, so nothing to update\n>\n> So, the function seems to be able to create the table, but the INSERT INTO\n> query does contain any correct value.\n> Do you have any idea about this problem, or where did I fail ?\n> I tried to add columns in an existing table with append=T, I had the same\n> error.\n>\n> note: Another function of RODBC did not want to work with MySQL: sqlColumns,\n> which never gave any results, but this is not my major concern.\n>\n> Many thanks in advance,\n>\n> Boris\n>\n> -- \n> Boris Leroy,\n> PhD Student\n> URU 420 Biodiversity and Territory Management\n> University of Rennes 1 / Mus?um National d'Histoire Naturelle\n>\n> \t[[alternative HTML version deleted]]\n>\n>\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "Please do study the posting guide and post again with the information \nrequested there.\n\nThe list moderator\n\nOn Mon, 10 May 2010, Boris Leroy wrote:\n\n> Hello,\n>\n> I have trouble using RODBC with MySQL",
+      "thread_id": "thread-e97a2a4d9452",
+      "thread_depth": 1,
+      "month": "2010-05"
+    },
+    {
+      "id": "msg-9e92a74fa542",
+      "message_id": "<AANLkTikl8iTLymnSYOGcF0K-b38svk1QqTo35NyJxwbl@mail.gmail.com>",
+      "from_name": "Boris Leroy",
+      "from_email_hash": "1a985cd2c757b124a01f9786d045091147c79380b120e68311d83165fd6b7b09",
+      "date": "2010-05-10T15:49:51+02:00",
+      "subject": "[R-sig-DB] RODBC and MySQL: problem with sqlSave function",
+      "subject_clean": "RODBC and MySQL: problem with sqlSave function",
+      "in_reply_to": "<alpine.LFD.2.00.1005101352140.11821@gannet.stats.ox.ac.uk>",
+      "references": [
+        "<AANLkTilxBQZjyj9XhE8AK_oyQDrOehVFZzazz7jw3IL6@mail.gmail.com>",
+        "<alpine.LFD.2.00.1005101352140.11821@gannet.stats.ox.ac.uk>"
+      ],
+      "body_plain": "2010/5/10 Prof Brian Ripley <ripley at stats.ox.ac.uk>:\n> Please do study the posting guide and post again with the information\n> requested there.\n>\n> The list moderator\n\nI put the additional informations below, as well as a much simpler example.\nPlease note that I also tested my code on the last R version (2.11.0)\nbut I got exactly the same error.\n\n>\n> On Mon, 10 May 2010, Boris Leroy wrote:\n>\n>> Hello,\n>>\n>> I have trouble using RODBC with MySQL. (R version : 2.9.2 ; MySQL version\n>> :\n>> 5.1.37 (embedded with xampp on a remote server))\n\nOS: Windows XP Professional SP3 on both client and server\n\n>>\n>> The main problem is that I can't use the function sqlSave, since it seems\n>> to\n>> send \"?\" to the server instead of the correct values in tables.\n>>\n>> Here is my code :\n>> note: I extract from the database a table, and then I try to write it into\n>> the database.\n>> This is because I want to be sure that the table is in a correct format,\n>> and\n>> I can therefore try to understand why the function sqlSave doesn't work.\n>>\n>>> require(RODBC)\n>>\n>> Le chargement a n?cessit? le package : RODBC\n>>\n>>> channel<-odbcDriverConnect() #I do not specify the database name here\n\n> odbcGetInfo(channel)\n                 DBMS_Name                   DBMS_Ver\n                   \"MySQL\"                   \"5.1.37\"\n           Driver_ODBC_Ver           Data_Source_Name\n                   \"03.51\"               \"URU420serv\"\n               Driver_Name                 Driver_Ver\n             \"myodbc5.dll\"               \"05.01.0006\"\n                  ODBC_Ver                Server_Name\n              \"03.52.0000\" \"129.20.94.228 via TCP/IP\"\n\n\n>>\n>>> stationsData<-sqlFetch(channel, \"baseimport.importstations\")\n>>\n>> Erreur dans fromchar(x) :\n>> ?character string is not in a standard unambiguous format\n>>\n>> This does not work because I have null dates in my table : \"00-00-0000\"\n>> and\n>> R does not manage to convert them\n>> The solution is:\n>>\n>>> stationsData<-sqlFetch(channel, \"baseimport.importstations\", as.is=T)\n>>\n>> Now, I would like to write the table \"stationsData\" in my database:\n>>\n>>> sqlSave(channel, stationsData, \"baseimport.test1\")\n>>\n>> Erreur dans odbcUpdate(channel, query, mydata, coldata[m, ], test = test,\n>> ?:\n>>\n>> ?no parameters, so nothing to update\n>>\n>> Didn't work..\n>>\n>>> sqlSave(channel, stationsData, \"baseimport.test2\", verbose=T)\n>>\n>> Query: CREATE TABLE baseimport.test2 ?(`rownames` varchar(255),\n>> `station_id`\n>> integer, `dept` varchar(255), `commune` varchar(255), `corine`\n>> varchar(255),\n>> `c1` varchar(255), `c2` varchar(255), `c3` varchar(255), `c4`\n>> varchar(255),\n>> `c5` varchar(255), `c6` varchar(255), `c7` varchar(255), `c8`\n>> varchar(255),\n>> `lieudit` varchar(255), `reservelabel` varchar(255), `milieu`\n>> varchar(255),\n>> `dateech` varchar(255), `datedebutech` varchar(255), `datefinech`\n>> varchar(255), `anneeech` integer, `anneedebutech` integer, `anneefinech`\n>> integer, `anneepub` integer, `typeech` varchar(255), `xreleve` integer,\n>> `yreleve` integer)\n>> Query: INSERT INTO baseimport.test2 ( `` ) VALUES (\n>> ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )\n>> Erreur dans odbcUpdate(channel, query, mydata, coldata[m, ], test = test,\n>> ?:\n>>\n>> ?no parameters, so nothing to update\n\nA simpler example:\n\n> nameData<-sqlFetch(channel, \"dbmassifarmoricain.collaborateurs\", as.is=T)[1,]\n\n> nameData\n  collaborateur_id   nom prenom\n1                1 Leroy  Boris\n\n> sqlSave(channel, nameData, \"baseimport.test\", verbose=T )\nQuery: CREATE TABLE baseimport.test  (`rownames` varchar(255),\n`collaborateur_id` integer, `nom` varchar(255), `prenom` varchar(255))\nQuery: INSERT INTO baseimport.test ( `` ) VALUES ( ?,?,?,? )\nErreur dans odbcUpdate(channel, query, mydata, coldata[m, ], test = test,  :\n  no parameters, so nothing to update\n\nAdditional information:\n\n> sessionInfo()\nR version 2.9.2 (2009-08-24)\ni386-pc-mingw32\n\nlocale:\nLC_COLLATE=French_France.1252;LC_CTYPE=French_France.1252;LC_MONETARY=French_France.1252;LC_NUMERIC=C;LC_TIME=French_France.1252\n\nattached base packages:\n[1] stats     graphics  grDevices utils     datasets  methods   base\n\nother attached packages:\n[1] RODBC_1.3-1\n\n>>\n>> So, the function seems to be able to create the table, but the INSERT INTO\n>> query does contain any correct value.\n>> Do you have any idea about this problem, or where did I fail ?\n>> I tried to add columns in an existing table with append=T, I had the same\n>> error.\n>>\n>> note: Another function of RODBC did not want to work with MySQL:\n>> sqlColumns,\n>> which never gave any results, but this is not my major concern.\n>>\n>> Many thanks in advance,\n>>\n>> Boris\n>>\n>> --\n>> Boris Leroy,\n>> PhD Student\n>> URU 420 Biodiversity and Territory Management\n>> University of Rennes 1 / Mus?um National d'Histoire Naturelle\n>>\n>> ? ? ? ?[[alternative HTML version deleted]]\n>>\n>>\n>\n> --\n> Brian D. Ripley, ? ? ? ? ? ? ? ? ?ripley at stats.ox.ac.uk\n> Professor of Applied Statistics, ?http://www.stats.ox.ac.uk/~ripley/\n> University of Oxford, ? ? ? ? ? ? Tel: ?+44 1865 272861 (self)\n> 1 South Parks Road, ? ? ? ? ? ? ? ? ? ? +44 1865 272866 (PA)\n> Oxford OX1 3TG, UK ? ? ? ? ? ? ? ?Fax: ?+44 1865 272595\n>",
+      "body_snippet": "2010/5/10 Prof Brian Ripley <ripley at stats.ox.ac.uk>:\n> Please do study the posting guide and post again with the information\n> requested there.\n>\n> The list moderator\n\nI put the additional informat",
+      "thread_id": "thread-e97a2a4d9452",
+      "thread_depth": 2,
+      "month": "2010-05"
+    },
+    {
+      "id": "msg-462075714937",
+      "message_id": "<4BEA4E41.4050903@developpement-durable.gouv.fr>",
+      "from_name": "PALMIER Patrick - CETE NP/INFRA/TRF",
+      "from_email_hash": "65ad5acd100c5b37eb62242a1b35744c55171c68eb67dbbc2aa8371f537c9f01",
+      "date": "2010-05-12T08:44:17+02:00",
+      "subject": "[R-sig-DB] Package RPostgreSQL : Problem with dbWriteTable",
+      "subject_clean": "Package RPostgreSQL : Problem with dbWriteTable",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello,\n\nI have a probem with dbWriteTable method of package RPostrgreSQL\nThe table is well added in the database but R doesn't succeed in \ninserting rows\nBut If I send the \"COPY FROM\"  as an sql query in  R, the rows are then \nwell added\nI think it is a problem with the temp file create by dbWriteTable\n\nAs anyone solved this problem?\n\n\nThanks in advance\n\n-- \n\n*Patrick PALMIER**\n**Centre d'?tudes Techniques de l'?quipement Nord - Picardie\nD?partement Infrastructures\n*/*Trafic ? Socio-?conomie\n*/2, rue de Bruxelles, BP 275\n59019 Lille cedex\nFRANCE\nT?l: +33 (0) 3 20 49 60 70\nFax: +33 (0) 3 20 49 63 69",
+      "body_snippet": "Hello,\n\nI have a probem with dbWriteTable method of package RPostrgreSQL\nThe table is well added in the database but R doesn't succeed in \ninserting rows\nBut If I send the \"COPY FROM\"  as an sql query",
+      "thread_id": "thread-462075714937",
+      "thread_depth": 0,
+      "month": "2010-05"
+    },
+    {
+      "id": "msg-470761b9a28d",
+      "message_id": "<7CD7F82CFC6FDF4AA81FF984F85050081998B71B97@EXCH2007>",
+      "from_name": "Geraets, David",
+      "from_email_hash": "9aa6f9266592f15e768387cff0aa9c78644de99ad9bb477473d8b546c8a29822",
+      "date": "2010-05-17T15:22:59+02:00",
+      "subject": "[R-sig-DB] Using RODBC with Access open",
+      "subject_clean": "Using RODBC with Access open",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I all,\n\nI face a strange behaviour, using RODBC - SQLSave to save a table into an Access Database :\n- If the Access database is closed, the (initially empty) database increases to a size of 55 MB.\n- If the database is open during the \"Save\" operation, it increases to a size of around 900 MB, which I can reduce to 55 if I compress/repair the database.\n\nDoes anyone know what's happening ? (is it linked to some sort of rights problem ? do I have a way to connect to the database that might change this, or a parameter in the SQLSave function ?)\n\n(my interest in keeping the database open is due to the fact that I call R from an access VBA, using the RDCom tool)\n\n\nThanks in advance,\n\nDavid\n\n\n[cid:image001.gif at 01CAF5D4.D55FD5E0] DAVID GERAETS, PhD\n\nEpid?miologie\nRue Juliette Wytsmanstraat 14 | 1050 Brussels\nT 02 642 50 26 | F 02 642 54 10\n\nInstitut Scientifique de Sant? Publique\nWetenschappelijk Instituut Volksgezondheid\nScientific Institute of Public Health\nwww.wiv-isp.be<http://www.wiv-isp.be>\n\n\n###########################################################\nChecked as being free of known viruses.\n\nScientific Institute of Public Health, Brussels, Belgium\nWetenschappelijk Instituut Volksgezondheid, Brussel, Belgi?\nInstitut scientifique de Sant? publique, Bruxelles, Belgique\nVisit our website: http://www.wiv-isp.be \n###########################################################\nDISCLAIMER: Please see http://www.wiv-isp.be/Disclaimer.asp\n###########################################################\n\n-------------- next part --------------\nAn HTML attachment was scrubbed...\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20100517/bd7c8166/attachment.html>\n\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: image001.gif\nType: image/gif\nSize: 1173 bytes\nDesc: image001.gif\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20100517/bd7c8166/attachment.gif>",
+      "body_snippet": "I all,\n\nI face a strange behaviour, using RODBC - SQLSave to save a table into an Access Database :\n- If the Access database is closed, the (initially empty) database increases to a size of 55 MB.\n- I",
+      "thread_id": "thread-470761b9a28d",
+      "thread_depth": 0,
+      "month": "2010-05"
+    },
+    {
+      "id": "msg-b6ad6bb628bc",
+      "message_id": "<15FEAD28-32B5-4E66-A48E-DF49CE060320@me.com>",
+      "from_name": "Marc Schwartz",
+      "from_email_hash": "040b2d09159b27cfd2853bc2dbb476bd637811586f307d9583c9ef7f806f3692",
+      "date": "2010-05-28T13:40:27-05:00",
+      "subject": "[R-sig-DB] OT Sorta: New R Interface to Oracle Data Mining Available for Download",
+      "subject_clean": "OT Sorta: New R Interface to Oracle Data Mining Available for Download",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi all,\n\nThought folks might find this Oracle blog post of interest:\n\n  http://blogs.oracle.com/datamining/2010/05/new_r_interface_to_oracle_data_mining_available_for_download.html\n\n\nThe RODM package referenced is available via CRAN and mirrors, eg:\n\n  http://cran.r-project.org/web/packages/RODM/index.html\n\n\nRegards,\n\nMarc Schwartz",
+      "body_snippet": "Hi all,\n\nThought folks might find this Oracle blog post of interest:\n\n  http://blogs.oracle.com/datamining/2010/05/new_r_interface_to_oracle_data_mining_available_for_download.html\n\n\nThe RODM package ",
+      "thread_id": "thread-b6ad6bb628bc",
+      "thread_depth": 0,
+      "month": "2010-05"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-537d7dd10cc9",
+      "subject": "Request for testers for RSQLite release candidate",
+      "message_count": 1,
+      "participants": [
+        "Seth Falcon"
+      ],
+      "started": "2010-05-02T14:17:50-07:00",
+      "last_reply": "2010-05-02T14:17:50-07:00",
+      "root_message_id": "msg-537d7dd10cc9"
+    },
+    {
+      "id": "thread-438b1522633e",
+      "subject": "RSQLite Issue",
+      "message_count": 1,
+      "participants": [
+        "Seth Falcon"
+      ],
+      "started": "2010-05-04T09:41:02-07:00",
+      "last_reply": "2010-05-04T09:41:02-07:00",
+      "root_message_id": "msg-438b1522633e"
+    },
+    {
+      "id": "thread-c3ca0c91c0fc",
+      "subject": "Release announcement: RSQLite 0.9-0 now with more BLOBs",
+      "message_count": 1,
+      "participants": [
+        "Seth Falcon"
+      ],
+      "started": "2010-05-07T10:42:15-07:00",
+      "last_reply": "2010-05-07T10:42:15-07:00",
+      "root_message_id": "msg-c3ca0c91c0fc"
+    },
+    {
+      "id": "thread-e97a2a4d9452",
+      "subject": "RODBC and MySQL: problem with sqlSave function",
+      "message_count": 3,
+      "participants": [
+        "Boris Leroy",
+        "Prof Brian Ripley"
+      ],
+      "started": "2010-05-10T13:26:13+02:00",
+      "last_reply": "2010-05-10T15:49:51+02:00",
+      "root_message_id": "msg-e97a2a4d9452"
+    },
+    {
+      "id": "thread-462075714937",
+      "subject": "Package RPostgreSQL : Problem with dbWriteTable",
+      "message_count": 1,
+      "participants": [
+        "PALMIER Patrick - CETE NP/INFRA/TRF"
+      ],
+      "started": "2010-05-12T08:44:17+02:00",
+      "last_reply": "2010-05-12T08:44:17+02:00",
+      "root_message_id": "msg-462075714937"
+    },
+    {
+      "id": "thread-470761b9a28d",
+      "subject": "Using RODBC with Access open",
+      "message_count": 1,
+      "participants": [
+        "Geraets, David"
+      ],
+      "started": "2010-05-17T15:22:59+02:00",
+      "last_reply": "2010-05-17T15:22:59+02:00",
+      "root_message_id": "msg-470761b9a28d"
+    },
+    {
+      "id": "thread-b6ad6bb628bc",
+      "subject": "OT Sorta: New R Interface to Oracle Data Mining Available for Download",
+      "message_count": 1,
+      "participants": [
+        "Marc Schwartz"
+      ],
+      "started": "2010-05-28T13:40:27-05:00",
+      "last_reply": "2010-05-28T13:40:27-05:00",
+      "root_message_id": "msg-b6ad6bb628bc"
+    }
+  ]
+}

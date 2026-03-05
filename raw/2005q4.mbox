@@ -1,0 +1,571 @@
+From |p@r|@m|@ @end|ng |rom m@c@com  Fri Oct 14 21:55:52 2005
+From: |p@r|@m|@ @end|ng |rom m@c@com (Parlamis Franklin)
+Date: Fri, 14 Oct 2005 09:55:52 -1000
+Subject: [R-sig-DB] RMySQL dbSendQuery
+Message-ID: <966FA346-513E-456B-BC23-411D3649F4DA@mac.com>
+
+When the following statement:
+
+     dbSendQuery(MySQL.Connection, "source ~/MySQLFiles/DateTable.sql")
+
+is run from R (where MySQL.Connection is my connection object and  
+DateTable is a file containing MySQL statements) I get the following  
+error:
+
+             Error in mysqlExecStatement(conn, statement, ...) :
+                 RS-DBI driver: (could not run statement: You have an  
+error in your SQL syntax; check the manual that corresponds
+             to your MySQL server version for the right syntax to use  
+near 'source ~/MySQLFiles/DateTable.sql' at line 1)
+
+However, when I run the exact same statement from an open MySQL  
+command line session (cut and pasted), I get the correct result,  
+which is that MySQL should run commands from the source file.
+
+Can anyone speculate as to why this happens?  Other commands, such as
+
+     dbSendQuery(MySQL.Connection, "select 1")
+
+seem to work correctly, as I receive the message
+
+         <MySQLResult:(8472,0,24)>
+
+
+I am running MySQL 4.1.14-standard and R 2.1.1 with Cocoa GUI 1.12 on  
+a PowerMac G5.  Packages DBI and RMySQL are installed
+
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From dmb@te@ @end|ng |rom gm@||@com  Fri Oct 14 22:07:58 2005
+From: dmb@te@ @end|ng |rom gm@||@com (Douglas Bates)
+Date: Fri, 14 Oct 2005 15:07:58 -0500
+Subject: [R-sig-DB] RMySQL dbSendQuery
+In-Reply-To: <966FA346-513E-456B-BC23-411D3649F4DA@mac.com>
+References: <966FA346-513E-456B-BC23-411D3649F4DA@mac.com>
+Message-ID: <40e66e0b0510141307o590e51e7n610c0b0b53476217@mail.gmail.com>
+
+On 10/14/05, Parlamis Franklin <fparlamis at mac.com> wrote:
+> When the following statement:
+>
+>      dbSendQuery(MySQL.Connection, "source ~/MySQLFiles/DateTable.sql")
+>
+> is run from R (where MySQL.Connection is my connection object and
+> DateTable is a file containing MySQL statements) I get the following
+> error:
+>
+>              Error in mysqlExecStatement(conn, statement, ...) :
+>                  RS-DBI driver: (could not run statement: You have an
+> error in your SQL syntax; check the manual that corresponds
+>              to your MySQL server version for the right syntax to use
+> near 'source ~/MySQLFiles/DateTable.sql' at line 1)
+>
+> However, when I run the exact same statement from an open MySQL
+> command line session (cut and pasted), I get the correct result,
+> which is that MySQL should run commands from the source file.
+>
+> Can anyone speculate as to why this happens?  Other commands, such as
+>
+>      dbSendQuery(MySQL.Connection, "select 1")
+>
+> seem to work correctly, as I receive the message
+>
+>          <MySQLResult:(8472,0,24)>
+
+The "source" directive is not part of the SQL language - it is a
+convenience feature built into the command line program and
+interpreted by that program.
+
+>
+>
+> I am running MySQL 4.1.14-standard and R 2.1.1 with Cocoa GUI 1.12 on
+> a PowerMac G5.  Packages DBI and RMySQL are installed
+>
+>
+>
+>         [[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From hp@ge@ @end|ng |rom |hcrc@org  Fri Oct 14 22:21:47 2005
+From: hp@ge@ @end|ng |rom |hcrc@org (Herve Pages)
+Date: Fri, 14 Oct 2005 13:21:47 -0700
+Subject: [R-sig-DB] RMySQL dbSendQuery
+In-Reply-To: <966FA346-513E-456B-BC23-411D3649F4DA@mac.com>
+References: <966FA346-513E-456B-BC23-411D3649F4DA@mac.com>
+Message-ID: <4350135B.6040103@fhcrc.org>
+
+Parlamis Franklin wrote:
+
+>When the following statement:
+>
+>     dbSendQuery(MySQL.Connection, "source ~/MySQLFiles/DateTable.sql")
+>
+>  
+>
+As Douglas said, "source" is not an SQL statement.
+
+Remember, MySQL is a client/server RDBMS. The client (your R program)
+and the server can be on different machines. So when the server receives
+the following statement "source ~/MySQLFiles/DateTable.sql", how could it
+find the file "~/MySQLFiles/DateTable.sql"?
+
+-- 
+------------------------
+Herv? Pag?s
+E-mail: hpages at fhcrc.org
+ Phone: (206) 667-5791
+   Fax: (206) 667-1319
+
+
+
+From |p@r|@m|@ @end|ng |rom m@c@com  Fri Oct 14 22:46:37 2005
+From: |p@r|@m|@ @end|ng |rom m@c@com (Parlamis Franklin)
+Date: Fri, 14 Oct 2005 10:46:37 -1000
+Subject: [R-sig-DB] RMySQL dbSendQuery
+In-Reply-To: <4350135B.6040103@fhcrc.org>
+References: <966FA346-513E-456B-BC23-411D3649F4DA@mac.com>
+	<4350135B.6040103@fhcrc.org>
+Message-ID: <75B4EB88-B41C-4DC3-9A0E-6094B36EB30B@mac.com>
+
+Thank you both for your responses.  I understand now.  I need to run  
+some R code, followed by some SQL code, followed again by some R  
+code, and wanted to do it from a single script.  dbSendQuery has a  
+one-statement limit, which I was trying to avoid.  Perhaps i will  
+concatenate all my commands into a single semicolon-separated string  
+and send that using dbQuery.
+
+
+On Oct 14, 2005, at 10:21 AM, Herve Pages wrote:
+
+> Parlamis Franklin wrote:
+>
+>
+>> When the following statement:
+>>
+>>     dbSendQuery(MySQL.Connection, "source ~/MySQLFiles/ 
+>> DateTable.sql")
+>>
+>>
+>>
+> As Douglas said, "source" is not an SQL statement.
+>
+> Remember, MySQL is a client/server RDBMS. The client (your R program)
+> and the server can be on different machines. So when the server  
+> receives
+> the following statement "source ~/MySQLFiles/DateTable.sql", how  
+> could it
+> find the file "~/MySQLFiles/DateTable.sql"?
+>
+> -- 
+> ------------------------
+> Herv? Pag?s
+> E-mail: hpages at fhcrc.org
+> Phone: (206) 667-5791
+>   Fax: (206) 667-1319
+> ------------------------
+>
+>
+
+
+
+From hp@ge@ @end|ng |rom |hcrc@org  Fri Oct 14 23:02:05 2005
+From: hp@ge@ @end|ng |rom |hcrc@org (Herve Pages)
+Date: Fri, 14 Oct 2005 14:02:05 -0700
+Subject: [R-sig-DB] RMySQL dbSendQuery
+In-Reply-To: <75B4EB88-B41C-4DC3-9A0E-6094B36EB30B@mac.com>
+References: <966FA346-513E-456B-BC23-411D3649F4DA@mac.com>
+	<4350135B.6040103@fhcrc.org>
+	<75B4EB88-B41C-4DC3-9A0E-6094B36EB30B@mac.com>
+Message-ID: <43501CCD.1040407@fhcrc.org>
+
+Parlamis Franklin wrote:
+
+> Thank you both for your responses.  I understand now.  I need to run  
+> some R code, followed by some SQL code, followed again by some R  
+> code, and wanted to do it from a single script.  dbSendQuery has a  
+> one-statement limit, which I was trying to avoid.  Perhaps i will  
+> concatenate all my commands into a single semicolon-separated string  
+> and send that using dbQuery.
+>
+Or, if your "DateTable.sql" file is big, do a loop in R that reads its 
+content SQL statement by
+SQL statement (easy to do if you have exactly one statement per line, 
+but more complicated
+if you have several statements on the same line or a statement splitted 
+over several lines)
+and sends each statement separately to the MySQL server. Advantage: (1) 
+you have more
+control and can handle errors returned by the server more easily, (2) 
+you don't have to load
+all the file into memory before to send it.
+
+-- 
+------------------------
+Herv? Pag?s
+E-mail: hpages at fhcrc.org
+ Phone: (206) 667-5791
+   Fax: (206) 667-1319
+
+
+
+From |p@r|@m|@ @end|ng |rom m@c@com  Thu Oct 20 12:06:41 2005
+From: |p@r|@m|@ @end|ng |rom m@c@com (Parlamis Franklin)
+Date: Thu, 20 Oct 2005 00:06:41 -1000
+Subject: [R-sig-DB] DBI problem after R upgrade
+Message-ID: <89CC323A-CD3A-4CEA-B6C0-B01B194AE9F0@mac.com>
+
+I upgraded R to 2.2.0 (Mac Cocoa GUI 1.13) this evening.  I am  
+running MySQL Standard version 4.1.14 locally, which I installed  
+several months ago from binaries on the MySQL web site (mysql- 
+standard-4.1.14-apple-darwin8.2.0-powerpc-64bit.dmg).  Before I  
+upgraded R, everything worked fine with RMySQL and DBI (all I used  
+was DBSendQuery, DBReadTable and DBWriteTable).
+
+However, now when I load the DBI package I get the following error:
+
+         Warning message:
+         RS-DBI driver warning: (MySQL mismatch between compiled  
+version 4.0.24 and runtime version 4.1.14)
+
+Then, if I attempt to use one of the DBI functions, say DBReadTable,  
+R quits unexpectedly.  I reinstalled MySQL from binaries, and I also  
+reinstalled the DBI and RMySQL packages from binaries.  Nothing has  
+helped.  I have never had MySQL 4.0.24 on my computer (4.1.14 was my  
+first and only install).
+
+If anyone has any thoughts on this, I would be very appreciative.
+
+Franklin Parlamis
+
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Thu Oct 20 13:22:15 2005
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Thu, 20 Oct 2005 12:22:15 +0100 (BST)
+Subject: [R-sig-DB] DBI problem after R upgrade
+In-Reply-To: <89CC323A-CD3A-4CEA-B6C0-B01B194AE9F0@mac.com>
+References: <89CC323A-CD3A-4CEA-B6C0-B01B194AE9F0@mac.com>
+Message-ID: <Pine.LNX.4.61.0510201218190.10265@gannet.stats>
+
+On Thu, 20 Oct 2005, Parlamis Franklin wrote:
+
+> I upgraded R to 2.2.0 (Mac Cocoa GUI 1.13) this evening.  I am
+> running MySQL Standard version 4.1.14 locally, which I installed
+> several months ago from binaries on the MySQL web site (mysql-
+> standard-4.1.14-apple-darwin8.2.0-powerpc-64bit.dmg).  Before I
+> upgraded R, everything worked fine with RMySQL and DBI (all I used
+> was DBSendQuery, DBReadTable and DBWriteTable).
+>
+> However, now when I load the DBI package I get the following error:
+>
+>         Warning message:
+>         RS-DBI driver warning: (MySQL mismatch between compiled
+> version 4.0.24 and runtime version 4.1.14)
+>
+> Then, if I attempt to use one of the DBI functions, say DBReadTable,
+> R quits unexpectedly.  I reinstalled MySQL from binaries, and I also
+> reinstalled the DBI and RMySQL packages from binaries.  Nothing has
+> helped.  I have never had MySQL 4.0.24 on my computer (4.1.14 was my
+> first and only install).
+
+It is the (powerpc/2.2) RMySQL MacOS X binary that is compiled against 
+MySQL 4.0.24.  It seems you need to install RMySQL from the sources.
+
+This is not really a R-sig-DB topic but a MacOS one.
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From t@r|q@kh@n @end|ng |rom gm@||@com  Thu Nov 10 16:21:21 2005
+From: t@r|q@kh@n @end|ng |rom gm@||@com (=?ISO-8859-1?Q?=A8Tariq_Khan?=)
+Date: Thu, 10 Nov 2005 15:21:21 +0000
+Subject: [R-sig-DB] RODBC/ROracle Oracle and VB automation with R(D)COM
+Message-ID: <2310043c0511100721q788c07a1of076689f8a7a47fd@mail.gmail.com>
+
+Dear All,
+ Months ago, I posted the question below and wanted to keep the question and
+the thread alive since Im sure many would agree that it is an important one,
+especially since many like myself find it very easy to make VB the interface
+with R the statistical back-end engine. Maybe in today's world there is a
+solution?
+ As i am revisiting the problem, I just downloaded and compiled ROracle on
+Windows XP along with the DBI package. I can connect to my database fine
+from the RConsole using either ROracle or RODBC.
+ So fine, these packages work, and so does my database. My computer can
+resolve my DSN, tnsping works, and my system is accessing the right
+tnsnames.ora file.
+ The problem arises when I use R(D)COM to request that R connect to the
+database. After tracing and manipulating the RODBC.c source code I finally
+got the following error message (from sqlDriverConnect()):
+state was 08004, code 12154, message [Oracle][ODBC][Ora]ORA-12154: TNS:could
+not resolve service name
+ROracle confirms this error code and message.
+ So why not post this on the R Com help list? because all the variables are
+the same whether I am running it directly from the Rconsole or not (except
+that Rconsole is only defined in one case but this is not the problem).
+Something is different in the context of the connection request, but ive
+confirmed that the variables can still be read. Furthermore, database
+requests with (D)COM work with microsoft products (Access and ive heard it
+works with SQL server). It just does not work with Oracle.
+ I found out that the flow is something like this:
+App->ODBC32.dll->sqora32.dll->SQL net->SQL-Net Listener->database
+ I used the microsoft driver for oracle as well, without avail.. i then get
+the following generic looking error:
+state was NA000, code 6413, message [Microsoft][ODBC driver for
+Oracle][Oracle]ORA-06413: Connection not open.
+ I opened up security on ORACLE_HOME and subdirectories ensuring 'Everyone'
+as access and did the same to Oracle Registry directories.
+ Why not contact Oracle? Indeed, and I believe we will; but either way maybe
+someone knows the answer because this problem with Oracle ony occurs when
+trying to use RODBC/ROracle together with VB or some other C language, so
+maybe by now someone knows the answer? Please let me know if you have seen
+this before or you know the answer.
+ My sincere thanks to all of you,
+ Tariq
+
+---------- Forwarded message ----------
+From: ?Tariq Khan <tariq.khan at gmail.com>
+Date: May 12, 2005 7:33 AM
+Subject: RODBC Oracle and VB automation with R(D)COM
+To: rcom-l at mailman.csd.univie.ac.at
+
+I haven't been able to find any help on this and am really struggling.
+Prof. Ripley thought this might be an appropriate forum for the
+question.
+I've been using RODBC 1.1-3 and R(D)COM v1.35 for a little over a year
+successfully with my Access Database, and now im switching to Oracle 9i.
+I use R 2.0.1 on a Windows XP platform, 1GB ram, 2GHz Intel Processor)
+
+When I connect through the Rgui R console, the connection is successful
+(but through VB, using R(D)COM, the attempt fails):
+>library(RODBC)
+>channel <- odbcConnect(dsn="MY_DB", uid="MYUID", pwd="MYPWD", case =
+"oracle")
+>channel
+RODB Connection 4
+Details:
+case=toupper
+DSN=MY_DB
+UID=MYUID
+PWD=MYPWD
+DBQ=LT10G
+DBA=W
+APA=T
+EXC=F
+FEN=T
+QTO=T
+FRC=10
+FDL=10
+LOB=T
+RST=T
+GDE=F
+FRL=F
+BAM=IfAllSuccessful
+NUM=NLS
+DPM=F
+MTS=T
+MDI=F
+CSR=F
+FWC=F
+FBS=64000
+TLO=0
+
+When I run the same code through VBA (and VB .NET). I would have:
+
+Rinterface.RRun("channel<- odbcConnect(dsn='MY_DB', uid='MYUID',
+pwd='MYPWD', case = 'oracle')")
+
+And then to check that there is a connection (since the rest of the code
+fails I debug by putting the channel variable to a .Rdata file and then
+inspect the value from the RGUI console:
+
+Rinterface.Rrun("dput(channel, 'c:/channel.RData')")
+
+In the Rconsole I can see that the value is -1, which occurs when a
+connection fails:
+>channel<-dget("c:/channel.Rdata")
+>channel
+[1] -1
+
+I have identified the problem to the a piece of code trying to establish
+the connection (residing in the odbcConnect function):
+odbcDriverConnect(st, case = case, believeNRows = believeNRows)
+
+Where st has the value "DSN=MY_DB;UID=MYUID;PWD=MYPWD", and this I
+believe is the case in both instances since I tried to replicate the
+odbcConnect code manually in VB, and the two connection strings checked
+out.
+
+It seems to boil down to the following code in odbcDriverConnect, which
+seems to either succeed or fail depending on whether I am attempting it
+from VB or from the Rconsole:
+stat <- .Call("RODBCDriverConnect", as.character(connection),
+id, as.integer(believeNRows), PACKAGE = "RODBC")
+
+I am wondering whether a check is performed on the environment calling
+it, such as is the code being run from the Rconsole or not? This is the
+only thing I can think of which might affect its behaviour. I tried
+inspecting the C code for the .DLL but am in over my head.
+
+I am using the Microsoft ODBC for Oracle provider and connections and
+queries succeed when ADO connects, and when R connects through the
+console.
+
+Any ideas for the disparities would be greatly appreciated. Anyone
+experienced anything similar?
+
+Kind Regards,
+
+Tariq Khan
+
+	[[alternative HTML version deleted]]
+
+
+
+From |p@r|@m|@ @end|ng |rom m@c@com  Sat Nov 19 21:52:07 2005
+From: |p@r|@m|@ @end|ng |rom m@c@com (Parlamis Franklin)
+Date: Sat, 19 Nov 2005 10:52:07 -1000
+Subject: [R-sig-DB] DBI problem after R upgrade
+In-Reply-To: <Pine.LNX.4.61.0510201218190.10265@gannet.stats>
+References: <89CC323A-CD3A-4CEA-B6C0-B01B194AE9F0@mac.com>
+	<Pine.LNX.4.61.0510201218190.10265@gannet.stats>
+Message-ID: <2D9EF6AA-6FA0-4FC0-B1B0-9619D582FA24@mac.com>
+
+Update on this thread:
+
+It turned out that, not only did I need to install RMySQL from  
+sources, I also needed to reinstall MySQL from sources, using gcc 3.3  
+as the c and c++ compiler.  The binary version of MySQL 5.0.15 was  
+compiled using gcc 4.0, which caused some kind of conflict with R  
+relating to the C API (R complained as follows):
+
+>> ld: truncated or malformed archive: /usr/local/mysql/lib/
+>> libmysqlclient.a (ranlib structures in table of contents extends past
+>> the end of the table of contents, can't load from it)
+
+Anyway, it all works now.  I am not sure whether it was the compiler  
+version that did the trick, of whether something else in my  
+configuration was different than in the MySQL binary (perhaps  
+relating to the ld flags) but it works.
+
+FP
+
+On Oct 20, 2005, at 1:22 AM, Prof Brian Ripley wrote:
+
+> On Thu, 20 Oct 2005, Parlamis Franklin wrote:
+>
+>> I upgraded R to 2.2.0 (Mac Cocoa GUI 1.13) this evening.  I am
+>> running MySQL Standard version 4.1.14 locally, which I installed
+>> several months ago from binaries on the MySQL web site (mysql-
+>> standard-4.1.14-apple-darwin8.2.0-powerpc-64bit.dmg).  Before I
+>> upgraded R, everything worked fine with RMySQL and DBI (all I used
+>> was DBSendQuery, DBReadTable and DBWriteTable).
+>>
+>> However, now when I load the DBI package I get the following error:
+>>
+>>         Warning message:
+>>         RS-DBI driver warning: (MySQL mismatch between compiled
+>> version 4.0.24 and runtime version 4.1.14)
+>>
+>> Then, if I attempt to use one of the DBI functions, say DBReadTable,
+>> R quits unexpectedly.  I reinstalled MySQL from binaries, and I also
+>> reinstalled the DBI and RMySQL packages from binaries.  Nothing has
+>> helped.  I have never had MySQL 4.0.24 on my computer (4.1.14 was my
+>> first and only install).
+>
+> It is the (powerpc/2.2) RMySQL MacOS X binary that is compiled  
+> against MySQL 4.0.24.  It seems you need to install RMySQL from the  
+> sources.
+>
+> This is not really a R-sig-DB topic but a MacOS one.
+>
+> -- 
+> Brian D. Ripley,                  ripley at stats.ox.ac.uk
+> Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+> University of Oxford,             Tel:  +44 1865 272861 (self)
+> 1 South Parks Road,                     +44 1865 272866 (PA)
+> Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From ke|thhobb@ @end|ng |rom ke|thhobb@@p|u@@com  Fri Dec 23 17:47:59 2005
+From: ke|thhobb@ @end|ng |rom ke|thhobb@@p|u@@com (Keith Hobbs)
+Date: Fri, 23 Dec 2005 16:47:59 +0000
+Subject: [R-sig-DB] Getting R to call a stored procedure
+Message-ID: <7.0.0.16.0.20051223164053.01e467b0@keithhobbs.plus.com>
+
+Hi
+
+I'm trying to get R  (v 2.0.1) to call a stored procedure which is on 
+a Microsoft SQL Server 2000 database. I've been looking through the 
+documentation for the DBI package and presumed I'd need a specific 
+driver for SQL Server. I've searched through Google but I can't find one.
+
+Does anyone know if there is a sql server driver, or one planned?
+
+Alternatively is there an ODBC driver that I can download?
+
+Thanks in advance.
+
+
+
+
+Keith Hobbs
+MSc Student
+University of the West of England
+Bristol, UK
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Fri Dec 23 18:45:09 2005
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Fri, 23 Dec 2005 17:45:09 +0000 (GMT)
+Subject: [R-sig-DB] Getting R to call a stored procedure
+In-Reply-To: <7.0.0.16.0.20051223164053.01e467b0@keithhobbs.plus.com>
+References: <7.0.0.16.0.20051223164053.01e467b0@keithhobbs.plus.com>
+Message-ID: <Pine.LNX.4.61.0512231744460.13829@gannet.stats>
+
+On Fri, 23 Dec 2005, Keith Hobbs wrote:
+
+> Hi
+>
+> I'm trying to get R  (v 2.0.1) to call a stored procedure which is on
+> a Microsoft SQL Server 2000 database. I've been looking through the
+> documentation for the DBI package and presumed I'd need a specific
+> driver for SQL Server. I've searched through Google but I can't find one.
+>
+> Does anyone know if there is a sql server driver, or one planned?
+>
+> Alternatively is there an ODBC driver that I can download?
+
+Yes, in package RODBC.
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+

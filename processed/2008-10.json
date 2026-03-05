@@ -1,0 +1,494 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2008-10",
+  "messages": [
+    {
+      "id": "msg-57334e53ea95",
+      "message_id": "<48E348A8.2010005@uni-muenster.de>",
+      "from_name": "Christian Ruckert",
+      "from_email_hash": "8becef0b146716f5f6cadcbd6bdec2159aeba05e50bcce48a88901569f191166",
+      "date": "2008-10-01T11:53:44+02:00",
+      "subject": "[R-sig-DB] Saving R-objects to a database",
+      "subject_clean": "Saving R-objects to a database",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Someone solved the problem of saving R-objects to a database or can give \nme an answer like \"this is not possible at the moment\"?\n\nAll my attempts runned into problems with conversion between blob, raw \nand character representations. Saving the R-object to a file and then \ngetting it into the db leads to similar problems. Is saving to the file \nsystem the only practicable solution?\n\nIn my special case I'm using a MySQL database with RMySQL package, but \nsuggestions for other combinations are welcome.\n\nGreetings,\nChristian Ruckert",
+      "body_snippet": "Someone solved the problem of saving R-objects to a database or can give \nme an answer like \"this is not possible at the moment\"?\n\nAll my attempts runned into problems with conversion between blob, ra",
+      "thread_id": "thread-57334e53ea95",
+      "thread_depth": 0,
+      "month": "2008-10"
+    },
+    {
+      "id": "msg-1a08767adb6d",
+      "message_id": "<264855a00810010315i158c740fi7a707c0fd9a90d61@mail.gmail.com>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2008-10-01T06:15:39-04:00",
+      "subject": "[R-sig-DB] Saving R-objects to a database",
+      "subject_clean": "Saving R-objects to a database",
+      "in_reply_to": "<48E348A8.2010005@uni-muenster.de>",
+      "references": [
+        "<48E348A8.2010005@uni-muenster.de>"
+      ],
+      "body_plain": "On Wed, Oct 1, 2008 at 5:53 AM, Christian Ruckert\n<cruckert at uni-muenster.de> wrote:\n> Someone solved the problem of saving R-objects to a database or can give me\n> an answer like \"this is not possible at the moment\"?\n>\n> All my attempts runned into problems with conversion between blob, raw and\n> character representations. Saving the R-object to a file and then getting it\n> into the db leads to similar problems. Is saving to the file system the only\n> practicable solution?\n\nLook at the serialize function.  You can serialize any R object which\ncan be stored into the database of your choice.  Give that a try and\nlet us know with a code example if you have problems.\n\nSean\n\n> In my special case I'm using a MySQL database with RMySQL package, but\n> suggestions for other combinations are welcome.\n>\n> Greetings,\n> Christian Ruckert\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "On Wed, Oct 1, 2008 at 5:53 AM, Christian Ruckert\n<cruckert at uni-muenster.de> wrote:\n> Someone solved the problem of saving R-objects to a database or can give me\n> an answer like \"this is not possi",
+      "thread_id": "thread-57334e53ea95",
+      "thread_depth": 1,
+      "month": "2008-10"
+    },
+    {
+      "id": "msg-c6e857bbbfe5",
+      "message_id": "<48E3542C.4080505@uni-muenster.de>",
+      "from_name": "Christian Ruckert",
+      "from_email_hash": "8becef0b146716f5f6cadcbd6bdec2159aeba05e50bcce48a88901569f191166",
+      "date": "2008-10-01T12:42:52+02:00",
+      "subject": "[R-sig-DB] Saving R-objects to a database",
+      "subject_clean": "Saving R-objects to a database",
+      "in_reply_to": "<264855a00810010315i158c740fi7a707c0fd9a90d61@mail.gmail.com>",
+      "references": [
+        "<48E348A8.2010005@uni-muenster.de>",
+        "<264855a00810010315i158c740fi7a707c0fd9a90d61@mail.gmail.com>"
+      ],
+      "body_plain": ">> Someone solved the problem of saving R-objects to a database or can give me\n>> an answer like \"this is not possible at the moment\"?\n>>\n>> All my attempts runned into problems with conversion between blob, raw and\n>> character representations. Saving the R-object to a file and then getting it\n>> into the db leads to similar problems. Is saving to the file system the only\n>> practicable solution?\n> \n> Look at the serialize function.  You can serialize any R object which\n> can be stored into the database of your choice.  Give that a try and\n> let us know with a code example if you have problems.\n\nThis is what I posted on r-mailing list before:\n\n > ser = serialize(obj, NULL)\n > dbSendQuery(link, paste(\"insert into table values(1, '\",ser,\"')\",sep=''))\n >\n > The field to save the object in the MySQL Database is of type blob.\n >\n > result = dbGetQuery(link,\"select * from table where id=1\")\n >\n > unser = unserialize(result[1,\"object_column\"], NULL)\n > Error in unserialize(result[1, \"object_column\"], NULL) : unknown \ninput format\n > In addition: Warning message:\n > In unserialize(result[1, \"object_column\"], NULL) :\n >  unserialize()from a character string is deprecated and will be \nwithdrawn in R 2.8.0\n\nBrian Ripley answered:\n\"DBI needs to convert blobs to raw not character.\"\n\nSo saving to the db works fine, but function dbGetQuery seems to convert \nthe result to a character string. Can I avoid this convertion or is this \na problem with DBI package and will it get fixed?",
+      "body_snippet": ">> Someone solved the problem of saving R-objects to a database or can give me\n>> an answer like \"this is not possible at the moment\"?\n>>\n>> All my attempts runned into problems with conversion betwee",
+      "thread_id": "thread-57334e53ea95",
+      "thread_depth": 2,
+      "month": "2008-10"
+    },
+    {
+      "id": "msg-2565e7614078",
+      "message_id": "<264855a00810010416q470c0465xa8fa65e77a048757@mail.gmail.com>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2008-10-01T07:16:59-04:00",
+      "subject": "[R-sig-DB] Saving R-objects to a database",
+      "subject_clean": "Saving R-objects to a database",
+      "in_reply_to": "<48E3542C.4080505@uni-muenster.de>",
+      "references": [
+        "<48E348A8.2010005@uni-muenster.de>",
+        "<264855a00810010315i158c740fi7a707c0fd9a90d61@mail.gmail.com>",
+        "<48E3542C.4080505@uni-muenster.de>"
+      ],
+      "body_plain": "On Wed, Oct 1, 2008 at 6:42 AM, Christian Ruckert\n<cruckert at uni-muenster.de> wrote:\n>>> Someone solved the problem of saving R-objects to a database or can give\n>>> me\n>>> an answer like \"this is not possible at the moment\"?\n>>>\n>>> All my attempts runned into problems with conversion between blob, raw\n>>> and\n>>> character representations. Saving the R-object to a file and then getting\n>>> it\n>>> into the db leads to similar problems. Is saving to the file system the\n>>> only\n>>> practicable solution?\n>>\n>> Look at the serialize function.  You can serialize any R object which\n>> can be stored into the database of your choice.  Give that a try and\n>> let us know with a code example if you have problems.\n>\n> This is what I posted on r-mailing list before:\n>\n>> ser = serialize(obj, NULL)\n>> dbSendQuery(link, paste(\"insert into table values(1, '\",ser,\"')\",sep=''))\n>>\n>> The field to save the object in the MySQL Database is of type blob.\n>>\n>> result = dbGetQuery(link,\"select * from table where id=1\")\n>>\n>> unser = unserialize(result[1,\"object_column\"], NULL)\n>> Error in unserialize(result[1, \"object_column\"], NULL) : unknown input\n>> format\n>> In addition: Warning message:\n>> In unserialize(result[1, \"object_column\"], NULL) :\n>>  unserialize()from a character string is deprecated and will be withdrawn\n>> in R 2.8.0\n>\n> Brian Ripley answered:\n> \"DBI needs to convert blobs to raw not character.\"\n>\n> So saving to the db works fine, but function dbGetQuery seems to convert the\n> result to a character string. Can I avoid this convertion or is this a\n> problem with DBI package and will it get fixed?\n\nWhat happens if you serialize using \"ascii=TRUE\"?  Then, you could\nprobably save into a text field.  Admittedly, I haven't tried this.\n\nSean",
+      "body_snippet": "On Wed, Oct 1, 2008 at 6:42 AM, Christian Ruckert\n<cruckert at uni-muenster.de> wrote:\n>>> Someone solved the problem of saving R-objects to a database or can give\n>>> me\n>>> an answer like \"this is n",
+      "thread_id": "thread-57334e53ea95",
+      "thread_depth": 3,
+      "month": "2008-10"
+    },
+    {
+      "id": "msg-1e3a1c679603",
+      "message_id": "<alpine.LFD.2.00.0810011351190.31511@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2008-10-01T13:54:08+01:00",
+      "subject": "[R-sig-DB] Saving R-objects to a database",
+      "subject_clean": "Saving R-objects to a database",
+      "in_reply_to": "<264855a00810010416q470c0465xa8fa65e77a048757@mail.gmail.com>",
+      "references": [
+        "<48E348A8.2010005@uni-muenster.de>",
+        "<264855a00810010315i158c740fi7a707c0fd9a90d61@mail.gmail.com>",
+        "<48E3542C.4080505@uni-muenster.de>",
+        "<264855a00810010416q470c0465xa8fa65e77a048757@mail.gmail.com>"
+      ],
+      "body_plain": "On Wed, 1 Oct 2008, Sean Davis wrote:\n\n> On Wed, Oct 1, 2008 at 6:42 AM, Christian Ruckert\n> <cruckert at uni-muenster.de> wrote:\n>>>> Someone solved the problem of saving R-objects to a database or can give\n>>>> me\n>>>> an answer like \"this is not possible at the moment\"?\n>>>>\n>>>> All my attempts runned into problems with conversion between blob, raw\n>>>> and\n>>>> character representations. Saving the R-object to a file and then getting\n>>>> it\n>>>> into the db leads to similar problems. Is saving to the file system the\n>>>> only\n>>>> practicable solution?\n>>>\n>>> Look at the serialize function.  You can serialize any R object which\n>>> can be stored into the database of your choice.  Give that a try and\n>>> let us know with a code example if you have problems.\n>>\n>> This is what I posted on r-mailing list before:\n>>\n>>> ser = serialize(obj, NULL)\n>>> dbSendQuery(link, paste(\"insert into table values(1, '\",ser,\"')\",sep=''))\n>>>\n>>> The field to save the object in the MySQL Database is of type blob.\n>>>\n>>> result = dbGetQuery(link,\"select * from table where id=1\")\n>>>\n>>> unser = unserialize(result[1,\"object_column\"], NULL)\n>>> Error in unserialize(result[1, \"object_column\"], NULL) : unknown input\n>>> format\n>>> In addition: Warning message:\n>>> In unserialize(result[1, \"object_column\"], NULL) :\n>>>  unserialize()from a character string is deprecated and will be withdrawn\n>>> in R 2.8.0\n>>\n>> Brian Ripley answered:\n>> \"DBI needs to convert blobs to raw not character.\"\n>>\n>> So saving to the db works fine, but function dbGetQuery seems to convert the\n>> result to a character string. Can I avoid this convertion or is this a\n>> problem with DBI package and will it get fixed?\n>\n> What happens if you serialize using \"ascii=TRUE\"?  Then, you could\n> probably save into a text field.  Admittedly, I haven't tried this.\n\nThe result is still a raw vector.  You need to encode the raw vector as \ntext before saving to the DBMS, and unencode after retrieval.\n\nAFAIK the problem referred to is specific to raw vectors and DBI, not \ngeneral to all R-DBMS interfaces.\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "On Wed, 1 Oct 2008, Sean Davis wrote:\n\n> On Wed, Oct 1, 2008 at 6:42 AM, Christian Ruckert\n> <cruckert at uni-muenster.de> wrote:\n>>>> Someone solved the problem of saving R-objects to a database or c",
+      "thread_id": "thread-57334e53ea95",
+      "thread_depth": 4,
+      "month": "2008-10"
+    },
+    {
+      "id": "msg-492445615a87",
+      "message_id": "<264855a00810010610i78b1b834n7f6d2243ea04636b@mail.gmail.com>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2008-10-01T09:10:13-04:00",
+      "subject": "[R-sig-DB] Saving R-objects to a database",
+      "subject_clean": "Saving R-objects to a database",
+      "in_reply_to": "<alpine.LFD.2.00.0810011351190.31511@gannet.stats.ox.ac.uk>",
+      "references": [
+        "<48E348A8.2010005@uni-muenster.de>",
+        "<264855a00810010315i158c740fi7a707c0fd9a90d61@mail.gmail.com>",
+        "<48E3542C.4080505@uni-muenster.de>",
+        "<264855a00810010416q470c0465xa8fa65e77a048757@mail.gmail.com>",
+        "<alpine.LFD.2.00.0810011351190.31511@gannet.stats.ox.ac.uk>"
+      ],
+      "body_plain": "On Wed, Oct 1, 2008 at 8:54 AM, Prof Brian Ripley <ripley at stats.ox.ac.uk> wrote:\n> On Wed, 1 Oct 2008, Sean Davis wrote:\n>\n>> On Wed, Oct 1, 2008 at 6:42 AM, Christian Ruckert\n>> <cruckert at uni-muenster.de> wrote:\n>>>>>\n>>>>> Someone solved the problem of saving R-objects to a database or can\n>>>>> give\n>>>>> me\n>>>>> an answer like \"this is not possible at the moment\"?\n>>>>>\n>>>>> All my attempts runned into problems with conversion between blob, raw\n>>>>> and\n>>>>> character representations. Saving the R-object to a file and then\n>>>>> getting\n>>>>> it\n>>>>> into the db leads to similar problems. Is saving to the file system the\n>>>>> only\n>>>>> practicable solution?\n>>>>\n>>>> Look at the serialize function.  You can serialize any R object which\n>>>> can be stored into the database of your choice.  Give that a try and\n>>>> let us know with a code example if you have problems.\n>>>\n>>> This is what I posted on r-mailing list before:\n>>>\n>>>> ser = serialize(obj, NULL)\n>>>> dbSendQuery(link, paste(\"insert into table values(1,\n>>>> '\",ser,\"')\",sep=''))\n>>>>\n>>>> The field to save the object in the MySQL Database is of type blob.\n>>>>\n>>>> result = dbGetQuery(link,\"select * from table where id=1\")\n>>>>\n>>>> unser = unserialize(result[1,\"object_column\"], NULL)\n>>>> Error in unserialize(result[1, \"object_column\"], NULL) : unknown input\n>>>> format\n>>>> In addition: Warning message:\n>>>> In unserialize(result[1, \"object_column\"], NULL) :\n>>>>  unserialize()from a character string is deprecated and will be\n>>>> withdrawn\n>>>> in R 2.8.0\n>>>\n>>> Brian Ripley answered:\n>>> \"DBI needs to convert blobs to raw not character.\"\n>>>\n>>> So saving to the db works fine, but function dbGetQuery seems to convert\n>>> the\n>>> result to a character string. Can I avoid this convertion or is this a\n>>> problem with DBI package and will it get fixed?\n>>\n>> What happens if you serialize using \"ascii=TRUE\"?  Then, you could\n>> probably save into a text field.  Admittedly, I haven't tried this.\n>\n> The result is still a raw vector.  You need to encode the raw vector as text\n> before saving to the DBMS, and unencode after retrieval.\n>\n> AFAIK the problem referred to is specific to raw vectors and DBI, not\n> general to all R-DBMS interfaces.\n\nThanks for the clarification, again.\n\nChristian, it might be easier (and likely faster) to store the URI in\nthe database and the object in Rda format on disk with a UUID as a\nfile name.  In the database world, I think the general consensus is\nthat it is best not to store objects like this in the database as the\noverhead of backup, storage, retrieval, etc. are higher than storing\non the file system.\n\nSean\n\nSean",
+      "body_snippet": "On Wed, Oct 1, 2008 at 8:54 AM, Prof Brian Ripley <ripley at stats.ox.ac.uk> wrote:\n> On Wed, 1 Oct 2008, Sean Davis wrote:\n>\n>> On Wed, Oct 1, 2008 at 6:42 AM, Christian Ruckert\n>> <cruckert at uni-m",
+      "thread_id": "thread-57334e53ea95",
+      "thread_depth": 5,
+      "month": "2008-10"
+    },
+    {
+      "id": "msg-9d619152978b",
+      "message_id": "<48E39379.1060307@uni-muenster.de>",
+      "from_name": "Christian Ruckert",
+      "from_email_hash": "8becef0b146716f5f6cadcbd6bdec2159aeba05e50bcce48a88901569f191166",
+      "date": "2008-10-01T17:12:57+02:00",
+      "subject": "[R-sig-DB] Saving R-objects to a database",
+      "subject_clean": "Saving R-objects to a database",
+      "in_reply_to": "<264855a00810010610i78b1b834n7f6d2243ea04636b@mail.gmail.com>",
+      "references": [
+        "<48E348A8.2010005@uni-muenster.de>",
+        "<264855a00810010315i158c740fi7a707c0fd9a90d61@mail.gmail.com>",
+        "<48E3542C.4080505@uni-muenster.de>",
+        "<264855a00810010416q470c0465xa8fa65e77a048757@mail.gmail.com>",
+        "<alpine.LFD.2.00.0810011351190.31511@gannet.stats.ox.ac.uk>",
+        "<264855a00810010610i78b1b834n7f6d2243ea04636b@mail.gmail.com>"
+      ],
+      "body_plain": "Sean Davis schrieb:\n> On Wed, Oct 1, 2008 at 8:54 AM, Prof Brian Ripley <ripley at stats.ox.ac.uk> wrote:\n>> On Wed, 1 Oct 2008, Sean Davis wrote:\n>>\n>>> On Wed, Oct 1, 2008 at 6:42 AM, Christian Ruckert\n>>> <cruckert at uni-muenster.de> wrote:\n>>>>>> Someone solved the problem of saving R-objects to a database or can\n>>>>>> give\n>>>>>> me\n>>>>>> an answer like \"this is not possible at the moment\"?\n>>>>>>\n>>>>>> All my attempts runned into problems with conversion between blob, raw\n>>>>>> and\n>>>>>> character representations. Saving the R-object to a file and then\n>>>>>> getting\n>>>>>> it\n>>>>>> into the db leads to similar problems. Is saving to the file system the\n>>>>>> only\n>>>>>> practicable solution?\n>>>>> Look at the serialize function.  You can serialize any R object which\n>>>>> can be stored into the database of your choice.  Give that a try and\n>>>>> let us know with a code example if you have problems.\n>>>> This is what I posted on r-mailing list before:\n>>>>\n>>>>> ser = serialize(obj, NULL)\n>>>>> dbSendQuery(link, paste(\"insert into table values(1,\n>>>>> '\",ser,\"')\",sep=''))\n>>>>>\n>>>>> The field to save the object in the MySQL Database is of type blob.\n>>>>>\n>>>>> result = dbGetQuery(link,\"select * from table where id=1\")\n>>>>>\n>>>>> unser = unserialize(result[1,\"object_column\"], NULL)\n>>>>> Error in unserialize(result[1, \"object_column\"], NULL) : unknown input\n>>>>> format\n>>>>> In addition: Warning message:\n>>>>> In unserialize(result[1, \"object_column\"], NULL) :\n>>>>>  unserialize()from a character string is deprecated and will be\n>>>>> withdrawn\n>>>>> in R 2.8.0\n>>>> Brian Ripley answered:\n>>>> \"DBI needs to convert blobs to raw not character.\"\n>>>>\n>>>> So saving to the db works fine, but function dbGetQuery seems to convert\n>>>> the\n>>>> result to a character string. Can I avoid this convertion or is this a\n>>>> problem with DBI package and will it get fixed?\n>>> What happens if you serialize using \"ascii=TRUE\"?  Then, you could\n>>> probably save into a text field.  Admittedly, I haven't tried this.\n>> The result is still a raw vector.  You need to encode the raw vector as text\n>> before saving to the DBMS, and unencode after retrieval.\n>>\n>> AFAIK the problem referred to is specific to raw vectors and DBI, not\n>> general to all R-DBMS interfaces.\n> \n> Thanks for the clarification, again.\n> \n> Christian, it might be easier (and likely faster) to store the URI in\n> the database and the object in Rda format on disk with a UUID as a\n> file name.  In the database world, I think the general consensus is\n> that it is best not to store objects like this in the database as the\n> overhead of backup, storage, retrieval, etc. are higher than storing\n> on the file system.\n> \n> Sean\n> \n> Sean\n\n(Un-)encode with rawToChar now worked for a small object, but for bigger \nobjects the string is truncated.\n\nThanks for your efforts, I've received an impression whats possible and \nwhat not. I think I'll give the file system solution a try.\n\nChristian",
+      "body_snippet": "Sean Davis schrieb:\n> On Wed, Oct 1, 2008 at 8:54 AM, Prof Brian Ripley <ripley at stats.ox.ac.uk> wrote:\n>> On Wed, 1 Oct 2008, Sean Davis wrote:\n>>\n>>> On Wed, Oct 1, 2008 at 6:42 AM, Christian Ruck",
+      "thread_id": "thread-57334e53ea95",
+      "thread_depth": 6,
+      "month": "2008-10"
+    },
+    {
+      "id": "msg-ab63ee001872",
+      "message_id": "<AA122E4E-C2DF-4880-A347-C8911C1713A0@witneyweb.org>",
+      "from_name": "adam_pgsql",
+      "from_email_hash": "cddbcda22f71d7dd001258bc9cd7e5478fe34a4b5838c6440a1fb1cc90e7a04d",
+      "date": "2008-10-02T13:55:57+01:00",
+      "subject": "[R-sig-DB] Saving R-objects to a database",
+      "subject_clean": "Saving R-objects to a database",
+      "in_reply_to": "<48E3542C.4080505@uni-muenster.de>",
+      "references": [
+        "<48E348A8.2010005@uni-muenster.de>",
+        "<264855a00810010315i158c740fi7a707c0fd9a90d61@mail.gmail.com>",
+        "<48E3542C.4080505@uni-muenster.de>"
+      ],
+      "body_plain": "On 1 Oct 2008, at 11:42, Christian Ruckert wrote:\n\n>>> Someone solved the problem of saving R-objects to a database or  \n>>> can give me\n>>> an answer like \"this is not possible at the moment\"?\n>>>\n>>> All my attempts runned into problems with conversion between blob,  \n>>> raw and\n>>> character representations. Saving the R-object to a file and then  \n>>> getting it\n>>> into the db leads to similar problems. Is saving to the file  \n>>> system the only\n>>> practicable solution?\n>> Look at the serialize function.  You can serialize any R object which\n>> can be stored into the database of your choice.  Give that a try and\n>> let us know with a code example if you have problems.\n>\n> This is what I posted on r-mailing list before:\n>\n> > ser = serialize(obj, NULL)\n> > dbSendQuery(link, paste(\"insert into table values(1,  \n> '\",ser,\"')\",sep=''))\n> >\n> > The field to save the object in the MySQL Database is of type blob.\n> >\n> > result = dbGetQuery(link,\"select * from table where id=1\")\n> >\n> > unser = unserialize(result[1,\"object_column\"], NULL)\n> > Error in unserialize(result[1, \"object_column\"], NULL) : unknown  \n> input format\n> > In addition: Warning message:\n> > In unserialize(result[1, \"object_column\"], NULL) :\n> >  unserialize()from a character string is deprecated and will be  \n> withdrawn in R 2.8.0\n>\n> Brian Ripley answered:\n> \"DBI needs to convert blobs to raw not character.\"\n>\n> So saving to the db works fine, but function dbGetQuery seems to  \n> convert the result to a character string. Can I avoid this  \n> convertion or is this a problem with DBI package and will it get  \n> fixed?\n\nwe have used something like this (these are snippets which will not  \nwork as is... but should give you a starting point)\n\nTo Save:\n     s_rdata <- if(is.null(rdata)) \"\" else serialize(rdata,  \nconnection=NULL, ascii=TRUE)\n\n     if(class(s_rdata) == \"raw\") s_rdata <- rawToChar(s_rdata)\n\n     sql <- paste(\"INSERT INTO my_table (dataset_id, rdata) \", \"VALUES  \n(\", dataset_id, \", E'\", s_rdata, \"')\", sep=\"\")\n     dbSendQuery(dbh, sql)\n\nTo Load:\n   sql <- paste(\"SELECT * FROM my_table WHERE dataset_id =  \n\",dataset_id, sep=\"\")\n   dataset <- dbGetResult(dbSendQuery(dbh, sql))\n\n   for(n in 1:length(dataset$rdata_type)) {\n     rdata_type <- dataset$rdata_type[n]\n     s_rdata <- dataset$rdata[n]\n\n     rdata <- if(nchar(s_rdata) > 0) unserialize(s_rdata) else NULL\n   }\n\n(this was for use with PostgreSQL by the way, hence the E'' syntax  \nabove)\n\nHTH\n\nadam",
+      "body_snippet": "On 1 Oct 2008, at 11:42, Christian Ruckert wrote:\n\n>>> Someone solved the problem of saving R-objects to a database or  \n>>> can give me\n>>> an answer like \"this is not possible at the moment\"?\n>>>\n>>",
+      "thread_id": "thread-57334e53ea95",
+      "thread_depth": 3,
+      "month": "2008-10"
+    },
+    {
+      "id": "msg-9c91bae621ff",
+      "message_id": "<48E580AF.6000006@fhcrc.org>",
+      "from_name": "Herve Pages",
+      "from_email_hash": "fd1d1d7a6264909f0236d26dfae51520f3d3455c869422fce43a45549d197dbf",
+      "date": "2008-10-02T19:17:19-07:00",
+      "subject": "[R-sig-DB] Saving R-objects to a database",
+      "subject_clean": "Saving R-objects to a database",
+      "in_reply_to": "<48E39379.1060307@uni-muenster.de>",
+      "references": [
+        "<48E348A8.2010005@uni-muenster.de>",
+        "<264855a00810010315i158c740fi7a707c0fd9a90d61@mail.gmail.com>",
+        "<48E3542C.4080505@uni-muenster.de>",
+        "<264855a00810010416q470c0465xa8fa65e77a048757@mail.gmail.com>",
+        "<alpine.LFD.2.00.0810011351190.31511@gannet.stats.ox.ac.uk>",
+        "<264855a00810010610i78b1b834n7f6d2243ea04636b@mail.gmail.com>",
+        "<48E39379.1060307@uni-muenster.de>"
+      ],
+      "body_plain": "Hi Christian,\n\nChristian Ruckert wrote:\n[...]\n> \n> (Un-)encode with rawToChar now worked for a small object, but for bigger \n> objects the string is truncated.\n\nYou need to serialize with ascii=TRUE otherwise you get a raw vector with\nlots of nul bytes that you won't be able to turn into a text without losing\npart of it:\n   - rawToChar() will truncate the text at the first nul byte\n   - intToUtf8(as.integer()) will silently ignore those nul bytes.\nThis is because embedded nuls are not supported in character vectors anymore\n(which is a good thing).\n\nI'm not 100% sure but I think you won't get any nul bytes if you use\nserialize( , ascii=TRUE). Try this:\n\n   objToText <- function(object)\n       rawToChar(serialize(object, NULL, ascii=TRUE))\n\n   textToObj <- function(text)\n       unserialize(charToRaw(text))\n\n > x0 <- list(1, 2, 3)\n > objToText(x0)\n[1] \"A\\n2\\n133120\\n131840\\n19\\n3\\n14\\n1\\n1\\n14\\n1\\n2\\n14\\n1\\n3\\n\"\n > textToObj(objToText(x0))\n[[1]]\n[1] 1\n\n[[2]]\n[1] 2\n\n[[3]]\n[1] 3\n\nI've not tried this on big objects though.\n\nNote that, despite serialize() man page claiming that ascii=FALSE will produce\na more compact binary representation of the object, my experience turns out\nto be the opposite.\n\nCheers,\nH.",
+      "body_snippet": "Hi Christian,\n\nChristian Ruckert wrote:\n[...]\n> \n> (Un-)encode with rawToChar now worked for a small object, but for bigger \n> objects the string is truncated.\n\nYou need to serialize with ascii=TRUE o",
+      "thread_id": "thread-57334e53ea95",
+      "thread_depth": 7,
+      "month": "2008-10"
+    },
+    {
+      "id": "msg-3b17b30343b7",
+      "message_id": "<alpine.LFD.2.00.0810171158300.9455@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2008-10-17T12:42:49+01:00",
+      "subject": "[R-sig-DB] [R] [R-pkgs] New package RPostgreSQL 0.1.0",
+      "subject_clean": "New package RPostgreSQL 0.1.0",
+      "in_reply_to": "<18677.22625.526067.785258@ron.nulle.part>",
+      "references": [
+        "<18677.22625.526067.785258@ron.nulle.part>"
+      ],
+      "body_plain": "Following up the Windows point on a specialized list (R-sig-db), I was \nable to get this to build with\n\nsetenv PG_HOME D:/Program Files/PostgreSQL/8.3\n\nand a src/Makevars.win containing\n\nPKG_CPPFLAGS=-I\"$(PG_HOME)\"/include\nPKG_LIBS=-L\"$(PG_HOME)\"/lib -lpq\n\nThe problem is that you do need a fairly complete Windows install of \nPostgreSQL, and I had to go back and add the development files.\n\nThen you will need libpq.dll in your path: that is in (PG_HOME/bin). The \ntests/*.R did not work, but that's a permissions issue (as for me on \nLinux) and I needed to specify user=\"postgresql\" and password=\"...\". \nThen minimal tests worked suitably.\n\nI'll put a Windows binary on CRAN extras, at least for now.\n\nOn Tue, 14 Oct 2008, Dirk Eddelbuettel wrote:\n\n>\n>       RPostgreSQL version 0.1.0\n>\n> We are pround to announce the availability of the RPostgreSQL package on CRAN\n> and its mirrors.  This package provides an a DBI-compliant interface between\n> PostgreSQL and R.\n>\n> RPostgreSQL was developed as part of the Google Summer of Code 2008 program\n> by Sameer Kumar Prayaga.\n>\n> Some highlights:\n>\n>  o  Implemented all the DBI features\n>\n>  o  Added support for transaction management\n>\n>  o  Added type mapping for dates & timestamps\n>\n> Known bugs/deficiencies:\n>\n>  o  Building on Windows unknown/untested. Feedback welcome\n>\n> RPostgreSQL is hosted on Google Code, for more information see\n>\n>   http://rpostgresql.googlecode.com/\n>\n> For any suggestions and queries, please contact:\n>\n>   Sameer Kumar Prayaga <sameer.bits at gmail.com>\n>   Dirk Eddelbuettel <edd at debian.org>\n>\n> -- \n> Three out of two people have difficulties with fractions.\n>\n> _______________________________________________\n> R-packages mailing list\n> R-packages at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-packages\n>\n> ______________________________________________\n> R-help at r-project.org mailing list\n> https://stat.ethz.ch/mailman/listinfo/r-help\n> PLEASE do read the posting guide http://www.R-project.org/posting-guide.html\n> and provide commented, minimal, self-contained, reproducible code.\n>\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "Following up the Windows point on a specialized list (R-sig-db), I was \nable to get this to build with\n\nsetenv PG_HOME D:/Program Files/PostgreSQL/8.3\n\nand a src/Makevars.win containing\n\nPKG_CPPFLAGS=",
+      "thread_id": "thread-3b17b30343b7",
+      "thread_depth": 0,
+      "month": "2008-10"
+    },
+    {
+      "id": "msg-cc048d381313",
+      "message_id": "<18680.33343.330123.562586@ron.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2008-10-17T07:17:03-05:00",
+      "subject": "[R-sig-DB] [R] [R-pkgs] New package RPostgreSQL 0.1.0",
+      "subject_clean": "New package RPostgreSQL 0.1.0",
+      "in_reply_to": "<alpine.LFD.2.00.0810171158300.9455@gannet.stats.ox.ac.uk>",
+      "references": [
+        "<18677.22625.526067.785258@ron.nulle.part>",
+        "<alpine.LFD.2.00.0810171158300.9455@gannet.stats.ox.ac.uk>"
+      ],
+      "body_plain": "On 17 October 2008 at 12:42, Prof Brian Ripley wrote:\n| Following up the Windows point on a specialized list (R-sig-db), I was \n| able to get this to build with\n| \n| setenv PG_HOME D:/Program Files/PostgreSQL/8.3\n| \n| and a src/Makevars.win containing\n| \n| PKG_CPPFLAGS=-I\"$(PG_HOME)\"/include\n| PKG_LIBS=-L\"$(PG_HOME)\"/lib -lpq\n\nThank you very much! \n\nI also learned from Jan that the simple (but too simple) configure.in that\navoids pg_config (which somehow wasn't in the path on Sameer's FC machine)\nleads to malfunction on OS X, so I have to fix that too.\n\nDo your FC / RH system all have pg_config in the path ?\n \n| The problem is that you do need a fairly complete Windows install of \n| PostgreSQL, and I had to go back and add the development files.\n\nRight. I guess I need to document that. Exactly what file did you fetch?\n\n| Then you will need libpq.dll in your path: that is in (PG_HOME/bin). The \n| tests/*.R did not work, but that's a permissions issue (as for me on \n| Linux) and I needed to specify user=\"postgresql\" and password=\"...\". \n| Then minimal tests worked suitably.\n\nBecause we cannot assume a Pg backend to be present and to be configured, we\ncannot run tests automagically. See inst/devTests in the sources, or\ndevTests/ in the installed package for some more tests -- not the most\nrefined set, but it grew as we grew the package.\n \n| I'll put a Windows binary on CRAN extras, at least for now.\n\nMany thanks for that, and thanks also for following up on r-sig-db!\n\nDirk\n\n\n| On Tue, 14 Oct 2008, Dirk Eddelbuettel wrote:\n| \n| >\n| >       RPostgreSQL version 0.1.0\n| >\n| > We are pround to announce the availability of the RPostgreSQL package on CRAN\n| > and its mirrors.  This package provides an a DBI-compliant interface between\n| > PostgreSQL and R.\n| >\n| > RPostgreSQL was developed as part of the Google Summer of Code 2008 program\n| > by Sameer Kumar Prayaga.\n| >\n| > Some highlights:\n| >\n| >  o  Implemented all the DBI features\n| >\n| >  o  Added support for transaction management\n| >\n| >  o  Added type mapping for dates & timestamps\n| >\n| > Known bugs/deficiencies:\n| >\n| >  o  Building on Windows unknown/untested. Feedback welcome\n| >\n| > RPostgreSQL is hosted on Google Code, for more information see\n| >\n| >   http://rpostgresql.googlecode.com/\n| >\n| > For any suggestions and queries, please contact:\n| >\n| >   Sameer Kumar Prayaga <sameer.bits at gmail.com>\n| >   Dirk Eddelbuettel <edd at debian.org>\n| >\n| > -- \n| > Three out of two people have difficulties with fractions.\n| >\n| > _______________________________________________\n| > R-packages mailing list\n| > R-packages at r-project.org\n| > https://stat.ethz.ch/mailman/listinfo/r-packages\n| >\n| > ______________________________________________\n| > R-help at r-project.org mailing list\n| > https://stat.ethz.ch/mailman/listinfo/r-help\n| > PLEASE do read the posting guide http://www.R-project.org/posting-guide.html\n| > and provide commented, minimal, self-contained, reproducible code.\n| >\n| \n| -- \n| Brian D. Ripley,                  ripley at stats.ox.ac.uk\n| Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\n| University of Oxford,             Tel:  +44 1865 272861 (self)\n| 1 South Parks Road,                     +44 1865 272866 (PA)\n| Oxford OX1 3TG, UK                Fax:  +44 1865 272595\n\n-- \nThree out of two people have difficulties with fractions.",
+      "body_snippet": "On 17 October 2008 at 12:42, Prof Brian Ripley wrote:\n| Following up the Windows point on a specialized list (R-sig-db), I was \n| able to get this to build with\n| \n| setenv PG_HOME D:/Program Files/Po",
+      "thread_id": "thread-3b17b30343b7",
+      "thread_depth": 1,
+      "month": "2008-10"
+    },
+    {
+      "id": "msg-89b8101240d9",
+      "message_id": "<alpine.LFD.2.00.0810171330140.13932@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2008-10-17T13:44:58+01:00",
+      "subject": "[R-sig-DB] [R] [R-pkgs] New package RPostgreSQL 0.1.0",
+      "subject_clean": "New package RPostgreSQL 0.1.0",
+      "in_reply_to": "<18680.33343.330123.562586@ron.nulle.part>",
+      "references": [
+        "<18677.22625.526067.785258@ron.nulle.part>",
+        "<alpine.LFD.2.00.0810171158300.9455@gannet.stats.ox.ac.uk>",
+        "<18680.33343.330123.562586@ron.nulle.part>"
+      ],
+      "body_plain": "On Fri, 17 Oct 2008, Dirk Eddelbuettel wrote:\n\n> On 17 October 2008 at 12:42, Prof Brian Ripley wrote:\n> | Following up the Windows point on a specialized list (R-sig-db), I was\n> | able to get this to build with\n> |\n> | setenv PG_HOME D:/Program Files/PostgreSQL/8.3\n> |\n> | and a src/Makevars.win containing\n> |\n> | PKG_CPPFLAGS=-I\"$(PG_HOME)\"/include\n> | PKG_LIBS=-L\"$(PG_HOME)\"/lib -lpq\n>\n> Thank you very much!\n>\n> I also learned from Jan that the simple (but too simple) configure.in that\n> avoids pg_config (which somehow wasn't in the path on Sameer's FC machine)\n> leads to malfunction on OS X, so I have to fix that too.\n>\n> Do your FC / RH system all have pg_config in the path ?\n\nThose which have development files on.  (We have some production \nPostgreSQL systems without it, since the CMS for our websites runs on \nPostgreSQL.)\n\ngannet% whereis pg_config\npg_config: /usr/bin/pg_config /usr/include/pg_config.h \n/usr/share/man/man1/pg_config.1.gz\ngannet% rpm -q --whatprovides /usr/bin/pg_config\npostgresql-devel-8.2.10-1.fc8\n\nso it is part of the -devel RPM as one might expect from RH.\n\n> | The problem is that you do need a fairly complete Windows install of\n> | PostgreSQL, and I had to go back and add the development files.\n>\n> Right. I guess I need to document that. Exactly what file did you fetch?\n\nIt's part of the standard .msi installer, but you have to select \nnon-default options, the Development group (only to do a source build of \nRPostgreSQL, as far as I can tell).  It *should* be easy to go back and \nadd those options, but on my box the installation path had been lost so I \nactually had to uninstall and reinstall.\n\n> | Then you will need libpq.dll in your path: that is in (PG_HOME/bin). The\n> | tests/*.R did not work, but that's a permissions issue (as for me on\n> | Linux) and I needed to specify user=\"postgresql\" and password=\"...\".\n> | Then minimal tests worked suitably.\n>\n> Because we cannot assume a Pg backend to be present and to be configured, we\n> cannot run tests automagically.\n\nSure, but even if it is, a standard setup (even on Windows) will require \nboth a user and a password (and the only user you can guarantee is present \nis \"postgresql\").  I was just warning people that failure is expected.\n\n> See inst/devTests in the sources, or\n> devTests/ in the installed package for some more tests -- not the most\n> refined set, but it grew as we grew the package.\n>\n> | I'll put a Windows binary on CRAN extras, at least for now.\n>\n> Many thanks for that, and thanks also for following up on r-sig-db!\n>\n> Dirk\n>\n>\n> | On Tue, 14 Oct 2008, Dirk Eddelbuettel wrote:\n> |\n> | >\n> | >       RPostgreSQL version 0.1.0\n> | >\n> | > We are pround to announce the availability of the RPostgreSQL package on CRAN\n> | > and its mirrors.  This package provides an a DBI-compliant interface between\n> | > PostgreSQL and R.\n> | >\n> | > RPostgreSQL was developed as part of the Google Summer of Code 2008 program\n> | > by Sameer Kumar Prayaga.\n> | >\n> | > Some highlights:\n> | >\n> | >  o  Implemented all the DBI features\n> | >\n> | >  o  Added support for transaction management\n> | >\n> | >  o  Added type mapping for dates & timestamps\n> | >\n> | > Known bugs/deficiencies:\n> | >\n> | >  o  Building on Windows unknown/untested. Feedback welcome\n> | >\n> | > RPostgreSQL is hosted on Google Code, for more information see\n> | >\n> | >   http://rpostgresql.googlecode.com/\n> | >\n> | > For any suggestions and queries, please contact:\n> | >\n> | >   Sameer Kumar Prayaga <sameer.bits at gmail.com>\n> | >   Dirk Eddelbuettel <edd at debian.org>\n> | >\n> | > --\n> | > Three out of two people have difficulties with fractions.\n> | >\n> | > _______________________________________________\n> | > R-packages mailing list\n> | > R-packages at r-project.org\n> | > https://stat.ethz.ch/mailman/listinfo/r-packages\n> | >\n> | > ______________________________________________\n> | > R-help at r-project.org mailing list\n> | > https://stat.ethz.ch/mailman/listinfo/r-help\n> | > PLEASE do read the posting guide http://www.R-project.org/posting-guide.html\n> | > and provide commented, minimal, self-contained, reproducible code.\n> | >\n> |\n> | --\n> | Brian D. Ripley,                  ripley at stats.ox.ac.uk\n> | Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\n> | University of Oxford,             Tel:  +44 1865 272861 (self)\n> | 1 South Parks Road,                     +44 1865 272866 (PA)\n> | Oxford OX1 3TG, UK                Fax:  +44 1865 272595\n>\n> -- \n> Three out of two people have difficulties with fractions.\n>\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "On Fri, 17 Oct 2008, Dirk Eddelbuettel wrote:\n\n> On 17 October 2008 at 12:42, Prof Brian Ripley wrote:\n> | Following up the Windows point on a specialized list (R-sig-db), I was\n> | able to get this t",
+      "thread_id": "thread-3b17b30343b7",
+      "thread_depth": 2,
+      "month": "2008-10"
+    },
+    {
+      "id": "msg-0c84af1bd4f6",
+      "message_id": "<4aad65740810171320n1fa1ba96kae1b269ecf0a4b92@mail.gmail.com>",
+      "from_name": "Bo Zhao",
+      "from_email_hash": "88d2a2b92d3e81aaaef967548085006af24d27ed97338ff33110d18cc179dfeb",
+      "date": "2008-10-17T16:20:23-04:00",
+      "subject": "[R-sig-DB] [R] [R-pkgs] New package RPostgreSQL 0.1.0",
+      "subject_clean": "New package RPostgreSQL 0.1.0",
+      "in_reply_to": "<alpine.LFD.2.00.0810171330140.13932@gannet.stats.ox.ac.uk>",
+      "references": [
+        "<18677.22625.526067.785258@ron.nulle.part>",
+        "<alpine.LFD.2.00.0810171158300.9455@gannet.stats.ox.ac.uk>",
+        "<18680.33343.330123.562586@ron.nulle.part>",
+        "<alpine.LFD.2.00.0810171330140.13932@gannet.stats.ox.ac.uk>"
+      ],
+      "body_plain": "it is a exciting news that the RPostgreSQL 1.0 released.\n\nOn Fri, Oct 17, 2008 at 8:44 AM, Prof Brian Ripley\n<ripley at stats.ox.ac.uk> wrote:\n> On Fri, 17 Oct 2008, Dirk Eddelbuettel wrote:\n>\n>> On 17 October 2008 at 12:42, Prof Brian Ripley wrote:\n>> | Following up the Windows point on a specialized list (R-sig-db), I was\n>> | able to get this to build with\n>> |\n>> | setenv PG_HOME D:/Program Files/PostgreSQL/8.3\n>> |\n>> | and a src/Makevars.win containing\n>> |\n>> | PKG_CPPFLAGS=-I\"$(PG_HOME)\"/include\n>> | PKG_LIBS=-L\"$(PG_HOME)\"/lib -lpq\n>>\n>> Thank you very much!\n>>\n>> I also learned from Jan that the simple (but too simple) configure.in that\n>> avoids pg_config (which somehow wasn't in the path on Sameer's FC machine)\n>> leads to malfunction on OS X, so I have to fix that too.\n>>\n>> Do your FC / RH system all have pg_config in the path ?\n>\n> Those which have development files on.  (We have some production PostgreSQL\n> systems without it, since the CMS for our websites runs on PostgreSQL.)\n>\n> gannet% whereis pg_config\n> pg_config: /usr/bin/pg_config /usr/include/pg_config.h\n> /usr/share/man/man1/pg_config.1.gz\n> gannet% rpm -q --whatprovides /usr/bin/pg_config\n> postgresql-devel-8.2.10-1.fc8\n>\n> so it is part of the -devel RPM as one might expect from RH.\n>\n>> | The problem is that you do need a fairly complete Windows install of\n>> | PostgreSQL, and I had to go back and add the development files.\n>>\n>> Right. I guess I need to document that. Exactly what file did you fetch?\n>\n> It's part of the standard .msi installer, but you have to select non-default\n> options, the Development group (only to do a source build of RPostgreSQL, as\n> far as I can tell).  It *should* be easy to go back and add those options,\n> but on my box the installation path had been lost so I actually had to\n> uninstall and reinstall.\n>\n>> | Then you will need libpq.dll in your path: that is in (PG_HOME/bin). The\n>> | tests/*.R did not work, but that's a permissions issue (as for me on\n>> | Linux) and I needed to specify user=\"postgresql\" and password=\"...\".\n>> | Then minimal tests worked suitably.\n>>\n>> Because we cannot assume a Pg backend to be present and to be configured,\n>> we\n>> cannot run tests automagically.\n>\n> Sure, but even if it is, a standard setup (even on Windows) will require\n> both a user and a password (and the only user you can guarantee is present\n> is \"postgresql\").  I was just warning people that failure is expected.\n>\n>> See inst/devTests in the sources, or\n>> devTests/ in the installed package for some more tests -- not the most\n>> refined set, but it grew as we grew the package.\n>>\n>> | I'll put a Windows binary on CRAN extras, at least for now.\n>>\n>> Many thanks for that, and thanks also for following up on r-sig-db!\n>>\n>> Dirk\n>>\n>>\n>> | On Tue, 14 Oct 2008, Dirk Eddelbuettel wrote:\n>> |\n>> | >\n>> | >       RPostgreSQL version 0.1.0\n>> | >\n>> | > We are pround to announce the availability of the RPostgreSQL package\n>> on CRAN\n>> | > and its mirrors.  This package provides an a DBI-compliant interface\n>> between\n>> | > PostgreSQL and R.\n>> | >\n>> | > RPostgreSQL was developed as part of the Google Summer of Code 2008\n>> program\n>> | > by Sameer Kumar Prayaga.\n>> | >\n>> | > Some highlights:\n>> | >\n>> | >  o  Implemented all the DBI features\n>> | >\n>> | >  o  Added support for transaction management\n>> | >\n>> | >  o  Added type mapping for dates & timestamps\n>> | >\n>> | > Known bugs/deficiencies:\n>> | >\n>> | >  o  Building on Windows unknown/untested. Feedback welcome\n>> | >\n>> | > RPostgreSQL is hosted on Google Code, for more information see\n>> | >\n>> | >   http://rpostgresql.googlecode.com/\n>> | >\n>> | > For any suggestions and queries, please contact:\n>> | >\n>> | >   Sameer Kumar Prayaga <sameer.bits at gmail.com>\n>> | >   Dirk Eddelbuettel <edd at debian.org>\n>> | >\n>> | > --\n>> | > Three out of two people have difficulties with fractions.\n>> | >\n>> | > _______________________________________________\n>> | > R-packages mailing list\n>> | > R-packages at r-project.org\n>> | > https://stat.ethz.ch/mailman/listinfo/r-packages\n>> | >\n>> | > ______________________________________________\n>> | > R-help at r-project.org mailing list\n>> | > https://stat.ethz.ch/mailman/listinfo/r-help\n>> | > PLEASE do read the posting guide\n>> http://www.R-project.org/posting-guide.html\n>> | > and provide commented, minimal, self-contained, reproducible code.\n>> | >\n>> |\n>> | --\n>> | Brian D. Ripley,                  ripley at stats.ox.ac.uk\n>> | Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\n>> | University of Oxford,             Tel:  +44 1865 272861 (self)\n>> | 1 South Parks Road,                     +44 1865 272866 (PA)\n>> | Oxford OX1 3TG, UK                Fax:  +44 1865 272595\n>>\n>> --\n>> Three out of two people have difficulties with fractions.\n>>\n>\n> --\n> Brian D. Ripley,                  ripley at stats.ox.ac.uk\n> Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\n> University of Oxford,             Tel:  +44 1865 272861 (self)\n> 1 South Parks Road,                     +44 1865 272866 (PA)\n> Oxford OX1 3TG, UK                Fax:  +44 1865 272595\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n\n\n-- \nBo, Zhao\nDept. of Urban & Regional Planning\nUniversity of Florida.\nMobile: +1-352-235-5029\nEmail: bo at ufl.edu\nSite: http://www.geoinformatics.cn\nCoordinates: 29?37'42\"N  82?22'27\"W\n\nThis information is protected by FERPA and cannot be re-disclosed",
+      "body_snippet": "it is a exciting news that the RPostgreSQL 1.0 released.\n\nOn Fri, Oct 17, 2008 at 8:44 AM, Prof Brian Ripley\n<ripley at stats.ox.ac.uk> wrote:\n> On Fri, 17 Oct 2008, Dirk Eddelbuettel wrote:\n>\n>> On 1",
+      "thread_id": "thread-3b17b30343b7",
+      "thread_depth": 3,
+      "month": "2008-10"
+    },
+    {
+      "id": "msg-25ffb8e1ae72",
+      "message_id": "<EB74E25A2AED52489728AF75E3C5668AB18D8E@EXVBE012-13.exch012.intermedia.net>",
+      "from_name": "Doug Hill",
+      "from_email_hash": "05a268c636ebc6d4dac5934cfc8372d6f6393ba1b2172b3c978795fae81fa8b5",
+      "date": "2008-10-20T09:16:01-07:00",
+      "subject": "[R-sig-DB] Long query time running R +  RODBC against SQL Server",
+      "subject_clean": "Long query time running R +  RODBC against SQL Server",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi, all. I'm using RODBC to query a SQL Server 2005 database, and am experiencing very slow performance. I assume I'm doing something wrong, but I'm not doing anything fancy, so I'm stumped. \n\nMy setup: \n\nCore 2 Duo 2GHz, Win XP, 2GB RAM \nR 2.7.1 \nRODBC (latest from CRAN, not sure the version - how to tell?) \nSQL Server 2005 \nMS Access 2003 \nSQL Native Client ODBC driver (DSN = \"HIM\") \nSQL Server ODBC driver (DSN = \"HIMs\") \nMS Access ODBC driver (DSN = \"HIMa\") \n\nTable being queried has ~290K rows, of which the query being run should return ~78K. \n\nTable being queried has 142 columns, of which all but 5 are type float. The other 5 are nvarchar(255) .\n\nNo indices, keys, or joins - one flat table \n\nNo UPDATEs, INSERTs, just a SELECT \n\nR code looks like this: \n\nhim <- odbcConnect(\"HIM\", \"CDCS\", \"*****\") \nFAC <- sqlQuery(him, \"Select * from T304 where f133=1\") \n\nIf I use either SQL Server DSN, the query seems to hang, though I can see in Task Manager that Rgui.exe grows up to point, and uses most of one CPU. I killed R after waiting 13+ minutes. \n \nIf I use sqlFetch() instead and specify max records as 1000, this does return but only after ~2 minutes.\n \nI have tried both these calls with believeNRows=FALSE, with the same result.\n\nIn SQL Server itself, the same query completes after ~10 seconds. \n\nIf I use the Access DSN in my R code above, the query takes 12-15s. It's the same data in Access, in fact it was imported into SQL Server 2005 from the Access DB. \n\nAny ideas how a query against SQL Server could be that much slower than against Access? I understand there are conversions performed for the 5 non-float columns, but I believe that would be true in the Access case as well. \n \nAny troubleshooting ideas?  \n\nThanks!\n\nDoug \n\nInternal Virus Database is out-of-date.\nChecked by AVG. \n\n7:50 AM\n \n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi, all. I'm using RODBC to query a SQL Server 2005 database, and am experiencing very slow performance. I assume I'm doing something wrong, but I'm not doing anything fancy, so I'm stumped. \n\nMy setu",
+      "thread_id": "thread-25ffb8e1ae72",
+      "thread_depth": 0,
+      "month": "2008-10"
+    },
+    {
+      "id": "msg-924be4e9e896",
+      "message_id": "<8763nllrbu.fsf@patagonia.sebmags.homelinux.org>",
+      "from_name": "Sebastian P. Luque",
+      "from_email_hash": "64e1245723a518467f98fc9a0ecf9b5f086a4977ca9fcb21467077da9da7bf73",
+      "date": "2008-10-21T13:45:57-05:00",
+      "subject": "[R-sig-DB] [R] [R-pkgs] New package RPostgreSQL 0.1.0",
+      "subject_clean": "New package RPostgreSQL 0.1.0",
+      "in_reply_to": null,
+      "references": [
+        "<18677.22625.526067.785258@ron.nulle.part>",
+        "<alpine.LFD.2.00.0810171158300.9455@gannet.stats.ox.ac.uk>",
+        "<18680.33343.330123.562586@ron.nulle.part>",
+        "<alpine.LFD.2.00.0810171330140.13932@gannet.stats.ox.ac.uk>",
+        "<4aad65740810171320n1fa1ba96kae1b269ecf0a4b92@mail.gmail.com>"
+      ],
+      "body_plain": "Hi,\n\nThis is great!  Any chance we'll see an r-cran-rpostgresql package in\nDebian?\n\n\nCheers,\n\n-- \nSeb",
+      "body_snippet": "Hi,\n\nThis is great!  Any chance we'll see an r-cran-rpostgresql package in\nDebian?\n\n\nCheers,\n\n-- \nSeb",
+      "thread_id": "thread-3b17b30343b7",
+      "thread_depth": 4,
+      "month": "2008-10"
+    },
+    {
+      "id": "msg-5a4c540eb456",
+      "message_id": "<aed5df510810231652v6aab3986t92ed7088d8e7bdbc@mail.gmail.com>",
+      "from_name": "Chris Long",
+      "from_email_hash": "162949a7f0c818af99bbb0532530d3d618c65db63f8cc250967d46838ba9523c",
+      "date": "2008-10-23T16:52:49-07:00",
+      "subject": "[R-sig-DB] RPostgreSQL dbWriteTable",
+      "subject_clean": "RPostgreSQL dbWriteTable",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\nRPostgreSQL's dbWriteTable uses the technique of saving a temporary\nfile, then loading the temporary file to a table using \"COPY ... FROM\".\nThis is fine for a local database connection, but fails if you are connected\nto a remote database.  A simple fix is to use a technique similar to either\nRSQLite or ROracle.  I've sent a note to the authors.\n\nI'm *really* happy to see this available; it's a tremendous improvement\nover the existing (and unmaintained) connectivity packages.  Kudos\nto the authors as well as Google for its support.\n-- \nChris Long, San Diego Padres, 100 Park Boulevard, San Diego CA\n\nScore: 0, Diff: 1, clong killed by a Harvard Math Team on  1",
+      "body_snippet": "Hi,\n\nRPostgreSQL's dbWriteTable uses the technique of saving a temporary\nfile, then loading the temporary file to a table using \"COPY ... FROM\".\nThis is fine for a local database connection, but fails",
+      "thread_id": "thread-5a4c540eb456",
+      "thread_depth": 0,
+      "month": "2008-10"
+    },
+    {
+      "id": "msg-80464c39d9fe",
+      "message_id": "<20081026183535.GB328@ziti.local>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2008-10-26T11:35:35-07:00",
+      "subject": "[R-sig-DB] New version of RSQLite 0.7-1 on CRAN",
+      "subject_clean": "New version of RSQLite 0.7-1 on CRAN",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "The new version updates the included SQLite from 3.6.0 to 3.6.4.\n\n+ seth\n\n-- \nSeth Falcon | http://userprimary.net/user/",
+      "body_snippet": "The new version updates the included SQLite from 3.6.0 to 3.6.4.\n\n+ seth\n\n-- \nSeth Falcon | http://userprimary.net/user/",
+      "thread_id": "thread-80464c39d9fe",
+      "thread_depth": 0,
+      "month": "2008-10"
+    },
+    {
+      "id": "msg-665b32847539",
+      "message_id": "<de8c7cb40810292350u521a20c6r31217a9e0e7e3dba@mail.gmail.com>",
+      "from_name": "Prasenjit Kapat",
+      "from_email_hash": "9e858ae1ef83a65a6b893dffe0d8db4d5362775729dd629dfe48603ee8933c48",
+      "date": "2008-10-30T02:50:44-04:00",
+      "subject": "[R-sig-DB] Compiling RPostgreSQL on Ubuntu?",
+      "subject_clean": "Compiling RPostgreSQL on Ubuntu?",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\nI am looking for some instructions on compiling the source package on\na Ubuntu 8.04 machine with R 2.7.1.\n\nThanks,\nPK",
+      "body_snippet": "Hi,\n\nI am looking for some instructions on compiling the source package on\na Ubuntu 8.04 machine with R 2.7.1.\n\nThanks,\nPK",
+      "thread_id": "thread-665b32847539",
+      "thread_depth": 0,
+      "month": "2008-10"
+    },
+    {
+      "id": "msg-4977ba1b7b40",
+      "message_id": "<18697.38693.539711.331545@ron.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2008-10-30T06:14:45-05:00",
+      "subject": "[R-sig-DB] Compiling RPostgreSQL on Ubuntu?",
+      "subject_clean": "Compiling RPostgreSQL on Ubuntu?",
+      "in_reply_to": "<de8c7cb40810292350u521a20c6r31217a9e0e7e3dba@mail.gmail.com>",
+      "references": [
+        "<de8c7cb40810292350u521a20c6r31217a9e0e7e3dba@mail.gmail.com>"
+      ],
+      "body_plain": "On 30 October 2008 at 02:50, Prasenjit Kapat wrote:\n| I am looking for some instructions on compiling the source package on\n| a Ubuntu 8.04 machine with R 2.7.1.\n\nNo different than \n1)  Install the Postgresql header files:\n\t\n\tsudo apt-get install libpq-dev   \n\n    This is always the same: if you want to build against a certain \n    feature or library, you need the corresponding -dev package. \n\n2)  Install the RPostgresql package, either via install.packages() from \n    inside R (but you may need to start R via sudo), or using \n\n        sudo R CMD INSTALL RPostgresql_0.1-1.tar.gz\n\n    if you downloaded sources.\n\nHope this helps,  Dirk\n\n-- \nThree out of two people have difficulties with fractions.",
+      "body_snippet": "On 30 October 2008 at 02:50, Prasenjit Kapat wrote:\n| I am looking for some instructions on compiling the source package on\n| a Ubuntu 8.04 machine with R 2.7.1.\n\nNo different than \n1)  Install the Po",
+      "thread_id": "thread-665b32847539",
+      "thread_depth": 1,
+      "month": "2008-10"
+    },
+    {
+      "id": "msg-207aa49a57b6",
+      "message_id": "<de8c7cb40810301108k6ea2cfach15e928410989c7f@mail.gmail.com>",
+      "from_name": "Prasenjit Kapat",
+      "from_email_hash": "9e858ae1ef83a65a6b893dffe0d8db4d5362775729dd629dfe48603ee8933c48",
+      "date": "2008-10-30T14:08:27-04:00",
+      "subject": "[R-sig-DB] Compiling RPostgreSQL on Ubuntu?",
+      "subject_clean": "Compiling RPostgreSQL on Ubuntu?",
+      "in_reply_to": "<18697.38693.539711.331545@ron.nulle.part>",
+      "references": [
+        "<de8c7cb40810292350u521a20c6r31217a9e0e7e3dba@mail.gmail.com>",
+        "<18697.38693.539711.331545@ron.nulle.part>"
+      ],
+      "body_plain": "On Thu, Oct 30, 2008 at 7:14 AM, Dirk Eddelbuettel <edd at debian.org> wrote:\n>\n> On 30 October 2008 at 02:50, Prasenjit Kapat wrote:\n> | I am looking for some instructions on compiling the source package on\n> | a Ubuntu 8.04 machine with R 2.7.1.\n>\n> No different than\n> 1)  Install the Postgresql header files:\n>\n>        sudo apt-get install libpq-dev\n>\n>    This is always the same: if you want to build against a certain\n>    feature or library, you need the corresponding -dev package.\n>\n> 2)  Install the RPostgresql package, either via install.packages() from\n>    inside R (but you may need to start R via sudo), or using\n>\n>        sudo R CMD INSTALL RPostgresql_0.1-1.tar.gz\n>\n>    if you downloaded sources.\n>\n> Hope this helps,  Dirk\n\nIt does indeed. Thanks Dirk. For some reason, don't know why, I was\ngoing on the \"./configure && make && make install\" route with the\n\"raw\" sources downloaded from code.google.com. Life is simpler than\nthat :)\n\nRegards,\nPK",
+      "body_snippet": "On Thu, Oct 30, 2008 at 7:14 AM, Dirk Eddelbuettel <edd at debian.org> wrote:\n>\n> On 30 October 2008 at 02:50, Prasenjit Kapat wrote:\n> | I am looking for some instructions on compiling the source pac",
+      "thread_id": "thread-665b32847539",
+      "thread_depth": 2,
+      "month": "2008-10"
+    },
+    {
+      "id": "msg-40d8c3706fe0",
+      "message_id": "<c8e8cd3d0810311328x2e5502dfoc34b7e40d78d1bd4@mail.gmail.com>",
+      "from_name": "christophe dutang",
+      "from_email_hash": "767bf2adf77e65292b8430dca3a919b5d13bfe88f6d0d99b1ed60c492fa2779b",
+      "date": "2008-10-31T21:28:41+01:00",
+      "subject": "[R-sig-DB] rmysql warning and its associated mysql error",
+      "subject_clean": "rmysql warning and its associated mysql error",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\nI'm currently experiencing problem with the combination of mysql / Rmysql /\nR when reading the result of a 'big' query. If I select only 4 variables of\nmy mysql table, the result dimension has 56972 rows, I read by pack of\n50000, namely the first of 50000 and the second of 6972. In this cas I do\nnot get any DBI warning telling an error of mysql server. But If I read the\n21 variables of my table, the result dimension is then 56972 x 21. In R, the\nfirst read of 50000 rows is fine but second stops after reading 2182 rows...\nand a DBI warning is raised\n\nRS-DBI driver warning: (error while fetching rows)\n\nThis problem was raised in 2003, cf.\nhttps://stat.ethz.ch/pipermail/r-help/2003-April/032708.html\n\nBut I found here http://www.mysqlperformanceblog.com/2007/07/06/, that \"If\nyou do not check for error it can look as you've done with result set while\nyou only processed a portion of it, which can cause rather hard to catch\nerrors.\"\n\nDoes anyone experience this problem? and know how to solve it?\n\nThanks in advance\n\nChristophe Dutang\n\n\nPS : I use R 2.7.2 on windows XP pro with RMySQL_0.6-1 and a MySQL community\nserver 5.0\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi,\n\nI'm currently experiencing problem with the combination of mysql / Rmysql /\nR when reading the result of a 'big' query. If I select only 4 variables of\nmy mysql table, the result dimension has 56",
+      "thread_id": "thread-40d8c3706fe0",
+      "thread_depth": 0,
+      "month": "2008-10"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-57334e53ea95",
+      "subject": "Saving R-objects to a database",
+      "message_count": 9,
+      "participants": [
+        "Christian Ruckert",
+        "Herve Pages",
+        "Prof Brian Ripley",
+        "Sean Davis",
+        "adam_pgsql"
+      ],
+      "started": "2008-10-01T11:53:44+02:00",
+      "last_reply": "2008-10-02T19:17:19-07:00",
+      "root_message_id": "msg-57334e53ea95"
+    },
+    {
+      "id": "thread-3b17b30343b7",
+      "subject": "New package RPostgreSQL 0.1.0",
+      "message_count": 5,
+      "participants": [
+        "Bo Zhao",
+        "Dirk Eddelbuettel",
+        "Prof Brian Ripley",
+        "Sebastian P. Luque"
+      ],
+      "started": "2008-10-17T12:42:49+01:00",
+      "last_reply": "2008-10-21T13:45:57-05:00",
+      "root_message_id": "msg-3b17b30343b7"
+    },
+    {
+      "id": "thread-25ffb8e1ae72",
+      "subject": "Long query time running R +  RODBC against SQL Server",
+      "message_count": 1,
+      "participants": [
+        "Doug Hill"
+      ],
+      "started": "2008-10-20T09:16:01-07:00",
+      "last_reply": "2008-10-20T09:16:01-07:00",
+      "root_message_id": "msg-25ffb8e1ae72"
+    },
+    {
+      "id": "thread-5a4c540eb456",
+      "subject": "RPostgreSQL dbWriteTable",
+      "message_count": 1,
+      "participants": [
+        "Chris Long"
+      ],
+      "started": "2008-10-23T16:52:49-07:00",
+      "last_reply": "2008-10-23T16:52:49-07:00",
+      "root_message_id": "msg-5a4c540eb456"
+    },
+    {
+      "id": "thread-80464c39d9fe",
+      "subject": "New version of RSQLite 0.7-1 on CRAN",
+      "message_count": 1,
+      "participants": [
+        "Seth Falcon"
+      ],
+      "started": "2008-10-26T11:35:35-07:00",
+      "last_reply": "2008-10-26T11:35:35-07:00",
+      "root_message_id": "msg-80464c39d9fe"
+    },
+    {
+      "id": "thread-665b32847539",
+      "subject": "Compiling RPostgreSQL on Ubuntu?",
+      "message_count": 3,
+      "participants": [
+        "Dirk Eddelbuettel",
+        "Prasenjit Kapat"
+      ],
+      "started": "2008-10-30T02:50:44-04:00",
+      "last_reply": "2008-10-30T14:08:27-04:00",
+      "root_message_id": "msg-665b32847539"
+    },
+    {
+      "id": "thread-40d8c3706fe0",
+      "subject": "rmysql warning and its associated mysql error",
+      "message_count": 1,
+      "participants": [
+        "christophe dutang"
+      ],
+      "started": "2008-10-31T21:28:41+01:00",
+      "last_reply": "2008-10-31T21:28:41+01:00",
+      "root_message_id": "msg-40d8c3706fe0"
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2015-12",
+  "messages": [
+    {
+      "id": "msg-1d7c34b4da20",
+      "message_id": "<CALx9ERWKGfmOK5SRLphWyXDmHEoeQjX4Lzh1sp+FESyXBSj46A@mail.gmail.com>",
+      "from_name": "Matthew Van Scoyoc",
+      "from_email_hash": "0ee9b65e832870bb12fe81993daf78e219840c5c838f8b161caab53f59fd17f6",
+      "date": "2015-12-09T15:16:49-07:00",
+      "subject": "[R-sig-DB] Error appending data using RODBC, sqlSave()",
+      "subject_clean": "Error appending data using RODBC, sqlSave()",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I need to update tables in an MS Access database, but sqlSave(..., append =\nTRUE) keeps returning errors. I've spent the better part of the last hour\non Google, but haven't found an adequate answer. Here's my code.\n\n#+ Munge ----\n> # Call in resampled plots from CRC_Data.DB\n> resample <- sqlFetch(CRC_Data.DB, \"tblResampledPlots\")\n> glimpse(resample)\nObservations: 58\nVariables: 7\n$ PlotID           (fctr) C057, C085, C091, C128, C133, C233, C284, C311,\nC312, C401, C418, ...\n$ Re-sampleDate    (time) 2014-07-24, 2014-08-29, 2014-09-27, 2014-10-01,\n2014-08-30, 2014-0...\n$ Notes            (str) NA, NA, Something important about the plot visit...\n$ SppRichStartTime (time) 13:09:00, 11:23:00, 13:54:00...\n$ SppRichEndTime   (time) 13:21:00, 11:38:00, 14:15:00...\n$ SppRichNotes     (fctr) NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,\nNA, NA, NA, NA, NA...\n$ SppRichTotalTime (time) 00:12:00, 00:15:00, 00:21:00...\n>\n> # Call in resampled plots from Summaries.DB\n> plots.sum = sqlFetch(Summaries.DB, \"tblPlotsResampled\")\n> glimpse(plots.sum)\nObservations: 52\nVariables: 3\n$ PlotID        (fctr) C021, C057, C085, C091, C128, C133, C233, C284,\nC311, C312, C401, C41...\n$ Re-sampleDate (time) 2014-08-29, 2014-07-24, 2014-08-29, 2014-09-27,\n2014-10-01...\n$ Notes         (fctr) NA, NA, NA, Something important about the plot\nvisit...\n>\n> # Select the new data\n> plots.write = resample %>%\n+   filter(!(PlotID %in% plots.sum$PlotID)) %>%\n+   select(PlotID:Notes)\n> glimpse(plots.write)\nObservations: 7\nVariables: 3\n$ PlotID        (fctr) D098, D104, D105, D605, D607, D608, D649\n$ Re-sampleDate (time) 2015-10-14, 2015-09-29, 2015-09-30, 2015-10-16,\n2015-10-15...\n$ Notes         (fctr) NA, NA, NA, NA, NA, NA, NA\n>\n> #+ AppendData ----\n> sqlSave(Summaries.DB, plots.write, \"tblPlotsResampled\", append = TRUE)\nError in sqlSave(Summaries.DB, plots.write, \"tblPlotsResampled\", append =\nTRUE) :\n  unable to append to table ?tblPlotsResampled?\n\nThanks,\n\nMVS\n=====\nMatthew Van Scoyoc\n=====\nThink SNOW!\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "I need to update tables in an MS Access database, but sqlSave(..., append =\nTRUE) keeps returning errors. I've spent the better part of the last hour\non Google, but haven't found an adequate answer. H",
+      "thread_id": "thread-1d7c34b4da20",
+      "thread_depth": 0,
+      "month": "2015-12"
+    },
+    {
+      "id": "msg-0e226948f620",
+      "message_id": "<CAJuCY5zGeq_prx=pBC4DxPB3HZgCJFv_wZvLjx2fUrGAkoUHfg@mail.gmail.com>",
+      "from_name": "Thierry Onkelinx",
+      "from_email_hash": "1183e720326bc91ec429d1a20d015e292579537392780a0fcfc24d392942c637",
+      "date": "2015-12-11T13:14:21+01:00",
+      "subject": "[R-sig-DB] Error appending data using RODBC, sqlSave()",
+      "subject_clean": "Error appending data using RODBC, sqlSave()",
+      "in_reply_to": "<CALx9ERWKGfmOK5SRLphWyXDmHEoeQjX4Lzh1sp+FESyXBSj46A@mail.gmail.com>",
+      "references": [
+        "<CALx9ERWKGfmOK5SRLphWyXDmHEoeQjX4Lzh1sp+FESyXBSj46A@mail.gmail.com>"
+      ],
+      "body_plain": "Dear Matthew,\n\nHave you tried converting the factors into characters?\n\nBest regards,\n\nir. Thierry Onkelinx\nInstituut voor natuur- en bosonderzoek / Research Institute for Nature and\nForest\nteam Biometrie & Kwaliteitszorg / team Biometrics & Quality Assurance\nKliniekstraat 25\n1070 Anderlecht\nBelgium\n\nTo call in the statistician after the experiment is done may be no more\nthan asking him to perform a post-mortem examination: he may be able to say\nwhat the experiment died of. ~ Sir Ronald Aylmer Fisher\nThe plural of anecdote is not data. ~ Roger Brinner\nThe combination of some data and an aching desire for an answer does not\nensure that a reasonable answer can be extracted from a given body of data.\n~ John Tukey\n\n2015-12-09 23:16 GMT+01:00 Matthew Van Scoyoc <scoyoc at gmail.com>:\n\n> I need to update tables in an MS Access database, but sqlSave(..., append =\n> TRUE) keeps returning errors. I've spent the better part of the last hour\n> on Google, but haven't found an adequate answer. Here's my code.\n>\n> #+ Munge ----\n> > # Call in resampled plots from CRC_Data.DB\n> > resample <- sqlFetch(CRC_Data.DB, \"tblResampledPlots\")\n> > glimpse(resample)\n> Observations: 58\n> Variables: 7\n> $ PlotID           (fctr) C057, C085, C091, C128, C133, C233, C284, C311,\n> C312, C401, C418, ...\n> $ Re-sampleDate    (time) 2014-07-24, 2014-08-29, 2014-09-27, 2014-10-01,\n> 2014-08-30, 2014-0...\n> $ Notes            (str) NA, NA, Something important about the plot\n> visit...\n> $ SppRichStartTime (time) 13:09:00, 11:23:00, 13:54:00...\n> $ SppRichEndTime   (time) 13:21:00, 11:38:00, 14:15:00...\n> $ SppRichNotes     (fctr) NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,\n> NA, NA, NA, NA, NA...\n> $ SppRichTotalTime (time) 00:12:00, 00:15:00, 00:21:00...\n> >\n> > # Call in resampled plots from Summaries.DB\n> > plots.sum = sqlFetch(Summaries.DB, \"tblPlotsResampled\")\n> > glimpse(plots.sum)\n> Observations: 52\n> Variables: 3\n> $ PlotID        (fctr) C021, C057, C085, C091, C128, C133, C233, C284,\n> C311, C312, C401, C41...\n> $ Re-sampleDate (time) 2014-08-29, 2014-07-24, 2014-08-29, 2014-09-27,\n> 2014-10-01...\n> $ Notes         (fctr) NA, NA, NA, Something important about the plot\n> visit...\n> >\n> > # Select the new data\n> > plots.write = resample %>%\n> +   filter(!(PlotID %in% plots.sum$PlotID)) %>%\n> +   select(PlotID:Notes)\n> > glimpse(plots.write)\n> Observations: 7\n> Variables: 3\n> $ PlotID        (fctr) D098, D104, D105, D605, D607, D608, D649\n> $ Re-sampleDate (time) 2015-10-14, 2015-09-29, 2015-09-30, 2015-10-16,\n> 2015-10-15...\n> $ Notes         (fctr) NA, NA, NA, NA, NA, NA, NA\n> >\n> > #+ AppendData ----\n> > sqlSave(Summaries.DB, plots.write, \"tblPlotsResampled\", append = TRUE)\n> Error in sqlSave(Summaries.DB, plots.write, \"tblPlotsResampled\", append =\n> TRUE) :\n>   unable to append to table ?tblPlotsResampled?\n>\n> Thanks,\n>\n> MVS\n> =====\n> Matthew Van Scoyoc\n> =====\n> Think SNOW!\n>\n>         [[alternative HTML version deleted]]\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Dear Matthew,\n\nHave you tried converting the factors into characters?\n\nBest regards,\n\nir. Thierry Onkelinx\nInstituut voor natuur- en bosonderzoek / Research Institute for Nature and\nForest\nteam Biomet",
+      "thread_id": "thread-1d7c34b4da20",
+      "thread_depth": 1,
+      "month": "2015-12"
+    },
+    {
+      "id": "msg-b890167f6a05",
+      "message_id": "<56848C19.2070809@ivt.baug.ethz.ch>",
+      "from_name": "Kirill Müller",
+      "from_email_hash": "27428f4e68e783f0953f00cf0a4d40466bcc4bbb32ab5f2324bee380e4c44f0b",
+      "date": "2015-12-31T02:59:53+01:00",
+      "subject": "[R-sig-DB] Improving DBI",
+      "subject_clean": "Improving DBI",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi\n\n\nI have prepared a proposal for improving DBI, and three backends to \nopen-source databases: http://bit.ly/1QZNNrC (current version), \nhttp://bit.ly/1Uhn1ZC (version at the time of writing). Among other \nthings, I plan to improve support for data types, parametrized queries, \nand database schemas. Ultimately, DBI will be formally specified by a \ntest suite and a written description.\n\nBefore submitting it to the R Consortium, I'd be glad to receive further \ninput. Are there other design issues that need to be addressed? Other \npoints I have missed? Issues you might want to see resolved as part of \nthis project? See also the GitHub issue trackers for DBI [1] (which also \ncontains the design discussion [2]), RMySQL [3], RPostgres [4] and \nRSQLite [5].\n\nPlease note that the deadline for submitting the proposal is already \nJanuary 10. Thank you for your attention.\n\n\nBest regards\n\nKirill\n\n\n[1] https://github.com/rstats-db/DBI/issues\n[2] \nhttps://github.com/rstats-db/DBI/issues?q=is%3Aopen+is%3Aissue+label%3Aaction%3Adesign\n[3] https://github.com/rstats-db/RMySQL/issues\n[4] https://github.com/rstats-db/RPostgres/issues\n[5] https://github.com/rstats-db/RSQLite/issues",
+      "body_snippet": "Hi\n\n\nI have prepared a proposal for improving DBI, and three backends to \nopen-source databases: http://bit.ly/1QZNNrC (current version), \nhttp://bit.ly/1Uhn1ZC (version at the time of writing). Among",
+      "thread_id": "thread-b890167f6a05",
+      "thread_depth": 0,
+      "month": "2015-12"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-1d7c34b4da20",
+      "subject": "Error appending data using RODBC, sqlSave()",
+      "message_count": 2,
+      "participants": [
+        "Matthew Van Scoyoc",
+        "Thierry Onkelinx"
+      ],
+      "started": "2015-12-09T15:16:49-07:00",
+      "last_reply": "2015-12-11T13:14:21+01:00",
+      "root_message_id": "msg-1d7c34b4da20"
+    },
+    {
+      "id": "thread-b890167f6a05",
+      "subject": "Improving DBI",
+      "message_count": 1,
+      "participants": [
+        "Kirill Müller"
+      ],
+      "started": "2015-12-31T02:59:53+01:00",
+      "last_reply": "2015-12-31T02:59:53+01:00",
+      "root_message_id": "msg-b890167f6a05"
+    }
+  ]
+}

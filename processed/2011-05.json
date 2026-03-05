@@ -1,0 +1,308 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2011-05",
+  "messages": [
+    {
+      "id": "msg-8e1f40a6e265",
+      "message_id": "<BANLkTi=zUZhmPo66FxurDsc6NKj90qP8iA@mail.gmail.com>",
+      "from_name": "Harlan Harris",
+      "from_email_hash": "611206558041b3ccc178bb02493ee676170bbca58f0ab8c485d465fae70db625",
+      "date": "2011-05-03T15:25:13-04:00",
+      "subject": "[R-sig-DB] NULL data not mapped to NA with RODBC on 64-bit Mac OS X",
+      "subject_clean": "NULL data not mapped to NA with RODBC on 64-bit Mac OS X",
+      "in_reply_to": "<A27FC7E9-579A-4D08-BB58-5475016D58A3@kenroku.kanazawa-u.ac.jp>",
+      "references": [
+        "<AANLkTimc8nxK4AZW8QeG1Jz-QU1fy9bi=ztXrv3H5ES_@mail.gmail.com>",
+        "<AANLkTi=i9SHhc-jVAXSPvzOF_FQkGZc-7wXhyav-1AJx@mail.gmail.com>",
+        "<11469CB8-DC47-4943-9187-4C764BBE5127@me.com>",
+        "<AANLkTinaBgjAf+-tq8ChaM2P6zgyhqRYB=RY4-Zwp=i=@mail.gmail.com>",
+        "<AANLkTimaQcqx7csgVo=6KZJrFnWmqnRuPEMEMAWOxpt5@mail.gmail.com>",
+        "<AANLkTi=2WtXaVY0TBdBtcbKpEgtuayL7kyeZrF1-mS3D@mail.gmail.com>",
+        "<BANLkTinyVJEG1CxvDO234Qn-DKfnX_QjDw@mail.gmail.com>",
+        "<A27FC7E9-579A-4D08-BB58-5475016D58A3@kenroku.kanazawa-u.ac.jp>"
+      ],
+      "body_plain": "(Missed this until now! Sorry for the delay in responding!)\n\nYou could be right about the solution I'm suggesting being wrong, but I\ndon't know. Does anyone else have any thoughts on the matter? It works for\nme....!\n\nI don't know enough to answer your other question, I'm afraid. It seems to\nme as if the nature of 64-bit equality is the real problem here...\n\nI'd really like this to get resolved officially. I've done the best I can to\nwrite a patch. Prof. Ripley, would you be able to weigh in on this?\n\n -Harlan\n\n\nOn Mon, Apr 18, 2011 at 9:20 PM, Tomoaki NISHIYAMA <\ntomoakin at kenroku.kanazawa-u.ac.jp> wrote:\n\n> Hi Harlan,\n>\n> I don't think this is a right way to fix.\n> Because\n> (int64_t) 0xFFFFFFFF == 4294967295 != -1\n> the bug resides on the code setting\n> ColData[i].IndPtr[row].\n> Changing the way to interpret it is a wrong solution.\n> Though, it might work as a workaround for the bug in other parts.\n>\n> The commented-out warning() in the code was used to confirm that without\n> the casts,\n>\n>\n> You did see only the lower 32 bits?\n>\n> --\n>\n> Tomoaki NISHIYAMA\n>\n>\n> Advanced Science Research Center,\n>\n> Kanazawa University,\n>\n> 13-1 Takara-machi,\n>\n> Kanazawa, 920-0934, Japan\n>\n>\n> On 2011/04/19, at 1:31, Harlan Harris wrote:\n>\n> OK, with the help of a rusty C coder at work, I've confirmed that the\n> solution the Python crew figured out also seems to work for me. I have no\n> idea if it breaks the 32-bit MacOS build, or any other build. Note that this\n> seems to be a very subtle effect of the way the compiler and header files\n> are interacting, as far as I can tell. The commented-out warning() in the\n> code was used to confirm that without the casts, the len variable and\n> SQL_NULL_DATA are, in fact, the same, and that despite their being the same,\n> the equality test fails.\n>\n> A patch is attached. All of the len variables are cast to ints. (Note that\n> casting to long, which should work, doesn't.) Would someone please apply to\n> patch to the source tree and do some regression testing?\n>\n> -Harlan\n>\n>\n> On Thu, Mar 31, 2011 at 9:35 AM, Harlan Harris <harlan at harris.name> wrote:\n>\n>> Prof. Ripley? Anyone? Should I cross-post this to R-Help? If someone would\n>> be willing to fix this for pay, please email me a proposal and I'll see if\n>> my employer would be willing to sponsor a fix.\n>>\n>>  -Harlan\n>>\n>>\n>> On Tue, Mar 29, 2011 at 9:43 AM, Harlan Harris <harlan at harris.name>wrote:\n>>\n>>> Following up on this... Prof. Ripley? Is this something you can address?\n>>>\n>>>  -Harlan\n>>>\n>>>\n>>> On Thu, Mar 24, 2011 at 9:54 AM, Harlan Harris <harlan at harris.name>wrote:\n>>>\n>>>> Thanks for the reply, Marc!\n>>>>\n>>>> Ah, it does appear I'm booting in 32-bit mode. From the terminal:\n>>>>\n>>>> > uname -a\n>>>> Darwin Harlan-Harris-MacBook-Pro.local 10.6.0 Darwin Kernel Version\n>>>> 10.6.0: Wed Nov 10 18:13:17 PST 2010; root:xnu-1504.9.26~3/RELEASE_I386 i386\n>>>>\n>>>> I can usually run stuff in 32-bit mode, but sometimes I would like the\n>>>> ability to use the extra RAM. Also, certain interfaces to R (such as the new\n>>>> RStudio) will run R in 64-bit mode, so for now, I can't use RStudio when I'm\n>>>> pulling data via ODBC that might have NULLs. I think Rscript also wants to\n>>>> run in 64-bit mode.\n>>>>\n>>>>  -Harlan\n>>>>\n>>>>\n>>>> On Thu, Mar 24, 2011 at 9:09 AM, Marc Schwartz <marc_schwartz at me.com>wrote:\n>>>>\n>>>>> Hi Harlan,\n>>>>>\n>>>>> I suspect that we will need to wait for Prof. Ripley to be able to look\n>>>>> into this further. There may be subtle issues at play here and I would defer\n>>>>> to his more intimate knowledge of the ODBC tool chain.\n>>>>>\n>>>>> I do know that the Actual driver is both 32 and 64 bit in a single\n>>>>> installation. However, I run R in 32 bit mode (don't need the extra address\n>>>>> space, even though I now have 8Gb on my MacBook Pro), so have not\n>>>>> encountered the 64 bit issues that you report here.\n>>>>>\n>>>>> I have the same header file. Note that SQLLEN is a signed declaration\n>>>>> below. It is defined as a 'long' generally and as a INT64 for 64 bit\n>>>>> Windows. It would be 'unsigned long' or UINT64, respectively for an unsigned\n>>>>> value.\n>>>>>\n>>>>> One question for you however, which is do you know if you are booting\n>>>>> the 32 bit or 64 bit OSX kernel on your Mac? Macs prior to mid-2010 (like\n>>>>> mine) running Snow Leopard typically default to the 32 bit kernel, though\n>>>>> can be 64 bit 'capable'. It depends upon various factors including the\n>>>>> presence of a 64 bit EFI. Newer Macs now boot into the 64 bit kernel by\n>>>>> default. I have seen some problems reported on older Macs where the default\n>>>>> kernel was changed from 32 bit to 64 bit, resulting in subtle and not so\n>>>>> subtle problems with some drivers. Booting to the 32 bit kernel still allows\n>>>>> you to run 64 bit apps under Snow Leopard, just that the kernel and\n>>>>> extensions are 32 bit.\n>>>>>\n>>>>> Regards,\n>>>>>\n>>>>> Marc\n>>>>>\n>>>>>\n>>>>> On Mar 23, 2011, at 2:29 PM, Harlan Harris wrote:\n>>>>>\n>>>>> > Any thoughts? Is there someone else or somewhere else I might ask?\n>>>>> >\n>>>>> > -Harlan\n>>>>> >\n>>>>> > On Tue, Mar 22, 2011 at 1:31 PM, Harlan Harris <harlan at harris.name>\n>>>>> wrote:\n>>>>> >\n>>>>> >> Hello,\n>>>>> >>\n>>>>> >> I seem to have hit a bug in RODBC on 64-bit versions of R on Mac OS\n>>>>> X. I'm\n>>>>> >> running R 2.12.1, and using R to talk to Oracle and other databases\n>>>>> using\n>>>>> >> RODBC 1.3-2. In 32-bit mode (R32), everything works. (The ODBC\n>>>>> drivers are\n>>>>> >> the ones from Actual.) In 64-bit mode (R), it seems as if NULL data\n>>>>> is not\n>>>>> >> being treated as missing. For example, a NULL value in an integer\n>>>>> column is\n>>>>> >> being returned as a 0 instead, which is wrong/bad.\n>>>>> >>\n>>>>> >> Diving into the code and Google a bit, it seems like an issue that's\n>>>>> been\n>>>>> >> seen before in other contexts. Here's the relevant C code, from\n>>>>> >> RODBCFetchRows:\n>>>>> >>\n>>>>> >>        for(row = thisHandle->rowsUsed;\n>>>>> >>        row < thisHandle->rowsFetched && j <= maximum;\n>>>>> >>        j++, row++)\n>>>>> >>        {\n>>>>> >>        thisHandle->rowsUsed++;\n>>>>> >>        if(j > blksize) {\n>>>>> >>            blksize *= 2;\n>>>>> >>            for (i = 0; i < nc; i++)\n>>>>> >>            SET_VECTOR_ELT(data, i,\n>>>>> >>                       lengthgets(VECTOR_ELT(data, i), blksize));\n>>>>> >>        }\n>>>>> >>        for (i = 0; i < nc; i++) {\n>>>>> >>            SQLLEN len = thisHandle->ColData[i].IndPtr[row];\n>>>>> >>            switch(thisHandle->ColData[i].DataType) {\n>>>>> >>            case SQL_DOUBLE:\n>>>>> >>            REAL(VECTOR_ELT(data, i))[j-1] =\n>>>>> >>                len == SQL_NULL_DATA ? NA_REAL :\n>>>>> >>                thisHandle->ColData[i].RData[row];\n>>>>> >>            break;\n>>>>> >>\n>>>>> >> etc...\n>>>>> >>\n>>>>> >> Googling for SQL_NULL_DATA and related terms finds this page, about\n>>>>> the\n>>>>> >> same issue in a Python driver:\n>>>>> >>\n>>>>> >> http://code.google.com/p/pyodbc/issues/detail?id=51\n>>>>> >>\n>>>>> >> It appears as if SQLLEN might be unsigned in 64-bit builds, while\n>>>>> >> SQL_NULL_DATA is -1. Casting len to be an int rather than an\n>>>>> unsigned int\n>>>>> >> seems to solve the problem for them.\n>>>>> >>\n>>>>> >> On my machine, /usr/include/sqltypes.h starts like this:\n>>>>> >>\n>>>>> >> /*\n>>>>> >> *  sqltypes.h\n>>>>> >> *\n>>>>> >> *  $Id: sqltypes.h,v 1.23 2007/10/07 13:27:13 source Exp $\n>>>>> >> *\n>>>>> >> *  ODBC typedefs\n>>>>> >> *\n>>>>> >> *  The iODBC driver manager.\n>>>>> >>\n>>>>> >> and defines SQLLEN as follows:\n>>>>> >>\n>>>>> >> #ifdef _WIN64\n>>>>> >> typedef INT64                   SQLLEN;\n>>>>> >> typedef UINT64                  SQLULEN;\n>>>>> >> typedef UINT64                  SQLSETPOSIROW;\n>>>>> >> #elif defined(STRICT_ODBC_TYPES)\n>>>>> >> typedef long                    SQLLEN;\n>>>>> >> typedef unsigned long           SQLULEN;\n>>>>> >> typedef unsigned short          SQLSETPOSIROW;\n>>>>> >> #else\n>>>>> >> #define SQLLEN                  long\n>>>>> >> #define SQLULEN                 unsigned long\n>>>>> >> #define SQLSETPOSIROW           unsigned short\n>>>>> >> #endif\n>>>>> >>\n>>>>> >> Seems to me like SQLLEN should be signed, but apparently not?\n>>>>> >>\n>>>>> >> Can anyone help? Thank you!\n>>>>> >>\n>>>>> >> -Harlan\n>>>>>\n>>>>>\n>>>>>\n>>>>\n>>>\n>>\n> <RODBC.c.diff>_______________________________________________\n>\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n>\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "(Missed this until now! Sorry for the delay in responding!)\n\nYou could be right about the solution I'm suggesting being wrong, but I\ndon't know. Does anyone else have any thoughts on the matter? It wo",
+      "thread_id": "thread-8e1f40a6e265",
+      "thread_depth": 0,
+      "month": "2011-05"
+    },
+    {
+      "id": "msg-f378b35441f9",
+      "message_id": "<BANLkTik=Je815DPKYSHdLB=5gt5djcpfDQ@mail.gmail.com>",
+      "from_name": "Harlan Harris",
+      "from_email_hash": "611206558041b3ccc178bb02493ee676170bbca58f0ab8c485d465fae70db625",
+      "date": "2011-05-03T15:34:28-04:00",
+      "subject": "[R-sig-DB] sqlUpdate causing crash with RODBC",
+      "subject_clean": "sqlUpdate causing crash with RODBC",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi all,\n\nI'm trying to get writing/updates to an Oracle 10g database to work via\nRODBC on Mac OSX. I've confirmed that I can write SQL and use sqlQuery to\nupdate a simple table, but when I try to do the equivalent with sqlUpdate, R\ncrashes hard.\n\nThe testone table has two columns: id is a number (and primary key), and\nasdf is a varchar2(40).\n\nWhen I do this:\nsqlUpdate(hdl, data.frame(id=4, asdf='zoom'), 'testone', verbose=TRUE,\ntest=TRUE)\n\nI get a segfault and the following stack trace:\n\nProcess:         R [8486]\nPath:            /Applications/R64.app/Contents/MacOS/R\nIdentifier:      org.R-project.R\nVersion:         R 2.12.2 GUI 1.36 Leopard build 64-bit (5691)\nCode Type:       X86-64 (Native)\nParent Process:  launchd [153]\n\nDate/Time:       2011-05-03 15:15:08.360 -0400\nOS Version:      Mac OS X 10.6.6 (10J567)\nReport Version:  6\n\nInterval Since Last Report:          173376 sec\nCrashes Since Last Report:           5\nPer-App Interval Since Last Report:  184150 sec\nPer-App Crashes Since Last Report:   2\nAnonymous UUID:                      C49D451E-9024-4368-9216-C5DE32F331B0\n\nException Type:  EXC_CRASH (SIGABRT)\nException Codes: 0x0000000000000000, 0x0000000000000000\nCrashed Thread:  0  Dispatch queue: com.apple.main-thread\n\nApplication Specific Information:\nabort() called\n\nThread 0 Crashed:  Dispatch queue: com.apple.main-thread\n0   libSystem.B.dylib                 0x00007fff81287616 __kill + 10\n1   libSystem.B.dylib                 0x00007fff81327cca abort + 83\n2   libSystem.B.dylib                 0x00007fff8123f6f5 free + 128\n3   atoradb.so                        0x000000010234c021 SQLFreeEnv + 501\n4   atoradb.so                        0x000000010234c175 SQLFreeStmt + 71\n5   RODBC.so                          0x000000010111c698\nSQLFreeStmt_Internal + 305\n6   RODBC.so                          0x000000010111d2fb SQLFreeStmt + 312\n7   RODBC.so                          0x00000001011066f2 RODBCUpdate + 194\n(RODBC.c:1184)\n8   libR.dylib                        0x000000010011a5b1 do_dotcall + 16145\n(dotcode.c:857)\n\nLooking at RODBC.c, it's crashing assigning a NULL:\n\n    /* free the buffers */\n    cachenbind_free(thisHandle);\n    (void)SQLFreeStmt(thisHandle->hStmt, SQL_RESET_PARAMS);\n    (void)SQLFreeHandle(SQL_HANDLE_STMT, thisHandle->hStmt);\n    thisHandle->hStmt = NULL;\n    return ScalarInteger(stat);\n\nHas anyone seen this before?\n\nNote that if I take out the test=TRUE, it still crashes, and the database is\nnot updated.\n\n -Harlan\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi all,\n\nI'm trying to get writing/updates to an Oracle 10g database to work via\nRODBC on Mac OSX. I've confirmed that I can write SQL and use sqlQuery to\nupdate a simple table, but when I try to do t",
+      "thread_id": "thread-f378b35441f9",
+      "thread_depth": 0,
+      "month": "2011-05"
+    },
+    {
+      "id": "msg-4ff6700db04d",
+      "message_id": "<DBC5D9BA-8755-4253-8D8A-2228153FB308@kenroku.kanazawa-u.ac.jp>",
+      "from_name": "Tomoaki NISHIYAMA",
+      "from_email_hash": "32104f251c35465c7b064ecaf7558a62b44d8fb01218b8a85e1f2cd3278271b5",
+      "date": "2011-05-04T10:56:23+09:00",
+      "subject": "[R-sig-DB] NULL data not mapped to NA with RODBC on 64-bit Mac OS X",
+      "subject_clean": "NULL data not mapped to NA with RODBC on 64-bit Mac OS X",
+      "in_reply_to": "<BANLkTi=zUZhmPo66FxurDsc6NKj90qP8iA@mail.gmail.com>",
+      "references": [
+        "<AANLkTimc8nxK4AZW8QeG1Jz-QU1fy9bi=ztXrv3H5ES_@mail.gmail.com>",
+        "<AANLkTi=i9SHhc-jVAXSPvzOF_FQkGZc-7wXhyav-1AJx@mail.gmail.com>",
+        "<11469CB8-DC47-4943-9187-4C764BBE5127@me.com>",
+        "<AANLkTinaBgjAf+-tq8ChaM2P6zgyhqRYB=RY4-Zwp=i=@mail.gmail.com>",
+        "<AANLkTimaQcqx7csgVo=6KZJrFnWmqnRuPEMEMAWOxpt5@mail.gmail.com>",
+        "<AANLkTi=2WtXaVY0TBdBtcbKpEgtuayL7kyeZrF1-mS3D@mail.gmail.com>",
+        "<BANLkTinyVJEG1CxvDO234Qn-DKfnX_QjDw@mail.gmail.com>",
+        "<A27FC7E9-579A-4D08-BB58-5475016D58A3@kenroku.kanazawa-u.ac.jp>",
+        "<BANLkTi=zUZhmPo66FxurDsc6NKj90qP8iA@mail.gmail.com>"
+      ],
+      "body_plain": "Hi Harlon,\n\n> I don't know enough to answer your other question, I'm afraid.\n> It seems to me as if the nature of 64-bit equality is the real problem here...\n\n\nFor the judgement of \"the len variable and SQL_NULL_DATA are, in fact, the same\"\nyou seemed to have done with\n\nwarning(_(\"len = %X, SQL_NULL_DATA = %X, len == SQL_NULL_DATA = %d\"), (int)len, (int)SQL_NULL_DATA, (int)len == (int)SQL_NULL_DATA);\n\nBut this is not the right way to see if \"the len variable and SQL_NULL_DATA are the same\".\nYou can try to see the contents of the variable by adding \"l\" prefix to the format conversion\nstring to see the full content of the variables.\n\nlen = %ld, SQL_NULL_DATA = %ld, len == SQL_NULL_DATA = %d\"), (long)len, (long)SQL_NULL_DATA, len == SQL_NULL_DATA\n\nThen see if the equality is strange.\n\nI think you are really close to the bug, but still you need to go for a bit further.\n-- \nTomoaki NISHIYAMA\n\nAdvanced Science Research Center,\nKanazawa University,\n13-1 Takara-machi, \nKanazawa, 920-0934, Japan\n\n\nOn 2011/05/04, at 4:25, Harlan Harris wrote:\n\n> (Missed this until now! Sorry for the delay in responding!)\n> \n> You could be right about the solution I'm suggesting being wrong, but I don't know. Does anyone else have any thoughts on the matter? It works for me....!\n> \n> I don't know enough to answer your other question, I'm afraid. It seems to me as if the nature of 64-bit equality is the real problem here...\n> \n> I'd really like this to get resolved officially. I've done the best I can to write a patch. Prof. Ripley, would you be able to weigh in on this?\n> \n>  -Harlan\n> \n> \n> On Mon, Apr 18, 2011 at 9:20 PM, Tomoaki NISHIYAMA <tomoakin at kenroku.kanazawa-u.ac.jp> wrote:\n> Hi Harlan,\n> \n> I don't think this is a right way to fix.\n> Because\n> (int64_t) 0xFFFFFFFF == 4294967295 != -1\n> the bug resides on the code setting\n> ColData[i].IndPtr[row].\n> Changing the way to interpret it is a wrong solution. \n> Though, it might work as a workaround for the bug in other parts.\n> \n>> The commented-out warning() in the code was used to confirm that without the casts,\n> \n> You did see only the lower 32 bits?\n> -- \n> Tomoaki NISHIYAMA\n> \n> Advanced Science Research Center,\n> Kanazawa University,\n> 13-1 Takara-machi, \n> Kanazawa, 920-0934, Japan\n> \n> \n> On 2011/04/19, at 1:31, Harlan Harris wrote:\n> \n>> OK, with the help of a rusty C coder at work, I've confirmed that the solution the Python crew figured out also seems to work for me. I have no idea if it breaks the 32-bit MacOS build, or any other build. Note that this seems to be a very subtle effect of the way the compiler and header files are interacting, as far as I can tell. The commented-out warning() in the code was used to confirm that without the casts, the len variable and SQL_NULL_DATA are, in fact, the same, and that despite their being the same, the equality test fails.\n>> \n>> A patch is attached. All of the len variables are cast to ints. (Note that casting to long, which should work, doesn't.) Would someone please apply to patch to the source tree and do some regression testing? \n>> \n>> -Harlan\n>> \n>> \n>> On Thu, Mar 31, 2011 at 9:35 AM, Harlan Harris <harlan at harris.name> wrote:\n>> Prof. Ripley? Anyone? Should I cross-post this to R-Help? If someone would be willing to fix this for pay, please email me a proposal and I'll see if my employer would be willing to sponsor a fix.\n>> \n>>  -Harlan\n>> \n>> \n>> On Tue, Mar 29, 2011 at 9:43 AM, Harlan Harris <harlan at harris.name> wrote:\n>> Following up on this... Prof. Ripley? Is this something you can address? \n>> \n>>  -Harlan\n>> \n>> \n>> On Thu, Mar 24, 2011 at 9:54 AM, Harlan Harris <harlan at harris.name> wrote:\n>> Thanks for the reply, Marc!\n>> \n>> Ah, it does appear I'm booting in 32-bit mode. From the terminal:\n>> \n>> > uname -a\n>> Darwin Harlan-Harris-MacBook-Pro.local 10.6.0 Darwin Kernel Version 10.6.0: Wed Nov 10 18:13:17 PST 2010; root:xnu-1504.9.26~3/RELEASE_I386 i386\n>> \n>> I can usually run stuff in 32-bit mode, but sometimes I would like the ability to use the extra RAM. Also, certain interfaces to R (such as the new RStudio) will run R in 64-bit mode, so for now, I can't use RStudio when I'm pulling data via ODBC that might have NULLs. I think Rscript also wants to run in 64-bit mode.\n>> \n>>  -Harlan\n>> \n>> \n>> On Thu, Mar 24, 2011 at 9:09 AM, Marc Schwartz <marc_schwartz at me.com> wrote:\n>> Hi Harlan,\n>> \n>> I suspect that we will need to wait for Prof. Ripley to be able to look into this further. There may be subtle issues at play here and I would defer to his more intimate knowledge of the ODBC tool chain.\n>> \n>> I do know that the Actual driver is both 32 and 64 bit in a single installation. However, I run R in 32 bit mode (don't need the extra address space, even though I now have 8Gb on my MacBook Pro), so have not encountered the 64 bit issues that you report here.\n>> \n>> I have the same header file. Note that SQLLEN is a signed declaration below. It is defined as a 'long' generally and as a INT64 for 64 bit Windows. It would be 'unsigned long' or UINT64, respectively for an unsigned value.\n>> \n>> One question for you however, which is do you know if you are booting the 32 bit or 64 bit OSX kernel on your Mac? Macs prior to mid-2010 (like mine) running Snow Leopard typically default to the 32 bit kernel, though can be 64 bit 'capable'. It depends upon various factors including the presence of a 64 bit EFI. Newer Macs now boot into the 64 bit kernel by default. I have seen some problems reported on older Macs where the default kernel was changed from 32 bit to 64 bit, resulting in subtle and not so subtle problems with some drivers. Booting to the 32 bit kernel still allows you to run 64 bit apps under Snow Leopard, just that the kernel and extensions are 32 bit.\n>> \n>> Regards,\n>> \n>> Marc\n>> \n>> \n>> On Mar 23, 2011, at 2:29 PM, Harlan Harris wrote:\n>> \n>> > Any thoughts? Is there someone else or somewhere else I might ask?\n>> >\n>> > -Harlan\n>> >\n>> > On Tue, Mar 22, 2011 at 1:31 PM, Harlan Harris <harlan at harris.name> wrote:\n>> >\n>> >> Hello,\n>> >>\n>> >> I seem to have hit a bug in RODBC on 64-bit versions of R on Mac OS X. I'm\n>> >> running R 2.12.1, and using R to talk to Oracle and other databases using\n>> >> RODBC 1.3-2. In 32-bit mode (R32), everything works. (The ODBC drivers are\n>> >> the ones from Actual.) In 64-bit mode (R), it seems as if NULL data is not\n>> >> being treated as missing. For example, a NULL value in an integer column is\n>> >> being returned as a 0 instead, which is wrong/bad.\n>> >>\n>> >> Diving into the code and Google a bit, it seems like an issue that's been\n>> >> seen before in other contexts. Here's the relevant C code, from\n>> >> RODBCFetchRows:\n>> >>\n>> >>        for(row = thisHandle->rowsUsed;\n>> >>        row < thisHandle->rowsFetched && j <= maximum;\n>> >>        j++, row++)\n>> >>        {\n>> >>        thisHandle->rowsUsed++;\n>> >>        if(j > blksize) {\n>> >>            blksize *= 2;\n>> >>            for (i = 0; i < nc; i++)\n>> >>            SET_VECTOR_ELT(data, i,\n>> >>                       lengthgets(VECTOR_ELT(data, i), blksize));\n>> >>        }\n>> >>        for (i = 0; i < nc; i++) {\n>> >>            SQLLEN len = thisHandle->ColData[i].IndPtr[row];\n>> >>            switch(thisHandle->ColData[i].DataType) {\n>> >>            case SQL_DOUBLE:\n>> >>            REAL(VECTOR_ELT(data, i))[j-1] =\n>> >>                len == SQL_NULL_DATA ? NA_REAL :\n>> >>                thisHandle->ColData[i].RData[row];\n>> >>            break;\n>> >>\n>> >> etc...\n>> >>\n>> >> Googling for SQL_NULL_DATA and related terms finds this page, about the\n>> >> same issue in a Python driver:\n>> >>\n>> >> http://code.google.com/p/pyodbc/issues/detail?id=51\n>> >>\n>> >> It appears as if SQLLEN might be unsigned in 64-bit builds, while\n>> >> SQL_NULL_DATA is -1. Casting len to be an int rather than an unsigned int\n>> >> seems to solve the problem for them.\n>> >>\n>> >> On my machine, /usr/include/sqltypes.h starts like this:\n>> >>\n>> >> /*\n>> >> *  sqltypes.h\n>> >> *\n>> >> *  $Id: sqltypes.h,v 1.23 2007/10/07 13:27:13 source Exp $\n>> >> *\n>> >> *  ODBC typedefs\n>> >> *\n>> >> *  The iODBC driver manager.\n>> >>\n>> >> and defines SQLLEN as follows:\n>> >>\n>> >> #ifdef _WIN64\n>> >> typedef INT64                   SQLLEN;\n>> >> typedef UINT64                  SQLULEN;\n>> >> typedef UINT64                  SQLSETPOSIROW;\n>> >> #elif defined(STRICT_ODBC_TYPES)\n>> >> typedef long                    SQLLEN;\n>> >> typedef unsigned long           SQLULEN;\n>> >> typedef unsigned short          SQLSETPOSIROW;\n>> >> #else\n>> >> #define SQLLEN                  long\n>> >> #define SQLULEN                 unsigned long\n>> >> #define SQLSETPOSIROW           unsigned short\n>> >> #endif\n>> >>\n>> >> Seems to me like SQLLEN should be signed, but apparently not?\n>> >>\n>> >> Can anyone help? Thank you!\n>> >>\n>> >> -Harlan\n>> \n>> \n>> \n>> \n>> \n>> \n>> <RODBC.c.diff>_______________________________________________\n>> \n>> R-sig-DB mailing list -- R Special Interest Group\n>> R-sig-DB at r-project.org\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n> \n> \n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi Harlon,\n\n> I don't know enough to answer your other question, I'm afraid.\n> It seems to me as if the nature of 64-bit equality is the real problem here...\n\n\nFor the judgement of \"the len variable a",
+      "thread_id": "thread-8e1f40a6e265",
+      "thread_depth": 1,
+      "month": "2011-05"
+    },
+    {
+      "id": "msg-79dd68454f3c",
+      "message_id": "<6D1F2DEB-99CA-43E1-9EAA-BEF4B3F65077@kenroku.kanazawa-u.ac.jp>",
+      "from_name": "Tomoaki NISHIYAMA",
+      "from_email_hash": "32104f251c35465c7b064ecaf7558a62b44d8fb01218b8a85e1f2cd3278271b5",
+      "date": "2011-05-04T13:48:33+09:00",
+      "subject": "[R-sig-DB] sqlUpdate causing crash with RODBC",
+      "subject_clean": "sqlUpdate causing crash with RODBC",
+      "in_reply_to": "<BANLkTik=Je815DPKYSHdLB=5gt5djcpfDQ@mail.gmail.com>",
+      "references": [
+        "<BANLkTik=Je815DPKYSHdLB=5gt5djcpfDQ@mail.gmail.com>"
+      ],
+      "body_plain": "Hi,\n\n>    (void)SQLFreeStmt(thisHandle->hStmt, SQL_RESET_PARAMS);\n>    (void)SQLFreeHandle(SQL_HANDLE_STMT, thisHandle->hStmt);\n\nThis is very strange code. SQLFreeStmt is superseded by SQLFreeHandle in ODBC v3 and \nshould not be used simultaneously. They are for the same purpose and may cause \ndouble free. Furthermore, the code contains SQLAllocHandle but not SQLAllocStmt.\nSo, there is no justification to use SQLFreeStmt.\n\nYou might test with just one\n\tSQLFreeHandle(SQL_HANDLE_STMT, thisHandle->hStmt);\n\n-- \nTomoaki NISHIYAMA\n\nAdvanced Science Research Center,\nKanazawa University,\n13-1 Takara-machi, \nKanazawa, 920-0934, Japan\n\n\nOn 2011/05/04, at 4:34, Harlan Harris wrote:\n\n> Hi all,\n> \n> I'm trying to get writing/updates to an Oracle 10g database to work via\n> RODBC on Mac OSX. I've confirmed that I can write SQL and use sqlQuery to\n> update a simple table, but when I try to do the equivalent with sqlUpdate, R\n> crashes hard.\n> \n> The testone table has two columns: id is a number (and primary key), and\n> asdf is a varchar2(40).\n> \n> When I do this:\n> sqlUpdate(hdl, data.frame(id=4, asdf='zoom'), 'testone', verbose=TRUE,\n> test=TRUE)\n> \n> I get a segfault and the following stack trace:\n> \n> Process:         R [8486]\n> Path:            /Applications/R64.app/Contents/MacOS/R\n> Identifier:      org.R-project.R\n> Version:         R 2.12.2 GUI 1.36 Leopard build 64-bit (5691)\n> Code Type:       X86-64 (Native)\n> Parent Process:  launchd [153]\n> \n> Date/Time:       2011-05-03 15:15:08.360 -0400\n> OS Version:      Mac OS X 10.6.6 (10J567)\n> Report Version:  6\n> \n> Interval Since Last Report:          173376 sec\n> Crashes Since Last Report:           5\n> Per-App Interval Since Last Report:  184150 sec\n> Per-App Crashes Since Last Report:   2\n> Anonymous UUID:                      C49D451E-9024-4368-9216-C5DE32F331B0\n> \n> Exception Type:  EXC_CRASH (SIGABRT)\n> Exception Codes: 0x0000000000000000, 0x0000000000000000\n> Crashed Thread:  0  Dispatch queue: com.apple.main-thread\n> \n> Application Specific Information:\n> abort() called\n> \n> Thread 0 Crashed:  Dispatch queue: com.apple.main-thread\n> 0   libSystem.B.dylib                 0x00007fff81287616 __kill + 10\n> 1   libSystem.B.dylib                 0x00007fff81327cca abort + 83\n> 2   libSystem.B.dylib                 0x00007fff8123f6f5 free + 128\n> 3   atoradb.so                        0x000000010234c021 SQLFreeEnv + 501\n> 4   atoradb.so                        0x000000010234c175 SQLFreeStmt + 71\n> 5   RODBC.so                          0x000000010111c698\n> SQLFreeStmt_Internal + 305\n> 6   RODBC.so                          0x000000010111d2fb SQLFreeStmt + 312\n> 7   RODBC.so                          0x00000001011066f2 RODBCUpdate + 194\n> (RODBC.c:1184)\n> 8   libR.dylib                        0x000000010011a5b1 do_dotcall + 16145\n> (dotcode.c:857)\n> \n> Looking at RODBC.c, it's crashing assigning a NULL:\n> \n>    /* free the buffers */\n>    cachenbind_free(thisHandle);\n>    (void)SQLFreeStmt(thisHandle->hStmt, SQL_RESET_PARAMS);\n>    (void)SQLFreeHandle(SQL_HANDLE_STMT, thisHandle->hStmt);\n>    thisHandle->hStmt = NULL;\n>    return ScalarInteger(stat);\n> \n> Has anyone seen this before?\n> \n> Note that if I take out the test=TRUE, it still crashes, and the database is\n> not updated.\n> \n> -Harlan\n> \n> \t[[alternative HTML version deleted]]\n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "Hi,\n\n>    (void)SQLFreeStmt(thisHandle->hStmt, SQL_RESET_PARAMS);\n>    (void)SQLFreeHandle(SQL_HANDLE_STMT, thisHandle->hStmt);\n\nThis is very strange code. SQLFreeStmt is superseded by SQLFreeHandle i",
+      "thread_id": "thread-f378b35441f9",
+      "thread_depth": 1,
+      "month": "2011-05"
+    },
+    {
+      "id": "msg-9433169b5e29",
+      "message_id": "<BANLkTimj29aM6Y=5JwOGQg-Th=j7-SLaZA@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2011-05-11T00:36:52-04:00",
+      "subject": "[R-sig-DB] Postgres to R date conversion and Writing NULL to postgres database using RpgSQL issue",
+      "subject_clean": "Postgres to R date conversion and Writing NULL to postgres database using RpgSQL issue",
+      "in_reply_to": "<BANLkTimvtsQKWD7hjTUikmOq1UMsBzy2Yg@mail.gmail.com>",
+      "references": [
+        "<BANLkTimvtsQKWD7hjTUikmOq1UMsBzy2Yg@mail.gmail.com>"
+      ],
+      "body_plain": "On Thu, Apr 21, 2011 at 6:32 AM, subodh agrawal <subodh.iitr at gmail.com> wrote:\n> Please comment on thses two queries.\n>\n> 1) While converting field of data type \"date\" selected form postgres,\n> RpgSQL gives error on windows ?when field value is null.\n\nThanks.  This reproduces the error.\n\nlibrary(RpgSQL)\nDF <- data.frame(a = c(1, NA, 2), b = c(Sys.Date() + 1:2, NA), c =\nc(\"a\", NA, \"b\"))\ncon <- dbConnect(pgSQL(), user = \"whatever\", password = \"whatever\",\ndbname = \"whatever\")\ndbWriteTable(con, \"DF\", DF)\n\n> 2) How a field can be assigned NULL value in R . I couldn't found a way to\n> write NULL value in database table row using RpgSQL. I used dbWriteTable\n> function to write data to database. One workaround temporarily i did is to\n> write \"NULL\" string in database and then update \"NULL\" to NULL using update\n> SQL script.\n\nContinuing from above the following works in the development version\nof RpgSQL (although the writeTable above is still a problem in the\ndevelopment version). The NA fields are stored as NULLs and then\nconverted back to NAs.  (In the released version the code below only\nworks for character columns.)\n\nDF2 <- DF[-2]\ndbWriteTable(con, \"DF2\", DF2)\ndbGetQuery(con, \"select * from DF\")\n\nI can send you the development version if you need it now.\n\n-- \nStatistics & Software Consulting\nGKX Group, GKX Associates Inc.\ntel: 1-877-GKX-GROUP\nemail: ggrothendieck at gmail.com",
+      "body_snippet": "On Thu, Apr 21, 2011 at 6:32 AM, subodh agrawal <subodh.iitr at gmail.com> wrote:\n> Please comment on thses two queries.\n>\n> 1) While converting field of data type \"date\" selected form postgres,\n> Rpg",
+      "thread_id": "thread-9433169b5e29",
+      "thread_depth": 0,
+      "month": "2011-05"
+    },
+    {
+      "id": "msg-9106adc4f6cd",
+      "message_id": "<BANLkTi=wp=yanA87u=69yJ8LoQcdio5+bw@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2011-05-11T21:44:30-04:00",
+      "subject": "[R-sig-DB] Postgres to R date conversion and Writing NULL to postgres database using RpgSQL issue",
+      "subject_clean": "Postgres to R date conversion and Writing NULL to postgres database using RpgSQL issue",
+      "in_reply_to": "<BANLkTimj29aM6Y=5JwOGQg-Th=j7-SLaZA@mail.gmail.com>",
+      "references": [
+        "<BANLkTimvtsQKWD7hjTUikmOq1UMsBzy2Yg@mail.gmail.com>",
+        "<BANLkTimj29aM6Y=5JwOGQg-Th=j7-SLaZA@mail.gmail.com>"
+      ],
+      "body_plain": "On Wed, May 11, 2011 at 12:36 AM, Gabor Grothendieck\n<ggrothendieck at gmail.com> wrote:\n> On Thu, Apr 21, 2011 at 6:32 AM, subodh agrawal <subodh.iitr at gmail.com> wrote:\n>> Please comment on thses two queries.\n>>\n>> 1) While converting field of data type \"date\" selected form postgres,\n>> RpgSQL gives error on windows ?when field value is null.\n>\n> Thanks. ?This reproduces the error.\n>\n> library(RpgSQL)\n> DF <- data.frame(a = c(1, NA, 2), b = c(Sys.Date() + 1:2, NA), c =\n> c(\"a\", NA, \"b\"))\n> con <- dbConnect(pgSQL(), user = \"whatever\", password = \"whatever\",\n> dbname = \"whatever\")\n> dbWriteTable(con, \"DF\", DF)\n>\n\nThis is now fixed in the development version of RpgSQL.\n\n-- \nStatistics & Software Consulting\nGKX Group, GKX Associates Inc.\ntel: 1-877-GKX-GROUP\nemail: ggrothendieck at gmail.com",
+      "body_snippet": "On Wed, May 11, 2011 at 12:36 AM, Gabor Grothendieck\n<ggrothendieck at gmail.com> wrote:\n> On Thu, Apr 21, 2011 at 6:32 AM, subodh agrawal <subodh.iitr at gmail.com> wrote:\n>> Please comment on thses ",
+      "thread_id": "thread-9433169b5e29",
+      "thread_depth": 1,
+      "month": "2011-05"
+    },
+    {
+      "id": "msg-d28febf8c83e",
+      "message_id": "<BANLkTimeieh+CPQeADnqs9k175UunH=4+w@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2011-05-12T18:39:29-04:00",
+      "subject": "[R-sig-DB] Postgres to R date conversion and Writing NULL to postgres database using RpgSQL issue",
+      "subject_clean": "Postgres to R date conversion and Writing NULL to postgres database using RpgSQL issue",
+      "in_reply_to": "<BANLkTi=wp=yanA87u=69yJ8LoQcdio5+bw@mail.gmail.com>",
+      "references": [
+        "<BANLkTimvtsQKWD7hjTUikmOq1UMsBzy2Yg@mail.gmail.com>",
+        "<BANLkTimj29aM6Y=5JwOGQg-Th=j7-SLaZA@mail.gmail.com>",
+        "<BANLkTi=wp=yanA87u=69yJ8LoQcdio5+bw@mail.gmail.com>"
+      ],
+      "body_plain": "On Wed, May 11, 2011 at 9:44 PM, Gabor Grothendieck\n<ggrothendieck at gmail.com> wrote:\n> On Wed, May 11, 2011 at 12:36 AM, Gabor Grothendieck\n> <ggrothendieck at gmail.com> wrote:\n>> On Thu, Apr 21, 2011 at 6:32 AM, subodh agrawal <subodh.iitr at gmail.com> wrote:\n>>> Please comment on thses two queries.\n>>>\n>>> 1) While converting field of data type \"date\" selected form postgres,\n>>> RpgSQL gives error on windows ?when field value is null.\n>>\n>> Thanks. ?This reproduces the error.\n>>\n>> library(RpgSQL)\n>> DF <- data.frame(a = c(1, NA, 2), b = c(Sys.Date() + 1:2, NA), c =\n>> c(\"a\", NA, \"b\"))\n>> con <- dbConnect(pgSQL(), user = \"whatever\", password = \"whatever\",\n>> dbname = \"whatever\")\n>> dbWriteTable(con, \"DF\", DF)\n>>\n>\n> This is now fixed in the development version of RpgSQL.\n>\n\nAnd its now on CRAN as version 0.1-5:\n\n   http://cran.r-project.org/web/packages/RpgSQL/index.html\n\nand should propagate to the other mirrors shortly.\n\n-- \nStatistics & Software Consulting\nGKX Group, GKX Associates Inc.\ntel: 1-877-GKX-GROUP\nemail: ggrothendieck at gmail.com",
+      "body_snippet": "On Wed, May 11, 2011 at 9:44 PM, Gabor Grothendieck\n<ggrothendieck at gmail.com> wrote:\n> On Wed, May 11, 2011 at 12:36 AM, Gabor Grothendieck\n> <ggrothendieck at gmail.com> wrote:\n>> On Thu, Apr 21, ",
+      "thread_id": "thread-9433169b5e29",
+      "thread_depth": 2,
+      "month": "2011-05"
+    },
+    {
+      "id": "msg-d54679d40f86",
+      "message_id": "<BANLkTimErqzcN-hMChfzOvXKAEW8NnGgkw@mail.gmail.com>",
+      "from_name": "Harlan Harris",
+      "from_email_hash": "611206558041b3ccc178bb02493ee676170bbca58f0ab8c485d465fae70db625",
+      "date": "2011-05-16T10:30:57-04:00",
+      "subject": "[R-sig-DB] Giving up on RODBC, using RJDBC 0.2 instead",
+      "subject_clean": "Giving up on RODBC, using RJDBC 0.2 instead",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi all,\n\nJust wanted to update folks on my ongoing struggles to connect to Oracle\ndatabases. After trying to deal with several data-corruption and crash bugs,\nespecially when connecting on 64-bit Linux and Mac OS machines, I must\nconclude that RODBC is no longer actively being developed or supported. I've\nreceived several good suggestions from several people on this list, but\nnothing from the package author, and I have seen no interest in integrating\nmy suggested patch for one of my problems. It's too bad that this very\nuseful package is no longer a viable option for many people.\n\nTo the contrary, after seeing someone on twitter note that RJDBC is under\nactive development again by Simon Urbanek (if you're reading this -- thank\nyou!), the NULL->NA mapping works, and core code has been rewritten in Java\nfor speed, I installed the dev version (0.2) and downloaded the JDBC driver\nthis morning. Pulling data worked the first time.\n\nI would urge anyone dealing with the many issues with RODBC to try using\nRJDBC instead.\n\nhttp://www.rforge.net/RJDBC/news.html\nhttp://twitter.com/#!/michaelv2/status/69403127899619329\n\n -Harlan\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi all,\n\nJust wanted to update folks on my ongoing struggles to connect to Oracle\ndatabases. After trying to deal with several data-corruption and crash bugs,\nespecially when connecting on 64-bit Linu",
+      "thread_id": "thread-d54679d40f86",
+      "thread_depth": 0,
+      "month": "2011-05"
+    },
+    {
+      "id": "msg-014d34773789",
+      "message_id": "<BANLkTinDPJQSXVhx31dgeN34cvyiDpUkdg@mail.gmail.com>",
+      "from_name": "siddharth arun",
+      "from_email_hash": "74265439c4fa47cff90f6afc01d40b4b84cd315ba55b97d86f6ef86ac15c7340",
+      "date": "2011-05-20T17:15:44+05:30",
+      "subject": "[R-sig-DB] Database",
+      "subject_clean": "Database",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "How to input data directly from Oracle database?\n\n-- \nSiddharth Arun,\n3rd Year Undergraduate student\nIndustrial Engineering and Management,\nIIT Kharagpur\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "How to input data directly from Oracle database?\n\n-- \nSiddharth Arun,\n3rd Year Undergraduate student\nIndustrial Engineering and Management,\nIIT Kharagpur\n\n\t[[alternative HTML version deleted]]",
+      "thread_id": "thread-014d34773789",
+      "thread_depth": 0,
+      "month": "2011-05"
+    },
+    {
+      "id": "msg-f809eceb29bb",
+      "message_id": "<8E3590214E4380489D2F8BF129B939F301A3082D@amsdc1-s-03371.europe.shell.com>",
+      "from_name": "W@y@e@W@Jo@es m@iii@g oii sheii@com",
+      "from_email_hash": "a147bdd3f26c876913bc139aba1e0462fd06a69494bd52b96ff8ef1ebcdfa33b",
+      "date": "2011-05-20T15:02:45+02:00",
+      "subject": "[R-sig-DB] Database",
+      "subject_clean": "Database",
+      "in_reply_to": "<BANLkTinDPJQSXVhx31dgeN34cvyiDpUkdg@mail.gmail.com>",
+      "references": [
+        "<BANLkTinDPJQSXVhx31dgeN34cvyiDpUkdg@mail.gmail.com>"
+      ],
+      "body_plain": "Us the RODBC package: \n\nlibrary(RODBC)\n\n\n\n-----Original Message-----\nFrom: r-sig-db-bounces at r-project.org\n[mailto:r-sig-db-bounces at r-project.org] On Behalf Of siddharth arun\nSent: 20 May 2011 12:46\nTo: r-sig-db at r-project.org\nSubject: [R-sig-DB] Database\n\nHow to input data directly from Oracle database?\n\n-- \nSiddharth Arun,\n3rd Year Undergraduate student\nIndustrial Engineering and Management,\nIIT Kharagpur\n\n\t[[alternative HTML version deleted]]\n\n_______________________________________________\nR-sig-DB mailing list -- R Special Interest Group\nR-sig-DB at r-project.org\nhttps://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "Us the RODBC package: \n\nlibrary(RODBC)\n\n\n\n-----Original Message-----\nFrom: r-sig-db-bounces at r-project.org\n[mailto:r-sig-db-bounces at r-project.org] On Behalf Of siddharth arun\nSent: 20 May 2011 12",
+      "thread_id": "thread-014d34773789",
+      "thread_depth": 1,
+      "month": "2011-05"
+    },
+    {
+      "id": "msg-361a70d7ef28",
+      "message_id": "<F2FB6BD965B8AF40BA59B9AC10FCEF210504647535@EXCHVS7A.mx.state.mo.us>",
+      "from_name": "McBride, David",
+      "from_email_hash": "94273b356a55981da120aa7942b179fadd53545df593ce1a897b318ea278f37c",
+      "date": "2011-05-20T08:49:37-05:00",
+      "subject": "[R-sig-DB] Database",
+      "subject_clean": "Database",
+      "in_reply_to": "<8E3590214E4380489D2F8BF129B939F301A3082D@amsdc1-s-03371.europe.shell.com>",
+      "references": [
+        "<BANLkTinDPJQSXVhx31dgeN34cvyiDpUkdg@mail.gmail.com>",
+        "<8E3590214E4380489D2F8BF129B939F301A3082D@amsdc1-s-03371.europe.shell.com>"
+      ],
+      "body_plain": "RJDBC is an alternative. Although I have never tried it, there were one or two recent threads here about difficulties with RODBC, particularly re. 64-bit Linux and Mac OS machines.\n\nhttp://www.rforge.net/RJDBC/news.html\nhttp://twitter.com/#!/michaelv2/status/69403127899619329\n\nand see this post, from May 16:  Subject: [R-sig-DB] Giving up on RODBC, using RJDBC 0.2 instead\n\nDave\n\n-----Original Message-----\nFrom: r-sig-db-bounces at r-project.org [mailto:r-sig-db-bounces at r-project.org] On Behalf Of Wayne.W.Jones at shell.com\nSent: Friday, May 20, 2011 8:03 AM\nTo: sid.arun91 at gmail.com; r-sig-db at r-project.org\nSubject: Re: [R-sig-DB] Database\n\nUs the RODBC package: \n\nlibrary(RODBC)\n\n\n\n-----Original Message-----\nFrom: r-sig-db-bounces at r-project.org\n[mailto:r-sig-db-bounces at r-project.org] On Behalf Of siddharth arun\nSent: 20 May 2011 12:46\nTo: r-sig-db at r-project.org\nSubject: [R-sig-DB] Database\n\nHow to input data directly from Oracle database?\n\n-- \nSiddharth Arun,\n3rd Year Undergraduate student\nIndustrial Engineering and Management,\nIIT Kharagpur\n\n\t[[alternative HTML version deleted]]\n\n_______________________________________________\nR-sig-DB mailing list -- R Special Interest Group\nR-sig-DB at r-project.org\nhttps://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n_______________________________________________\nR-sig-DB mailing list -- R Special Interest Group\nR-sig-DB at r-project.org\nhttps://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "RJDBC is an alternative. Although I have never tried it, there were one or two recent threads here about difficulties with RODBC, particularly re. 64-bit Linux and Mac OS machines.\n\nhttp://www.rforge.",
+      "thread_id": "thread-014d34773789",
+      "thread_depth": 2,
+      "month": "2011-05"
+    },
+    {
+      "id": "msg-0d427b3135a1",
+      "message_id": "<BANLkTimispYoxjjAiuKVFF7t0Hza4ype9A@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2011-05-31T16:12:08-04:00",
+      "subject": "[R-sig-DB] dbGetQuery and options(stringsAsFactors=F)",
+      "subject_clean": "dbGetQuery and options(stringsAsFactors=F)",
+      "in_reply_to": "<4DE53D51.10401@gmail.com>",
+      "references": [
+        "<4DE53D51.10401@gmail.com>"
+      ],
+      "body_plain": "On Tue, May 31, 2011 at 3:11 PM, dinesh <dinesh.k.somani at gmail.com> wrote:\n> Is there some configuration to make dbGetQuery() pick up defaults set via\n> options() call? E.g.,\n>\n> require(RpgSQL);\n> options(stringsAsFactors=F);\n> ...\n> x=dbGetQuery(dbConnect(pgSQL()), \"select * from some_table\");\n> is.factor(x[1,\"stringcol\"]) # returns TRUE\n> #OTOH\n> x=dbGetQuery(dbConnect(pgSQL()), \"select * from\n> some_table\",stringsAsFactors=F);\n> is.factor(x[1,\"stringcol\"]) # returns FALSE\n>\n> I am using RpgSQL 0.1-5 with RJDBC 0.2.\n> --\n>\n> Regards,\n> Dinesh\n>\n\nThere is no such option but in the development version the default is\nFALSE.  I can send it to you offline.\n\n-- \nStatistics & Software Consulting\nGKX Group, GKX Associates Inc.\ntel: 1-877-GKX-GROUP\nemail: ggrothendieck at gmail.com",
+      "body_snippet": "On Tue, May 31, 2011 at 3:11 PM, dinesh <dinesh.k.somani at gmail.com> wrote:\n> Is there some configuration to make dbGetQuery() pick up defaults set via\n> options() call? E.g.,\n>\n> require(RpgSQL);\n>",
+      "thread_id": "thread-0d427b3135a1",
+      "thread_depth": 0,
+      "month": "2011-05"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-8e1f40a6e265",
+      "subject": "NULL data not mapped to NA with RODBC on 64-bit Mac OS X",
+      "message_count": 2,
+      "participants": [
+        "Harlan Harris",
+        "Tomoaki NISHIYAMA"
+      ],
+      "started": "2011-05-03T15:25:13-04:00",
+      "last_reply": "2011-05-04T10:56:23+09:00",
+      "root_message_id": "msg-8e1f40a6e265"
+    },
+    {
+      "id": "thread-f378b35441f9",
+      "subject": "sqlUpdate causing crash with RODBC",
+      "message_count": 2,
+      "participants": [
+        "Harlan Harris",
+        "Tomoaki NISHIYAMA"
+      ],
+      "started": "2011-05-03T15:34:28-04:00",
+      "last_reply": "2011-05-04T13:48:33+09:00",
+      "root_message_id": "msg-f378b35441f9"
+    },
+    {
+      "id": "thread-9433169b5e29",
+      "subject": "Postgres to R date conversion and Writing NULL to postgres database using RpgSQL issue",
+      "message_count": 3,
+      "participants": [
+        "Gabor Grothendieck"
+      ],
+      "started": "2011-05-11T00:36:52-04:00",
+      "last_reply": "2011-05-12T18:39:29-04:00",
+      "root_message_id": "msg-9433169b5e29"
+    },
+    {
+      "id": "thread-d54679d40f86",
+      "subject": "Giving up on RODBC, using RJDBC 0.2 instead",
+      "message_count": 1,
+      "participants": [
+        "Harlan Harris"
+      ],
+      "started": "2011-05-16T10:30:57-04:00",
+      "last_reply": "2011-05-16T10:30:57-04:00",
+      "root_message_id": "msg-d54679d40f86"
+    },
+    {
+      "id": "thread-014d34773789",
+      "subject": "Database",
+      "message_count": 3,
+      "participants": [
+        "McBride, David",
+        "W@y@e@W@Jo@es m@iii@g oii sheii@com",
+        "siddharth arun"
+      ],
+      "started": "2011-05-20T17:15:44+05:30",
+      "last_reply": "2011-05-20T08:49:37-05:00",
+      "root_message_id": "msg-014d34773789"
+    },
+    {
+      "id": "thread-0d427b3135a1",
+      "subject": "dbGetQuery and options(stringsAsFactors=F)",
+      "message_count": 1,
+      "participants": [
+        "Gabor Grothendieck"
+      ],
+      "started": "2011-05-31T16:12:08-04:00",
+      "last_reply": "2011-05-31T16:12:08-04:00",
+      "root_message_id": "msg-0d427b3135a1"
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2011-08",
+  "messages": [
+    {
+      "id": "msg-bc4470f5b9d9",
+      "message_id": "<20110819091933.GA60120@piskorski.com>",
+      "from_name": "Andrew Piskorski",
+      "from_email_hash": "97d00696dba0e6f5e264a64a77af3a9f56d82977f2cd582c5717ca652f389772",
+      "date": "2011-08-19T05:19:33-04:00",
+      "subject": "[R-sig-DB] RSQLite \"close resultSet before continuing\" error in dbBeginTransaction()",
+      "subject_clean": "RSQLite \"close resultSet before continuing\" error in dbBeginTransaction()",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello, I recently started using RSQLite, version 0.9-4 (2010-11-24),\nwith R version 2.12.2 Patched (2011-03-18 r55969), on x86-64.\n\nWhile running background jobs which insert rows into my SQLite table,\ndbBeginTransaction() sometimes throws this error (see also the stack\ntrace further below):\n\n  connection with pending rows, close resultSet before continuing \n\nThe frustrating thing is that AFAICT I am not using any RSQLite\nfunctions which return a resultSet!  Also, I have not been able to\nreplicate this error interactively, so I'm reduced to guessing what\nmight be triggering it.\n\nThe only RSQLite functions I ever use anywhere in my code are:\ndbConnect, dbDisconnect, dbGetException, dbListTables, dbGetQuery,\ndbGetPreparedQuery, dbBeginTransaction, dbCommit, and dbRollback .\n\nAFAICT none of those functions ever return a resultSet to the user,\nalthough some of them probably do manipulate result sets in their\ninternal implementations.\n\nCan anyone suggest what the true cause of this problem might be and\nhow I could better debug it?\n\nAlso, what's the best way to insure that my code doesn't die in\ndbBeginTransaction() with this error?  So far I've added this\nimmediately before my dbBeginTransaction() call (cargo-culted from\nwhat sqliteTransactionStatement does):\n\n   ll <- dbListResults(handle)\n   if (length(ll) > 0) {\n      res <- ll[[1]]\n      if (!dbHasCompleted(res)) dbClearResult(res)\n   } \n\nBut would it be better to instead, say, call dbDisconnect() and\ndbConnect() every time before I start a new transaction?  Or some\nother workaround?\n\nThanks for your help!\n\n------------------------------------------------------------\n\nError in sqliteTransactionStatement(conn, \"BEGIN\") :  \n  connection with pending rows, close resultSet before continuing \nCalls: do.call ... .valueClassTest -> is -> is -> sqliteTransactionStatement \nError in sqliteTransactionStatement(conn, \"BEGIN\") :  \n  connection with pending rows, close resultSet before continuing \nCalls: do.call ... .valueClassTest -> is -> is -> sqliteTransactionStatement \n \n#13: function () { dump.frames() traceback.stderr() q(\"no\", status = 1, runLast = FALSE)  }() from 0 \n#12: stop(\"connection with pending rows, close resultSet before continuing\") from 11 \n#11: sqliteTransactionStatement(conn, \"BEGIN\") from 10 \n#10: is(object, Cl) from 8 \n#9: is(object, Cl) from 8 \n#8: .valueClassTest(standardGeneric(\"dbBeginTransaction\"), \"logical\",  structure(\"dbBeginTransaction\", package = \"RSQLite\")) from 7 \n#7: dbBeginTransaction(handle) from 6 \n\n-- \nAndrew Piskorski <atp at piskorski.com>\nhttp://www.piskorski.com/",
+      "body_snippet": "Hello, I recently started using RSQLite, version 0.9-4 (2010-11-24),\nwith R version 2.12.2 Patched (2011-03-18 r55969), on x86-64.\n\nWhile running background jobs which insert rows into my SQLite table",
+      "thread_id": "thread-bc4470f5b9d9",
+      "thread_depth": 0,
+      "month": "2011-08"
+    },
+    {
+      "id": "msg-45e3fbdcc07f",
+      "message_id": "<CANqbw6XyPKe5wa0o7qNGwxw+xuVXCN8M-pwrQTKZCChkLGghZQ@mail.gmail.com>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2011-08-19T21:14:41-07:00",
+      "subject": "[R-sig-DB] RSQLite \"close resultSet before continuing\" error in dbBeginTransaction()",
+      "subject_clean": "RSQLite \"close resultSet before continuing\" error in dbBeginTransaction()",
+      "in_reply_to": "<20110819091933.GA60120@piskorski.com>",
+      "references": [
+        "<20110819091933.GA60120@piskorski.com>"
+      ],
+      "body_plain": "Hi,\n\nOn Fri, Aug 19, 2011 at 2:19 AM, Andrew Piskorski <atp at piskorski.com> wrote:\n> Hello, I recently started using RSQLite, version 0.9-4 (2010-11-24),\n> with R version 2.12.2 Patched (2011-03-18 r55969), on x86-64.\n>\n> While running background jobs which insert rows into my SQLite table,\n> dbBeginTransaction() sometimes throws this error (see also the stack\n> trace further below):\n\nIt's pretty hard to provide much guidance without more detail on the\ncode you are actually running.  Is there any chance you can provide a\nreproducible example or show some version of the code you are running?\n If you don't want to share this with the list, you can send it to me\ndirectly.\n\nCan you provide an outline of what you mean by \"running background\njobs\"?  Do you have more than one process inserting into the same\nSQLite database?\n\n> The frustrating thing is that AFAICT I am not using any RSQLite\n> functions which return a resultSet! ?Also, I have not been able to\n> replicate this error interactively, so I'm reduced to guessing what\n> might be triggering it.\n>\n> The only RSQLite functions I ever use anywhere in my code are:\n> dbConnect, dbDisconnect, dbGetException, dbListTables, dbGetQuery,\n> dbGetPreparedQuery, dbBeginTransaction, dbCommit, and dbRollback .\n>\n> AFAICT none of those functions ever return a resultSet to the user,\n> although some of them probably do manipulate result sets in their\n> internal implementations.\n\n> Can anyone suggest what the true cause of this problem might be and\n> how I could better debug it?\n\nThe behavior as described sounds like you may have found a bug.  It is\ndifficult to speculate without more detail on how you are running your\ncode and what your code is doing.\n\n+ seth\n\n-- \nSeth Falcon | @sfalcon | http://userprimary.net/",
+      "body_snippet": "Hi,\n\nOn Fri, Aug 19, 2011 at 2:19 AM, Andrew Piskorski <atp at piskorski.com> wrote:\n> Hello, I recently started using RSQLite, version 0.9-4 (2010-11-24),\n> with R version 2.12.2 Patched (2011-03-18 ",
+      "thread_id": "thread-bc4470f5b9d9",
+      "thread_depth": 1,
+      "month": "2011-08"
+    },
+    {
+      "id": "msg-8e5d22e100bc",
+      "message_id": "<20110821211039.GA45572@piskorski.com>",
+      "from_name": "Andrew Piskorski",
+      "from_email_hash": "97d00696dba0e6f5e264a64a77af3a9f56d82977f2cd582c5717ca652f389772",
+      "date": "2011-08-21T17:10:39-04:00",
+      "subject": "[R-sig-DB] RSQLite, segfault in dbGetPreparedQuery() when bind.data is bad",
+      "subject_clean": "RSQLite, segfault in dbGetPreparedQuery() when bind.data is bad",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "With RSQLite, I used dbGetPreparedQuery() to do a SQL update\nstatement, and passed it an incorrect bind.data data frame.  That's\nclearly user error on my part, but to my surprise, it segfaulted R.\n\nBelow is a smaller example which reproduces the segfault.  Here, I've\nforced my bind.df to be incorrect by simply renaming its \"id\" column\nto something else.\n\nNote that the segfault does not occur 100% of the time.  Often I\ninstead get this error:\n\n  Error in sqliteExecStatement(con, statement, bind.data) : \n    STRING_ELT() can only be applied to a 'character vector', not a 'NULL'\n\nBut if I keep redoing the bad dbGetPreparedQuery() update statement,\nwithin 4 or 5 tries it segfaults.  The gdb backtrace is below, here\nare some highlights:\n\n#3  0x00007fdf528765b6 in malloc_printerr (action=3, \n    str=0x7fdf52949c70 \"double free or corruption (fasttop)\", \n    ptr=<value optimized out>) at malloc.c:6266\n\n#5  0x00007fdf4cfd3525 in non_select_prepared_query (\n    conHandle=<value optimized out>, statement=0x0, \n    bind_data=<value optimized out>) at RS-SQLite.c:677\n\nIn the RSQLite_0.9-4.tar.gz that I'm using, line 677 of RS-SQLite.c is\nthe very last line of non_select_prepared_query(), which does this:\n\n  RS_SQLite_freeParameterBinding(params);\n\nUnfortunately I don't understand how that ParameterBinding stuff\nactually works, nor what the true source of this problem is.\n\nI am using:\n\n  R 2.12.2 (Patched), 2011-03-18, svn.rev 55969, x86_64-unknown-linux-gnu \n  $ lsb_release -d\n  Description:\tUbuntu 10.04.3 LTS\n  $ uname -a\n  Linux quark 2.6.32.29+drm33.13-custom #1 SMP Fri Apr 8 13:42:18 EDT 2011 x86_64 GNU/Linux\n\n--------------------------------------------------\n\nrequire(\"RSQLite\")\nhandle <- dbConnect(dbDriver(\"SQLite\") ,dbname=\"/data1/nobackup/andy/bad-update\")\ndbGetQuery(handle ,\"create table atp_1 (id  INTEGER primary key  ,file_dt  REAL  ,file_length  INTEGER)\")\nbind.df <-\n   data.frame(\"id\"=as.integer(1:5)\n              ,\"file_dt\"=as.POSIXct(c(paste(\"2010-12-0\" ,1:5 ,sep=\"\")))\n              ,\"file_length\"=101:105 )\ninsert.sql <- \"insert into atp_1 (id ,file_dt ,file_length) values (:id ,:file_dt ,:file_length)\"\nupdate.sql <- \"update atp_1 set  file_dt = :file_dt ,file_length = :file_length  where id = :id\"\ndbGetPreparedQuery(handle ,insert.sql ,bind.data=bind.df)\ndbGetQuery(handle ,\"select count(*) from atp_1\")\ndbGetQuery(handle ,\"select * from atp_1\")\ndbGetQuery(handle ,\"update atp_1 set file_length = -1 where id in (2,3)\")\ndbGetQuery(handle ,\"update atp_1 set file_dt = 0 where id in (4)\")\n\n# Oops, I forgot to include the primary key column in my bind.data:\ncolnames(bind.df)[1] <- \"bad.id\"\n\ndbGetPreparedQuery(handle ,update.sql ,bind.data=bind.df)\n\n# Do the dbGetPreparedQuery() update statement above repeatedly.  At\n# first you will get R-level errors like this:\n#    Error in sqliteExecStatement(con, statement, bind.data) : \n#      STRING_ELT() can only be applied to a 'character vector', not a 'NULL'\n# Eventually you will get a segfualt.\n\ndbDisconnect(handle) ; rm(\"handle\")\n\n> dbGetQuery(handle ,\"select * from atp_1\")\n  id    file_dt file_length\n1  1 1291179600         101\n2  2 1291266000          -1\n3  3 1291352400          -1\n4  4          0         104\n5  5 1291525200         105\n\n> bind.df\n  bad.id    file_dt file_length\n1      1 2010-12-01         101\n2      2 2010-12-02         102\n3      3 2010-12-03         103\n4      4 2010-12-04         104\n5      5 2010-12-05         105\n\n--------------------------------------------------\n\n> dbGetPreparedQuery(handle ,update.sql ,bind.data=bind.df)\n*** glibc detected *** /usr/local/pkg/R-2.12-branch-20110520/lib/R/bin/exec/x86_64/R: double free or corruption (fasttop): 0x0000000002887a60 ***\nProcess R aborted (core dumped) at Sun Aug 21 16:44:46 2011\n\nGNU gdb (GDB) 7.1-ubuntu\nCore was generated by `/usr/local/pkg/R-2.12-branch-20110520/lib/R/bin/exec/x86_64/R --no-readline'.\nProgram terminated with signal 6, Aborted.\n(gdb) bt\n#0  0x00007fdf52832a75 in *__GI_raise (sig=<value optimized out>)\n    at ../nptl/sysdeps/unix/sysv/linux/raise.c:64\n#1  0x00007fdf528365c0 in *__GI_abort () at abort.c:92\n#2  0x00007fdf5286c4fb in __libc_message (do_abort=<value optimized out>, \n    fmt=<value optimized out>) at ../sysdeps/unix/sysv/linux/libc_fatal.c:189\n#3  0x00007fdf528765b6 in malloc_printerr (action=3, \n    str=0x7fdf52949c70 \"double free or corruption (fasttop)\", \n    ptr=<value optimized out>) at malloc.c:6266\n#4  0x00007fdf5287ce83 in *__GI___libc_free (mem=<value optimized out>)\n    at malloc.c:3738\n#5  0x00007fdf4cfd3525 in non_select_prepared_query (\n    conHandle=<value optimized out>, statement=0x0, \n    bind_data=<value optimized out>) at RS-SQLite.c:677\n#6  RS_SQLite_exec (conHandle=<value optimized out>, statement=0x0, \n    bind_data=<value optimized out>) at RS-SQLite.c:750\n#7  0x00007fdf52e4b524 in do_dotcall (call=0x40203e8, \n    op=<value optimized out>, args=<value optimized out>, \n    env=<value optimized out>) at ../../../src/main/dotcode.c:847\n#8  0x00007fdf52e76464 in Rf_eval (e=0x40203e8, rho=0x3d30e18)\n    at ../../../src/main/eval.c:495\n#9  0x00007fdf52e795bf in do_set (call=0x4020500, op=0x1dddb58, \n    args=0x40204c8, rho=0x3d30e18) at ../../../src/main/eval.c:1511\n#10 0x00007fdf52e762c1 in Rf_eval (e=0x4020500, rho=0x3d30e18)\n    at ../../../src/main/eval.c:469\n#11 0x00007fdf52e77adc in do_begin (call=0x401db38, op=0x1ddd960, \n    args=0x4020538, rho=0x3d30e18) at ../../../src/main/eval.c:1266\n#12 0x00007fdf52e762c1 in Rf_eval (e=0x401db38, rho=0x3d30e18)\n    at ../../../src/main/eval.c:469\n#13 0x00007fdf52e79e63 in Rf_applyClosure (call=0x401cdb0, op=0x401e008, \n    arglist=0x3d30c58, rho=0x3d30bb0, suppliedenv=0x1e04560)\n    at ../../../src/main/eval.c:704\n#14 0x00007fdf52e761dc in Rf_eval (e=0x401cdb0, rho=0x3d30bb0)\n    at ../../../src/main/eval.c:513\n#15 0x00007fdf52e795bf in do_set (call=0x401ce58, op=0x1dddb58, \n    args=0x401ce20, rho=0x3d30bb0) at ../../../src/main/eval.c:1511\n#16 0x00007fdf52e762c1 in Rf_eval (e=0x401ce58, rho=0x3d30bb0)\n    at ../../../src/main/eval.c:469\n#17 0x00007fdf52e77adc in do_begin (call=0x401cec8, op=0x1ddd960, \n    args=0x401ce90, rho=0x3d30bb0) at ../../../src/main/eval.c:1266\n#18 0x00007fdf52e762c1 in Rf_eval (e=0x401cec8, rho=0x3d30bb0)\n    at ../../../src/main/eval.c:469\n#19 0x00007fdf52e79e63 in Rf_applyClosure (call=0x30e8618, op=0x401b858, \n    arglist=0x3d318e8, rho=0x3d31648, suppliedenv=0x1e04560)\n    at ../../../src/main/eval.c:704\n#20 0x00007fdf52e761dc in Rf_eval (e=0x30e8618, rho=0x3d31648)\n    at ../../../src/main/eval.c:513\n#21 0x00007fdf52e77adc in do_begin (call=0x30e9270, op=0x1ddd960, \n    args=0x30e85e0, rho=0x3d31648) at ../../../src/main/eval.c:1266\n#22 0x00007fdf52e762c1 in Rf_eval (e=0x30e9270, rho=0x3d31648)\n    at ../../../src/main/eval.c:469\n#23 0x00007fdf52e79734 in R_execClosure (call=0x3d35560, op=0x30eadb8, \n    arglist=<value optimized out>, rho=0x1e04528, newrho=0x3d31648)\n    at ../../../src/main/eval.c:790\n#24 0x00007fdf52e79ad6 in R_execMethod (op=0x30eadb8, rho=0x3d35800)\n    at ../../../src/main/eval.c:893\n#25 0x00007fdf50f1aef2 in R_dispatchGeneric (fname=0x26b4c98, ev=0x3d35800, \n    fdef=0x3d34908)\n    at ../../../../../src/library/methods/src/methods_list_dispatch.c:994\n#26 0x00007fdf52eb8305 in do_standardGeneric (call=0x0, \n    op=<value optimized out>, args=0x3d34908, env=0x3d35800)\n    at ../../../src/main/objects.c:1046\n#27 0x00007fdf52e763ad in Rf_eval (e=0x31bdc10, rho=0x3d35800)\n    at ../../../src/main/eval.c:498\n#28 0x00007fdf52e79e63 in Rf_applyClosure (call=0x3d35560, op=0x2c64010, \n    arglist=0x3d35608, rho=0x1e04528, suppliedenv=0x1e04560)\n    at ../../../src/main/eval.c:704\n#29 0x00007fdf52e761dc in Rf_eval (e=0x3d35560, rho=0x1e04528)\n    at ../../../src/main/eval.c:513\n#30 0x00007fdf52ea6ec7 in Rf_ReplIteration (rho=0x1e04528, \n    savestack=<value optimized out>, browselevel=0, state=0x7fff8007bb80)\n    at ../../../src/main/main.c:262\n#31 0x00007fdf52ea71b0 in R_ReplConsole (rho=0x1e04528, savestack=0, \n    browselevel=0) at ../../../src/main/main.c:311\n#32 0x00007fdf52ea76a0 in run_Rmainloop () at ../../../src/main/main.c:1004\n#33 0x000000000040088b in main (ac=<value optimized out>, \n    av=<value optimized out>) at ../../../src/main/Rmain.c:32\n#34 0x00007fdf5281dc4d in __libc_start_main (main=<value optimized out>, \n    argc=<value optimized out>, ubp_av=<value optimized out>, \n    init=<value optimized out>, fini=<value optimized out>, \n    rtld_fini=<value optimized out>, stack_end=0x7fff8007ccb8)\n    at libc-start.c:226\n#35 0x00000000004007a9 in _start ()\n(gdb) q\n\n-- \nAndrew Piskorski <atp at piskorski.com>",
+      "body_snippet": "With RSQLite, I used dbGetPreparedQuery() to do a SQL update\nstatement, and passed it an incorrect bind.data data frame.  That's\nclearly user error on my part, but to my surprise, it segfaulted R.\n\nBe",
+      "thread_id": "thread-8e5d22e100bc",
+      "thread_depth": 0,
+      "month": "2011-08"
+    },
+    {
+      "id": "msg-01909eca386f",
+      "message_id": "<20110821214033.GA46644@piskorski.com>",
+      "from_name": "Andrew Piskorski",
+      "from_email_hash": "97d00696dba0e6f5e264a64a77af3a9f56d82977f2cd582c5717ca652f389772",
+      "date": "2011-08-21T17:40:33-04:00",
+      "subject": "[R-sig-DB] RSQLite \"close resultSet before continuing\" error in\tdbBeginTransaction()",
+      "subject_clean": "RSQLite \"close resultSet before continuing\" error in\tdbBeginTransaction()",
+      "in_reply_to": "<CANqbw6XyPKe5wa0o7qNGwxw+xuVXCN8M-pwrQTKZCChkLGghZQ@mail.gmail.com>",
+      "references": [
+        "<CANqbw6XyPKe5wa0o7qNGwxw+xuVXCN8M-pwrQTKZCChkLGghZQ@mail.gmail.com>"
+      ],
+      "body_plain": "On Fri, Aug 19, 2011 at 09:14:41PM -0700, Seth Falcon wrote:\n\n> It's pretty hard to provide much guidance without more detail on the\n> code you are actually running.  Is there any chance you can provide a\n> reproducible example or show some version of the code you are running?\n\nWell, while reproducing the segfault problem that I just (separately)\nemailed about, I discovered that I can also use that simpler case to\ntrigger a \"close resultSet before continuing\" error.\n\nFor this, do the bad update statement (see other email) once.  This\nfirst time, rather than segfaulting it will problably throw this\nerror:\n\n  > dbGetPreparedQuery(handle ,update.sql ,bind.data=bind.df) \n  Error in sqliteExecStatement(con, statement, bind.data) :  \n    STRING_ELT() can only be applied to a 'character vector', not a 'NULL' \n \nAt that point, rather than running the bad update statement several more\ntimes to get the segfault, instead do a query, which fails like so:\n\n  > dbGetQuery(handle ,\"select count(*) from atp_1\") \n  Error in sqliteExecStatement(con, statement, bind.data) :  \n    RS-DBI driver: (connection with pending rows, close resultSet before continuing) \n\nNote that my previous encounter with this error was while was while\ndoing insert statements not updates, and I never saw that\n\"STRING_ELT() can only be applied\" error then.  However, some of those\ninserts probably failed due to integrity constraints on my SQLite\ntable, so to hand-wave a bit, perhaps that left the RSQLite connection\nin a similar \"pending rows\" state.\n\nBtw, so far, explicitly calling dbClearResult() right before\ndbBeginTransaction() seems to prevent dbBeginTransaction() from ever\nfailing with that \"close resultSet before continuing\" error.\n\n> Can you provide an outline of what you mean by \"running background\n> jobs\"?  Do you have more than one process inserting into the same\n> SQLite database?\n\nYes, I used Sun Grid Engine to start up 5 or 6 R processes at once,\nwith each R process writing to the same SQLite database over NFS.\n(Which mostly seems to work well!)\n\nHowever, for my simpler example above, I used just one R process, and\na newly created empty SQLite database on a local disk - no NFS and no\nconcurrency at all.  I think I forgot to mention it, but the segfault\nfrom my other email also occurred in the strictly single process local\ndisk case.\n\n-- \nAndrew Piskorski <atp at piskorski.com>\nhttp://www.piskorski.com/",
+      "body_snippet": "On Fri, Aug 19, 2011 at 09:14:41PM -0700, Seth Falcon wrote:\n\n> It's pretty hard to provide much guidance without more detail on the\n> code you are actually running.  Is there any chance you can provi",
+      "thread_id": "thread-bc4470f5b9d9",
+      "thread_depth": 2,
+      "month": "2011-08"
+    },
+    {
+      "id": "msg-0adc7c75251e",
+      "message_id": "<CANqbw6VOqo=UAmUtrwV8w=z=wEXqR7Y0OBiDbjsYhcuz_K2S_w@mail.gmail.com>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2011-08-22T08:47:06-07:00",
+      "subject": "[R-sig-DB] RSQLite, segfault in dbGetPreparedQuery() when bind.data is bad",
+      "subject_clean": "RSQLite, segfault in dbGetPreparedQuery() when bind.data is bad",
+      "in_reply_to": "<20110821211039.GA45572@piskorski.com>",
+      "references": [
+        "<20110821211039.GA45572@piskorski.com>"
+      ],
+      "body_plain": "On Sun, Aug 21, 2011 at 2:10 PM, Andrew Piskorski <atp at piskorski.com> wrote:\n> With RSQLite, I used dbGetPreparedQuery() to do a SQL update\n> statement, and passed it an incorrect bind.data data frame. ?That's\n> clearly user error on my part, but to my surprise, it segfaulted R.\n\nThanks for the detailed report.  I can reproduce the issue and will\nwork on a fix.\n\n+ seth\n\n-- \nSeth Falcon | @sfalcon | http://userprimary.net/",
+      "body_snippet": "On Sun, Aug 21, 2011 at 2:10 PM, Andrew Piskorski <atp at piskorski.com> wrote:\n> With RSQLite, I used dbGetPreparedQuery() to do a SQL update\n> statement, and passed it an incorrect bind.data data fr",
+      "thread_id": "thread-8e5d22e100bc",
+      "thread_depth": 1,
+      "month": "2011-08"
+    },
+    {
+      "id": "msg-a7801bb247fe",
+      "message_id": "<CANqbw6VGzKmiTJVCCNx3K5xyMbCVucPOOP2QA5MSCp8Sk8A67w@mail.gmail.com>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2011-08-22T22:49:08-07:00",
+      "subject": "[R-sig-DB] RSQLite, segfault in dbGetPreparedQuery() when bind.data is bad",
+      "subject_clean": "RSQLite, segfault in dbGetPreparedQuery() when bind.data is bad",
+      "in_reply_to": "<CANqbw6VOqo=UAmUtrwV8w=z=wEXqR7Y0OBiDbjsYhcuz_K2S_w@mail.gmail.com>",
+      "references": [
+        "<20110821211039.GA45572@piskorski.com>",
+        "<CANqbw6VOqo=UAmUtrwV8w=z=wEXqR7Y0OBiDbjsYhcuz_K2S_w@mail.gmail.com>"
+      ],
+      "body_plain": "Hi again,\n\nI found a bug in the handling of the parameter bindings that prevented\na missing binding from being raised as an error.  I have put together\na preview of the fix which you can download and install here:\n\n    unofficial non-release for testing:\n    http://userprimary.net/software/RSQLite_0.9-5.tar.gz\n\nCan you give this version a try?  I would be interested to see if this\nfix also addresses your other issue.\n\nThanks,\n\n+ seth\n\n-- \nSeth Falcon | @sfalcon | http://userprimary.net/",
+      "body_snippet": "Hi again,\n\nI found a bug in the handling of the parameter bindings that prevented\na missing binding from being raised as an error.  I have put together\na preview of the fix which you can download and ",
+      "thread_id": "thread-8e5d22e100bc",
+      "thread_depth": 2,
+      "month": "2011-08"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-bc4470f5b9d9",
+      "subject": "RSQLite \"close resultSet before continuing\" error in dbBeginTransaction()",
+      "message_count": 3,
+      "participants": [
+        "Andrew Piskorski",
+        "Seth Falcon"
+      ],
+      "started": "2011-08-19T05:19:33-04:00",
+      "last_reply": "2011-08-21T17:40:33-04:00",
+      "root_message_id": "msg-bc4470f5b9d9"
+    },
+    {
+      "id": "thread-8e5d22e100bc",
+      "subject": "RSQLite, segfault in dbGetPreparedQuery() when bind.data is bad",
+      "message_count": 3,
+      "participants": [
+        "Andrew Piskorski",
+        "Seth Falcon"
+      ],
+      "started": "2011-08-21T17:10:39-04:00",
+      "last_reply": "2011-08-22T22:49:08-07:00",
+      "root_message_id": "msg-8e5d22e100bc"
+    }
+  ]
+}

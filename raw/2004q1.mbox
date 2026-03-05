@@ -1,0 +1,97 @@
+From vogr@no @end|ng |rom ev@|und@@com  Mon Feb 16 09:26:18 2004
+From: vogr@no @end|ng |rom ev@|und@@com (Vadim Ogranovich)
+Date: Mon, 16 Feb 2004 00:26:18 -0800
+Subject: [R-sig-DB] problems with ROracle
+Message-ID: <C698D707214E6F4AB39AB7096C3DE5A50C3A54@phost015.intermedia.net>
+
+Hi,
+ 
+I've was playing around with ROracle and have run into various (randomly
+looking) problems which I guess relate to some db-results not being
+properly released. Below I compiled a short session that
+deterministically reproduces a couple of the problems.
+ 
+The systems I use are:
+Redhat 7.3
+Oracle9i Release 9.2.0.1.0 - Production
+JServer Release 9.2.0.1.0 - Production
+
+ 
+Any help is greatly appreciated,
+Vadim
+ 
+ 
+> version
+         _                
+platform i686-pc-linux-gnu
+arch     i686             
+os       linux-gnu        
+system   i686, linux-gnu  
+status   alpha            
+major    1                
+minor    8.1              
+year     2003             
+month    11               
+day      05               
+language R                
+
+# I use the most recent (as of 14/02/2004) version of ROracle, which is
+0.5-3 I think. Don't know if there is a sort of package.version()
+function to figure this out for sure.
+ 
+ 
+# open a connection 
+> con <- dbConnect(dbDriver("Oracle"), user="user/password at database")
+> ora9.workaround(con)
+[1] TRUE
+> 
+
+# make sure there is no table in the user's schema
+> oraQuickSQL(con, "select table_name from user_tables")[,1]
+character(0)
+ 
+# create a table
+> dbWriteTable(con, "GOO", data.frame(x=rnorm(10)), overwrite=TRUE)
+[1] TRUE
+ 
+
+## check if the table is created
+# the first time the select doesn't work (this is a suspected bug)
+> oraQuickSQL(con, "select table_name from user_tables")[,1]
+Error in oraQuickSQL(con, "select table_name from user_tables")[, 1] : 
+ incorrect number of dimensions
+# the second time it works
+> oraQuickSQL(con, "select table_name from user_tables")[,1]
+[1] "GOO"
+ 
+# try to overwrite the table. This wouldn't work. I suspect this is
+because the sesion is already corrupted (second suspected bug).
+> dbWriteTable(con, "GOO", data.frame(x=rnorm(10)), overwrite=TRUE)
+Error in oraFetch(rs, n = -1) : RS-DBI driver: (ORA-24374: define not
+done before fetch or execute and fetch
+)
+[1] FALSE
+Warning message: 
+table GOO couldn't be overwritten in: oraWriteTable(conn, name, value,
+...) 
+# As you see it didn't work though it should. To test the permission I
+successfully dropped the table from a plsql session
+ 
+
+# Now I can not disconnect (third suspected bug) 
+> dbDisconnect(con)
+Error in oraCloseConnection(conn, ...) : pending result sets in the
+Oracle server -- must close manually
+> 
+> lapply(dbListResults(con), dbClearResult)
+[[1]]
+[1] TRUE
+ 
+> dbDisconnect(con)
+[1] TRUE
+
+
+	[[alternative HTML version deleted]]
+
+
+

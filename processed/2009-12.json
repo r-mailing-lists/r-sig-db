@@ -1,0 +1,237 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2009-12",
+  "messages": [
+    {
+      "id": "msg-a9101bc6a0a3",
+      "message_id": "<001101ca7276$1a09aeb0$4e1d0c10$@thyson@ku-eichstaett.de>",
+      "from_name": "Janko Thyson",
+      "from_email_hash": "d46e8fc2caf8d7a142463b8e9ca4da291c2725f6f5c4695a74cf335d564f9efa",
+      "date": "2009-12-01T12:04:49+01:00",
+      "subject": "[R-sig-DB] RMySQL and xampp: crash upon reading tables",
+      "subject_clean": "RMySQL and xampp: crash upon reading tables",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi everyone,\n\nI am trying to get RMySQL to work with the MySQL version(s) that ship with\nxampp.\n\nWhat is strange is the fact that establishing a connection and writing\ncontent to tables work just fine. However, R crashes when trying to read\ntables from a database. I used MySQL-Server (5.0.67) prior to xampp and\neverything worked fine.\n\nThe Xampp versions I tried: \n1.7.2 (MySQL 5.1.37), 1.7.1 (MySQL 5.1.33) and finally 1.7.0 (MySQL 5.0.67).\nThe last two xampp versions should definitely work, shouldn't they? Yet I've\nexperienced the same behavior also with the newest version, just having\nRMySQL throw an error (which it should). Xampp is located at \"C:\\xampp\n\nHere's some information that is probably relevant:\n\nCode Snippets\n#############\n\ninstall.packages(\"RMySQL\", repos=repos.cran,\n\tconfigure.args=\"--with-mysql-dir=C:/xampp/mysql/bin\")\n\nsessionInfo()\nR version 2.9.2 (2009-08-24) \ni386-pc-mingw32 \n\nlocale:\nLC_COLLATE=German_Germany.1252;LC_CTYPE=German_Germany.1252;LC_MONETARY=Germ\nan_Germany.1252;LC_NUMERIC=C;LC_TIME=German_Germany.1252\n\nattached base packages:\n[1] stats     graphics  grDevices utils     datasets  methods   base     \n\n.libPaths()\n\"C:/R/R-2.9.2/library\"\n\nSys.getenv('MYSQL_HOME')\nMYSQL_HOME \n        \"\" \nutils::readRegistry(\"SOFTWARE\\\\MySQL AB\", hive=\"HLM\", maxdepth=2)\n$`MySQL Server 5.0`\n$`MySQL Server 5.0`$DataLocation\n[1] \"C:\\\\xampp\\\\mysql\\\\data\\\\\"\n\n$`MySQL Server 5.0`$FoundExistingDataDir\n[1] \"1\"\n\n$`MySQL Server 5.0`$Location\n[1] \"C:\\\\xampp\\\\mysql\\\\\"\n\n$`MySQL Server 5.0`$Version\n[1] \"5.0.67\"\n\nAdditional comments\n####################\n\nI also tried this:\nset MYSQL_HOME=C:\\xampp\\mysql\n\nBut still Sys.getenv(\"MySQL_HOME\") gave me \"\". What did I do wrong?\n\nI think the registry entries were still there from the \"old\" MySQL-Server\n5.0 installation and I simply adapted the values to the current xampp\nconfiguration. If that was wrong, what do I do to get a \"fresh and correct\"\nregistry entry?\n\nBest regards,\nJanko Thyson",
+      "body_snippet": "Hi everyone,\n\nI am trying to get RMySQL to work with the MySQL version(s) that ship with\nxampp.\n\nWhat is strange is the fact that establishing a connection and writing\ncontent to tables work just fine",
+      "thread_id": "thread-a9101bc6a0a3",
+      "thread_depth": 0,
+      "month": "2009-12"
+    },
+    {
+      "id": "msg-e4ff43a42062",
+      "message_id": "<001401ca727d$bef842e0$3ce8c8a0$@thyson@ku-eichstaett.de>",
+      "from_name": "Janko Thyson",
+      "from_email_hash": "d46e8fc2caf8d7a142463b8e9ca4da291c2725f6f5c4695a74cf335d564f9efa",
+      "date": "2009-12-01T12:59:32+01:00",
+      "subject": "[R-sig-DB] RMySQL and xampp: crash upon reading tables",
+      "subject_clean": "RMySQL and xampp: crash upon reading tables",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi again,\n\nI'm really sorry, but I was \"one off\" concerning the versions of xampp. The\none that includes MySQL 5.0.67 was version 1.6.8 and not 1.7.0.\n\nIt works fine now! \n\nOne last question, though: It says at\nhttp://biostat.mc.vanderbilt.edu/wiki/Main/RMySQL that RMySQL (0.7-4) should\nalso work with MySQL 5.1.33. I found that's not the case. Did I do something\nwrong?\n\nBest regards,\nJanko Thyson\n\n-----Urspr?ngliche Nachricht-----\nVon: Janko Thyson [mailto:janko.thyson at ku-eichstaett.de] \nGesendet: Dienstag, 1. Dezember 2009 12:05\nAn: 'r-sig-db at stat.math.ethz.ch'\nCc: 'janko.thyson at kuei.de'\nBetreff: RMySQL and xampp: crash upon reading tables\n\nHi everyone,\n\nI am trying to get RMySQL to work with the MySQL version(s) that ship with\nxampp.\n\nWhat is strange is the fact that establishing a connection and writing\ncontent to tables work just fine. However, R crashes when trying to read\ntables from a database. I used MySQL-Server (5.0.67) prior to xampp and\neverything worked fine.\n\nThe Xampp versions I tried: \n1.7.2 (MySQL 5.1.37), 1.7.1 (MySQL 5.1.33) and finally 1.7.0 (MySQL 5.0.67).\nThe last two xampp versions should definitely work, shouldn?t they? Yet I?ve\nexperienced the same behavior also with the newest version, just having\nRMySQL throw an error (which it should). Xampp is located at \"C:\\xampp\n\nHere?s some information that is probably relevant:\n\nCode Snippets\n#############\n\ninstall.packages(\"RMySQL\", repos=repos.cran,\n\tconfigure.args=\"--with-mysql-dir=C:/xampp/mysql/bin\")\n\nsessionInfo()\nR version 2.9.2 (2009-08-24) \ni386-pc-mingw32 \n\nlocale:\nLC_COLLATE=German_Germany.1252;LC_CTYPE=German_Germany.1252;LC_MONETARY=Germ\nan_Germany.1252;LC_NUMERIC=C;LC_TIME=German_Germany.1252\n\nattached base packages:\n[1] stats     graphics  grDevices utils     datasets  methods   base     \n\n.libPaths()\n\"C:/R/R-2.9.2/library\"\n\nSys.getenv('MYSQL_HOME')\nMYSQL_HOME \n        \"\" \nutils::readRegistry(\"SOFTWARE\\\\MySQL AB\", hive=\"HLM\", maxdepth=2)\n$`MySQL Server 5.0`\n$`MySQL Server 5.0`$DataLocation\n[1] \"C:\\\\xampp\\\\mysql\\\\data\\\\\"\n\n$`MySQL Server 5.0`$FoundExistingDataDir\n[1] \"1\"\n\n$`MySQL Server 5.0`$Location\n[1] \"C:\\\\xampp\\\\mysql\\\\\"\n\n$`MySQL Server 5.0`$Version\n[1] \"5.0.67\"\n\nAdditional comments\n####################\n\nI also tried this:\nset MYSQL_HOME=C:\\xampp\\mysql\n\nBut still Sys.getenv(?MySQL_HOME?) gave me ??. What did I do wrong?\n\nI think the registry entries were still there from the ?old? MySQL-Server\n5.0 installation and I simply adapted the values to the current xampp\nconfiguration. If that was wrong, what do I do to get a ?fresh and correct?\nregistry entry?\n\nBest regards,\nJanko Thyson",
+      "body_snippet": "Hi again,\n\nI'm really sorry, but I was \"one off\" concerning the versions of xampp. The\none that includes MySQL 5.0.67 was version 1.6.8 and not 1.7.0.\n\nIt works fine now! \n\nOne last question, though: ",
+      "thread_id": "thread-e4ff43a42062",
+      "thread_depth": 0,
+      "month": "2009-12"
+    },
+    {
+      "id": "msg-1a3d67075b6f",
+      "message_id": "<BAY143-W56527C1A9A878B07E1CF8FE8F0@phx.gbl>",
+      "from_name": "Nick Torenvliet",
+      "from_email_hash": "04d99aee943d1a7bfba07f61b64e70d0d206a35fedc6675ec559cddeefb80cb1",
+      "date": "2009-12-07T22:01:15-05:00",
+      "subject": "[R-sig-DB] dynamic sql statements and dbGetQuery",
+      "subject_clean": "dynamic sql statements and dbGetQuery",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi, \n\nJust new to R and rmysql and trying to run the same query on a list of databases as per the following...\n\nlibrary(RMySQL)\ndrv = dbDriver(\"MySQL\")\ndbList = c(\"TSE\")\n\nfor (market in dbList){\n    con = dbConnect(drv, host=\"localhost\", dbname=market, user=\"root\", pass=\"rootPass\")\n    dbTableList <- dbListTables(con)\n    for (symbol in dbTableList){\n        #get the latest date in the table\n        string <- c(\"select max(date(dayDate)) from \", symbol)\n        sql <- toString(string)\n        tableData = dbGetQuery( con, sql)\n        cat(tableData)        \n    }\n    dbDisconnect(con)\n}\n\nWhen I run the script I get the following error... \n\nselect max(date(dayDate)) from  AABError in mysqlExecStatement(conn, statement, ...) : \n  RS-DBI driver: (could not run statement: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''select max(date(dayDate)) from , AAB, '' at line 1)\n\n\nWhere AAB is the first table in dbTableList... I'm kind of stumped as to why this won't work -- the sql itself checks out fine... I've experimented with parenthesis and a semicolon... and dbSendQuery as well... all to no avail...\n\nAny help would be appreciated, \n\nNick\n \t\t \t   \t\t  \n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi, \n\nJust new to R and rmysql and trying to run the same query on a list of databases as per the following...\n\nlibrary(RMySQL)\ndrv = dbDriver(\"MySQL\")\ndbList = c(\"TSE\")\n\nfor (market in dbList){\n    c",
+      "thread_id": "thread-1a3d67075b6f",
+      "thread_depth": 0,
+      "month": "2009-12"
+    },
+    {
+      "id": "msg-d4ddeec31b1c",
+      "message_id": "<264855a00912071913r699ba50dtc303760227a14d06@mail.gmail.com>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2009-12-07T22:13:48-05:00",
+      "subject": "[R-sig-DB] dynamic sql statements and dbGetQuery",
+      "subject_clean": "dynamic sql statements and dbGetQuery",
+      "in_reply_to": "<BAY143-W56527C1A9A878B07E1CF8FE8F0@phx.gbl>",
+      "references": [
+        "<BAY143-W56527C1A9A878B07E1CF8FE8F0@phx.gbl>"
+      ],
+      "body_plain": "On Mon, Dec 7, 2009 at 10:01 PM, Nick Torenvliet\n<n_torenvliet at hotmail.com> wrote:\n>\n> Hi,\n>\n> Just new to R and rmysql and trying to run the same query on a list of databases as per the following...\n>\n> library(RMySQL)\n> drv = dbDriver(\"MySQL\")\n> dbList = c(\"TSE\")\n>\n> for (market in dbList){\n> ? ?con = dbConnect(drv, host=\"localhost\", dbname=market, user=\"root\", pass=\"rootPass\")\n> ? ?dbTableList <- dbListTables(con)\n> ? ?for (symbol in dbTableList){\n> ? ? ? ?#get the latest date in the table\n> ? ? ? ?string <- c(\"select max(date(dayDate)) from \", symbol)\n\nBasic R problem here--c() forms a vector and is not a string\nconcatenation.  You want to use paste():\n\nsql <- paste(\"select max(date(dayDate)) from\",symbol)\n\n> ? ? ? ?sql <- toString(string)\n\nNow, you don't need this line.\n\nUntested, so let us know if there is still a problem after switching\nto using paste().  The other way to do this is to use sprintf().\n\nSean\n\n> ? ? ? ?tableData = dbGetQuery( con, sql)\n> ? ? ? ?cat(tableData)\n> ? ?}\n> ? ?dbDisconnect(con)\n> }\n>\n> When I run the script I get the following error...\n>\n> select max(date(dayDate)) from ?AABError in mysqlExecStatement(conn, statement, ...) :\n> ?RS-DBI driver: (could not run statement: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''select max(date(dayDate)) from , AAB, '' at line 1)\n>\n>\n> Where AAB is the first table in dbTableList... I'm kind of stumped as to why this won't work -- the sql itself checks out fine... I've experimented with parenthesis and a semicolon... and dbSendQuery as well... all to no avail...\n>\n> Any help would be appreciated,\n>\n> Nick\n>\n> ? ? ? ?[[alternative HTML version deleted]]\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "On Mon, Dec 7, 2009 at 10:01 PM, Nick Torenvliet\n<n_torenvliet at hotmail.com> wrote:\n>\n> Hi,\n>\n> Just new to R and rmysql and trying to run the same query on a list of databases as per the following.",
+      "thread_id": "thread-1a3d67075b6f",
+      "thread_depth": 1,
+      "month": "2009-12"
+    },
+    {
+      "id": "msg-4cfd6837bebb",
+      "message_id": "<20091211133824.2A845E38025@smtpauth02.csee.onr.siteprotect.com>",
+      "from_name": "Alberto Martin",
+      "from_email_hash": "ff8c0ca42e68e438cf82d21e069fad109020e20326d26c64ddb624e988faf5b6",
+      "date": "2009-12-11T14:41:36+01:00",
+      "subject": "[R-sig-DB]  RMySQL for windows",
+      "subject_clean": "RMySQL for windows",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear Peter,\n\n \n\nMy name is Alberto and I would like to connect to SQL data base running R on\nWindows and I have read that you got it by means of installing RMySQL. I\nhave downlodaded the binary version of MySQL for Windows (RMySQL\n<http://stat.bell-labs.com/RS-DBI/download/RMySQL/RMySQL_0.5-7.tar.gz>\n0.5-7) from http://stat.bell-labs.com/RS-DBI/download/ but I have no idea\nhow can I use it, because I have two main problems:\n\n \n\n*         Error: package 'DBI' 0.1-10 was found, but >= 0.2.2 is required by\n'RMySQL': Do you know where can I find the DBIv0.2.2 or latest for Windows?\nand,\n*         I need the function dbDriver and I do not where can I get it\nfrom?.\n \n               Sorry if you find the questions a little silly but I have\nbeen working with R only a few weeks.\n \n               Best regards,           \n\n \n\n \n\n\nAlberto Mart?n Garc?a \n\n\nMeteorology and Radiation\n\n\nR & D Department\n\n\n______________________________________________________________________ \n\n\n\n\nInstituto de Sistemas Fotovoltaicos de concentraci?n S.A ISFOC S.A. \n\n\nC/ Juan Bravo 22 - 13500 PUERTOLLANO      (Ciudad Real) SPAIN \n\n\nPhone: +34 926441673 - Fax: +34 926429142 \n\n\ne-mail:  <mailto:amartin at isfoc.com> amartin at isfoc.com \n\n\n____________________________________________________________________________\n____ \n\n\n\n\n\nAviso Legal.\n\n\nLa informaci?n contenida en este mensaje de correo electr?nico es\nconfidencial. Este mensaje y los documentos adjuntos a ?l van dirigidos\nexclusivamente a su destinatario y contiene informaci?n confidencial, cuya\ndivulgaci?n no est? permitida por la ley, por lo que el acceso a este\nmensaje por otras personas no est? autorizado. En caso de haber recibido\neste mensaje por error, le rogamos que lo notifique inmediatamente al\nremitente y se ponga en contacto con el INSTITUTO DE SISTEMAS FOTOVOLTAICOS\nDE CONCENTRACI?N, S.A.U, v?a e-mail remitido a nuestra atenci?n y proceda a\nsu eliminaci?n, sin revisarlo ni reenviarlo. as? como a la de cualquier\ndocumento adjunto al mismo. Igualmente, le informamos que la distribuci?n,\ncopia o utilizaci?n de este mensaje, o de cualquier documento adjunto al\nmismo, cualquiera que fuera su finalidad, est?n prohibidas por la ley. \n\n\nDe igual modo, si usted es el destinatario de este mensaje, le informamos\nque INSTITUTO DE SISTEMAS FOTOVOLTAICOS DE CONCENTRACI?N, S.A., no asume\nresponsabilidad alguna sobre la confidencialidad, integridad, veracidad o\ncorrecta recepci?n de este mensaje pues el correo electr?nico y las\ncomunicaciones a trav?s de Internet no permiten asegurar ni garantizar tales\nextremos. Por ello, si usted no consintiese el empleo de los medios de\ncomunicaci?n antes referidos, les rogamos que nos lo comunique de manera\nfehaciente e inmediata en la siguiente direcci?n: C/ Juan Bravo, 22 (13.500)\nde Puertollano (Ciudad Real).\n\n\n\n\n-------------- next part --------------\nAn HTML attachment was scrubbed...\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20091211/1dd4c257/attachment.html>\n\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: image001.jpg\nType: image/jpeg\nSize: 16911 bytes\nDesc: not available\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20091211/1dd4c257/attachment.jpg>\n\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: image002.jpg\nType: image/jpeg\nSize: 1791 bytes\nDesc: not available\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20091211/1dd4c257/attachment-0001.jpg>",
+      "body_snippet": "Dear Peter,\n\n \n\nMy name is Alberto and I would like to connect to SQL data base running R on\nWindows and I have read that you got it by means of installing RMySQL. I\nhave downlodaded the binary versio",
+      "thread_id": "thread-4cfd6837bebb",
+      "thread_depth": 0,
+      "month": "2009-12"
+    },
+    {
+      "id": "msg-32194ec7f615",
+      "message_id": "<a8cee7640912110857wd32cc6g7f22f86869ec82ae@mail.gmail.com>",
+      "from_name": "Jeffrey Horner",
+      "from_email_hash": "e607bcdb19dc9d635a2a3c196f9034657ac788f689890348c9ed37006841b989",
+      "date": "2009-12-11T10:57:52-06:00",
+      "subject": "[R-sig-DB] R-sig-DB Digest, Vol 62, Issue 4",
+      "subject_clean": "R-sig-DB Digest, Vol 62, Issue 4",
+      "in_reply_to": "<mailman.4754.1260547332.4157.r-sig-db@stat.math.ethz.ch>",
+      "references": [
+        "<mailman.4754.1260547332.4157.r-sig-db@stat.math.ethz.ch>"
+      ],
+      "body_plain": "You will want to download R packages from CRAN:\n\nhttp://cran.r-project.org/\n\nas that site has the latest versions of all packages, including RMySQL and DBI.\n\nBest,\n\nJeff\n\n> My name is Alberto and I would like to connect to SQL data base running R on\n> Windows and I have read that you got it by means of installing RMySQL. I\n> have downlodaded the binary version of MySQL for Windows (RMySQL\n> <http://stat.bell-labs.com/RS-DBI/download/RMySQL/RMySQL_0.5-7.tar.gz>\n> 0.5-7) from http://stat.bell-labs.com/RS-DBI/download/ but I have no idea\n> how can I use it, because I have two main problems:\n>\n>\n>\n> * ? ? ? ? Error: package 'DBI' 0.1-10 was found, but >= 0.2.2 is required by\n> 'RMySQL': Do you know where can I find the DBIv0.2.2 or latest for Windows?\n> and,\n> * ? ? ? ? I need the function dbDriver and I do not where can I get it\n> from?.\n>\n> ? ? ? ? ? ? ? Sorry if you find the questions a little silly but I have\n> been working with R only a few weeks.\n>\n> ? ? ? ? ? ? ? Best regards,\n>\n>\n>\n>\n>\n>\n> Alberto Mart?n Garc?a\n>\n>\n> Meteorology and Radiation\n>\n>\n> R & D Department\n>\n>\n> ______________________________________________________________________\n>\n>\n>\n>\n> Instituto de Sistemas Fotovoltaicos de concentraci?n S.A ISFOC S.A.\n>\n>\n> C/ Juan Bravo 22 - 13500 PUERTOLLANO ? ? ?(Ciudad Real) SPAIN\n>\n>\n> Phone: +34 926441673 - Fax: +34 926429142\n>\n>\n> e-mail: ?<mailto:amartin at isfoc.com> amartin at isfoc.com\n\n-- \nhttp://biostat.mc.vanderbilt.edu/JeffreyHorner",
+      "body_snippet": "You will want to download R packages from CRAN:\n\nhttp://cran.r-project.org/\n\nas that site has the latest versions of all packages, including RMySQL and DBI.\n\nBest,\n\nJeff\n\n> My name is Alberto and I wo",
+      "thread_id": "thread-32194ec7f615",
+      "thread_depth": 0,
+      "month": "2009-12"
+    },
+    {
+      "id": "msg-1845c2a13d84",
+      "message_id": "<5d07dbf0912111022q10ce8ab5uf9be9ee87748f648@mail.gmail.com>",
+      "from_name": "Stephen Weller",
+      "from_email_hash": "47acb5f314b7daef82b7d48355c865cfea493153c3b24a091279114c8d7af397",
+      "date": "2009-12-11T10:22:47-08:00",
+      "subject": "[R-sig-DB] 1. RMySQL for windows (Alberto Martin)",
+      "subject_clean": "1. RMySQL for windows (Alberto Martin)",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "You need a newer version of the 'RMySQL' package for the version of R you\nare running. Try installing 'RMySQL_0.7-4.zip' from the\nCRAN website(http://cran.r-project.org/).\n\n\nStephen Weller\nQA and Technical Support Engineer\nRevolution Computing\n\n\n\n\nOn Fri, Dec 11, 2009 at 8:02 AM, <r-sig-db-request at stat.math.ethz.ch> wrote:\n\n> Send R-sig-DB mailing list submissions to\n>        r-sig-db at stat.math.ethz.ch\n>\n> To subscribe or unsubscribe via the World Wide Web, visit\n>        https://stat.ethz.ch/mailman/listinfo/r-sig-db\n> or, via email, send a message with subject or body 'help' to\n>        r-sig-db-request at stat.math.ethz.ch\n>\n> You can reach the person managing the list at\n>        r-sig-db-owner at stat.math.ethz.ch\n>\n> When replying, please edit your Subject line so it is more specific\n> than \"Re: Contents of R-sig-DB digest...\"\n>\n>\n> Today's Topics:\n>\n>   1.  RMySQL for windows (Alberto Martin)\n>\n>\n> ----------------------------------------------------------------------\n>\n> Message: 1\n> Date: Fri, 11 Dec 2009 14:41:36 +0100\n> From: \"Alberto Martin\" <amartin at isfoc.com>\n> Subject: [R-sig-DB]  RMySQL for windows\n> To: <r-sig-db at stat.math.ethz.ch>\n> Message-ID:\n>        <20091211133824.2A845E38025 at smtpauth02.csee.onr.siteprotect.com>\n> Content-Type: text/plain; charset=\"iso-8859-1\"\n>\n>\n>\n>            Dear Peter,\n>\n>\n>\n> My name is Alberto and I would like to connect to SQL data base running R\n> on\n> Windows and I have read that you got it by means of installing RMySQL. I\n> have downlodaded the binary version of MySQL for Windows (RMySQL\n> <http://stat.bell-labs.com/RS-DBI/download/RMySQL/RMySQL_0.5-7.tar.gz>\n> 0.5-7) from http://stat.bell-labs.com/RS-DBI/download/ but I have no idea\n> how can I use it, because I have two main problems:\n>\n>\n>\n> *         Error: package 'DBI' 0.1-10 was found, but >= 0.2.2 is required\n> by\n> 'RMySQL': Do you know where can I find the DBIv0.2.2 or latest for Windows?\n> and,\n> *         I need the function dbDriver and I do not where can I get it\n> from?.\n>\n>               Sorry if you find the questions a little silly but I have\n> been working with R only a few weeks.\n>\n>               Best regards,\n>\n>\n>\n>\n>\n>\n> Alberto Mart?n Garc?a\n>\n>\n> Meteorology and Radiation\n>\n>\n> R & D Department\n>\n>\n> ______________________________________________________________________\n>\n>\n>\n>\n> Instituto de Sistemas Fotovoltaicos de concentraci?n S.A ISFOC S.A.\n>\n>\n> C/ Juan Bravo 22 - 13500 PUERTOLLANO      (Ciudad Real) SPAIN\n>\n>\n> Phone: +34 926441673 - Fax: +34 926429142\n>\n>\n> e-mail:  <mailto:amartin at isfoc.com> amartin at isfoc.com\n>\n>\n>\n> ____________________________________________________________________________\n> ____\n>\n>\n>\n>\n>\n> Aviso Legal.\n>\n>\n> La informaci?n contenida en este mensaje de correo electr?nico es\n> confidencial. Este mensaje y los documentos adjuntos a ?l van dirigidos\n> exclusivamente a su destinatario y contiene informaci?n confidencial, cuya\n> divulgaci?n no est? permitida por la ley, por lo que el acceso a este\n> mensaje por otras personas no est? autorizado. En caso de haber recibido\n> este mensaje por error, le rogamos que lo notifique inmediatamente al\n> remitente y se ponga en contacto con el INSTITUTO DE SISTEMAS FOTOVOLTAICOS\n> DE CONCENTRACI?N, S.A.U, v?a e-mail remitido a nuestra atenci?n y proceda a\n> su eliminaci?n, sin revisarlo ni reenviarlo. as? como a la de cualquier\n> documento adjunto al mismo. Igualmente, le informamos que la distribuci?n,\n> copia o utilizaci?n de este mensaje, o de cualquier documento adjunto al\n> mismo, cualquiera que fuera su finalidad, est?n prohibidas por la ley.\n>\n>\n> De igual modo, si usted es el destinatario de este mensaje, le informamos\n> que INSTITUTO DE SISTEMAS FOTOVOLTAICOS DE CONCENTRACI?N, S.A., no asume\n> responsabilidad alguna sobre la confidencialidad, integridad, veracidad o\n> correcta recepci?n de este mensaje pues el correo electr?nico y las\n> comunicaciones a trav?s de Internet no permiten asegurar ni garantizar\n> tales\n> extremos. Por ello, si usted no consintiese el empleo de los medios de\n> comunicaci?n antes referidos, les rogamos que nos lo comunique de manera\n> fehaciente e inmediata en la siguiente direcci?n: C/ Juan Bravo, 22\n> (13.500)\n> de Puertollano (Ciudad Real).\n>\n>\n>\n> -------------- next part --------------\n> An HTML attachment was scrubbed...\n> URL: <\n> https://stat.ethz.ch/pipermail/r-sig-db/attachments/20091211/1dd4c257/attachment.html\n> >\n> -------------- next part --------------\n> A non-text attachment was scrubbed...\n> Name: not available\n> Type: image/jpeg\n> Size: 16911 bytes\n> Desc: not available\n> URL: <\n> https://stat.ethz.ch/pipermail/r-sig-db/attachments/20091211/1dd4c257/attachment.jpe\n> >\n> -------------- next part --------------\n> A non-text attachment was scrubbed...\n> Name: not available\n> Type: image/jpeg\n> Size: 1791 bytes\n> Desc: not available\n> URL: <\n> https://stat.ethz.ch/pipermail/r-sig-db/attachments/20091211/1dd4c257/attachment-0001.jpe\n> >\n>\n> ------------------------------\n>\n> _______________________________________________\n> R-sig-DB mailing list\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n>\n> End of R-sig-DB Digest, Vol 62, Issue 4\n> ***************************************\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "You need a newer version of the 'RMySQL' package for the version of R you\nare running. Try installing 'RMySQL_0.7-4.zip' from the\nCRAN website(http://cran.r-project.org/).\n\n\nStephen Weller\nQA and Tech",
+      "thread_id": "thread-1845c2a13d84",
+      "thread_depth": 0,
+      "month": "2009-12"
+    },
+    {
+      "id": "msg-6965054ba939",
+      "message_id": "<4B26CC19.1020806@userprimary.net>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2009-12-14T15:36:57-08:00",
+      "subject": "[R-sig-DB] Release candidates for DBI and RSQLite",
+      "subject_clean": "Release candidates for DBI and RSQLite",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello all,\n\nI've made available release candidates for DBI and RSQLite (URLs are \nbelow) and would appreciate feedback from users able to test these new \nversions.  My plan is to push updates to CRAN at the end of this week.\n\nHere is a list of what's new (extracted from each package's NEWS file):\n\n*** DBI ***\nVersion 0.2-5\n\n* Code cleanups contributed by Matthias Burger: avoid partial argument\n   name matching and use TRUE/FALSE, not T/F.\n\n* Change behavior of make.db.names.default to quote SQL keywords if\n   allow.keywords is FALSE.  Previously, SQL keywords would be name\n   mangled with underscores and a digit.  Now they are quoted using\n   '\"'.\n\n*** RSQLite ***\n\nVersion 0.8-0\n\n- Upgrade to SQLite 3.6.19\n\n- Apply some code and Rd cleanups contributed by Mattias Burger.\n   Avoid partial argument name matching, use TRUE/FALSE not T/F and\n   improve Rd markup.\n\n- Integrate RUnit unit tests so that they run during R CMD check.\n   Small improvements to make the tests run more quietly.  You can run\n   the unit tests by calling RSQLite:::.test_RSQLite() (require latest\n   version of the RUnit package).  Also had to disable some unit tests\n   on Windows.  Investigation of details is on the TODO list.\n\n- Add sqliteCopyDatabase, a function that uses SQLite's online backup\n   API to allow a specified database to be copied to a file.  This can\n   be used to create a file copy of an in memory database.\n\n- Increase the default max connections from 16 to 200 in SQLite().\n   Connections to SQLite are inexpensive and there is no longer any\n   hard-coded limit to the number of connections you can have.\n   However, memory is allocated at driver initialization time based on\n   the maximum, so it is best not to use very large values unless you\n   really need the connections.\n\n- sqliteTransactionStatement, which is used by dbCommit, dbRollback,\n   and dbBeginTransaction, now passes silent=TRUE to try() to suppress\n   error messages.  Without this, code that could otherwise handle a\n   failed commit gracefully had no way to suppress the error message.\n   You can use dbGetException to see the error when\n   sqliteTransactionStatement returns FALSE.\n\n- dbConnect/sqliteNewConnection now throws an error if dbname argument\n   is NA.  Previously, if as.character(NA) was provided, a database\n   with filename \"NA\" was created.\n\n- dbConnect/sqliteNewConnection now accepts two new arguments:\n\n   flags:\n       provides additional control over connetion details.  For\n       convenience, you can specify one of SQLITE_RWC (default),\n       SQLITE_RW, or SQLITE_RO to obtain a connection in\n       read/write/create, read/write, or read only mode, respectively.\n       See http://sqlite.org/c3ref/open.html for details.\n   vfs:\n       controls the virtual filesystem used by SQLite.  The default,\n       NULL, lets SQLite select the appropriate vfs for the system.\n       You can specify one of \"unix-posix\", \"unix-afp\", \"unix-flock\",\n       \"unix-dotfile\", or \"unix-none\".  For details, see\n       http://www.sqlite.org/compile.html.  This functionality is not\n       available on Windows and non-NULL values of the vfs argument\n       will be ignored with a warning.\n\n\n\nURLs:\n\nsource:  http://bioconductor.org/packages/misc/DBI_0.2-41.tar.gz\nwindows: http://bioconductor.org/packages/misc/DBI_0.2-41.zip\n\nsource:  http://bioconductor.org/packages/misc/RSQLite_0.7-97.tar.gz\nwindows: http://bioconductor.org/packages/misc/RSQLite_0.7-97.zip\n\n\n+ seth\n\n-- \nSeth Falcon | @sfalcon | http://userprimary.net/users",
+      "body_snippet": "Hello all,\n\nI've made available release candidates for DBI and RSQLite (URLs are \nbelow) and would appreciate feedback from users able to test these new \nversions.  My plan is to push updates to CRAN ",
+      "thread_id": "thread-6965054ba939",
+      "thread_depth": 0,
+      "month": "2009-12"
+    },
+    {
+      "id": "msg-71fb8cebc3fc",
+      "message_id": "<486f230c0912220621u691fba46y53decf156665a172@mail.gmail.com>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2009-12-22T06:21:18-08:00",
+      "subject": "[R-sig-DB] Release candidates for DBI and RSQLite",
+      "subject_clean": "Release candidates for DBI and RSQLite",
+      "in_reply_to": "<4B26CC19.1020806@userprimary.net>",
+      "references": [
+        "<4B26CC19.1020806@userprimary.net>"
+      ],
+      "body_plain": "Hi again,\n\nDBI 0.2-5 and RSQLite 0.8-0 are now on CRAN.\n\nSee the NEWS files for the final list of changes...\n\nhttp://cran.fhcrc.org/web/packages/RSQLite/NEWS\n\n+ seth",
+      "body_snippet": "Hi again,\n\nDBI 0.2-5 and RSQLite 0.8-0 are now on CRAN.\n\nSee the NEWS files for the final list of changes...\n\nhttp://cran.fhcrc.org/web/packages/RSQLite/NEWS\n\n+ seth",
+      "thread_id": "thread-6965054ba939",
+      "thread_depth": 1,
+      "month": "2009-12"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-a9101bc6a0a3",
+      "subject": "RMySQL and xampp: crash upon reading tables",
+      "message_count": 1,
+      "participants": [
+        "Janko Thyson"
+      ],
+      "started": "2009-12-01T12:04:49+01:00",
+      "last_reply": "2009-12-01T12:04:49+01:00",
+      "root_message_id": "msg-a9101bc6a0a3"
+    },
+    {
+      "id": "thread-e4ff43a42062",
+      "subject": "RMySQL and xampp: crash upon reading tables",
+      "message_count": 1,
+      "participants": [
+        "Janko Thyson"
+      ],
+      "started": "2009-12-01T12:59:32+01:00",
+      "last_reply": "2009-12-01T12:59:32+01:00",
+      "root_message_id": "msg-e4ff43a42062"
+    },
+    {
+      "id": "thread-1a3d67075b6f",
+      "subject": "dynamic sql statements and dbGetQuery",
+      "message_count": 2,
+      "participants": [
+        "Nick Torenvliet",
+        "Sean Davis"
+      ],
+      "started": "2009-12-07T22:01:15-05:00",
+      "last_reply": "2009-12-07T22:13:48-05:00",
+      "root_message_id": "msg-1a3d67075b6f"
+    },
+    {
+      "id": "thread-1845c2a13d84",
+      "subject": "1. RMySQL for windows (Alberto Martin)",
+      "message_count": 1,
+      "participants": [
+        "Stephen Weller"
+      ],
+      "started": "2009-12-11T10:22:47-08:00",
+      "last_reply": "2009-12-11T10:22:47-08:00",
+      "root_message_id": "msg-1845c2a13d84"
+    },
+    {
+      "id": "thread-32194ec7f615",
+      "subject": "R-sig-DB Digest, Vol 62, Issue 4",
+      "message_count": 1,
+      "participants": [
+        "Jeffrey Horner"
+      ],
+      "started": "2009-12-11T10:57:52-06:00",
+      "last_reply": "2009-12-11T10:57:52-06:00",
+      "root_message_id": "msg-32194ec7f615"
+    },
+    {
+      "id": "thread-4cfd6837bebb",
+      "subject": "RMySQL for windows",
+      "message_count": 1,
+      "participants": [
+        "Alberto Martin"
+      ],
+      "started": "2009-12-11T14:41:36+01:00",
+      "last_reply": "2009-12-11T14:41:36+01:00",
+      "root_message_id": "msg-4cfd6837bebb"
+    },
+    {
+      "id": "thread-6965054ba939",
+      "subject": "Release candidates for DBI and RSQLite",
+      "message_count": 2,
+      "participants": [
+        "Seth Falcon"
+      ],
+      "started": "2009-12-14T15:36:57-08:00",
+      "last_reply": "2009-12-22T06:21:18-08:00",
+      "root_message_id": "msg-6965054ba939"
+    }
+  ]
+}

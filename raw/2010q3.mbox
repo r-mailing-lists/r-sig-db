@@ -1,0 +1,2994 @@
+From greenberg @end|ng |rom ucd@v|@@edu  Mon Jul  5 21:36:52 2010
+From: greenberg @end|ng |rom ucd@v|@@edu (Jonathan Greenberg)
+Date: Mon, 5 Jul 2010 12:36:52 -0700
+Subject: [R-sig-DB] concurrent reading/writing in "chunks" with RSQLite
+	(need some help troubleshooting)
+In-Reply-To: <029e01cb180f$c6c7ccb0$54576610$@gmail.com>
+References: <AQIIZI94LA4uJIz37TVf3kl0/vXWeg==>
+	<029e01cb180f$c6c7ccb0$54576610$@gmail.com>
+Message-ID: <AANLkTilG_6VI3kaotx4Dxk8uH8aC0X8Qpd_osQwIaosJ@mail.gmail.com>
+
+Keith and Seth (and r-sig-db'ers):
+
+I somewhat understand the difference between both of your solutions --
+Seth, I'm not a database person (quickly learning tho) but does your
+code hold the output in memory before writing it all at the end (via
+dbCommit), or is each iteration's output being stored in some "waiting
+room" (on disk) where it gets written at the very end?  The key (for
+my purposes) is to avoid keeping more than a chunk's worth of input
+AND output in memory at any one time.
+
+Along the lines of Keith's solution, I noticed the COUNT query can be
+VERY slow -- there is no rapid way of getting the number of rows in a
+database table?
+
+Thanks again!
+
+--j
+
+On Tue, Jun 29, 2010 at 9:50 PM, kMan <kchamberln at gmail.com> wrote:
+> Hi Seth,
+>
+> This particular list requires considerable stretching on my part, so I would not be surprised if I missed a goal implied by the code style used or off-list correspondence.
+>
+> If I understood the original code correctly, though, each iteration through the loop required (2) queries, a read and a write, where (I've assumed) the result sets are handled one at a time anyway. The code I proposed does the same thing, but overall there is (1) additional query prior to the loop to get the number of rows. The rest is just case processing b/c dbGetQuery() seemed to do funny things when LIMIT extended beyond the end of the table, and it wouldn't remember its last read location (e.g. didn't work like scan()). In addition, it works with dbWriteTable() and gets around the need for creating the table first, and filling it in later.
+>
+> I used the WHERE condition for lack of a better way to seek to a particular record. The fetch() & fetch_n, were those intended to get the read queries to start at the last read location (e.g. like serial reads using scan())? Eliminating need to condition match or generate a db index first would speed things up, and I'd very much like to learn that trick. I'd think it would also make for an excellent R-wiki post.
+>
+> Sincerely,
+> KeithC.
+>
+> -----Original Message-----
+> From: Seth Falcon [mailto:seth at userprimary.net]
+> Sent: Tuesday, June 29, 2010 9:37 PM
+> To: kMan
+> Cc: Jonathan Greenberg; r-sig-db at stat.math.ethz.ch
+> Subject: Re: R-sig-DB Digest, Vol 68, Issue 7
+>
+> On Tue, Jun 29, 2010 at 8:19 PM, kMan <kchamberln at gmail.com> wrote:
+>> Dear Jonathan,
+>>
+>>>I'm trying to cycle through a database, reading a chunk of data from one
+>> table in the DB, processing this data chunk, >and then writing the output to
+>> another table in the database. ?I'm having to set the fetch(n=) option
+>> because the >database is too large to read the entire thing into memory at
+>> once. ?Here's my sample code:
+>> [snip]
+>>
+>> There is no need to open separate connections for reading vs. writing.
+>
+> While it is true that you can read and write from a single connection,
+> you can only have one result set open at a time and so if you want to
+> iterate through a result set and then write, you do, I believe, need
+> two connections.
+>
+>
+> I suspect that the code you propose will be considerably slower as you
+> are issuing multiple queries along with a WHERE constraint.
+>
+> + seth
+>
+>
+>>
+>> Your code was corrupting the connection between R/driver, I think, and I
+>> don't know why. But when I close a connection in R and my OS won't let me
+>> delete the file, there is a different kind of problem. The code below works
+>> on my system. I wish I knew enough to explain wtf happened with your code.
+>> ------------------------------------------------------------------------
+>> ##
+>> ## Prelim/Declarations
+>> ##
+>> require(RSQLite)
+>> mysqldb <- "test.sqlite"
+>> m <- dbDriver("SQLite")
+>> tbl.names <- c("TABLEA", "TABLEB")
+>> q1<-paste("SELECT COUNT(*) FROM", tbl.names[1])
+>>
+>> ##
+>> ## Surrogate data (if not allready done)
+>> ##
+>> (somedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3))
+>> con<-dbConnect(m, dbname=mysqldb)
+>> dbWriteTable(con,"TABLEA",somedata, overwrite=TRUE)
+>> dbDisconnect(con)
+>>
+>> ##
+>> ## Process TABLEA in parts, write to TABLEB
+>> ##
+>> con<-dbConnect(m, dbname=mysqldb)
+>> n.lines<-dbGetQuery(con, q1) #NOTE class is data.frame
+>> chunk.size<-3
+>> start.index<-seq(from = 1, to = n.lines[1,1], by = 3)
+>> limit<-c(diff(start.index), n.lines[1,1]-sum(diff(start.index)))
+>> i<-1
+>> for(i in 1:length(limit)){
+>> ?if(i<length(limit)) { q2<-paste("SELECT * FROM TABLEA WHERE row_names >=",
+>>
+>> ? ? ?start.index[i], "LIMIT", limit[i])
+>> ?} else { q2<-paste("SELECT * FROM TABLEA WHERE row_names =",
+>> ? ? ?start.index[i], "LIMIT", limit[i])
+>> ?}
+>> ?dat<-dbGetQuery(con, q2)
+>> ?dbWriteTable(con, tbl.names[2], dat, row.names=FALSE, append=TRUE)
+>> }
+>> dbGetQuery(con, "SELECT * FROM TABLEB")
+>> dbDisconnect(con)
+>> ------------------------------------------------------------------------
+>>
+>> Sincerely,
+>> KeithC.
+>>
+>>
+>>
+>
+>
+>
+> --
+> Seth Falcon | @sfalcon | http://userprimary.net/
+>
+>
+
+
+
+From greenberg @end|ng |rom ucd@v|@@edu  Mon Jul  5 21:48:08 2010
+From: greenberg @end|ng |rom ucd@v|@@edu (Jonathan Greenberg)
+Date: Mon, 5 Jul 2010 12:48:08 -0700
+Subject: [R-sig-DB] Fwd: concurrent reading/writing in "chunks" with
+	RSQLite (need some help troubleshooting)
+In-Reply-To: <AANLkTimi0rLaqIuCpyOTS4Ycnws4Q-m9SKCS5EV3n227@mail.gmail.com>
+References: <AANLkTimpByMYkw0BXjfKeW5lQB2wHpJ8QqiGPaWCF9Vi@mail.gmail.com>
+	<AANLkTikp6zjZ-_kcJnl0m6ORcNXs4uUkNHHxP2we_tvg@mail.gmail.com>
+	<AANLkTim7g5MZ5yFazRx-mTlj69lsHVPC5NEgcJ0kR8Eq@mail.gmail.com>
+	<AANLkTilFR5hroZROFN8LQNv5RNC9Bov7uzEUOs-QMQbd@mail.gmail.com>
+	<AANLkTimi0rLaqIuCpyOTS4Ycnws4Q-m9SKCS5EV3n227@mail.gmail.com>
+Message-ID: <AANLkTikUvxFWON5sNCqeKi3Qbdemmolp3L5PbVXceXb2@mail.gmail.com>
+
+Seth:
+
+Second follow-up question.  If you do NOT, in advance, know the number
+of columns that will be in the output table, is there any way to
+safely perform the initial output table creation within the loop (e.g.
+the end of the first fetch determine the table # of columns)?  Or
+should I do a "first pass" on a single row of input data to determine
+the output data table parameters?
+
+--j
+
+On Mon, Jun 28, 2010 at 8:50 PM, Seth Falcon <seth at userprimary.net> wrote:
+> Hi again,
+>
+> I had a chance to play with this a bit. ?You may find it useful to
+> read up on the how SQLite does locking
+> (http://www.sqlite.org/lockingv3.html).
+>
+> I think what's happening is that read_con with the open read_query is
+> holding a shared lock on the db. ?While that shared lock is held,
+> writes are not allowed. ?The discussion of transaction in the SQLite
+> doc referenced above gave me the idea to try putting the writes into a
+> transaction and waiting to commit until after the read_query is
+> complete. ?This seems to work. ?Here's an example:
+>
+> library("RSQLite")
+> mysqldb='test.sqlite'
+> unlink(mysqldb)
+> fetch_n=3
+>
+> # Create a data table.
+> somedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3)
+>
+> # Make a table in our database with it.
+> m <- dbDriver("SQLite")
+> con=dbConnect(m, dbname=mysqldb)
+> dbWriteTable(con,"TABLEA",somedata,overwrite=TRUE)
+> dbGetQuery(con, "CREATE table t2 (data1 INTEGER, data2 FLOAT)")
+> dbDisconnect(con)
+>
+> # Now we want to read from TABLEA in "chunks" and write to TABLEB.
+> read_con=dbConnect(m, dbname=mysqldb)
+> write_con=dbConnect(m, dbname=mysqldb)
+>
+> read_query=dbSendQuery(read_con,"SELECT * FROM TABLEA")
+> dbBeginTransaction(write_con)
+> while (!dbHasCompleted(read_query))
+> {
+> ? ? ? read_chunk=fetch(read_query,fetch_n)
+> ? ? ? new_data=data.frame(data3=read_chunk$data1*4,data4=read_chunk$data2*4)
+> ? ? ? dbGetPreparedQuery(write_con, "INSERT into t2 values (?, ?)", new_data)
+> }
+> dbClearResult(read_query)
+> dbCommit(write_con)
+>
+> dbDisconnect(read_con)
+> dbDisconnect(write_con)
+>
+>
+>
+> Unfortunately, dbWriteTable does not currently allow you to interact
+> with transactions so I'm not sure there is a way to accomplish what
+> you want and still use the dbWriteTable convenience function.
+>
+> Hope that helps,
+>
+> + seth
+>
+> --
+> Seth Falcon | @sfalcon | http://userprimary.net/
+>
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Mon Jul  5 22:09:59 2010
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Mon, 5 Jul 2010 13:09:59 -0700
+Subject: [R-sig-DB] concurrent reading/writing in "chunks" with RSQLite
+	(need some help troubleshooting)
+In-Reply-To: <AANLkTilG_6VI3kaotx4Dxk8uH8aC0X8Qpd_osQwIaosJ@mail.gmail.com>
+References: <029e01cb180f$c6c7ccb0$54576610$@gmail.com>
+	<AANLkTilG_6VI3kaotx4Dxk8uH8aC0X8Qpd_osQwIaosJ@mail.gmail.com>
+Message-ID: <AANLkTikShzhompZgpJI8geE0krQ4LI9EfNorB5aloupd@mail.gmail.com>
+
+Jonathan,
+
+On Mon, Jul 5, 2010 at 12:36 PM, Jonathan Greenberg
+<greenberg at ucdavis.edu> wrote:
+> Keith and Seth (and r-sig-db'ers):
+>
+> I somewhat understand the difference between both of your solutions --
+> Seth, I'm not a database person (quickly learning tho) but does your
+> code hold the output in memory before writing it all at the end (via
+> dbCommit), or is each iteration's output being stored in some "waiting
+> room" (on disk) where it gets written at the very end? ?The key (for
+> my purposes) is to avoid keeping more than a chunk's worth of input
+> AND output in memory at any one time.
+
+It seems at this point that your simplified example is no longer
+sufficient for understanding what you want to achieve.  I'm pretty
+sure that data within a transaction will be written to disk (for a
+disk-based db) before commit is called.  This is something that will
+be determined by SQLite itself -- you can go read up on how things
+work.  Or you can do some experiments with your data and see how it
+looks.
+
+Depending on the manipulations you actually want to perform before
+inserting the data, you might be able to keep everything in the db.
+You could use SQLite extension functions (see RSQLite.extfuns) to
+expand what is possible at the SQL level
+
+> Along the lines of Keith's solution, I noticed the COUNT query can be
+> VERY slow -- there is no rapid way of getting the number of rows in a
+> database table?
+
+No, there is no notion of number of rows in a table that I am aware
+of.  Note that COUNT is a way of aggregating the number of rows
+returned from a query and in general there is no way for the db to
+know how many rows will match a query.
+
+I expect Keith's solution to be quite slow.  It is executing a
+separate query each time through the loop and making a linear scan
+through the table to do the offset.
+
++ seth
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Mon Jul  5 22:12:26 2010
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Mon, 5 Jul 2010 13:12:26 -0700
+Subject: [R-sig-DB] Fwd: concurrent reading/writing in "chunks" with
+	RSQLite (need some help troubleshooting)
+In-Reply-To: <AANLkTikUvxFWON5sNCqeKi3Qbdemmolp3L5PbVXceXb2@mail.gmail.com>
+References: <AANLkTimpByMYkw0BXjfKeW5lQB2wHpJ8QqiGPaWCF9Vi@mail.gmail.com>
+	<AANLkTikp6zjZ-_kcJnl0m6ORcNXs4uUkNHHxP2we_tvg@mail.gmail.com>
+	<AANLkTim7g5MZ5yFazRx-mTlj69lsHVPC5NEgcJ0kR8Eq@mail.gmail.com>
+	<AANLkTilFR5hroZROFN8LQNv5RNC9Bov7uzEUOs-QMQbd@mail.gmail.com>
+	<AANLkTimi0rLaqIuCpyOTS4Ycnws4Q-m9SKCS5EV3n227@mail.gmail.com>
+	<AANLkTikUvxFWON5sNCqeKi3Qbdemmolp3L5PbVXceXb2@mail.gmail.com>
+Message-ID: <AANLkTinsyZnGujczzQ79bPuv-_pvTJyIxAaEgcvHtysf@mail.gmail.com>
+
+On Mon, Jul 5, 2010 at 12:48 PM, Jonathan Greenberg
+<greenberg at ucdavis.edu> wrote:
+> Seth:
+>
+> Second follow-up question. ?If you do NOT, in advance, know the number
+> of columns that will be in the output table, is there any way to
+> safely perform the initial output table creation within the loop (e.g.
+> the end of the first fetch determine the table # of columns)? ?Or
+> should I do a "first pass" on a single row of input data to determine
+> the output data table parameters?
+
+Probably? :-)
+
+Again, I think at this point, I don't have enough detail to be of much
+use.  I don't understand how you can be doing a query and
+programmatically inserting and not know how many fields you have. Have
+you tried creating the table within the loop (with the new arrangement
+for commit?)
+
+
+>
+> --j
+>
+> On Mon, Jun 28, 2010 at 8:50 PM, Seth Falcon <seth at userprimary.net> wrote:
+>> Hi again,
+>>
+>> I had a chance to play with this a bit. ?You may find it useful to
+>> read up on the how SQLite does locking
+>> (http://www.sqlite.org/lockingv3.html).
+>>
+>> I think what's happening is that read_con with the open read_query is
+>> holding a shared lock on the db. ?While that shared lock is held,
+>> writes are not allowed. ?The discussion of transaction in the SQLite
+>> doc referenced above gave me the idea to try putting the writes into a
+>> transaction and waiting to commit until after the read_query is
+>> complete. ?This seems to work. ?Here's an example:
+>>
+>> library("RSQLite")
+>> mysqldb='test.sqlite'
+>> unlink(mysqldb)
+>> fetch_n=3
+>>
+>> # Create a data table.
+>> somedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3)
+>>
+>> # Make a table in our database with it.
+>> m <- dbDriver("SQLite")
+>> con=dbConnect(m, dbname=mysqldb)
+>> dbWriteTable(con,"TABLEA",somedata,overwrite=TRUE)
+>> dbGetQuery(con, "CREATE table t2 (data1 INTEGER, data2 FLOAT)")
+>> dbDisconnect(con)
+>>
+>> # Now we want to read from TABLEA in "chunks" and write to TABLEB.
+>> read_con=dbConnect(m, dbname=mysqldb)
+>> write_con=dbConnect(m, dbname=mysqldb)
+>>
+>> read_query=dbSendQuery(read_con,"SELECT * FROM TABLEA")
+>> dbBeginTransaction(write_con)
+>> while (!dbHasCompleted(read_query))
+>> {
+>> ? ? ? read_chunk=fetch(read_query,fetch_n)
+>> ? ? ? new_data=data.frame(data3=read_chunk$data1*4,data4=read_chunk$data2*4)
+>> ? ? ? dbGetPreparedQuery(write_con, "INSERT into t2 values (?, ?)", new_data)
+>> }
+>> dbClearResult(read_query)
+>> dbCommit(write_con)
+>>
+>> dbDisconnect(read_con)
+>> dbDisconnect(write_con)
+>>
+>>
+>>
+>> Unfortunately, dbWriteTable does not currently allow you to interact
+>> with transactions so I'm not sure there is a way to accomplish what
+>> you want and still use the dbWriteTable convenience function.
+>>
+>> Hope that helps,
+>>
+>> + seth
+>>
+>> --
+>> Seth Falcon | @sfalcon | http://userprimary.net/
+>>
+>
+
+
+
+-- 
+Seth Falcon | @sfalcon | http://userprimary.net/
+
+
+
+From greenberg @end|ng |rom ucd@v|@@edu  Tue Jul  6 00:12:56 2010
+From: greenberg @end|ng |rom ucd@v|@@edu (Jonathan Greenberg)
+Date: Mon, 5 Jul 2010 15:12:56 -0700
+Subject: [R-sig-DB] dbListConnections() not working in RSQLite?
+Message-ID: <AANLkTilZlNGBiwp1sh3QuuEpbyb33X5fSBW4I7Qds9x2@mail.gmail.com>
+
+This is a fork off my previous discussion -- trying to troubleshoot
+locking and connections has led me to try using dbListConnections().
+Using Seth's example for solving the problem of concurrent read/writes
+to a database, I tossed in a "print(dbListConnections(m))" into the
+main while() loop:
+
+***
+
+library("RSQLite")
+mysqldb='test.sqlite'
+unlink(mysqldb)
+fetch_n=3
+
+# Create a data table.
+somedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3)
+
+# Make a table in our database with it.
+m <- dbDriver("SQLite")
+con=dbConnect(m, dbname=mysqldb)
+dbWriteTable(con,"TABLEA",somedata,overwrite=TRUE)
+dbGetQuery(con, "CREATE table t2 (data1 INTEGER, data2 FLOAT)")
+dbDisconnect(con)
+
+# Now we want to read from TABLEA in "chunks" and write to TABLEB.
+read_con=dbConnect(m, dbname=mysqldb)
+write_con=dbConnect(m, dbname=mysqldb)
+
+read_query=dbSendQuery(read_con,"SELECT * FROM TABLEA")
+dbBeginTransaction(write_con)
+while (!dbHasCompleted(read_query))
+{
+	read_chunk=fetch(read_query,fetch_n)
+	new_data=data.frame(data3=read_chunk$data1*4,data4=read_chunk$data2*4)
+	dbGetPreparedQuery(write_con, "INSERT into t2 values (?, ?)", new_data)
+	print(dbListConnections(m))
+}
+dbClearResult(read_query)
+dbCommit(write_con)
+
+dbDisconnect(read_con)
+dbDisconnect(write_con)
+
+***
+
+The response from this statement is:
+list()
+list()
+list()
+list()
+
+Am I missing something?  I'm noticing this behavior on the MacOS X
+install of RSQLite as well as a Debian amd x64 install.
+
+--j
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Tue Jul  6 00:23:22 2010
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Mon, 5 Jul 2010 18:23:22 -0400
+Subject: [R-sig-DB] concurrent reading/writing in "chunks" with RSQLite
+	(need some help troubleshooting)
+In-Reply-To: <AANLkTikShzhompZgpJI8geE0krQ4LI9EfNorB5aloupd@mail.gmail.com>
+References: <029e01cb180f$c6c7ccb0$54576610$@gmail.com>
+	<AANLkTilG_6VI3kaotx4Dxk8uH8aC0X8Qpd_osQwIaosJ@mail.gmail.com>
+	<AANLkTikShzhompZgpJI8geE0krQ4LI9EfNorB5aloupd@mail.gmail.com>
+Message-ID: <AANLkTikPK75stAg_ZZxN3Q90ProEdv4n2tbabwdXCQtv@mail.gmail.com>
+
+On Mon, Jul 5, 2010 at 4:09 PM, Seth Falcon <seth at userprimary.net> wrote:
+
+>
+> > Along the lines of Keith's solution, I noticed the COUNT query can be
+> > VERY slow -- there is no rapid way of getting the number of rows in a
+> > database table?
+>
+>
+One way of dealing with this situation using RDBMs is to use a set of
+triggers (an insert and delete pair) to keep the count in a separate table.
+ I'm sure there are some examples/discussion online for creating triggers in
+SQLite.
+
+Sean
+
+
+
+> No, there is no notion of number of rows in a table that I am aware
+> of.  Note that COUNT is a way of aggregating the number of rows
+> returned from a query and in general there is no way for the db to
+> know how many rows will match a query.
+>
+> I expect Keith's solution to be quite slow.  It is executing a
+> separate query each time through the loop and making a linear scan
+> through the table to do the offset.
+>
+> + seth
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Tue Jul  6 05:26:28 2010
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Mon, 05 Jul 2010 20:26:28 -0700
+Subject: [R-sig-DB] dbListConnections() not working in RSQLite?
+In-Reply-To: <AANLkTilZlNGBiwp1sh3QuuEpbyb33X5fSBW4I7Qds9x2@mail.gmail.com>
+References: <AANLkTilZlNGBiwp1sh3QuuEpbyb33X5fSBW4I7Qds9x2@mail.gmail.com>
+Message-ID: <4C32A264.7070305@userprimary.net>
+
+Hi Jonathan,
+
+On 7/5/10 3:12 PM, Jonathan Greenberg wrote:
+> This is a fork off my previous discussion -- trying to troubleshoot
+> locking and connections has led me to try using dbListConnections().
+> Using Seth's example for solving the problem of concurrent read/writes
+> to a database, I tossed in a "print(dbListConnections(m))" into the
+> main while() loop:
+> 
+> ***
+
+[snip]
+
+> 
+> 	print(dbListConnections(m))
+
+[snip]
+
+> ***
+> 
+> The response from this statement is:
+> list()
+> list()
+> list()
+> list()
+> 
+> Am I missing something?  I'm noticing this behavior on the MacOS X
+> install of RSQLite as well as a Debian amd x64 install.
+
+Until quite recently, this would have done what you are expecting.  In
+RSQLite 0.9-0, the memory model that handles SQLite db connections at
+the R level was significantly refactored.  You can read some details as
+provides in the NEWS file:
+
+   library("RSQLite")
+   RShowDoc("NEWS", package="RSQLite")
+
+At the R level, RSQLite db connections now behave like other R objects.
+ When you no longer have any variables referring to a connection, they
+become available for garbage collection and will be auto-closed if
+needed.  Aside from being a better choice for the R interface IMO, this
+change also removes a predefined limit on the number of connections in
+an R session.
+
+In my view, the dbListConnections function was only needed precisely
+because if you didn't close a connection and lost all references to it,
+it "leaked" and there would have been no way to close it without a
+global registry of connections.
+
+In the new implementation, there is no such registry (hence no
+predefined limit on number of connections) and no way to list open
+connections.  While it would be possible to add that back in, I feel
+pretty strongly that it isn't worth the extra complexity.  If you want a
+list of connections, you can maintain that yourself in your code.
+
+It is worth mentioning that the connection count available from
+dbGetInfo(SQLite())$num_con does give some insight into number of open
+connections, it can over-report, in a sense, if no gc has occured and
+there is an orphaned connection.
+
+Hope that helps some.
+
++ seth
+
+
+
+From kch@mber|n @end|ng |rom gm@||@com  Tue Jul  6 08:19:52 2010
+From: kch@mber|n @end|ng |rom gm@||@com (kMan)
+Date: Tue, 6 Jul 2010 00:19:52 -0600
+Subject: [R-sig-DB] concurrent reading/writing in "chunks" with RSQLite
+	(need some help troubleshooting)
+In-Reply-To: <AANLkTilG_6VI3kaotx4Dxk8uH8aC0X8Qpd_osQwIaosJ@mail.gmail.com>
+References: <AQIIZI94LA4uJIz37TVf3kl0/vXWeg==>
+	<029e01cb180f$c6c7ccb0$54576610$@gmail.com>
+	<AANLkTilG_6VI3kaotx4Dxk8uH8aC0X8Qpd_osQwIaosJ@mail.gmail.com>
+Message-ID: <07f901cb1cd3$4070c2c0$c1524840$@gmail.com>
+
+Dear Jonathan,
+
+I do not know of a quick way to query the number of records, the first time.
+After that, it should be a simpler matter. I suggest looking into "CREATE
+INDEX" as part of your dbGetQuery() call. With clever use of indexes you may
+work around needing to create duplicate data in some cases. 
+
+I have not actually used it for this particular case yet, so I do not have a
+working example. 
+
+Sincerely,
+KeithC.
+
+
+-----Original Message-----
+From: jgrn307 at gmail.com [mailto:jgrn307 at gmail.com] On Behalf Of Jonathan
+Greenberg
+Sent: Monday, July 05, 2010 1:37 PM
+To: kMan
+Cc: Seth Falcon; r-sig-db at stat.math.ethz.ch
+Subject: Re: concurrent reading/writing in "chunks" with RSQLite (need some
+help troubleshooting)
+
+Keith and Seth (and r-sig-db'ers):
+
+I somewhat understand the difference between both of your solutions -- Seth,
+I'm not a database person (quickly learning tho) but does your code hold the
+output in memory before writing it all at the end (via dbCommit), or is each
+iteration's output being stored in some "waiting room" (on disk) where it
+gets written at the very end?  The key (for my purposes) is to avoid keeping
+more than a chunk's worth of input AND output in memory at any one time.
+
+Along the lines of Keith's solution, I noticed the COUNT query can be VERY
+slow -- there is no rapid way of getting the number of rows in a database
+table?
+
+Thanks again!
+
+--j
+
+On Tue, Jun 29, 2010 at 9:50 PM, kMan <kchamberln at gmail.com> wrote:
+> Hi Seth,
+>
+> This particular list requires considerable stretching on my part, so I
+would not be surprised if I missed a goal implied by the code style used or
+off-list correspondence.
+>
+> If I understood the original code correctly, though, each iteration
+through the loop required (2) queries, a read and a write, where (I've
+assumed) the result sets are handled one at a time anyway. The code I
+proposed does the same thing, but overall there is (1) additional query
+prior to the loop to get the number of rows. The rest is just case
+processing b/c dbGetQuery() seemed to do funny things when LIMIT extended
+beyond the end of the table, and it wouldn't remember its last read location
+(e.g. didn't work like scan()). In addition, it works with dbWriteTable()
+and gets around the need for creating the table first, and filling it in
+later.
+>
+> I used the WHERE condition for lack of a better way to seek to a
+particular record. The fetch() & fetch_n, were those intended to get the
+read queries to start at the last read location (e.g. like serial reads
+using scan())? Eliminating need to condition match or generate a db index
+first would speed things up, and I'd very much like to learn that trick. I'd
+think it would also make for an excellent R-wiki post.
+>
+> Sincerely,
+> KeithC.
+>
+> -----Original Message-----
+> From: Seth Falcon [mailto:seth at userprimary.net]
+> Sent: Tuesday, June 29, 2010 9:37 PM
+> To: kMan
+> Cc: Jonathan Greenberg; r-sig-db at stat.math.ethz.ch
+> Subject: Re: R-sig-DB Digest, Vol 68, Issue 7
+>
+> On Tue, Jun 29, 2010 at 8:19 PM, kMan <kchamberln at gmail.com> wrote:
+>> Dear Jonathan,
+>>
+>>>I'm trying to cycle through a database, reading a chunk of data from 
+>>>one
+>> table in the DB, processing this data chunk, >and then writing the 
+>> output to another table in the database. ?I'm having to set the 
+>> fetch(n=) option because the >database is too large to read the 
+>> entire thing into memory at once. ?Here's my sample code:
+>> [snip]
+>>
+>> There is no need to open separate connections for reading vs. writing.
+>
+> While it is true that you can read and write from a single connection, 
+> you can only have one result set open at a time and so if you want to 
+> iterate through a result set and then write, you do, I believe, need 
+> two connections.
+>
+>
+> I suspect that the code you propose will be considerably slower as you 
+> are issuing multiple queries along with a WHERE constraint.
+>
+> + seth
+>
+>
+>>
+>> Your code was corrupting the connection between R/driver, I think, 
+>> and I don't know why. But when I close a connection in R and my OS 
+>> won't let me delete the file, there is a different kind of problem. 
+>> The code below works on my system. I wish I knew enough to explain wtf
+happened with your code.
+>> ---------------------------------------------------------------------
+>> ---
+>> ##
+>> ## Prelim/Declarations
+>> ##
+>> require(RSQLite)
+>> mysqldb <- "test.sqlite"
+>> m <- dbDriver("SQLite")
+>> tbl.names <- c("TABLEA", "TABLEB")
+>> q1<-paste("SELECT COUNT(*) FROM", tbl.names[1])
+>>
+>> ##
+>> ## Surrogate data (if not allready done) ##
+>> (somedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3))
+>> con<-dbConnect(m, dbname=mysqldb)
+>> dbWriteTable(con,"TABLEA",somedata, overwrite=TRUE)
+>> dbDisconnect(con)
+>>
+>> ##
+>> ## Process TABLEA in parts, write to TABLEB ## con<-dbConnect(m, 
+>> dbname=mysqldb) n.lines<-dbGetQuery(con, q1) #NOTE class is 
+>> data.frame
+>> chunk.size<-3
+>> start.index<-seq(from = 1, to = n.lines[1,1], by = 3) 
+>> limit<-c(diff(start.index), n.lines[1,1]-sum(diff(start.index)))
+>> i<-1
+>> for(i in 1:length(limit)){
+>> ?if(i<length(limit)) { q2<-paste("SELECT * FROM TABLEA WHERE 
+>> row_names >=",
+>>
+>> ? ? ?start.index[i], "LIMIT", limit[i])
+>> ?} else { q2<-paste("SELECT * FROM TABLEA WHERE row_names =",
+>> ? ? ?start.index[i], "LIMIT", limit[i])
+>> ?}
+>> ?dat<-dbGetQuery(con, q2)
+>> ?dbWriteTable(con, tbl.names[2], dat, row.names=FALSE, append=TRUE) } 
+>> dbGetQuery(con, "SELECT * FROM TABLEB")
+>> dbDisconnect(con)
+>> ---------------------------------------------------------------------
+>> ---
+>>
+>> Sincerely,
+>> KeithC.
+>>
+>>
+>>
+>
+>
+>
+> --
+> Seth Falcon | @sfalcon | http://userprimary.net/
+>
+>
+
+
+
+From je||@h@m@nn @end|ng |rom |ore@t|n|orm@t|c@@com  Fri Jul  9 21:57:20 2010
+From: je||@h@m@nn @end|ng |rom |ore@t|n|orm@t|c@@com (Jeff Hamann)
+Date: Fri, 9 Jul 2010 12:57:20 -0700
+Subject: [R-sig-DB] PostgreSQL+PostGIS+PLR Class Announcement
+Message-ID: <B00E4D5E-526B-4B6C-BF37-378453BC4A15@forestinformatics.com>
+
+R Database List, 
+
+Credativ and Forest Informatics are holding a short course on
+PostgreSQL, PostGIS, and PL/R as part of their newly announced
+partnership, GeoSpatial University. PL/R is an extension to PostgreSQL,
+which allows PostgreSQL stored procedures to be written in R.
+
+This first course, "Intro to PostgreSQL with Spatial Analysis
+Extensions" will be offered from September 13-15, 2010 in San Diego, CA.
+
+Students will learn the fundamentals of PostgreSQL, geospatial database
+management using PostGIS, and basic analysis of geospatial database
+objects using PL/R.
+
+For more details, please visit the course web page:
+http://www.credativ.us/pg_w_spatial/
+
+Respectfully,
+Jeff
+
+
+Jeff Hamann, PhD
+PO Box 1421
+Corvallis, Oregon 97339-1421
+541-754-2457
+jeff.hamann[at]forestinformatics[dot]com
+http://www.forestinformatics.com
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From |@b|o@d|memmo @end|ng |rom techedge@|t  Wed Jul 14 19:47:40 2010
+From: |@b|o@d|memmo @end|ng |rom techedge@|t (Fabio Di Memmo)
+Date: Wed, 14 Jul 2010 19:47:40 +0200
+Subject: [R-sig-DB] Fwd: The results of your email commands
+In-Reply-To: <mailman.254.1279129426.4243.r-sig-db@stat.math.ethz.ch>
+References: <mailman.254.1279129426.4243.r-sig-db@stat.math.ethz.ch>
+Message-ID: <AANLkTik2PeuaLF3dUaDqk3OZOkc9dCnudeJ4JuCirhZc@mail.gmail.com>
+
+Hi All
+
+   I am new member and I came from another world, SAP, business
+   applications and consulting...
+   I would like to use R within an SAP architecture. For several reasons
+   we don?t want to use SAS or SPSS.
+   We would like R for Optimization, stitistics and predictions. The SAP
+   DWH will send data to R. R will elaborate and send back info  to SAP.
+   Is there any experience on that?
+   how pawerfull are the R API's?
+   How many GB R can support?
+Is there any documents which describes the R architecture?
+   With kind regards,
+   Fabio
+   --
+   Fabio Di Memmo
+   Customer Value Practice Manager
+   CRM Professor at Milano Bicocca University
+   fabio.dimemmo at techedge.it
+   Cell. +39 335 6010678
+   Techedge - www.techedge.it
+   Milan Office
+
+- Ignored:
+   Via Caldera 21, Palazzo B1
+   20153 Milano
+   Tel: +39 (0)2 89075129, Fax: +39 (0)2 89075229
+   Rome Office
+   Via Mario Bianchini, 47
+   I-001442 Rome
+   Tel: +39 06 54281163, Fax: +39 06 54210971
+
+
+- Done.
+
+
+
+---------- Forwarded message ----------
+From: Fabio Di Memmo <fabio.dimemmo at techedge.it>
+To: r-sig-db-request at stat.math.ethz.ch
+Date: Wed, 14 Jul 2010 19:43:38 +0200
+Subject: SAP????
+Dear Members,
+
+I am new member and I came from another world, SAP, business
+applications and consulting...
+I would like to use R within an SAP architecture. For several reasons
+we don?t want to use SAS or SPSS.
+We would like R for Optimization, stitistics and predictions. THe SAP
+DWH will send data to R. R will elaborate and send back info  to SAP.
+Is there any experience on that?
+how pawerfull are the R API's?
+How many GB R can support?
+
+With kind regards,
+Fabio
+
+--
+Fabio Di Memmo
+Customer Value Practice Manager
+CRM Professor at Milano Bicocca University
+
+fabio.dimemmo at techedge.it
+Cell. +39 335 6010678
+
+Techedge - www.techedge.it
+Milan Office
+Via Caldera 21, Palazzo B1
+20153 Milano
+Tel: +39 (0)2 89075129, Fax: +39 (0)2 89075229
+Rome Office
+Via Mario Bianchini, 47
+I-001442 Rome
+Tel: +39 06 54281163, Fax: +39 06 54210971
+
+
+
+
+-- 
+Fabio Di Memmo
+Customer Value Practice Manager
+CRM Professor at Milano Bicocca University
+
+fabio.dimemmo at techedge.it
+Cell. +39 335 6010678
+
+Techedge - www.techedge.it
+Milan Office
+Via Caldera 21, Palazzo B1
+20153 Milano
+Tel: +39 (0)2 89075129, Fax: +39 (0)2 89075229
+Rome Office
+Via Mario Bianchini, 47
+I-001442 Rome
+Tel: +39 06 54281163, Fax: +39 06 54210971
+
+
+
+From Robert@McGehee @end|ng |rom geodec@p|t@|@com  Tue Jul 20 17:37:27 2010
+From: Robert@McGehee @end|ng |rom geodec@p|t@|@com (McGehee, Robert)
+Date: Tue, 20 Jul 2010 11:37:27 -0400
+Subject: [R-sig-DB] RPostgreSQL Row Inserts on Remote Servers
+Message-ID: <EEBC169715EB8C438D3C9283AF0F201C08A7CF7D@MSGBOSCLM2WIN.DMN1.FMR.COM>
+
+Hello,
+An issue discussed before on this list server is difficulty using
+dbWriteTable from the RPostgreSQL/DBI package to insert rows when
+either:
+1) the R client and PostgreSQL server are on different computers (or at
+least don't share a common filesystem), and thus bulk copy is
+unavailable.
+2) the postgres user does not have read permission for the user's file
+(See https://stat.ethz.ch/pipermail/r-sig-db/2009q4/000741.html, for
+example)
+
+To address this, I wrote a helper function called dbInsert() that some
+of you may find useful. The function converts a data frame into a single
+INSERT query transaction that inserts the data frame into an existing
+table. My hope is that this is a relatively fast way to insert rows when
+bulk copy is unavailable.
+
+If any of you have already discovered a faster way to insert data
+without using bulk copy, or find ways of improving this code, please
+share. I'm also CC:ing the RPostgreSQL package maintainer in case he
+thinks this functionality should be merged into the postgresWriteTable
+function for when bulk copy is not possible.
+
+Cheers, 
+Robert
+
+dbInsert <- function(con, name, value, row.names = TRUE, ...) {
+    xx <- dbSendQuery(con, paste("select * from", name, "LIMIT 1;"))
+    cols <- dbColumnInfo(xx)$name
+    dbClearResult(xx)
+    if (row.names) {
+        if (!"row_names" %in% cols) stop("row_names column missing from
+", sQuote(name))
+        value[["row_names", exact=TRUE]] <- rownames(value)
+    }
+    if (length(setdiff(names(value), cols)))
+      stop("names of 'value' do not match columns of ", sQuote(name))
+    
+    cdt  <- which(sapply(value, inherits, c("Date", "POSIXt")))
+    ctxt <- which(sapply(value, postgresqlDataType)=="text")
+    for (i in cdt)
+      value[[i]] <- ifelse(is.na(value[[i]]), "NULL",
+sQuote(format(value[[i]])))
+    for (i in setdiff(ctxt, cdt))
+      value[[i]] <- ifelse(is.na(value[[i]]), "NULL",
+sQuote(value[[i]]))
+
+    m <- as.matrix(value)
+    class(m) <- "character"
+    m[is.na(m)] <- "NULL"
+
+    q1 <- paste("BEGIN; INSERT INTO", name, "(", paste(names(value),
+collapse=", "), ") VALUES")
+    q2 <- apply(m, 1, function(x) paste("(", paste(x, collapse=","),
+")", sep=""))
+    q3 <- "; COMMIT;"
+    qry <- paste(q1, paste(q2, collapse=","), q3)
+    dbGetQuery(con, qry)
+}
+
+Robert McGehee, CFA
+Geode Capital Management, LLC
+One Post Office Square, 28th Floor | Boston, MA | 02109
+Tel: 617/392-8396    Fax:617/476-6389
+mailto:robert.mcgehee at geodecapital.com
+
+
+This e-mail, and any attachments hereto, are intended fo...{{dropped:12}}
+
+
+
+From @rm@trong@wh|t @end|ng |rom gm@||@com  Tue Jul 20 18:01:05 2010
+From: @rm@trong@wh|t @end|ng |rom gm@||@com (Whit Armstrong)
+Date: Tue, 20 Jul 2010 12:01:05 -0400
+Subject: [R-sig-DB] RPostgreSQL Row Inserts on Remote Servers
+In-Reply-To: <EEBC169715EB8C438D3C9283AF0F201C08A7CF7D@MSGBOSCLM2WIN.DMN1.FMR.COM>
+References: <EEBC169715EB8C438D3C9283AF0F201C08A7CF7D@MSGBOSCLM2WIN.DMN1.FMR.COM>
+Message-ID: <AANLkTintFZfsAqe1jEHKwP9aXBKjlkWJdCHH6Y4F61wZ@mail.gmail.com>
+
+you can use my driver. which will someday make it to cran.  it uses a
+binary connection to write the data.
+
+http://github.com/armstrtw/unifieddbi
+
+depending on what you are doing, you can get between a 10x and 50x speedup.
+
+-Whit
+
+
+
+On Tue, Jul 20, 2010 at 11:37 AM, McGehee, Robert
+<Robert.McGehee at geodecapital.com> wrote:
+> Hello,
+> An issue discussed before on this list server is difficulty using
+> dbWriteTable from the RPostgreSQL/DBI package to insert rows when
+> either:
+> 1) the R client and PostgreSQL server are on different computers (or at
+> least don't share a common filesystem), and thus bulk copy is
+> unavailable.
+> 2) the postgres user does not have read permission for the user's file
+> (See https://stat.ethz.ch/pipermail/r-sig-db/2009q4/000741.html, for
+> example)
+>
+> To address this, I wrote a helper function called dbInsert() that some
+> of you may find useful. The function converts a data frame into a single
+> INSERT query transaction that inserts the data frame into an existing
+> table. My hope is that this is a relatively fast way to insert rows when
+> bulk copy is unavailable.
+>
+> If any of you have already discovered a faster way to insert data
+> without using bulk copy, or find ways of improving this code, please
+> share. I'm also CC:ing the RPostgreSQL package maintainer in case he
+> thinks this functionality should be merged into the postgresWriteTable
+> function for when bulk copy is not possible.
+>
+> Cheers,
+> Robert
+>
+> dbInsert <- function(con, name, value, row.names = TRUE, ...) {
+> ? ?xx <- dbSendQuery(con, paste("select * from", name, "LIMIT 1;"))
+> ? ?cols <- dbColumnInfo(xx)$name
+> ? ?dbClearResult(xx)
+> ? ?if (row.names) {
+> ? ? ? ?if (!"row_names" %in% cols) stop("row_names column missing from
+> ", sQuote(name))
+> ? ? ? ?value[["row_names", exact=TRUE]] <- rownames(value)
+> ? ?}
+> ? ?if (length(setdiff(names(value), cols)))
+> ? ? ?stop("names of 'value' do not match columns of ", sQuote(name))
+>
+> ? ?cdt ?<- which(sapply(value, inherits, c("Date", "POSIXt")))
+> ? ?ctxt <- which(sapply(value, postgresqlDataType)=="text")
+> ? ?for (i in cdt)
+> ? ? ?value[[i]] <- ifelse(is.na(value[[i]]), "NULL",
+> sQuote(format(value[[i]])))
+> ? ?for (i in setdiff(ctxt, cdt))
+> ? ? ?value[[i]] <- ifelse(is.na(value[[i]]), "NULL",
+> sQuote(value[[i]]))
+>
+> ? ?m <- as.matrix(value)
+> ? ?class(m) <- "character"
+> ? ?m[is.na(m)] <- "NULL"
+>
+> ? ?q1 <- paste("BEGIN; INSERT INTO", name, "(", paste(names(value),
+> collapse=", "), ") VALUES")
+> ? ?q2 <- apply(m, 1, function(x) paste("(", paste(x, collapse=","),
+> ")", sep=""))
+> ? ?q3 <- "; COMMIT;"
+> ? ?qry <- paste(q1, paste(q2, collapse=","), q3)
+> ? ?dbGetQuery(con, qry)
+> }
+>
+> Robert McGehee, CFA
+> Geode Capital Management, LLC
+> One Post Office Square, 28th Floor | Boston, MA | 02109
+> Tel: 617/392-8396 ? ?Fax:617/476-6389
+> mailto:robert.mcgehee at geodecapital.com
+>
+>
+> This e-mail, and any attachments hereto, are intended fo...{{dropped:12}}
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Tue Jul 20 18:16:05 2010
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Tue, 20 Jul 2010 12:16:05 -0400
+Subject: [R-sig-DB] RPostgreSQL Row Inserts on Remote Servers
+In-Reply-To: <EEBC169715EB8C438D3C9283AF0F201C08A7CF7D@MSGBOSCLM2WIN.DMN1.FMR.COM>
+References: <EEBC169715EB8C438D3C9283AF0F201C08A7CF7D@MSGBOSCLM2WIN.DMN1.FMR.COM>
+Message-ID: <AANLkTinKS8L7SU1OAd3xNI9tPYWnjG0I6SghiSgiAr1E@mail.gmail.com>
+
+On Tue, Jul 20, 2010 at 11:37 AM, McGehee, Robert
+<Robert.McGehee at geodecapital.com> wrote:
+> Hello,
+> An issue discussed before on this list server is difficulty using
+> dbWriteTable from the RPostgreSQL/DBI package to insert rows when
+> either:
+> 1) the R client and PostgreSQL server are on different computers (or at
+> least don't share a common filesystem), and thus bulk copy is
+> unavailable.
+> 2) the postgres user does not have read permission for the user's file
+> (See https://stat.ethz.ch/pipermail/r-sig-db/2009q4/000741.html, for
+> example)
+>
+> To address this, I wrote a helper function called dbInsert() that some
+> of you may find useful. The function converts a data frame into a single
+> INSERT query transaction that inserts the data frame into an existing
+> table. My hope is that this is a relatively fast way to insert rows when
+> bulk copy is unavailable.
+>
+> If any of you have already discovered a faster way to insert data
+> without using bulk copy, or find ways of improving this code, please
+> share. I'm also CC:ing the RPostgreSQL package maintainer in case he
+> thinks this functionality should be merged into the postgresWriteTable
+> function for when bulk copy is not possible.
+
+I haven't tested the speed relative to other drivers but I have a
+PostgreSQL driver on CRAN,
+RpgSQL which supports PostgreSQL via a layer over RJDBC.
+
+It was mainly developed for use with the sqldf package (which now
+supports sqlite, H2 and
+PostgreSQL databases) since it needed functionality not supported by
+other CRAN drivers.
+
+
+
+From Robert@McGehee @end|ng |rom geodec@p|t@|@com  Tue Jul 20 19:52:27 2010
+From: Robert@McGehee @end|ng |rom geodec@p|t@|@com (McGehee, Robert)
+Date: Tue, 20 Jul 2010 13:52:27 -0400
+Subject: [R-sig-DB] RpgSQL Install problems [was: RPostgreSQL Row Inserts on
+	Remote Servers]
+References: <EEBC169715EB8C438D3C9283AF0F201C08A7CF7D@MSGBOSCLM2WIN.DMN1.FMR.COM>
+	<AANLkTinKS8L7SU1OAd3xNI9tPYWnjG0I6SghiSgiAr1E@mail.gmail.com>
+Message-ID: <EEBC169715EB8C438D3C9283AF0F201C08A7CFB9@MSGBOSCLM2WIN.DMN1.FMR.COM>
+
+Thanks to Gabor and Whit for replies.
+
+I thought I'd give these packages a try, starting with RpgSQL on my Mac.
+However, I'm running into installation troubles. If any of you are
+feeling generous, and the below RpgSQL error message means something to
+you, please let me know what I'm doing wrong.
+
+Here are the RpgSQL installation steps I tried:
+
+First I downloaded the latest JDBC4 driver and saved it here on my Mac:
+/Library/Java/Extensions/postgresql-8.4-701.jdbc4.jar
+
+And then per installation instructions I exported the environment
+variable RpgSQL_JAR to point to the above file.
+
+Next, I successfully tested the JDBC installation by compiling and
+running the quick JDBC program found here:
+http://www.fankhausers.com/postgresql/jdbc/
+to show that I could create, drop, and populate a table using JDBC.
+
+Last, I successfully installed the latest RpgSQL and all dependencies (I
+didn't specify any config options here). 
+
+However, I can't seem to connect:
+
+> p <- dbDriver("pgSQL")
+Error in pgSQL() :
+  Could not find Postgres JDBC driver
+on/Library/Java/Extensions/postgresql-8.4-701.jdbc4.jar./Library/Framewo
+rks/Python.framework/Versions/2.6/bin:/Users/a347549/Bin:/Users/a347549/
+bin:/opt/bin:/usr/local/bin:/usr/local/pgsql/bin:/usr/bin:/bin:/usr/sbin
+:/sbin:/usr/local/bin:/usr/texbin:/usr/X11/bin/usr/local/pgsql/share/jav
+a
+
+The error message indicates to me that the JDBC driver is not where I
+put it--but it is. The file is also world readable/executable, so there
+shouldn't be any permission problems. Any ideas? Note I already have
+RPostgreSQL installed and working, so it's (presumably) not a problem
+with PostgreSQL.
+
+Thanks, Robert
+
+Some possibly important information:
+
+> java -version
+java version "1.6.0_20"
+Java(TM) SE Runtime Environment (build 1.6.0_20-b02-279-9M3165)
+Java HotSpot(TM) 64-Bit Server VM (build 16.3-b01-279, mixed mode)
+
+> uname -a
+Darwin BOSA871443.fmr.com 9.8.0 Darwin Kernel Version 9.8.0: Wed Jul 15
+16:55:01 PDT 2009; root:xnu-1228.15.4~1/RELEASE_I386 i386
+
+> pg_config
+BINDIR = /usr/local/pgsql/bin
+DOCDIR = /usr/local/pgsql/share/doc
+HTMLDIR = /usr/local/pgsql/share/doc
+INCLUDEDIR = /usr/local/pgsql/include
+PKGINCLUDEDIR = /usr/local/pgsql/include
+INCLUDEDIR-SERVER = /usr/local/pgsql/include/server
+LIBDIR = /usr/local/pgsql/lib
+PKGLIBDIR = /usr/local/pgsql/lib
+LOCALEDIR = /usr/local/pgsql/share/locale
+MANDIR = /usr/local/pgsql/share/man
+SHAREDIR = /usr/local/pgsql/share
+SYSCONFDIR = /usr/local/pgsql/etc
+PGXS = /usr/local/pgsql/lib/pgxs/src/makefiles/pgxs.mk
+CONFIGURE = '--enable-thread-safety' '--with-bonjour' 'CFLAGS=-m64 -arch
+x86_64'
+CC = gcc -no-cpp-precomp
+CPPFLAGS =
+CFLAGS = -m64 -arch x86_64 -Wall -Wmissing-prototypes -Wpointer-arith
+-Wdeclaration-after-statement -Wendif-labels -fno-strict-aliasing
+-fwrapv
+CFLAGS_SL =
+LDFLAGS = -Wl,-dead_strip_dylibs
+LDFLAGS_SL =
+LIBS = -lpgport -lz -lreadline -lm
+VERSION = PostgreSQL 8.4.2
+
+> R.version
+               _
+platform       x86_64-apple-darwin9.8.0
+arch           x86_64
+os             darwin9.8.0
+system         x86_64, darwin9.8.0
+status         Patched
+major          2
+minor          11.0
+year           2010
+month          05
+day            11
+svn rev        51984
+language       R
+version.string R version 2.11.0 Patched (2010-05-11 r51984)
+
+-----Original Message-----
+From: Gabor Grothendieck [mailto:ggrothendieck at gmail.com] 
+Sent: Tuesday, July 20, 2010 12:16 PM
+To: McGehee, Robert
+Cc: r-sig-db at stat.math.ethz.ch
+Subject: Re: [R-sig-DB] RPostgreSQL Row Inserts on Remote Servers
+
+On Tue, Jul 20, 2010 at 11:37 AM, McGehee, Robert
+<Robert.McGehee at geodecapital.com> wrote:
+> Hello,
+> An issue discussed before on this list server is difficulty using
+> dbWriteTable from the RPostgreSQL/DBI package to insert rows when
+> either:
+> 1) the R client and PostgreSQL server are on different computers (or
+at
+> least don't share a common filesystem), and thus bulk copy is
+> unavailable.
+> 2) the postgres user does not have read permission for the user's file
+> (See https://stat.ethz.ch/pipermail/r-sig-db/2009q4/000741.html, for
+> example)
+>
+> To address this, I wrote a helper function called dbInsert() that some
+> of you may find useful. The function converts a data frame into a
+single
+> INSERT query transaction that inserts the data frame into an existing
+> table. My hope is that this is a relatively fast way to insert rows
+when
+> bulk copy is unavailable.
+>
+> If any of you have already discovered a faster way to insert data
+> without using bulk copy, or find ways of improving this code, please
+> share. I'm also CC:ing the RPostgreSQL package maintainer in case he
+> thinks this functionality should be merged into the postgresWriteTable
+> function for when bulk copy is not possible.
+
+I haven't tested the speed relative to other drivers but I have a
+PostgreSQL driver on CRAN,
+RpgSQL which supports PostgreSQL via a layer over RJDBC.
+
+It was mainly developed for use with the sqldf package (which now
+supports sqlite, H2 and
+PostgreSQL databases) since it needed functionality not supported by
+other CRAN drivers.
+
+
+
+From k@@perd@n|e|h@n@en @end|ng |rom gm@||@com  Sat Aug  7 02:00:53 2010
+From: k@@perd@n|e|h@n@en @end|ng |rom gm@||@com (Kasper Daniel Hansen)
+Date: Fri, 6 Aug 2010 20:00:53 -0400
+Subject: [R-sig-DB] RpgSQL Install problems [was: RPostgreSQL Row
+	Inserts on Remote Servers]
+In-Reply-To: <EEBC169715EB8C438D3C9283AF0F201C08A7CFB9@MSGBOSCLM2WIN.DMN1.FMR.COM>
+References: <EEBC169715EB8C438D3C9283AF0F201C08A7CF7D@MSGBOSCLM2WIN.DMN1.FMR.COM>
+	<AANLkTinKS8L7SU1OAd3xNI9tPYWnjG0I6SghiSgiAr1E@mail.gmail.com>
+	<EEBC169715EB8C438D3C9283AF0F201C08A7CFB9@MSGBOSCLM2WIN.DMN1.FMR.COM>
+Message-ID: <AANLkTinKMjDEcm6Emz2Kmj8ZmAzUgE8LOfumub=dniBS@mail.gmail.com>
+
+I know little to nothing about using JDBC, but the following caught my
+attention:
+
+>> p <- dbDriver("pgSQL")
+> Error in pgSQL() :
+> ?Could not find Postgres JDBC driver
+> on/Library/Java/Extensions/postgresql-8.4-701.jdbc4.jar./Library/Framewo
+> rks/Python.framework/Versions/2.6/bin:/Users/a347549/Bin:/Users/a347549/
+> bin:/opt/bin:/usr/local/bin:/usr/local/pgsql/bin:/usr/bin:/bin:/usr/sbin
+> :/sbin:/usr/local/bin:/usr/texbin:/usr/X11/bin/usr/local/pgsql/share/jav
+> a
+
+It seems that the character after jdbc4.jar is a dot "." instead of a
+colon ":".  I have no idea why (or whether it matters), but there
+could be some name mangling somewhere....
+
+Kasper
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Sat Aug  7 02:21:21 2010
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Fri, 6 Aug 2010 20:21:21 -0400
+Subject: [R-sig-DB] RpgSQL Install problems [was: RPostgreSQL Row
+	Inserts on Remote Servers]
+In-Reply-To: <AANLkTinKMjDEcm6Emz2Kmj8ZmAzUgE8LOfumub=dniBS@mail.gmail.com>
+References: <EEBC169715EB8C438D3C9283AF0F201C08A7CF7D@MSGBOSCLM2WIN.DMN1.FMR.COM>
+	<AANLkTinKS8L7SU1OAd3xNI9tPYWnjG0I6SghiSgiAr1E@mail.gmail.com> 
+	<EEBC169715EB8C438D3C9283AF0F201C08A7CFB9@MSGBOSCLM2WIN.DMN1.FMR.COM> 
+	<AANLkTinKMjDEcm6Emz2Kmj8ZmAzUgE8LOfumub=dniBS@mail.gmail.com>
+Message-ID: <AANLkTi=RSDntyqbnxg_jZCjmrTgAbY5FUphHZhc6_uLs@mail.gmail.com>
+
+On Fri, Aug 6, 2010 at 8:00 PM, Kasper Daniel Hansen
+<kasperdanielhansen at gmail.com> wrote:
+> I know little to nothing about using JDBC, but the following caught my
+> attention:
+>
+>>> p <- dbDriver("pgSQL")
+>> Error in pgSQL() :
+>> ?Could not find Postgres JDBC driver
+>> on/Library/Java/Extensions/postgresql-8.4-701.jdbc4.jar./Library/Framewo
+>> rks/Python.framework/Versions/2.6/bin:/Users/a347549/Bin:/Users/a347549/
+>> bin:/opt/bin:/usr/local/bin:/usr/local/pgsql/bin:/usr/bin:/bin:/usr/sbin
+>> :/sbin:/usr/local/bin:/usr/texbin:/usr/X11/bin/usr/local/pgsql/share/jav
+>> a
+>
+> It seems that the character after jdbc4.jar is a dot "." instead of a
+> colon ":". ?I have no idea why (or whether it matters), but there
+> could be some name mangling somewhere....
+>
+> Kasper
+>
+
+Are you using the latest version of the RpgSQL package -- version
+0.1-3.1 released July 24, 2010?  There were some improvements on the
+class path searching in that version.
+
+
+
+From homer@@trong @end|ng |rom gm@||@com  Sat Aug  7 01:29:13 2010
+From: homer@@trong @end|ng |rom gm@||@com (Homer V Strong)
+Date: Fri, 6 Aug 2010 16:29:13 -0700
+Subject: [R-sig-DB] handling RS-DBI errors
+Message-ID: <AANLkTim25KEri1oCs1EP900WGUnhcN=DhreYJPC3SRpi@mail.gmail.com>
+
+Hello DB SIG,
+
+I'm wondering how you hand RS-DBI driver errors in R. They don't seem to
+respect my attempts at try() or tryCatch() ing them. Any advice? I can
+provide specific examples if requested, but the scenario is simple: an ERROR
+occurs on the DB and try() and friends don't catch any exceptions.
+
+Thanks in advance!
+
+Homer
+
+	[[alternative HTML version deleted]]
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Tue Aug 10 12:09:04 2010
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Tue, 10 Aug 2010 06:09:04 -0400
+Subject: [R-sig-DB] handling RS-DBI errors
+In-Reply-To: <AANLkTim25KEri1oCs1EP900WGUnhcN=DhreYJPC3SRpi@mail.gmail.com>
+References: <AANLkTim25KEri1oCs1EP900WGUnhcN=DhreYJPC3SRpi@mail.gmail.com>
+Message-ID: <AANLkTikmgMQJLehMFUqM4ZRP+4q837DEQpy0K2-ygiFx@mail.gmail.com>
+
+On Fri, Aug 6, 2010 at 7:29 PM, Homer V Strong <homer.strong at gmail.com> wrote:
+> Hello DB SIG,
+>
+> I'm wondering how you hand RS-DBI driver errors in R. They don't seem to
+> respect my attempts at try() or tryCatch() ing them. Any advice? I can
+> provide specific examples if requested, but the scenario is simple: an ERROR
+> occurs on the DB and try() and friends don't catch any exceptions.
+>
+
+Which driver are you referring to?
+
+When I try it using RSQLite on Windows try does work to allow
+processing to continue.  It still produces an error message (unless
+you use try(..., silent= TRUE)).
+
+
+> library(RSQLite)
+> con <- dbConnect(SQLite(), dbname = ":memory:")
+> f <- function() {
++ out <- try(dbGetQuery(con, "select * from nosuchexists"), silent = TRUE)
++ class(out)
++ }
+> f()
+[1] "try-error"
+
+
+> R.version.string
+[1] "R version 2.11.1 Patched (2010-05-31 r52167)"
+> win.version()
+[1] "Windows Vista (build 6002) Service Pack 2"
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Tue Aug 10 19:11:43 2010
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Tue, 10 Aug 2010 13:11:43 -0400
+Subject: [R-sig-DB] handling RS-DBI errors
+In-Reply-To: <AANLkTikaEQzs+3v+Jch0iVaDsXzATGpJYQ-Ca8WeE7oP@mail.gmail.com>
+References: <AANLkTim25KEri1oCs1EP900WGUnhcN=DhreYJPC3SRpi@mail.gmail.com> 
+	<AANLkTikmgMQJLehMFUqM4ZRP+4q837DEQpy0K2-ygiFx@mail.gmail.com> 
+	<AANLkTikaEQzs+3v+Jch0iVaDsXzATGpJYQ-Ca8WeE7oP@mail.gmail.com>
+Message-ID: <AANLkTikuE0d=GO=3T1_6HBW8WayZwYcok4zoqq1Pr91W@mail.gmail.com>
+
+On Tue, Aug 10, 2010 at 12:50 PM, Homer V Strong <homer.strong at gmail.com> wrote:
+> Sorry for not being more specific in my first email. I'm using RPostgreSQL
+> and Ubuntu 10.04.
+> The problem is not just the error message prints, but also that R seems to
+> have no idea that an error occurred at all. An error message prints in spite
+> of the silent=T option, and what's much worse, the class of ?`out' is NULL.
+
+You could try the pgSQL postgresql driver in the RpgSQL package.     On
+Windows it works for me:
+
+> library(RpgSQL)
+> con <- dbConnect(pgSQL())
+> out <- try(dbGetQuery(con, "select * from doesnotexist"), silent = TRUE)
+> class(out)
+[1] "try-error"
+
+
+>
+> R.version.string
+[1] "R version 2.11.1 Patched (2010-05-31 r52167)"
+> win.version()
+[1] "Windows Vista (build 6002) Service Pack 2"
+
+
+
+From |ubr@ @end|ng |rom comc@@t@net  Thu Aug 12 04:55:43 2010
+From: |ubr@ @end|ng |rom comc@@t@net (Dave Lubbers)
+Date: Wed, 11 Aug 2010 22:55:43 -0400
+Subject: [R-sig-DB] ROracle INSTALL sed crash
+Message-ID: <3B6E982BA55C4DA8BF31F57793B64FC1@OwnerPC>
+
+linux RHE4
+Oracle 10.2
+R-2.10.1
+
+R CMD INSTALL ROracle_0.5-9.tar.gz  generates a sed error after about 15 lines:
+
+sed:  file ./confstatM28090/subs-1.sed line 43: unterminated `s' commands
+
+When I drop back to R-2.7.2 there is no error
+	[[alternative HTML version deleted]]
+
+
+
+From |ubr@ @end|ng |rom comc@@t@net  Thu Aug 12 05:03:06 2010
+From: |ubr@ @end|ng |rom comc@@t@net (Dave Lubbers)
+Date: Wed, 11 Aug 2010 23:03:06 -0400
+Subject: [R-sig-DB] ROracle LD_LIBRARY_PATH issues
+Message-ID: <47710E58969E46E89C99A639E90BEBD7@OwnerPC>
+
+linux RHE4
+R-2.7.2
+ORacle 10.2
+
+Added oracle (10.2) to LD_LIBRARY_PATH but still get the same error as the on-line install notes:  undefined symbol sqlclu I think it is.  I did ar -t *.a on all the Oracle archives and only found sqlcluf and sqlclut,  no clu.  Any clues on my problem? 
+	[[alternative HTML version deleted]]
+
+
+
+From |ubr@ @end|ng |rom comc@@t@net  Thu Aug 12 05:05:17 2010
+From: |ubr@ @end|ng |rom comc@@t@net (Dave Lubbers)
+Date: Wed, 11 Aug 2010 23:05:17 -0400
+Subject: [R-sig-DB] ROracle Examples ???
+Message-ID: <BC481EAA5C2643F8A0EA34EE8B9E9169@OwnerPC>
+
+Trying to connect to Oracle databases over the internet.  Any examples on how this is done?  Any good Oracle databases on-line to experiment with?
+	[[alternative HTML version deleted]]
+
+
+
+From vish@i-v@meht@ m@iii@g oii ubs@com  Thu Aug 12 17:59:17 2010
+From: vish@i-v@meht@ m@iii@g oii ubs@com (vish@i-v@meht@ m@iii@g oii ubs@com)
+Date: Thu, 12 Aug 2010 16:59:17 +0100
+Subject: [R-sig-DB]  RODBC
+Message-ID: <E80227B084FBD341B5EC6ADB0916016201529069@NLDNC101PEX1.ubsw.net>
+
+
+Vikram Kuurana
+
+Hello, this may seem a little random.
+But I am trying to install RODBC on windows, and when searching for help
+on google, I found a thread from years ago. But no solution. I was
+hoping if you would be so kind to help.
+I installed RODBC, you can see it in the list when you type the command,
+(.packages(all.available=TRUE))
+But when I tried to load it I get the following error
+	Error in library.dynam(lib, package, package.lib) : 
+ 	 shared library 'RODBC' not found
+	In addition: Warning message:
+	package 'RODBC' was built under R version 2.12.0 
+	Error: package/namespace load failed for 'RODBC'
+
+Do you know why?
+
+Again I apologise for the complete randomness
+
+Vishal Mehta
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20100812/29b3f5c4/attachment.html>
+
+-------------- next part --------------
+Visit our website at http://www.ubs.com
+
+This message contains confidential information and is intended only 
+for the individual named.  If you are not the named addressee you 
+should not disseminate, distribute or copy this e-mail.  Please 
+notify the sender immediately by e-mail if you have received this 
+e-mail by mistake and delete this e-mail from your system.
+	
+E-mails are not encrypted and cannot be guaranteed to be secure or 
+error-free as information could be intercepted, corrupted, lost, 
+destroyed, arrive late or incomplete, or contain viruses.  The sender 
+therefore does not accept liability for any errors or omissions in the 
+contents of this message which arise as a result of e-mail transmission.  
+If verification is required please request a hard-copy version.  This 
+message is provided for informational purposes and should not be 
+construed as a solicitation or offer to buy or sell any securities 
+or related financial instruments.
+
+UBS Limited is a company registered in England & Wales under company
+number 2035362, whose registered office is at 1 Finsbury Avenue,
+London, EC2M 2PP, United Kingdom.
+
+UBS AG (London Branch) is registered as a branch of a foreign company
+under number BR004507, whose registered office is at
+1 Finsbury Avenue, London, EC2M 2PP, United Kingdom.
+
+UBS Clearing and Execution Services Limited is a company registered
+in England & Wales under company number 03123037, whose registered
+office is at 1 Finsbury Avenue, London, EC2M 2PP, United Kingdom.
+ 
+UBS reserves the right to retain all messages. Messages are protected
+and accessed only in legally justified cases.
+
+From m@rc_@chw@rtz @end|ng |rom me@com  Thu Aug 12 18:56:26 2010
+From: m@rc_@chw@rtz @end|ng |rom me@com (Marc Schwartz)
+Date: Thu, 12 Aug 2010 11:56:26 -0500
+Subject: [R-sig-DB] ROracle LD_LIBRARY_PATH issues
+In-Reply-To: <47710E58969E46E89C99A639E90BEBD7@OwnerPC>
+References: <47710E58969E46E89C99A639E90BEBD7@OwnerPC>
+Message-ID: <BAE4D1A7-8BFF-446A-A5B1-C2CDA8610A98@me.com>
+
+
+On Aug 11, 2010, at 10:03 PM, Dave Lubbers wrote:
+
+> linux RHE4
+> R-2.7.2
+> ORacle 10.2
+> 
+> Added oracle (10.2) to LD_LIBRARY_PATH but still get the same error as the on-line install notes:  undefined symbol sqlclu I think it is.  I did ar -t *.a on all the Oracle archives and only found sqlcluf and sqlclut,  no clu.  Any clues on my problem? 
+
+Typically, you would be better off adding the path specifications to /etc/ld.so.conf and then run ldconfig (both as root) to update the environment information. Adding the path to LD_LIBRARY_PATH in a .bashrc file or similar does not work (in my experience).
+
+R version 2.7.2 is two years old, which is an eternity in R time. The current release version is 2.11.1, which is available via the EPEL yum repos:
+
+  http://fedoraproject.org/wiki/EPEL
+
+and you should upgrade to see if that resolves anything. If not, then you may be better off directly contacting the package maintainer for focused assistance, albeit it would seem that ROracle has not been updated in almost 3 years...
+
+I found this thread from 2006 that might be helpful:
+
+  http://tolstoy.newcastle.edu.au/R/e2/help/06/09/1295.html
+
+HTH,
+
+Marc Schwartz
+
+
+
+From m@rc_@chw@rtz @end|ng |rom me@com  Thu Aug 12 19:06:02 2010
+From: m@rc_@chw@rtz @end|ng |rom me@com (Marc Schwartz)
+Date: Thu, 12 Aug 2010 12:06:02 -0500
+Subject: [R-sig-DB] ROracle Examples ???
+In-Reply-To: <BC481EAA5C2643F8A0EA34EE8B9E9169@OwnerPC>
+References: <BC481EAA5C2643F8A0EA34EE8B9E9169@OwnerPC>
+Message-ID: <F7086121-9EE0-4805-A99C-DB6FA9A9C956@me.com>
+
+
+On Aug 11, 2010, at 10:05 PM, Dave Lubbers wrote:
+
+> Trying to connect to Oracle databases over the internet.  Any examples on how this is done?  Any good Oracle databases on-line to experiment with?
+
+
+I am not off-hand aware of anyone making their Oracle database available for general public online access. Security, you know...
+
+If you are having issues, presuming that you get ROracle installed and your R version updated, you might consider contacting the Admin for the Oracle database that you initially intended to work with. Since you would need an account on the Oracle server, you would of course need the userID and password, along with any other configuration settings required for the particular server, including the possibility of needing a VPN connection. The ROracle documentation would likely be helpful to the Admin.
+
+HTH,
+
+Marc Schwartz
+
+
+
+From m@rc_@chw@rtz @end|ng |rom me@com  Thu Aug 12 19:12:31 2010
+From: m@rc_@chw@rtz @end|ng |rom me@com (Marc Schwartz)
+Date: Thu, 12 Aug 2010 12:12:31 -0500
+Subject: [R-sig-DB] RODBC
+In-Reply-To: <E80227B084FBD341B5EC6ADB0916016201529069@NLDNC101PEX1.ubsw.net>
+References: <E80227B084FBD341B5EC6ADB0916016201529069@NLDNC101PEX1.ubsw.net>
+Message-ID: <E0B27E66-71CC-4206-8FE6-B1366BA8ADA2@me.com>
+
+On Aug 12, 2010, at 10:59 AM, vishal-v.mehta at ubs.com wrote:
+
+> 
+> Vikram Kuurana
+> 
+> Hello, this may seem a little random. 
+> But I am trying to install RODBC on windows, and when searching for help on google, I found a thread from years ago. But no solution. I was hoping if you would be so kind to help.
+> 
+> I installed RODBC, you can see it in the list when you type the command, (.packages(all.available=TRUE)) 
+> But when I tried to load it I get the following error 
+>         Error in library.dynam(lib, package, package.lib) : 
+>          shared library 'RODBC' not found 
+>         In addition: Warning message: 
+>         package 'RODBC' was built under R version 2.12.0 
+>         Error: package/namespace load failed for 'RODBC'
+> 
+> Do you know why?
+> 
+> Again I apologise for the complete randomness
+> 
+> Vishal Mehta
+
+
+What version of R are you running?  The message above suggests that you were running 2.12.0 when you installed the packages, but are not running it now. 
+
+2.12.0 is not yet released, so were you testing a 'devel' version of R?
+
+You will need to sort out your R versions and then make sure that you are running the proper version when both installing and loading the packages...
+
+HTH,
+
+Marc Schwartz
+
+
+
+From |ubr@ @end|ng |rom comc@@t@net  Fri Aug 13 04:04:12 2010
+From: |ubr@ @end|ng |rom comc@@t@net (Susan Lubbers)
+Date: Thu, 12 Aug 2010 22:04:12 -0400
+Subject: [R-sig-DB] ROracle LD_LIBRARY_PATH issues
+Message-ID: <01EB2B52-12A6-4BC8-B136-95F21BFCA6FC@comcast.net>
+
+My problem was our local oracle installation.  One the required files  
+existed in /lib but had a size of 0 bytes!  One of our sys admins owes  
+me a coke.
+
+
+
+From |ubr@ @end|ng |rom comc@@t@net  Fri Aug 13 04:10:01 2010
+From: |ubr@ @end|ng |rom comc@@t@net (Susan Lubbers)
+Date: Thu, 12 Aug 2010 22:10:01 -0400
+Subject: [R-sig-DB] ROracle Examples ???
+Message-ID: <FF757AE4-1335-4D8A-9254-8FE24420252E@comcast.net>
+
+Thanks for the response.  You understand the issues.  Rethinking how I  
+go about this.
+
+
+
+From ju@t|n @end|ng |rom noet|c-p@rtner@@com  Wed Aug 18 07:41:43 2010
+From: ju@t|n @end|ng |rom noet|c-p@rtner@@com (Justin Magruder)
+Date: Wed, 18 Aug 2010 01:41:43 -0400
+Subject: [R-sig-DB] RODBC for 64-bit Windows 7
+Message-ID: <00de01cb3e98$0a76a590$1f63f0b0$@noetic-partners.com>
+
+I'm new to R and trying to install RODBC package 1.3-2 on a windows 7 64-bit
+os, but am getting errors when loading: "Error: package 'RODBC' is not
+installed for 'arch=x64'". It appears to be a 32-bit package.  Is there
+64-bit package available?
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Wed Aug 18 08:13:11 2010
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Wed, 18 Aug 2010 07:13:11 +0100 (BST)
+Subject: [R-sig-DB] RODBC for 64-bit Windows 7
+In-Reply-To: <00de01cb3e98$0a76a590$1f63f0b0$@noetic-partners.com>
+References: <00de01cb3e98$0a76a590$1f63f0b0$@noetic-partners.com>
+Message-ID: <alpine.LFD.2.00.1008180708080.14318@gannet.stats.ox.ac.uk>
+
+On Wed, 18 Aug 2010, Justin Magruder wrote:
+
+> I'm new to R and trying to install RODBC package 1.3-2 on a windows 7 64-bit
+> os, but am getting errors when loading: "Error: package 'RODBC' is not
+> installed for 'arch=x64'". It appears to be a 32-bit package.  Is there
+> 64-bit package available?
+
+Yes, in the bin/windows64 part of the repository.  (Assuming this is 
+for R 2.11.1, but you have not even told us that.)
+
+This is not an R-sig-DB question, and you need to study the posting 
+guide, provide the 'at a minimum' information asked for there, and 
+tell us exactly how you are 'trying to install'.
+
+Note too that you have ignored the advice in the rw-FAQ for people 
+'new to R', and that almost certainly you are going to have trouble 
+with finding 64-bit ODBC drivers -- but you have not even told us what 
+DBMS you want to connect to.
+
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From bet|mb @end|ng |rom gm@||@com  Thu Aug 19 17:35:07 2010
+From: bet|mb @end|ng |rom gm@||@com (Betim Berjani)
+Date: Thu, 19 Aug 2010 17:35:07 +0200
+Subject: [R-sig-DB] RMySQL error under Windows Server 2008 64-bit
+In-Reply-To: <alpine.LFD.2.00.0812192002001.22346@gannet.stats.ox.ac.uk>
+References: <alpine.LFD.2.00.0812192002001.22346@gannet.stats.ox.ac.uk>
+Message-ID: <4C6D4F2B.80100@googlemail.com>
+
+Hello,
+did you find a solution for this?
+
+I have kind of a similar problem on Windows 7 64 bit and with a 64-bit 
+version of MySQL 5.1.
+
+ > library(RMySQL)
+Error : .onLoad in loadNamespace() fehlgechlagen, Details:
+   Aufruf: RMySQL
+   Fehler: inDL(x, as.logical(local), as.logical(now), ...)
+Fehler: Laden von Paket/Namensraum f?r 'RMySQL' fehlgeschlagen
+
+My Path seems to be set correctly:
+
+ > Sys.getenv("MYSQL_HOME")
+                                   MYSQL_HOME
+"C:\\Program Files\\MySQL\\MySQL Server 5.1"
+
+Any help would be appreciated!
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Thu Aug 19 18:35:36 2010
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Thu, 19 Aug 2010 17:35:36 +0100 (BST)
+Subject: [R-sig-DB] RMySQL error under Windows Server 2008 64-bit
+In-Reply-To: <4C6D4F2B.80100@googlemail.com>
+References: <alpine.LFD.2.00.0812192002001.22346@gannet.stats.ox.ac.uk>
+	<4C6D4F2B.80100@googlemail.com>
+Message-ID: <alpine.LFD.2.00.1008191733090.3285@gannet.stats.ox.ac.uk>
+
+On Thu, 19 Aug 2010, Betim Berjani wrote:
+
+> Hello,
+> did you find a solution for this?
+>
+> I have kind of a similar problem on Windows 7 64 bit and with a 64-bit
+
+What is 'this'? If you cannot include the relevant parts of a previous 
+message, include a URL of it on one of the archives.
+
+And note that you have singularly failed to follow the posting guide's 
+request for 'at a minimum' information, most notably the version of 
+RMySQL.
+
+The list moderator.
+
+> version of MySQL 5.1.
+>
+>> library(RMySQL)
+> Error : .onLoad in loadNamespace() fehlgechlagen, Details:
+>  Aufruf: RMySQL
+>  Fehler: inDL(x, as.logical(local), as.logical(now), ...)
+> Fehler: Laden von Paket/Namensraum f?r 'RMySQL' fehlgeschlagen
+>
+> My Path seems to be set correctly:
+>
+>> Sys.getenv("MYSQL_HOME")
+>                                  MYSQL_HOME
+> "C:\\Program Files\\MySQL\\MySQL Server 5.1"
+>
+> Any help would be appreciated!
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+From m|r@d|hou@e @end|ng |rom goog|em@||@com  Sat Aug 21 12:10:18 2010
+From: m|r@d|hou@e @end|ng |rom goog|em@||@com (...)
+Date: Sat, 21 Aug 2010 12:10:18 +0200
+Subject: [R-sig-DB]  Problem when loading package RMySQL
+Message-ID: <AANLkTin3npu1DmuPJOof+TcMiSmpCt1TQT8_+6_mvu0m@mail.gmail.com>
+
+Hello,
+I have a problem when loading RMySQL 0.7-5 on Windows 7 64 bit and
+with a 64-bit version of MySQL 5.1.
+My R version is 2.11.1 32-bit. I installed it from here:
+http://ftp.yalwa.org/cran/bin/windows/base/R-2.11.1-win32.exe
+
+I then installed RMySQL using a local zip file from here:
+http://cran.r-project.org/web/packages/RMySQL/index.html
+Windows binary: RMySQL_0.7-5.zip
+
+Here is the error:
+
+> library(RMySQL)
+Error : .onLoad in loadNamespace() fehlgechlagen, Details:
+  Aufruf: RMySQL
+  Fehler: inDL(x, as.logical(local), as.logical(now), ...)
+Fehler: Laden von Paket/Namensraum f?r 'RMySQL' fehlgeschlagen
+
+My Path seems to be set correctly:
+
+> Sys.getenv("MYSQL_HOME")
+                                  MYSQL_HOME
+"C:\\Program Files\\MySQL\\MySQL Server 5.1"
+
+Any help would be appreciated!
+Cheers
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Sat Aug 21 19:04:31 2010
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Sat, 21 Aug 2010 18:04:31 +0100 (BST)
+Subject: [R-sig-DB] Problem when loading package RMySQL
+In-Reply-To: <AANLkTin3npu1DmuPJOof+TcMiSmpCt1TQT8_+6_mvu0m@mail.gmail.com>
+References: <AANLkTin3npu1DmuPJOof+TcMiSmpCt1TQT8_+6_mvu0m@mail.gmail.com>
+Message-ID: <alpine.LFD.2.00.1008211645450.11719@gannet.stats.ox.ac.uk>
+
+It looks like you set MYSQL_HOME to point to a 64-bit MySQL, since 
+C:\Program Files\ is for 64-bit software.  For 32-bit R you need a 
+32-bit MySQL client (although you can use this with a 64-bit server).
+
+On Sat, 21 Aug 2010, ... wrote:
+
+> Hello,
+> I have a problem when loading RMySQL 0.7-5 on Windows 7 64 bit and
+> with a 64-bit version of MySQL 5.1.
+> My R version is 2.11.1 32-bit. I installed it from here:
+> http://ftp.yalwa.org/cran/bin/windows/base/R-2.11.1-win32.exe
+>
+> I then installed RMySQL using a local zip file from here:
+> http://cran.r-project.org/web/packages/RMySQL/index.html
+> Windows binary: RMySQL_0.7-5.zip
+>
+> Here is the error:
+>
+>> library(RMySQL)
+> Error : .onLoad in loadNamespace() fehlgechlagen, Details:
+>  Aufruf: RMySQL
+>  Fehler: inDL(x, as.logical(local), as.logical(now), ...)
+> Fehler: Laden von Paket/Namensraum f?r 'RMySQL' fehlgeschlagen
+>
+> My Path seems to be set correctly:
+>
+>> Sys.getenv("MYSQL_HOME")
+>                                  MYSQL_HOME
+> "C:\\Program Files\\MySQL\\MySQL Server 5.1"
+>
+> Any help would be appreciated!
+> Cheers
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+From m|r@d|hou@e @end|ng |rom goog|em@||@com  Sun Aug 22 00:13:48 2010
+From: m|r@d|hou@e @end|ng |rom goog|em@||@com (...)
+Date: Sun, 22 Aug 2010 00:13:48 +0200
+Subject: [R-sig-DB] Problem when loading package RMySQL
+In-Reply-To: <alpine.LFD.2.00.1008211645450.11719@gannet.stats.ox.ac.uk>
+References: <AANLkTin3npu1DmuPJOof+TcMiSmpCt1TQT8_+6_mvu0m@mail.gmail.com>
+	<alpine.LFD.2.00.1008211645450.11719@gannet.stats.ox.ac.uk>
+Message-ID: <AANLkTi=Y0TZ28fap-k7W2eZrnU0oJV3yZVbw9jeemBnm@mail.gmail.com>
+
+Is there a RMySQL package for 64-bit R for Windows?
+I had the 64-bit R installed before, but got similar errors. Thats why I
+switched to 32-bit R.
+
+On Sat, Aug 21, 2010 at 7:04 PM, Prof Brian Ripley <ripley at stats.ox.ac.uk>wrote:
+
+> It looks like you set MYSQL_HOME to point to a 64-bit MySQL, since
+> C:\Program Files\ is for 64-bit software.  For 32-bit R you need a 32-bit
+> MySQL client (although you can use this with a 64-bit server).
+>
+>
+> On Sat, 21 Aug 2010, ... wrote:
+>
+>  Hello,
+>> I have a problem when loading RMySQL 0.7-5 on Windows 7 64 bit and
+>> with a 64-bit version of MySQL 5.1.
+>> My R version is 2.11.1 32-bit. I installed it from here:
+>> http://ftp.yalwa.org/cran/bin/windows/base/R-2.11.1-win32.exe
+>>
+>> I then installed RMySQL using a local zip file from here:
+>> http://cran.r-project.org/web/packages/RMySQL/index.html
+>> Windows binary: RMySQL_0.7-5.zip
+>>
+>> Here is the error:
+>>
+>>  library(RMySQL)
+>>>
+>> Error : .onLoad in loadNamespace() fehlgechlagen, Details:
+>>  Aufruf: RMySQL
+>>  Fehler: inDL(x, as.logical(local), as.logical(now), ...)
+>> Fehler: Laden von Paket/Namensraum f?r 'RMySQL' fehlgeschlagen
+>>
+>> My Path seems to be set correctly:
+>>
+>>  Sys.getenv("MYSQL_HOME")
+>>>
+>>                                 MYSQL_HOME
+>> "C:\\Program Files\\MySQL\\MySQL Server 5.1"
+>>
+>> Any help would be appreciated!
+>> Cheers
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at stat.math.ethz.ch
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+>>
+> --
+> Brian D. Ripley,                  ripley at stats.ox.ac.uk
+> Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/<http://www.stats.ox.ac.uk/%7Eripley/>
+> University of Oxford,             Tel:  +44 1865 272861 (self)
+> 1 South Parks Road,                     +44 1865 272866 (PA)
+> Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+	[[alternative HTML version deleted]]
+
+
+
+From George@P@p@ @end|ng |rom @p|derrocktr@d|ng@com  Mon Aug 30 00:24:02 2010
+From: George@P@p@ @end|ng |rom @p|derrocktr@d|ng@com (George Papa)
+Date: Sun, 29 Aug 2010 22:24:02 +0000
+Subject: [R-sig-DB] RMySQL on R 2.11.1 (x64) / Windows
+Message-ID: <BAE6EBF601E63B48BDA6FE35552637100A4A37@srtmail01.srt.local>
+
+Hello All,
+
+First, thanks for the effort behind x64 R on windows.  It has been a substantial help.
+
+In reviewing the CRAN binary archives (R 2.11.1 / packages / install ... {all repositories}) I find that RMySQL is not listed.  I assume this is because there is some difficulty in getting them through the x64 build/test environment but haven't been able to find much discussion of the topic.
+
+So, has anyone successfully installed RMySQL under R 2.11.1 (x64 build) on a windows machine (for any version of MySQL libraries)?  If this is doable, can you give me some hints.  And, is there an ETA on getting RMySQL into the CRAN binary mirror distribution?
+
+All The Best,
+George
+
+
+
+
+--
+Important - Confidential Information & Disclaimer. All email sent to or from this address will be retained by SpiderRock's email archiving system. This message is intended only for the use of the individual or entity to which it is addressed, and may contain information that is privileged, confidential, and exempt from disclosure under applicable law. If you have received this message in error, please notify us immediately and delete the message without copying or forwarding it to anyone. SpiderRock will not be liable for any compliance and technical information or guidance provided herein.
+
+	[[alternative HTML version deleted]]
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Mon Aug 30 08:40:07 2010
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Mon, 30 Aug 2010 07:40:07 +0100 (BST)
+Subject: [R-sig-DB] RMySQL on R 2.11.1 (x64) / Windows
+In-Reply-To: <BAE6EBF601E63B48BDA6FE35552637100A4A37@srtmail01.srt.local>
+References: <BAE6EBF601E63B48BDA6FE35552637100A4A37@srtmail01.srt.local>
+Message-ID: <alpine.LFD.2.00.1008300714310.15400@gannet.stats.ox.ac.uk>
+
+This really is off-list here: it is complete coincidence that anyone 
+who knows anything about Windows binary packages is subscribed.
+
+There are no plans to distribute Windows binaries of any package that 
+requires external software other than Gtk+, especially not those which 
+are very sensitive to software versions such as MySQL.  In addition, 
+there is a single build machine and it is tricky to run both 32- and 
+64-bit MySQL on the same machine.
+
+And we have announced that development of R 2.11.x on x64 Windows has 
+stopped and asked users to migrate to snapshots of R 2.12.0:
+https://stat.ethz.ch/pipermail/r-devel/2010-August/058140.html
+
+Also, for much of the life of x64 Windows R we were waiting for a 
+RMySQL update (which we have in 0.7-5) -- you can now simply build it 
+from the sources as described in the rw-FAQ at 
+http://cran.r-project.org/bin/windows/base/rw-FAQ.html#Can-I-install-packages-into-libraries-in-this-version_003f 
+.
+
+Please don't
+
+- send HTML when expressly asked not in the posting guide.
+- post to a members-only list -- you will need to subscribe to reply.
+- send Windows-specific topics to R-sig-db.  How to use RMySQL is 
+apporpriate here, but not asking about availability of binaries, 
+something covered in the appropriate FAQ.
+
+The list moderator (and coincidentally a R-for-Windows developer)
+
+On Sun, 29 Aug 2010, George Papa wrote:
+
+> Hello All,
+>
+> First, thanks for the effort behind x64 R on windows.  It has been a substantial help.
+>
+> In reviewing the CRAN binary archives (R 2.11.1 / packages / install ... {all repositories}) I find that RMySQL is not listed.  I assume this is because there is some difficulty in getting them through the x64 build/test environment but haven't been able to find much discussion of the topic.
+>
+> So, has anyone successfully installed RMySQL under R 2.11.1 (x64 build) on a windows machine (for any version of MySQL libraries)?  If this is doable, can you give me some hints.  And, is there an ETA on getting RMySQL into the CRAN binary mirror distribution?
+>
+> All The Best,
+> George
+>
+>
+>
+>
+> --
+> Important - Confidential Information & Disclaimer. All email sent to or from this address will be retained by SpiderRock's email archiving system. This message is intended only for the use of the individual or entity to which it is addressed, and may contain information that is privileged, confidential, and exempt from disclosure under applicable law. If you have received this message in error, please notify us immediately and delete the message without copying or forwarding it to anyone. SpiderRock will not be liable for any compliance and technical information or guidance provided herein.
+>
+> 	[[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From jenwe|@h @end|ng |rom y@hoo@com  Tue Aug 31 00:52:24 2010
+From: jenwe|@h @end|ng |rom y@hoo@com (Jennifer Welsh)
+Date: Mon, 30 Aug 2010 15:52:24 -0700 (PDT)
+Subject: [R-sig-DB] MySQL stored procedure fails when called from R
+Message-ID: <47804.16668.qm@web65407.mail.ac4.yahoo.com>
+
+Hi,
+
+I posted this question at Stack Overflow ( 
+http://stackoverflow.com/questions/3603865/mysql-stored-procedure-fails-when-called-from-r/3604472#3604472
+ ) and was directed to this mailing list. I hope you can help.
+
+Thanks,
+Jen
+
+
+
+This procedure works from the MySQL commandline both  remotely and on localhost 
+and it works when called from PHP. In all  cases the grants are adequate:
+CREATE PROCEDURE `myDB`.`lee_expout` (IN e int, IN g int)
+BEGIN
+
+select lm.groupname, lee.location, starttime, dark,
+  
+inadist,smldist,lardist,emptydur,inadur,smldur,lardur,emptyct,entct,inact,smlct,larct
+
+from lee join leegroup_map lm using (location)
+where exp_id= e and std_interval!=0 and groupset_id= g
+order by starttime,groupname,location;
+
+END
+
+I'm trying to call it from R:
+library(DBI)
+library(RMySQL)
+
+db <- dbConnect(MySQL(), user="user", password="pswd",
+        dbname="myDB", host="the.host.com")
+
+#args to pass to the procedure
+exp_id<-16
+group_id<-2
+
+#the procedure call
+p <- paste('CALL lee_expout(', exp_id, ',', group_id,')', sep= ' ') 
+
+#the bare query
+q <- paste('select lm.groupname, lee.location, starttime, dark,
+inadist,smldist,lardist,emptydur,inadur,smldur,lardur,emptyct,entct,inact,smlct,larct
+
+from lee join leegroup_map lm using (location)
+where exp_id=', 
+exp_id, 
+' and std_interval!=0 and groupset_id=', 
+group_id, 
+'order by starttime,groupname,location', sep=' ') 
+
+rs_p <- dbSendQuery(db, statement=p) #run procedure and fail
+p_data<-fetch(rs_p,n=30)
+
+rs_q <- dbSendQuery(db, statement=q) #or comment out p, run query and succeed
+q_data<-fetch(rs_q,n=30)
+
+The bare query runs fine. The procedure call fails with 
+RApache Warning/Error!!!Error in   mysqlExecStatement(conn, statement,   ...) :    
+RS-DBI driver: (could not   run statement: PROCEDURE   myDB.lee_expout can't 
+return a   result set in the given context)
+The MySQL docs say 
+For statements that can be determined   only at runtime to return a result   
+set, a PROCEDURE %s can't return a   result set in the given context error   
+occurs.
+One would think that if a procedure were going to throw that error,  it would be 
+thrown under all circumstances instead of just from R.
+Any thoughts on how to fix this?
+
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From jenwe|@h @end|ng |rom y@hoo@com  Tue Aug 31 00:52:24 2010
+From: jenwe|@h @end|ng |rom y@hoo@com (Jennifer Welsh)
+Date: Mon, 30 Aug 2010 15:52:24 -0700 (PDT)
+Subject: [R-sig-DB] MySQL stored procedure fails when called from R
+Message-ID: <47804.16668.qm@web65407.mail.ac4.yahoo.com>
+
+Hi,
+
+I posted this question at Stack Overflow ( 
+http://stackoverflow.com/questions/3603865/mysql-stored-procedure-fails-when-called-from-r/3604472#3604472
+ ) and was directed to this mailing list. I hope you can help.
+
+Thanks,
+Jen
+
+
+
+This procedure works from the MySQL commandline both  remotely and on localhost 
+and it works when called from PHP. In all  cases the grants are adequate:
+CREATE PROCEDURE `myDB`.`lee_expout` (IN e int, IN g int)
+BEGIN
+
+select lm.groupname, lee.location, starttime, dark,
+  
+inadist,smldist,lardist,emptydur,inadur,smldur,lardur,emptyct,entct,inact,smlct,larct
+
+from lee join leegroup_map lm using (location)
+where exp_id= e and std_interval!=0 and groupset_id= g
+order by starttime,groupname,location;
+
+END
+
+I'm trying to call it from R:
+library(DBI)
+library(RMySQL)
+
+db <- dbConnect(MySQL(), user="user", password="pswd",
+        dbname="myDB", host="the.host.com")
+
+#args to pass to the procedure
+exp_id<-16
+group_id<-2
+
+#the procedure call
+p <- paste('CALL lee_expout(', exp_id, ',', group_id,')', sep= ' ') 
+
+#the bare query
+q <- paste('select lm.groupname, lee.location, starttime, dark,
+inadist,smldist,lardist,emptydur,inadur,smldur,lardur,emptyct,entct,inact,smlct,larct
+
+from lee join leegroup_map lm using (location)
+where exp_id=', 
+exp_id, 
+' and std_interval!=0 and groupset_id=', 
+group_id, 
+'order by starttime,groupname,location', sep=' ') 
+
+rs_p <- dbSendQuery(db, statement=p) #run procedure and fail
+p_data<-fetch(rs_p,n=30)
+
+rs_q <- dbSendQuery(db, statement=q) #or comment out p, run query and succeed
+q_data<-fetch(rs_q,n=30)
+
+The bare query runs fine. The procedure call fails with 
+RApache Warning/Error!!!Error in   mysqlExecStatement(conn, statement,   ...) :    
+RS-DBI driver: (could not   run statement: PROCEDURE   myDB.lee_expout can't 
+return a   result set in the given context)
+The MySQL docs say 
+For statements that can be determined   only at runtime to return a result   
+set, a PROCEDURE %s can't return a   result set in the given context error   
+occurs.
+One would think that if a procedure were going to throw that error,  it would be 
+thrown under all circumstances instead of just from R.
+Any thoughts on how to fix this?
+
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Fri Sep 17 20:14:55 2010
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Fri, 17 Sep 2010 19:14:55 +0100 (BST)
+Subject: [R-sig-DB] [Rd] How to connect R to Mysql?
+In-Reply-To: <4C939B91.9020004@structuremonitoring.com>
+References: <AANLkTi=ca5M_jbzexYE8KXQ0nKCz1xbui4uXgoGBK1N3@mail.gmail.com>
+	<4C938E2E.6020000@structuremonitoring.com>
+	<4C9396B6.7000007@gmx.de>
+	<4C939B91.9020004@structuremonitoring.com>
+Message-ID: <alpine.LFD.2.00.1009171906320.1617@gannet.stats.ox.ac.uk>
+
+On Fri, 17 Sep 2010, Spencer Graves wrote:
+
+> Hi, Thomas:
+>
+>      You use RODBC to connect to MySQL?
+
+Well, I do, and it is faster and more stable than RMySQL on all my 
+platforms.
+
+However, I have no idea why this is thought to be the appropriate 
+list.  See R-sig-db !
+
+For Windows, we need to know (see the posting guide) not just the 
+version of the OS but also the version of R.  If you are running x64 
+Win 7, you might be running 32- or 64-bit Windows.  Whichever, the the 
+ODBC driver or MySQL client dll has to be of the same architecture as 
+R *and not MySQL nor the OS*.  This is covered in detail in the RODBC 
+manual.  For RMySQL it is quite recent that it has worked under x64 
+Windows and I am not sure the documentation has yet caught up.
+
+Follow-up to R-sig-db (which requires you to join to post) would be 
+appropriate, so I am copying this there for future reference.
+
+>
+>
+>      Thanks, Spencer
+>
+>
+> On 9/17/2010 9:26 AM, Thomas Etheber wrote:
+>> I also had problems connecting via RMysql on Windows several weeks ago.
+>> I decided to skip the package and now use RODBC, which runs stable out of 
+>> the box. Perhaps you should have a look at this package.
+>> 
+>> Hth
+>> Thomas
+>> 
+>> Am 17.09.2010 17:50, schrieb Spencer Graves:
+>>> 
+>>>
+>>>       I've recently been through that with some success.  I don't remember 
+>>> all the details, but I first looked at "help(pac=RMySQL)".   This told me 
+>>> that the maintainer was Jeffrey Horner.  Google told me he was at 
+>>> Vanderbilt.  Eventually I found 
+>>> "http://biostat.mc.vanderbilt.edu/wiki/Main/RMySQL", which told me that I 
+>>> needed to build the package myself so it matches your version of MySQL, 
+>>> operating system, etc.  I did that.
+>>> 
+>>>
+>>>       Does the MySQL database already exist?  I created a MySQL database 
+>>> and tables using MySQL server 5.1.50-win32.  (Which version of MySQL do 
+>>> you have?)
+>>> 
+>>>
+>>>       help('RMySQL-package') includes "A typical usage".  That helped me 
+>>> get started, except that I needed to write to that database, not just 
+>>> query it.  For this, I think I got something like the following to work:
+>>> 
+>>> 
+>>> d <- dbReadTable(con, "WL")
+>>> dbWriteTable(con, "WL2", a.data.frame)  ## table from a data.frame
+>>> dbWriteTable(con, "test2", "~/data/test2.csv") ## table from a file
+>>> 
+>>>
+>>>       Hope this helps.
+>>>       Spencer
+>>> 
+>>> 
+>>> On 9/17/2010 7:55 AM, Arijeet Mukherjee wrote:
+>>>> I installed the RMySql package in R 2.11.1 64 bit
+>>>> Now how can I connect R with MySql?
+>>>> I am using a windows 7 64 bit version.
+>>>> Please help ASAP.
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From k@p@tp @end|ng |rom gm@||@com  Tue Sep 21 17:16:38 2010
+From: k@p@tp @end|ng |rom gm@||@com (Prasenjit Kapat)
+Date: Tue, 21 Sep 2010 11:16:38 -0400
+Subject: [R-sig-DB] using the field.types arg in dbBuildTableDefinition()
+In-Reply-To: <77921CC6-EA09-4088-8972-94CAA41AECDE@vub.ac.be>
+References: <77921CC6-EA09-4088-8972-94CAA41AECDE@vub.ac.be>
+Message-ID: <AANLkTinUyhaxfUtT38FkGNhLG5veaeaLVRKR5JuR9YT2@mail.gmail.com>
+
+Hi,
+
+Fwd-ing to the appropriate list. The thread being referred to by Gipsi
+is the following:
+https://stat.ethz.ch/pipermail/r-sig-db/2008q4/000511.html
+
+On Tue, Sep 21, 2010 at 10:28 AM, Gipsi Lima-Mendez
+<gipsi.lima at vub.ac.be> wrote:
+> Hi,
+>
+> I want to define the field types for a mysql table and found nothing but
+> this old post of yours (see below). I am not use to named.lists, so it does
+> not help me.
+>
+> If the table I want to create has columns named "ColumnA" and "ColumnB",
+> would this named list be something like: field.types =
+> list(ColumnA="TEXT",ColumnB="VARCHAR")?
+
+That would be the case, although I am not sure if it will work with
+the mysql DB.
+
+> Thanks in advance,
+> regards,
+>
+> G
+
+G:
+Please address / reply-to the list. You'll have a better chance of a
+proper solution.
+
+>
+> Ignore my earlier mail on this subject. Sorry for spamming.
+>
+> On Thu, Nov 6, 2008 at 6:59 PM, Prasenjit Kapat <kapatp at gmail.com> wrote:
+>> Getting back, ?dbBuildTableDefinition shows the following:
+>>
+>> field.types   optional named list of the types for each field in obj
+>>
+>> Am I interpreting it wrongly?
+>
+> Yes I did! It is a "named-list" and not a character vector :((
+>
+>
+> Gipsi Lima Mendez, PhD
+> Bioinformatics and (eco-)systems biology
+> Department of Molecular and Cellular Interactions
+> VIB -?Vrije Universiteit Brussel
+> Pleinlaan 2
+> 1050 Brussels, Belgium
+
+
+-- 
+Prasenjit
+
+
+
+From m@tt@pettis m@iii@g oii thomso@reuters@com  Thu Sep 23 04:46:13 2010
+From: m@tt@pettis m@iii@g oii thomso@reuters@com (m@tt@pettis m@iii@g oii thomso@reuters@com)
+Date: Wed, 22 Sep 2010 21:46:13 -0500
+Subject: [R-sig-DB] RODBC: Oracle Connectivity questions from Windows Box
+Message-ID: <4698336393F47347A088FB9F99FF1EBA13483D@TLRUSMNEAGMBX26.ERF.THOMSON.COM>
+
+Hi,
+
+I am trying to set R up to connect to remote Oracle server (all >=10g) from a Windows XP box.  I want to use RODBC (unless someone has a persuasive reason to use ROracle, which I am totally unfamiliar with).  I have sucessfully connected to these servers before using native Oracle drivers via SAS and SQL*Plus tests from my box, as I have a correct tnsnames.ora file and user/passwords for this.  But I have never made an ODBC connection to Oracle (I have to SQL Server).  I need some help getting the connection set up.
+
+Questions:
+
+1. Do I have to set up a connection in the 'Data Sources (ODBC)' from the Control panel, or can I bypass it and use Oracle drivers directly?  I'd rather not use the 'Data Sources (ODBC)', as using the sofware directly seems cleaner.
+
+2. Failing that, I'm trying to set up a DSN in 'Data Sources (ODBC)'.  I downloaded the Oracle instant client and followed the directions here (http://szamtud-docs.uni-corvinus.hu/tananyagok/Alapkepzes/Portal/Archiv/4/oracle_ODBC/ODBC_IC_Readme_Win.html) to set it up.  It looked sucessful, and I was able to select it as a driver from 'Data Sources (ODBC)' Add button.  I got confused here when I tried to configure it.  The config window has the following 4 fields:
+
+Data Source Name
+Description
+TNS Service Name
+User ID
+
+This is where I get lost.  As I said, I have a tnsnames.ora file with connection strings in them, and I'm thinking I can make this wizard point to that file.  But none of the fields appears to be for a path to my tnsnames.ora file.
+
+Plus, I'm not sure if this matters, but my TNS Service Name field is a dropdown that has gibberish binary characters as options.  Is this an issue, or can I get by with out it?
+
+Can I get this wizard in 'Data Sources (ODBC)' to see and use my tnsnames.ora file?
+
+So given that I have a string in my tnsnames.ora file that looks like:
+
+MyDBIdentifier = 
+ (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = phost1.com)(PORT = 1521))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = phost2.com)(PORT = 1521))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = phost3.com)(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = thedbvip.com)
+    )
+  )
+
+How can I configure either the 'Data Sources (ODBC)' to have the correct connection info or, better yet, get RODBC to interact directly with the Oracle client software, bypassing the 'Data Sources (ODBC)'?  To this point, if the instant clients aren't enough, I have downloaded (but not installed yet) ODAC112012.zip from http://www.oracle.com/technetwork/database/windows/downloads/utilsoft-087491.html .
+
+Thanks,
+Matt
+
+
+
+From m@tt@pettis m@iii@g oii thomso@reuters@com  Thu Sep 23 05:37:22 2010
+From: m@tt@pettis m@iii@g oii thomso@reuters@com (m@tt@pettis m@iii@g oii thomso@reuters@com)
+Date: Wed, 22 Sep 2010 22:37:22 -0500
+Subject: [R-sig-DB] RODBC: Oracle Connectivity questions from Windows Box
+References: <4698336393F47347A088FB9F99FF1EBA13483D@TLRUSMNEAGMBX26.ERF.THOMSON.COM>
+Message-ID: <4698336393F47347A088FB9F99FF1EBA13483E@TLRUSMNEAGMBX26.ERF.THOMSON.COM>
+
+UPDATE:
+
+I was able to get rid of the gibberish and get a list of my TNS service names in tnsnames.ora by setting the env variable TNS_ADMIN.  I found this at: http://dbaspot.com/forums/oracle-server/85888-tns-service-name-selector-odbc-configuration-windows-2000-shows-trash-instant-client-10g.html.
+
+However, when I hit 'Test' for this on the 'Data Sources (ODBC)' Add... dialog page, it just hangs and never returns.  Same is true if I try to connect to it via RODBC in R.
+
+I do not have the env. variable ORACLE_HOME set.  If I do try to set it, and set it to instant client, it screws up my other applications that use a different Oracle client install on my machine to connect to the same databases with a native driver (apps like SAS and Toad), and it still hung when it was set.
+
+Any ideas?
+
+thanks,
+Matt
+
+
+-----Original Message-----
+From: r-sig-db-bounces at stat.math.ethz.ch on behalf of Pettis, Matthew (Legal)
+Sent: Wed 9/22/2010 9:46 PM
+To: r-sig-db at stat.math.ethz.ch
+Subject: [R-sig-DB] RODBC: Oracle Connectivity questions from Windows Box
+ 
+Hi,
+
+I am trying to set R up to connect to remote Oracle server (all >=10g) from a Windows XP box.  I want to use RODBC (unless someone has a persuasive reason to use ROracle, which I am totally unfamiliar with).  I have sucessfully connected to these servers before using native Oracle drivers via SAS and SQL*Plus tests from my box, as I have a correct tnsnames.ora file and user/passwords for this.  But I have never made an ODBC connection to Oracle (I have to SQL Server).  I need some help getting the connection set up.
+
+Questions:
+
+1. Do I have to set up a connection in the 'Data Sources (ODBC)' from the Control panel, or can I bypass it and use Oracle drivers directly?  I'd rather not use the 'Data Sources (ODBC)', as using the sofware directly seems cleaner.
+
+2. Failing that, I'm trying to set up a DSN in 'Data Sources (ODBC)'.  I downloaded the Oracle instant client and followed the directions here (http://szamtud-docs.uni-corvinus.hu/tananyagok/Alapkepzes/Portal/Archiv/4/oracle_ODBC/ODBC_IC_Readme_Win.html) to set it up.  It looked sucessful, and I was able to select it as a driver from 'Data Sources (ODBC)' Add button.  I got confused here when I tried to configure it.  The config window has the following 4 fields:
+
+Data Source Name
+Description
+TNS Service Name
+User ID
+
+This is where I get lost.  As I said, I have a tnsnames.ora file with connection strings in them, and I'm thinking I can make this wizard point to that file.  But none of the fields appears to be for a path to my tnsnames.ora file.
+
+Plus, I'm not sure if this matters, but my TNS Service Name field is a dropdown that has gibberish binary characters as options.  Is this an issue, or can I get by with out it?
+
+Can I get this wizard in 'Data Sources (ODBC)' to see and use my tnsnames.ora file?
+
+So given that I have a string in my tnsnames.ora file that looks like:
+
+MyDBIdentifier = 
+ (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = phost1.com)(PORT = 1521))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = phost2.com)(PORT = 1521))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = phost3.com)(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = thedbvip.com)
+    )
+  )
+
+How can I configure either the 'Data Sources (ODBC)' to have the correct connection info or, better yet, get RODBC to interact directly with the Oracle client software, bypassing the 'Data Sources (ODBC)'?  To this point, if the instant clients aren't enough, I have downloaded (but not installed yet) ODAC112012.zip from http://www.oracle.com/technetwork/database/windows/downloads/utilsoft-087491.html .
+
+Thanks,
+Matt
+
+_______________________________________________
+R-sig-DB mailing list -- R Special Interest Group
+R-sig-DB at stat.math.ethz.ch
+https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Thu Sep 23 08:11:06 2010
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Thu, 23 Sep 2010 07:11:06 +0100 (BST)
+Subject: [R-sig-DB] RODBC: Oracle Connectivity questions from Windows Box
+In-Reply-To: <4698336393F47347A088FB9F99FF1EBA13483E@TLRUSMNEAGMBX26.ERF.THOMSON.COM>
+References: <4698336393F47347A088FB9F99FF1EBA13483D@TLRUSMNEAGMBX26.ERF.THOMSON.COM>
+	<4698336393F47347A088FB9F99FF1EBA13483E@TLRUSMNEAGMBX26.ERF.THOMSON.COM>
+Message-ID: <alpine.LFD.2.00.1009230710230.17794@gannet.stats.ox.ac.uk>
+
+These are questions about the Oracle ODBC driver, nothing to do with R 
+nor RODBC.  Please ask Oracle support.
+
+On Wed, 22 Sep 2010, matt.pettis at thomsonreuters.com wrote:
+
+> UPDATE:
+>
+> I was able to get rid of the gibberish and get a list of my TNS service names in tnsnames.ora by setting the env variable TNS_ADMIN.  I found this at: http://dbaspot.com/forums/oracle-server/85888-tns-service-name-selector-odbc-configuration-windows-2000-shows-trash-instant-client-10g.html.
+>
+> However, when I hit 'Test' for this on the 'Data Sources (ODBC)' Add... dialog page, it just hangs and never returns.  Same is true if I try to connect to it via RODBC in R.
+>
+> I do not have the env. variable ORACLE_HOME set.  If I do try to set it, and set it to instant client, it screws up my other applications that use a different Oracle client install on my machine to connect to the same databases with a native driver (apps like SAS and Toad), and it still hung when it was set.
+>
+> Any ideas?
+>
+> thanks,
+> Matt
+>
+>
+> -----Original Message-----
+> From: r-sig-db-bounces at stat.math.ethz.ch on behalf of Pettis, Matthew (Legal)
+> Sent: Wed 9/22/2010 9:46 PM
+> To: r-sig-db at stat.math.ethz.ch
+> Subject: [R-sig-DB] RODBC: Oracle Connectivity questions from Windows Box
+>
+> Hi,
+>
+> I am trying to set R up to connect to remote Oracle server (all >=10g) from a Windows XP box.  I want to use RODBC (unless someone has a persuasive reason to use ROracle, which I am totally unfamiliar with).  I have sucessfully connected to these servers before using native Oracle drivers via SAS and SQL*Plus tests from my box, as I have a correct tnsnames.ora file and user/passwords for this.  But I have never made an ODBC connection to Oracle (I have to SQL Server).  I need some help getting the connection set up.
+>
+> Questions:
+>
+> 1. Do I have to set up a connection in the 'Data Sources (ODBC)' from the Control panel, or can I bypass it and use Oracle drivers directly?  I'd rather not use the 'Data Sources (ODBC)', as using the sofware directly seems cleaner.
+>
+> 2. Failing that, I'm trying to set up a DSN in 'Data Sources (ODBC)'.  I downloaded the Oracle instant client and followed the directions here (http://szamtud-docs.uni-corvinus.hu/tananyagok/Alapkepzes/Portal/Archiv/4/oracle_ODBC/ODBC_IC_Readme_Win.html) to set it up.  It looked sucessful, and I was able to select it as a driver from 'Data Sources (ODBC)' Add button.  I got confused here when I tried to configure it.  The config window has the following 4 fields:
+>
+> Data Source Name
+> Description
+> TNS Service Name
+> User ID
+>
+> This is where I get lost.  As I said, I have a tnsnames.ora file with connection strings in them, and I'm thinking I can make this wizard point to that file.  But none of the fields appears to be for a path to my tnsnames.ora file.
+>
+> Plus, I'm not sure if this matters, but my TNS Service Name field is a dropdown that has gibberish binary characters as options.  Is this an issue, or can I get by with out it?
+>
+> Can I get this wizard in 'Data Sources (ODBC)' to see and use my tnsnames.ora file?
+>
+> So given that I have a string in my tnsnames.ora file that looks like:
+>
+> MyDBIdentifier =
+> (DESCRIPTION =
+>    (ADDRESS_LIST =
+>      (ADDRESS = (PROTOCOL = TCP)(HOST = phost1.com)(PORT = 1521))
+>      (ADDRESS = (PROTOCOL = TCP)(HOST = phost2.com)(PORT = 1521))
+>      (ADDRESS = (PROTOCOL = TCP)(HOST = phost3.com)(PORT = 1521))
+>    )
+>    (CONNECT_DATA =
+>      (SERVICE_NAME = thedbvip.com)
+>    )
+>  )
+>
+> How can I configure either the 'Data Sources (ODBC)' to have the correct connection info or, better yet, get RODBC to interact directly with the Oracle client software, bypassing the 'Data Sources (ODBC)'?  To this point, if the instant clients aren't enough, I have downloaded (but not installed yet) ODAC112012.zip from http://www.oracle.com/technetwork/database/windows/downloads/utilsoft-087491.html .
+>
+> Thanks,
+> Matt
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From @|dup@@|r@b@h@ @end|ng |rom gm@||@com  Fri Sep 24 05:51:05 2010
+From: @|dup@@|r@b@h@ @end|ng |rom gm@||@com (Hj Sidup Hj Sirabaha)
+Date: Fri, 24 Sep 2010 11:51:05 +0800
+Subject: [R-sig-DB] R-sig-DB Digest, Vol 71, Issue 3
+In-Reply-To: <mailman.23.1285236004.1478.r-sig-db@stat.math.ethz.ch>
+References: <mailman.23.1285236004.1478.r-sig-db@stat.math.ethz.ch>
+Message-ID: <90C1B7A2-3E19-4F0E-85C6-538EBF34E12A@gmail.com>
+
+F
+F
+Njrycnkb
+Jcucf
+F
+Kc
+Kvkt
+Ig
+Ikukt
+B
+Kk
+SvWebmaster
+
+Sent from my iPhone
+
+On Sep 23, 2010, at 6:00 PM, r-sig-db-request at stat.math.ethz.ch wrote:
+
+> Send R-sig-DB mailing list submissions to
+>    r-sig-db at stat.math.ethz.ch
+>
+> To subscribe or unsubscribe via the World Wide Web, visit
+>    https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> or, via email, send a message with subject or body 'help' to
+>    r-sig-db-request at stat.math.ethz.ch
+>
+> You can reach the person managing the list at
+>    r-sig-db-owner at stat.math.ethz.ch
+>
+> When replying, please edit your Subject line so it is more specific
+> than "Re: Contents of R-sig-DB digest..."
+>
+>
+> Today's Topics:
+>
+>   1. RODBC: Oracle Connectivity questions from Windows Box
+>      (matt.pettis at thomsonreuters.com)
+>   2. Re: RODBC: Oracle Connectivity questions from Windows Box
+>      (matt.pettis at thomsonreuters.com)
+>   3. Re: RODBC: Oracle Connectivity questions from Windows Box
+>      (Prof Brian Ripley)
+>
+>
+> ----------------------------------------------------------------------
+>
+> Message: 1
+> Date: Wed, 22 Sep 2010 21:46:13 -0500
+> From: <matt.pettis at thomsonreuters.com>
+> To: <r-sig-db at stat.math.ethz.ch>
+> Subject: [R-sig-DB] RODBC: Oracle Connectivity questions from Windows
+>    Box
+> Message-ID:
+>    <4698336393F47347A088FB9F99FF1EBA13483D at TLRUSMNEAGMBX26.ERF.THOMSON.COM 
+> >
+>
+> Content-Type: text/plain;    charset="iso-8859-1"
+>
+> Hi,
+>
+> I am trying to set R up to connect to remote Oracle server (all  
+> >=10g) from a Windows XP box.  I want to use RODBC (unless someone  
+> has a persuasive reason to use ROracle, which I am totally  
+> unfamiliar with).  I have sucessfully connected to these servers  
+> before using native Oracle drivers via SAS and SQL*Plus tests from  
+> my box, as I have a correct tnsnames.ora file and user/passwords for  
+> this.  But I have never made an ODBC connection to Oracle (I have to  
+> SQL Server).  I need some help getting the connection set up.
+>
+> Questions:
+>
+> 1. Do I have to set up a connection in the 'Data Sources (ODBC)'  
+> from the Control panel, or can I bypass it and use Oracle drivers  
+> directly?  I'd rather not use the 'Data Sources (ODBC)', as using  
+> the sofware directly seems cleaner.
+>
+> 2. Failing that, I'm trying to set up a DSN in 'Data Sources  
+> (ODBC)'.  I downloaded the Oracle instant client and followed the  
+> directions here (http://szamtud-docs.uni-corvinus.hu/tananyagok/Alapkepzes/Portal/Archiv/4/oracle_ODBC/ODBC_IC_Readme_Win.html 
+> ) to set it up.  It looked sucessful, and I was able to select it as  
+> a driver from 'Data Sources (ODBC)' Add button.  I got confused here  
+> when I tried to configure it.  The config window has the following 4  
+> fields:
+>
+> Data Source Name
+> Description
+> TNS Service Name
+> User ID
+>
+> This is where I get lost.  As I said, I have a tnsnames.ora file  
+> with connection strings in them, and I'm thinking I can make this  
+> wizard point to that file.  But none of the fields appears to be for  
+> a path to my tnsnames.ora file.
+>
+> Plus, I'm not sure if this matters, but my TNS Service Name field is  
+> a dropdown that has gibberish binary characters as options.  Is this  
+> an issue, or can I get by with out it?
+>
+> Can I get this wizard in 'Data Sources (ODBC)' to see and use my  
+> tnsnames.ora file?
+>
+> So given that I have a string in my tnsnames.ora file that looks like:
+>
+> MyDBIdentifier =
+> (DESCRIPTION =
+>    (ADDRESS_LIST =
+>      (ADDRESS = (PROTOCOL = TCP)(HOST = phost1.com)(PORT = 1521))
+>      (ADDRESS = (PROTOCOL = TCP)(HOST = phost2.com)(PORT = 1521))
+>      (ADDRESS = (PROTOCOL = TCP)(HOST = phost3.com)(PORT = 1521))
+>    )
+>    (CONNECT_DATA =
+>      (SERVICE_NAME = thedbvip.com)
+>    )
+>  )
+>
+> How can I configure either the 'Data Sources (ODBC)' to have the  
+> correct connection info or, better yet, get RODBC to interact  
+> directly with the Oracle client software, bypassing the 'Data  
+> Sources (ODBC)'?  To this point, if the instant clients aren't  
+> enough, I have downloaded (but not installed yet) ODAC112012.zip  
+> from http://www.oracle.com/technetwork/database/windows/downloads/utilsoft-087491.html 
+>  .
+>
+> Thanks,
+> Matt
+>
+>
+>
+> ------------------------------
+>
+> Message: 2
+> Date: Wed, 22 Sep 2010 22:37:22 -0500
+> From: <matt.pettis at thomsonreuters.com>
+> To: <matt.pettis at thomsonreuters.com>, <r-sig-db at stat.math.ethz.ch>
+> Subject: Re: [R-sig-DB] RODBC: Oracle Connectivity questions from
+>    Windows Box
+> Message-ID:
+>    <4698336393F47347A088FB9F99FF1EBA13483E at TLRUSMNEAGMBX26.ERF.THOMSON.COM 
+> >
+>
+> Content-Type: text/plain;    charset="iso-8859-1"
+>
+> UPDATE:
+>
+> I was able to get rid of the gibberish and get a list of my TNS  
+> service names in tnsnames.ora by setting the env variable  
+> TNS_ADMIN.  I found this at: http://dbaspot.com/forums/oracle-server/85888-tns-service-name-selector-odbc-configuration-windows-2000-shows-trash-instant-client-10g.html 
+> .
+>
+> However, when I hit 'Test' for this on the 'Data Sources (ODBC)'  
+> Add... dialog page, it just hangs and never returns.  Same is true  
+> if I try to connect to it via RODBC in R.
+>
+> I do not have the env. variable ORACLE_HOME set.  If I do try to set  
+> it, and set it to instant client, it screws up my other applications  
+> that use a different Oracle client install on my machine to connect  
+> to the same databases with a native driver (apps like SAS and Toad),  
+> and it still hung when it was set.
+>
+> Any ideas?
+>
+> thanks,
+> Matt
+>
+>
+> -----Original Message-----
+> From: r-sig-db-bounces at stat.math.ethz.ch on behalf of Pettis,  
+> Matthew (Legal)
+> Sent: Wed 9/22/2010 9:46 PM
+> To: r-sig-db at stat.math.ethz.ch
+> Subject: [R-sig-DB] RODBC: Oracle Connectivity questions from  
+> Windows Box
+>
+> Hi,
+>
+> I am trying to set R up to connect to remote Oracle server (all  
+> >=10g) from a Windows XP box.  I want to use RODBC (unless someone  
+> has a persuasive reason to use ROracle, which I am totally  
+> unfamiliar with).  I have sucessfully connected to these servers  
+> before using native Oracle drivers via SAS and SQL*Plus tests from  
+> my box, as I have a correct tnsnames.ora file and user/passwords for  
+> this.  But I have never made an ODBC connection to Oracle (I have to  
+> SQL Server).  I need some help getting the connection set up.
+>
+> Questions:
+>
+> 1. Do I have to set up a connection in the 'Data Sources (ODBC)'  
+> from the Control panel, or can I bypass it and use Oracle drivers  
+> directly?  I'd rather not use the 'Data Sources (ODBC)', as using  
+> the sofware directly seems cleaner.
+>
+> 2. Failing that, I'm trying to set up a DSN in 'Data Sources  
+> (ODBC)'.  I downloaded the Oracle instant client and followed the  
+> directions here (http://szamtud-docs.uni-corvinus.hu/tananyagok/Alapkepzes/Portal/Archiv/4/oracle_ODBC/ODBC_IC_Readme_Win.html 
+> ) to set it up.  It looked sucessful, and I was able to select it as  
+> a driver from 'Data Sources (ODBC)' Add button.  I got confused here  
+> when I tried to configure it.  The config window has the following 4  
+> fields:
+>
+> Data Source Name
+> Description
+> TNS Service Name
+> User ID
+>
+> This is where I get lost.  As I said, I have a tnsnames.ora file  
+> with connection strings in them, and I'm thinking I can make this  
+> wizard point to that file.  But none of the fields appears to be for  
+> a path to my tnsnames.ora file.
+>
+> Plus, I'm not sure if this matters, but my TNS Service Name field is  
+> a dropdown that has gibberish binary characters as options.  Is this  
+> an issue, or can I get by with out it?
+>
+> Can I get this wizard in 'Data Sources (ODBC)' to see and use my  
+> tnsnames.ora file?
+>
+> So given that I have a string in my tnsnames.ora file that looks like:
+>
+> MyDBIdentifier =
+> (DESCRIPTION =
+>    (ADDRESS_LIST =
+>      (ADDRESS = (PROTOCOL = TCP)(HOST = phost1.com)(PORT = 1521))
+>      (ADDRESS = (PROTOCOL = TCP)(HOST = phost2.com)(PORT = 1521))
+>      (ADDRESS = (PROTOCOL = TCP)(HOST = phost3.com)(PORT = 1521))
+>    )
+>    (CONNECT_DATA =
+>      (SERVICE_NAME = thedbvip.com)
+>    )
+>  )
+>
+> How can I configure either the 'Data Sources (ODBC)' to have the  
+> correct connection info or, better yet, get RODBC to interact  
+> directly with the Oracle client software, bypassing the 'Data  
+> Sources (ODBC)'?  To this point, if the instant clients aren't  
+> enough, I have downloaded (but not installed yet) ODAC112012.zip  
+> from http://www.oracle.com/technetwork/database/windows/downloads/utilsoft-087491.html 
+>  .
+>
+> Thanks,
+> Matt
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+>
+>
+> ------------------------------
+>
+> Message: 3
+> Date: Thu, 23 Sep 2010 07:11:06 +0100 (BST)
+> From: Prof Brian Ripley <ripley at stats.ox.ac.uk>
+> To: matt.pettis at thomsonreuters.com
+> Cc: r-sig-db at stat.math.ethz.ch
+> Subject: Re: [R-sig-DB] RODBC: Oracle Connectivity questions from
+>    Windows Box
+> Message-ID:
+>    <alpine.LFD.2.00.1009230710230.17794 at gannet.stats.ox.ac.uk>
+> Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+>
+> These are questions about the Oracle ODBC driver, nothing to do with R
+> nor RODBC.  Please ask Oracle support.
+>
+> On Wed, 22 Sep 2010, matt.pettis at thomsonreuters.com wrote:
+>
+>> UPDATE:
+>>
+>> I was able to get rid of the gibberish and get a list of my TNS  
+>> service names in tnsnames.ora by setting the env variable  
+>> TNS_ADMIN.  I found this at: http://dbaspot.com/forums/oracle-server/85888-tns-service-name-selector-odbc-configuration-windows-2000-shows-trash-instant-client-10g.html 
+>> .
+>>
+>> However, when I hit 'Test' for this on the 'Data Sources (ODBC)'  
+>> Add... dialog page, it just hangs and never returns.  Same is true  
+>> if I try to connect to it via RODBC in R.
+>>
+>> I do not have the env. variable ORACLE_HOME set.  If I do try to  
+>> set it, and set it to instant client, it screws up my other  
+>> applications that use a different Oracle client install on my  
+>> machine to connect to the same databases with a native driver (apps  
+>> like SAS and Toad), and it still hung when it was set.
+>>
+>> Any ideas?
+>>
+>> thanks,
+>> Matt
+>>
+>>
+>> -----Original Message-----
+>> From: r-sig-db-bounces at stat.math.ethz.ch on behalf of Pettis,  
+>> Matthew (Legal)
+>> Sent: Wed 9/22/2010 9:46 PM
+>> To: r-sig-db at stat.math.ethz.ch
+>> Subject: [R-sig-DB] RODBC: Oracle Connectivity questions from  
+>> Windows Box
+>>
+>> Hi,
+>>
+>> I am trying to set R up to connect to remote Oracle server (all  
+>> >=10g) from a Windows XP box.  I want to use RODBC (unless someone  
+>> has a persuasive reason to use ROracle, which I am totally  
+>> unfamiliar with).  I have sucessfully connected to these servers  
+>> before using native Oracle drivers via SAS and SQL*Plus tests from  
+>> my box, as I have a correct tnsnames.ora file and user/passwords  
+>> for this.  But I have never made an ODBC connection to Oracle (I  
+>> have to SQL Server).  I need some help getting the connection set up.
+>>
+>> Questions:
+>>
+>> 1. Do I have to set up a connection in the 'Data Sources (ODBC)'  
+>> from the Control panel, or can I bypass it and use Oracle drivers  
+>> directly?  I'd rather not use the 'Data Sources (ODBC)', as using  
+>> the sofware directly seems cleaner.
+>>
+>> 2. Failing that, I'm trying to set up a DSN in 'Data Sources  
+>> (ODBC)'.  I downloaded the Oracle instant client and followed the  
+>> directions here (http://szamtud-docs.uni-corvinus.hu/tananyagok/Alapkepzes/Portal/Archiv/4/oracle_ODBC/ODBC_IC_Readme_Win.html 
+>> ) to set it up.  It looked sucessful, and I was able to select it  
+>> as a driver from 'Data Sources (ODBC)' Add button.  I got confused  
+>> here when I tried to configure it.  The config window has the  
+>> following 4 fields:
+>>
+>> Data Source Name
+>> Description
+>> TNS Service Name
+>> User ID
+>>
+>> This is where I get lost.  As I said, I have a tnsnames.ora file  
+>> with connection strings in them, and I'm thinking I can make this  
+>> wizard point to that file.  But none of the fields appears to be  
+>> for a path to my tnsnames.ora file.
+>>
+>> Plus, I'm not sure if this matters, but my TNS Service Name field  
+>> is a dropdown that has gibberish binary characters as options.  Is  
+>> this an issue, or can I get by with out it?
+>>
+>> Can I get this wizard in 'Data Sources (ODBC)' to see and use my  
+>> tnsnames.ora file?
+>>
+>> So given that I have a string in my tnsnames.ora file that looks  
+>> like:
+>>
+>> MyDBIdentifier =
+>> (DESCRIPTION =
+>>   (ADDRESS_LIST =
+>>     (ADDRESS = (PROTOCOL = TCP)(HOST = phost1.com)(PORT = 1521))
+>>     (ADDRESS = (PROTOCOL = TCP)(HOST = phost2.com)(PORT = 1521))
+>>     (ADDRESS = (PROTOCOL = TCP)(HOST = phost3.com)(PORT = 1521))
+>>   )
+>>   (CONNECT_DATA =
+>>     (SERVICE_NAME = thedbvip.com)
+>>   )
+>> )
+>>
+>> How can I configure either the 'Data Sources (ODBC)' to have the  
+>> correct connection info or, better yet, get RODBC to interact  
+>> directly with the Oracle client software, bypassing the 'Data  
+>> Sources (ODBC)'?  To this point, if the instant clients aren't  
+>> enough, I have downloaded (but not installed yet) ODAC112012.zip  
+>> from http://www.oracle.com/technetwork/database/windows/downloads/utilsoft-087491.html 
+>>  .
+>>
+>> Thanks,
+>> Matt
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at stat.math.ethz.ch
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at stat.math.ethz.ch
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+>
+> -- 
+> Brian D. Ripley,                  ripley at stats.ox.ac.uk
+> Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+> University of Oxford,             Tel:  +44 1865 272861 (self)
+> 1 South Parks Road,                     +44 1865 272866 (PA)
+> Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+>
+>
+>
+> ------------------------------
+>
+> _______________________________________________
+> R-sig-DB mailing list
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+>
+> End of R-sig-DB Digest, Vol 71, Issue 3
+> ***************************************
+
+
+

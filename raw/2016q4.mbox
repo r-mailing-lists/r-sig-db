@@ -1,0 +1,289 @@
+From @osp@m m@iii@g oii @itieid-im@de  Wed Nov 30 23:06:15 2016
+From: @osp@m m@iii@g oii @itieid-im@de (@osp@m m@iii@g oii @itieid-im@de)
+Date: Wed, 30 Nov 2016 23:06:15 +0100
+Subject: [R-sig-DB] RODBC: Set connection and command timeout values => how
+ to request features? Source code repository available to contribute
+ patches? [retry]
+Message-ID: <1480543575.30843.40.camel@i3770>
+
+Hi,
+
+I have some improvement suggestions and ideas,
+but I cannot find a public master repository on github, sourceforge or
+elsewhere that contains the current development branch of RODBC.
+
+How could I
+- file a feature request
+- contribute code?
+
+Thank you very much + best regards
+
+
+
+PS: My feature requests are:
+----------------------------
+
+1. Add a possibility to set the connection timeout in seconds
+2. Add a possibility to set the statement (sql command) timeout in
+seconds
+
+I think many users of RODBC have already struggled with the too
+short default timeout values of e. g. 30 seconds which are
+problematic in case of long running queries e. g. in the
+data warehousing or reporting context.
+
+
+Implementation:
+---------------
+
+The implementation should be quite straightforward (similar to
+"SEXP RODBCSetAutoCommit(SEXP chan, SEXP autoCommit)" function
+in the file "RODBC.c".
+
+To change the timeout values the ODBC API offers two functions:
+
+1. SQLSetConnectAttr()
+
+https://msdn.microsoft.com/en-us/library/ms713605(v=vs.85).aspx
+
+Attribute to set SQL_ATTR_CONNECTION_TIMEOUT
+
+An SQLUINTEGER value corresponding to the number of seconds to wait for
+any request on the connection to complete before returning to the
+application. The driver should return SQLSTATE HYT00 (Timeout expired)
+anytime that it is possible to time out in a situation not associated
+with query execution or login.
+
+2. SQLSetStmtAttr()
+
+https://msdn.microsoft.com/en-us/library/ms712631(v=vs.85).aspx
+
+Attribute to set: SQL_ATTR_QUERY_TIMEOUT (ODBC 1.0)
+
+An SQLULEN value corresponding to the number of seconds to wait for an
+SQL statement to execute before returning to the application. If
+ValuePtr is equal to 0 (default), there is no timeout.
+If the specified timeout exceeds the maximum timeout in the data source
+or is smaller than the minimum timeout, SQLSetStmtAttr substitutes that
+value and returns SQLSTATE 01S02 (Option value changed).
+Note that the application need not call SQLCloseCursor to reuse the
+statement if a SELECT statement timed out.
+The query timeout set in this statement attribute is valid in both
+synchronous and asynchronous modes.
+
+
+
+From e@ @end|ng |rom enr|co@chum@nn@net  Thu Dec  1 08:31:55 2016
+From: e@ @end|ng |rom enr|co@chum@nn@net (Enrico Schumann)
+Date: Thu, 01 Dec 2016 08:31:55 +0100
+Subject: [R-sig-DB] RODBC: Set connection and command timeout values =>
+	how to request features? Source code repository available to
+	contribute patches? [retry]
+In-Reply-To: <1480543575.30843.40.camel@i3770> (nospam@altfeld-im.de's message
+	of "Wed, 30 Nov 2016 23:06:15 +0100")
+References: <1480543575.30843.40.camel@i3770>
+Message-ID: <87h96oqf4k.fsf@enricoschumann.net>
+
+On Wed, 30 Nov 2016, nospam at altfeld-im.de writes:
+
+> Hi,
+>
+> I have some improvement suggestions and ideas,
+> but I cannot find a public master repository on github, sourceforge or
+> elsewhere that contains the current development branch of RODBC.
+>
+> How could I
+> - file a feature request
+> - contribute code?
+>
+> Thank you very much + best regards
+>
+>
+>
+> PS: My feature requests are:
+> ----------------------------
+>
+> 1. Add a possibility to set the connection timeout in seconds
+> 2. Add a possibility to set the statement (sql command) timeout in
+> seconds
+>
+> I think many users of RODBC have already struggled with the too
+> short default timeout values of e. g. 30 seconds which are
+> problematic in case of long running queries e. g. in the
+> data warehousing or reporting context.
+>
+>
+> Implementation:
+> ---------------
+>
+> The implementation should be quite straightforward (similar to
+> "SEXP RODBCSetAutoCommit(SEXP chan, SEXP autoCommit)" function
+> in the file "RODBC.c".
+>
+> To change the timeout values the ODBC API offers two functions:
+>
+> 1. SQLSetConnectAttr()
+>
+> https://msdn.microsoft.com/en-us/library/ms713605(v=vs.85).aspx
+>
+> Attribute to set SQL_ATTR_CONNECTION_TIMEOUT
+>
+> An SQLUINTEGER value corresponding to the number of seconds to wait for
+> any request on the connection to complete before returning to the
+> application. The driver should return SQLSTATE HYT00 (Timeout expired)
+> anytime that it is possible to time out in a situation not associated
+> with query execution or login.
+>
+> 2. SQLSetStmtAttr()
+>
+> https://msdn.microsoft.com/en-us/library/ms712631(v=vs.85).aspx
+>
+> Attribute to set: SQL_ATTR_QUERY_TIMEOUT (ODBC 1.0)
+>
+> An SQLULEN value corresponding to the number of seconds to wait for an
+> SQL statement to execute before returning to the application. If
+> ValuePtr is equal to 0 (default), there is no timeout.
+> If the specified timeout exceeds the maximum timeout in the data source
+> or is smaller than the minimum timeout, SQLSetStmtAttr substitutes that
+> value and returns SQLSTATE 01S02 (Option value changed).
+> Note that the application need not call SQLCloseCursor to reuse the
+> statement if a SELECT statement timed out.
+> The query timeout set in this statement attribute is valid in both
+> synchronous and asynchronous modes.
+>
+
+Have you tried to contact the maintainer?
+
+  > maintainer("RODBC")
+  ## [1] "Brian Ripley <ripley at stats.ox.ac.uk>"
+
+-- 
+Enrico Schumann
+Lucerne, Switzerland
+http://enricoschumann.net
+
+
+
+From @osp@m m@iii@g oii @itieid-im@de  Thu Dec  1 23:26:18 2016
+From: @osp@m m@iii@g oii @itieid-im@de (@osp@m m@iii@g oii @itieid-im@de)
+Date: Thu, 01 Dec 2016 23:26:18 +0100
+Subject: [R-sig-DB] RODBC: Set connection and command timeout values =>
+ how to request features? Source code repository available to contribute
+ patches? [retry]
+In-Reply-To: <87h96oqf4k.fsf@enricoschumann.net>
+References: <1480543575.30843.40.camel@i3770>
+	<87h96oqf4k.fsf@enricoschumann.net>
+Message-ID: <1480631178.30843.46.camel@i3770>
+
+> Have you tried to contact the maintainer?
+>   ## [1] "Brian Ripley <ripley at stats.ox.ac.uk>"
+
+I have contacted the package maintainer with the same questions
+on Nov. 02 but did not receive an answer (perhaps lost in 
+the spam filter?).
+
+So I am hoping to receive an answer here by developers who
+have already contributed to RODBC...
+
+
+
+On Thu, 2016-12-01 at 08:31 +0100, Enrico Schumann wrote:
+> On Wed, 30 Nov 2016, nospam at altfeld-im.de writes:
+> 
+> > Hi,
+> >
+> > I have some improvement suggestions and ideas,
+> > but I cannot find a public master repository on github, sourceforge or
+> > elsewhere that contains the current development branch of RODBC.
+> >
+> > How could I
+> > - file a feature request
+> > - contribute code?
+> >
+> > Thank you very much + best regards
+> >
+> >
+> >
+> > PS: My feature requests are:
+> > ----------------------------
+> >
+> > 1. Add a possibility to set the connection timeout in seconds
+> > 2. Add a possibility to set the statement (sql command) timeout in
+> > seconds
+> >
+> > I think many users of RODBC have already struggled with the too
+> > short default timeout values of e. g. 30 seconds which are
+> > problematic in case of long running queries e. g. in the
+> > data warehousing or reporting context.
+> >
+> >
+> > Implementation:
+> > ---------------
+> >
+> > The implementation should be quite straightforward (similar to
+> > "SEXP RODBCSetAutoCommit(SEXP chan, SEXP autoCommit)" function
+> > in the file "RODBC.c".
+> >
+> > To change the timeout values the ODBC API offers two functions:
+> >
+> > 1. SQLSetConnectAttr()
+> >
+> > https://msdn.microsoft.com/en-us/library/ms713605(v=vs.85).aspx
+> >
+> > Attribute to set SQL_ATTR_CONNECTION_TIMEOUT
+> >
+> > An SQLUINTEGER value corresponding to the number of seconds to wait for
+> > any request on the connection to complete before returning to the
+> > application. The driver should return SQLSTATE HYT00 (Timeout expired)
+> > anytime that it is possible to time out in a situation not associated
+> > with query execution or login.
+> >
+> > 2. SQLSetStmtAttr()
+> >
+> > https://msdn.microsoft.com/en-us/library/ms712631(v=vs.85).aspx
+> >
+> > Attribute to set: SQL_ATTR_QUERY_TIMEOUT (ODBC 1.0)
+> >
+> > An SQLULEN value corresponding to the number of seconds to wait for an
+> > SQL statement to execute before returning to the application. If
+> > ValuePtr is equal to 0 (default), there is no timeout.
+> > If the specified timeout exceeds the maximum timeout in the data source
+> > or is smaller than the minimum timeout, SQLSetStmtAttr substitutes that
+> > value and returns SQLSTATE 01S02 (Option value changed).
+> > Note that the application need not call SQLCloseCursor to reuse the
+> > statement if a SELECT statement timed out.
+> > The query timeout set in this statement attribute is valid in both
+> > synchronous and asynchronous modes.
+> >
+> 
+> Have you tried to contact the maintainer?
+> 
+>   > maintainer("RODBC")
+>   ## [1] "Brian Ripley <ripley at stats.ox.ac.uk>"
+>
+
+
+
+From ev@n@ro@en||eb @end|ng |rom gm@||@com  Thu Dec  1 20:29:00 2016
+From: ev@n@ro@en||eb @end|ng |rom gm@||@com (Evan Rosenlieb)
+Date: Thu, 1 Dec 2016 12:29:00 -0700
+Subject: [R-sig-DB] Use dbListTables to list only tables in a schema.
+Message-ID: <CAET=62Vs+Om0uj-YO2FO0BDRS70ACi5QNRP7RyYfkP-Ap53mUA@mail.gmail.com>
+
+Hello all,
+
+
+Subject is pretty self explanatory. Is there a way to list only tables in a
+certain schema using dbListTables. I am using the PostgreSQL driver if that
+makes any difference.
+
+
+Thanks,
+
+
+--Evan
+
+	[[alternative HTML version deleted]]
+
+
+

@@ -1,0 +1,85 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2016-12",
+  "messages": [
+    {
+      "id": "msg-58073da674ad",
+      "message_id": "<87h96oqf4k.fsf@enricoschumann.net>",
+      "from_name": "Enrico Schumann",
+      "from_email_hash": "42e3fbcaa04e968726f4c1d1a69e34143bdbc62b403d112ba1d3712256bacb88",
+      "date": "2016-12-01T08:31:55+01:00",
+      "subject": "[R-sig-DB] RODBC: Set connection and command timeout values => how to request features? Source code repository available to contribute patches? [retry]",
+      "subject_clean": "RODBC: Set connection and command timeout values => how to request features? Source code repository available to contribute patches? [retry]",
+      "in_reply_to": "<1480543575.30843.40.camel@i3770> (nospam@altfeld-im.de's message of \"Wed, 30 Nov 2016 23:06:15 +0100\")",
+      "references": [
+        "<1480543575.30843.40.camel@i3770>"
+      ],
+      "body_plain": "On Wed, 30 Nov 2016, nospam at altfeld-im.de writes:\n\n> Hi,\n>\n> I have some improvement suggestions and ideas,\n> but I cannot find a public master repository on github, sourceforge or\n> elsewhere that contains the current development branch of RODBC.\n>\n> How could I\n> - file a feature request\n> - contribute code?\n>\n> Thank you very much + best regards\n>\n>\n>\n> PS: My feature requests are:\n> ----------------------------\n>\n> 1. Add a possibility to set the connection timeout in seconds\n> 2. Add a possibility to set the statement (sql command) timeout in\n> seconds\n>\n> I think many users of RODBC have already struggled with the too\n> short default timeout values of e. g. 30 seconds which are\n> problematic in case of long running queries e. g. in the\n> data warehousing or reporting context.\n>\n>\n> Implementation:\n> ---------------\n>\n> The implementation should be quite straightforward (similar to\n> \"SEXP RODBCSetAutoCommit(SEXP chan, SEXP autoCommit)\" function\n> in the file \"RODBC.c\".\n>\n> To change the timeout values the ODBC API offers two functions:\n>\n> 1. SQLSetConnectAttr()\n>\n> https://msdn.microsoft.com/en-us/library/ms713605(v=vs.85).aspx\n>\n> Attribute to set SQL_ATTR_CONNECTION_TIMEOUT\n>\n> An SQLUINTEGER value corresponding to the number of seconds to wait for\n> any request on the connection to complete before returning to the\n> application. The driver should return SQLSTATE HYT00 (Timeout expired)\n> anytime that it is possible to time out in a situation not associated\n> with query execution or login.\n>\n> 2. SQLSetStmtAttr()\n>\n> https://msdn.microsoft.com/en-us/library/ms712631(v=vs.85).aspx\n>\n> Attribute to set: SQL_ATTR_QUERY_TIMEOUT (ODBC 1.0)\n>\n> An SQLULEN value corresponding to the number of seconds to wait for an\n> SQL statement to execute before returning to the application. If\n> ValuePtr is equal to 0 (default), there is no timeout.\n> If the specified timeout exceeds the maximum timeout in the data source\n> or is smaller than the minimum timeout, SQLSetStmtAttr substitutes that\n> value and returns SQLSTATE 01S02 (Option value changed).\n> Note that the application need not call SQLCloseCursor to reuse the\n> statement if a SELECT statement timed out.\n> The query timeout set in this statement attribute is valid in both\n> synchronous and asynchronous modes.\n>\n\nHave you tried to contact the maintainer?\n\n  > maintainer(\"RODBC\")\n  ## [1] \"Brian Ripley <ripley at stats.ox.ac.uk>\"\n\n-- \nEnrico Schumann\nLucerne, Switzerland\nhttp://enricoschumann.net",
+      "body_snippet": "On Wed, 30 Nov 2016, nospam at altfeld-im.de writes:\n\n> Hi,\n>\n> I have some improvement suggestions and ideas,\n> but I cannot find a public master repository on github, sourceforge or\n> elsewhere that",
+      "thread_id": "thread-58073da674ad",
+      "thread_depth": 0,
+      "month": "2016-12"
+    },
+    {
+      "id": "msg-79242f71ea9f",
+      "message_id": "<CAET=62Vs+Om0uj-YO2FO0BDRS70ACi5QNRP7RyYfkP-Ap53mUA@mail.gmail.com>",
+      "from_name": "Evan Rosenlieb",
+      "from_email_hash": "6f67cd65b07932952042419f8643707907c81d0e5cefb127007d19b125bd5811",
+      "date": "2016-12-01T12:29:00-07:00",
+      "subject": "[R-sig-DB] Use dbListTables to list only tables in a schema.",
+      "subject_clean": "Use dbListTables to list only tables in a schema.",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello all,\n\n\nSubject is pretty self explanatory. Is there a way to list only tables in a\ncertain schema using dbListTables. I am using the PostgreSQL driver if that\nmakes any difference.\n\n\nThanks,\n\n\n--Evan\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hello all,\n\n\nSubject is pretty self explanatory. Is there a way to list only tables in a\ncertain schema using dbListTables. I am using the PostgreSQL driver if that\nmakes any difference.\n\n\nThanks,\n\n\n-",
+      "thread_id": "thread-79242f71ea9f",
+      "thread_depth": 0,
+      "month": "2016-12"
+    },
+    {
+      "id": "msg-5beb61bbb163",
+      "message_id": "<1480631178.30843.46.camel@i3770>",
+      "from_name": "@osp@m m@iii@g oii @itieid-im@de",
+      "from_email_hash": "00ee37aa6bee6af54388100d4dbb2ff218679c282ca7a24f892e406c93c7e011",
+      "date": "2016-12-01T23:26:18+01:00",
+      "subject": "[R-sig-DB] RODBC: Set connection and command timeout values => how to request features? Source code repository available to contribute patches? [retry]",
+      "subject_clean": "RODBC: Set connection and command timeout values => how to request features? Source code repository available to contribute patches? [retry]",
+      "in_reply_to": "<87h96oqf4k.fsf@enricoschumann.net>",
+      "references": [
+        "<1480543575.30843.40.camel@i3770>",
+        "<87h96oqf4k.fsf@enricoschumann.net>"
+      ],
+      "body_plain": "> Have you tried to contact the maintainer?\n>   ## [1] \"Brian Ripley <ripley at stats.ox.ac.uk>\"\n\nI have contacted the package maintainer with the same questions\non Nov. 02 but did not receive an answer (perhaps lost in \nthe spam filter?).\n\nSo I am hoping to receive an answer here by developers who\nhave already contributed to RODBC...\n\n\n\nOn Thu, 2016-12-01 at 08:31 +0100, Enrico Schumann wrote:\n> On Wed, 30 Nov 2016, nospam at altfeld-im.de writes:\n> \n> > Hi,\n> >\n> > I have some improvement suggestions and ideas,\n> > but I cannot find a public master repository on github, sourceforge or\n> > elsewhere that contains the current development branch of RODBC.\n> >\n> > How could I\n> > - file a feature request\n> > - contribute code?\n> >\n> > Thank you very much + best regards\n> >\n> >\n> >\n> > PS: My feature requests are:\n> > ----------------------------\n> >\n> > 1. Add a possibility to set the connection timeout in seconds\n> > 2. Add a possibility to set the statement (sql command) timeout in\n> > seconds\n> >\n> > I think many users of RODBC have already struggled with the too\n> > short default timeout values of e. g. 30 seconds which are\n> > problematic in case of long running queries e. g. in the\n> > data warehousing or reporting context.\n> >\n> >\n> > Implementation:\n> > ---------------\n> >\n> > The implementation should be quite straightforward (similar to\n> > \"SEXP RODBCSetAutoCommit(SEXP chan, SEXP autoCommit)\" function\n> > in the file \"RODBC.c\".\n> >\n> > To change the timeout values the ODBC API offers two functions:\n> >\n> > 1. SQLSetConnectAttr()\n> >\n> > https://msdn.microsoft.com/en-us/library/ms713605(v=vs.85).aspx\n> >\n> > Attribute to set SQL_ATTR_CONNECTION_TIMEOUT\n> >\n> > An SQLUINTEGER value corresponding to the number of seconds to wait for\n> > any request on the connection to complete before returning to the\n> > application. The driver should return SQLSTATE HYT00 (Timeout expired)\n> > anytime that it is possible to time out in a situation not associated\n> > with query execution or login.\n> >\n> > 2. SQLSetStmtAttr()\n> >\n> > https://msdn.microsoft.com/en-us/library/ms712631(v=vs.85).aspx\n> >\n> > Attribute to set: SQL_ATTR_QUERY_TIMEOUT (ODBC 1.0)\n> >\n> > An SQLULEN value corresponding to the number of seconds to wait for an\n> > SQL statement to execute before returning to the application. If\n> > ValuePtr is equal to 0 (default), there is no timeout.\n> > If the specified timeout exceeds the maximum timeout in the data source\n> > or is smaller than the minimum timeout, SQLSetStmtAttr substitutes that\n> > value and returns SQLSTATE 01S02 (Option value changed).\n> > Note that the application need not call SQLCloseCursor to reuse the\n> > statement if a SELECT statement timed out.\n> > The query timeout set in this statement attribute is valid in both\n> > synchronous and asynchronous modes.\n> >\n> \n> Have you tried to contact the maintainer?\n> \n>   > maintainer(\"RODBC\")\n>   ## [1] \"Brian Ripley <ripley at stats.ox.ac.uk>\"\n>",
+      "body_snippet": "> Have you tried to contact the maintainer?\n>   ## [1] \"Brian Ripley <ripley at stats.ox.ac.uk>\"\n\nI have contacted the package maintainer with the same questions\non Nov. 02 but did not receive an answ",
+      "thread_id": "thread-58073da674ad",
+      "thread_depth": 1,
+      "month": "2016-12"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-58073da674ad",
+      "subject": "RODBC: Set connection and command timeout values => how to request features? Source code repository available to contribute patches? [retry]",
+      "message_count": 2,
+      "participants": [
+        "@osp@m m@iii@g oii @itieid-im@de",
+        "Enrico Schumann"
+      ],
+      "started": "2016-12-01T08:31:55+01:00",
+      "last_reply": "2016-12-01T23:26:18+01:00",
+      "root_message_id": "msg-58073da674ad"
+    },
+    {
+      "id": "thread-79242f71ea9f",
+      "subject": "Use dbListTables to list only tables in a schema.",
+      "message_count": 1,
+      "participants": [
+        "Evan Rosenlieb"
+      ],
+      "started": "2016-12-01T12:29:00-07:00",
+      "last_reply": "2016-12-01T12:29:00-07:00",
+      "root_message_id": "msg-79242f71ea9f"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2006-08",
+  "messages": [
+    {
+      "id": "msg-3c880364f9a5",
+      "message_id": "<17615.43055.577571.903542@basebud.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2006-08-01T14:14:55-05:00",
+      "subject": "[R-sig-DB] RSQLite problems with SQLite versions 3.3.* -- but not 3.2.*",
+      "subject_clean": "RSQLite problems with SQLite versions 3.3.* -- but not 3.2.*",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "When using the current RSQLite 0.4.1 along with the current SQLite version\n3.3.6 (and I also testsed 3.3.5), dbWriteTable() never seems to actually put\ncontent into the database. The schema gets created, but no more.  Seemingly,\nthe call \n\n  rc <- \n      try({\n         skip <- skip + as.integer(header)\n         conId <- as(con, \"integer\")\n         .Call(\"RS_SQLite_importFile\", conId, name, fn, sep, eol,\n            as(skip, \"integer\"), PACKAGE = \"RSQLite\")\n      })\n\nand the end of sqliteImportFile (which is called from sqliteWriteTable, which\nin turn is called from dbWriteTable). \n\nI just spent some scratching my head, and ended up avoiding the problem by\ngoing back to the SQLite 3.2.8 version that comes with RSQLite.  \n\nDid anybody else see something like this?  The problem seems to occur on both\nUbuntu Linux (05.10) at work and Debian Linux (testing) at home.\n\nRegards, Dirk\n\n-- \nHell, there are no rules here - we're trying to accomplish something. \n                                                  -- Thomas A. Edison",
+      "body_snippet": "When using the current RSQLite 0.4.1 along with the current SQLite version\n3.3.6 (and I also testsed 3.3.5), dbWriteTable() never seems to actually put\ncontent into the database. The schema gets creat",
+      "thread_id": "thread-3c880364f9a5",
+      "thread_depth": 0,
+      "month": "2006-08"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-3c880364f9a5",
+      "subject": "RSQLite problems with SQLite versions 3.3.* -- but not 3.2.*",
+      "message_count": 1,
+      "participants": [
+        "Dirk Eddelbuettel"
+      ],
+      "started": "2006-08-01T14:14:55-05:00",
+      "last_reply": "2006-08-01T14:14:55-05:00",
+      "root_message_id": "msg-3c880364f9a5"
+    }
+  ]
+}

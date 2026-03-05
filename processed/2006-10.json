@@ -1,0 +1,286 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2006-10",
+  "messages": [
+    {
+      "id": "msg-8276fda6cb80",
+      "message_id": "<EA09C4B2B0F16E44B8F3311629493C0D02A9D34C@DJFPOST01.djf.agrsci.dk>",
+      "from_name": "Peter Sørensen (HAG)",
+      "from_email_hash": "b531e0e0cbb68ca810c28f32c9fdf735c3ecdd9645e37ed28ac9997f2b513dfc",
+      "date": "2006-10-13T19:44:38+02:00",
+      "subject": "[R-sig-DB] RMySQL for windows",
+      "subject_clean": "RMySQL for windows",
+      "in_reply_to": null,
+      "references": [
+        "<2AB7346A3227A74BB97F9A0D79E3E65A03F26D@mailserver.kalyptorisk.com>",
+        "<m2irj6ob9n.fsf@ziti.local>"
+      ],
+      "body_plain": "Dear List,\n \nUptill now I have been using RMySQL on Windows and installed it by downloading the precompiled (binary) version of RMySQL for windows from http://stat.bell-labs.com/RS-DBI/download/. It works great.\nI have now upgraded R to 2.4.0 and would like to install RMySQL again, but the binary version (RMySQL 0.5-7 <https://djfpost.agrsci.dk/exchange/pso/Kladder/RE:%20%5BR-sig-DB%5D%20RSQLite%20and%20SQLite%203.3.x.EML/RMySQL/RMySQL_0.5-7.zip>  ) downloaded from the above website does not work with R2.4.0 ( but it did work with R version 2.4.0 Under development (unstable) (2006-07-25 r38698)). \n \nI get the following error message with R2.4.0:\n> library(RMySQL)\n> drv <- dbDriver(\"MySQL\", max.con = 25)\n> con <- dbConnect(drv, host=\"localhost\",user=\"root\", password=\"pomp06\", dbname=\"ggdb2r\")\nError in function (classes, fdef, mtable)  : \n        unable to find an inherited method for function \"dbConnect\", for signature \"MySQLDriver\"\n>\n \nI have looked for a windows binary of RMySQL for R2.4.0 at the R/Bioconductor websites, but could not find any. \nIs there a windows binary avaliable somewhere?\n \nI then tried to install the package from source ( using the commands pasted below) on Windows, but run into the following problem: \n \n\" installation of package 'RMySQL' had non-zero exit status in: install.packages(\"RMySQL\", type = \"source\") \" \n\nI have followed the instructions \"6 Add-on packages\" from the R-help, but this is the first time I tried to install a package from source so maybe I am doing something wrong. I will continue to try to solve problem, but if someone would have seen something similar and perhaps give me some directions on how to solve the problem I would of course appreciate that.\n \nI hope that my questions are clear and that this is the right place to send these questions.\n \nThanks \n \nPeter \n \n> install.packages(\"RMySQL\", type=\"source\")\ntrying URL 'http://www.biometrics.mtu.edu/CRAN/src/contrib/RMySQL_0.5-9.tar.gz'\nContent type 'application/x-gzip' length 142529 bytes\nopened URL\ndownloaded 139Kb\n\nThe downloaded packages are in\n        C:\\Documents and Settings\\sor\\Local Settings\\Temp\\RtmpEVzIqb\\downloaded_packages\nupdating HTML package descriptions\nWarning message:\ninstallation of package 'RMySQL' had non-zero exit status in: install.packages(\"RMySQL\", type = \"source\") \n>\n\n \n \n> sessionInfo()\nR version 2.4.0 (2006-10-03) \ni386-pc-mingw32 \nlocale:\nLC_COLLATE=English_United States.1252;LC_CTYPE=English_United States.1252;LC_MONETARY=English_United States.1252;LC_NUMERIC=C;LC_TIME=English_United States.1252\nattached base packages:\n[1] \"methods\"   \"stats\"     \"graphics\"  \"grDevices\" \"utils\"     \"datasets\"  \"base\"     \nother attached packages:\n     DBI \n\"0.1-10\"",
+      "body_snippet": "Dear List,\n \nUptill now I have been using RMySQL on Windows and installed it by downloading the precompiled (binary) version of RMySQL for windows from http://stat.bell-labs.com/RS-DBI/download/. It w",
+      "thread_id": "thread-8276fda6cb80",
+      "thread_depth": 0,
+      "month": "2006-10"
+    },
+    {
+      "id": "msg-8d5d39abb561",
+      "message_id": "<m2mz80j5cm.fsf@ziti.local>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2006-10-13T14:03:37-07:00",
+      "subject": "[R-sig-DB] RMySQL for windows",
+      "subject_clean": "RMySQL for windows",
+      "in_reply_to": "<EA09C4B2B0F16E44B8F3311629493C0D02A9D34C@DJFPOST01.djf.agrsci.dk> (Peter Sørensen's message of \"Fri, 13 Oct 2006 19:44:38 +0200\")",
+      "references": [
+        "<2AB7346A3227A74BB97F9A0D79E3E65A03F26D@mailserver.kalyptorisk.com>",
+        "<m2irj6ob9n.fsf@ziti.local>",
+        "<EA09C4B2B0F16E44B8F3311629493C0D02A9D34C@DJFPOST01.djf.agrsci.dk>"
+      ],
+      "body_plain": "Hi Peter,\n\n\"Peter S?rensen (HAG)\" <Peter.Sorensen2 at agrsci.dk> writes:\n> Uptill now I have been using RMySQL on Windows and installed it by\n> downloading the precompiled (binary) version of RMySQL for windows\n> from http://stat.bell-labs.com/RS-DBI/download/. It works great.  I\n> have now upgraded R to 2.4.0 and would like to install RMySQL again,\n> but the binary version (RMySQL 0.5-7\n> <https://djfpost.agrsci.dk/exchange/pso/Kladder/RE:%20%5BR-sig-DB%5D%20RSQLite%20and%20SQLite%203.3.x.EML/RMySQL/RMySQL_0.5-7.zip>\n> ) downloaded from the above website does not work with R2.4.0 ( but\n> it did work with R version 2.4.0 Under development (unstable)\n> (2006-07-25 r38698)).\n\nThe S4 class system, which is used by RMySQL, went through heavy\nrevision during the R 2.4.0 dev cycle.  So I'm pretty sure that\nexplains why the binary package worked with an R from late July and\ndoesn't work with the release.\n\n\n> I have looked for a windows binary of RMySQL for R2.4.0 at the\n> R/Bioconductor websites, but could not find any.  Is there a windows\n> binary avaliable somewhere?\n\nI don't know of one, but we will see what we can do here to build one\nand make it available.\n\n\n> I hope that my questions are clear and that this is the right place\n> to send these questions.\n\nI think this is the right place.  Thanks for the report.\n\n+ seth",
+      "body_snippet": "Hi Peter,\n\n\"Peter S?rensen (HAG)\" <Peter.Sorensen2 at agrsci.dk> writes:\n> Uptill now I have been using RMySQL on Windows and installed it by\n> downloading the precompiled (binary) version of RMySQL f",
+      "thread_id": "thread-8276fda6cb80",
+      "thread_depth": 1,
+      "month": "2006-10"
+    },
+    {
+      "id": "msg-592a7133f52a",
+      "message_id": "<2AB7346A3227A74BB97F9A0D79E3E65A064F81@mailserver.kalyptorisk.com>",
+      "from_name": "Ashish Kulkarni",
+      "from_email_hash": "8dcdca1ca2742e40a1b7516dc78a7d1c8c26f842205807c5921f62ca22c6209c",
+      "date": "2006-10-16T10:47:20+05:30",
+      "subject": "[R-sig-DB] RSQLite enhancements",
+      "subject_clean": "RSQLite enhancements",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello,\n\nI've been working on some enhancements for RSQLite, and here they are :-)\n\nCHANGES\n=======\n\nVersion 0.4-5\n\n* Update to the SQLite 3 API for fetching records. This means that\n  the records are pulled from the database as required, and not\n  cached in memory as was previously done.\n  \n* dbConnect() now has a parameter \"loadable.extensions\" which will\n  allow loading of extensions. See the loadable extensions documentation:\n  http://www.sqlite.org/cvstrac/wiki?p=LoadableExtensions\n\n\nThe source and binary packages are available at:\n\nhttp://puggy.symonds.net/~ashish/downloads/R/\n\nI'm planning to add more features to RSQLite next week:\n\n* use actual types from SQLite and remove the type.convert calls\n* implement DBIPreparedStatment and friends, similar to ROracle\n* implement dbApply (if time permits .. this will be tough).\n\nBTW, the SQLite tarball for 0.4-4 contains a ELF-binary copy of SQLite (I assume it's Linux) in the inst/ folder. This get copied on even windows binary packages, increasing its size from roughly 356kB -> 1.5M.\n\nHope this helps,\nAshish",
+      "body_snippet": "Hello,\n\nI've been working on some enhancements for RSQLite, and here they are :-)\n\nCHANGES\n=======\n\nVersion 0.4-5\n\n* Update to the SQLite 3 API for fetching records. This means that\n  the records are ",
+      "thread_id": "thread-592a7133f52a",
+      "thread_depth": 0,
+      "month": "2006-10"
+    },
+    {
+      "id": "msg-9d353021faa0",
+      "message_id": "<m2d58s7ygj.fsf@ziti.local>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2006-10-16T14:17:00-07:00",
+      "subject": "[R-sig-DB] RSQLite enhancements",
+      "subject_clean": "RSQLite enhancements",
+      "in_reply_to": "<2AB7346A3227A74BB97F9A0D79E3E65A064F81@mailserver.kalyptorisk.com> (Ashish Kulkarni's message of \"Mon, 16 Oct 2006 10:47:20 +0530\")",
+      "references": [
+        "<2AB7346A3227A74BB97F9A0D79E3E65A064F81@mailserver.kalyptorisk.com>"
+      ],
+      "body_plain": "Hi Ashish,\n\n\"Ashish Kulkarni\" <ashish.kulkarni at kalyptorisk.com> writes:\n> Hello,\n>\n> I've been working on some enhancements for RSQLite, and here they\n> are :-)\n\nWow, these changes look great.  I will plan on applying the patch you\nposted.\n\n> I'm planning to add more features to RSQLite next week:\n>\n> * use actual types from SQLite and remove the type.convert calls\n> * implement DBIPreparedStatment and friends, similar to ROracle\n> * implement dbApply (if time permits .. this will be tough).\n\nSounds good.  I think there are many users who will appreciate having\naccess to prepared statements.\n\n> BTW, the SQLite tarball for 0.4-4 contains a ELF-binary copy of\n> SQLite (I assume it's Linux) in the inst/ folder. This get copied on\n> even windows binary packages, increasing its size from roughly 356kB\n> -> 1.5M.\n\nOops, will take care of that in the next push to CRAN.  While there\n_is_ an ELF-binary that doesn't belong, the size is not going to be\n356kB.  The sqlite source tarball is 1.7MB alone.\n\n+ seth",
+      "body_snippet": "Hi Ashish,\n\n\"Ashish Kulkarni\" <ashish.kulkarni at kalyptorisk.com> writes:\n> Hello,\n>\n> I've been working on some enhancements for RSQLite, and here they\n> are :-)\n\nWow, these changes look great.  I w",
+      "thread_id": "thread-592a7133f52a",
+      "thread_depth": 1,
+      "month": "2006-10"
+    },
+    {
+      "id": "msg-5784481837c4",
+      "message_id": "<2AB7346A3227A74BB97F9A0D79E3E65A06503A@mailserver.kalyptorisk.com>",
+      "from_name": "Ashish Kulkarni",
+      "from_email_hash": "8dcdca1ca2742e40a1b7516dc78a7d1c8c26f842205807c5921f62ca22c6209c",
+      "date": "2006-10-17T21:44:03+05:30",
+      "subject": "[R-sig-DB] RSQLite enhancements",
+      "subject_clean": "RSQLite enhancements",
+      "in_reply_to": "<mailman.13.1161079205.11307.r-sig-db@stat.math.ethz.ch>",
+      "references": [],
+      "body_plain": "Hello, \n\nI have another (large) set of enhancements :-)\n\nAll of these are relative to the previous version. I haven't made a \npatch for this, as I updated to SQLite 3.3.8 (some export symbols \nwere missing on windows for 3.3.7) resulting in too many diffs. \n\nThe source, windows binary and PDF are at the same place:\n\nhttp://puggy.symonds.net/~ashish/downloads/R/\n\nRe: the file size, I was talking of the windows binary size not the\nsource tarball -- as a comparison:\n\nRSQLite_0.4-6.zip => 375kB\nRSQLite_0.4-4.zip => 1.5M\n\nwhile the source is again smaller, as I've removed the ELF-binary:\n\nRSQLite_0.4-6.tar.gz => 2.9M\nRSQLite_0.4-4.tar.gz => 3.7M\n\nI won't be doing dbPreparedStatement, as dbExecuteQuery() along with\ntransactions provides good enough performance for me. The rest I will\nbe doing as time permits...\n\nRegards,\nAshish\n\nVersion 0.4-6\n=============\n\n* Upgraded to SQLite 3.3.8\n\n* Use .SQLitePkgName instead of hard-coding the package name when\n  using .Call\n\n* The SQLite driver has a new logical parameter \"shared.cache\" to\n  enable the shared-cache mode, which allows multiple connections\n  to share a single data and schema cache. See\n  http://www.sqlite.org/sharedcache.html\n\n* Implemented dbCommit() and dbRollback(). There is also a new\n  generic method dbBeginTransaction(), which begins a transaction.\n  Note that this is an extension to the DBI interface.\n\n* Added a new generic method dbExecuteQuery(). It takes an\n  extra \"bind.data\" parameter, which is a data.frame. It returns\n  the resultset, similiar to dbSendQuery().\n\n  For each column in the data frame, the SQL statement is searched\n  for named parameters in the form of \":name\" or \"@name\". If no\n  such parameter is found, it is assumed to be a positional parameter\n  in the form of \"?\", and the index of the column is used to\n  specify the parameter. Please note that no validation is done\n  that some parameters are there is no overlap in the two, so\n  always use either valid names or positional  parameters.\n  An example:\n\n  rs <- dbExecuteStatement(con, \"INSERT INTO test(str_val) VALUES (:val)\",\n                           data.frame(val=c(\"a\", \"b\")) )\n\n  Also, setting options(stringsAsFactors=FALSE) if you are using a large\n  number of strings is advisable, as they will have to be converted from\n  factors to strings. See ?data.frame for more details.",
+      "body_snippet": "Hello, \n\nI have another (large) set of enhancements :-)\n\nAll of these are relative to the previous version. I haven't made a \npatch for this, as I updated to SQLite 3.3.8 (some export symbols \nwere mi",
+      "thread_id": "thread-5784481837c4",
+      "thread_depth": 0,
+      "month": "2006-10"
+    },
+    {
+      "id": "msg-d70b0b81af4d",
+      "message_id": "<000b01c6f380$e3d3cd70$0ac0a8c0@MightyMini>",
+      "from_name": "Dan Rie",
+      "from_email_hash": "286bc5809a8c8c7788c121ca2a1e483374043a231d6300d4ea0412b838a17ac1",
+      "date": "2006-10-19T09:17:10-04:00",
+      "subject": "[R-sig-DB] RMySQL problem - inherited dbConnect method missing for MySQL",
+      "subject_clean": "RMySQL problem - inherited dbConnect method missing for MySQL",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I am hoping that you can help me resolve a problem I am having using RMySQL.\nI've searched the R help news archives, but RMySQL appears to be so trouble\nfree that there are remarkably few problems reported there, and none that\nappear to be related to mine.\n\nI am trying to use RMySQL_0.5-7 on a Windows XP-Pro machine running\nR 2.4.0 and MySQL v5.0.26.\n\nI believe that MySQL is installed and working properly (I an able to use\nMySQL in Python through MySQLdb without any difficulty), but it's possible\nthat I have some configuration issue causing the problem described below.\nThe MySQL server is running on the same machine that is running R.\n\nI have been working from the windows binary installation package\nRMySQL_0.5-7.zip.  I have installed it from the R Packages menu using\n\"Install package(s) from local zip files...\".   I have tried various\ncombinations of adding Path references pointing to the folder with\nlibmysql.dll and libmysql.lib using references pointing to the MySQL\ndistribution version of these files and/or pointing to the RMySQL version of\nthe files (which are a bit older than those in C:\\Program Files\\MySQL\\MySQL\nServer 5.0\\lib\\opt).  I have also tried copying the three dll files to \n...\\R-2.3.0\\bin.\n\nThe problem if first evident when I attempt to create a connection, but may\nactually start when I attempt to create the driver variable.\nHere is the R transcript after loading the RMySQL package:\n\n# initialize and create MySQL driver variable\n   > m<-dbDriver(\"MySQL\")   #does not create output like example code\n   > m\n   An object of class \"MySQLDriver\"\n   Slot \"Id\":\n   [1] 3376\n# create a DBI connection variable - Error results\n   > con <- dbConnect(m,host=\"localhost\", user=\"Dan\", password=\"abcdef\",\ndbname=\"test\")\n   Error in function (classes, fdef, mtable)  :\n               unable to find an inherited method for function \"dbConnect\",\n               for signature \"MySQLDriver\"\n# summary of m indicates another failure to find MySQL specific DBI function\n   > summary(m)\n   Error in function (classes,  fdef, mtable)  :\n               unable to find an inherited method for function \"dbGetInfo\",\n               for the signature \"MySQLDriver\"\n# m in expired state, but perhaps that is natural for uninitialized driver\n   > mysqlDriverInfo(m)\n   Error in mysqlDriverInfo(m)  : expired MySQLDriver\n\n# some diagnostic checks:\n   > z<-.packages()\n   > z\n   [1] \"RMySQL\"    \"DBI\"         \"methods\"    \"stats\"    \"graphics\"\n\"grDevices\"\n   [7] \"utils\"            \"datasets\"   \"base\"\n\n   > objects(2)\n    [1] \"dbApply\"                                \"dbBuildTableDefinition\"\n    [3] \"ErrorClass\"                            \"isIDCurrent\"\n    [5] \"MySQL\"                                 \"mysqlCloneConnection\"\n    [7] \"mysqlCloseConnection\"        \"CloseDriver\"\n    [9] \"mysqlCloseResult\"                \"mysqlConnectionInfo\"\n  [11] \"mysqlDataType\"                    \"mysqlDBApply\"\n  [13] \"mysqlDescribeConnection\"  \"mysqlDescribeDriver\"\n  [15] \"mysqlDescribeFields\"            \"mysqlDescribeResult\"\n  [17] \"mysqlDriverInfo\"                   \"mysqlExecStatement\"\n  [19] \"mysqlFetch\"                            \"mysqlImportFile\"\n  [21] \"mysqlInitDriver\"                    \"mysqlNewConnection\"\n  [23] \"mysqlQuickSQL\"                   \"mysqlReadTable\"\n  [25] \"mysqlResultInfo\"                   \"mysqlWriteTable\"\n  [27] \"safe.write\"                              \"usingR\"\n\nI have uninstalled, then reinstalled the RMySQL package, but the error\npersists.  I'm kind of at a loss as to what to do to fix this problem or\neven where to look for clues.  It looks like perhaps the RMySQL.dll is not\nbeing found, but it is in the directory that the zip file indicated\n(c:\\Program Files\\R\\R-2.4.0\\library\\RMySQL\\libs), and at least for some\ntests, the Path string includes that directory.   I've tried copying the\nfile RMySQL.dll to the ....\\R-2.4.0\\bin directory, but no joy there either.\n\nAny help or suggestions that you can provide will be greatly appreciated.\n\nRegards,\n\nDan Rie\nScituate, MA",
+      "body_snippet": "I am hoping that you can help me resolve a problem I am having using RMySQL.\nI've searched the R help news archives, but RMySQL appears to be so trouble\nfree that there are remarkably few problems rep",
+      "thread_id": "thread-d70b0b81af4d",
+      "thread_depth": 0,
+      "month": "2006-10"
+    },
+    {
+      "id": "msg-5e4416ee5c0b",
+      "message_id": "<Pine.LNX.4.64.0610200926530.5813@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2006-10-20T09:30:16+01:00",
+      "subject": "[R-sig-DB] RMySQL problem - inherited dbConnect method missing for MySQL",
+      "subject_clean": "RMySQL problem - inherited dbConnect method missing for MySQL",
+      "in_reply_to": "<000b01c6f380$e3d3cd70$0ac0a8c0@MightyMini>",
+      "references": [
+        "<000b01c6f380$e3d3cd70$0ac0a8c0@MightyMini>"
+      ],
+      "body_plain": "Where did you get RMySQL_0.5-7.zip from?  Was it built for R 2.4.0?\n\nThe symptoms are those of using S4-using packages which have not been \nreinstalled for R 2.4.0.  The current version is RMySQL_0.5-9.tar.gz on \nCRAN, and I suggest you compile that from the sources.\n\nOn Thu, 19 Oct 2006, Dan Rie wrote:\n\n> I am hoping that you can help me resolve a problem I am having using RMySQL.\n> I've searched the R help news archives, but RMySQL appears to be so trouble\n> free that there are remarkably few problems reported there, and none that\n> appear to be related to mine.\n\nYours is a recent phenomenon.\n\n> I am trying to use RMySQL_0.5-7 on a Windows XP-Pro machine running\n> R 2.4.0 and MySQL v5.0.26.\n>\n> I believe that MySQL is installed and working properly (I an able to use\n> MySQL in Python through MySQLdb without any difficulty), but it's possible\n> that I have some configuration issue causing the problem described below.\n> The MySQL server is running on the same machine that is running R.\n>\n> I have been working from the windows binary installation package\n> RMySQL_0.5-7.zip.  I have installed it from the R Packages menu using\n> \"Install package(s) from local zip files...\".   I have tried various\n> combinations of adding Path references pointing to the folder with\n> libmysql.dll and libmysql.lib using references pointing to the MySQL\n> distribution version of these files and/or pointing to the RMySQL version of\n> the files (which are a bit older than those in C:\\Program Files\\MySQL\\MySQL\n> Server 5.0\\lib\\opt).  I have also tried copying the three dll files to\n> ...\\R-2.3.0\\bin.\n>\n> The problem if first evident when I attempt to create a connection, but may\n> actually start when I attempt to create the driver variable.\n> Here is the R transcript after loading the RMySQL package:\n>\n> # initialize and create MySQL driver variable\n>   > m<-dbDriver(\"MySQL\")   #does not create output like example code\n>   > m\n>   An object of class \"MySQLDriver\"\n>   Slot \"Id\":\n>   [1] 3376\n> # create a DBI connection variable - Error results\n>   > con <- dbConnect(m,host=\"localhost\", user=\"Dan\", password=\"abcdef\",\n> dbname=\"test\")\n>   Error in function (classes, fdef, mtable)  :\n>               unable to find an inherited method for function \"dbConnect\",\n>               for signature \"MySQLDriver\"\n> # summary of m indicates another failure to find MySQL specific DBI function\n>   > summary(m)\n>   Error in function (classes,  fdef, mtable)  :\n>               unable to find an inherited method for function \"dbGetInfo\",\n>               for the signature \"MySQLDriver\"\n> # m in expired state, but perhaps that is natural for uninitialized driver\n>   > mysqlDriverInfo(m)\n>   Error in mysqlDriverInfo(m)  : expired MySQLDriver\n>\n> # some diagnostic checks:\n>   > z<-.packages()\n>   > z\n>   [1] \"RMySQL\"    \"DBI\"         \"methods\"    \"stats\"    \"graphics\"\n> \"grDevices\"\n>   [7] \"utils\"            \"datasets\"   \"base\"\n>\n>   > objects(2)\n>    [1] \"dbApply\"                                \"dbBuildTableDefinition\"\n>    [3] \"ErrorClass\"                            \"isIDCurrent\"\n>    [5] \"MySQL\"                                 \"mysqlCloneConnection\"\n>    [7] \"mysqlCloseConnection\"        \"CloseDriver\"\n>    [9] \"mysqlCloseResult\"                \"mysqlConnectionInfo\"\n>  [11] \"mysqlDataType\"                    \"mysqlDBApply\"\n>  [13] \"mysqlDescribeConnection\"  \"mysqlDescribeDriver\"\n>  [15] \"mysqlDescribeFields\"            \"mysqlDescribeResult\"\n>  [17] \"mysqlDriverInfo\"                   \"mysqlExecStatement\"\n>  [19] \"mysqlFetch\"                            \"mysqlImportFile\"\n>  [21] \"mysqlInitDriver\"                    \"mysqlNewConnection\"\n>  [23] \"mysqlQuickSQL\"                   \"mysqlReadTable\"\n>  [25] \"mysqlResultInfo\"                   \"mysqlWriteTable\"\n>  [27] \"safe.write\"                              \"usingR\"\n>\n> I have uninstalled, then reinstalled the RMySQL package, but the error\n> persists.  I'm kind of at a loss as to what to do to fix this problem or\n> even where to look for clues.  It looks like perhaps the RMySQL.dll is not\n> being found, but it is in the directory that the zip file indicated\n> (c:\\Program Files\\R\\R-2.4.0\\library\\RMySQL\\libs), and at least for some\n> tests, the Path string includes that directory.   I've tried copying the\n> file RMySQL.dll to the ....\\R-2.4.0\\bin directory, but no joy there either.\n>\n> Any help or suggestions that you can provide will be greatly appreciated.\n>\n> Regards,\n>\n> Dan Rie\n> Scituate, MA\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "Where did you get RMySQL_0.5-7.zip from?  Was it built for R 2.4.0?\n\nThe symptoms are those of using S4-using packages which have not been \nreinstalled for R 2.4.0.  The current version is RMySQL_0.5-",
+      "thread_id": "thread-d70b0b81af4d",
+      "thread_depth": 1,
+      "month": "2006-10"
+    },
+    {
+      "id": "msg-ed92658e8a62",
+      "message_id": "<2AB7346A3227A74BB97F9A0D79E3E65A06511C@mailserver.kalyptorisk.com>",
+      "from_name": "Ashish Kulkarni",
+      "from_email_hash": "8dcdca1ca2742e40a1b7516dc78a7d1c8c26f842205807c5921f62ca22c6209c",
+      "date": "2006-10-20T20:41:23+05:30",
+      "subject": "[R-sig-DB] RSQLite enhancements",
+      "subject_clean": "RSQLite enhancements",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello,\n\nSeth created a branch for me on which I've made merged the \nchanges, which is at:\n\nhttps://hedgehog.fhcrc.org/compbio/r-dbi/branches/RSQLite-ak/\n\nRegards,\nAshish\n\nVersion 0.4-7\n=============\n\n* Upgraded to SQLite 3.3.8\n\n* Use .SQLitePkgName instead of hard-coding the package name when\n  using .Call\n\n* The SQLite driver has a new logical parameter \"shared.cache\" to\n  enable the shared-cache mode, which allows multiple connections\n  to share a single data and schema cache. See\n  http://www.sqlite.org/sharedcache.html\n\n* dbConnect() now has a logical parameter \"loadable.extensions\"\n  which will allow loading of extensions. See the Loadable\n  Extensions documentation:\n  http://www.sqlite.org/cvstrac/wiki?p=LoadableExtensions\n\n* Implemented dbCommit() and dbRollback(). There is also a new\n  generic method dbBeginTransaction(), which begins a transaction.\n  Note that this is an extension to the DBI interface.\n\n* Update to the SQLite 3 API for fetching records. This means that\n  the records are pulled from the database as required, and not\n  cached in memory as was previously done.\n\n* Added generic methods dbSendPreparedQuery() and dbGetPreparedQuery()\n  which are similiar to dbSendQuery() and dbGetQuery(), but take an\n  extra \"bind.data\" parameter, which is a data frame. The statement\n  is assumed to contain bind variables. Bind variables are either\n  for a column name (\":name\" or \"@name\") or for a column index (\"?\")\n  in the data frame. See http://sqlite.org/capi3ref.html for more details.\n\n  dbGetPreparedQuery(con, \"INSERT INTO table1 VALUES (:col1)\",\n                           data.frame(col1=c(1, 2)) )\n\n  Each bind variable in the query has to be bound only once, either via\n  named or positional parameters. If it is not bound or is bound more\n  than once (due to a mix or positional/named parameters) an error is\n  thrown. Any extra columns in the data frame are ignored.\n\n  If you are having a lot of string parameters, ensuring that they\n  are wrapped via calls to I() would reduce allocated memory, as\n  by default string vectors are converted to factors. See ?I\n  and ?data.frame for more details.",
+      "body_snippet": "Hello,\n\nSeth created a branch for me on which I've made merged the \nchanges, which is at:\n\nhttps://hedgehog.fhcrc.org/compbio/r-dbi/branches/RSQLite-ak/\n\nRegards,\nAshish\n\nVersion 0.4-7\n=============\n\n",
+      "thread_id": "thread-ed92658e8a62",
+      "thread_depth": 0,
+      "month": "2006-10"
+    },
+    {
+      "id": "msg-c2ca52ade47a",
+      "message_id": "<m2lkn4cdpm.fsf@ziti.local>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2006-10-25T14:01:09-07:00",
+      "subject": "[R-sig-DB] RSQLite enhancements",
+      "subject_clean": "RSQLite enhancements",
+      "in_reply_to": "<2AB7346A3227A74BB97F9A0D79E3E65A06511C@mailserver.kalyptorisk.com> (Ashish Kulkarni's message of \"Fri, 20 Oct 2006 20:41:23 +0530\")",
+      "references": [
+        "<2AB7346A3227A74BB97F9A0D79E3E65A06511C@mailserver.kalyptorisk.com>"
+      ],
+      "body_plain": "Hi Ashish,\n\n\"Ashish Kulkarni\" <ashish.kulkarni at kalyptorisk.com> writes:\n> Seth created a branch for me on which I've made merged the \n> changes, which is at:\n>\n> https://hedgehog.fhcrc.org/compbio/r-dbi/branches/RSQLite-ak/\n>\n> Regards,\n> Ashish\n>\n> Version 0.4-7\n> =============\n\nSorry for the delay.  The changes look good.  I was just testing out a\nmerge into trunk...\n\nIf you can cleanup the doc, I will merge the changes into trunk.\n\nHere's what R CMD check is showing:\n\n* checking for code/documentation mismatches ... WARNING\nCodoc mismatches from documentation object 'SQLite':\nSQLite\n  Code: function(max.con = 16, fetch.default.rec = 500, force.reload =\n                 FALSE, shared.cache = FALSE)\n  Docs: function(max.con = 16, fetch.default.rec = 500, force.reload =\n                 FALSE)\n  Argument names in code not in docs:\n    shared.cache\n\n* checking Rd \\usage sections ... WARNING\nDocumented arguments not in \\usage in documentation object 'sqliteSupport':\n  limit\n\nFunctions with \\usage entries need to have the appropriate \\alias entries,\nand all their arguments documented.\nThe \\usage entries must correspond to syntactically valid R code.\nSee the chapter 'Writing R documentation files' in manual 'Writing R\nExtensions'.\n\n\nBest,\n\n+ seth",
+      "body_snippet": "Hi Ashish,\n\n\"Ashish Kulkarni\" <ashish.kulkarni at kalyptorisk.com> writes:\n> Seth created a branch for me on which I've made merged the \n> changes, which is at:\n>\n> https://hedgehog.fhcrc.org/compbio/",
+      "thread_id": "thread-ed92658e8a62",
+      "thread_depth": 1,
+      "month": "2006-10"
+    },
+    {
+      "id": "msg-bf04fc9c6fff",
+      "message_id": "<2AB7346A3227A74BB97F9A0D79E3E65A065155@mailserver.kalyptorisk.com>",
+      "from_name": "Ashish Kulkarni",
+      "from_email_hash": "8dcdca1ca2742e40a1b7516dc78a7d1c8c26f842205807c5921f62ca22c6209c",
+      "date": "2006-10-26T11:44:04+05:30",
+      "subject": "[R-sig-DB] RSQLite enhancements",
+      "subject_clean": "RSQLite enhancements",
+      "in_reply_to": "<m2lkn4cdpm.fsf@ziti.local>",
+      "references": [],
+      "body_plain": "> Sorry for the delay.  The changes look good.  I was just testing out a\n> merge into trunk...\n> \n> If you can cleanup the doc, I will merge the changes into trunk.\n> \n> Here's what R CMD check is showing:\n> \n> [snip]\n\nFixed the documentation, please review it and let me know if I\nmissed anything.\n\nRegards,\nashish",
+      "body_snippet": "> Sorry for the delay.  The changes look good.  I was just testing out a\n> merge into trunk...\n> \n> If you can cleanup the doc, I will merge the changes into trunk.\n> \n> Here's what R CMD check is sho",
+      "thread_id": "thread-ed92658e8a62",
+      "thread_depth": 2,
+      "month": "2006-10"
+    },
+    {
+      "id": "msg-35b31419d1a9",
+      "message_id": "<m2k62mztc6.fsf@ziti.local>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2006-10-26T13:59:37-07:00",
+      "subject": "[R-sig-DB] Updates for DBI, RSQLite, RMySQL, ROracle",
+      "subject_clean": "Updates for DBI, RSQLite, RMySQL, ROracle",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello all,\n\nUpdates to the above named packages have been pushed to CRAN and\nshould be available in the next few days.  In the meantime, you can\nget the latest here:\n\nhttp://www.bioconductor.org/packages/misc/\n\nWe've built Windows binaries for RSQLite and RMySQL and posted them at\nthe above location.  I'm not sure what a more permanent solution is to\ndistributing the Windows binaries; this is a temporary measure.\n\nChanges\n=======\n\nGenerics make.db.names and isSQLKeyword in DBI now enforce the implied\ninterface in terms of additional named arguments.  This required minor\nchanges to the R<DBMS> packages.  You should not notice anything\ndifferent on the user side of things.\n\nRSQLite has been updated to the latest SQLite release, 3.3.8.\n\n\n\nBest Wishes,\n\n+ seth\n\n--\nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "Hello all,\n\nUpdates to the above named packages have been pushed to CRAN and\nshould be available in the next few days.  In the meantime, you can\nget the latest here:\n\nhttp://www.bioconductor.org/packa",
+      "thread_id": "thread-35b31419d1a9",
+      "thread_depth": 0,
+      "month": "2006-10"
+    },
+    {
+      "id": "msg-08b2e21ca8d8",
+      "message_id": "<m2fydazt58.fsf@ziti.local>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2006-10-26T14:03:47-07:00",
+      "subject": "[R-sig-DB] RSQLite enhancements",
+      "subject_clean": "RSQLite enhancements",
+      "in_reply_to": "<2AB7346A3227A74BB97F9A0D79E3E65A065155@mailserver.kalyptorisk.com> (Ashish Kulkarni's message of \"Thu, 26 Oct 2006 11:44:04 +0530\")",
+      "references": [
+        "<2AB7346A3227A74BB97F9A0D79E3E65A065155@mailserver.kalyptorisk.com>"
+      ],
+      "body_plain": "I wrote:\n>> Sorry for the delay.  The changes look good.  I was just testing out a\n>> merge into trunk...\n\nAnd I spoke a bit too soon it seems.  R is freezing when testing\nthe changes introduced in r200.  Seems memory related as the hang only\noccurs after a number of calls to RSQLite code.\n\n\"Ashish Kulkarni\" <ashish.kulkarni at kalyptorisk.com> writes:\n> Fixed the documentation, please review it and let me know if I\n> missed anything.\n\nThe doc fixes look good, thanks.  I have merged up to r195 without\ntrouble and will wait on the rest until some fixes are available.\n\nBest,\n\n+ seth",
+      "body_snippet": "I wrote:\n>> Sorry for the delay.  The changes look good.  I was just testing out a\n>> merge into trunk...\n\nAnd I spoke a bit too soon it seems.  R is freezing when testing\nthe changes introduced in r2",
+      "thread_id": "thread-ed92658e8a62",
+      "thread_depth": 3,
+      "month": "2006-10"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-8276fda6cb80",
+      "subject": "RMySQL for windows",
+      "message_count": 2,
+      "participants": [
+        "Peter Sørensen (HAG)",
+        "Seth Falcon"
+      ],
+      "started": "2006-10-13T19:44:38+02:00",
+      "last_reply": "2006-10-13T14:03:37-07:00",
+      "root_message_id": "msg-8276fda6cb80"
+    },
+    {
+      "id": "thread-592a7133f52a",
+      "subject": "RSQLite enhancements",
+      "message_count": 2,
+      "participants": [
+        "Ashish Kulkarni",
+        "Seth Falcon"
+      ],
+      "started": "2006-10-16T10:47:20+05:30",
+      "last_reply": "2006-10-16T14:17:00-07:00",
+      "root_message_id": "msg-592a7133f52a"
+    },
+    {
+      "id": "thread-5784481837c4",
+      "subject": "RSQLite enhancements",
+      "message_count": 1,
+      "participants": [
+        "Ashish Kulkarni"
+      ],
+      "started": "2006-10-17T21:44:03+05:30",
+      "last_reply": "2006-10-17T21:44:03+05:30",
+      "root_message_id": "msg-5784481837c4"
+    },
+    {
+      "id": "thread-d70b0b81af4d",
+      "subject": "RMySQL problem - inherited dbConnect method missing for MySQL",
+      "message_count": 2,
+      "participants": [
+        "Dan Rie",
+        "Prof Brian Ripley"
+      ],
+      "started": "2006-10-19T09:17:10-04:00",
+      "last_reply": "2006-10-20T09:30:16+01:00",
+      "root_message_id": "msg-d70b0b81af4d"
+    },
+    {
+      "id": "thread-ed92658e8a62",
+      "subject": "RSQLite enhancements",
+      "message_count": 4,
+      "participants": [
+        "Ashish Kulkarni",
+        "Seth Falcon"
+      ],
+      "started": "2006-10-20T20:41:23+05:30",
+      "last_reply": "2006-10-26T14:03:47-07:00",
+      "root_message_id": "msg-ed92658e8a62"
+    },
+    {
+      "id": "thread-35b31419d1a9",
+      "subject": "Updates for DBI, RSQLite, RMySQL, ROracle",
+      "message_count": 1,
+      "participants": [
+        "Seth Falcon"
+      ],
+      "started": "2006-10-26T13:59:37-07:00",
+      "last_reply": "2006-10-26T13:59:37-07:00",
+      "root_message_id": "msg-35b31419d1a9"
+    }
+  ]
+}

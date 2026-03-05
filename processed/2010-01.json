@@ -1,0 +1,166 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2010-01",
+  "messages": [
+    {
+      "id": "msg-4be8a9a4f143",
+      "message_id": "<bbdc7ed01001041802q2384a83bqaa77a6145d90a23b@mail.gmail.com>",
+      "from_name": "Steve Lianoglou",
+      "from_email_hash": "fb6babcc920850b35298a8bc39823dd33d867c038c5db514864b27a2bb503fb7",
+      "date": "2010-01-04T21:02:50-05:00",
+      "subject": "[R-sig-DB] Managing transactions with RSQLite?",
+      "subject_clean": "Managing transactions with RSQLite?",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi all,\n\nI'm sorry if the answer is obvious, but my searches haven't been\nbearing fruit. I'm trying to wrap a large \"insert into\" query into a\ntransaction to optimize its speed. I have something like so:\n\n  dbGetPreparedQuery(conn, \"INSERT INTO restriction_read (id, nhits)\nVALUES(?, ?)\",\n                     bind.data=counts.df)\n\nwhere:\n  * `conn` is my sqlite connection\n  * `counts.df` is my data.frame with id and nhits colums\n\n`counts.df` can be several 100k to 1 million rows.\n\nI thought this would wrap the inserts into a transaction, but I just\nhappened to notice that a \"mydb.sqlite3-journal\" file is being created\nand removed lots of times on my file system while R is running this\nquery (upwards of 30mins), so I'm guessing the queries are being\nexecuted 1 at a time, and not wrapped into a transaction.\n\nAm I correct? If so, what's the appropriate way to handle transactions\n(if any) using RSQLite?\n\nBTW, I'm using RSQLite_0.8-0\n\nThanks,\n-steve\n\n-- \nSteve Lianoglou\nGraduate Student: Computational Systems Biology\n | Memorial Sloan-Kettering Cancer Center\n | Weill Medical College of Cornell University\nContact Info: http://cbio.mskcc.org/~lianos/contact",
+      "body_snippet": "Hi all,\n\nI'm sorry if the answer is obvious, but my searches haven't been\nbearing fruit. I'm trying to wrap a large \"insert into\" query into a\ntransaction to optimize its speed. I have something like ",
+      "thread_id": "thread-4be8a9a4f143",
+      "thread_depth": 0,
+      "month": "2010-01"
+    },
+    {
+      "id": "msg-65090492f5b5",
+      "message_id": "<4B42D02D.3040405@userprimary.net>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2010-01-04T21:37:49-08:00",
+      "subject": "[R-sig-DB] Managing transactions with RSQLite?",
+      "subject_clean": "Managing transactions with RSQLite?",
+      "in_reply_to": "<bbdc7ed01001041802q2384a83bqaa77a6145d90a23b@mail.gmail.com>",
+      "references": [
+        "<bbdc7ed01001041802q2384a83bqaa77a6145d90a23b@mail.gmail.com>"
+      ],
+      "body_plain": "On 1/4/10 6:02 PM, Steve Lianoglou wrote:\n> Hi all,\n> \n> I'm sorry if the answer is obvious, but my searches haven't been\n> bearing fruit. I'm trying to wrap a large \"insert into\" query into a\n> transaction to optimize its speed. I have something like so:\n> \n>   dbGetPreparedQuery(conn, \"INSERT INTO restriction_read (id, nhits)\n> VALUES(?, ?)\",\n>                      bind.data=counts.df)\n> \n> where:\n>   * `conn` is my sqlite connection\n>   * `counts.df` is my data.frame with id and nhits colums\n> \n> `counts.df` can be several 100k to 1 million rows.\n> \n> I thought this would wrap the inserts into a transaction, but I just\n> happened to notice that a \"mydb.sqlite3-journal\" file is being created\n> and removed lots of times on my file system while R is running this\n> query (upwards of 30mins), so I'm guessing the queries are being\n> executed 1 at a time, and not wrapped into a transaction.\n> \n> Am I correct? If so, what's the appropriate way to handle transactions\n> (if any) using RSQLite?\n\nTry doing:\n\n  dbBeginTransaction(db)\n  ##  insert here\n  dbCommit(db)\n\n+ seth",
+      "body_snippet": "On 1/4/10 6:02 PM, Steve Lianoglou wrote:\n> Hi all,\n> \n> I'm sorry if the answer is obvious, but my searches haven't been\n> bearing fruit. I'm trying to wrap a large \"insert into\" query into a\n> trans",
+      "thread_id": "thread-4be8a9a4f143",
+      "thread_depth": 1,
+      "month": "2010-01"
+    },
+    {
+      "id": "msg-c301eeeb67fa",
+      "message_id": "<bbdc7ed01001050720icbc298ai9c7cfac136fd2107@mail.gmail.com>",
+      "from_name": "Steve Lianoglou",
+      "from_email_hash": "fb6babcc920850b35298a8bc39823dd33d867c038c5db514864b27a2bb503fb7",
+      "date": "2010-01-05T10:20:08-05:00",
+      "subject": "[R-sig-DB] Managing transactions with RSQLite?",
+      "subject_clean": "Managing transactions with RSQLite?",
+      "in_reply_to": "<4B42D02D.3040405@userprimary.net>",
+      "references": [
+        "<bbdc7ed01001041802q2384a83bqaa77a6145d90a23b@mail.gmail.com>",
+        "<4B42D02D.3040405@userprimary.net>"
+      ],
+      "body_plain": "Hi,\n\nOn Tue, Jan 5, 2010 at 12:37 AM, Seth Falcon <seth at userprimary.net> wrote:\n<snip>\n> Try doing:\n>\n> ?dbBeginTransaction(db)\n> ?## ?insert here\n> ?dbCommit(db)\n</snip>\n\nWow ... what a weird name for a function that handles database transactions ...\n\nYeesh, that's embarrassing ... not sure how I missed that.\n\nThanks for the tip,\n\n-steve\n\n-- \nSteve Lianoglou\nGraduate Student: Computational Systems Biology\n | Memorial Sloan-Kettering Cancer Center\n | Weill Medical College of Cornell University\nContact Info: http://cbio.mskcc.org/~lianos/contact",
+      "body_snippet": "Hi,\n\nOn Tue, Jan 5, 2010 at 12:37 AM, Seth Falcon <seth at userprimary.net> wrote:\n<snip>\n> Try doing:\n>\n> ?dbBeginTransaction(db)\n> ?## ?insert here\n> ?dbCommit(db)\n</snip>\n\nWow ... what a weird name",
+      "thread_id": "thread-4be8a9a4f143",
+      "thread_depth": 2,
+      "month": "2010-01"
+    },
+    {
+      "id": "msg-5742e8915c09",
+      "message_id": "<877hrmobsg.fsf@kolob.sebmags.homelinux.org>",
+      "from_name": "Sebastian P. Luque",
+      "from_email_hash": "64e1245723a518467f98fc9a0ecf9b5f086a4977ca9fcb21467077da9da7bf73",
+      "date": "2010-01-12T22:42:55-06:00",
+      "subject": "[R-sig-DB] RPostgreSQL driver timestamp data type mapping",
+      "subject_clean": "RPostgreSQL driver timestamp data type mapping",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\nUsing the RPostgreSQL driver to access a view on a PostgreSQL 8.4\ndatabase:\n\nlibrary(RPostgreSQL)\nm <- dbDriver(\"PostgreSQL\")\ncon <- dbConnect(m, user=\"me\", password=\"pwd\", dbname=\"dbname\")\nqry <- \"SELECT * FROM mytable\"\nrs <- dbSendQuery(con, qry)\n\nFields corresponding to timestamp data type are mapped to POSIXct, as\nshown by dbColumnInfo():\n\n        name    Sclass      type len precision scale nullOK\n...\n...\n8  date_time   POSIXct TIMESTAMP   8        -1    -1   TRUE\n\nI'd like to have a bit more control over this conversion, as it\ncurrently results in the POSIXct object having the time zone of my\nlocale, whereas I need to set it to GMT.  Reading the DBI manual, I\ncan't see how this could be done.  Any pointers would be appreciated.\nThanks.\n\n\nCheers,\n\n-- \nSeb",
+      "body_snippet": "Hi,\n\nUsing the RPostgreSQL driver to access a view on a PostgreSQL 8.4\ndatabase:\n\nlibrary(RPostgreSQL)\nm <- dbDriver(\"PostgreSQL\")\ncon <- dbConnect(m, user=\"me\", password=\"pwd\", dbname=\"dbname\")\nqry <",
+      "thread_id": "thread-5742e8915c09",
+      "thread_depth": 0,
+      "month": "2010-01"
+    },
+    {
+      "id": "msg-e2a01e9e24d4",
+      "message_id": "<alpine.LFD.2.00.1001130705370.23279@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2010-01-13T07:09:57Z",
+      "subject": "[R-sig-DB] RPostgreSQL driver timestamp data type mapping",
+      "subject_clean": "RPostgreSQL driver timestamp data type mapping",
+      "in_reply_to": "<877hrmobsg.fsf@kolob.sebmags.homelinux.org>",
+      "references": [
+        "<877hrmobsg.fsf@kolob.sebmags.homelinux.org>"
+      ],
+      "body_plain": "On Tue, 12 Jan 2010, Sebastian P. Luque wrote:\n\n> Hi,\n>\n> Using the RPostgreSQL driver to access a view on a PostgreSQL 8.4\n> database:\n>\n> library(RPostgreSQL)\n> m <- dbDriver(\"PostgreSQL\")\n> con <- dbConnect(m, user=\"me\", password=\"pwd\", dbname=\"dbname\")\n> qry <- \"SELECT * FROM mytable\"\n> rs <- dbSendQuery(con, qry)\n>\n> Fields corresponding to timestamp data type are mapped to POSIXct, as\n> shown by dbColumnInfo():\n>\n>        name    Sclass      type len precision scale nullOK\n> ...\n> ...\n> 8  date_time   POSIXct TIMESTAMP   8        -1    -1   TRUE\n>\n> I'd like to have a bit more control over this conversion, as it\n> currently results in the POSIXct object having the time zone of my\n> locale,\n\nNot really: POSIXct times are absolute times: it is when they are \ndisplayed that you see the locale.  So just add a tzone attribute to \nthe result, as in\n\n> x <- Sys.time()\n> x\n[1] \"2010-01-13 07:07:26 GMT\"\n> attr(x, \"tzone\") <- \"PST8DST\"\n> x\n[1] \"2010-01-12 23:07:26 PST\"\n> attr(x, \"tzone\") <- NULL\n> x\n[1] \"2010-01-13 07:07:26 GMT\"\n\n\n> whereas I need to set it to GMT.  Reading the DBI manual, I\n> can't see how this could be done.  Any pointers would be appreciated.\n> Thanks.\n>\n>\n> Cheers,\n>\n> -- \n> Seb\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "On Tue, 12 Jan 2010, Sebastian P. Luque wrote:\n\n> Hi,\n>\n> Using the RPostgreSQL driver to access a view on a PostgreSQL 8.4\n> database:\n>\n> library(RPostgreSQL)\n> m <- dbDriver(\"PostgreSQL\")\n> con <- ",
+      "thread_id": "thread-5742e8915c09",
+      "thread_depth": 1,
+      "month": "2010-01"
+    },
+    {
+      "id": "msg-e1716edfd2a3",
+      "message_id": "<MPG.25b7c9429e12fe6a9896cd@news.gmane.org>",
+      "from_name": "Karl Ove Hufthammer",
+      "from_email_hash": "256d927983a8102ad4befb385c5fa57427693eb2406ecb4eb9807d17ef1a0d89",
+      "date": "2010-01-13T12:13:31+01:00",
+      "subject": "[R-sig-DB] R crash when closing DB connection from command-line",
+      "subject_clean": "R crash when closing DB connection from command-line",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I'm experiencing a rather curious crash related to accessing a database \nin R 2.10.1 on Windows. I'm using RODBC on an Oracle database, which \nworks fine, but closing the database connection from the command-line \nleads to a crash:\n\nlibrary(RODBC)\ndb = odbcConnect(\"dbname\", uid=\"username\", pwd=\"password\")\nclose(db)\n\nWhen I run the above lines inside R, everything is fine. If I store the \ncommands in a file and then source the file, everything is fine. But if \nI run the file using\n\nRterm --file=test.R\n\nRTerm.exe crashes, with the following Windows error message (my \ntranslation from Norwegian Nynorsk):\n\n  The instruction in \"0x7c9109f9\" referenced adress \"0xffffffff\". The\n  memory could not be \"read\". Click OK to terminate the program.\n\nThe problem seems not to be related to the amount of time between \nopening the connection and closing it, BTW, as it still occurs 100% of \nthe time if I add a 'Sys.sleep(5)' between 'odbcConnect' and 'close'.\n\nAny ideas that the problem could be? Here's some system information from \na clean start of R:\n\n> sessionInfo()\nR version 2.10.1 (2009-12-14)\ni386-pc-mingw32\n\nlocale:\n[1] LC_COLLATE=Norwegian-Nynorsk_Norway.1252  LC_CTYPE=Norwegian-\nNynorsk_Norway.1252    LC_MONETARY=Norwegian-Nynorsk_Norway.1252\n[4] LC_NUMERIC=C                              LC_TIME=Norwegian-\nNynorsk_Norway.1252\n\nattached base packages:\n[1] stats     graphics  grDevices utils     datasets  methods   base\n>\n\n-- \nKarl Ove Hufthammer",
+      "body_snippet": "I'm experiencing a rather curious crash related to accessing a database \nin R 2.10.1 on Windows. I'm using RODBC on an Oracle database, which \nworks fine, but closing the database connection from the ",
+      "thread_id": "thread-e1716edfd2a3",
+      "thread_depth": 0,
+      "month": "2010-01"
+    },
+    {
+      "id": "msg-6770cad5b10b",
+      "message_id": "<87r5pumdl4.fsf@kolob.sebmags.homelinux.org>",
+      "from_name": "Sebastian P. Luque",
+      "from_email_hash": "64e1245723a518467f98fc9a0ecf9b5f086a4977ca9fcb21467077da9da7bf73",
+      "date": "2010-01-13T05:47:03-06:00",
+      "subject": "[R-sig-DB] RPostgreSQL driver timestamp data type mapping",
+      "subject_clean": "RPostgreSQL driver timestamp data type mapping",
+      "in_reply_to": "<alpine.LFD.2.00.1001130705370.23279@gannet.stats.ox.ac.uk> (Brian Ripley's message of \"Wed, 13 Jan 2010 07:09:57 +0000 (GMT)\")",
+      "references": [
+        "<877hrmobsg.fsf@kolob.sebmags.homelinux.org>",
+        "<alpine.LFD.2.00.1001130705370.23279@gannet.stats.ox.ac.uk>"
+      ],
+      "body_plain": "On Wed, 13 Jan 2010 07:09:57 +0000 (GMT),\nProf Brian Ripley <ripley-+7o2aNKnwVPQzY9nttDBhA at public.gmane.org> wrote:\n\n[...]\n\n> Not really: POSIXct times are absolute times: it is when they are\n> displayed that you see the locale.  So just add a tzone attribute to\n> the result, as in\n\n> > x <- Sys.time()\n> > x\n> [1] \"2010-01-13 07:07:26 GMT\"\n> > attr(x, \"tzone\") <- \"PST8DST\"\n> > x\n> [1] \"2010-01-12 23:07:26 PST\"\n> > attr(x, \"tzone\") <- NULL\n> > x\n> [1] \"2010-01-13 07:07:26 GMT\"\n\nDoes setting tzone=NULL have the same effect as setting it to \"GMT\", in\nthat daylight savings are no longer relevant?  This is the only reason I\nwanted to set it \"GMT\", and avoid daylight savings issues that I don't\nneed to deal with.  Usually I do this starting from a character vector,\nas in:\n\nas.POSIXct(strptime(\"2010-01-13 01:00:00\", \"%Y-%m-%d %H:%M:%S), tz=\"GMT\")\n\nThanks,\n\n-- \nSeb",
+      "body_snippet": "On Wed, 13 Jan 2010 07:09:57 +0000 (GMT),\nProf Brian Ripley <ripley-+7o2aNKnwVPQzY9nttDBhA at public.gmane.org> wrote:\n\n[...]\n\n> Not really: POSIXct times are absolute times: it is when they are\n> dis",
+      "thread_id": "thread-5742e8915c09",
+      "thread_depth": 2,
+      "month": "2010-01"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-4be8a9a4f143",
+      "subject": "Managing transactions with RSQLite?",
+      "message_count": 3,
+      "participants": [
+        "Seth Falcon",
+        "Steve Lianoglou"
+      ],
+      "started": "2010-01-04T21:02:50-05:00",
+      "last_reply": "2010-01-05T10:20:08-05:00",
+      "root_message_id": "msg-4be8a9a4f143"
+    },
+    {
+      "id": "thread-5742e8915c09",
+      "subject": "RPostgreSQL driver timestamp data type mapping",
+      "message_count": 3,
+      "participants": [
+        "Prof Brian Ripley",
+        "Sebastian P. Luque"
+      ],
+      "started": "2010-01-12T22:42:55-06:00",
+      "last_reply": "2010-01-13T05:47:03-06:00",
+      "root_message_id": "msg-5742e8915c09"
+    },
+    {
+      "id": "thread-e1716edfd2a3",
+      "subject": "R crash when closing DB connection from command-line",
+      "message_count": 1,
+      "participants": [
+        "Karl Ove Hufthammer"
+      ],
+      "started": "2010-01-13T12:13:31+01:00",
+      "last_reply": "2010-01-13T12:13:31+01:00",
+      "root_message_id": "msg-e1716edfd2a3"
+    }
+  ]
+}

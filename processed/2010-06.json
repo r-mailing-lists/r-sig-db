@@ -1,0 +1,489 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2010-06",
+  "messages": [
+    {
+      "id": "msg-88764c09307c",
+      "message_id": "<DB0D8E4D-0346-4513-B7C1-C9B9E7CDD022@onsemble.ws>",
+      "from_name": "Dan Rowlands",
+      "from_email_hash": "96986f8c6587e22083089feb2183efdf7f2a307c7c5f655e2b0c74544cd0d0b2",
+      "date": "2010-06-01T16:52:08+01:00",
+      "subject": "[R-sig-DB] RODBC error",
+      "subject_clean": "RODBC error",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\nI have been using RODBC to connect to a mysql database from R. I have  \nrecently upgraded to Mac OSX 10.6 and am having some trouble getting R  \nto connect. My\nsetup worked fine in Mac OS X 10.5.\n\nSpecifically I can set up a dsn and test it in ODBC Administrator  \nfine, but when I try in R using\n\ncon <- odbcConnect(\"test\")\n\nI get the following set of warnings, and the program hangs.\n\nWarning messages:\n1: In odbcDriverConnect(\"DSN=test\") :\n  [RODBC] ERROR: state 00000, code 8663360, message [iODBC][Driver  \nManager]dlopen(/opt/local/lib/libmyodbc5.so, 6): no suitable image  \nfound.  Did find:\n\t/opt/local/lib/libmyodbc5.so: mach-o, but wrong architecture\n2: In odbcDriverConnect(\"DSN=test\") :\n  [RODBC] ERROR: state IM003, code 8663360, message [iODBC][Driver  \nManager]Specified driver could not be loaded\n3: In odbcDriverConnect(\"DSN=test\") :\n  [RODBC] ERROR: state IM003, code 8663360, message [iODBC][Driver  \nManager]Specified driver could not be loaded\n4: In odbcDriverConnect(\"DSN=test\") :\n  [RODBC] ERROR: state IM003, code 8663360, message [iODBC][Driver  \nManager]Specified driver could not be loaded\n5: In odbcDriverConnect(\"DSN=test\") :\n  [RODBC] ERROR: state IM003, code 8663360, message [iODBC][Driver  \nManager]Specified driver could not be loaded\n6: In odbcDriverConnect(\"DSN=test\") :\n  [RODBC] ERROR: state IM003, code 8663\netc...\n\nThe test dsn is just a connection to the mysql test database, and I  \nhave verified the connection is working using ODBC administrator on  \nthe Mac.\n\nHas anyone experienced similar problems?\n\nThanks\n\nDan",
+      "body_snippet": "Hi,\n\nI have been using RODBC to connect to a mysql database from R. I have  \nrecently upgraded to Mac OSX 10.6 and am having some trouble getting R  \nto connect. My\nsetup worked fine in Mac OS X 10.5.",
+      "thread_id": "thread-88764c09307c",
+      "thread_depth": 0,
+      "month": "2010-06"
+    },
+    {
+      "id": "msg-961cce2e5731",
+      "message_id": "<AANLkTinDXbQdH4XQIaiedHEz4dQ7_4v2xTeavrcJBulo@mail.gmail.com>",
+      "from_name": "Kasper Daniel Hansen",
+      "from_email_hash": "d93d2b6e7e026786d1329cc362094fa8cf7678c5556ec56db24b97db9e327685",
+      "date": "2010-06-02T00:57:33-04:00",
+      "subject": "[R-sig-DB] RODBC error",
+      "subject_clean": "RODBC error",
+      "in_reply_to": "<DB0D8E4D-0346-4513-B7C1-C9B9E7CDD022@onsemble.ws>",
+      "references": [
+        "<DB0D8E4D-0346-4513-B7C1-C9B9E7CDD022@onsemble.ws>"
+      ],
+      "body_plain": "Well, use file on the library, like\n\n# file /opt/local/lib/libmyodbc5.so\n\nto see what architecture the file supports.  My guess is that the\nlibrary is 32 bit only and your R is 64 bit.  But that could be\ncompletely wrong, I have no mysql nor odbc experience on the Mac.\n\nKasper\n\nOn Tue, Jun 1, 2010 at 11:52 AM, Dan Rowlands <dan at onsemble.ws> wrote:\n> Hi,\n>\n> I have been using RODBC to connect to a mysql database from R. I have\n> recently upgraded to Mac OSX 10.6 and am having some trouble getting R to\n> connect. My\n> setup worked fine in Mac OS X 10.5.\n>\n> Specifically I can set up a dsn and test it in ODBC Administrator fine, but\n> when I try in R using\n>\n> con <- odbcConnect(\"test\")\n>\n> I get the following set of warnings, and the program hangs.\n>\n> Warning messages:\n> 1: In odbcDriverConnect(\"DSN=test\") :\n> ?[RODBC] ERROR: state 00000, code 8663360, message [iODBC][Driver\n> Manager]dlopen(/opt/local/lib/libmyodbc5.so, 6): no suitable image found.\n> ?Did find:\n> ? ? ? ?/opt/local/lib/libmyodbc5.so: mach-o, but wrong architecture\n> 2: In odbcDriverConnect(\"DSN=test\") :\n> ?[RODBC] ERROR: state IM003, code 8663360, message [iODBC][Driver\n> Manager]Specified driver could not be loaded\n> 3: In odbcDriverConnect(\"DSN=test\") :\n> ?[RODBC] ERROR: state IM003, code 8663360, message [iODBC][Driver\n> Manager]Specified driver could not be loaded\n> 4: In odbcDriverConnect(\"DSN=test\") :\n> ?[RODBC] ERROR: state IM003, code 8663360, message [iODBC][Driver\n> Manager]Specified driver could not be loaded\n> 5: In odbcDriverConnect(\"DSN=test\") :\n> ?[RODBC] ERROR: state IM003, code 8663360, message [iODBC][Driver\n> Manager]Specified driver could not be loaded\n> 6: In odbcDriverConnect(\"DSN=test\") :\n> ?[RODBC] ERROR: state IM003, code 8663\n> etc...\n>\n> The test dsn is just a connection to the mysql test database, and I have\n> verified the connection is working using ODBC administrator on the Mac.\n>\n> Has anyone experienced similar problems?\n>\n> Thanks\n>\n> Dan\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "Well, use file on the library, like\n\n# file /opt/local/lib/libmyodbc5.so\n\nto see what architecture the file supports.  My guess is that the\nlibrary is 32 bit only and your R is 64 bit.  But that could",
+      "thread_id": "thread-88764c09307c",
+      "thread_depth": 1,
+      "month": "2010-06"
+    },
+    {
+      "id": "msg-c290d9c941a8",
+      "message_id": "<CA5669F7-05ED-4206-B946-A00EC0198C09@gmail.com>",
+      "from_name": "Sébastien Durand",
+      "from_email_hash": "b5d1ed8b1d122e4cb1014b4fcb13fd051cb6579aeaff3a2e0b89a6cec81998e2",
+      "date": "2010-06-05T10:20:34-04:00",
+      "subject": "[R-sig-DB] Which DB type",
+      "subject_clean": "Which DB type",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello to all,\n\nI got my mind into it did some search and comparison I got myself decided to do the following :\n\nI want to build a package for personal finance : \n\n-In this package I wish to be able to :\n\t-Read OFX data\n\t-Recognize transaction\n\t-Setup a budget through the use of buckets or envelope through time\n\t-Have cashflow plotting methods\n\t-This package will be able to utilise data from multiple accounts\n\nMy first question is quite simple:  \n\tIs this a good idea, import OFX data into a SQL data base using R.\n\nIt must be said that I am planning to use a Database support in order to facilitate user usage (example visualisation of transactions, sorting and so on...)\n\nAny suggestion or comment would be appreciated\n\nThanks a lot!\n\nS?bastien",
+      "body_snippet": "Hello to all,\n\nI got my mind into it did some search and comparison I got myself decided to do the following :\n\nI want to build a package for personal finance : \n\n-In this package I wish to be able to",
+      "thread_id": "thread-c290d9c941a8",
+      "thread_depth": 0,
+      "month": "2010-06"
+    },
+    {
+      "id": "msg-553b30fda3f2",
+      "message_id": "<9519CA2E75D49B45BF80D0D89830171423DDD532B0@THHS2E12BE2X.hostedservice2.net>",
+      "from_name": "Navdeep Singh",
+      "from_email_hash": "6683d189c9a12d5027c70531e1572dc84a1f12d30e2e126ea9992adc7a447f11",
+      "date": "2010-06-15T14:42:42+01:00",
+      "subject": "[R-sig-DB] Very slow MySQL access using RJDBC",
+      "subject_clean": "Very slow MySQL access using RJDBC",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi all,\n\nI am having severe speed issues when trying to use R (version 2.10.1, 32-bit) and RJDBC (0.1-5) to access tables on a remote MySQL (5.1.47-community) via the driver \"com.mysql.jdbc.Driver\" as supplied with the MySQL client on my workstation. I am using a very simple select query to select a fairly large number (hundreds of thousands) of rows from a table as follows:\n\nLibrary(RJDBC);\ndb.loc <- \"jdbc:mysql://192.168.0.2/schema\";\ndbDrvJDBC <- JDBC(\"com.mysql.jdbc.Driver\");\nconn <- dbConnect(dbDrvJDBC,\n                  db.loc,\n                  user=\"user\",\n                  password=\"pass\");\nsqlMom <- paste(\"select p_date, id, s_1006, s_1054\",\n              \"from signals\",\n              \"where s_1025 = 1\",\n              \"and p_date>'2010-01-01'\");\ndata.mom <- dbGetQuery(conn,sqlMom);\n\nFor example this brings back about 70,000 rows and takes a couple of minutes to run. Unfortunately the time taken seems to scale with the number of records returned, and I need to work with several datasets 10-20 times this size. Running this same query in the SQL client or in Matlab using the same JDBC driver takes a couple of seconds.\n\nI thought the slowdown might be due to restricted Java heap size so tried increasing this (to no avail) via:\n\nOptions(java.parameters=\"-Xmx900M\");\n\nAlso memory.limit() indicates R has 3583MB available (of 12GB physical).\n\n\nI also had a brief attempt at using the RMySQL package, but this did not work, I am guessing due to having the client rather than the MySQL server installed on my machine. I made a go of moving around the required  libmySQL.dll so that RMySQL could find it, but ultimately got the following error when using dbConnect as above (with the MySQL driver instead):\n\nRS-DBI driver: (Failed to connect to database: Error: Can't connect to MySQL server on 'localhost' (10061)\n\n\nI am still missing something, having scanned through the Data Import/Export manual, previous mailing list posts and Google this morning so any guidance would be appreciated very much.\n\n\nBest wishes,\nNavdeep\n\n\n\n__________ Information from ESET NOD32 Antivirus, version of virus signature database 5198 (20100615) __________\n\nThe message was checked by ESET NOD32 Antivirus.\n\nhttp://www.eset.com\n\n\n______________________________________________________________________\nThis email has been scanned by the MessageLabs Email Security System.\nFor more information please visit http://www.messagelabs.com/email",
+      "body_snippet": "Hi all,\n\nI am having severe speed issues when trying to use R (version 2.10.1, 32-bit) and RJDBC (0.1-5) to access tables on a remote MySQL (5.1.47-community) via the driver \"com.mysql.jdbc.Driver\" as",
+      "thread_id": "thread-553b30fda3f2",
+      "thread_depth": 0,
+      "month": "2010-06"
+    },
+    {
+      "id": "msg-752844c5a449",
+      "message_id": "<AANLkTimVK-6GhzwAG0I86gSuEu-BZSte0GzL1zhtWwvW@mail.gmail.com>",
+      "from_name": "Daniel",
+      "from_email_hash": "e75e57f43599ba5e48d01f1d535f200935c93d65e50cefa56b0c382d1c1f0c97",
+      "date": "2010-06-17T10:21:48-03:00",
+      "subject": "[R-sig-DB] updating values",
+      "subject_clean": "updating values",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello all,I have a table with about 18000 rows, I need to UPDATE the strings\nin the \"name.x\" column in each row by the strings from \"name.y\" given if\n\"name.x\" is NA or \" \". How can I do it?\nAlso I want to update values in other columns, but I think that will be the\nsame job.\nDaniel\n-- \nDaniel Marcelino\nhttp://bit.ly/pol4vc\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hello all,I have a table with about 18000 rows, I need to UPDATE the strings\nin the \"name.x\" column in each row by the strings from \"name.y\" given if\n\"name.x\" is NA or \" \". How can I do it?\nAlso I wan",
+      "thread_id": "thread-752844c5a449",
+      "thread_depth": 0,
+      "month": "2010-06"
+    },
+    {
+      "id": "msg-c19daf7b539a",
+      "message_id": "<AANLkTinsQyLkBW5MJ4hjkpnlpjx_PhOnY-91GiRqDE1S@mail.gmail.com>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2010-06-17T09:32:15-04:00",
+      "subject": "[R-sig-DB] updating values",
+      "subject_clean": "updating values",
+      "in_reply_to": "<AANLkTimVK-6GhzwAG0I86gSuEu-BZSte0GzL1zhtWwvW@mail.gmail.com>",
+      "references": [
+        "<AANLkTimVK-6GhzwAG0I86gSuEu-BZSte0GzL1zhtWwvW@mail.gmail.com>"
+      ],
+      "body_plain": "On Thu, Jun 17, 2010 at 9:21 AM, Daniel <dmsilv at gmail.com> wrote:\n\n> Hello all,I have a table with about 18000 rows, I need to UPDATE the\n> strings\n> in the \"name.x\" column in each row by the strings from \"name.y\" given if\n> \"name.x\" is NA or \" \". How can I do it?\n>\n\nYou didn't really give us enough information to answer your question (what\ndatabase, what interface, etc.)  However, you'll probably want to use a SQL\nupdate statement.  The syntax will vary slightly depending on database\nengine and a little googling will probably get you the answer you need.\n\nSean\n\n\n> Also I want to update values in other columns, but I think that will be the\n> same job.\n> Daniel\n> --\n> Daniel Marcelino\n> http://bit.ly/pol4vc\n>\n>        [[alternative HTML version deleted]]\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "On Thu, Jun 17, 2010 at 9:21 AM, Daniel <dmsilv at gmail.com> wrote:\n\n> Hello all,I have a table with about 18000 rows, I need to UPDATE the\n> strings\n> in the \"name.x\" column in each row by the strin",
+      "thread_id": "thread-752844c5a449",
+      "thread_depth": 1,
+      "month": "2010-06"
+    },
+    {
+      "id": "msg-e93edc910d8e",
+      "message_id": "<2011707201-1276781613-cardhu_decombobulator_blackberry.rim.net-847182356-@bda325.bisx.prod.on.blackberry>",
+      "from_name": "jeii@@@ry@@ m@iii@g oii gm@ii@com",
+      "from_email_hash": "66274e7e45d20b10753c4d06038b3ee328c681325f7a4411c8c646ffa7c734ca",
+      "date": "2010-06-17T13:33:31Z",
+      "subject": "[R-sig-DB] updating values",
+      "subject_clean": "updating values",
+      "in_reply_to": "<AANLkTimVK-6GhzwAG0I86gSuEu-BZSte0GzL1zhtWwvW@mail.gmail.com>",
+      "references": [
+        "<AANLkTimVK-6GhzwAG0I86gSuEu-BZSte0GzL1zhtWwvW@mail.gmail.com>"
+      ],
+      "body_plain": "Much like R-SIG-Finance, this isn't the correct forum or way to ask for help. \n\nOnce is a mistake, twice isn't. Follow the posting guidelines if you want help. \n\nJeff\nSent via BlackBerry from T-Mobile\n\n-----Original Message-----\nFrom: Daniel <dmsilv at gmail.com>\nDate: Thu, 17 Jun 2010 10:21:48 \nTo: <r-sig-db at stat.math.ethz.ch>\nSubject: [R-sig-DB] updating values\n\nHello all,I have a table with about 18000 rows, I need to UPDATE the strings\nin the \"name.x\" column in each row by the strings from \"name.y\" given if\n\"name.x\" is NA or \" \". How can I do it?\nAlso I want to update values in other columns, but I think that will be the\nsame job.\nDaniel\n-- \nDaniel Marcelino\nhttp://bit.ly/pol4vc\n\n\t[[alternative HTML version deleted]]\n\n_______________________________________________\nR-sig-DB mailing list -- R Special Interest Group\nR-sig-DB at stat.math.ethz.ch\nhttps://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "Much like R-SIG-Finance, this isn't the correct forum or way to ask for help. \n\nOnce is a mistake, twice isn't. Follow the posting guidelines if you want help. \n\nJeff\nSent via BlackBerry from T-Mobile",
+      "thread_id": "thread-752844c5a449",
+      "thread_depth": 1,
+      "month": "2010-06"
+    },
+    {
+      "id": "msg-3e44c86c8eee",
+      "message_id": "<AANLkTinSRGvvat8IWMRw-kQTgX_UWzNyWoih3D6zF_tu@mail.gmail.com>",
+      "from_name": "johannes rara",
+      "from_email_hash": "f4df2b566402aa8d36078ae970678e3ad507aeb45151cffccd4834fa4fb2f45b",
+      "date": "2010-06-17T21:17:33+03:00",
+      "subject": "[R-sig-DB] RODBC: AD authentication when accessing database?",
+      "subject_clean": "RODBC: AD authentication when accessing database?",
+      "in_reply_to": "<AANLkTim8f9UFkjRszJAjFKfAiSrg5ssno7vSNdZeYsD1@mail.gmail.com>",
+      "references": [
+        "<AANLkTim8f9UFkjRszJAjFKfAiSrg5ssno7vSNdZeYsD1@mail.gmail.com>"
+      ],
+      "body_plain": "Hi (posted this to r-help, but got advised to post this on R-sig-db),\n\nI'm trying to fetch data from SQL Server database using RODBC. Is\nthere a way to use AD authentication method when accessing data via R?\nI'm using R 2.10.1 and Windows XP.\n\n-J",
+      "body_snippet": "Hi (posted this to r-help, but got advised to post this on R-sig-db),\n\nI'm trying to fetch data from SQL Server database using RODBC. Is\nthere a way to use AD authentication method when accessing data",
+      "thread_id": "thread-3e44c86c8eee",
+      "thread_depth": 0,
+      "month": "2010-06"
+    },
+    {
+      "id": "msg-a0a76bcfb6da",
+      "message_id": "<001701cb113d$0fc224d0$2f466e70$@com>",
+      "from_name": "顾小波",
+      "from_email_hash": "176108762e20fc40c0ea5782a4cf2388d4cba8cdadb1f5a5481fccf34141e262",
+      "date": "2010-06-21T20:27:02+08:00",
+      "subject": "[R-sig-DB] RODBC on 64bit Windows",
+      "subject_clean": "RODBC on 64bit Windows",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi all,\n\n         Since now R has a Windows 64 bit version, is there plan for 64bit RODBC packages, thanks.\n\n \n\nXiaobo.Gu\n\n \n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi all,\n\n         Since now R has a Windows 64 bit version, is there plan for 64bit RODBC packages, thanks.\n\n \n\nXiaobo.Gu\n\n \n\n\n\t[[alternative HTML version deleted]]",
+      "thread_id": "thread-a0a76bcfb6da",
+      "thread_depth": 0,
+      "month": "2010-06"
+    },
+    {
+      "id": "msg-be56df59770d",
+      "message_id": "<alpine.LFD.2.00.1006211353430.18508@localhost>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2010-06-21T14:00:25+01:00",
+      "subject": "[R-sig-DB] RODBC on 64bit Windows",
+      "subject_clean": "RODBC on 64bit Windows",
+      "in_reply_to": "<001701cb113d$0fc224d0$2f466e70$@com>",
+      "references": [
+        "<001701cb113d$0fc224d0$2f466e70$@com>"
+      ],
+      "body_plain": "On Mon, 21 Jun 2010, ??? wrote:\n\n> Hi all,\n>\n>         Since now R has a Windows 64 bit version, is there plan for \n> 64bit RODBC packages, thanks.\n\nBut there has been a 64-bit Windows package at \nhttp://cran.r-project.org/bin/windows64/contrib/2.11/RODBC_1.3-1.zip \nfor several months, so what are you asking for?  (Note that 64-bit \nODBC drivers are in short supply, but I have tested MySQL and \nsqliteodbc has recently gained a 64-bit binary.)\n\nIt is also simple to install RODBC from its sources.\n\n>\n>\n>\n> Xiaobo.Gu\n>\n>\n>\n>\n> \t[[alternative HTML version deleted]]\n\nPlease note that the posting guide has to say about that.\n\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "On Mon, 21 Jun 2010, ??? wrote:\n\n> Hi all,\n>\n>         Since now R has a Windows 64 bit version, is there plan for \n> 64bit RODBC packages, thanks.\n\nBut there has been a 64-bit Windows package at \nhtt",
+      "thread_id": "thread-a0a76bcfb6da",
+      "thread_depth": 1,
+      "month": "2010-06"
+    },
+    {
+      "id": "msg-34151d5aba5e",
+      "message_id": "<000001cb1150$31bc7000$95355000$@com>",
+      "from_name": "顾小波",
+      "from_email_hash": "176108762e20fc40c0ea5782a4cf2388d4cba8cdadb1f5a5481fccf34141e262",
+      "date": "2010-06-21T22:43:56+08:00",
+      "subject": "[R-sig-DB] RODBC on 64bit Windows",
+      "subject_clean": "RODBC on 64bit Windows",
+      "in_reply_to": "<alpine.LFD.2.00.1006211353430.18508@localhost>",
+      "references": [
+        "<001701cb113d$0fc224d0$2f466e70$@com>",
+        "<alpine.LFD.2.00.1006211353430.18508@localhost>"
+      ],
+      "body_plain": "Ripley,\n\tThanks, lucky enough we are working with IBM DB2 and Greenplum, which both have 64bit ODBC dirvers.\nBTW, there are three ways to work with R - Greenplum integration:\n1. via RODBC package, which now has a 64 bit version\n2. via RPostgres interface, which seems does not a 64 bit version yet.\n3. via plr for Greenplum, which only supports a few kinds of functionality, and supports only specific versions of R.\n\nDo you have any idea about the advantages and disadvantages of each, and the differences among them?\n\n\nXiaobo.Gu\n\n-----Original Message-----\nFrom: Prof Brian Ripley [mailto:ripley at stats.ox.ac.uk] \nSent: Monday, June 21, 2010 9:00 PM\nTo: ???\nCc: r-sig-db at stat.math.ethz.ch\nSubject: Re: [R-sig-DB] RODBC on 64bit Windows\n\nOn Mon, 21 Jun 2010, ??? wrote:\n\n> Hi all,\n>\n>         Since now R has a Windows 64 bit version, is there plan for \n> 64bit RODBC packages, thanks.\n\nBut there has been a 64-bit Windows package at \nhttp://cran.r-project.org/bin/windows64/contrib/2.11/RODBC_1.3-1.zip \nfor several months, so what are you asking for?  (Note that 64-bit \nODBC drivers are in short supply, but I have tested MySQL and \nsqliteodbc has recently gained a 64-bit binary.)\n\nIt is also simple to install RODBC from its sources.\n\n>\n>\n>\n> Xiaobo.Gu\n>\n>\n>\n>\n> \t[[alternative HTML version deleted]]\n\nPlease note that the posting guide has to say about that.\n\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "Ripley,\n\tThanks, lucky enough we are working with IBM DB2 and Greenplum, which both have 64bit ODBC dirvers.\nBTW, there are three ways to work with R - Greenplum integration:\n1. via RODBC package, whi",
+      "thread_id": "thread-a0a76bcfb6da",
+      "thread_depth": 2,
+      "month": "2010-06"
+    },
+    {
+      "id": "msg-546292b5943e",
+      "message_id": "<AANLkTim_m7OHbCy5Co1akqLNL0ll2uWk7Rwxkv5SStp6@mail.gmail.com>",
+      "from_name": "johannes rara",
+      "from_email_hash": "f4df2b566402aa8d36078ae970678e3ad507aeb45151cffccd4834fa4fb2f45b",
+      "date": "2010-06-21T21:56:21+03:00",
+      "subject": "[R-sig-DB] RODBC: AD authentication when accessing database?",
+      "subject_clean": "RODBC: AD authentication when accessing database?",
+      "in_reply_to": "<AANLkTinSRGvvat8IWMRw-kQTgX_UWzNyWoih3D6zF_tu@mail.gmail.com>",
+      "references": [
+        "<AANLkTim8f9UFkjRszJAjFKfAiSrg5ssno7vSNdZeYsD1@mail.gmail.com>",
+        "<AANLkTinSRGvvat8IWMRw-kQTgX_UWzNyWoih3D6zF_tu@mail.gmail.com>"
+      ],
+      "body_plain": "I tested using System DSN and different accounts on the same computer.\nSeems to work, different users can query data using their own Windows\ncredentials.\n\n-J\n\n2010/6/17 johannes rara <johannesraja at gmail.com>:\n> Hi (posted this to r-help, but got advised to post this on R-sig-db),\n>\n> I'm trying to fetch data from SQL Server database using RODBC. Is\n> there a way to use AD authentication method when accessing data via R?\n> I'm using R 2.10.1 and Windows XP.\n>\n> -J\n>",
+      "body_snippet": "I tested using System DSN and different accounts on the same computer.\nSeems to work, different users can query data using their own Windows\ncredentials.\n\n-J\n\n2010/6/17 johannes rara <johannesraja at ",
+      "thread_id": "thread-3e44c86c8eee",
+      "thread_depth": 1,
+      "month": "2010-06"
+    },
+    {
+      "id": "msg-62b05789797b",
+      "message_id": "<AANLkTimpByMYkw0BXjfKeW5lQB2wHpJ8QqiGPaWCF9Vi@mail.gmail.com>",
+      "from_name": "Jonathan Greenberg",
+      "from_email_hash": "a4df5b911cdb3fd3f70ac604839ebb4411c8b25668156d97baad1ceb32653cbe",
+      "date": "2010-06-28T13:26:33-07:00",
+      "subject": "[R-sig-DB] concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "subject_clean": "concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Folks:\n\nI'm trying to cycle through a database, reading a chunk of data from\none table in the DB, processing this data chunk, and then writing the\noutput to another table in the database.  I'm having to set the\nfetch(n=) option because the database is too large to read the entire\nthing into memory at once.  Here's my sample code:\n\n***\n\nrequire(RSQLite)\nmysqldb='test.sqlite'\nfetch_n=3\n\n# Create a data table.\nsomedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3)\n\n# Make a table in our database with it.\nm <- dbDriver(\"SQLite\")\ncon=dbConnect(m, dbname=mysqldb)\ndbWriteTable(con,\"TABLEA\",somedata,overwrite=TRUE)\ndbDisconnect(con)\n\n# Now we want to read from TABLEA in \"chunks\" and write to TABLEB.\nread_con=dbConnect(m, dbname=mysqldb)\nwrite_con=dbConnect(m, dbname=mysqldb)\n\nread_query=dbSendQuery(read_con,\"SELECT * FROM TABLEA\")\n\nwhile(!dbHasCompleted(read_query))\n{\n\tread_chunk=fetch(read_query,fetch_n)\n\tnew_data=data.frame(data3=read_chunk$data1*4,data4=read_chunk$data2*4)\n\tif(!dbExistsTable(write_con, \"TABLEB\"))\n\t{\n\t\tdbWriteTable(write_con,\"TABLEB\",new_data)\n\t} else\n\t{\n\t\tdbWriteTable(write_con,\"TABLEB\",new_data, append=TRUE)\n\t}\t\n}\ndbDisconnect(read_con)\ndbDisconnect(write_con)\n\n**\n\nI am getting this error:\n\nWarning messages:\n1: In sqliteWriteTable(conn, name, value, ...) :\n  RS_SQLite_exec: could not execute1: database is locked\n2: In sqliteWriteTable(conn, name, value, ...) :\n  RS_SQLite_exec: could not execute1: database is locked\n3: In sqliteWriteTable(conn, name, value, ...) :\n  RS_SQLite_exec: could not execute1: database is locked\n> dbDisconnect(read_con)\n[1] TRUE\nWarning message:\nIn sqliteCloseConnection(conn, ...) :\n  RS-DBI driver warning: (closing pending result sets before closing\nthis connection)\n> dbDisconnect(write_con)\n[1] TRUE\n\nAny suggestions on how to fix this?  Thanks!\n\n--j",
+      "body_snippet": "Folks:\n\nI'm trying to cycle through a database, reading a chunk of data from\none table in the DB, processing this data chunk, and then writing the\noutput to another table in the database.  I'm having ",
+      "thread_id": "thread-62b05789797b",
+      "thread_depth": 0,
+      "month": "2010-06"
+    },
+    {
+      "id": "msg-74bc25811774",
+      "message_id": "<AANLkTikp6zjZ-_kcJnl0m6ORcNXs4uUkNHHxP2we_tvg@mail.gmail.com>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2010-06-28T13:52:41-07:00",
+      "subject": "[R-sig-DB] concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "subject_clean": "concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "in_reply_to": "<AANLkTimpByMYkw0BXjfKeW5lQB2wHpJ8QqiGPaWCF9Vi@mail.gmail.com>",
+      "references": [
+        "<AANLkTimpByMYkw0BXjfKeW5lQB2wHpJ8QqiGPaWCF9Vi@mail.gmail.com>"
+      ],
+      "body_plain": "Hi,\n\nA couple of ideas below...  I will try to reproduce this later.\n\nOn Mon, Jun 28, 2010 at 1:26 PM, Jonathan Greenberg\n<greenberg at ucdavis.edu> wrote:\n> I'm trying to cycle through a database, reading a chunk of data from\n> one table in the DB, processing this data chunk, and then writing the\n> output to another table in the database. ?I'm having to set the\n> fetch(n=) option because the database is too large to read the entire\n> thing into memory at once. ?Here's my sample code:\n>\n> ***\n>\n> require(RSQLite)\n> mysqldb='test.sqlite'\n> fetch_n=3\n>\n> # Create a data table.\n> somedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3)\n>\n> # Make a table in our database with it.\n> m <- dbDriver(\"SQLite\")\n> con=dbConnect(m, dbname=mysqldb)\n> dbWriteTable(con,\"TABLEA\",somedata,overwrite=TRUE)\n> dbDisconnect(con)\n>\n> # Now we want to read from TABLEA in \"chunks\" and write to TABLEB.\n> read_con=dbConnect(m, dbname=mysqldb)\n> write_con=dbConnect(m, dbname=mysqldb)\n\nYou might try setting the flags on the read connection to indicate\nthat it is read only:\n\n read_con = dbConnect(m, dbname = mysqldb, flags = SQLITE_RO)\n\nThere are some details in ?sqliteSupport\n\nI wonder if it would make a difference if you created the destination\ntable (TABLEB) earlier (say before opening read/write cons).\n\n> read_query=dbSendQuery(read_con,\"SELECT * FROM TABLEA\")\n>\n> while(!dbHasCompleted(read_query))\n> {\n> ? ? ? ?read_chunk=fetch(read_query,fetch_n)\n> ? ? ? ?new_data=data.frame(data3=read_chunk$data1*4,data4=read_chunk$data2*4)\n> ? ? ? ?if(!dbExistsTable(write_con, \"TABLEB\"))\n> ? ? ? ?{\n> ? ? ? ? ? ? ? ?dbWriteTable(write_con,\"TABLEB\",new_data)\n> ? ? ? ?} else\n> ? ? ? ?{\n> ? ? ? ? ? ? ? ?dbWriteTable(write_con,\"TABLEB\",new_data, append=TRUE)\n> ? ? ? ?}\n> }\n> dbDisconnect(read_con)\n> dbDisconnect(write_con)\n>\n> **\n>\n> I am getting this error:\n>\n> Warning messages:\n> 1: In sqliteWriteTable(conn, name, value, ...) :\n> ?RS_SQLite_exec: could not execute1: database is locked\n> 2: In sqliteWriteTable(conn, name, value, ...) :\n> ?RS_SQLite_exec: could not execute1: database is locked\n> 3: In sqliteWriteTable(conn, name, value, ...) :\n> ?RS_SQLite_exec: could not execute1: database is locked\n>> dbDisconnect(read_con)\n> [1] TRUE\n> Warning message:\n> In sqliteCloseConnection(conn, ...) :\n> ?RS-DBI driver warning: (closing pending result sets before closing\n> this connection)\n\nYou can get rid of this warning by calling dbClearResult on your query\nresult object.\n\n>> dbDisconnect(write_con)\n> [1] TRUE\n>\n> Any suggestions on how to fix this? ?Thanks!\n\nI will try and have a closer look over the next couple of days.\n\n+ seth\n\n-- \nSeth Falcon | @sfalcon | http://userprimary.net/",
+      "body_snippet": "Hi,\n\nA couple of ideas below...  I will try to reproduce this later.\n\nOn Mon, Jun 28, 2010 at 1:26 PM, Jonathan Greenberg\n<greenberg at ucdavis.edu> wrote:\n> I'm trying to cycle through a database, re",
+      "thread_id": "thread-62b05789797b",
+      "thread_depth": 1,
+      "month": "2010-06"
+    },
+    {
+      "id": "msg-c616f8467c8e",
+      "message_id": "<AANLkTilFR5hroZROFN8LQNv5RNC9Bov7uzEUOs-QMQbd@mail.gmail.com>",
+      "from_name": "Jonathan Greenberg",
+      "from_email_hash": "a4df5b911cdb3fd3f70ac604839ebb4411c8b25668156d97baad1ceb32653cbe",
+      "date": "2010-06-28T14:15:32-07:00",
+      "subject": "[R-sig-DB] Fwd: concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "subject_clean": "concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "in_reply_to": "<AANLkTim7g5MZ5yFazRx-mTlj69lsHVPC5NEgcJ0kR8Eq@mail.gmail.com>",
+      "references": [
+        "<AANLkTimpByMYkw0BXjfKeW5lQB2wHpJ8QqiGPaWCF9Vi@mail.gmail.com>",
+        "<AANLkTikp6zjZ-_kcJnl0m6ORcNXs4uUkNHHxP2we_tvg@mail.gmail.com>",
+        "<AANLkTim7g5MZ5yFazRx-mTlj69lsHVPC5NEgcJ0kR8Eq@mail.gmail.com>"
+      ],
+      "body_plain": "A bit more troubleshooting, see the modded code below. ?I'm noticing\nthat dbExistsTable() appears to be failing. ?If you run the code\nbelow, you'll see that the output is:\n\n[1] \"row extraction begins: 0\"\n[1] \"making new table\"\n[1] \"row extraction begins: 3\"\n[1] \"making new table\"\n[1] \"row extraction begins: 6\"\n[1] \"making new table\"\n[1] \"row extraction begins: 9\"\n[1] \"making new table\"\n\nE.g. it keeps seeing dbExistsTable() as FALSE even though, after the\nfirst pass, it should have created that table. ?I through in some\nother things I thought might work (placing the dbConnect statement for\nthe writing inside the while() loop, and adding a dbCommit()\nstatement), but none of these worked either. ?Is it possible that the\ndbDisconnect() statement is not behaving properly?\n\nThanks a ton for any help you can give me!\n\n--j\n\n***\n\nrequire(RSQLite)\nmysqldb='test.sqlite'\nfetch_n=3\n\n# Create a small table.\nsomedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3)\n\n# Make a table with it.\nm <- dbDriver(\"SQLite\",flags = SQLITE_RO)\ncon=dbConnect(m, dbname=mysqldb)\ndbWriteTable(con,\"TABLEA\",somedata,overwrite=TRUE)\ndbDisconnect(con)\n\n# Now we want to read from TABLEA in \"chunks\" and write to TABLEB.\nread_con=dbConnect(m, dbname=mysqldb)\nread_query=dbSendQuery(read_con,\"SELECT * FROM TABLEA\")\n\nwhile(!dbHasCompleted(read_query))\n{\n? ? ? ?print(dbGetRowCount(read_query))\n? ? ? ?write_con=dbConnect(m, dbname=mysqldb)\n? ? ? ?read_chunk=fetch(read_query,fetch_n)\n? ? ? ?new_data=data.frame(data3=read_chunk$data1*4,data4=read_chunk$data2*4)\n? ? ? ?# Let's check dbexists with a different connection.\n? ? ? ?tables_exists_con=dbConnect(m, dbname=mysqldb)\n? ? ? ?table_exists=dbExistsTable(tables_exists_con, \"TABLEB\")\n? ? ? ?dbDisconnect(tables_exists_con)\n\n? ? ? ?if(!table_exists)\n? ? ? ?{\n? ? ? ? ? ? ? ?print(\"making new table\")\n? ? ? ? ? ? ? ?dbWriteTable(write_con,\"TABLEB\",new_data)\n? ? ? ?} else\n? ? ? ?{\n? ? ? ? ? ? ? ?print(\"append to existing table\")\n? ? ? ? ? ? ? ?dbWriteTable(write_con,\"TABLEB\",new_data, append=TRUE)\n? ? ? ?}\n? ? ? ?dbCommit(write_con)\n? ? ? ?dbDisconnect(write_con)\n}\ndbClearResult(read_query)\ndbDisconnect(read_con)\n\n\nOn Mon, Jun 28, 2010 at 1:52 PM, Seth Falcon <seth at userprimary.net> wrote:\n> Hi,\n>\n> A couple of ideas below... ?I will try to reproduce this later.\n>\n> On Mon, Jun 28, 2010 at 1:26 PM, Jonathan Greenberg\n> <greenberg at ucdavis.edu> wrote:\n>> I'm trying to cycle through a database, reading a chunk of data from\n>> one table in the DB, processing this data chunk, and then writing the\n>> output to another table in the database. ?I'm having to set the\n>> fetch(n=) option because the database is too large to read the entire\n>> thing into memory at once. ?Here's my sample code:\n>>\n>> ***\n>>\n>> require(RSQLite)\n>> mysqldb='test.sqlite'\n>> fetch_n=3\n>>\n>> # Create a data table.\n>> somedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3)\n>>\n>> # Make a table in our database with it.\n>> m <- dbDriver(\"SQLite\")\n>> con=dbConnect(m, dbname=mysqldb)\n>> dbWriteTable(con,\"TABLEA\",somedata,overwrite=TRUE)\n>> dbDisconnect(con)\n>>\n>> # Now we want to read from TABLEA in \"chunks\" and write to TABLEB.\n>> read_con=dbConnect(m, dbname=mysqldb)\n>> write_con=dbConnect(m, dbname=mysqldb)\n>\n> You might try setting the flags on the read connection to indicate\n> that it is read only:\n>\n> ?read_con = dbConnect(m, dbname = mysqldb, flags = SQLITE_RO)\n>\n> There are some details in ?sqliteSupport\n>\n> I wonder if it would make a difference if you created the destination\n> table (TABLEB) earlier (say before opening read/write cons).\n>\n>> read_query=dbSendQuery(read_con,\"SELECT * FROM TABLEA\")\n>>\n>> while(!dbHasCompleted(read_query))\n>> {\n>> ? ? ? ?read_chunk=fetch(read_query,fetch_n)\n>> ? ? ? ?new_data=data.frame(data3=read_chunk$data1*4,data4=read_chunk$data2*4)\n>> ? ? ? ?if(!dbExistsTable(write_con, \"TABLEB\"))\n>> ? ? ? ?{\n>> ? ? ? ? ? ? ? ?dbWriteTable(write_con,\"TABLEB\",new_data)\n>> ? ? ? ?} else\n>> ? ? ? ?{\n>> ? ? ? ? ? ? ? ?dbWriteTable(write_con,\"TABLEB\",new_data, append=TRUE)\n>> ? ? ? ?}\n>> }\n>> dbDisconnect(read_con)\n>> dbDisconnect(write_con)\n>>\n>> **\n>>\n>> I am getting this error:\n>>\n>> Warning messages:\n>> 1: In sqliteWriteTable(conn, name, value, ...) :\n>> ?RS_SQLite_exec: could not execute1: database is locked\n>> 2: In sqliteWriteTable(conn, name, value, ...) :\n>> ?RS_SQLite_exec: could not execute1: database is locked\n>> 3: In sqliteWriteTable(conn, name, value, ...) :\n>> ?RS_SQLite_exec: could not execute1: database is locked\n>>> dbDisconnect(read_con)\n>> [1] TRUE\n>> Warning message:\n>> In sqliteCloseConnection(conn, ...) :\n>> ?RS-DBI driver warning: (closing pending result sets before closing\n>> this connection)\n>\n> You can get rid of this warning by calling dbClearResult on your query\n> result object.\n>\n>>> dbDisconnect(write_con)\n>> [1] TRUE\n>>\n>> Any suggestions on how to fix this? ?Thanks!\n>\n> I will try and have a closer look over the next couple of days.\n>\n> + seth\n>\n> --\n> Seth Falcon | @sfalcon | http://userprimary.net/\n>",
+      "body_snippet": "A bit more troubleshooting, see the modded code below. ?I'm noticing\nthat dbExistsTable() appears to be failing. ?If you run the code\nbelow, you'll see that the output is:\n\n[1] \"row extraction begins:",
+      "thread_id": "thread-c616f8467c8e",
+      "thread_depth": 0,
+      "month": "2010-06"
+    },
+    {
+      "id": "msg-115eb46d26b4",
+      "message_id": "<AANLkTimi0rLaqIuCpyOTS4Ycnws4Q-m9SKCS5EV3n227@mail.gmail.com>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2010-06-28T20:50:50-07:00",
+      "subject": "[R-sig-DB] Fwd: concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "subject_clean": "concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "in_reply_to": "<AANLkTilFR5hroZROFN8LQNv5RNC9Bov7uzEUOs-QMQbd@mail.gmail.com>",
+      "references": [
+        "<AANLkTimpByMYkw0BXjfKeW5lQB2wHpJ8QqiGPaWCF9Vi@mail.gmail.com>",
+        "<AANLkTikp6zjZ-_kcJnl0m6ORcNXs4uUkNHHxP2we_tvg@mail.gmail.com>",
+        "<AANLkTim7g5MZ5yFazRx-mTlj69lsHVPC5NEgcJ0kR8Eq@mail.gmail.com>",
+        "<AANLkTilFR5hroZROFN8LQNv5RNC9Bov7uzEUOs-QMQbd@mail.gmail.com>"
+      ],
+      "body_plain": "Hi again,\n\nI had a chance to play with this a bit.  You may find it useful to\nread up on the how SQLite does locking\n(http://www.sqlite.org/lockingv3.html).\n\nI think what's happening is that read_con with the open read_query is\nholding a shared lock on the db.  While that shared lock is held,\nwrites are not allowed.  The discussion of transaction in the SQLite\ndoc referenced above gave me the idea to try putting the writes into a\ntransaction and waiting to commit until after the read_query is\ncomplete.  This seems to work.  Here's an example:\n\nlibrary(\"RSQLite\")\nmysqldb='test.sqlite'\nunlink(mysqldb)\nfetch_n=3\n\n# Create a data table.\nsomedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3)\n\n# Make a table in our database with it.\nm <- dbDriver(\"SQLite\")\ncon=dbConnect(m, dbname=mysqldb)\ndbWriteTable(con,\"TABLEA\",somedata,overwrite=TRUE)\ndbGetQuery(con, \"CREATE table t2 (data1 INTEGER, data2 FLOAT)\")\ndbDisconnect(con)\n\n# Now we want to read from TABLEA in \"chunks\" and write to TABLEB.\nread_con=dbConnect(m, dbname=mysqldb)\nwrite_con=dbConnect(m, dbname=mysqldb)\n\nread_query=dbSendQuery(read_con,\"SELECT * FROM TABLEA\")\ndbBeginTransaction(write_con)\nwhile (!dbHasCompleted(read_query))\n{\n       read_chunk=fetch(read_query,fetch_n)\n       new_data=data.frame(data3=read_chunk$data1*4,data4=read_chunk$data2*4)\n       dbGetPreparedQuery(write_con, \"INSERT into t2 values (?, ?)\", new_data)\n}\ndbClearResult(read_query)\ndbCommit(write_con)\n\ndbDisconnect(read_con)\ndbDisconnect(write_con)\n\n\n\nUnfortunately, dbWriteTable does not currently allow you to interact\nwith transactions so I'm not sure there is a way to accomplish what\nyou want and still use the dbWriteTable convenience function.\n\nHope that helps,\n\n+ seth\n\n-- \nSeth Falcon | @sfalcon | http://userprimary.net/",
+      "body_snippet": "Hi again,\n\nI had a chance to play with this a bit.  You may find it useful to\nread up on the how SQLite does locking\n(http://www.sqlite.org/lockingv3.html).\n\nI think what's happening is that read_con ",
+      "thread_id": "thread-c616f8467c8e",
+      "thread_depth": 1,
+      "month": "2010-06"
+    },
+    {
+      "id": "msg-a695f1335398",
+      "message_id": "<029c01cb1803$18afbd10$4a0f3730$@gmail.com>",
+      "from_name": "kMan",
+      "from_email_hash": "da36b6c9f0d3bcf670ca0070ab21c08e2af9500102a69f3d58e008549eb10fc2",
+      "date": "2010-06-29T21:19:46-06:00",
+      "subject": "[R-sig-DB] R-sig-DB Digest, Vol 68, Issue 7",
+      "subject_clean": "R-sig-DB Digest, Vol 68, Issue 7",
+      "in_reply_to": "<mailman.17.1277805604.20129.r-sig-db@stat.math.ethz.ch>",
+      "references": [
+        "<mailman.17.1277805604.20129.r-sig-db@stat.math.ethz.ch>"
+      ],
+      "body_plain": "Dear Jonathan,\n\n>I'm trying to cycle through a database, reading a chunk of data from one\ntable in the DB, processing this data chunk, >and then writing the output to\nanother table in the database.  I'm having to set the fetch(n=) option\nbecause the >database is too large to read the entire thing into memory at\nonce.  Here's my sample code:\n[snip]\n\nThere is no need to open separate connections for reading vs. writing.\n\nYour code was corrupting the connection between R/driver, I think, and I\ndon't know why. But when I close a connection in R and my OS won't let me\ndelete the file, there is a different kind of problem. The code below works\non my system. I wish I knew enough to explain wtf happened with your code.\n------------------------------------------------------------------------\n##\n## Prelim/Declarations\n##\nrequire(RSQLite)\nmysqldb <- \"test.sqlite\"\nm <- dbDriver(\"SQLite\")\ntbl.names <- c(\"TABLEA\", \"TABLEB\")\nq1<-paste(\"SELECT COUNT(*) FROM\", tbl.names[1])\n\n##\n## Surrogate data (if not allready done)\n##\n(somedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3))\ncon<-dbConnect(m, dbname=mysqldb)\ndbWriteTable(con,\"TABLEA\",somedata, overwrite=TRUE)\ndbDisconnect(con)\n\n##\n## Process TABLEA in parts, write to TABLEB\n##\ncon<-dbConnect(m, dbname=mysqldb)\nn.lines<-dbGetQuery(con, q1) #NOTE class is data.frame\nchunk.size<-3\nstart.index<-seq(from = 1, to = n.lines[1,1], by = 3)\nlimit<-c(diff(start.index), n.lines[1,1]-sum(diff(start.index)))\ni<-1\nfor(i in 1:length(limit)){\n  if(i<length(limit)) { q2<-paste(\"SELECT * FROM TABLEA WHERE row_names >=\",\n\n      start.index[i], \"LIMIT\", limit[i])\n  } else { q2<-paste(\"SELECT * FROM TABLEA WHERE row_names =\", \n      start.index[i], \"LIMIT\", limit[i])\n  }\n  dat<-dbGetQuery(con, q2)\n  dbWriteTable(con, tbl.names[2], dat, row.names=FALSE, append=TRUE)\n}\ndbGetQuery(con, \"SELECT * FROM TABLEB\")\ndbDisconnect(con)\n------------------------------------------------------------------------\n\nSincerely,\nKeithC.",
+      "body_snippet": "Dear Jonathan,\n\n>I'm trying to cycle through a database, reading a chunk of data from one\ntable in the DB, processing this data chunk, >and then writing the output to\nanother table in the database.  I",
+      "thread_id": "thread-a695f1335398",
+      "thread_depth": 0,
+      "month": "2010-06"
+    },
+    {
+      "id": "msg-155268013002",
+      "message_id": "<AANLkTin39mr81IryNc3uYL5fLlP_BeL2dlAijwxEoah4@mail.gmail.com>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2010-06-29T20:36:46-07:00",
+      "subject": "[R-sig-DB] R-sig-DB Digest, Vol 68, Issue 7",
+      "subject_clean": "R-sig-DB Digest, Vol 68, Issue 7",
+      "in_reply_to": "<029c01cb1803$18afbd10$4a0f3730$@gmail.com>",
+      "references": [
+        "<mailman.17.1277805604.20129.r-sig-db@stat.math.ethz.ch>",
+        "<029c01cb1803$18afbd10$4a0f3730$@gmail.com>"
+      ],
+      "body_plain": "On Tue, Jun 29, 2010 at 8:19 PM, kMan <kchamberln at gmail.com> wrote:\n> Dear Jonathan,\n>\n>>I'm trying to cycle through a database, reading a chunk of data from one\n> table in the DB, processing this data chunk, >and then writing the output to\n> another table in the database. ?I'm having to set the fetch(n=) option\n> because the >database is too large to read the entire thing into memory at\n> once. ?Here's my sample code:\n> [snip]\n>\n> There is no need to open separate connections for reading vs. writing.\n\nWhile it is true that you can read and write from a single connection,\nyou can only have one result set open at a time and so if you want to\niterate through a result set and then write, you do, I believe, need\ntwo connections.\n\n\nI suspect that the code you propose will be considerably slower as you\nare issuing multiple queries along with a WHERE constraint.\n\n+ seth\n\n\n>\n> Your code was corrupting the connection between R/driver, I think, and I\n> don't know why. But when I close a connection in R and my OS won't let me\n> delete the file, there is a different kind of problem. The code below works\n> on my system. I wish I knew enough to explain wtf happened with your code.\n> ------------------------------------------------------------------------\n> ##\n> ## Prelim/Declarations\n> ##\n> require(RSQLite)\n> mysqldb <- \"test.sqlite\"\n> m <- dbDriver(\"SQLite\")\n> tbl.names <- c(\"TABLEA\", \"TABLEB\")\n> q1<-paste(\"SELECT COUNT(*) FROM\", tbl.names[1])\n>\n> ##\n> ## Surrogate data (if not allready done)\n> ##\n> (somedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3))\n> con<-dbConnect(m, dbname=mysqldb)\n> dbWriteTable(con,\"TABLEA\",somedata, overwrite=TRUE)\n> dbDisconnect(con)\n>\n> ##\n> ## Process TABLEA in parts, write to TABLEB\n> ##\n> con<-dbConnect(m, dbname=mysqldb)\n> n.lines<-dbGetQuery(con, q1) #NOTE class is data.frame\n> chunk.size<-3\n> start.index<-seq(from = 1, to = n.lines[1,1], by = 3)\n> limit<-c(diff(start.index), n.lines[1,1]-sum(diff(start.index)))\n> i<-1\n> for(i in 1:length(limit)){\n> ?if(i<length(limit)) { q2<-paste(\"SELECT * FROM TABLEA WHERE row_names >=\",\n>\n> ? ? ?start.index[i], \"LIMIT\", limit[i])\n> ?} else { q2<-paste(\"SELECT * FROM TABLEA WHERE row_names =\",\n> ? ? ?start.index[i], \"LIMIT\", limit[i])\n> ?}\n> ?dat<-dbGetQuery(con, q2)\n> ?dbWriteTable(con, tbl.names[2], dat, row.names=FALSE, append=TRUE)\n> }\n> dbGetQuery(con, \"SELECT * FROM TABLEB\")\n> dbDisconnect(con)\n> ------------------------------------------------------------------------\n>\n> Sincerely,\n> KeithC.\n>\n>\n>\n\n\n\n-- \nSeth Falcon | @sfalcon | http://userprimary.net/",
+      "body_snippet": "On Tue, Jun 29, 2010 at 8:19 PM, kMan <kchamberln at gmail.com> wrote:\n> Dear Jonathan,\n>\n>>I'm trying to cycle through a database, reading a chunk of data from one\n> table in the DB, processing this ",
+      "thread_id": "thread-a695f1335398",
+      "thread_depth": 1,
+      "month": "2010-06"
+    },
+    {
+      "id": "msg-90b26f9d1622",
+      "message_id": "<029d01cb1805$cf228440$6d678cc0$@gmail.com>",
+      "from_name": "kMan",
+      "from_email_hash": "da36b6c9f0d3bcf670ca0070ab21c08e2af9500102a69f3d58e008549eb10fc2",
+      "date": "2010-06-29T21:39:11-06:00",
+      "subject": "[R-sig-DB] concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "subject_clean": "concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I apologize. I sent this initially without correcting the subject line.\n\nSincerely,\nKeithC.\n\n-----Original Message-----\nDear Jonathan,\n\n>I'm trying to cycle through a database, reading a chunk of data from \n>one\ntable in the DB, processing this data chunk, >and then writing the output to\nanother table in the database.  I'm having to set the fetch(n=) option\nbecause the >database is too large to read the entire thing into memory at\nonce.  Here's my sample code:\n[snip]\n\nThere is no need to open separate connections for reading vs. writing.\n\nYour code was corrupting the connection between R/driver, I think, and I\ndon't know why. But when I close a connection in R and my OS won't let me\ndelete the file, there is a different kind of problem. The code below works\non my system. I wish I knew enough to explain wtf happened with your code.\n------------------------------------------------------------------------\n##\n## Prelim/Declarations\n##\nrequire(RSQLite)\nmysqldb <- \"test.sqlite\"\nm <- dbDriver(\"SQLite\")\ntbl.names <- c(\"TABLEA\", \"TABLEB\")\nq1<-paste(\"SELECT COUNT(*) FROM\", tbl.names[1])\n\n##\n## Surrogate data (if not allready done) ##\n(somedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3))\ncon<-dbConnect(m, dbname=mysqldb)\ndbWriteTable(con,\"TABLEA\",somedata, overwrite=TRUE)\ndbDisconnect(con)\n\n##\n## Process TABLEA in parts, write to TABLEB ## con<-dbConnect(m,\ndbname=mysqldb) n.lines<-dbGetQuery(con, q1) #NOTE class is data.frame\nchunk.size<-3\nstart.index<-seq(from = 1, to = n.lines[1,1], by = 3)\nlimit<-c(diff(start.index), n.lines[1,1]-sum(diff(start.index)))\ni<-1\nfor(i in 1:length(limit)){\n  if(i<length(limit)) { q2<-paste(\"SELECT * FROM TABLEA WHERE row_names >=\",\n\n      start.index[i], \"LIMIT\", limit[i])\n  } else { q2<-paste(\"SELECT * FROM TABLEA WHERE row_names =\", \n      start.index[i], \"LIMIT\", limit[i])\n  }\n  dat<-dbGetQuery(con, q2)\n  dbWriteTable(con, tbl.names[2], dat, row.names=FALSE, append=TRUE) }\ndbGetQuery(con, \"SELECT * FROM TABLEB\")\ndbDisconnect(con)\n------------------------------------------------------------------------\n\nSincerely,\nKeithC.",
+      "body_snippet": "I apologize. I sent this initially without correcting the subject line.\n\nSincerely,\nKeithC.\n\n-----Original Message-----\nDear Jonathan,\n\n>I'm trying to cycle through a database, reading a chunk of data",
+      "thread_id": "thread-90b26f9d1622",
+      "thread_depth": 0,
+      "month": "2010-06"
+    },
+    {
+      "id": "msg-c38b01fe50d5",
+      "message_id": "<029e01cb180f$c6c7ccb0$54576610$@gmail.com>",
+      "from_name": "kMan",
+      "from_email_hash": "da36b6c9f0d3bcf670ca0070ab21c08e2af9500102a69f3d58e008549eb10fc2",
+      "date": "2010-06-29T22:50:32-06:00",
+      "subject": "[R-sig-DB] concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "subject_clean": "concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi Seth,\n\nThis particular list requires considerable stretching on my part, so I would not be surprised if I missed a goal implied by the code style used or off-list correspondence.\n\nIf I understood the original code correctly, though, each iteration through the loop required (2) queries, a read and a write, where (I've assumed) the result sets are handled one at a time anyway. The code I proposed does the same thing, but overall there is (1) additional query prior to the loop to get the number of rows. The rest is just case processing b/c dbGetQuery() seemed to do funny things when LIMIT extended beyond the end of the table, and it wouldn't remember its last read location (e.g. didn't work like scan()). In addition, it works with dbWriteTable() and gets around the need for creating the table first, and filling it in later. \n\nI used the WHERE condition for lack of a better way to seek to a particular record. The fetch() & fetch_n, were those intended to get the read queries to start at the last read location (e.g. like serial reads using scan())? Eliminating need to condition match or generate a db index first would speed things up, and I'd very much like to learn that trick. I'd think it would also make for an excellent R-wiki post. \n\nSincerely,\nKeithC.\n\n-----Original Message-----\nFrom: Seth Falcon [mailto:seth at userprimary.net] \nSent: Tuesday, June 29, 2010 9:37 PM\nTo: kMan\nCc: Jonathan Greenberg; r-sig-db at stat.math.ethz.ch\nSubject: Re: R-sig-DB Digest, Vol 68, Issue 7\n\nOn Tue, Jun 29, 2010 at 8:19 PM, kMan <kchamberln at gmail.com> wrote:\n> Dear Jonathan,\n>\n>>I'm trying to cycle through a database, reading a chunk of data from one\n> table in the DB, processing this data chunk, >and then writing the output to\n> another table in the database.  I'm having to set the fetch(n=) option\n> because the >database is too large to read the entire thing into memory at\n> once.  Here's my sample code:\n> [snip]\n>\n> There is no need to open separate connections for reading vs. writing.\n\nWhile it is true that you can read and write from a single connection,\nyou can only have one result set open at a time and so if you want to\niterate through a result set and then write, you do, I believe, need\ntwo connections.\n\n\nI suspect that the code you propose will be considerably slower as you\nare issuing multiple queries along with a WHERE constraint.\n\n+ seth\n\n\n>\n> Your code was corrupting the connection between R/driver, I think, and I\n> don't know why. But when I close a connection in R and my OS won't let me\n> delete the file, there is a different kind of problem. The code below works\n> on my system. I wish I knew enough to explain wtf happened with your code.\n> ------------------------------------------------------------------------\n> ##\n> ## Prelim/Declarations\n> ##\n> require(RSQLite)\n> mysqldb <- \"test.sqlite\"\n> m <- dbDriver(\"SQLite\")\n> tbl.names <- c(\"TABLEA\", \"TABLEB\")\n> q1<-paste(\"SELECT COUNT(*) FROM\", tbl.names[1])\n>\n> ##\n> ## Surrogate data (if not allready done)\n> ##\n> (somedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3))\n> con<-dbConnect(m, dbname=mysqldb)\n> dbWriteTable(con,\"TABLEA\",somedata, overwrite=TRUE)\n> dbDisconnect(con)\n>\n> ##\n> ## Process TABLEA in parts, write to TABLEB\n> ##\n> con<-dbConnect(m, dbname=mysqldb)\n> n.lines<-dbGetQuery(con, q1) #NOTE class is data.frame\n> chunk.size<-3\n> start.index<-seq(from = 1, to = n.lines[1,1], by = 3)\n> limit<-c(diff(start.index), n.lines[1,1]-sum(diff(start.index)))\n> i<-1\n> for(i in 1:length(limit)){\n>  if(i<length(limit)) { q2<-paste(\"SELECT * FROM TABLEA WHERE row_names >=\",\n>\n>      start.index[i], \"LIMIT\", limit[i])\n>  } else { q2<-paste(\"SELECT * FROM TABLEA WHERE row_names =\",\n>      start.index[i], \"LIMIT\", limit[i])\n>  }\n>  dat<-dbGetQuery(con, q2)\n>  dbWriteTable(con, tbl.names[2], dat, row.names=FALSE, append=TRUE)\n> }\n> dbGetQuery(con, \"SELECT * FROM TABLEB\")\n> dbDisconnect(con)\n> ------------------------------------------------------------------------\n>\n> Sincerely,\n> KeithC.\n>\n>\n>\n\n\n\n-- \nSeth Falcon | @sfalcon | http://userprimary.net/",
+      "body_snippet": "Hi Seth,\n\nThis particular list requires considerable stretching on my part, so I would not be surprised if I missed a goal implied by the code style used or off-list correspondence.\n\nIf I understood t",
+      "thread_id": "thread-c38b01fe50d5",
+      "thread_depth": 0,
+      "month": "2010-06"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-88764c09307c",
+      "subject": "RODBC error",
+      "message_count": 2,
+      "participants": [
+        "Dan Rowlands",
+        "Kasper Daniel Hansen"
+      ],
+      "started": "2010-06-01T16:52:08+01:00",
+      "last_reply": "2010-06-02T00:57:33-04:00",
+      "root_message_id": "msg-88764c09307c"
+    },
+    {
+      "id": "thread-c290d9c941a8",
+      "subject": "Which DB type",
+      "message_count": 1,
+      "participants": [
+        "Sébastien Durand"
+      ],
+      "started": "2010-06-05T10:20:34-04:00",
+      "last_reply": "2010-06-05T10:20:34-04:00",
+      "root_message_id": "msg-c290d9c941a8"
+    },
+    {
+      "id": "thread-553b30fda3f2",
+      "subject": "Very slow MySQL access using RJDBC",
+      "message_count": 1,
+      "participants": [
+        "Navdeep Singh"
+      ],
+      "started": "2010-06-15T14:42:42+01:00",
+      "last_reply": "2010-06-15T14:42:42+01:00",
+      "root_message_id": "msg-553b30fda3f2"
+    },
+    {
+      "id": "thread-752844c5a449",
+      "subject": "updating values",
+      "message_count": 3,
+      "participants": [
+        "Daniel",
+        "Sean Davis",
+        "jeii@@@ry@@ m@iii@g oii gm@ii@com"
+      ],
+      "started": "2010-06-17T10:21:48-03:00",
+      "last_reply": "2010-06-17T13:33:31+00:00",
+      "root_message_id": "msg-752844c5a449"
+    },
+    {
+      "id": "thread-3e44c86c8eee",
+      "subject": "RODBC: AD authentication when accessing database?",
+      "message_count": 2,
+      "participants": [
+        "johannes rara"
+      ],
+      "started": "2010-06-17T21:17:33+03:00",
+      "last_reply": "2010-06-21T21:56:21+03:00",
+      "root_message_id": "msg-3e44c86c8eee"
+    },
+    {
+      "id": "thread-a0a76bcfb6da",
+      "subject": "RODBC on 64bit Windows",
+      "message_count": 3,
+      "participants": [
+        "Prof Brian Ripley",
+        "顾小波"
+      ],
+      "started": "2010-06-21T20:27:02+08:00",
+      "last_reply": "2010-06-21T22:43:56+08:00",
+      "root_message_id": "msg-a0a76bcfb6da"
+    },
+    {
+      "id": "thread-62b05789797b",
+      "subject": "concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "message_count": 2,
+      "participants": [
+        "Jonathan Greenberg",
+        "Seth Falcon"
+      ],
+      "started": "2010-06-28T13:26:33-07:00",
+      "last_reply": "2010-06-28T13:52:41-07:00",
+      "root_message_id": "msg-62b05789797b"
+    },
+    {
+      "id": "thread-c616f8467c8e",
+      "subject": "concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "message_count": 2,
+      "participants": [
+        "Jonathan Greenberg",
+        "Seth Falcon"
+      ],
+      "started": "2010-06-28T14:15:32-07:00",
+      "last_reply": "2010-06-28T20:50:50-07:00",
+      "root_message_id": "msg-c616f8467c8e"
+    },
+    {
+      "id": "thread-a695f1335398",
+      "subject": "R-sig-DB Digest, Vol 68, Issue 7",
+      "message_count": 2,
+      "participants": [
+        "Seth Falcon",
+        "kMan"
+      ],
+      "started": "2010-06-29T21:19:46-06:00",
+      "last_reply": "2010-06-29T20:36:46-07:00",
+      "root_message_id": "msg-a695f1335398"
+    },
+    {
+      "id": "thread-90b26f9d1622",
+      "subject": "concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "message_count": 1,
+      "participants": [
+        "kMan"
+      ],
+      "started": "2010-06-29T21:39:11-06:00",
+      "last_reply": "2010-06-29T21:39:11-06:00",
+      "root_message_id": "msg-90b26f9d1622"
+    },
+    {
+      "id": "thread-c38b01fe50d5",
+      "subject": "concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "message_count": 1,
+      "participants": [
+        "kMan"
+      ],
+      "started": "2010-06-29T22:50:32-06:00",
+      "last_reply": "2010-06-29T22:50:32-06:00",
+      "root_message_id": "msg-c38b01fe50d5"
+    }
+  ]
+}

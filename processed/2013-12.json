@@ -1,0 +1,275 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2013-12",
+  "messages": [
+    {
+      "id": "msg-7bd5eae2e19f",
+      "message_id": "<000001ceeea0$7c4d93c0$74e8bb40$@gmail.com>",
+      "from_name": "Edward Vanden Berghe",
+      "from_email_hash": "88a2ffe75b43f83da92d0218e53ec05b060e4ca314f3655262747c72299e40a5",
+      "date": "2013-12-01T15:20:26+01:00",
+      "subject": "[R-sig-DB] unexplained error in response to 'copy' command",
+      "subject_clean": "unexplained error in response to 'copy' command",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear all,\n\n \n\nI wanted to write the contents of a PostgreSQL table to a csv file; this is the code I used:\n\n \n\nsql <- paste(\"set search_path to testschema; \",\n\n                                \"copy testtable to '/home/evberghe/testdirectory/testfile.csv' \",\n\n                                \"with (format csv, delimiter ',', header true, quote '\\\"');\",\n\n                                sep=\"\")\n\ndbSendQuery(con, s)\n\n \n\nIn R I get the response:\n\n \n\nError in postgresqlExecStatement(conn, statement, ...) : \n\n  RS-DBI driver: (could not Retrieve the result : ERROR:  syntax error at or near \"testtable\"\n\nLINE 1: testtable\n\n        ^\n\n)\n\n \n\nThe exact same sql statement runs fine if I run it from pgAdmin. Other SQL commands work fine, so no problem with the connection. I set the permissions to the directory for anyone to read and write from/to the destination directory. Any idea of what might cause the problem?\n\n \n\nI am using R version 3.0.2 though StatET (but a plain vanilla R terminal gives the same result). SessionInfo() is \n\n \n\nR version 3.0.2 (2013-09-25)\n\nPlatform: x86_64-pc-linux-gnu (64-bit)\n\n \n\nlocale:\n\n[1] LC_CTYPE=en_US.UTF-8          LC_NUMERIC=C                  LC_TIME=en_US.UTF-8          \n\n [4] LC_COLLATE=en_US.UTF-8        LC_MONETARY=en_US.UTF-8       LC_MESSAGES=en_US.UTF-8      \n\n [7] LC_PAPER=en_US.UTF-8          LC_NAME=en_US.UTF-8           LC_ADDRESS=en_US.UTF-8       \n\n[10] LC_TELEPHONE=en_US.UTF-8      LC_MEASUREMENT=en_US.UTF-8    LC_IDENTIFICATION=en_US.UTF-8\n\n \n\nattached base packages:\n\n[1] stats     graphics  grDevices utils     datasets  methods   base     \n\n \n\nother attached packages:\n\n[1] RPostgreSQL_0.4 DBI_0.2-7       rj_1.1.3-1     \n\n \n\nloaded via a namespace (and not attached):\n\n[1] rj.gd_1.1.3-1 tools_3.0.2  \n\n \n\nPostgreSQL is version 9.1.10; Ubuntu is 12.04.3\n\n \n\n \n\nEdward\n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Dear all,\n\n \n\nI wanted to write the contents of a PostgreSQL table to a csv file; this is the code I used:\n\n \n\nsql <- paste(\"set search_path to testschema; \",\n\n                                \"copy te",
+      "thread_id": "thread-7bd5eae2e19f",
+      "thread_depth": 0,
+      "month": "2013-12"
+    },
+    {
+      "id": "msg-c8aa4134f13d",
+      "message_id": "<CAMu32AC2vYXcaiiNPt_TB3Vsa+vZuUHD-20n+0sztWovwUkueg@mail.gmail.com>",
+      "from_name": "James David Smith",
+      "from_email_hash": "dd89f045970e588c9c1cd25b447415e2e9bf5d07f9e3d341647ec316ff7a19fe",
+      "date": "2013-12-01T14:37:02Z",
+      "subject": "[R-sig-DB] unexplained error in response to 'copy' command",
+      "subject_clean": "unexplained error in response to 'copy' command",
+      "in_reply_to": "<000001ceeea0$7c4d93c0$74e8bb40$@gmail.com>",
+      "references": [
+        "<000001ceeea0$7c4d93c0$74e8bb40$@gmail.com>"
+      ],
+      "body_plain": "Does this work?\n\ndbSendQuery(con, \"copy testtable to\n'/home/evberghe/testdirectory/testfile.csv' format csv delimiter ','\nheader=true  quote '\\\"')\n\n\n\n\nOn 1 Dec 2013 14:20, \"Edward Vanden Berghe\" <evberghe at gmail.com> wrote:\n\n> Dear all,\n>\n>\n>\n> I wanted to write the contents of a PostgreSQL table to a csv file; this\n> is the code I used:\n>\n>\n>\n> sql <- paste(\"set search_path to testschema; \",\n>\n>                                 \"copy testtable to\n> '/home/evberghe/testdirectory/testfile.csv' \",\n>\n>                                 \"with (format csv, delimiter ',', header\n> true, quote '\\\"');\",\n>\n>                                 sep=\"\")\n>\n> dbSendQuery(con, s)\n>\n>\n>\n> In R I get the response:\n>\n>\n>\n> Error in postgresqlExecStatement(conn, statement, ...) :\n>\n>   RS-DBI driver: (could not Retrieve the result : ERROR:  syntax error at\n> or near \"testtable\"\n>\n> LINE 1: testtable\n>\n>         ^\n>\n> )\n>\n>\n>\n> The exact same sql statement runs fine if I run it from pgAdmin. Other SQL\n> commands work fine, so no problem with the connection. I set the\n> permissions to the directory for anyone to read and write from/to the\n> destination directory. Any idea of what might cause the problem?\n>\n>\n>\n> I am using R version 3.0.2 though StatET (but a plain vanilla R terminal\n> gives the same result). SessionInfo() is\n>\n>\n>\n> R version 3.0.2 (2013-09-25)\n>\n> Platform: x86_64-pc-linux-gnu (64-bit)\n>\n>\n>\n> locale:\n>\n> [1] LC_CTYPE=en_US.UTF-8          LC_NUMERIC=C\n>  LC_TIME=en_US.UTF-8\n>\n>  [4] LC_COLLATE=en_US.UTF-8        LC_MONETARY=en_US.UTF-8\n> LC_MESSAGES=en_US.UTF-8\n>\n>  [7] LC_PAPER=en_US.UTF-8          LC_NAME=en_US.UTF-8\n> LC_ADDRESS=en_US.UTF-8\n>\n> [10] LC_TELEPHONE=en_US.UTF-8      LC_MEASUREMENT=en_US.UTF-8\n>  LC_IDENTIFICATION=en_US.UTF-8\n>\n>\n>\n> attached base packages:\n>\n> [1] stats     graphics  grDevices utils     datasets  methods   base\n>\n>\n>\n> other attached packages:\n>\n> [1] RPostgreSQL_0.4 DBI_0.2-7       rj_1.1.3-1\n>\n>\n>\n> loaded via a namespace (and not attached):\n>\n> [1] rj.gd_1.1.3-1 tools_3.0.2\n>\n>\n>\n> PostgreSQL is version 9.1.10; Ubuntu is 12.04.3\n>\n>\n>\n>\n>\n> Edward\n>\n>\n>         [[alternative HTML version deleted]]\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Does this work?\n\ndbSendQuery(con, \"copy testtable to\n'/home/evberghe/testdirectory/testfile.csv' format csv delimiter ','\nheader=true  quote '\\\"')\n\n\n\n\nOn 1 Dec 2013 14:20, \"Edward Vanden Berghe\" <evbe",
+      "thread_id": "thread-7bd5eae2e19f",
+      "thread_depth": 1,
+      "month": "2013-12"
+    },
+    {
+      "id": "msg-8a9bc08b4745",
+      "message_id": "<000d01ceeea8$91291c30$b37b5490$@gmail.com>",
+      "from_name": "Edward Vanden Berghe",
+      "from_email_hash": "88a2ffe75b43f83da92d0218e53ec05b060e4ca314f3655262747c72299e40a5",
+      "date": "2013-12-01T16:18:17+01:00",
+      "subject": "[R-sig-DB] unexplained error in response to 'copy' command",
+      "subject_clean": "unexplained error in response to 'copy' command",
+      "in_reply_to": "<CAMu32AC2vYXcaiiNPt_TB3Vsa+vZuUHD-20n+0sztWovwUkueg@mail.gmail.com>",
+      "references": [
+        "<000001ceeea0$7c4d93c0$74e8bb40$@gmail.com>",
+        "<CAMu32AC2vYXcaiiNPt_TB3Vsa+vZuUHD-20n+0sztWovwUkueg@mail.gmail.com>"
+      ],
+      "body_plain": "Hi James,\n\nThanks for your quick response.\n\nThe format of the options of the copy command was changed some time ago; your suggestion does not work; the one in my original post does.\n\nIn the mean time I found the source of the problem - nothing to do with DBI or PostgreSQL, but a mistake in my code.\n\nCheers,\n\nEdward\n\nFrom: James David Smith [mailto:james.david.smith at gmail.com] \nSent: 01 December 2013 15:37\nTo: Edward Vanden Berghe\nCc: r-sig-db at r-project.org\nSubject: Re: [R-sig-DB] unexplained error in response to 'copy' command\n\nDoes this work?\ndbSendQuery(con, \"copy testtable to '/home/evberghe/testdirectory/testfile.csv' format csv delimiter ',' header=true  quote '\\\"')\n\n\n\nOn 1 Dec 2013 14:20, \"Edward Vanden Berghe\" <evberghe at gmail.com> wrote:\nDear all,\n\n\n\nI wanted to write the contents of a PostgreSQL table to a csv file; this is the code I used:\n\n\n\nsql <- paste(\"set search_path to testschema; \",\n\n                                \"copy testtable to '/home/evberghe/testdirectory/testfile.csv' \",\n\n                                \"with (format csv, delimiter ',', header true, quote '\\\"');\",\n\n                                sep=\"\")\n\ndbSendQuery(con, s)\n\n\n\nIn R I get the response:\n\n\n\nError in postgresqlExecStatement(conn, statement, ...) :\n\n  RS-DBI driver: (could not Retrieve the result : ERROR:  syntax error at or near \"testtable\"\n\nLINE 1: testtable\n\n        ^\n\n)\n\n\n\nThe exact same sql statement runs fine if I run it from pgAdmin. Other SQL commands work fine, so no problem with the connection. I set the permissions to the directory for anyone to read and write from/to the destination directory. Any idea of what might cause the problem?\n\n\n\nI am using R version 3.0.2 though StatET (but a plain vanilla R terminal gives the same result). SessionInfo() is\n\n\n\nR version 3.0.2 (2013-09-25)\n\nPlatform: x86_64-pc-linux-gnu (64-bit)\n\n\n\nlocale:\n\n[1] LC_CTYPE=en_US.UTF-8          LC_NUMERIC=C                  LC_TIME=en_US.UTF-8\n\n [4] LC_COLLATE=en_US.UTF-8        LC_MONETARY=en_US.UTF-8       LC_MESSAGES=en_US.UTF-8\n\n [7] LC_PAPER=en_US.UTF-8          LC_NAME=en_US.UTF-8           LC_ADDRESS=en_US.UTF-8\n\n[10] LC_TELEPHONE=en_US.UTF-8      LC_MEASUREMENT=en_US.UTF-8    LC_IDENTIFICATION=en_US.UTF-8\n\n\n\nattached base packages:\n\n[1] stats     graphics  grDevices utils     datasets  methods   base\n\n\n\nother attached packages:\n\n[1] RPostgreSQL_0.4 DBI_0.2-7       rj_1.1.3-1\n\n\n\nloaded via a namespace (and not attached):\n\n[1] rj.gd_1.1.3-1 tools_3.0.2\n\n\n\nPostgreSQL is version 9.1.10; Ubuntu is 12.04.3\n\n\n\n\n\nEdward\n\n\n        [[alternative HTML version deleted]]\n\n_______________________________________________\nR-sig-DB mailing list -- R Special Interest Group\nR-sig-DB at r-project.org\nhttps://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "Hi James,\n\nThanks for your quick response.\n\nThe format of the options of the copy command was changed some time ago; your suggestion does not work; the one in my original post does.\n\nIn the mean time ",
+      "thread_id": "thread-7bd5eae2e19f",
+      "thread_depth": 2,
+      "month": "2013-12"
+    },
+    {
+      "id": "msg-8198451764eb",
+      "message_id": "<CACgt3o=7WRCwj+7ojQcLgVg-DrCrFQm3whEemBsuOwCdUKORaQ@mail.gmail.com>",
+      "from_name": "Domagoj Culinovic",
+      "from_email_hash": "c9e338406a8bc700d4eb6bd961790542b278f8bf077a94315518c1cde4012f31",
+      "date": "2013-12-06T10:08:44+01:00",
+      "subject": "[R-sig-DB] R and MS SQL Spatial",
+      "subject_clean": "R and MS SQL Spatial",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I have a lot of spatial and statistical data stored in MS SQL Spatial. Now\ni am using web-gis server to produce thematic maps, but for better analyses\ni need R.\nCan someone help me to find solution for MS SQL Spatial. Some examples code\nwill be welcome too, because i am new in R.\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "I have a lot of spatial and statistical data stored in MS SQL Spatial. Now\ni am using web-gis server to produce thematic maps, but for better analyses\ni need R.\nCan someone help me to find solution fo",
+      "thread_id": "thread-8198451764eb",
+      "thread_depth": 0,
+      "month": "2013-12"
+    },
+    {
+      "id": "msg-16b9bdae8b75",
+      "message_id": "<CAMXOh=0QtH8BikHcA4BCRGzOhjmdboAuW2tov0-hgtwVLcsiXw@mail.gmail.com>",
+      "from_name": "Andres Diaz",
+      "from_email_hash": "1df8a32de245751eed9d9bf5337ecb7de9922af5ee3e506df5997657ffdacd20",
+      "date": "2013-12-06T10:35:10+01:00",
+      "subject": "[R-sig-DB] [R-sig-Geo] R and MS SQL Spatial",
+      "subject_clean": "R and MS SQL Spatial",
+      "in_reply_to": "<CACgt3o=7WRCwj+7ojQcLgVg-DrCrFQm3whEemBsuOwCdUKORaQ@mail.gmail.com>",
+      "references": [
+        "<CACgt3o=7WRCwj+7ojQcLgVg-DrCrFQm3whEemBsuOwCdUKORaQ@mail.gmail.com>"
+      ],
+      "body_plain": "I had used MySQL instead of MSSQL and its very similar. i recomend you to\nuse this database programm because you can download and install a R package\nthat allows you to connect your database and R program.\n\nThe name of the R package is RMySQL, if you want I Can provide you with\nsome hydrometeorological examples focused on rainfall and dicharge flow\ndata series. (How to connect etc..)\n\nOnce you can acquire your information from the database you can start to\nplay with severals statistical/spatial packages builded in R.\n\nBest regards,\n\n\n\nM. Andr?s D?az L.\nPhd. Candidate\nSediment Transport Research Group\nBarcelona Tech\nTel.:+34 934054196\nwww.gits.ws\n\n\nEl viernes, 6 de diciembre de 2013, Domagoj Culinovic escribi?:\n\n> I have a lot of spatial and statistical data stored in MS SQL Spatial. Now\n> i am using web-gis server to produce thematic maps, but for better analyses\n> i need R.\n> Can someone help me to find solution for MS SQL Spatial. Some examples code\n> will be welcome too, because i am new in R.\n>\n>         [[alternative HTML version deleted]]\n>\n> _______________________________________________\n> R-sig-Geo mailing list\n> R-sig-Geo at r-project.org <javascript:;>\n> https://stat.ethz.ch/mailman/listinfo/r-sig-geo\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "I had used MySQL instead of MSSQL and its very similar. i recomend you to\nuse this database programm because you can download and install a R package\nthat allows you to connect your database and R pro",
+      "thread_id": "thread-8198451764eb",
+      "thread_depth": 1,
+      "month": "2013-12"
+    },
+    {
+      "id": "msg-e00b094457aa",
+      "message_id": "<alpine.LRH.2.03.1312061025090.26376@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "37a3c7637f7cdc3576966201a0fd58853d44abb21284a9eb85afffcb057c33b5",
+      "date": "2013-12-06T10:37:49+01:00",
+      "subject": "[R-sig-DB] [R-sig-Geo] R and MS SQL Spatial",
+      "subject_clean": "R and MS SQL Spatial",
+      "in_reply_to": "<CACgt3o=7WRCwj+7ojQcLgVg-DrCrFQm3whEemBsuOwCdUKORaQ@mail.gmail.com>",
+      "references": [
+        "<CACgt3o=7WRCwj+7ojQcLgVg-DrCrFQm3whEemBsuOwCdUKORaQ@mail.gmail.com>"
+      ],
+      "body_plain": "On Fri, 6 Dec 2013, Domagoj Culinovic wrote:\n\n> I have a lot of spatial and statistical data stored in MS SQL Spatial. Now\n> i am using web-gis server to produce thematic maps, but for better analyses\n> i need R.\n> Can someone help me to find solution for MS SQL Spatial. Some examples code\n> will be welcome too, because i am new in R.\n>\n\nIf you are using Windows, and have installed the rgdal CRAN Windows binary \npackage, then the correct driver should be available. The driver should \nwork as desrcibed in OGR:\n\nhttp://www.gdal.org/ogr/drv_mssqlspatial.html\n\nOn loading rgdal, look for MSSQLSpatial in:\n\nlibrary(rgdal)\nogrDrivers()\n\nYou may need to proceed by trial and error to find the incantation for \ndsn= and layer= in ogrInfo() and readOGR() to access your data. Maybe try \nogrListLayers() with your supposed dsn= first to see which layers are \nreported. I don't use this driver, so advice from others who do would be \nvery useful.\n\nHope this helps,\n\nRoger\n\n> \t[[alternative HTML version deleted]]\n\nPS: only post plain text please! HTML mail is larger in size and can \ncontain bad payloads that consume energy to remove. This is a low-carbon \nfootprint list.\n\n>\n> _______________________________________________\n> R-sig-Geo mailing list\n> R-sig-Geo at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-geo\n>\n\n-- \nRoger Bivand\nDepartment of Economics, Norwegian School of Economics,\nHelleveien 30, N-5045 Bergen, Norway.\nvoice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand at nhh.no",
+      "body_snippet": "On Fri, 6 Dec 2013, Domagoj Culinovic wrote:\n\n> I have a lot of spatial and statistical data stored in MS SQL Spatial. Now\n> i am using web-gis server to produce thematic maps, but for better analyses",
+      "thread_id": "thread-8198451764eb",
+      "thread_depth": 1,
+      "month": "2013-12"
+    },
+    {
+      "id": "msg-f5d096afb7a0",
+      "message_id": "<11693D5D-1F5E-420F-A833-5B208A29882D@gmail.com>",
+      "from_name": "p@@j@i@ m@iii@g oii gm@ii@com",
+      "from_email_hash": "60d6ad88e828ccd62bfcb746f0b1356a822e58606736ad14a7401a042eccca89",
+      "date": "2013-12-06T10:54:05+01:00",
+      "subject": "[R-sig-DB] [R-sig-Geo] R and MS SQL Spatial",
+      "subject_clean": "R and MS SQL Spatial",
+      "in_reply_to": "<CAMXOh=0QtH8BikHcA4BCRGzOhjmdboAuW2tov0-hgtwVLcsiXw@mail.gmail.com>",
+      "references": [
+        "<CACgt3o=7WRCwj+7ojQcLgVg-DrCrFQm3whEemBsuOwCdUKORaQ@mail.gmail.com>",
+        "<CAMXOh=0QtH8BikHcA4BCRGzOhjmdboAuW2tov0-hgtwVLcsiXw@mail.gmail.com>"
+      ],
+      "body_plain": "If I have only dbf format of those data base can I use them in R with the same codes of hydrometeorological example? Plz provide some example I'm new in R.\n\nSent from Brishti's iPhone\n\n> On 06.12.2013, at 10:35, Andres Diaz <madiazl at gmail.com> wrote:\n> \n> I had used MySQL instead of MSSQL and its very similar. i recomend you to\n> use this database programm because you can download and install a R package\n> that allows you to connect your database and R program.\n> \n> The name of the R package is RMySQL, if you want I Can provide you with\n> some hydrometeorological examples focused on rainfall and dicharge flow\n> data series. (How to connect etc..)\n> \n> Once you can acquire your information from the database you can start to\n> play with severals statistical/spatial packages builded in R.\n> \n> Best regards,\n> \n> \n> \n> M. Andr??s D??az L.\n> Phd. Candidate\n> Sediment Transport Research Group\n> Barcelona Tech\n> Tel.:+34 934054196\n> www.gits.ws\n> \n> \n> El viernes, 6 de diciembre de 2013, Domagoj Culinovic escribi??:\n> \n>> I have a lot of spatial and statistical data stored in MS SQL Spatial. Now\n>> i am using web-gis server to produce thematic maps, but for better analyses\n>> i need R.\n>> Can someone help me to find solution for MS SQL Spatial. Some examples code\n>> will be welcome too, because i am new in R.\n>> \n>>        [[alternative HTML version deleted]]\n>> \n>> _______________________________________________\n>> R-sig-Geo mailing list\n>> R-sig-Geo at r-project.org <javascript:;>\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-geo\n> \n>    [[alternative HTML version deleted]]\n> \n> _______________________________________________\n> R-sig-Geo mailing list\n> R-sig-Geo at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-geo\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "If I have only dbf format of those data base can I use them in R with the same codes of hydrometeorological example? Plz provide some example I'm new in R.\n\nSent from Brishti's iPhone\n\n> On 06.12.2013",
+      "thread_id": "thread-8198451764eb",
+      "thread_depth": 2,
+      "month": "2013-12"
+    },
+    {
+      "id": "msg-c3c591b66ae7",
+      "message_id": "<CANVKczPzDB6YVFrrJR_QedfDT8aK2aadVRXhvJDLCENZX4xS=g@mail.gmail.com>",
+      "from_name": "Barry Rowlingson",
+      "from_email_hash": "d992dc8c7701258dafb725629b4bdcc346e4592cf9f5db84c9b50e39b17a0e06",
+      "date": "2013-12-06T10:17:45Z",
+      "subject": "[R-sig-DB] [R-sig-Geo] R and MS SQL Spatial",
+      "subject_clean": "R and MS SQL Spatial",
+      "in_reply_to": "<4f76d403e3b1466a8e16a1fc95cff49d@EX-1-HT0.lancs.local>",
+      "references": [
+        "<4f76d403e3b1466a8e16a1fc95cff49d@EX-1-HT0.lancs.local>"
+      ],
+      "body_plain": "On Fri, Dec 6, 2013 at 9:08 AM, Domagoj Culinovic\n<culinovic.domagoj at gmail.com> wrote:\n> I have a lot of spatial and statistical data stored in MS SQL Spatial. Now\n> i am using web-gis server to produce thematic maps, but for better analyses\n> i need R.\n> Can someone help me to find solution for MS SQL Spatial. Some examples code\n> will be welcome too, because i am new in R.\n\nAccess to spatial data in R is best done using the rgdal package,\nwhich uses the C library GDAL to access different types of spatial\ndata store - shapefiles, Mapinfo files, GML etc.\n\nIf you can install GDAL with support for MS SQL Spatial then you can\nread your data using `readOGR` from the `rgdal` package. Install the\nrgdal package, do require(rgdal);ogrDrivers() to get a list of drivers\nthat your rgdal package has. If it includes MSSQLSpatial then you may\nbe sorted. Mine does, and I'm not even running Windows, which\nsurprised me and I fell off my chair:\n\n > any(ogrDrivers()$name == \"MSSQLSpatial\")\n [1] TRUE\n\nThe next problem is simply working out the exact form of the\nconnection string (the \"dsn\") to the database so that it can pass your\nserver name, username, and password, and database name. The GDAL guide\nmight help:\n\nhttp://www.gdal.org/ogr/drv_mssqlspatial.html\n\nbut I don't have a server I can experiment with.\n\n[Someone has just suggested switching to MySQL, which is probably a\nbit pointless - you'd be better off switching to PostGIS]\n\nBarry",
+      "body_snippet": "On Fri, Dec 6, 2013 at 9:08 AM, Domagoj Culinovic\n<culinovic.domagoj at gmail.com> wrote:\n> I have a lot of spatial and statistical data stored in MS SQL Spatial. Now\n> i am using web-gis server to pr",
+      "thread_id": "thread-c3c591b66ae7",
+      "thread_depth": 0,
+      "month": "2013-12"
+    },
+    {
+      "id": "msg-24191b7032db",
+      "message_id": "<B6A0874B-A8F0-4D19-81C3-3B144855DF47@coote.org>",
+      "from_name": "Tim Coote",
+      "from_email_hash": "df580cd4c3c425871e089d1f7e5a28c9f98bacb6e3680a962091cf23863b90cf",
+      "date": "2013-12-20T13:07:29Z",
+      "subject": "[R-sig-DB] data type mapping for RMySQL",
+      "subject_clean": "data type mapping for RMySQL",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hullo\n\nI?m not sure whether this is a bug, but I would expect some sort of warning where mappings may lose precision.\n\nI?ve got a mysql table with large numbers in it:\n\nCREATE TABLE if not exists `tester` (\n      `id` bigint(20) NOT NULL AUTO_INCREMENT,\n      `address` bigint(20) NOT NULL,\n      PRIMARY KEY (`id`),\n      UNIQUE KEY `idx_address` (`address`)\n    ) ENGINE=InnoDB AUTO_INCREMENT=78628 DEFAULT CHARSET=latin1 ;\n\nThe key aspect of this is that the ?address? column needs to be used to distinguish between values. If I put one value into this table, and read it back with the mysql client:\n\nmysql> \\. test.sql\nQuery OK, 1 row affected, 1 warning (0.00 sec)\n\nDatabase changed\nQuery OK, 0 rows affected (0.05 sec)\n\nQuery OK, 1 row affected (0.01 sec)\n\n+---------------------+\n| address             |\n+---------------------+\n| 2029716610205351937 |\n+---------------------+\n1 row in set (0.00 sec)\n\nBut if I try to read the value using R:\n> library(RMySQL)\nLoading required package: DBI\n> options(digits=20)\n> \n> hubdb <- dbConnect(\"MySQL\", username=\"root\", host=\"localhost\", password=\"dummy\", dbname=\"dummy\" )\n> q = sprintf(\"select * from tester;\")\n> \n> \n> testvals <- fetch(dbSendQuery(hubdb, q), n=-1)\n> \n> print (testvals)\n              address\n1 2029716610205351936\n> \n> \nNote that the address value is different\n\nThe issue is that the precision of the sql type (20 decimal characters) is larger than the precision of the R type that it?s been matched to.  I don?t know whether this is a bug or not - it would have help to have a warning about the possible precision mismatch, rather than to spot the emerging bug ;-) - that aside, is there a simple way to map the bigint type to something else, eg for this situation, character would do. I know that I can cast the type in the sql query, but I?d prefer to set the mapping at a more global scope if I could in the data definition.\n\ntia\n\nTim",
+      "body_snippet": "Hullo\n\nI?m not sure whether this is a bug, but I would expect some sort of warning where mappings may lose precision.\n\nI?ve got a mysql table with large numbers in it:\n\nCREATE TABLE if not exists `tes",
+      "thread_id": "thread-24191b7032db",
+      "thread_depth": 0,
+      "month": "2013-12"
+    },
+    {
+      "id": "msg-18f24b3af5e5",
+      "message_id": "<52B4620C.3060003@gmail.com>",
+      "from_name": "Paul Gilbert",
+      "from_email_hash": "29fea860e182a01f3e4160bbdef3ad0b7144bad40faef12022989132ed8ec2b1",
+      "date": "2013-12-20T10:28:12-05:00",
+      "subject": "[R-sig-DB] data type mapping for RMySQL",
+      "subject_clean": "data type mapping for RMySQL",
+      "in_reply_to": "<B6A0874B-A8F0-4D19-81C3-3B144855DF47@coote.org>",
+      "references": [
+        "<B6A0874B-A8F0-4D19-81C3-3B144855DF47@coote.org>"
+      ],
+      "body_plain": "Just for the record, this also happens in Postgresql, so the problem is \nmore general. (I tried testing in SQLite but my standalone client seems \nto be encrypting the db and RSQLite cannot use it.) I'm not sure there \nis a solution to this as I do not immediately see how to represent \nbigint in R.\n\nGeneric SQL example:\n\n >mysql test\n >psql  test\n >sqlite test\n\n[ DROP TABLE tester; ]\n\nCREATE TABLE  tester (\n       id bigint NOT NULL,\n       address bigint NOT NULL\n     ) ;\n\nINSERT INTO tester VALUES (1, 2029716610205351937);\n\nSELECT * FROM tester ;\n\ngives\n   1 | 2029716610205351937\nin mysql, psql, and sqlite\n\n( exit; /q or .quit )\n(later DROP TABLE tester;)\n\n\n >R\n\nrequire(\"RMySQL\")\nhubdb <- dbConnect(\"MySQL\", dbname=\"test\" )\nprint(fetch(dbSendQuery(hubdb, \"select * from tester;\"), n=-1), digits=20)\n\nRMySQL gives\n   id             address\n1  1 2029716610205351936\n\n\nrequire(\"RPostgreSQL\")\nhubdb <- dbConnect(\"PostgreSQL\", dbname=\"test\" )\nprint(fetch(dbSendQuery(hubdb, \"select * from tester;\"), n=-1), digits=20)\nRPostgreSQL gives\n   id             address\n1  1 2029716610205351936\n\n\nPaul\n\n\nOn 13-12-20 08:07 AM, Tim Coote wrote:\n> Hullo\n>\n> I?m not sure whether this is a bug, but I would expect some sort of warning where mappings may lose precision.\n>\n> I?ve got a mysql table with large numbers in it:\n>\n> CREATE TABLE if not exists `tester` (\n>        `id` bigint(20) NOT NULL AUTO_INCREMENT,\n>        `address` bigint(20) NOT NULL,\n>        PRIMARY KEY (`id`),\n>        UNIQUE KEY `idx_address` (`address`)\n>      ) ENGINE=InnoDB AUTO_INCREMENT=78628 DEFAULT CHARSET=latin1 ;\n>\n> The key aspect of this is that the ?address? column needs to be used to distinguish between values. If I put one value into this table, and read it back with the mysql client:\n>\n> mysql> \\. test.sql\n> Query OK, 1 row affected, 1 warning (0.00 sec)\n>\n> Database changed\n> Query OK, 0 rows affected (0.05 sec)\n>\n> Query OK, 1 row affected (0.01 sec)\n>\n> +---------------------+\n> | address             |\n> +---------------------+\n> | 2029716610205351937 |\n> +---------------------+\n> 1 row in set (0.00 sec)\n>\n> But if I try to read the value using R:\n>> library(RMySQL)\n> Loading required package: DBI\n>> options(digits=20)\n>>\n>> hubdb <- dbConnect(\"MySQL\", username=\"root\", host=\"localhost\", password=\"dummy\", dbname=\"dummy\" )\n>> q = sprintf(\"select * from tester;\")\n>>\n>>\n>> testvals <- fetch(dbSendQuery(hubdb, q), n=-1)\n>>\n>> print (testvals)\n>                address\n> 1 2029716610205351936\n>>\n>>\n> Note that the address value is different\n>\n> The issue is that the precision of the sql type (20 decimal characters) is larger than the precision of the R type that it?s been matched to.  I don?t know whether this is a bug or not - it would have help to have a warning about the possible precision mismatch, rather than to spot the emerging bug ;-) - that aside, is there a simple way to map the bigint type to something else, eg for this situation, character would do. I know that I can cast the type in the sql query, but I?d prefer to set the mapping at a more global scope if I could in the data definition.\n>\n> tia\n>\n> Tim\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "Just for the record, this also happens in Postgresql, so the problem is \nmore general. (I tried testing in SQLite but my standalone client seems \nto be encrypting the db and RSQLite cannot use it.) I'",
+      "thread_id": "thread-24191b7032db",
+      "thread_depth": 1,
+      "month": "2013-12"
+    },
+    {
+      "id": "msg-5fb95c923927",
+      "message_id": "<CAAxdm-6Z1jKDjSjgdgg=kw3RguYYRf9bx861ZQMkeBgH2oooXQ@mail.gmail.com>",
+      "from_name": "jim holtman",
+      "from_email_hash": "45e8e0391a4858662e9d19b8dde054f6d84c05f4f238ae7db6017878fee93353",
+      "date": "2013-12-20T10:38:12-05:00",
+      "subject": "[R-sig-DB] data type mapping for RMySQL",
+      "subject_clean": "data type mapping for RMySQL",
+      "in_reply_to": "<52B4620C.3060003@gmail.com>",
+      "references": [
+        "<B6A0874B-A8F0-4D19-81C3-3B144855DF47@coote.org>",
+        "<52B4620C.3060003@gmail.com>"
+      ],
+      "body_plain": "There is no direct mapping for a 'bigint' that has 20 digits.  The\nfloating point in R (and in any other language used on your computer\nwith IEEE floating point) is limited to about 15 digits.  In the cases\nwhere I have had to process this type of numeric data, I have had it\nread in as a character value.  This means that I cannot do arithmetic\non it, but at least I can compare it to other values correctly.  This\nis a variation of FAQ 7.31.\n\nJim Holtman\nData Munger Guru\n\nWhat is the problem that you are trying to solve?\nTell me what you want to do, not how you want to do it.\n\n\nOn Fri, Dec 20, 2013 at 10:28 AM, Paul Gilbert <pgilbert902 at gmail.com> wrote:\n> Just for the record, this also happens in Postgresql, so the problem is more\n> general. (I tried testing in SQLite but my standalone client seems to be\n> encrypting the db and RSQLite cannot use it.) I'm not sure there is a\n> solution to this as I do not immediately see how to represent bigint in R.\n>\n> Generic SQL example:\n>\n>>mysql test\n>>psql  test\n>>sqlite test\n>\n> [ DROP TABLE tester; ]\n>\n> CREATE TABLE  tester (\n>       id bigint NOT NULL,\n>       address bigint NOT NULL\n>     ) ;\n>\n> INSERT INTO tester VALUES (1, 2029716610205351937);\n>\n> SELECT * FROM tester ;\n>\n> gives\n>   1 | 2029716610205351937\n> in mysql, psql, and sqlite\n>\n> ( exit; /q or .quit )\n> (later DROP TABLE tester;)\n>\n>\n>>R\n>\n> require(\"RMySQL\")\n> hubdb <- dbConnect(\"MySQL\", dbname=\"test\" )\n> print(fetch(dbSendQuery(hubdb, \"select * from tester;\"), n=-1), digits=20)\n>\n> RMySQL gives\n>   id             address\n> 1  1 2029716610205351936\n>\n>\n> require(\"RPostgreSQL\")\n> hubdb <- dbConnect(\"PostgreSQL\", dbname=\"test\" )\n> print(fetch(dbSendQuery(hubdb, \"select * from tester;\"), n=-1), digits=20)\n> RPostgreSQL gives\n>   id             address\n> 1  1 2029716610205351936\n>\n>\n> Paul\n>\n>\n>\n> On 13-12-20 08:07 AM, Tim Coote wrote:\n>>\n>> Hullo\n>>\n>> I?m not sure whether this is a bug, but I would expect some sort of\n>> warning where mappings may lose precision.\n>>\n>> I?ve got a mysql table with large numbers in it:\n>>\n>> CREATE TABLE if not exists `tester` (\n>>        `id` bigint(20) NOT NULL AUTO_INCREMENT,\n>>        `address` bigint(20) NOT NULL,\n>>        PRIMARY KEY (`id`),\n>>        UNIQUE KEY `idx_address` (`address`)\n>>      ) ENGINE=InnoDB AUTO_INCREMENT=78628 DEFAULT CHARSET=latin1 ;\n>>\n>> The key aspect of this is that the ?address? column needs to be used to\n>> distinguish between values. If I put one value into this table, and read it\n>> back with the mysql client:\n>>\n>> mysql> \\. test.sql\n>> Query OK, 1 row affected, 1 warning (0.00 sec)\n>>\n>> Database changed\n>> Query OK, 0 rows affected (0.05 sec)\n>>\n>> Query OK, 1 row affected (0.01 sec)\n>>\n>> +---------------------+\n>> | address             |\n>> +---------------------+\n>> | 2029716610205351937 |\n>> +---------------------+\n>> 1 row in set (0.00 sec)\n>>\n>> But if I try to read the value using R:\n>>>\n>>> library(RMySQL)\n>>\n>> Loading required package: DBI\n>>>\n>>> options(digits=20)\n>>>\n>>> hubdb <- dbConnect(\"MySQL\", username=\"root\", host=\"localhost\",\n>>> password=\"dummy\", dbname=\"dummy\" )\n>>> q = sprintf(\"select * from tester;\")\n>>>\n>>>\n>>> testvals <- fetch(dbSendQuery(hubdb, q), n=-1)\n>>>\n>>> print (testvals)\n>>\n>>                address\n>> 1 2029716610205351936\n>>>\n>>>\n>>>\n>> Note that the address value is different\n>>\n>> The issue is that the precision of the sql type (20 decimal characters) is\n>> larger than the precision of the R type that it?s been matched to.  I don?t\n>> know whether this is a bug or not - it would have help to have a warning\n>> about the possible precision mismatch, rather than to spot the emerging bug\n>> ;-) - that aside, is there a simple way to map the bigint type to something\n>> else, eg for this situation, character would do. I know that I can cast the\n>> type in the sql query, but I?d prefer to set the mapping at a more global\n>> scope if I could in the data definition.\n>>\n>> tia\n>>\n>> Tim\n>> _______________________________________________\n>> R-sig-DB mailing list -- R Special Interest Group\n>> R-sig-DB at r-project.org\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>>\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "There is no direct mapping for a 'bigint' that has 20 digits.  The\nfloating point in R (and in any other language used on your computer\nwith IEEE floating point) is limited to about 15 digits.  In the",
+      "thread_id": "thread-24191b7032db",
+      "thread_depth": 2,
+      "month": "2013-12"
+    },
+    {
+      "id": "msg-4c13f8b686a3",
+      "message_id": "<CABdHhvFy_3pEGj=Go9GDU6swJUGUAsyNmvtFrHOoE1+8qRnprA@mail.gmail.com>",
+      "from_name": "Hadley Wickham",
+      "from_email_hash": "ca0ecd97ae88c22ed6e7f3889e08db1f732ad5eadb66671b2dc01d355cc20bf9",
+      "date": "2013-12-20T10:04:21-08:00",
+      "subject": "[R-sig-DB] data type mapping for RMySQL",
+      "subject_clean": "data type mapping for RMySQL",
+      "in_reply_to": "<CAAxdm-6Z1jKDjSjgdgg=kw3RguYYRf9bx861ZQMkeBgH2oooXQ@mail.gmail.com>",
+      "references": [
+        "<B6A0874B-A8F0-4D19-81C3-3B144855DF47@coote.org>",
+        "<52B4620C.3060003@gmail.com>",
+        "<CAAxdm-6Z1jKDjSjgdgg=kw3RguYYRf9bx861ZQMkeBgH2oooXQ@mail.gmail.com>"
+      ],
+      "body_plain": "I don't think there's anyway to preserve precision here, but the R\nclient should at least give a warning that this is happening.\n\nHadley\n\nOn Fri, Dec 20, 2013 at 7:38 AM, jim holtman <jholtman at gmail.com> wrote:\n> There is no direct mapping for a 'bigint' that has 20 digits.  The\n> floating point in R (and in any other language used on your computer\n> with IEEE floating point) is limited to about 15 digits.  In the cases\n> where I have had to process this type of numeric data, I have had it\n> read in as a character value.  This means that I cannot do arithmetic\n> on it, but at least I can compare it to other values correctly.  This\n> is a variation of FAQ 7.31.\n>\n> Jim Holtman\n> Data Munger Guru\n>\n> What is the problem that you are trying to solve?\n> Tell me what you want to do, not how you want to do it.\n>\n>\n> On Fri, Dec 20, 2013 at 10:28 AM, Paul Gilbert <pgilbert902 at gmail.com> wrote:\n>> Just for the record, this also happens in Postgresql, so the problem is more\n>> general. (I tried testing in SQLite but my standalone client seems to be\n>> encrypting the db and RSQLite cannot use it.) I'm not sure there is a\n>> solution to this as I do not immediately see how to represent bigint in R.\n>>\n>> Generic SQL example:\n>>\n>>>mysql test\n>>>psql  test\n>>>sqlite test\n>>\n>> [ DROP TABLE tester; ]\n>>\n>> CREATE TABLE  tester (\n>>       id bigint NOT NULL,\n>>       address bigint NOT NULL\n>>     ) ;\n>>\n>> INSERT INTO tester VALUES (1, 2029716610205351937);\n>>\n>> SELECT * FROM tester ;\n>>\n>> gives\n>>   1 | 2029716610205351937\n>> in mysql, psql, and sqlite\n>>\n>> ( exit; /q or .quit )\n>> (later DROP TABLE tester;)\n>>\n>>\n>>>R\n>>\n>> require(\"RMySQL\")\n>> hubdb <- dbConnect(\"MySQL\", dbname=\"test\" )\n>> print(fetch(dbSendQuery(hubdb, \"select * from tester;\"), n=-1), digits=20)\n>>\n>> RMySQL gives\n>>   id             address\n>> 1  1 2029716610205351936\n>>\n>>\n>> require(\"RPostgreSQL\")\n>> hubdb <- dbConnect(\"PostgreSQL\", dbname=\"test\" )\n>> print(fetch(dbSendQuery(hubdb, \"select * from tester;\"), n=-1), digits=20)\n>> RPostgreSQL gives\n>>   id             address\n>> 1  1 2029716610205351936\n>>\n>>\n>> Paul\n>>\n>>\n>>\n>> On 13-12-20 08:07 AM, Tim Coote wrote:\n>>>\n>>> Hullo\n>>>\n>>> I?m not sure whether this is a bug, but I would expect some sort of\n>>> warning where mappings may lose precision.\n>>>\n>>> I?ve got a mysql table with large numbers in it:\n>>>\n>>> CREATE TABLE if not exists `tester` (\n>>>        `id` bigint(20) NOT NULL AUTO_INCREMENT,\n>>>        `address` bigint(20) NOT NULL,\n>>>        PRIMARY KEY (`id`),\n>>>        UNIQUE KEY `idx_address` (`address`)\n>>>      ) ENGINE=InnoDB AUTO_INCREMENT=78628 DEFAULT CHARSET=latin1 ;\n>>>\n>>> The key aspect of this is that the ?address? column needs to be used to\n>>> distinguish between values. If I put one value into this table, and read it\n>>> back with the mysql client:\n>>>\n>>> mysql> \\. test.sql\n>>> Query OK, 1 row affected, 1 warning (0.00 sec)\n>>>\n>>> Database changed\n>>> Query OK, 0 rows affected (0.05 sec)\n>>>\n>>> Query OK, 1 row affected (0.01 sec)\n>>>\n>>> +---------------------+\n>>> | address             |\n>>> +---------------------+\n>>> | 2029716610205351937 |\n>>> +---------------------+\n>>> 1 row in set (0.00 sec)\n>>>\n>>> But if I try to read the value using R:\n>>>>\n>>>> library(RMySQL)\n>>>\n>>> Loading required package: DBI\n>>>>\n>>>> options(digits=20)\n>>>>\n>>>> hubdb <- dbConnect(\"MySQL\", username=\"root\", host=\"localhost\",\n>>>> password=\"dummy\", dbname=\"dummy\" )\n>>>> q = sprintf(\"select * from tester;\")\n>>>>\n>>>>\n>>>> testvals <- fetch(dbSendQuery(hubdb, q), n=-1)\n>>>>\n>>>> print (testvals)\n>>>\n>>>                address\n>>> 1 2029716610205351936\n>>>>\n>>>>\n>>>>\n>>> Note that the address value is different\n>>>\n>>> The issue is that the precision of the sql type (20 decimal characters) is\n>>> larger than the precision of the R type that it?s been matched to.  I don?t\n>>> know whether this is a bug or not - it would have help to have a warning\n>>> about the possible precision mismatch, rather than to spot the emerging bug\n>>> ;-) - that aside, is there a simple way to map the bigint type to something\n>>> else, eg for this situation, character would do. I know that I can cast the\n>>> type in the sql query, but I?d prefer to set the mapping at a more global\n>>> scope if I could in the data definition.\n>>>\n>>> tia\n>>>\n>>> Tim\n>>> _______________________________________________\n>>> R-sig-DB mailing list -- R Special Interest Group\n>>> R-sig-DB at r-project.org\n>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>>>\n>>\n>> _______________________________________________\n>> R-sig-DB mailing list -- R Special Interest Group\n>> R-sig-DB at r-project.org\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n\n\n-- \nhttp://had.co.nz/",
+      "body_snippet": "I don't think there's anyway to preserve precision here, but the R\nclient should at least give a warning that this is happening.\n\nHadley\n\nOn Fri, Dec 20, 2013 at 7:38 AM, jim holtman <jholtman at gmai",
+      "thread_id": "thread-24191b7032db",
+      "thread_depth": 3,
+      "month": "2013-12"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-7bd5eae2e19f",
+      "subject": "unexplained error in response to 'copy' command",
+      "message_count": 3,
+      "participants": [
+        "Edward Vanden Berghe",
+        "James David Smith"
+      ],
+      "started": "2013-12-01T15:20:26+01:00",
+      "last_reply": "2013-12-01T16:18:17+01:00",
+      "root_message_id": "msg-7bd5eae2e19f"
+    },
+    {
+      "id": "thread-8198451764eb",
+      "subject": "R and MS SQL Spatial",
+      "message_count": 4,
+      "participants": [
+        "Andres Diaz",
+        "Domagoj Culinovic",
+        "Roger Bivand",
+        "p@@j@i@ m@iii@g oii gm@ii@com"
+      ],
+      "started": "2013-12-06T10:08:44+01:00",
+      "last_reply": "2013-12-06T10:54:05+01:00",
+      "root_message_id": "msg-8198451764eb"
+    },
+    {
+      "id": "thread-c3c591b66ae7",
+      "subject": "R and MS SQL Spatial",
+      "message_count": 1,
+      "participants": [
+        "Barry Rowlingson"
+      ],
+      "started": "2013-12-06T10:17:45+00:00",
+      "last_reply": "2013-12-06T10:17:45+00:00",
+      "root_message_id": "msg-c3c591b66ae7"
+    },
+    {
+      "id": "thread-24191b7032db",
+      "subject": "data type mapping for RMySQL",
+      "message_count": 4,
+      "participants": [
+        "Hadley Wickham",
+        "Paul Gilbert",
+        "Tim Coote",
+        "jim holtman"
+      ],
+      "started": "2013-12-20T13:07:29+00:00",
+      "last_reply": "2013-12-20T10:04:21-08:00",
+      "root_message_id": "msg-24191b7032db"
+    }
+  ]
+}

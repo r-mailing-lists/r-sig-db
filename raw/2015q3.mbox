@@ -1,0 +1,981 @@
+From h@d|ey @end|ng |rom r@tud|o@com  Thu Jul  2 05:36:51 2015
+From: h@d|ey @end|ng |rom r@tud|o@com (Hadley Wickham)
+Date: Thu, 2 Jul 2015 05:36:51 +0200
+Subject: [R-sig-DB] DBI documentation
+In-Reply-To: <55915D58.2090804@gmail.com>
+References: <55915D58.2090804@gmail.com>
+Message-ID: <CABdHhvFwn-ffNYNeqezLM3k0NSon-p58xTaXX5oDkFBZDxo4gQ@mail.gmail.com>
+
+On Mon, Jun 29, 2015 at 4:59 PM, Paul Gilbert <pgilbert902 at gmail.com> wrote:
+> Hadley
+>
+> ?dbConnect says
+>
+>      drv: an object that inherits from ?DBIDriver?, or a character
+>           string specifying the name of DBMS driver, e.g., "RSQLite",
+>           "RMySQL", "RPostgreSQL", or an existing ?DBIConnection?
+>           object (in order to clone an existing connection).
+>
+> and further down
+>
+>      manner. For instance ?dbConnect("MySQL")? produces an object of
+>
+> The inconsistency, "RMySQL" vs "MySQL", has probably existed for a long
+> time, but I seem to recall that the character specifications no longer work.
+> Certainly they are no longer the preferred approach. Am I wrong on that?
+
+You're correct: it's now best to use RMySQL::MySQL() and not do
+library(RMySQL).  Would you mind filing an issue on github to remind
+me to fix this?
+
+> ?dbConnect also says
+>
+>      ...: authorization arguments needed by the DBMS instance; these
+>           typically include ?user?, ?password?, ?dbname?, ?host?,
+>           ?port?, etc.  For details see the appropriate ?DBIDriver?.
+>
+> I am trying to find details for the MySQL driver and it is less than obvious
+> where that would be. (Trying to verify if the complete argument name is
+> "user" or "username" for MySQL.) Could "For details see the appropriate
+> ?DBIDriver?" be expanded? It is not really even obvious how to print out the
+> correct function to get this information from the code.
+
+The easiest way is ?dbConnect(RMySQL::MySQL())
+
+Probably a note in the docs would be a good idea, since many people
+aren't familiar with getting help on S4 methods.
+
+Hadley
+
+
+-- 
+http://had.co.nz/
+
+
+
+From br|@n_k|@@@@en@ @end|ng |rom bd@com  Thu Jul  9 18:34:47 2015
+From: br|@n_k|@@@@en@ @end|ng |rom bd@com (Brian Klaassens)
+Date: Thu, 9 Jul 2015 16:34:47 +0000
+Subject: [R-sig-DB] calloc error using RODBC and Oracle
+Message-ID: <E682AFFDA204C44FA9B4DA4C79987B4A538F7366@NASY00EXMAIL01.BDX.com>
+
+Trying to get RODBC to work on SUSE Linux Enterprise Server 11 (x86_64)
+When I run a quick test script like this
+=======================================================
+library(RODBC)
+odbChannel <- odbcConnect(dsn = "CTPRD03", uid = "*********", pwd = "*******")
+odbcGetInfo(odbChannel)
+df.test <- sqlQuery(channel = odbChannel, query = "select * from DUAL;")
+df.test
+close(odbChannel)
+========================================================
+
+I get the following results:
+========================================================
+shiny at narc07shiny1dev>Rscript R_SIMPLE_ODBC_TEST.r
+       DBMS_Name         DBMS_Ver  Driver_ODBC_Ver Data_Source_Name
+        "Oracle"     "11.02.0030"          "03.52"        "CTPRD03"
+     Driver_Name       Driver_Ver         ODBC_Ver      Server_Name
+   "SQORA32.DLL"     "11.02.0004"          "03.52"        "CTPRD03"
+Error in odbcQuery(channel, query, rows_at_time) :
+  'Calloc' could not allocate memory (18446744073709551616 of 22816 bytes)
+Calls: sqlQuery -> odbcQuery -> .Call
+Execution halted
+Warning message:
+closing unused RODBC handle 1
+=========================================================
+
+
+Isql works fine
+=========================================================
+shiny at narc07shiny1dev>isql CTPRD03
++---------------------------------------+
+| Connected!                            |
+|                                       |
+| sql-statement                         |
+| help [tablename]                      |
+| quit                                  |
+|                                       |
++---------------------------------------+
+SQL> select * from dual;
++------+
+| DUMMY|
++------+
+| X    |
++------+
+SQLRowCount returns -1
+1 rows fetched
+=========================================================
+
+
+Reinstalled RODBC based on previous suggestion in the mailing list and did not resolve the issue.
+Not sure where to go from here, looking for suggestions?
+
+
+**********************************************************************
+*******************************************************************
+IMPORTANT MESSAGE FOR RECIPIENTS IN THE U.S.A.:
+This message may constitute an advertisement of a BD group's products or services or a solicitation of interest in them. If this is such a message and you would like to opt out of receiving future advertisements or solicitations from this BD group, please forward this e-mail to optoutbygroup at bd.com.
+*******************************************************************
+This message (which includes any attachments) is intended only for the designated recipient(s).  It may contain confidential or proprietary information and may be subject to the attorney-client
+privilege or other confidentiality protections.  If you are not a designated recipient, you may not review, use, copy or distribute this message. If you received this in error, please notify the sender by reply e-mail and delete this message. Thank you.
+*******************************************************************
+Corporate Headquarters Mailing Address: BD (Becton, Dickinson and Company) 1 Becton Drive Franklin Lakes, NJ 07417 U.S.A.
+
+	[[alternative HTML version deleted]]
+
+
+
+From bp@chn01 @end|ng |rom gm@||@com  Thu Jul 23 03:50:46 2015
+From: bp@chn01 @end|ng |rom gm@||@com (Brad P)
+Date: Wed, 22 Jul 2015 20:50:46 -0500
+Subject: [R-sig-DB] RODBC Error when fetching tables: 'Calloc' could not
+	allocate memory
+Message-ID: <CAMAcwjxH_oet4G4WrHtP83m2TR6Cjk4YtdEk1xGC-5b0nt98KQ@mail.gmail.com>
+
+Hello,
+
+I have used R for a while in Linux, but am trying to become familiar with
+using R in Windows as well as using MS SQL and the RODBC package. I have a
+problem described below when trying to fetch SOME tables.
+
+I am using:
+
+OS:
+Windows 7 64-bit
+Intel quad i5 650 at 320GHz
+12GB RAM
+
+R:
+Rstudio Version 0.99.467
+Revolution R Open 3.2.0
+Using CRAN snapshot taken on 2015-05-01
+
+> sessionInfo()
+R version 3.2.0 (2015-04-16)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows 7 x64 (build 7601) Service Pack 1
+
+locale:
+[1] LC_COLLATE=English_United States.1252  LC_CTYPE=English_United
+States.1252
+[3] LC_MONETARY=English_United States.1252 LC_NUMERIC=C
+
+[5] LC_TIME=English_United States.1252
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] SOAR_0.99-11 pryr_0.1.2   RODBC_1.3-12
+
+loaded via a namespace (and not attached):
+[1] magrittr_1.5     tools_3.2.0      Rcpp_0.11.6      stringi_0.5-5
+[5] codetools_0.2-11 stringr_1.0.0
+
+> Sys.getlocale()
+[1] "LC_COLLATE=English_United States.1252;LC_CTYPE=English_United
+States.1252;LC_MONETARY=English_United
+States.1252;LC_NUMERIC=C;LC_TIME=English_United States.1252"
+
+SQL:
+MS SQL server 2012
+Example database: AdventureWorksDW2012
+
+
+# Here is some code and the problem I am having:
+
+library(RODBC)
+con <- odbcDriverConnect('driver={SQL Server}; server=SQLEXPRESS;
+Database=AdventureWorksDW2012; uid=BPS; trusted_connection=true')
+
+
+# The problem is that some tables are fetched OK, while some tables lead to
+the following error:
+
+# increasing memory
+memory.limit(size=10000000000)
+round(memory.limit()/2^30, 2)
+[1] 9.31 # GB
+
+
+dat <- sqlFetch(con, DimEmployee)
+Error in odbcQuery(channel, query, rows_at_time) :
+  'Calloc' could not allocate memory (214748364800 of 1 bytes)
+
+traceback()
+4: .Call(C_RODBCQuery, attr(channel, "handle_ptr"), as.character(query),
+       as.integer(rows_at_time))
+3: odbcQuery(channel, query, rows_at_time)
+2: sqlQuery(channel, paste("SELECT * FROM", dbname), ...)
+1: sqlFetch(con, DimEmployee)
+
+
+# Here are 2 examples of databases that can be fetched and can not:
+
+# DimAccount does work, here is some info regarding its size:
+sqlQuery(con, "exec sp_spaceused DimCustomer")
+         name  rows reserved     data index_size unused
+1 DimCustomer 18484 13608 KB 12552 KB     920 KB 136 KB
+
+# DimEmployee (example given above) does not work, here is some info
+regarding its size:
+sqlQuery(con, "exec sp_spaceused DimEmployee")
+         name rows reserved     data index_size unused
+1 DimEmployee  296 18992 KB 18856 KB      48 KB  88 KB
+
+
+# 4 of 31 tables in this SQL database give this exact error when attempting
+to fetch them as shown above, the rest are fetched without error.
+
+# Also, please know that when I run this in regular 64-bit R (not
+Revolution R) it does the same thing, and when I do it in 32-bit R, it
+literally crashes
+
+Please let me know if you have any suggestions.
+-Patrick
+
+	[[alternative HTML version deleted]]
+
+
+
+From bp@chn01 @end|ng |rom gm@||@com  Thu Jul 23 07:41:09 2015
+From: bp@chn01 @end|ng |rom gm@||@com (Brad P)
+Date: Thu, 23 Jul 2015 00:41:09 -0500
+Subject: [R-sig-DB] RODBC Error when fetching tables: 'Calloc' could not
+	allocate memory
+Message-ID: <CAMAcwjxzaNh9Nc6+mPFJCG4Kk7jpju-rPubNKQOfoTEr5XgY0A@mail.gmail.com>
+
+Sorry if replying to this is not OK.
+
+I now see that RODBC can not handle cases where length is huge, evidently >
+8000, see this:
+
+http://stackoverflow.com/questions/18477994/rodbc-does-not-save-greater-than-8k-varchar-text-from-a-data-frame
+
+I also noticed that one column in the table previously mentioned had a
+length of  2147483647
+
+Anyway, my goal was to pull all tables in and saving them as .rds files.
+I wrote a quick work around that identifies which tables have these long
+lengths and selects all columns but those columns. This is not ideal, but
+at least I get most of the data.
+
+##################################
+# get list of all table names
+tables <- sqlQuery(con, "SELECT * FROM information_schema.tables")
+tables <- subset(tables, subset=TABLE_TYPE!="VIEW")
+tables <- as.character(tables$TABLE_NAME)
+
+# for loop to pull in tables 1 at a time
+for(i in 1:length(tables) ){
+  x <- sqlQuery(con, paste("exec sp_columns", tables[i], sep=" ")  )
+  if(length(which(x$LENGTH > 8000))>0){
+     drop.cols <- as.character( x[which(x$LENGTH > 8000),]$COLUMN_NAME )
+     print ( paste(tables[i], "had", paste(drop.cols, collapse=","),
+"column(s) dropped", sep=" ") )
+     keep.cols <- as.character( x[which(x$LENGTH < 8000),]$COLUMN_NAME )
+     dat <- sqlQuery(con, paste( "SELECT", paste(keep.cols, collapse=","),
+"FROM", tables[i], sep=" ") )
+  }else{
+    dat <- try( sqlFetch(con, tables[i]), silent=F)
+  }
+  print(i)
+  print( paste(tables[i]) )
+  print( object.size(dat),  units = "auto" )
+  saveRDS(dat, paste(tables[i], "rds", sep=".") )
+}
+##################################
+
+##################################
+
+Cheers!
+Patrick
+
+
+On Wed, Jul 22, 2015 at 8:50 PM, Brad P <bpschn01 at gmail.com> wrote:
+
+> Hello,
+>
+> I have used R for a while in Linux, but am trying to become familiar with
+> using R in Windows as well as using MS SQL and the RODBC package. I have a
+> problem described below when trying to fetch SOME tables.
+>
+> I am using:
+>
+> OS:
+> Windows 7 64-bit
+> Intel quad i5 650 at 320GHz
+> 12GB RAM
+>
+> R:
+> Rstudio Version 0.99.467
+> Revolution R Open 3.2.0
+> Using CRAN snapshot taken on 2015-05-01
+>
+> > sessionInfo()
+> R version 3.2.0 (2015-04-16)
+> Platform: x86_64-w64-mingw32/x64 (64-bit)
+> Running under: Windows 7 x64 (build 7601) Service Pack 1
+>
+> locale:
+> [1] LC_COLLATE=English_United States.1252  LC_CTYPE=English_United
+> States.1252
+> [3] LC_MONETARY=English_United States.1252 LC_NUMERIC=C
+>
+> [5] LC_TIME=English_United States.1252
+>
+> attached base packages:
+> [1] stats     graphics  grDevices utils     datasets  methods   base
+>
+> other attached packages:
+> [1] SOAR_0.99-11 pryr_0.1.2   RODBC_1.3-12
+>
+> loaded via a namespace (and not attached):
+> [1] magrittr_1.5     tools_3.2.0      Rcpp_0.11.6      stringi_0.5-5
+> [5] codetools_0.2-11 stringr_1.0.0
+>
+> > Sys.getlocale()
+> [1] "LC_COLLATE=English_United States.1252;LC_CTYPE=English_United
+> States.1252;LC_MONETARY=English_United
+> States.1252;LC_NUMERIC=C;LC_TIME=English_United States.1252"
+>
+> SQL:
+> MS SQL server 2012
+> Example database: AdventureWorksDW2012
+>
+>
+> # Here is some code and the problem I am having:
+>
+> library(RODBC)
+> con <- odbcDriverConnect('driver={SQL Server}; server=SQLEXPRESS;
+> Database=AdventureWorksDW2012; uid=BPS; trusted_connection=true')
+>
+>
+> # The problem is that some tables are fetched OK, while some tables lead
+> to the following error:
+>
+> # increasing memory
+> memory.limit(size=10000000000)
+> round(memory.limit()/2^30, 2)
+> [1] 9.31 # GB
+>
+>
+> dat <- sqlFetch(con, DimEmployee)
+> Error in odbcQuery(channel, query, rows_at_time) :
+>   'Calloc' could not allocate memory (214748364800 of 1 bytes)
+>
+> traceback()
+> 4: .Call(C_RODBCQuery, attr(channel, "handle_ptr"), as.character(query),
+>        as.integer(rows_at_time))
+> 3: odbcQuery(channel, query, rows_at_time)
+> 2: sqlQuery(channel, paste("SELECT * FROM", dbname), ...)
+> 1: sqlFetch(con, DimEmployee)
+>
+>
+> # Here are 2 examples of databases that can be fetched and can not:
+>
+> # DimAccount does work, here is some info regarding its size:
+> sqlQuery(con, "exec sp_spaceused DimCustomer")
+>          name  rows reserved     data index_size unused
+> 1 DimCustomer 18484 13608 KB 12552 KB     920 KB 136 KB
+>
+> # DimEmployee (example given above) does not work, here is some info
+> regarding its size:
+> sqlQuery(con, "exec sp_spaceused DimEmployee")
+>          name rows reserved     data index_size unused
+> 1 DimEmployee  296 18992 KB 18856 KB      48 KB  88 KB
+>
+>
+> # 4 of 31 tables in this SQL database give this exact error when
+> attempting to fetch them as shown above, the rest are fetched without error.
+>
+> # Also, please know that when I run this in regular 64-bit R (not
+> Revolution R) it does the same thing, and when I do it in 32-bit R, it
+> literally crashes
+>
+> Please let me know if you have any suggestions.
+> -Patrick
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From tom_ph|||pp| @end|ng |rom np@@gov  Thu Jul 23 08:47:38 2015
+From: tom_ph|||pp| @end|ng |rom np@@gov (Philippi, Tom)
+Date: Wed, 22 Jul 2015 23:47:38 -0700
+Subject: [R-sig-DB] RODBC Error when fetching tables: 'Calloc' could not
+ allocate memory
+In-Reply-To: <CAMAcwjxzaNh9Nc6+mPFJCG4Kk7jpju-rPubNKQOfoTEr5XgY0A@mail.gmail.com>
+References: <CAMAcwjxzaNh9Nc6+mPFJCG4Kk7jpju-rPubNKQOfoTEr5XgY0A@mail.gmail.com>
+Message-ID: <CAM9kYqh-SMa+YXjT-5tNRuN4mTP9y=vX37kLjUQ=3dH98aeMEw@mail.gmail.com>
+
+memo fields are an issue for MS ODBC and MS Access or SQL Server,
+especially with sqlSave() creating or appending to tables.  ODBC reports
+them as 1G 2-byte characters per value, VARCHAR with length of 1070M or so.
+ As far as I know, this is an all-MS issue, between their ODBC and their
+databases, and on most if not all platforms.
+
+sqlColumns(mdb,table) is another way to accomplish what you do with
+x <- sqlQuery(con, paste("exec sp_columns", tables[i], sep=" ")  )
+x <- sqlColumns(con,tables[i])
+
+I may be brain-dead, but I don't think you need the which() in your
+subsetting:
+drop.cols <- as.character( x[which(x$LENGTH > 8000),]$COLUMN_NAME )
+drop.cols <- as.character( x$COLUMN_NAME[x$LENGTH > 8000] )
+
+
+Tom 2
+
+
+On Wed, Jul 22, 2015 at 10:41 PM, Brad P <bpschn01 at gmail.com> wrote:
+
+> Sorry if replying to this is not OK.
+>
+> I now see that RODBC can not handle cases where length is huge, evidently >
+> 8000, see this:
+>
+>
+> http://stackoverflow.com/questions/18477994/rodbc-does-not-save-greater-than-8k-varchar-text-from-a-data-frame
+>
+> I also noticed that one column in the table previously mentioned had a
+> length of  2147483647
+>
+> Anyway, my goal was to pull all tables in and saving them as .rds files.
+> I wrote a quick work around that identifies which tables have these long
+> lengths and selects all columns but those columns. This is not ideal, but
+> at least I get most of the data.
+>
+> ##################################
+> # get list of all table names
+> tables <- sqlQuery(con, "SELECT * FROM information_schema.tables")
+> tables <- subset(tables, subset=TABLE_TYPE!="VIEW")
+> tables <- as.character(tables$TABLE_NAME)
+>
+> # for loop to pull in tables 1 at a time
+> for(i in 1:length(tables) ){
+>   x <- sqlQuery(con, paste("exec sp_columns", tables[i], sep=" ")  )
+>   if(length(which(x$LENGTH > 8000))>0){
+>      drop.cols <- as.character( x[which(x$LENGTH > 8000),]$COLUMN_NAME )
+>      print ( paste(tables[i], "had", paste(drop.cols, collapse=","),
+> "column(s) dropped", sep=" ") )
+>      keep.cols <- as.character( x[which(x$LENGTH < 8000),]$COLUMN_NAME )
+>      dat <- sqlQuery(con, paste( "SELECT", paste(keep.cols, collapse=","),
+> "FROM", tables[i], sep=" ") )
+>   }else{
+>     dat <- try( sqlFetch(con, tables[i]), silent=F)
+>   }
+>   print(i)
+>   print( paste(tables[i]) )
+>   print( object.size(dat),  units = "auto" )
+>   saveRDS(dat, paste(tables[i], "rds", sep=".") )
+> }
+> ##################################
+>
+> ##################################
+>
+> Cheers!
+> Patrick
+>
+>
+> On Wed, Jul 22, 2015 at 8:50 PM, Brad P <bpschn01 at gmail.com> wrote:
+>
+> > Hello,
+> >
+> > I have used R for a while in Linux, but am trying to become familiar with
+> > using R in Windows as well as using MS SQL and the RODBC package. I have
+> a
+> > problem described below when trying to fetch SOME tables.
+> >
+> > I am using:
+> >
+> > OS:
+> > Windows 7 64-bit
+> > Intel quad i5 650 at 320GHz
+> > 12GB RAM
+> >
+> > R:
+> > Rstudio Version 0.99.467
+> > Revolution R Open 3.2.0
+> > Using CRAN snapshot taken on 2015-05-01
+> >
+> > > sessionInfo()
+> > R version 3.2.0 (2015-04-16)
+> > Platform: x86_64-w64-mingw32/x64 (64-bit)
+> > Running under: Windows 7 x64 (build 7601) Service Pack 1
+> >
+> > locale:
+> > [1] LC_COLLATE=English_United States.1252  LC_CTYPE=English_United
+> > States.1252
+> > [3] LC_MONETARY=English_United States.1252 LC_NUMERIC=C
+> >
+> > [5] LC_TIME=English_United States.1252
+> >
+> > attached base packages:
+> > [1] stats     graphics  grDevices utils     datasets  methods   base
+> >
+> > other attached packages:
+> > [1] SOAR_0.99-11 pryr_0.1.2   RODBC_1.3-12
+> >
+> > loaded via a namespace (and not attached):
+> > [1] magrittr_1.5     tools_3.2.0      Rcpp_0.11.6      stringi_0.5-5
+> > [5] codetools_0.2-11 stringr_1.0.0
+> >
+> > > Sys.getlocale()
+> > [1] "LC_COLLATE=English_United States.1252;LC_CTYPE=English_United
+> > States.1252;LC_MONETARY=English_United
+> > States.1252;LC_NUMERIC=C;LC_TIME=English_United States.1252"
+> >
+> > SQL:
+> > MS SQL server 2012
+> > Example database: AdventureWorksDW2012
+> >
+> >
+> > # Here is some code and the problem I am having:
+> >
+> > library(RODBC)
+> > con <- odbcDriverConnect('driver={SQL Server}; server=SQLEXPRESS;
+> > Database=AdventureWorksDW2012; uid=BPS; trusted_connection=true')
+> >
+> >
+> > # The problem is that some tables are fetched OK, while some tables lead
+> > to the following error:
+> >
+> > # increasing memory
+> > memory.limit(size=10000000000)
+> > round(memory.limit()/2^30, 2)
+> > [1] 9.31 # GB
+> >
+> >
+> > dat <- sqlFetch(con, DimEmployee)
+> > Error in odbcQuery(channel, query, rows_at_time) :
+> >   'Calloc' could not allocate memory (214748364800 of 1 bytes)
+> >
+> > traceback()
+> > 4: .Call(C_RODBCQuery, attr(channel, "handle_ptr"), as.character(query),
+> >        as.integer(rows_at_time))
+> > 3: odbcQuery(channel, query, rows_at_time)
+> > 2: sqlQuery(channel, paste("SELECT * FROM", dbname), ...)
+> > 1: sqlFetch(con, DimEmployee)
+> >
+> >
+> > # Here are 2 examples of databases that can be fetched and can not:
+> >
+> > # DimAccount does work, here is some info regarding its size:
+> > sqlQuery(con, "exec sp_spaceused DimCustomer")
+> >          name  rows reserved     data index_size unused
+> > 1 DimCustomer 18484 13608 KB 12552 KB     920 KB 136 KB
+> >
+> > # DimEmployee (example given above) does not work, here is some info
+> > regarding its size:
+> > sqlQuery(con, "exec sp_spaceused DimEmployee")
+> >          name rows reserved     data index_size unused
+> > 1 DimEmployee  296 18992 KB 18856 KB      48 KB  88 KB
+> >
+> >
+> > # 4 of 31 tables in this SQL database give this exact error when
+> > attempting to fetch them as shown above, the rest are fetched without
+> error.
+> >
+> > # Also, please know that when I run this in regular 64-bit R (not
+> > Revolution R) it does the same thing, and when I do it in 32-bit R, it
+> > literally crashes
+> >
+> > Please let me know if you have any suggestions.
+> > -Patrick
+> >
+>
+>         [[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From evberghe @end|ng |rom gm@||@com  Thu Jul 23 13:25:48 2015
+From: evberghe @end|ng |rom gm@||@com (Edward Vanden Berghe)
+Date: Thu, 23 Jul 2015 13:25:48 +0200
+Subject: [R-sig-DB] RODBC Error when fetching tables: 'Calloc' could
+	not	allocate memory
+In-Reply-To: <CAMAcwjxzaNh9Nc6+mPFJCG4Kk7jpju-rPubNKQOfoTEr5XgY0A@mail.gmail.com>
+References: <CAMAcwjxzaNh9Nc6+mPFJCG4Kk7jpju-rPubNKQOfoTEr5XgY0A@mail.gmail.com>
+Message-ID: <001801d0c53a$5373fdf0$fa5bf9d0$@gmail.com>
+
+Hi,
+
+I had some similar issues, working with a PostgreSQL/PostGIS database and
+RODBC - RODBC seems to have problems dealing with long fields. I tried with
+R on both Ubuntu and Windows (PostGIS was always on Ubuntu), but larger
+polygons always got truncated. Problems disappeared when I switched over to
+DBI and RPostregeSQL. Don't forget to also set 'stringsAsFactors' to false
+if you want to read into R instead of just writing out to the database.
+
+HTH
+
+Edward
+
+-----Original Message-----
+From: R-sig-DB [mailto:r-sig-db-bounces at r-project.org] On Behalf Of Brad P
+Sent: Thursday, July 23, 2015 07:41 AM
+To: r-sig-db at r-project.org
+Subject: Re: [R-sig-DB] RODBC Error when fetching tables: 'Calloc' could not
+allocate memory
+
+Sorry if replying to this is not OK.
+
+I now see that RODBC can not handle cases where length is huge, evidently >
+8000, see this:
+
+http://stackoverflow.com/questions/18477994/rodbc-does-not-save-greater-than
+-8k-varchar-text-from-a-data-frame
+
+I also noticed that one column in the table previously mentioned had a
+length of  2147483647
+
+Anyway, my goal was to pull all tables in and saving them as .rds files.
+I wrote a quick work around that identifies which tables have these long
+lengths and selects all columns but those columns. This is not ideal, but at
+least I get most of the data.
+
+##################################
+# get list of all table names
+tables <- sqlQuery(con, "SELECT * FROM information_schema.tables") tables <-
+subset(tables, subset=TABLE_TYPE!="VIEW") tables <-
+as.character(tables$TABLE_NAME)
+
+# for loop to pull in tables 1 at a time for(i in 1:length(tables) ){
+  x <- sqlQuery(con, paste("exec sp_columns", tables[i], sep=" ")  )
+  if(length(which(x$LENGTH > 8000))>0){
+     drop.cols <- as.character( x[which(x$LENGTH > 8000),]$COLUMN_NAME )
+     print ( paste(tables[i], "had", paste(drop.cols, collapse=","),
+"column(s) dropped", sep=" ") )
+     keep.cols <- as.character( x[which(x$LENGTH < 8000),]$COLUMN_NAME )
+     dat <- sqlQuery(con, paste( "SELECT", paste(keep.cols, collapse=","),
+"FROM", tables[i], sep=" ") )
+  }else{
+    dat <- try( sqlFetch(con, tables[i]), silent=F)
+  }
+  print(i)
+  print( paste(tables[i]) )
+  print( object.size(dat),  units = "auto" )
+  saveRDS(dat, paste(tables[i], "rds", sep=".") ) }
+##################################
+
+##################################
+
+Cheers!
+Patrick
+
+
+On Wed, Jul 22, 2015 at 8:50 PM, Brad P <bpschn01 at gmail.com> wrote:
+
+> Hello,
+>
+> I have used R for a while in Linux, but am trying to become familiar 
+> with using R in Windows as well as using MS SQL and the RODBC package. 
+> I have a problem described below when trying to fetch SOME tables.
+>
+> I am using:
+>
+> OS:
+> Windows 7 64-bit
+> Intel quad i5 650 at 320GHz
+> 12GB RAM
+>
+> R:
+> Rstudio Version 0.99.467
+> Revolution R Open 3.2.0
+> Using CRAN snapshot taken on 2015-05-01
+>
+> > sessionInfo()
+> R version 3.2.0 (2015-04-16)
+> Platform: x86_64-w64-mingw32/x64 (64-bit) Running under: Windows 7 x64 
+> (build 7601) Service Pack 1
+>
+> locale:
+> [1] LC_COLLATE=English_United States.1252  LC_CTYPE=English_United
+> States.1252
+> [3] LC_MONETARY=English_United States.1252 LC_NUMERIC=C
+>
+> [5] LC_TIME=English_United States.1252
+>
+> attached base packages:
+> [1] stats     graphics  grDevices utils     datasets  methods   base
+>
+> other attached packages:
+> [1] SOAR_0.99-11 pryr_0.1.2   RODBC_1.3-12
+>
+> loaded via a namespace (and not attached):
+> [1] magrittr_1.5     tools_3.2.0      Rcpp_0.11.6      stringi_0.5-5
+> [5] codetools_0.2-11 stringr_1.0.0
+>
+> > Sys.getlocale()
+> [1] "LC_COLLATE=English_United States.1252;LC_CTYPE=English_United
+> States.1252;LC_MONETARY=English_United
+> States.1252;LC_NUMERIC=C;LC_TIME=English_United States.1252"
+>
+> SQL:
+> MS SQL server 2012
+> Example database: AdventureWorksDW2012
+>
+>
+> # Here is some code and the problem I am having:
+>
+> library(RODBC)
+> con <- odbcDriverConnect('driver={SQL Server}; server=SQLEXPRESS; 
+> Database=AdventureWorksDW2012; uid=BPS; trusted_connection=true')
+>
+>
+> # The problem is that some tables are fetched OK, while some tables 
+> lead to the following error:
+>
+> # increasing memory
+> memory.limit(size=10000000000)
+> round(memory.limit()/2^30, 2)
+> [1] 9.31 # GB
+>
+>
+> dat <- sqlFetch(con, DimEmployee)
+> Error in odbcQuery(channel, query, rows_at_time) :
+>   'Calloc' could not allocate memory (214748364800 of 1 bytes)
+>
+> traceback()
+> 4: .Call(C_RODBCQuery, attr(channel, "handle_ptr"), as.character(query),
+>        as.integer(rows_at_time))
+> 3: odbcQuery(channel, query, rows_at_time)
+> 2: sqlQuery(channel, paste("SELECT * FROM", dbname), ...)
+> 1: sqlFetch(con, DimEmployee)
+>
+>
+> # Here are 2 examples of databases that can be fetched and can not:
+>
+> # DimAccount does work, here is some info regarding its size:
+> sqlQuery(con, "exec sp_spaceused DimCustomer")
+>          name  rows reserved     data index_size unused
+> 1 DimCustomer 18484 13608 KB 12552 KB     920 KB 136 KB
+>
+> # DimEmployee (example given above) does not work, here is some info 
+> regarding its size:
+> sqlQuery(con, "exec sp_spaceused DimEmployee")
+>          name rows reserved     data index_size unused
+> 1 DimEmployee  296 18992 KB 18856 KB      48 KB  88 KB
+>
+>
+> # 4 of 31 tables in this SQL database give this exact error when 
+> attempting to fetch them as shown above, the rest are fetched without
+error.
+>
+> # Also, please know that when I run this in regular 64-bit R (not 
+> Revolution R) it does the same thing, and when I do it in 32-bit R, it 
+> literally crashes
+>
+> Please let me know if you have any suggestions.
+> -Patrick
+>
+
+	[[alternative HTML version deleted]]
+
+_______________________________________________
+R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org
+https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From m@rco@cetr@ro @end|ng |rom gm@||@com  Tue Sep 22 23:41:44 2015
+From: m@rco@cetr@ro @end|ng |rom gm@||@com (Marco Cetraro)
+Date: Tue, 22 Sep 2015 17:41:44 -0400
+Subject: [R-sig-DB] Data Frame from a Teradata table
+Message-ID: <CABoPq5P5v+chV7m-SYEhuQdJ4N+aztisS5t_TopYUwB-U5KAFQ@mail.gmail.com>
+
+Hi all,
+
+I am new in R language.  I have created a data frame in R using a Teradata
+table, the statement:
+
+tdf <- td.data.frame("base_08092015_v2")
+
+where base_08092015_v2 is a Teradata table.
+
+summary(tdf)
+   numero_id           dias_mora          periodo           saldo
+ Min.   :      626   Min.   :  -2.00   Min.   :201002   Min.   :        1
+ 1st Qu.:   446602   1st Qu.:   0.00   1st Qu.:201201   1st Qu.: 11196611
+ Median :  1038866   Median :   0.00   Median :201212   Median : 17477384
+ Mean   :  2251666   Mean   :  54.84   Mean   :201244   Mean   : 20259955
+ 3rd Qu.:  1589698   3rd Qu.:   0.00   3rd Qu.:201310   3rd Qu.: 25689429
+ Max    :178371212   Max    :7334.00   Max    :201409   Max    :200000000
+                                                        NA's   :    37762
+    tipo_id
+ Min.   :3.000
+ 1st Qu.:3.000
+ Median :3.000
+ Mean   :3.021
+ 3rd Qu.:3.000
+ Max    :9.000
+
+
+My problem is that I get an error when I try to filter the td.data.frame
+tdf:
+
+new_tdf <- tdf[tdf$Dias_Mora > Dias_Mora & tdf$periodo >= Fecha_Inicio_YM &
+tdf$periodo <= Fecha_Final_YM & tdf$tipo_id == 3, ]
+*Error in `[.td.data.frame`(tdf, tdf$Dias_Mora > Dias_Mora & tdf$periodo >=
+ : *
+*  Invalid subscript type 'logical'*
+
+Also, when I executed the statement:
+
+dups <- tdf5[duplicated(tdf5$periodo), ]
+*Error in `[.td.data.frame`(tdf5, duplicated(tdf5$periodo), ) : *
+*  Invalid subscript type 'logical'*
+
+
+*I don't understand the error.  I searched on the internet as well
+as specialize R websites and I couldn't find any information.*
+
+*THANK YOU VERY MUCH.*
+
+
+-- 
+Regards,
+
+Marco Cetraro
+
+	[[alternative HTML version deleted]]
+
+
+
+From m@cqueen1 @end|ng |rom ||n|@gov  Thu Sep 24 17:44:16 2015
+From: m@cqueen1 @end|ng |rom ||n|@gov (MacQueen, Don)
+Date: Thu, 24 Sep 2015 15:44:16 +0000
+Subject: [R-sig-DB] Data Frame from a Teradata table
+In-Reply-To: <CABoPq5P5v+chV7m-SYEhuQdJ4N+aztisS5t_TopYUwB-U5KAFQ@mail.gmail.com>
+References: <CABoPq5P5v+chV7m-SYEhuQdJ4N+aztisS5t_TopYUwB-U5KAFQ@mail.gmail.com>
+Message-ID: <D229658D.1397C9%macqueen1@llnl.gov>
+
+The output from
+  str(tdf)
+  class(tdf)
+would be helpful.
+
+It may be that "td.data.frame" objects, whatever they are, do not use the
+same syntax as "data.frame" objects. Perhaps they only support numeric
+indexing, not logical indexing.
+
+
+Assuming logical indexes are valid for td.data.frame objects,
+  tdf$Dias_Mora
+should be
+  tdf$dias_mora
+[see the variable names shown in the output of summary()]
+
+If that doesn't fix it, then try this:
+
+tmp <- df$Dias_Mora > Dias_Mora &
+  tdf$periodo >= Fecha_Inicio_YM &
+  tdf$periodo <= Fecha_Final_YM &
+  tdf$tipo_id == 3
+
+Then, one or more of these should help reveal the problem:
+  class(tmp)
+  str(tmp)
+  table(tmp)
+tmp should be logical, and should not have any NA (missing) values
+
+All of this assumes that
+  Dias_Mora
+  Fecha_Inicio_YM
+  Fecha_Final_YM
+all exist and are of the correct type (apparently numeric)
+
+Also, please do not post in HTML. And you should identify what package
+td.data.frame comes from, since it is not part of base R.
+
+-- 
+Don MacQueen
+
+Lawrence Livermore National Laboratory
+7000 East Ave., L-627
+Livermore, CA 94550
+925-423-1062
+
+
+
+
+
+On 9/22/15, 2:41 PM, "R-sig-DB on behalf of Marco Cetraro"
+<r-sig-db-bounces at r-project.org on behalf of marco.cetraro at gmail.com>
+wrote:
+
+>Hi all,
+>
+>I am new in R language.  I have created a data frame in R using a Teradata
+>table, the statement:
+>
+>tdf <- td.data.frame("base_08092015_v2")
+>
+>where base_08092015_v2 is a Teradata table.
+>
+>summary(tdf)
+>   numero_id           dias_mora          periodo           saldo
+> Min.   :      626   Min.   :  -2.00   Min.   :201002   Min.   :        1
+> 1st Qu.:   446602   1st Qu.:   0.00   1st Qu.:201201   1st Qu.: 11196611
+> Median :  1038866   Median :   0.00   Median :201212   Median : 17477384
+> Mean   :  2251666   Mean   :  54.84   Mean   :201244   Mean   : 20259955
+> 3rd Qu.:  1589698   3rd Qu.:   0.00   3rd Qu.:201310   3rd Qu.: 25689429
+> Max    :178371212   Max    :7334.00   Max    :201409   Max    :200000000
+>                                                        NA's   :    37762
+>    tipo_id
+> Min.   :3.000
+> 1st Qu.:3.000
+> Median :3.000
+> Mean   :3.021
+> 3rd Qu.:3.000
+> Max    :9.000
+>
+>
+>My problem is that I get an error when I try to filter the td.data.frame
+>tdf:
+>
+>new_tdf <- tdf[tdf$Dias_Mora > Dias_Mora & tdf$periodo >= Fecha_Inicio_YM
+>&
+>tdf$periodo <= Fecha_Final_YM & tdf$tipo_id == 3, ]
+>*Error in `[.td.data.frame`(tdf, tdf$Dias_Mora > Dias_Mora & tdf$periodo
+>>=
+> : *
+>*  Invalid subscript type 'logical'*
+>
+>Also, when I executed the statement:
+>
+>dups <- tdf5[duplicated(tdf5$periodo), ]
+>*Error in `[.td.data.frame`(tdf5, duplicated(tdf5$periodo), ) : *
+>*  Invalid subscript type 'logical'*
+>
+>
+>*I don't understand the error.  I searched on the internet as well
+>as specialize R websites and I couldn't find any information.*
+>
+>*THANK YOU VERY MUCH.*
+>
+>
+>-- 
+>Regards,
+>
+>Marco Cetraro
+>
+>	[[alternative HTML version deleted]]
+>
+>_______________________________________________
+>R-sig-DB mailing list -- R Special Interest Group
+>R-sig-DB at r-project.org
+>https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+

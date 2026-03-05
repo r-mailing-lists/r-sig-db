@@ -1,0 +1,132 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2013-02",
+  "messages": [
+    {
+      "id": "msg-c8e8c0f3a05a",
+      "message_id": "<CAP01uRnGBBUW_hX0yKVEpnx5WdpoaE4AABiQ1K4wHMvqM-35Qg@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2013-02-07T00:20:55-05:00",
+      "subject": "[R-sig-DB] RpgSQL/RJDBC(?) on R15.2(64) Win7 throws can't find .verify.JDBC.result",
+      "subject_clean": "RpgSQL/RJDBC(?) on R15.2(64) Win7 throws can't find .verify.JDBC.result",
+      "in_reply_to": "<CAOo3SQipSCStjbdFpWarxahdrbcJaN6hMS3BcJw981_ZFr0i7Q@mail.gmail.com>",
+      "references": [
+        "<CAOo3SQgJ5OgobM9eBNecvhPQwYOhjEtmj2L+rqE4U9YnaNorGg@mail.gmail.com>",
+        "<CAP01uRmOtnhy1XPtnvCYvBVO6dK5Kc+DP4fhn4uApOwbdbP8pA@mail.gmail.com>",
+        "<CAOo3SQipSCStjbdFpWarxahdrbcJaN6hMS3BcJw981_ZFr0i7Q@mail.gmail.com>"
+      ],
+      "body_plain": "I was wondering if you could use RPostgreSQL instead of RpgSQL?\n\nRpgSQL was written to support cross platform PostgreSQL at a time that\nRPostgreSQL did not have that capability but now that RPostgreSQL\nworks on all platforms (as far as I know) it does have the benefit of\nnot needing Java.  If there is a general feeling that RPostgreSQL is\nsufficient I was thinking I could retire RpgSQL.\n\nLet me know.\n\nRegards.\n\n\nOn Wed, Jan 23, 2013 at 4:16 PM, Jim Porzak <jporzak at gmail.com> wrote:\n> Thanks Gabor,\n> Not a panic, since I'm doing this work in 2.14.2, but would be good to\n> get cleaned up.\n> Jim\n>\n>\n> On Wed, Jan 23, 2013 at 12:22 PM, Gabor Grothendieck\n> <ggrothendieck at gmail.com> wrote:\n>> I tried the same fix that worked for RH2 but it seems its something\n>> else as you found too.  I will have a look next week.\n>>\n>> On Wed, Jan 23, 2013 at 2:08 PM, Jim Porzak <jporzak at gmail.com> wrote:\n>>> All, I see:\n>>>\n>>>> options(RpgSQL.user = \"tableau\", RpgSQL.password = \"******\",\n>>> +         RpgSQL.host = \"10.8.0.1\", RpgSQL.port = 5432,\n>>> +         RpgSQL.JAR = \"C:/Drivers/JDBC\")\n>>>>\n>>>> library(RpgSQL)                                  ## Version: 0.1-6\n>>> Loading required package: RJDBC           ## Version: 0.2-1\n>>> Loading required package: DBI                ## Version: 0.2-5\n>>> Loading required package: rJava              ## Version: 0.9-3\n>>>\n>>>> con <- dbConnect(pgSQL(), dbname = \"bidata_pg\")\n>>> Error in .local(drv, ...) : could not find function \".verify.JDBC.result\"\n>>>\n>>> The above works just fine with R14.2 & prior versions of PpgSQL & RJDBC.\n>>>\n>>> I noticed H2 user had a similar error which they worked around by\n>>> rolling back to RJDBC 0.2-0\n>>> I tried hacking a roll-back using files from my 14.2 install but that\n>>> didn't work.\n>>> I did not see any window binaries for RJDBC 0.2-0\n>>>\n>>> Suggestions?\n>>>\n>>>\n>>> Jim Porzak\n>>> Minted.com\n>>> San Francisco, CA\n>>> www.linkedin.com/in/jimporzak\n>>> use R! Group SF: www.meetup.com/R-Users/\n>>\n>>\n>>\n>> --\n>> Statistics & Software Consulting\n>> GKX Group, GKX Associates Inc.\n>> tel: 1-877-GKX-GROUP\n>> email: ggrothendieck at gmail.com\n\n\n\n-- \nStatistics & Software Consulting\nGKX Group, GKX Associates Inc.\ntel: 1-877-GKX-GROUP\nemail: ggrothendieck at gmail.com",
+      "body_snippet": "I was wondering if you could use RPostgreSQL instead of RpgSQL?\n\nRpgSQL was written to support cross platform PostgreSQL at a time that\nRPostgreSQL did not have that capability but now that RPostgreSQ",
+      "thread_id": "thread-c8e8c0f3a05a",
+      "thread_depth": 0,
+      "month": "2013-02"
+    },
+    {
+      "id": "msg-a9a691d4cdb9",
+      "message_id": "<17B09E7789D3104E8F5EEB0582A8D66FF250D527BE@MSGRTPCCRF2WIN.DMN1.FMR.COM>",
+      "from_name": "McGehee, Robert",
+      "from_email_hash": "d6e856f0aa01f89698472702235348f1cd8814da0dffd4bae380a929d6d2736c",
+      "date": "2013-02-12T10:05:31-05:00",
+      "subject": "[R-sig-DB] PostgreSQL killed on dbDisconnect (RPostgreSQL)",
+      "subject_clean": "PostgreSQL killed on dbDisconnect (RPostgreSQL)",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\nHas anyone had an issue where a PostgreSQL connection was forcibly killed (SIGKILL) by RPostgreSQL, causing a full database crash/recovery/restart? \n\nThis seems to happen about twice a week when a RPostgreSQL connection is closed using dbDisconnect (or when an R session ends) while other queries are running. The Linux OOM killer is not enabled on this server and I can find no evidence of hardware problems or any evidence of problems with the PostgreSQL database. This left me to wonder if there was a problem with the way RPostgreSQL (or R) disconnects that causes the database crash.\n \nI generally interface with RPostgreSQL inside a function like this:\n\nFUN <- function() {\n\tconn <- dbConnect(dbDriver(\"PostgreSQL\"), host=\"xx\", user=\"xx\", password=\"xx\", dbname=\"xx\")\n\ton.exit(dbDisconnect(conn), add=TRUE)\n\tdbGetQuery(\"SELECT 1;\", conn=conn)\n}\n\nI found record of a similar problem with the RpgSQL package here (from 2009):\nhttps://stat.ethz.ch/pipermail/r-help/2009-January/184707.html\nwhich indicates that dbDisconnect() caused a crash under similar circumstances in RpgSQL. However, in this case there was a crash in R; in my case there is a crash in PostgreSQL (and it's a different package).\n\nHas anyone else had a problem like this with RPostgreSQL or know if it is even possible for RPostgreSQL to send a SIGKILL signal to a PostgreSQL connection? I'm reluctant to remove dbDisconnect everywhere, as I don't want zombie connections accumulating. Also, I'm not the only user of the database.\n\nThanks, Robert",
+      "body_snippet": "Hi,\nHas anyone had an issue where a PostgreSQL connection was forcibly killed (SIGKILL) by RPostgreSQL, causing a full database crash/recovery/restart? \n\nThis seems to happen about twice a week when a",
+      "thread_id": "thread-a9a691d4cdb9",
+      "thread_depth": 0,
+      "month": "2013-02"
+    },
+    {
+      "id": "msg-3eb48cce56e9",
+      "message_id": "<20762.23895.744575.859760@max.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2013-02-12T09:18:47-06:00",
+      "subject": "[R-sig-DB] PostgreSQL killed on dbDisconnect (RPostgreSQL)",
+      "subject_clean": "PostgreSQL killed on dbDisconnect (RPostgreSQL)",
+      "in_reply_to": "<17B09E7789D3104E8F5EEB0582A8D66FF250D527BE@MSGRTPCCRF2WIN.DMN1.FMR.COM>",
+      "references": [
+        "<17B09E7789D3104E8F5EEB0582A8D66FF250D527BE@MSGRTPCCRF2WIN.DMN1.FMR.COM>"
+      ],
+      "body_plain": "Robert,\n\nOn 12 February 2013 at 10:05, McGehee, Robert wrote:\n| Hi,\n| Has anyone had an issue where a PostgreSQL connection was forcibly killed (SIGKILL) by RPostgreSQL, causing a full database crash/recovery/restart? \n| \n| This seems to happen about twice a week when a RPostgreSQL connection is closed using dbDisconnect (or when an R session ends) while other queries are running. The Linux OOM killer is not enabled on this server and I can find no evidence of hardware problems or any evidence of problems with the PostgreSQL database. This left me to wonder if there was a problem with the way RPostgreSQL (or R) disconnects that causes the database crash.\n|  \n| I generally interface with RPostgreSQL inside a function like this:\n| \n| FUN <- function() {\n| \tconn <- dbConnect(dbDriver(\"PostgreSQL\"), host=\"xx\", user=\"xx\", password=\"xx\", dbname=\"xx\")\n| \ton.exit(dbDisconnect(conn), add=TRUE)\n| \tdbGetQuery(\"SELECT 1;\", conn=conn)\n| }\n| \n| I found record of a similar problem with the RpgSQL package here (from 2009):\n| https://stat.ethz.ch/pipermail/r-help/2009-January/184707.html\n| which indicates that dbDisconnect() caused a crash under similar circumstances in RpgSQL. However, in this case there was a crash in R; in my case there is a crash in PostgreSQL (and it's a different package).\n| \n| Has anyone else had a problem like this with RPostgreSQL or know if it is even possible for RPostgreSQL to send a SIGKILL signal to a PostgreSQL connection? I'm reluctant to remove dbDisconnect everywhere, as I don't want zombie connections accumulating. Also, I'm not the only user of the database.\n\nWe obviousy have a lot of connect/disconnect in the unit testing for\nRPostgreSQL and this has never come up before.  \n\nThis may be an iffy one to chase down as it could well depend on your load,\ndatabase, server version, ...\n\nWe will try to help where we can but without a reproducible example it is\ndifficult.  Maybe you can locally mod your RPostgreSQL package and add\nlogging ?\n\nThere is a (very low-volume) list for RPostgreSQL which may be more appropriate.\n\nDirk\n \n| Thanks, Robert\n| \n| _______________________________________________\n| R-sig-DB mailing list -- R Special Interest Group\n| R-sig-DB at r-project.org\n| https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n-- \nDirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com",
+      "body_snippet": "Robert,\n\nOn 12 February 2013 at 10:05, McGehee, Robert wrote:\n| Hi,\n| Has anyone had an issue where a PostgreSQL connection was forcibly killed (SIGKILL) by RPostgreSQL, causing a full database crash/",
+      "thread_id": "thread-a9a691d4cdb9",
+      "thread_depth": 1,
+      "month": "2013-02"
+    },
+    {
+      "id": "msg-8b30bac0a6c5",
+      "message_id": "<A9906F5A-7B19-4CD8-969D-825A144FFA9D@staff.kanazawa-u.ac.jp>",
+      "from_name": "NISHIYAMA Tomoaki",
+      "from_email_hash": "ad7d0ad7e619994bf2ad9845ab93b14a1002af9dca9ed0f127abe8dd8475d08f",
+      "date": "2013-02-17T22:16:59+09:00",
+      "subject": "[R-sig-DB] PostgreSQL killed on dbDisconnect (RPostgreSQL)",
+      "subject_clean": "PostgreSQL killed on dbDisconnect (RPostgreSQL)",
+      "in_reply_to": "<17B09E7789D3104E8F5EEB0582A8D66FF250D527BE@MSGRTPCCRF2WIN.DMN1.FMR.COM>",
+      "references": [
+        "<17B09E7789D3104E8F5EEB0582A8D66FF250D527BE@MSGRTPCCRF2WIN.DMN1.FMR.COM>"
+      ],
+      "body_plain": "Dear Robert,\n\nSince you are seeing crashes in the server side, which is probably very serious\nproblem for the PostgreSQL developers, I think it is best to contact their\nmailing list.  With more specific version no. of the server and libpq etc.\nHopefully, they would direct you to collect information necessary to \ninvestigate the problem.\n\nBest regards,\n\nTomoaki\n\nOn 2013/02/13, at 0:05, McGehee, Robert wrote:\n\n> Hi,\n> Has anyone had an issue where a PostgreSQL connection was forcibly killed (SIGKILL) by RPostgreSQL, causing a full database crash/recovery/restart? \n> \n> This seems to happen about twice a week when a RPostgreSQL connection is closed using dbDisconnect (or when an R session ends) while other queries are running. The Linux OOM killer is not enabled on this server and I can find no evidence of hardware problems or any evidence of problems with the PostgreSQL database. This left me to wonder if there was a problem with the way RPostgreSQL (or R) disconnects that causes the database crash.\n> \n> I generally interface with RPostgreSQL inside a function like this:\n> \n> FUN <- function() {\n> \tconn <- dbConnect(dbDriver(\"PostgreSQL\"), host=\"xx\", user=\"xx\", password=\"xx\", dbname=\"xx\")\n> \ton.exit(dbDisconnect(conn), add=TRUE)\n> \tdbGetQuery(\"SELECT 1;\", conn=conn)\n> }\n> \n> I found record of a similar problem with the RpgSQL package here (from 2009):\n> https://stat.ethz.ch/pipermail/r-help/2009-January/184707.html\n> which indicates that dbDisconnect() caused a crash under similar circumstances in RpgSQL. However, in this case there was a crash in R; in my case there is a crash in PostgreSQL (and it's a different package).\n> \n> Has anyone else had a problem like this with RPostgreSQL or know if it is even possible for RPostgreSQL to send a SIGKILL signal to a PostgreSQL connection? I'm reluctant to remove dbDisconnect everywhere, as I don't want zombie connections accumulating. Also, I'm not the only user of the database.\n> \n> Thanks, Robert\n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "Dear Robert,\n\nSince you are seeing crashes in the server side, which is probably very serious\nproblem for the PostgreSQL developers, I think it is best to contact their\nmailing list.  With more specif",
+      "thread_id": "thread-a9a691d4cdb9",
+      "thread_depth": 1,
+      "month": "2013-02"
+    },
+    {
+      "id": "msg-7834fb55ba35",
+      "message_id": "<DDBF4D74-5157-4158-8C7F-93450661FF92@cwi.nl>",
+      "from_name": "Hannes Mühleisen",
+      "from_email_hash": "bf97b3aafe8f8940588b601fbd6408f9c783dfea3439485571573968b5d7da08",
+      "date": "2013-02-24T11:16:11+01:00",
+      "subject": "[R-sig-DB] MonetDB.R connector",
+      "subject_clean": "MonetDB.R connector",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello everybody,\n\nWe would like to announce the immediate availability of the first native connector for the open source database MonetDB [1] in R.  The connector is available on CRAN [2] and implements the R DBI [3]. MonetDB is particularly suited to support statistics due to its column-oriented storage model that allows fast bulk operations. \n\nWe invite everybody to try this combination and are looking forward to your feedback.\n\nBest,\n\nHannes M?hleisen\n\n[1] http://www.monetdb.org\n[2] http://cran.r-project.org/web/packages/MonetDB.R/index.html\n[3] http://cran.r-project.org/web/packages/DBI/index.html\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hello everybody,\n\nWe would like to announce the immediate availability of the first native connector for the open source database MonetDB [1] in R.  The connector is available on CRAN [2] and implemen",
+      "thread_id": "thread-7834fb55ba35",
+      "thread_depth": 0,
+      "month": "2013-02"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-c8e8c0f3a05a",
+      "subject": "RpgSQL/RJDBC(?) on R15.2(64) Win7 throws can't find .verify.JDBC.result",
+      "message_count": 1,
+      "participants": [
+        "Gabor Grothendieck"
+      ],
+      "started": "2013-02-07T00:20:55-05:00",
+      "last_reply": "2013-02-07T00:20:55-05:00",
+      "root_message_id": "msg-c8e8c0f3a05a"
+    },
+    {
+      "id": "thread-a9a691d4cdb9",
+      "subject": "PostgreSQL killed on dbDisconnect (RPostgreSQL)",
+      "message_count": 3,
+      "participants": [
+        "Dirk Eddelbuettel",
+        "McGehee, Robert",
+        "NISHIYAMA Tomoaki"
+      ],
+      "started": "2013-02-12T10:05:31-05:00",
+      "last_reply": "2013-02-17T22:16:59+09:00",
+      "root_message_id": "msg-a9a691d4cdb9"
+    },
+    {
+      "id": "thread-7834fb55ba35",
+      "subject": "MonetDB.R connector",
+      "message_count": 1,
+      "participants": [
+        "Hannes Mühleisen"
+      ],
+      "started": "2013-02-24T11:16:11+01:00",
+      "last_reply": "2013-02-24T11:16:11+01:00",
+      "root_message_id": "msg-7834fb55ba35"
+    }
+  ]
+}

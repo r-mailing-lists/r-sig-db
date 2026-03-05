@@ -1,0 +1,55 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2015-09",
+  "messages": [
+    {
+      "id": "msg-fadee404afb0",
+      "message_id": "<CABoPq5P5v+chV7m-SYEhuQdJ4N+aztisS5t_TopYUwB-U5KAFQ@mail.gmail.com>",
+      "from_name": "Marco Cetraro",
+      "from_email_hash": "e5af2f1ed4c6c31475b4f0b68c4b5f1adb482d8a8a30598028d06d50c2f92a0d",
+      "date": "2015-09-22T17:41:44-04:00",
+      "subject": "[R-sig-DB] Data Frame from a Teradata table",
+      "subject_clean": "Data Frame from a Teradata table",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi all,\n\nI am new in R language.  I have created a data frame in R using a Teradata\ntable, the statement:\n\ntdf <- td.data.frame(\"base_08092015_v2\")\n\nwhere base_08092015_v2 is a Teradata table.\n\nsummary(tdf)\n   numero_id           dias_mora          periodo           saldo\n Min.   :      626   Min.   :  -2.00   Min.   :201002   Min.   :        1\n 1st Qu.:   446602   1st Qu.:   0.00   1st Qu.:201201   1st Qu.: 11196611\n Median :  1038866   Median :   0.00   Median :201212   Median : 17477384\n Mean   :  2251666   Mean   :  54.84   Mean   :201244   Mean   : 20259955\n 3rd Qu.:  1589698   3rd Qu.:   0.00   3rd Qu.:201310   3rd Qu.: 25689429\n Max    :178371212   Max    :7334.00   Max    :201409   Max    :200000000\n                                                        NA's   :    37762\n    tipo_id\n Min.   :3.000\n 1st Qu.:3.000\n Median :3.000\n Mean   :3.021\n 3rd Qu.:3.000\n Max    :9.000\n\n\nMy problem is that I get an error when I try to filter the td.data.frame\ntdf:\n\nnew_tdf <- tdf[tdf$Dias_Mora > Dias_Mora & tdf$periodo >= Fecha_Inicio_YM &\ntdf$periodo <= Fecha_Final_YM & tdf$tipo_id == 3, ]\n*Error in `[.td.data.frame`(tdf, tdf$Dias_Mora > Dias_Mora & tdf$periodo >=\n : *\n*  Invalid subscript type 'logical'*\n\nAlso, when I executed the statement:\n\ndups <- tdf5[duplicated(tdf5$periodo), ]\n*Error in `[.td.data.frame`(tdf5, duplicated(tdf5$periodo), ) : *\n*  Invalid subscript type 'logical'*\n\n\n*I don't understand the error.  I searched on the internet as well\nas specialize R websites and I couldn't find any information.*\n\n*THANK YOU VERY MUCH.*\n\n\n-- \nRegards,\n\nMarco Cetraro\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi all,\n\nI am new in R language.  I have created a data frame in R using a Teradata\ntable, the statement:\n\ntdf <- td.data.frame(\"base_08092015_v2\")\n\nwhere base_08092015_v2 is a Teradata table.\n\nsummar",
+      "thread_id": "thread-fadee404afb0",
+      "thread_depth": 0,
+      "month": "2015-09"
+    },
+    {
+      "id": "msg-b83dabfed931",
+      "message_id": "<D229658D.1397C9%macqueen1@llnl.gov>",
+      "from_name": "MacQueen, Don",
+      "from_email_hash": "57bebc14c9dfd76714b31750b84b62773dc73c911ab434c31e5a16c8c34dda91",
+      "date": "2015-09-24T15:44:16Z",
+      "subject": "[R-sig-DB] Data Frame from a Teradata table",
+      "subject_clean": "Data Frame from a Teradata table",
+      "in_reply_to": "<CABoPq5P5v+chV7m-SYEhuQdJ4N+aztisS5t_TopYUwB-U5KAFQ@mail.gmail.com>",
+      "references": [
+        "<CABoPq5P5v+chV7m-SYEhuQdJ4N+aztisS5t_TopYUwB-U5KAFQ@mail.gmail.com>"
+      ],
+      "body_plain": "The output from\n  str(tdf)\n  class(tdf)\nwould be helpful.\n\nIt may be that \"td.data.frame\" objects, whatever they are, do not use the\nsame syntax as \"data.frame\" objects. Perhaps they only support numeric\nindexing, not logical indexing.\n\n\nAssuming logical indexes are valid for td.data.frame objects,\n  tdf$Dias_Mora\nshould be\n  tdf$dias_mora\n[see the variable names shown in the output of summary()]\n\nIf that doesn't fix it, then try this:\n\ntmp <- df$Dias_Mora > Dias_Mora &\n  tdf$periodo >= Fecha_Inicio_YM &\n  tdf$periodo <= Fecha_Final_YM &\n  tdf$tipo_id == 3\n\nThen, one or more of these should help reveal the problem:\n  class(tmp)\n  str(tmp)\n  table(tmp)\ntmp should be logical, and should not have any NA (missing) values\n\nAll of this assumes that\n  Dias_Mora\n  Fecha_Inicio_YM\n  Fecha_Final_YM\nall exist and are of the correct type (apparently numeric)\n\nAlso, please do not post in HTML. And you should identify what package\ntd.data.frame comes from, since it is not part of base R.\n\n-- \nDon MacQueen\n\nLawrence Livermore National Laboratory\n7000 East Ave., L-627\nLivermore, CA 94550\n925-423-1062\n\n\n\n\n\nOn 9/22/15, 2:41 PM, \"R-sig-DB on behalf of Marco Cetraro\"\n<r-sig-db-bounces at r-project.org on behalf of marco.cetraro at gmail.com>\nwrote:\n\n>Hi all,\n>\n>I am new in R language.  I have created a data frame in R using a Teradata\n>table, the statement:\n>\n>tdf <- td.data.frame(\"base_08092015_v2\")\n>\n>where base_08092015_v2 is a Teradata table.\n>\n>summary(tdf)\n>   numero_id           dias_mora          periodo           saldo\n> Min.   :      626   Min.   :  -2.00   Min.   :201002   Min.   :        1\n> 1st Qu.:   446602   1st Qu.:   0.00   1st Qu.:201201   1st Qu.: 11196611\n> Median :  1038866   Median :   0.00   Median :201212   Median : 17477384\n> Mean   :  2251666   Mean   :  54.84   Mean   :201244   Mean   : 20259955\n> 3rd Qu.:  1589698   3rd Qu.:   0.00   3rd Qu.:201310   3rd Qu.: 25689429\n> Max    :178371212   Max    :7334.00   Max    :201409   Max    :200000000\n>                                                        NA's   :    37762\n>    tipo_id\n> Min.   :3.000\n> 1st Qu.:3.000\n> Median :3.000\n> Mean   :3.021\n> 3rd Qu.:3.000\n> Max    :9.000\n>\n>\n>My problem is that I get an error when I try to filter the td.data.frame\n>tdf:\n>\n>new_tdf <- tdf[tdf$Dias_Mora > Dias_Mora & tdf$periodo >= Fecha_Inicio_YM\n>&\n>tdf$periodo <= Fecha_Final_YM & tdf$tipo_id == 3, ]\n>*Error in `[.td.data.frame`(tdf, tdf$Dias_Mora > Dias_Mora & tdf$periodo\n>>=\n> : *\n>*  Invalid subscript type 'logical'*\n>\n>Also, when I executed the statement:\n>\n>dups <- tdf5[duplicated(tdf5$periodo), ]\n>*Error in `[.td.data.frame`(tdf5, duplicated(tdf5$periodo), ) : *\n>*  Invalid subscript type 'logical'*\n>\n>\n>*I don't understand the error.  I searched on the internet as well\n>as specialize R websites and I couldn't find any information.*\n>\n>*THANK YOU VERY MUCH.*\n>\n>\n>-- \n>Regards,\n>\n>Marco Cetraro\n>\n>\t[[alternative HTML version deleted]]\n>\n>_______________________________________________\n>R-sig-DB mailing list -- R Special Interest Group\n>R-sig-DB at r-project.org\n>https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "The output from\n  str(tdf)\n  class(tdf)\nwould be helpful.\n\nIt may be that \"td.data.frame\" objects, whatever they are, do not use the\nsame syntax as \"data.frame\" objects. Perhaps they only support nume",
+      "thread_id": "thread-fadee404afb0",
+      "thread_depth": 1,
+      "month": "2015-09"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-fadee404afb0",
+      "subject": "Data Frame from a Teradata table",
+      "message_count": 2,
+      "participants": [
+        "MacQueen, Don",
+        "Marco Cetraro"
+      ],
+      "started": "2015-09-22T17:41:44-04:00",
+      "last_reply": "2015-09-24T15:44:16+00:00",
+      "root_message_id": "msg-fadee404afb0"
+    }
+  ]
+}

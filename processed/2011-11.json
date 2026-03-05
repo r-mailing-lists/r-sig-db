@@ -1,0 +1,204 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2011-11",
+  "messages": [
+    {
+      "id": "msg-76afa6872144",
+      "message_id": "<CACLVabXbULSr+-ozQfhPi9SJDwq8x34FoT_=qx=OFFoe14783A@mail.gmail.com>",
+      "from_name": "Stavros Macrakis",
+      "from_email_hash": "2a5c45f1326bc938c1d79fe8847fe988008cc4420967ae773985d028e97405de",
+      "date": "2011-11-03T17:56:45-04:00",
+      "subject": "[R-sig-DB] Minor documentation glitch in RODBC sqlQuery",
+      "subject_clean": "Minor documentation glitch in RODBC sqlQuery",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "The help page for sqlQuery (RODBC 1.3.3 under R 2.13.1 on 64-bit\nWindows 7) documents the 'errors' argument as:\n\n     errors: logical: if true halt and display error, else return '-1'.\n\nIn fact, with errors=TRUE, sqlQuery does not halt and display an\nerror; instead it behaves as documented in the Value section, which\nreads:\n\n     ...On error, if 'errors = TRUE' a character vector of error\nmessage(s), otherwise...\n\nThat is, it displays nothing and returns a character-vector value.\n\nMay I suggest the maintainers update the document?\n\n           -s",
+      "body_snippet": "The help page for sqlQuery (RODBC 1.3.3 under R 2.13.1 on 64-bit\nWindows 7) documents the 'errors' argument as:\n\n     errors: logical: if true halt and display error, else return '-1'.\n\nIn fact, with ",
+      "thread_id": "thread-76afa6872144",
+      "thread_depth": 0,
+      "month": "2011-11"
+    },
+    {
+      "id": "msg-80414e13b71a",
+      "message_id": "<557e8eb9fa56b0e487dba4ac73cf3595@varenka.cime.net>",
+      "from_name": "CIURANA EUGENE",
+      "from_email_hash": "bb5c9baa5110267d003b30b513ca8a278f19768fce217b78bac0b25895bf3794",
+      "date": "2011-11-06T13:40:09-08:00",
+      "subject": "[R-sig-DB] Problem with RMySQL installation - R64.app 2.14, OS X",
+      "subject_clean": "Problem with RMySQL installation - R64.app 2.14, OS X",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Greetings. \n\nI installed DBI and RMySQL under R 64-bit console\nwithout issues, but after several attempts at installing it under\nR64.app it continues to give this error message in response to\nlibrary(RMySQL): \n\nLoading required package: DBI\nError : .onLoad failed\nin loadNamespace() for 'RMySQL', details:\n call: dyn.load(file, DLLpath\n= DLLpath, ...)\n error: unable to load shared object\n'/Users/ciurana/Library/R/2.14/library/RMySQL/libs/x86_64/RMySQL.so':\n\ndlopen(/Users/ciurana/Library/R/2.14/library/RMySQL/libs/x86_64/RMySQL.so,\n6): Library not loaded:\n/Library/Frameworks/R.framework/Versions/2.13/Resources/lib/libR.dylib\n\nReferenced from:\n/Users/ciurana/Library/R/2.14/library/RMySQL/libs/x86_64/RMySQL.so\n\nReason: image not found\nError: package/namespace load failed for\n'RMySQL' \n\nI tried installing from the command line using R CMD INSTALL\nRMySQL-whatever.tgz \n\nI also tried setting up the environment variables\nwithin R64.app for the MySQL client headers and libraries, then\ninstalling using install.packages(). \n\nI tried installing this as a\nnormal user, and as root. Same effect in both cases. \n\nThe net effect is\nthis error message ONLY under R64.app. R from the command line works\nfine, and my scripts and interactive sessions can talk to the MySQL\ndatabases just fine, sans errors or warnings. \n\nI was able to install\n(and run) RMySQL under R64 both console and GUI app version 2.13. This\nproblem appeared only under 2.14.0. \n\nCan you please suggest a way of\ntroubleshooting this, or a good installation guide specific to OS X?\nGoogle reports none; I'll be happy to write one too. \n\nThanks in advance\nand have a great week, \n\nE \n\n-- \npr3d4t0r at #R, ##java, #awk,\n#pyton\nirc.freeenode.net\n  \n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Greetings. \n\nI installed DBI and RMySQL under R 64-bit console\nwithout issues, but after several attempts at installing it under\nR64.app it continues to give this error message in response to\nlibrary(",
+      "thread_id": "thread-80414e13b71a",
+      "thread_depth": 0,
+      "month": "2011-11"
+    },
+    {
+      "id": "msg-deeed30eabb5",
+      "message_id": "<000301cc9f96$b6b83ca0$2428b5e0$@de>",
+      "from_name": "Meike Börder",
+      "from_email_hash": "12c14c4660d313112a4332accd09a24e2176f0b99f9dff3035d842e0fe263ef6",
+      "date": "2011-11-10T11:51:33+01:00",
+      "subject": "[R-sig-DB] R/PostgreSQL",
+      "subject_clean": "R/PostgreSQL",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear all,\n\n \n\nI have two problems while using R and PostgreSQL 9.0 and need some help.\n\n \n\n1)      I want to import tables from a specific PostgreSQL-Database into R.\n\nConnecting R to PostgreSQL using dbConnect worked, but instead of showing\njust the tables in the requested database, R returned every single table\nfrom all databases.\n\n \n\nI used these commands:\n\nconRLP <- dbConnect(pgSQL(), user = \"postgres\", password = \"pw?, dbname =\n\"Data RLP\")\n\n \n\ndbListTables(conRLP)  \n\n \n\nand now instead of just the 15 tables from ?Data RLP? I need, I see a list\nof all tables. Is there a way to just show the tables that are in Data RLP?\n\n \n\nMy session info:\n\nR version 2.13.2 (2011-09-30)\n\nPlatform: i386-pc-mingw32/i386 (32-bit)\n\n \n\nlocale:\n\n[1] LC_COLLATE=German_Germany.1252  LC_CTYPE=German_Germany.1252\nLC_MONETARY=German_Germany.1252 LC_NUMERIC=C\nLC_TIME=German_Germany.1252    \n\n \n\nattached base packages:\n\n[1] stats     graphics  grDevices utils     datasets  methods   base\n\n \n\n \n\n2)      I tried to install RPostgreSQL, but got an error report that the\nconfirmation failed.\n\n \n\ninstall.packages(\"RPostgreSQL\", type=\"source\")\n\nInstalliere Paket(e) nach ?C:/Users/Hinata/Documents/R/win-library/2.13?\n#translation from german: install packages to C:/?\n\n(da ?lib? nicht spezifiziert)\n#?lib? not specified\n\nversuche URL 'http://cran.rakanu.com/src/contrib/RPostgreSQL_0.2-0.tar.gz'\n#tries URL ?http://??\n\nContent type 'application/x-gzip' length 159167 bytes (155 Kb)\n\nURL ge?ffnet\n#URL opened\n\ndownloaded 155 Kb\n\n \n\n* installing *source* package 'RPostgreSQL' ...\n\nERROR: configuration failed for package 'RPostgreSQL'\n\n* removing 'C:/Users/Hinata/Documents/R/win-library/2.13/RPostgreSQL'\n\n \n\nDie heruntergeladenen Pakete sind in\n#downloaded packages can be found in folder c:\\users?\n\n        ?C:\\Users\\Hinata\\AppData\\Local\\Temp\\RtmpBsQJ05\\downloaded_packages?\n\n \n\n \n\nWhat can I do?\n\n  \n\nCheers, Meike\n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Dear all,\n\n \n\nI have two problems while using R and PostgreSQL 9.0 and need some help.\n\n \n\n1)      I want to import tables from a specific PostgreSQL-Database into R.\n\nConnecting R to PostgreSQL using",
+      "thread_id": "thread-deeed30eabb5",
+      "thread_depth": 0,
+      "month": "2011-11"
+    },
+    {
+      "id": "msg-f26519ada878",
+      "message_id": "<20156.2705.947895.128342@max.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2011-11-10T11:32:01-06:00",
+      "subject": "[R-sig-DB] R/PostgreSQL",
+      "subject_clean": "R/PostgreSQL",
+      "in_reply_to": "<000301cc9f96$b6b83ca0$2428b5e0$@de>",
+      "references": [
+        "<000301cc9f96$b6b83ca0$2428b5e0$@de>"
+      ],
+      "body_plain": "On 10 November 2011 at 11:51, Meike B?rder wrote:\n| 2)      I tried to install RPostgreSQL, but got an error report that the\n| confirmation failed.\n| \n|  \n| \n| install.packages(\"RPostgreSQL\", type=\"source\")\n| \n| Installiere Paket(e) nach ?C:/Users/Hinata/Documents/R/win-library/2.13?\n| #translation from german: install packages to C:/?\n| \n| (da ?lib? nicht spezifiziert)\n| #?lib? not specified\n| \n| versuche URL 'http://cran.rakanu.com/src/contrib/RPostgreSQL_0.2-0.tar.gz'\n| #tries URL ?http://??\n| \n| Content type 'application/x-gzip' length 159167 bytes (155 Kb)\n| \n| URL ge?ffnet\n| #URL opened\n| \n| downloaded 155 Kb\n| \n|  \n| \n| * installing *source* package 'RPostgreSQL' ...\n| \n| ERROR: configuration failed for package 'RPostgreSQL'\n| \n| * removing 'C:/Users/Hinata/Documents/R/win-library/2.13/RPostgreSQL'\n| \n|  \n| \n| Die heruntergeladenen Pakete sind in\n| #downloaded packages can be found in folder c:\\users?\n| \n|         ?C:\\Users\\Hinata\\AppData\\Local\\Temp\\RtmpBsQJ05\\downloaded_packages?\n| \n|  \n| \n|  \n| \n| What can I do?\n\nIf everything else fails, read the documentation. ;-)\n\nTo build RPostgreSQL from source you _must have_ the header files and library\ninstalled.  \n\nOn Windows, where locations of programs and files are a little less (let's be\ncharitable here) \"predicable\" you also need to set an environment variable\nPG_HOME to point to the directory holding these files.\n\nI just did this on Windows a couple of days ago, and I effectively had to\ninstall a full PostgreSQL 9.1 installation: PostgreSQL server, PgAdmin,\n... just to get the headers and libraries. After setting PG_HOME the package\nbuilt like a charm and I am happily talking to a PostgreSQL server on another\nmachine. \n\nBeste Gruesse,  Dirk\n\n-- \n\"Outside of a dog, a book is a man's best friend. Inside of a dog, it is too\ndark to read.\" -- Groucho Marx",
+      "body_snippet": "On 10 November 2011 at 11:51, Meike B?rder wrote:\n| 2)      I tried to install RPostgreSQL, but got an error report that the\n| confirmation failed.\n| \n|  \n| \n| install.packages(\"RPostgreSQL\", type=\"so",
+      "thread_id": "thread-deeed30eabb5",
+      "thread_depth": 1,
+      "month": "2011-11"
+    },
+    {
+      "id": "msg-8f7f42c809f5",
+      "message_id": "<0B960CB1-20F1-41EA-8FAB-8B7EBECF3FF2@kenroku.kanazawa-u.ac.jp>",
+      "from_name": "Tomoaki NISHIYAMA",
+      "from_email_hash": "32104f251c35465c7b064ecaf7558a62b44d8fb01218b8a85e1f2cd3278271b5",
+      "date": "2011-11-12T11:59:22+09:00",
+      "subject": "[R-sig-DB] RpostgreSQL install on Windows",
+      "subject_clean": "RpostgreSQL install on Windows",
+      "in_reply_to": "<CAG2PC+ddv-ytdbSqBX7cFEPNmmME+nM-wfZdAoinm8PrG+TOCQ@mail.gmail.com>",
+      "references": [
+        "<CAG2PC+ddv-ytdbSqBX7cFEPNmmME+nM-wfZdAoinm8PrG+TOCQ@mail.gmail.com>"
+      ],
+      "body_plain": "Hi,\n\nI wrote an instruction to install on windows in rpostgresql wiki.\nFor 32 bit version:\nhttp://code.google.com/p/rpostgresql/wiki/WindowsInstall32\nand for 64 bit version:\nhttp://code.google.com/p/rpostgresql/wiki/WindowsInstall64\n\nNote that this was written with very few experience and may contain errors.\nSo, please let me know if you find something incorrect, not working, or missing.\n-- \nTomoaki NISHIYAMA\n\nAdvanced Science Research Center,\nKanazawa University,\n13-1 Takara-machi, \nKanazawa, 920-0934, Japan\n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi,\n\nI wrote an instruction to install on windows in rpostgresql wiki.\nFor 32 bit version:\nhttp://code.google.com/p/rpostgresql/wiki/WindowsInstall32\nand for 64 bit version:\nhttp://code.google.com/p/r",
+      "thread_id": "thread-8f7f42c809f5",
+      "thread_depth": 0,
+      "month": "2011-11"
+    },
+    {
+      "id": "msg-49617e6268b5",
+      "message_id": "<E26B217404968B4C9B0B800C7716C8CE018011E0@ex2k.bankofamerica.com>",
+      "from_name": "Bowling, Brad",
+      "from_email_hash": "38cae08576118de3e6ffd1ade9caccd339ed02c9235dd47ac9112066b984d031",
+      "date": "2011-11-14T18:12:31-05:00",
+      "subject": "[R-sig-DB] Unable to install ROracle on R 2.14.0",
+      "subject_clean": "Unable to install ROracle on R 2.14.0",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I am having an issue compiling and installing ROracle.  My knowledge of\nR is very limited so I am looking for any advice on ways I can\ntroubleshoot and/or solve this issue, i.e. logs, commands, patches, etc.\nMy environment is as follows:\n\nOperating System - Red Hat Enterprise Linux AS release 4 (Nahant Update\n6)\nLinux atlqtfldplz01 2.6.9-78.0.1.ELhugemem #1 SMP Tue Jul 22 18:23:25\nEDT 2008 i686 i686 i386 GNU/Linux\n\nR version 2.14.0 (2011-10-31) Platform: i686-pc-linux-gnu (32-bit)\nTrying to install ROracle_0.5-12.tar.gz\n\nOracle Client:  10.1.0.3.0 (32bit)\nORACLE_HOME=/mass/oracle/product/10.1.0.3.0\nLD_LIBRARY_PATH=/mass/oracle/product/10.1.0.3.0/lib\n\nInstalled R libraries:\n# /mass/bin/R --slave -e 'cat(rownames(installed.packages()), \"\\n\")'\nbase bitops boot caTools chron class cluster codetools corpcor datasets\nDBI digest ellipse fAssets fBasics fCopulae fda fields foreign\nfPortfolio gdata getopt glpk gplots graphics grDevices grid gtools Hmisc\nKernSmooth lars lattice leaps limSolve lpSolve MASS Matrix methods mgcv\nmnormt nlme nnet optparse pls proto quadprog Rcpp Rglpk rjson\nR.methodsS3 robustbase R.oo ROracle roxygen rpart Runiversal slam sn\nspam spatial splines stats stats4 survival tcltk timeDate timeSeries\ntools tseries urca utils zoo\n\nWhen attempting to compile/install ROracle I receive the following:\n\n# /mass/R/R-2.14.0/bin/R CMD INSTALL -l /mass/R/R-2.14.0/lib/R/library\n./ROracle_0.5-12.tar.gz\n* installing *source* package 'ROracle' ...\n** package 'ROracle' successfully unpacked and MD5 sums checked\nchecking for gcc... gcc\nchecking for C compiler default output... a.out\nchecking whether the C compiler works... yes\nchecking whether we are cross compiling... no\nchecking for suffix of executables...\nchecking for suffix of object files... o\nchecking whether we are using the GNU C compiler... yes\nchecking whether gcc accepts -g... yes\nchecking for gcc option to accept ANSI C... none needed\nchecking how to run the C preprocessor... gcc -E\n## You are not building with distcc and have been limited to -j2\n## If you are on the build machine consider stopping and running\n## envy distcc before restarting the build\nconfigure: creating ./config.status\nconfig.status: creating src/Makevars\nsed: file ./confstatSv9983/subs-1.sed line 43: unterminated `s' command\nconfig.status: creating src/Makefile\nsed: file ./confstatSv9983/subs-1.sed line 43: unterminated `s' command\n** libs\n** arch -\nmake: *** No targets.  Stop.\nERROR: compilation failed for package 'ROracle'\n* removing '/mass/R/R-2.14.0/lib/R/library/ROracle'\n\nHas anyone experienced this issue?  I haven't found much in the way of\ndocumentation out there.  Just install procedures, which I've checked\nand double checked.  Not really sure how to troubleshoot this further.\nAny help will be greatly appreciated.\n\n\nThanks,\n-Brad\n\n\n----------------------------------------------------------------------\nThis message w/attachments (message) is intended solely ...{{dropped:7}}",
+      "body_snippet": "I am having an issue compiling and installing ROracle.  My knowledge of\nR is very limited so I am looking for any advice on ways I can\ntroubleshoot and/or solve this issue, i.e. logs, commands, patche",
+      "thread_id": "thread-49617e6268b5",
+      "thread_depth": 0,
+      "month": "2011-11"
+    },
+    {
+      "id": "msg-836cf3bdda01",
+      "message_id": "<alpine.LFD.2.02.1111150615070.1495@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2011-11-15T06:17:11Z",
+      "subject": "[R-sig-DB] Unable to install ROracle on R 2.14.0",
+      "subject_clean": "Unable to install ROracle on R 2.14.0",
+      "in_reply_to": "<E26B217404968B4C9B0B800C7716C8CE018011E0@ex2k.bankofamerica.com>",
+      "references": [
+        "<E26B217404968B4C9B0B800C7716C8CE018011E0@ex2k.bankofamerica.com>"
+      ],
+      "body_plain": "Please ask the maintainer (as the posting guide said).  This is about \nhis configure script, not R nor DBMSs.\n\nIf I read it correctly your Linux is very old (RHEL are on 6.x now), \nand the configure script may need a more recent set of tools.\n\nOn Mon, 14 Nov 2011, Bowling, Brad wrote:\n\n> I am having an issue compiling and installing ROracle.  My knowledge of\n> R is very limited so I am looking for any advice on ways I can\n> troubleshoot and/or solve this issue, i.e. logs, commands, patches, etc.\n> My environment is as follows:\n>\n> Operating System - Red Hat Enterprise Linux AS release 4 (Nahant Update\n> 6)\n> Linux atlqtfldplz01 2.6.9-78.0.1.ELhugemem #1 SMP Tue Jul 22 18:23:25\n> EDT 2008 i686 i686 i386 GNU/Linux\n>\n> R version 2.14.0 (2011-10-31) Platform: i686-pc-linux-gnu (32-bit)\n> Trying to install ROracle_0.5-12.tar.gz\n>\n> Oracle Client:  10.1.0.3.0 (32bit)\n> ORACLE_HOME=/mass/oracle/product/10.1.0.3.0\n> LD_LIBRARY_PATH=/mass/oracle/product/10.1.0.3.0/lib\n>\n> Installed R libraries:\n> # /mass/bin/R --slave -e 'cat(rownames(installed.packages()), \"\\n\")'\n> base bitops boot caTools chron class cluster codetools corpcor datasets\n> DBI digest ellipse fAssets fBasics fCopulae fda fields foreign\n> fPortfolio gdata getopt glpk gplots graphics grDevices grid gtools Hmisc\n> KernSmooth lars lattice leaps limSolve lpSolve MASS Matrix methods mgcv\n> mnormt nlme nnet optparse pls proto quadprog Rcpp Rglpk rjson\n> R.methodsS3 robustbase R.oo ROracle roxygen rpart Runiversal slam sn\n> spam spatial splines stats stats4 survival tcltk timeDate timeSeries\n> tools tseries urca utils zoo\n>\n> When attempting to compile/install ROracle I receive the following:\n>\n> # /mass/R/R-2.14.0/bin/R CMD INSTALL -l /mass/R/R-2.14.0/lib/R/library\n> ./ROracle_0.5-12.tar.gz\n> * installing *source* package 'ROracle' ...\n> ** package 'ROracle' successfully unpacked and MD5 sums checked\n> checking for gcc... gcc\n> checking for C compiler default output... a.out\n> checking whether the C compiler works... yes\n> checking whether we are cross compiling... no\n> checking for suffix of executables...\n> checking for suffix of object files... o\n> checking whether we are using the GNU C compiler... yes\n> checking whether gcc accepts -g... yes\n> checking for gcc option to accept ANSI C... none needed\n> checking how to run the C preprocessor... gcc -E\n> ## You are not building with distcc and have been limited to -j2\n> ## If you are on the build machine consider stopping and running\n> ## envy distcc before restarting the build\n> configure: creating ./config.status\n> config.status: creating src/Makevars\n> sed: file ./confstatSv9983/subs-1.sed line 43: unterminated `s' command\n> config.status: creating src/Makefile\n> sed: file ./confstatSv9983/subs-1.sed line 43: unterminated `s' command\n> ** libs\n> ** arch -\n> make: *** No targets.  Stop.\n> ERROR: compilation failed for package 'ROracle'\n> * removing '/mass/R/R-2.14.0/lib/R/library/ROracle'\n>\n> Has anyone experienced this issue?  I haven't found much in the way of\n> documentation out there.  Just install procedures, which I've checked\n> and double checked.  Not really sure how to troubleshoot this further.\n> Any help will be greatly appreciated.\n>\n>\n> Thanks,\n> -Brad\n>\n>\n> ----------------------------------------------------------------------\n> This message w/attachments (message) is intended solely ...{{dropped:7}}\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "Please ask the maintainer (as the posting guide said).  This is about \nhis configure script, not R nor DBMSs.\n\nIf I read it correctly your Linux is very old (RHEL are on 6.x now), \nand the configure s",
+      "thread_id": "thread-49617e6268b5",
+      "thread_depth": 1,
+      "month": "2011-11"
+    },
+    {
+      "id": "msg-680d58626340",
+      "message_id": "<20180.60323.756815.980663@max.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2011-11-29T08:26:43-06:00",
+      "subject": "[R-sig-DB] RpostgreSQL install on Windows",
+      "subject_clean": "RpostgreSQL install on Windows",
+      "in_reply_to": "<0B960CB1-20F1-41EA-8FAB-8B7EBECF3FF2@kenroku.kanazawa-u.ac.jp>",
+      "references": [
+        "<CAG2PC+ddv-ytdbSqBX7cFEPNmmME+nM-wfZdAoinm8PrG+TOCQ@mail.gmail.com>",
+        "<0B960CB1-20F1-41EA-8FAB-8B7EBECF3FF2@kenroku.kanazawa-u.ac.jp>"
+      ],
+      "body_plain": "On 12 November 2011 at 11:59, Tomoaki NISHIYAMA wrote:\n| Hi,\n| \n| I wrote an instruction to install on windows in rpostgresql wiki.\n| For 32 bit version:\n| http://code.google.com/p/rpostgresql/wiki/WindowsInstall32\n| and for 64 bit version:\n| http://code.google.com/p/rpostgresql/wiki/WindowsInstall64\n| \n| Note that this was written with very few experience and may contain errors.\n| So, please let me know if you find something incorrect, not working, or\n| missing.\n\nA follow-up is in order here as Tomoaki not only provided this writeup, but\nthen proceeded to re-engineer the build on Windows, making the write-up\nsomewhat data: By shipping an embedded copy of the source of the PostgreSQL\nconnection code (which we can ship as it is of course Open Source), the\nRPostgreSQL package is now no longer dependent on a PostgreSQL installation\nin order to be built.\n\nHence, Windows binaries are back on CRAN, and Windows users of RPostgreSQL\ncan install a pre-compiled package just as they can for RMySQL or RODBC.\n\nThat is very good news which I detailed, along with more praise for Tomoaki,\nin a short blog post a couple of days ago:\n\n  http://dirk.eddelbuettel.com/blog/2011/11/21/#rpostgresql_0.2-0_0.2-1\n\nRPostgreSQL is in very fine shape thanks to all his contributions. So three\ncheers for Tomoaki!\n\nDirk\n\n-- \n\"Outside of a dog, a book is a man's best friend. Inside of a dog, it is too\ndark to read.\" -- Groucho Marx",
+      "body_snippet": "On 12 November 2011 at 11:59, Tomoaki NISHIYAMA wrote:\n| Hi,\n| \n| I wrote an instruction to install on windows in rpostgresql wiki.\n| For 32 bit version:\n| http://code.google.com/p/rpostgresql/wiki/Wi",
+      "thread_id": "thread-8f7f42c809f5",
+      "thread_depth": 1,
+      "month": "2011-11"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-76afa6872144",
+      "subject": "Minor documentation glitch in RODBC sqlQuery",
+      "message_count": 1,
+      "participants": [
+        "Stavros Macrakis"
+      ],
+      "started": "2011-11-03T17:56:45-04:00",
+      "last_reply": "2011-11-03T17:56:45-04:00",
+      "root_message_id": "msg-76afa6872144"
+    },
+    {
+      "id": "thread-80414e13b71a",
+      "subject": "Problem with RMySQL installation - R64.app 2.14, OS X",
+      "message_count": 1,
+      "participants": [
+        "CIURANA EUGENE"
+      ],
+      "started": "2011-11-06T13:40:09-08:00",
+      "last_reply": "2011-11-06T13:40:09-08:00",
+      "root_message_id": "msg-80414e13b71a"
+    },
+    {
+      "id": "thread-deeed30eabb5",
+      "subject": "R/PostgreSQL",
+      "message_count": 2,
+      "participants": [
+        "Dirk Eddelbuettel",
+        "Meike Börder"
+      ],
+      "started": "2011-11-10T11:51:33+01:00",
+      "last_reply": "2011-11-10T11:32:01-06:00",
+      "root_message_id": "msg-deeed30eabb5"
+    },
+    {
+      "id": "thread-8f7f42c809f5",
+      "subject": "RpostgreSQL install on Windows",
+      "message_count": 2,
+      "participants": [
+        "Dirk Eddelbuettel",
+        "Tomoaki NISHIYAMA"
+      ],
+      "started": "2011-11-12T11:59:22+09:00",
+      "last_reply": "2011-11-29T08:26:43-06:00",
+      "root_message_id": "msg-8f7f42c809f5"
+    },
+    {
+      "id": "thread-49617e6268b5",
+      "subject": "Unable to install ROracle on R 2.14.0",
+      "message_count": 2,
+      "participants": [
+        "Bowling, Brad",
+        "Prof Brian Ripley"
+      ],
+      "started": "2011-11-14T18:12:31-05:00",
+      "last_reply": "2011-11-15T06:17:11+00:00",
+      "root_message_id": "msg-49617e6268b5"
+    }
+  ]
+}

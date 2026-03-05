@@ -1,0 +1,1621 @@
+From edd @end|ng |rom deb|@n@org  Thu Jul  6 17:04:00 2006
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Thu, 6 Jul 2006 10:04:00 -0500
+Subject: [R-sig-DB] RSQLite problems / questions
+Message-ID: <17581.9824.441084.518407@basebud.nulle.part>
+
+
+I am trying to set up some simulations to store data in RSQLite, and I hit a
+few snags I wasn't expecting. Any and all comments and suggestions welcome:
+
+i)   RSQLite does not seem to like libsqlite 3.3.5:  On a Ubuntu system where
+I locally rebuilt libsqlite3 from Debian unstable source, the current RSQLite
+builds fine -- but dbWriteTable() seemingly never commits its data.frame to
+the database. I could not figure out why and how, nor could I tell RSQLite's
+configure to ignore the system libraries. Only by  "hiding" the sqlite3
+header and libraries in a temp directory was I able to build RSQLite against
+its shipped libsqlite 3.2.( versions.  Has anybody else experienced problems
+with sqlite 3.3.5? 
+
+ii)  SQLite can use autoincremt'ing columns; one can write to such tables 
+by submitting a NULL in the corresponding field.  I could not figure out how
+to do that with directly with dbWriteTable() -- so I added code to read the
+max value, add one to it and add that as a column to the data.frame submitted
+for writes. This works, but is hardly elegant.  Does anybody have a trick for
+doing this directly?
+
+iii) After a small (20-some) number of iterations, R dies with the error
+message 'all connections are in use'.  Bash's ulimit tells me I can have 1024
+file discriptors, and as the manual page suspect, I cannot raise that.  That
+said, I never hit this wall before when not working with RSQLite. Is it
+forgetting to close/release file handles somewhere?  Each of my runs write
+two updates, but I have the dbConnect()/dbDisconnect() pair 'inside' the
+update function. Moving the db update from the called function to the calling
+function does not cure it -- so even with a single dbConnect()/dbDisconnect I
+run out of resources.  Any idea why ?
+
+Thanks in advance for any insights or comments.
+
+Regards, Dirk
+
+-- 
+Hell, there are no rules here - we're trying to accomplish something. 
+                                                  -- Thomas A. Edison
+
+
+
+From edd @end|ng |rom deb|@n@org  Fri Jul  7 05:09:02 2006
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Thu, 6 Jul 2006 22:09:02 -0500
+Subject: [R-sig-DB] RSQLite problems / questions
+In-Reply-To: <17581.9824.441084.518407@basebud.nulle.part>
+References: <17581.9824.441084.518407@basebud.nulle.part>
+Message-ID: <17581.53326.274026.883593@basebud.nulle.part>
+
+
+On 6 July 2006 at 10:04, Dirk Eddelbuettel wrote:
+| 
+| I am trying to set up some simulations to store data in RSQLite, and I hit a
+| few snags I wasn't expecting. Any and all comments and suggestions welcome:
+| 
+| i)   RSQLite does not seem to like libsqlite 3.3.5:  On a Ubuntu system where
+| I locally rebuilt libsqlite3 from Debian unstable source, the current RSQLite
+| builds fine -- but dbWriteTable() seemingly never commits its data.frame to
+| the database. I could not figure out why and how, nor could I tell RSQLite's
+| configure to ignore the system libraries. Only by  "hiding" the sqlite3
+| header and libraries in a temp directory was I able to build RSQLite against
+| its shipped libsqlite 3.2.( versions.  Has anybody else experienced problems
+| with sqlite 3.3.5? 
+| 
+| ii)  SQLite can use autoincremt'ing columns; one can write to such tables 
+| by submitting a NULL in the corresponding field.  I could not figure out how
+| to do that with directly with dbWriteTable() -- so I added code to read the
+| max value, add one to it and add that as a column to the data.frame submitted
+| for writes. This works, but is hardly elegant.  Does anybody have a trick for
+| doing this directly?
+| 
+| iii) After a small (20-some) number of iterations, R dies with the error
+| message 'all connections are in use'.  Bash's ulimit tells me I can have 1024
+| file discriptors, and as the manual page suspect, I cannot raise that.  That
+| said, I never hit this wall before when not working with RSQLite. Is it
+| forgetting to close/release file handles somewhere?  Each of my runs write
+| two updates, but I have the dbConnect()/dbDisconnect() pair 'inside' the
+| update function. Moving the db update from the called function to the calling
+| function does not cure it -- so even with a single dbConnect()/dbDisconnect I
+| run out of resources.  Any idea why ?
+
+The same problem happens on my Debian testing machine (R 2.3.1, SQLite 3.3.5,
+DBI 0.1.10, RSQLite 0.4-1) :
+
+> 
+> library(RSQLite)
+Loading required package: DBI
+> m <- dbDriver("SQLite")
+> con <- dbConnect(m, "/tmp/temp.sqlite")
+> for (i in 1:500) dbWriteTable(con, "dummytable", data.frame(A=sample(LETTERS, 10), B=rnorm(10)), append=i>1, overwrite=FALSE)
+Error in textConnection(readLines(f, n = 2)) : 
+	all connections are in use
+> i
+[1] 46
+> 
+
+Same 46 limit of 46 connections I hit earlier.
+
+This seems to be a bug in SQLite or DBI.
+
+Regards, Dirk
+
+-- 
+Hell, there are no rules here - we're trying to accomplish something. 
+                                                  -- Thomas A. Edison
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Fri Jul  7 08:40:14 2006
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Fri, 7 Jul 2006 07:40:14 +0100 (BST)
+Subject: [R-sig-DB] RSQLite problems / questions
+In-Reply-To: <17581.53326.274026.883593@basebud.nulle.part>
+References: <17581.9824.441084.518407@basebud.nulle.part>
+	<17581.53326.274026.883593@basebud.nulle.part>
+Message-ID: <Pine.LNX.4.64.0607070736370.21367@gannet.stats.ox.ac.uk>
+
+On Thu, 6 Jul 2006, Dirk Eddelbuettel wrote:
+
+>
+> On 6 July 2006 at 10:04, Dirk Eddelbuettel wrote:
+> |
+> | I am trying to set up some simulations to store data in RSQLite, and I hit a
+> | few snags I wasn't expecting. Any and all comments and suggestions welcome:
+> |
+> | i)   RSQLite does not seem to like libsqlite 3.3.5:  On a Ubuntu system where
+> | I locally rebuilt libsqlite3 from Debian unstable source, the current RSQLite
+> | builds fine -- but dbWriteTable() seemingly never commits its data.frame to
+> | the database. I could not figure out why and how, nor could I tell RSQLite's
+> | configure to ignore the system libraries. Only by  "hiding" the sqlite3
+> | header and libraries in a temp directory was I able to build RSQLite against
+> | its shipped libsqlite 3.2.( versions.  Has anybody else experienced problems
+> | with sqlite 3.3.5?
+> |
+> | ii)  SQLite can use autoincremt'ing columns; one can write to such tables
+> | by submitting a NULL in the corresponding field.  I could not figure out how
+> | to do that with directly with dbWriteTable() -- so I added code to read the
+> | max value, add one to it and add that as a column to the data.frame submitted
+> | for writes. This works, but is hardly elegant.  Does anybody have a trick for
+> | doing this directly?
+> |
+> | iii) After a small (20-some) number of iterations, R dies with the error
+> | message 'all connections are in use'.  Bash's ulimit tells me I can have 1024
+> | file discriptors, and as the manual page suspect, I cannot raise that.  That
+> | said, I never hit this wall before when not working with RSQLite. Is it
+> | forgetting to close/release file handles somewhere?  Each of my runs write
+> | two updates, but I have the dbConnect()/dbDisconnect() pair 'inside' the
+> | update function. Moving the db update from the called function to the calling
+> | function does not cure it -- so even with a single dbConnect()/dbDisconnect I
+> | run out of resources.  Any idea why ?
+>
+> The same problem happens on my Debian testing machine (R 2.3.1, SQLite 3.3.5,
+> DBI 0.1.10, RSQLite 0.4-1) :
+>
+>>
+>> library(RSQLite)
+> Loading required package: DBI
+>> m <- dbDriver("SQLite")
+>> con <- dbConnect(m, "/tmp/temp.sqlite")
+>> for (i in 1:500) dbWriteTable(con, "dummytable", data.frame(A=sample(LETTERS, 10), B=rnorm(10)), append=i>1, overwrite=FALSE)
+> Error in textConnection(readLines(f, n = 2)) :
+> 	all connections are in use
+>> i
+> [1] 46
+>>
+>
+> Same 46 limit of 46 connections I hit earlier.
+>
+> This seems to be a bug in SQLite or DBI.
+
+The message is that R is hitting its limit (50, including 3 terminal 
+connections), so the problem is in DBI.
+
+You can work around it by using showConnections(all=TRUE) and identifying 
+those left open and closing them (programmatically within the loop 
+eventually).
+
+Brian
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Fri Jul  7 09:29:08 2006
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Fri, 7 Jul 2006 08:29:08 +0100 (BST)
+Subject: [R-sig-DB] RSQLite problems / questions
+In-Reply-To: <Pine.LNX.4.64.0607070736370.21367@gannet.stats.ox.ac.uk>
+References: <17581.9824.441084.518407@basebud.nulle.part>
+	<17581.53326.274026.883593@basebud.nulle.part>
+	<Pine.LNX.4.64.0607070736370.21367@gannet.stats.ox.ac.uk>
+Message-ID: <Pine.LNX.4.64.0607070823290.23972@gannet.stats.ox.ac.uk>
+
+On Fri, 7 Jul 2006, Prof Brian Ripley wrote:
+
+> On Thu, 6 Jul 2006, Dirk Eddelbuettel wrote:
+>
+>>
+>> On 6 July 2006 at 10:04, Dirk Eddelbuettel wrote:
+>> |
+>> | I am trying to set up some simulations to store data in RSQLite, and I hit a
+>> | few snags I wasn't expecting. Any and all comments and suggestions welcome:
+>> |
+>> | i)   RSQLite does not seem to like libsqlite 3.3.5:  On a Ubuntu system where
+>> | I locally rebuilt libsqlite3 from Debian unstable source, the current RSQLite
+>> | builds fine -- but dbWriteTable() seemingly never commits its data.frame to
+>> | the database. I could not figure out why and how, nor could I tell RSQLite's
+>> | configure to ignore the system libraries. Only by  "hiding" the sqlite3
+>> | header and libraries in a temp directory was I able to build RSQLite against
+>> | its shipped libsqlite 3.2.( versions.  Has anybody else experienced problems
+>> | with sqlite 3.3.5?
+>> |
+>> | ii)  SQLite can use autoincremt'ing columns; one can write to such tables
+>> | by submitting a NULL in the corresponding field.  I could not figure out how
+>> | to do that with directly with dbWriteTable() -- so I added code to read the
+>> | max value, add one to it and add that as a column to the data.frame submitted
+>> | for writes. This works, but is hardly elegant.  Does anybody have a trick for
+>> | doing this directly?
+>> |
+>> | iii) After a small (20-some) number of iterations, R dies with the error
+>> | message 'all connections are in use'.  Bash's ulimit tells me I can have 1024
+>> | file discriptors, and as the manual page suspect, I cannot raise that.  That
+>> | said, I never hit this wall before when not working with RSQLite. Is it
+>> | forgetting to close/release file handles somewhere?  Each of my runs write
+>> | two updates, but I have the dbConnect()/dbDisconnect() pair 'inside' the
+>> | update function. Moving the db update from the called function to the calling
+>> | function does not cure it -- so even with a single dbConnect()/dbDisconnect I
+>> | run out of resources.  Any idea why ?
+>>
+>> The same problem happens on my Debian testing machine (R 2.3.1, SQLite 3.3.5,
+>> DBI 0.1.10, RSQLite 0.4-1) :
+>>
+>>>
+>>> library(RSQLite)
+>> Loading required package: DBI
+>>> m <- dbDriver("SQLite")
+>>> con <- dbConnect(m, "/tmp/temp.sqlite")
+>>> for (i in 1:500) dbWriteTable(con, "dummytable", data.frame(A=sample(LETTERS, 10), B=rnorm(10)), append=i>1, overwrite=FALSE)
+>> Error in textConnection(readLines(f, n = 2)) :
+>> 	all connections are in use
+>>> i
+>> [1] 46
+>>>
+>>
+>> Same 46 limit of 46 connections I hit earlier.
+>>
+>> This seems to be a bug in SQLite or DBI.
+>
+> The message is that R is hitting its limit (50, including 3 terminal
+> connections), so the problem is in DBI.
+
+Actually, in package RMySQL, which has in mysqlImportFile()
+
+   if(missing(header) || missing(row.names)){
+     f <- file(fn, open="r")
+     if(skip>0)
+       readLines(f, n=skip)
+     flds <- count.fields(textConnection(readLines(f, n=2)), sep)
+     close(f)
+     nf <- length(unique(flds))
+   }
+
+and that never closes the connection it created.  This needs to be 
+something like
+
+     con <- textConnection(readLines(f, n=2))
+     flds <- count.fields(con, sep)
+     close(con)
+
+or perhaps better, use an on.exit action to close the connection.
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From edd @end|ng |rom deb|@n@org  Fri Jul  7 15:45:55 2006
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Fri, 7 Jul 2006 08:45:55 -0500
+Subject: [R-sig-DB] RSQLite problems / questions
+In-Reply-To: <Pine.LNX.4.64.0607070823290.23972@gannet.stats.ox.ac.uk>
+References: <17581.9824.441084.518407@basebud.nulle.part>
+	<17581.53326.274026.883593@basebud.nulle.part>
+	<Pine.LNX.4.64.0607070736370.21367@gannet.stats.ox.ac.uk>
+	<Pine.LNX.4.64.0607070823290.23972@gannet.stats.ox.ac.uk>
+Message-ID: <20060707134555.GA27964@eddelbuettel.com>
+
+On Fri, Jul 07, 2006 at 08:29:08AM +0100, Prof Brian Ripley wrote:
+> On Fri, 7 Jul 2006, Prof Brian Ripley wrote:
+> 
+> >On Thu, 6 Jul 2006, Dirk Eddelbuettel wrote:
+[..]
+> >>Same 46 limit of 46 connections I hit earlier.
+> >>
+> >>This seems to be a bug in SQLite or DBI.
+> >
+> >The message is that R is hitting its limit (50, including 3 terminal
+> >connections), so the problem is in DBI.
+> 
+> Actually, in package RMySQL, which has in mysqlImportFile()
+> 
+>   if(missing(header) || missing(row.names)){
+>     f <- file(fn, open="r")
+>     if(skip>0)
+>       readLines(f, n=skip)
+>     flds <- count.fields(textConnection(readLines(f, n=2)), sep)
+>     close(f)
+>     nf <- length(unique(flds))
+>   }
+> 
+> and that never closes the connection it created.  This needs to be 
+> something like
+> 
+>     con <- textConnection(readLines(f, n=2))
+>     flds <- count.fields(con, sep)
+>     close(con)
+> 
+> or perhaps better, use an on.exit action to close the connection.
+
+Spot on -- thanks for finding this so quickly.  RSQLite has an identical
+segment in the sibbling function sqliteImportfile(), and I applied the patch
+(with substitution of txtcon for con as a variable con is already in use). in
+
+So I suppose this takes care of one of my three questions, and would
+require new uploads of RMySQL, RSQLite, ... to CRAN once David resurfaces.
+
+Thanks, Dirk
+
+-- 
+Hell, there are no rules here - we're trying to accomplish something. 
+                                                  -- Thomas A. Edison
+
+
+
+From hp@ges m@iii@g oii ihcrc@org  Thu Jul 13 02:52:56 2006
+From: hp@ges m@iii@g oii ihcrc@org (hp@ges m@iii@g oii ihcrc@org)
+Date: Wed, 12 Jul 2006 17:52:56 -0700
+Subject: [R-sig-DB] RSQLite 0.4-1 compilation error on Solaris 2.9
+Message-ID: <1152751976.44b5996815d9e@webmail.fhcrc.org>
+
+Hi list,
+
+I tried to install RSQLite_0.4-1.tar.gz on a Solaris 2.9 (sparc)
+machine and got the following error:
+
+  hpages at churchill:~/shipping_and_receiving> R-2.3 CMD INSTALL
+RSQLite_0.4-1.tar.gz
+  * Installing *source* package 'RSQLite' ...
+  checking for gcc... gcc
+  ...
+
+  building the SQLite engine ... slowly ....
+
+  (the file /tmp/sqlite15229 stores compiler messages)
+
+
+  SQLite installation failed.
+  ...
+
+
+Then, in /tmp/sqlite15229, I found:
+
+  ...
+  ./libtool --mode=link gcc -g -O2 -DOS_UNIX=1 -DHAVE_USLEEP=1 -I. -I./src
+-DNDEBUG  -DTHREADSAFE=0 -DSQLITE_OMIT_CURSOR -DHAVE_READLINE=1
+-I/usr/local/include/readline  \
+          -o sqlite3 ./src/shell.c libsqlite3.la -lreadline -lncurses
+  gcc -g -O2 -DOS_UNIX=1 -DHAVE_USLEEP=1 -I. -I./src -DNDEBUG -DTHREADSAFE=0
+-DSQLITE_OMIT_CURSOR -DHAVE_READLINE=1 -I/usr/local/include/readline -o sqlite3
+./src/shell.c  ./.libs/libsqlite3.a -lreadline -lncurses
+  Undefined                       first referenced
+   symbol                             in file
+  fdatasync                           ./.libs/libsqlite3.a(os_unix.o)
+  ld: fatal: Symbol referencing errors. No output written to sqlite3
+  collect2: ld returned 1 exit status
+  make: *** [sqlite3] Error 1
+
+
+But, this problem disppears if I replace the current embedded
+sqlite source tarball (RSQLite/src/sqlite-3.2.8.tar.gz) by the
+last available one (sqlite-3.3.6.tar.gz).
+Are there any plan to update the embedded sqlite source tarball
+provided with RSQLite?
+
+Thanks,
+
+H.
+
+------------------------
+Herv? Pag?s
+E-mail: hpages at fhcrc.org
+Phone: (206) 667-5791
+Fax: (206) 667-1319
+
+
+
+From A@h|@h@M@|hotr@ @end|ng |rom koch|nd@com  Wed Jul 26 02:57:25 2006
+From: A@h|@h@M@|hotr@ @end|ng |rom koch|nd@com (Malhotra, Ashish)
+Date: Tue, 25 Jul 2006 19:57:25 -0500
+Subject: [R-sig-DB] Running a SQL Server Stored Procedure from R
+Message-ID: <030B041DE2D0A34F8C7283D96877A44FCB3717@hou0mbx01.kochind.com>
+
+I am attempting to run a stored procedure on a SQL SErver database from
+R. The sqlQuery method accepts the commend but does not do anything. My
+research indicates that it is not currently possible to do what I am
+attempting. I would be delighted if someone could prove me wrong and
+point me in the right direction on this.
+ 
+Regards,
+Ashish
+
+	[[alternative HTML version deleted]]
+
+
+
+From je||@horner @end|ng |rom v@nderb||t@edu  Thu Jul 27 16:53:52 2006
+From: je||@horner @end|ng |rom v@nderb||t@edu (Jeffrey Horner)
+Date: Thu, 27 Jul 2006 09:53:52 -0500
+Subject: [R-sig-DB] [R] RODBC on linux
+In-Reply-To: <E58BE6136618CF4C964F6EC7773AE5699FA5C0@ex4.nyc.hcmny.com>
+References: <E58BE6136618CF4C964F6EC7773AE5699FA5C0@ex4.nyc.hcmny.com>
+Message-ID: <44C8D380.1040209@vanderbilt.edu>
+
+Armstrong, Whit wrote:
+> Thanks, everyone.
+> 
+> I'll give freeTDS a try.
+
+One final hitch to be aware of when using FreeTDS:
+
+MS SQL Server authenticates db connections in two different ways (well 
+actually three, but it's just the combination of 1 and 2):
+
+1) Sql server authenticates the connection, meaning you must have
+    an SQL server account. FreeTDS will handle this fine.
+2) the SQL server OS authenticates the connection with an NT Domain
+    login. That's the domain\username you use to login to your Windows
+    machine. FreeTDS will ONLY handle this over TCP/IP, not over DCE/RPC,
+    so be aware.
+
+More info here:
+
+http://www.freetds.org/userguide/domains.htm
+
+and here:
+
+http://www.freetds.org/userguide/troubleshooting.htm
+
+Jeff
+
+> 
+> 
+> -----Original Message-----
+> From: Prof Brian Ripley [mailto:ripley at stats.ox.ac.uk] 
+> Sent: Thursday, July 27, 2006 1:17 AM
+> To: Marc Schwartz
+> Cc: Armstrong, Whit; r-help at stat.math.ethz.ch
+> Subject: Re: [R] RODBC on linux
+> 
+> On Wed, 26 Jul 2006, Marc Schwartz wrote:
+> 
+>> On Wed, 2006-07-26 at 17:52 -0400, Armstrong, Whit wrote:
+>>> Anyone out there using Linux RODBC and unixODBC to connect to a 
+>>> Microsoft SQL server?
+>>>
+>>> If possible can someone post a sample .odbc.ini file?
+>>>
+>>> I saw a few discussions on the archives a few years ago, but no 
+>>> config file details were available.
+>>>
+>>> Thanks,
+>>> Whit
+>> Whit,
+>>
+>> Do you have a Linux ODBC driver for SQL Server?  unixODBC is simply 
+>> the driver manager, not the driver itself.
+>>
+>> MS does not offer (not surprisingly) an ODBC driver for Unix/Linux.
+>> There are resources available however and these might be helpful:
+>>
+>> http://www.sommarskog.se/mssql/unix.html
+>>
+>> Note that Easysoft provides (at a cost) an ODBC-ODBC bridge for 
+>> Unix/Linux platforms which supports ODBC connections to SQL Server:
+>>
+>> http://www.easysoft.com/products/data_access/odbc_odbc_bridge/index.ht
+>> ml
+> 
+> Several people have successfully used that, from the earliest days of
+> RODBC: I believe it was part of Michael Lapsley's motivation to write
+> RODBC.
+> 
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> ______________________________________________
+> R-help at stat.math.ethz.ch mailing list
+> https://stat.ethz.ch/mailman/listinfo/r-help
+> PLEASE do read the posting guide http://www.R-project.org/posting-guide.html
+> and provide commented, minimal, self-contained, reproducible code.
+
+
+
+From edd @end|ng |rom deb|@n@org  Tue Aug  1 21:14:55 2006
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Tue, 1 Aug 2006 14:14:55 -0500
+Subject: [R-sig-DB] RSQLite problems with SQLite versions 3.3.* -- but not
+	3.2.*
+Message-ID: <17615.43055.577571.903542@basebud.nulle.part>
+
+
+When using the current RSQLite 0.4.1 along with the current SQLite version
+3.3.6 (and I also testsed 3.3.5), dbWriteTable() never seems to actually put
+content into the database. The schema gets created, but no more.  Seemingly,
+the call 
+
+  rc <- 
+      try({
+         skip <- skip + as.integer(header)
+         conId <- as(con, "integer")
+         .Call("RS_SQLite_importFile", conId, name, fn, sep, eol,
+            as(skip, "integer"), PACKAGE = "RSQLite")
+      })
+
+and the end of sqliteImportFile (which is called from sqliteWriteTable, which
+in turn is called from dbWriteTable). 
+
+I just spent some scratching my head, and ended up avoiding the problem by
+going back to the SQLite 3.2.8 version that comes with RSQLite.  
+
+Did anybody else see something like this?  The problem seems to occur on both
+Ubuntu Linux (05.10) at work and Debian Linux (testing) at home.
+
+Regards, Dirk
+
+-- 
+Hell, there are no rules here - we're trying to accomplish something. 
+                                                  -- Thomas A. Edison
+
+
+
+From du@@@@dr|@n @end|ng |rom gm@||@com  Mon Sep 11 11:44:51 2006
+From: du@@@@dr|@n @end|ng |rom gm@||@com (Adrian Dusa)
+Date: Mon, 11 Sep 2006 12:44:51 +0300
+Subject: [R-sig-DB] function for updating variables in a MySQL database
+Message-ID: <200609111244.51741.dusa.adrian@gmail.com>
+
+Dear all,
+
+I recently started to use RMySQL and I noticed there are no functions for 
+updating variables (say, when one creates a new variable and decides later to 
+change the formula).
+
+I hope I didn't reinvent the wheel, you can find my attempt below 
+(undocumented but I guess pretty straighforward):
+
+
+## START
+"dbUpdateVar" <-
+function(conn, dbtable, dataframe=NULL, primary, vars) {
+    if (is.null(dataframe)) {
+        stop("The source dataframe is missing, with no default\n\n", call. = 
+FALSE)
+        }
+    if (!dbExistsTable(conn, dbtable)) {
+        stop("The target table doesn't exist\n\n", call. = FALSE)
+        }
+    if (!(primary %in% names(dataframe))) {
+        stop("The primary key variable doesn't exist in the source 
+dataframe\n\n", call. = FALSE)
+        }
+    if (!all(vars %in% names(dataframe))) {
+        stop("One or more variables don't exist in the source dataframe\n\n", 
+call. = FALSE)
+        }
+    if (!(primary %in% dbListFields(con, dbtable))) {
+        stop("The primary key variable doesn't exist in the target table\n\n", 
+call. = FALSE)
+        }
+    if (!all(vars %in% dbListFields(con, dbtable))) {
+        stop("One or more variables don't exist in the target table\n\n", 
+call. = FALSE)
+        }
+
+    varlist <- paste(dbtable, "(", paste(c(primary, vars), 
+collapse=", "), ")", sep="")
+    dbstring <- paste("(", paste(apply(dataframe[, c(primary, vars)], 1, 
+paste, collapse=", "), collapse="), ("), ")", sep="")
+    toupdate <- paste(paste(vars, "=VALUES(", vars, ")", sep=""), 
+collapse=", ")
+    sqlstring <- paste("INSERT INTO", varlist, "VALUES", dbstring, "ON 
+DUPLICATE KEY UPDATE", toupdate)
+    dbSendQuery(conn, sqlstring)
+    }
+## END
+
+If there is a more direct way of doing this, I would very much like to learn 
+about it.
+
+Regards,
+Adrian
+
+-- 
+Adrian Dusa
+Romanian Social Data Archive
+1, Schitu Magureanu Bd
+050025 Bucharest sector 5
+Romania
+Tel./Fax: +40 21 3126618 \
+          +40 21 3120210 / int.101
+
+
+
+From wh|t@@rm@trong @end|ng |rom hcmny@com  Fri Sep 22 23:43:27 2006
+From: wh|t@@rm@trong @end|ng |rom hcmny@com (Armstrong, Whit)
+Date: Fri, 22 Sep 2006 17:43:27 -0400
+Subject: [R-sig-DB] possible bug in ROracle
+Message-ID: <E58BE6136618CF4C964F6EC7773AE569B4FEAF@ex4.nyc.hcmny.com>
+
+the code which no one else will be able to execute is at the bottom of
+the email  The query I'm sending is this:
+
+"select IDENT,FIELDDATE,to_number(FIELDVALUE) from TS_DATALOOKUP_VIEW
+where FIELDNAME='PRICE' and IDENT in
+('USSWAP10','BPSW10','JYSW10','CDSW10','DMSW10','GJGB10','GCAN10YR','GDB
+R10')"
+
+which should just grap the IDENTS that I asked for.
+
+However, when I inspect the result (stored in qry.data).  I see that the
+colnmes to not mach the IDENTS that I asked for.  Some of these IDENTS
+do not even exist in the database.
+
+cnms <- unique(qry.data[,"IDENT"])
+Browse[1]> cnms
+ [1] "GCAN10YR" "GDBR10YR" "GJGB10YR" "USSWAP10" "BPSW1010" "JYSW1010"
+"CDSW1010" "DMSW1010" "GJGB1010" "GDBR1010"
+
+and the IDENTS I asked for:
+Browse[1]> tickers
+[1] "USSWAP10" "BPSW10"   "JYSW10"   "CDSW10"   "DMSW10"   "GJGB10"
+"GCAN10YR" "GDBR10"  
+
+the culprits:
+Browse[1]> cnms[!cnms%in%tickers]
+[1] "GDBR10YR" "GJGB10YR" "BPSW1010" "JYSW1010" "CDSW1010" "DMSW1010"
+"GJGB1010" "GDBR1010"
+
+Only 2 of the resulting IDENTS match the ones passed into the query:
+Browse[1]> cnms[cnms%in%tickers]
+[1] "GCAN10YR" "USSWAP10"
+
+We are using Oracle 9.2.0.
+
+Is there something seriously wrong w/ my query or is there a bug
+somewhere?
+
+Thanks,
+Whit
+
+
+
+actual code:
+grab.data <- function(tickers) {
+
+    drv <- Oracle()
+    con <- dbConnect(drv,user="fi",password="fi",dbname="FINP1")
+
+    tickers.string <-
+paste(paste("\'",tickers,"\'",sep=""),collapse=",")
+    ticker.qry <- paste("select IDENT,FIELDDATE,to_number(FIELDVALUE)
+from TS_DATALOOKUP_VIEW where FIELDNAME='PRICE' and IDENT in
+(",tickers.string,")",sep="")
+    res <- dbSendQuery(con,ticker.qry )
+    qry.data <- fetch(res,n=-1)
+    dbClearResult(res)
+    dbDisconnect(con)
+    cnms <- unique(qry.data[,"IDENT"])
+
+    if(length(cnms)!=length(tickers)) {
+        browser()
+    }
+}
+
+
+System details:
+
+Package:       ROracle
+Version:       0.5-7
+Date:          2006-02-13
+Title:         Oracle database interface for R
+Author:        David A. James <dj at bell-labs.com> Jake Luciani
+<jakeluciani at yahoo.com>
+Maintainer:    David A. James <dj at bell-labs.com>
+Description:   Oracle database interface (DBI) driver for R. This is a
+DBI-compliant Oracle driver based on the ProC/C++ embedded SQL.  It
+implements the DBI version
+               0.1-8 plus one extension.
+SaveImage:     yes
+Depends:       R (>= 2.0.0), methods, DBI (>= 0.1-8)
+License:       LGPL version 2 or newer
+URL:           http://stat.bell-labs.com/RS-DBI http://www.omegahat.org
+Packaged:      Mon Feb 13 16:16:30 2006; dj
+Built:         R 2.3.1; i686-pc-linux-gnu; 2006-08-14 15:29:35; unix
+
+
+
+Description:
+
+Package:       DBI
+Version:       0.1-10
+Date:          2006-01-28
+Title:         R Database Interface
+Author:        R Special Interest Group on Databases (R-SIG-DB)
+Maintainer:    David A. James <dj at bell-labs.com>
+Depends:       R (>= 1.8.0), methods
+Description:   A database interface (DBI) definition for communication
+between R and relational database management systems.  All classes in
+this package are virtual and
+               need to be extended by the various R/DBMS
+implementations.
+License:       GPL (version 2 or later)
+URL:           http://stat.bell-labs.com/RS-DBI
+http://developer.r-project.org/db
+Packaged:      Sat Jan 28 14:42:20 2006; dj
+Built:         R 2.3.1; ; 2006-08-14 15:29:07; unix
+
+
+> R.Version()
+$platform
+[1] "i686-pc-linux-gnu"
+
+$arch
+[1] "i686"
+
+$os
+[1] "linux-gnu"
+
+$system
+[1] "i686, linux-gnu"
+
+$status
+[1] ""
+
+$major
+[1] "2"
+
+$minor
+[1] "3.1"
+
+$year
+[1] "2006"
+
+$month
+[1] "06"
+
+$day
+[1] "01"
+
+$`svn rev`
+[1] "38247"
+
+$language
+[1] "R"
+
+$version.string
+[1] "Version 2.3.1 (2006-06-01)"
+
+> 
+
+
+
+
+This e-mail message is intended only for the named recipient(s) above. It may contain confidential information. If you are not the intended recipient you are hereby notified that any dissemination, distribution or copying of this e-mail and any attachment(s) is strictly prohibited. If you have received this e-mail in error, please immediately notify the sender by replying to this e-mail and delete the message and any attachment(s) from your system. Thank you.
+
+
+From @|@|con @end|ng |rom |hcrc@org  Mon Sep 25 23:08:15 2006
+From: @|@|con @end|ng |rom |hcrc@org (Seth Falcon)
+Date: Mon, 25 Sep 2006 14:08:15 -0700
+Subject: [R-sig-DB] Help testing updates to RSQLite and RMySQL
+Message-ID: <m2slifvem8.fsf@ziti.local>
+
+Hi all,
+
+Our group here in Seattle is now hosting the svn repository
+for DBI and related packages and we are helping David James to
+maintain these packages.
+
+I have updates for DBI, RSQLite, and RMySQL and would like some help
+testing them before pushing the updates to CRAN.
+
+You can download the provisional source packages here:
+
+    http://www.bioconductor.org/packages/misc/
+
+A brief summary of changes follows:
+
+DBI, RSQLite, RMySQL:
+
+ - Use the Collate field and individual R/*.R files instead of a
+   single generated All.R file.  Should make user contributed patches
+   easier to integrate.  Otherwise, should have no impact on package
+   behavior.
+
+RMySQL and RSQLite:
+
+ - Make sure all textConnections get closed.  Fixes a bug reported by
+   Dirk E.
+
+RSQLite:
+
+ - Update Sqlite to 3.3.7
+
+ - Default when installing from source is now to compile the included
+   Sqlite and link to it statically.  This avoids version mismatch
+   issues.  It is still possible to link against system-wide Sqlite
+   using configure args.
+
+Questions?  Comments?  Send 'em my way (well, the list's way).
+
++ seth
+
+-- 
+Seth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center
+http://bioconductor.org
+
+
+
+From m@cq @end|ng |rom ||n|@gov  Tue Sep 26 01:44:56 2006
+From: m@cq @end|ng |rom ||n|@gov (Don MacQueen)
+Date: Mon, 25 Sep 2006 16:44:56 -0700
+Subject: [R-sig-DB] possible bug in ROracle
+In-Reply-To: <E58BE6136618CF4C964F6EC7773AE569B4FEAF@ex4.nyc.hcmny.com>
+References: <E58BE6136618CF4C964F6EC7773AE569B4FEAF@ex4.nyc.hcmny.com>
+Message-ID: <p06230905c13e123713c7@[128.115.153.6]>
+
+I don't have a solution, but here's what I would try.
+
+I have found it very useful, when debugging my queries, to take them 
+outside of R and run them in some other sort of query tool.
+I have never found a case where a correct query outside of R returned 
+incorrect results using ROracle.
+
+Is there some reason you're not using dbGetQuery()
+    (instead of dbSendQuery, fetch, and dbClearResult)?
+Try dbGetQuery(), and see if it's better.
+
+-Don
+
+At 5:43 PM -0400 9/22/06, Armstrong, Whit wrote:
+>Content-class: urn:content-classes:message
+>Content-Type: text/plain;
+>	charset="us-ascii"
+>Content-Disposition: inline
+>
+>the code which no one else will be able to execute is at the bottom of
+>the email  The query I'm sending is this:
+>
+>"select IDENT,FIELDDATE,to_number(FIELDVALUE) from TS_DATALOOKUP_VIEW
+>where FIELDNAME='PRICE' and IDENT in
+>('USSWAP10','BPSW10','JYSW10','CDSW10','DMSW10','GJGB10','GCAN10YR','GDB
+>R10')"
+>
+>which should just grap the IDENTS that I asked for.
+>
+>However, when I inspect the result (stored in qry.data).  I see that the
+>colnmes to not mach the IDENTS that I asked for.  Some of these IDENTS
+>do not even exist in the database.
+>
+>cnms <- unique(qry.data[,"IDENT"])
+>Browse[1]> cnms
+>  [1] "GCAN10YR" "GDBR10YR" "GJGB10YR" "USSWAP10" "BPSW1010" "JYSW1010"
+>"CDSW1010" "DMSW1010" "GJGB1010" "GDBR1010"
+>
+>and the IDENTS I asked for:
+>Browse[1]> tickers
+>[1] "USSWAP10" "BPSW10"   "JYSW10"   "CDSW10"   "DMSW10"   "GJGB10"
+>"GCAN10YR" "GDBR10" 
+>
+>the culprits:
+>Browse[1]> cnms[!cnms%in%tickers]
+>[1] "GDBR10YR" "GJGB10YR" "BPSW1010" "JYSW1010" "CDSW1010" "DMSW1010"
+>"GJGB1010" "GDBR1010"
+>
+>Only 2 of the resulting IDENTS match the ones passed into the query:
+>Browse[1]> cnms[cnms%in%tickers]
+>[1] "GCAN10YR" "USSWAP10"
+>
+>We are using Oracle 9.2.0.
+>
+>Is there something seriously wrong w/ my query or is there a bug
+>somewhere?
+>
+>Thanks,
+>Whit
+>
+>
+>
+>actual code:
+>grab.data <- function(tickers) {
+>
+>     drv <- Oracle()
+>     con <- dbConnect(drv,user="fi",password="fi",dbname="FINP1")
+>
+>     tickers.string <-
+>paste(paste("\'",tickers,"\'",sep=""),collapse=",")
+>     ticker.qry <- paste("select IDENT,FIELDDATE,to_number(FIELDVALUE)
+>from TS_DATALOOKUP_VIEW where FIELDNAME='PRICE' and IDENT in
+>(",tickers.string,")",sep="")
+>     res <- dbSendQuery(con,ticker.qry )
+>     qry.data <- fetch(res,n=-1)
+>     dbClearResult(res)
+>     dbDisconnect(con)
+>     cnms <- unique(qry.data[,"IDENT"])
+>
+>     if(length(cnms)!=length(tickers)) {
+>         browser()
+>     }
+>}
+>
+>
+>System details:
+>
+>Package:       ROracle
+>Version:       0.5-7
+>Date:          2006-02-13
+>Title:         Oracle database interface for R
+>Author:        David A. James <dj at bell-labs.com> Jake Luciani
+><jakeluciani at yahoo.com>
+>Maintainer:    David A. James <dj at bell-labs.com>
+>Description:   Oracle database interface (DBI) driver for R. This is a
+>DBI-compliant Oracle driver based on the ProC/C++ embedded SQL.  It
+>implements the DBI version
+>                0.1-8 plus one extension.
+>SaveImage:     yes
+>Depends:       R (>= 2.0.0), methods, DBI (>= 0.1-8)
+>License:       LGPL version 2 or newer
+>URL:           http://stat.bell-labs.com/RS-DBI http://www.omegahat.org
+>Packaged:      Mon Feb 13 16:16:30 2006; dj
+>Built:         R 2.3.1; i686-pc-linux-gnu; 2006-08-14 15:29:35; unix
+>
+>
+>
+>Description:
+>
+>Package:       DBI
+>Version:       0.1-10
+>Date:          2006-01-28
+>Title:         R Database Interface
+>Author:        R Special Interest Group on Databases (R-SIG-DB)
+>Maintainer:    David A. James <dj at bell-labs.com>
+>Depends:       R (>= 1.8.0), methods
+>Description:   A database interface (DBI) definition for communication
+>between R and relational database management systems.  All classes in
+>this package are virtual and
+>                need to be extended by the various R/DBMS
+>implementations.
+>License:       GPL (version 2 or later)
+>URL:           http://stat.bell-labs.com/RS-DBI
+>http://developer.r-project.org/db
+>Packaged:      Sat Jan 28 14:42:20 2006; dj
+>Built:         R 2.3.1; ; 2006-08-14 15:29:07; unix
+>
+>
+>>  R.Version()
+>$platform
+>[1] "i686-pc-linux-gnu"
+>
+>$arch
+>[1] "i686"
+>
+>$os
+>[1] "linux-gnu"
+>
+>$system
+>[1] "i686, linux-gnu"
+>
+>$status
+>[1] ""
+>
+>$major
+>[1] "2"
+>
+>$minor
+>[1] "3.1"
+>
+>$year
+>[1] "2006"
+>
+>$month
+>[1] "06"
+>
+>$day
+>[1] "01"
+>
+>$`svn rev`
+>[1] "38247"
+>
+>$language
+>[1] "R"
+>
+>$version.string
+>[1] "Version 2.3.1 (2006-06-01)"
+>
+>>
+>
+>
+>
+>
+>This e-mail message is intended only for the named recipient(s) 
+>above. It may contain confidential information. If you are not the 
+>intended recipient you are hereby notified that any dissemination, 
+>distribution or copying of this e-mail and any attachment(s) is 
+>strictly prohibited. If you have received this e-mail in error, 
+>please immediately notify the sender by replying to this e-mail and 
+>delete the message and any attachment(s) from your system. Thank you.
+>
+>
+>_______________________________________________
+>R-sig-DB mailing list -- R Special Interest Group
+>R-sig-DB at stat.math.ethz.ch
+>https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+-- 
+--------------------------------------
+Don MacQueen
+Environmental Protection Department
+Lawrence Livermore National Laboratory
+Livermore, CA, USA
+
+
+
+From wh|t@@rm@trong @end|ng |rom hcmny@com  Tue Sep 26 17:36:17 2006
+From: wh|t@@rm@trong @end|ng |rom hcmny@com (Armstrong, Whit)
+Date: Tue, 26 Sep 2006 11:36:17 -0400
+Subject: [R-sig-DB] possible bug in ROracle
+Message-ID: <E58BE6136618CF4C964F6EC7773AE569B4FF3C@ex4.nyc.hcmny.com>
+
+Thanks for your suggestion, Don.
+
+I tried  dbGetQuery, but the problem still exists.
+
+When I execute this query in other sql clients, it runs fine.  The one
+we are most is TOAD (http://www.quest.com/toad_for_oracle/)
+
+In this case, I ran the query with the full list of IDENTS (126 distinct
+tickers).
+
+And the resulting data has 1480 unique IDENTS.
+
+I'll try to debug this a bit further on my end, but if anyone who is
+familiar with the codebase has any suggestions as to where to start I'd
+love to hear them.
+
+Thanks,
+Whit
+
+
+Here is a small sample of the output (sorry for the long post):
+
+these are the ones I asked for:
+
+Browse[1]> tickers
+  [1] "US0003M"  "BP0006M"  "JY0006M"  "CDOR03"   "EU0006M"  "STIB3M"
+"NIBOR6M"  "BBSW6M"   "NFIX3MID" "RPGT01M"  "UKBRBASE" "JYMUON"
+"CAONREPO" "ECBALTMR" "SWRP1M"   "NOBRDEP" 
+ [17] "RBACTR"   "NZOCRS"   "USSWAP2"  "BPSW2"    "JYSW2"    "CDSW2"
+"DMSW2"    "USSWAP10" "BPSW10"   "JYSW10"   "CDSW10"   "DMSW10"
+"USGG2YR"  "GUKG2"    "GJGB2"    "GCAN2YR" 
+ [33] "GDBR2"    "USGG10YR" "GUKG10"   "GJGB10"   "GCAN10YR" "GDBR10"
+"USSS2"    "USSS3"    "USSS4"    "USSS5"    "USSS6"    "USSS7"
+"USSS8"    "USSS9"    "USSS10"   "USSS15"  
+ [49] "USSS20"   "USSS30"   "BPSS1"    "BPSS2"    "BPSS3"    "BPSS4"
+"BPSS5"    "BPSS7"    "BPSS8"    "BPSS9"    "BPSS10"   "BPSS15"
+"BPSS20"   "BPSS30"   "JYSS1"    "JYSS2"   
+ [65] "JYSS3"    "JYSS4"    "JYSS5"    "JYSS6"    "JYSS7"    "JYSS8"
+"JYSS9"    "JYSS10"   "JYSS15"   "JYSS20"   "CDSS2"    "CDSS3"
+"CDSS4"    "CDSS5"    "CDSS6"    "CDSS7"   
+ [81] "CDSS8"    "CDSS9"    "CDSS10"   "CDSS15"   "CDSS20"   "CDSS30"
+"DMSS1"    "DMSS2"    "DMSS3"    "DMSS4"    "DMSS5"    "DMSS6"
+"DMSS7"    "DMSS8"    "DMSS9"    "DMSS10"  
+ [97] "DMSS30"   "SKSS1"    "SKSS2"    "SKSS3"    "SKSS5"    "SKSS10"
+"NKSS1"    "NKSS2"    "NKSS3"    "NKSS4"    "NKSS5"    "NKSS6"
+"NKSS7"    "NKSS8"    "NKSS9"    "NKSS10"  
+[113] "ADSF2Q"   "ADSF3Q"   "ADSF4"    "ADSF5"    "ADSF6"    "ADSF7"
+"ADSF10"   "ADSF15"   "NDSS022"  "NDSS033"  "NDSS044"  "NDSS055"
+"NDSS077"  "NDSS1010"
+Browse[1]> 
+
+Here is a small sample of the result:
+[1345] "BPSS2030" "CDSS1530" "BPSS5330" "SKSS3330" "USSS6330" "JYSS2030"
+"NKSS7330" "JYSS2330" "BPSS1030" "BPSS7330" "USSS1530" "BPSS3330"
+"CDSW1030" "JYSS9550" "ADSF6550" "JYSS8550"
+[1361] "CDSS9550" "JYSS1050" "USSS2050" "NKSS5550" "DMSS1550" "DMSS2550"
+"DMSS6550" "DMSS1050" "GJGB2550" "DMSS4550" "DMSS3550" "STIB3M50"
+"BBSW6M50" "DMSS5550" "GDBR2550" "DMSS3050"
+[1377] "DMSS9550" "GUKG2550" "NZOCRS50" "DMSS7550" "DMSW2550" "DMSS8550"
+"CDOR0350" "RBACTR50" "DMSW1050" "GDBR1050" "GJGB1050" "GUKG1050"
+"GJGB1070" "GJGB1040" "GJGB1020" "GJGB10M0"
+[1393] "GJGB10ID" "GJGB10PO" "GJGB10P0" "GJGB10R0" "GJGB10SE" "BPSS4070"
+"BPSS1070" "CDSS5070" "JYSS7070" "JYSS6070" "JYSS4070" "SKSS2070"
+"JYSW1070" "CDSS7070" "JYSS5070" "CDSS4070"
+[1409] "BPSS1570" "BPSS3070" "JYSS1070" "CDSS2070" "NKSS1070" "USSS1070"
+"USSS7070" "BPSW2070" "ADSF2Q70" "ADSF1070" "SKSS1070" "BPSS2070"
+"CDSS1570" "BPSS5070" "SKSS3070" "USSS6070"
+[1425] "JYSS2070" "NKSS7070" "BPSS7070" "USSS1570" "CDSW1070" "USSS4070"
+"JYMUON70" "BPSW1070" "CDSS6070" "USSS3070" "ADSF4070" "ADSF1570"
+"CDSS3070" "NKSS3070" "SKSS5070" "USSS8070"
+[1441] "CDSS1070" "JYSS3070" "CDSS8070" "BPSS8070" "ADSF5070" "USSS9070"
+"CDSW2070" "USSS2070" "ADSF3Q70" "USSS5070" "BPSS9070" "JYSS1570"
+"JYSW2070" "ADSF7070" "JYSS9070" "ADSF6070"
+[1457] "JYSS8070" "CDSS9070" "NKSS5070" "DMSS1070" "DMSS2070" "DMSS6070"
+"GJGB2070" "DMSS4070" "DMSS3070" "STIB3M70" "BBSW6M70" "DMSS5070"
+"GDBR2070" "DMSS9070" "GUKG2070" "NZOCRS70"
+[1473] "DMSS7070" "DMSW2070" "DMSS8070" "CDOR0370" "RBACTR70" "DMSW1070"
+"GDBR1070" "GUKG1070"
+
+and finally the query I'm running:
+
+Browse[1]> ticker.qry
+[1] "select IDENT,FIELDDATE,to_number(FIELDVALUE) from
+TS_DATALOOKUP_VIEW where FIELDNAME='PRICE' and IDENT in
+('US0003M','BP0006M','JY0006M','CDOR03','EU0006M','STIB3M','NIBOR6M','BB
+SW6M','NFIX3MID','RPGT01M','UKBRBASE','JYMUON','CAONREPO','ECBALTMR','SW
+RP1M','NOBRDEP','RBACTR','NZOCRS','USSWAP2','BPSW2','JYSW2','CDSW2','DMS
+W2','USSWAP10','BPSW10','JYSW10','CDSW10','DMSW10','USGG2YR','GUKG2','GJ
+GB2','GCAN2YR','GDBR2','USGG10YR','GUKG10','GJGB10','GCAN10YR','GDBR10',
+'USSS2','USSS3','USSS4','USSS5','USSS6','USSS7','USSS8','USSS9','USSS10'
+,'USSS15','USSS20','USSS30','BPSS1','BPSS2','BPSS3','BPSS4','BPSS5','BPS
+S7','BPSS8','BPSS9','BPSS10','BPSS15','BPSS20','BPSS30','JYSS1','JYSS2',
+'JYSS3','JYSS4','JYSS5','JYSS6','JYSS7','JYSS8','JYSS9','JYSS10','JYSS15
+','JYSS20','CDSS2','CDSS3','CDSS4','CDSS5','CDSS6','CDSS7','CDSS8','CDSS
+9','CDSS10','CDSS15','CDSS20','CDSS30','DMSS1','DMSS2','DMSS3','DMSS4','
+DMSS5','DMSS6','DMSS7','DMSS8','DMSS9','DMSS10','DMSS30','SKSS1','SKSS2'
+,'SKSS3','SKSS5','SKSS10','NKSS1','NKSS2','NKSS3','NKSS4','NKSS5','NKSS6
+','NKSS7','NKSS8','NKSS9','NKSS10','ADSF2Q','ADSF3Q','ADSF4','ADSF5','AD
+SF6','ADSF7','ADSF10','ADSF15','NDSS022','NDSS033','NDSS044','NDSS055','
+NDSS077','NDSS1010')"
+Browse[1]> 
+
+
+Reading in the query result that was eported from TOAD:
+> xx <- read.csv("big.qry.csv",header=F)
+> nrow(xx)
+[1] 342553
+> 
+> unique(xx[,1])
+  [1] "US0003M"  "BP0006M"  "JY0006M"  "GCAN10YR" "GDBR10"   "GJGB10"
+"GUKG10"   "USGG10YR" "EU0006M"  "CDOR03"   "NIBOR6M"  "BBSW6M"
+"STIB3M"   "RPGT01M"  "NFIX3MID" "UKBRBASE"
+ [17] "CAONREPO" "JYMUON"   "NOBRDEP"  "SWRP1M"   "GUKG2"    "BPSS2"
+"ADSF7"    "ECBALTMR" "NZOCRS"   "RBACTR"   "USSWAP2"  "JYSW2"
+"BPSW2"    "CDSW2"    "DMSW2"    "BPSW10"  
+ [33] "USSWAP10" "JYSW10"   "CDSW10"   "DMSW10"   "USGG2YR"  "GJGB2"
+"GCAN2YR"  "GDBR2"    "USSS2"    "USSS5"    "USSS4"    "CDSS10"
+"CDSS15"   "CDSS20"   "CDSS30"   "DMSS1"   
+ [49] "DMSS2"    "DMSS3"    "DMSS4"    "DMSS5"    "DMSS6"    "DMSS7"
+"DMSS8"    "DMSS9"    "DMSS10"   "DMSS30"   "SKSS2"    "SKSS3"
+"SKSS5"    "SKSS10"   "NKSS3"    "NKSS5"   
+ [65] "NKSS7"    "NKSS10"   "ADSF2Q"   "ADSF3Q"   "ADSF4"    "ADSF5"
+"ADSF6"    "ADSF10"   "ADSF15"   "NDSS022"  "NDSS033"  "NDSS044"
+"NDSS055"  "NDSS077"  "NDSS1010" "USSS3"   
+ [81] "USSS6"    "USSS7"    "USSS8"    "USSS9"    "USSS10"   "USSS15"
+"USSS20"   "USSS30"   "BPSS1"    "BPSS3"    "BPSS4"    "BPSS5"
+"BPSS7"    "BPSS8"    "BPSS9"    "BPSS10"  
+ [97] "BPSS15"   "BPSS20"   "BPSS30"   "JYSS1"    "JYSS2"    "JYSS3"
+"JYSS4"    "JYSS5"    "JYSS6"    "JYSS7"    "JYSS8"    "JYSS9"
+"JYSS10"   "JYSS15"   "JYSS20"   "CDSS2"   
+[113] "CDSS3"    "CDSS4"    "CDSS5"    "CDSS6"    "CDSS7"    "CDSS8"
+"CDSS9"   
+> 
+
+
+> -----Original Message-----
+> From: Don MacQueen [mailto:macq at llnl.gov] 
+> Sent: Monday, September 25, 2006 7:45 PM
+> To: Armstrong, Whit; r-sig-db at stat.math.ethz.ch
+> Subject: Re: [R-sig-DB] possible bug in ROracle
+> 
+> I don't have a solution, but here's what I would try.
+> 
+> I have found it very useful, when debugging my queries, to 
+> take them outside of R and run them in some other sort of query tool.
+> I have never found a case where a correct query outside of R 
+> returned incorrect results using ROracle.
+> 
+> Is there some reason you're not using dbGetQuery()
+>     (instead of dbSendQuery, fetch, and dbClearResult)?
+> Try dbGetQuery(), and see if it's better.
+> 
+> -Don
+> 
+> At 5:43 PM -0400 9/22/06, Armstrong, Whit wrote:
+> >Content-class: urn:content-classes:message
+> >Content-Type: text/plain;
+> >	charset="us-ascii"
+> >Content-Disposition: inline
+> >
+> >the code which no one else will be able to execute is at the 
+> bottom of 
+> >the email  The query I'm sending is this:
+> >
+> >"select IDENT,FIELDDATE,to_number(FIELDVALUE) from 
+> TS_DATALOOKUP_VIEW 
+> >where FIELDNAME='PRICE' and IDENT in 
+> >('USSWAP10','BPSW10','JYSW10','CDSW10','DMSW10','GJGB10','GCA
+> N10YR','GD
+> >B
+> >R10')"
+> >
+> >which should just grap the IDENTS that I asked for.
+> >
+> >However, when I inspect the result (stored in qry.data).  I see that 
+> >the colnmes to not mach the IDENTS that I asked for.  Some of these 
+> >IDENTS do not even exist in the database.
+> >
+> >cnms <- unique(qry.data[,"IDENT"])
+> >Browse[1]> cnms
+> >  [1] "GCAN10YR" "GDBR10YR" "GJGB10YR" "USSWAP10" "BPSW1010" 
+> "JYSW1010"
+> >"CDSW1010" "DMSW1010" "GJGB1010" "GDBR1010"
+> >
+> >and the IDENTS I asked for:
+> >Browse[1]> tickers
+> >[1] "USSWAP10" "BPSW10"   "JYSW10"   "CDSW10"   "DMSW10"   "GJGB10"
+> >"GCAN10YR" "GDBR10" 
+> >
+> >the culprits:
+> >Browse[1]> cnms[!cnms%in%tickers]
+> >[1] "GDBR10YR" "GJGB10YR" "BPSW1010" "JYSW1010" "CDSW1010" "DMSW1010"
+> >"GJGB1010" "GDBR1010"
+> >
+> >Only 2 of the resulting IDENTS match the ones passed into the query:
+> >Browse[1]> cnms[cnms%in%tickers]
+> >[1] "GCAN10YR" "USSWAP10"
+> >
+> >We are using Oracle 9.2.0.
+> >
+> >Is there something seriously wrong w/ my query or is there a bug 
+> >somewhere?
+> >
+> >Thanks,
+> >Whit
+> >
+> >
+> >
+> >actual code:
+> >grab.data <- function(tickers) {
+> >
+> >     drv <- Oracle()
+> >     con <- dbConnect(drv,user="fi",password="fi",dbname="FINP1")
+> >
+> >     tickers.string <-
+> >paste(paste("\'",tickers,"\'",sep=""),collapse=",")
+> >     ticker.qry <- paste("select 
+> IDENT,FIELDDATE,to_number(FIELDVALUE)
+> >from TS_DATALOOKUP_VIEW where FIELDNAME='PRICE' and IDENT in
+> >(",tickers.string,")",sep="")
+> >     res <- dbSendQuery(con,ticker.qry )
+> >     qry.data <- fetch(res,n=-1)
+> >     dbClearResult(res)
+> >     dbDisconnect(con)
+> >     cnms <- unique(qry.data[,"IDENT"])
+> >
+> >     if(length(cnms)!=length(tickers)) {
+> >         browser()
+> >     }
+> >}
+> >
+> >
+> >System details:
+> >
+> >Package:       ROracle
+> >Version:       0.5-7
+> >Date:          2006-02-13
+> >Title:         Oracle database interface for R
+> >Author:        David A. James <dj at bell-labs.com> Jake Luciani
+> ><jakeluciani at yahoo.com>
+> >Maintainer:    David A. James <dj at bell-labs.com>
+> >Description:   Oracle database interface (DBI) driver for R. 
+> This is a
+> >DBI-compliant Oracle driver based on the ProC/C++ embedded SQL.  It 
+> >implements the DBI version
+> >                0.1-8 plus one extension.
+> >SaveImage:     yes
+> >Depends:       R (>= 2.0.0), methods, DBI (>= 0.1-8)
+> >License:       LGPL version 2 or newer
+> >URL:           http://stat.bell-labs.com/RS-DBI 
+> http://www.omegahat.org
+> >Packaged:      Mon Feb 13 16:16:30 2006; dj
+> >Built:         R 2.3.1; i686-pc-linux-gnu; 2006-08-14 15:29:35; unix
+> >
+> >
+> >
+> >Description:
+> >
+> >Package:       DBI
+> >Version:       0.1-10
+> >Date:          2006-01-28
+> >Title:         R Database Interface
+> >Author:        R Special Interest Group on Databases (R-SIG-DB)
+> >Maintainer:    David A. James <dj at bell-labs.com>
+> >Depends:       R (>= 1.8.0), methods
+> >Description:   A database interface (DBI) definition for 
+> communication
+> >between R and relational database management systems.  All 
+> classes in 
+> >this package are virtual and
+> >                need to be extended by the various R/DBMS 
+> >implementations.
+> >License:       GPL (version 2 or later)
+> >URL:           http://stat.bell-labs.com/RS-DBI
+> >http://developer.r-project.org/db
+> >Packaged:      Sat Jan 28 14:42:20 2006; dj
+> >Built:         R 2.3.1; ; 2006-08-14 15:29:07; unix
+> >
+> >
+> >>  R.Version()
+> >$platform
+> >[1] "i686-pc-linux-gnu"
+> >
+> >$arch
+> >[1] "i686"
+> >
+> >$os
+> >[1] "linux-gnu"
+> >
+> >$system
+> >[1] "i686, linux-gnu"
+> >
+> >$status
+> >[1] ""
+> >
+> >$major
+> >[1] "2"
+> >
+> >$minor
+> >[1] "3.1"
+> >
+> >$year
+> >[1] "2006"
+> >
+> >$month
+> >[1] "06"
+> >
+> >$day
+> >[1] "01"
+> >
+> >$`svn rev`
+> >[1] "38247"
+> >
+> >$language
+> >[1] "R"
+> >
+> >$version.string
+> >[1] "Version 2.3.1 (2006-06-01)"
+> >
+> >>
+> >
+> >
+> >
+> >
+> >This e-mail message is intended only for the named 
+> recipient(s) above. 
+> >It may contain confidential information. If you are not the intended 
+> >recipient you are hereby notified that any dissemination, 
+> distribution 
+> >or copying of this e-mail and any attachment(s) is strictly 
+> prohibited. 
+> >If you have received this e-mail in error, please immediately notify 
+> >the sender by replying to this e-mail and delete the message and any 
+> >attachment(s) from your system. Thank you.
+> >
+> >
+> >_______________________________________________
+> >R-sig-DB mailing list -- R Special Interest Group 
+> >R-sig-DB at stat.math.ethz.ch 
+> >https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> 
+> 
+> --
+> --------------------------------------
+> Don MacQueen
+> Environmental Protection Department
+> Lawrence Livermore National Laboratory
+> Livermore, CA, USA
+> --------------------------------------
+> 
+
+
+
+
+This e-mail message is intended only for the named recipient(s) above. It may contain confidential information. If you are not the intended recipient you are hereby notified that any dissemination, distribution or copying of this e-mail and any attachment(s) is strictly prohibited. If you have received this e-mail in error, please immediately notify the sender by replying to this e-mail and delete the message and any attachment(s) from your system. Thank you.
+
+
+From @@h|@h@ku|k@rn| @end|ng |rom k@|yptor|@k@com  Fri Sep 29 16:28:10 2006
+From: @@h|@h@ku|k@rn| @end|ng |rom k@|yptor|@k@com (Ashish Kulkarni)
+Date: Fri, 29 Sep 2006 19:58:10 +0530
+Subject: [R-sig-DB] RSQLite and SQLite 3.3.x
+Message-ID: <2AB7346A3227A74BB97F9A0D79E3E65A03F26D@mailserver.kalyptorisk.com>
+
+Hello,
+
+I found the reason why RSQLite does not work with SQLite 3.3.x -- one of the SQLite APIs was being used incorrectly. The patch is simple:
+
+diff -ur ./src/RS-SQLite.c ../RSQLite/src/RS-SQLite.c
+--- ./src/RS-SQLite.c	2006-09-01 04:34:11.000000000 +0530
++++ ../RSQLite/src/RS-SQLite.c	2006-09-29 19:44:05.851964900 +0530
+@@ -1029,7 +1029,7 @@
+     zSql = sqlite3_mprintf("SELECT * FROM '%q'", zTable);
+     if( zSql==0 ) return 0;
+     nByte = strlen(zSql);
+-    rc = sqlite3_prepare(db, zSql, 0, &pStmt, 0);
++    rc = sqlite3_prepare(db, zSql, -1, &pStmt, 0);
+     sqlite3_free(zSql);
+     if( rc ){
+       char errMsg[512];
+@@ -1051,7 +1051,7 @@
+     }
+     zSql[j++] = ')';
+     zSql[j] = 0;
+-    rc = sqlite3_prepare(db, zSql, 0, &pStmt, 0);
++    rc = sqlite3_prepare(db, zSql, -1, &pStmt, 0);
+     free(zSql);
+     if( rc ){
+       char errMsg[512];
+
+According to http://sqlite.org/capi3ref.html#sqlite3_prepare
+"If the next argument, "nBytes", is less than zero, then zSql 
+is read up to the first nul terminator. If "nBytes" is not 
+less than zero, then it is the length of the string zSql in 
+Bytes."
+
+In this case, nBytes was zero -- effectively a zero-length 
+query. Also, the error handling did not work -- a zero was
+returned from the function RS_sqlite_import() but the coercion 
+to a logical always returned TRUE -- that really confused me :-)
+
+Hope this is integrated in the official CRAN uploads.
+
+Regards,
+ashish
+
+
+
+From @|@|con @end|ng |rom |hcrc@org  Fri Sep 29 19:03:48 2006
+From: @|@|con @end|ng |rom |hcrc@org (Seth Falcon)
+Date: Fri, 29 Sep 2006 10:03:48 -0700
+Subject: [R-sig-DB] RSQLite and SQLite 3.3.x
+In-Reply-To: <2AB7346A3227A74BB97F9A0D79E3E65A03F26D@mailserver.kalyptorisk.com>
+	(Ashish Kulkarni's message of "Fri, 29 Sep 2006 19:58:10 +0530")
+References: <2AB7346A3227A74BB97F9A0D79E3E65A03F26D@mailserver.kalyptorisk.com>
+Message-ID: <m2irj6ob9n.fsf@ziti.local>
+
+Hi Ashish,
+
+Thanks for sending along the patch.  I've incorportated it into
+RSQLite 0.4-4 which included SQLite 3.3.7. 
+
+You and others can get the preview here:
+http://bioconductor.org/packages/misc/
+
+I would really like to hear back from a few folks that these packages
+work before pushing the updates to CRAN.
+
+Anyone?
+
+Best,
+
++ seth
+
+-- 
+Seth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center
+http://bioconductor.org
+
+
+
+From je||@horner @end|ng |rom v@nderb||t@edu  Fri Sep 29 19:44:46 2006
+From: je||@horner @end|ng |rom v@nderb||t@edu (Jeffrey Horner)
+Date: Fri, 29 Sep 2006 12:44:46 -0500
+Subject: [R-sig-DB] RSQLite and SQLite 3.3.x
+In-Reply-To: <m2irj6ob9n.fsf@ziti.local>
+References: <2AB7346A3227A74BB97F9A0D79E3E65A03F26D@mailserver.kalyptorisk.com>
+	<m2irj6ob9n.fsf@ziti.local>
+Message-ID: <451D5B8E.4060905@vanderbilt.edu>
+
+Seth Falcon wrote:
+> Hi Ashish,
+> 
+> Thanks for sending along the patch.  I've incorportated it into
+> RSQLite 0.4-4 which included SQLite 3.3.7. 
+> 
+> You and others can get the preview here:
+> http://bioconductor.org/packages/misc/
+> 
+> I would really like to hear back from a few folks that these packages
+> work before pushing the updates to CRAN.
+> 
+> Anyone?
+
+Well, I can confirm that yuor DBI/RMySQL work for me so far, but I've 
+only used it simply, e.g., calling dbConnect() and dbGetQuery().
+
+But I do get the following message when calling dbGetQuery() when a 
+table contains the timestamp type:
+
+1: RS-DBI driver warning: (unrecognized MySQL field type 7 in column 2 
+imported as character)
+2: RS-DBI driver warning: (unrecognized MySQL field type 7 in column 2 
+imported as character)
+
+I do plan on a more thorough vetting of the situation, but too busy 
+right now.
+
+Jeff
+-- 
+http://biostat.mc.vanderbilt.edu/JeffreyHorner
+
+
+
+From edd @end|ng |rom deb|@n@org  Fri Sep 29 20:00:01 2006
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Fri, 29 Sep 2006 13:00:01 -0500
+Subject: [R-sig-DB]  timestamp support (Was: RSQLite and SQLite 3.3.x)
+In-Reply-To: <451D5B8E.4060905@vanderbilt.edu>
+References: <2AB7346A3227A74BB97F9A0D79E3E65A03F26D@mailserver.kalyptorisk.com>
+	<m2irj6ob9n.fsf@ziti.local> <451D5B8E.4060905@vanderbilt.edu>
+Message-ID: <17693.24353.270960.698419@basebud.nulle.part>
+
+
+On 29 September 2006 at 12:44, Jeffrey Horner wrote:
+| But I do get the following message when calling dbGetQuery() when a 
+| table contains the timestamp type:
+| 
+| 1: RS-DBI driver warning: (unrecognized MySQL field type 7 in column 2 
+| imported as character)
+| 2: RS-DBI driver warning: (unrecognized MySQL field type 7 in column 2 
+| imported as character)
+
+Turns out that I use timestamp quite heavily right now, and to the best of
+limited knowledge timestamps are
+
+-- not supported by DBI and RMySQL/ RSQlite
+-- not supported by Rdbi and RdbiPgSQL
+
+but are 
+
+-- supported natively by RODBC
+
+so I am back to using RODBC even though I dislike having to twiddle with
+odbc.ini and friends.
+
+Dirk 
+
+-- 
+Hell, there are no rules here - we're trying to accomplish something. 
+                                                  -- Thomas A. Edison
+
+
+
+From @|@|con @end|ng |rom |hcrc@org  Fri Sep 29 20:12:02 2006
+From: @|@|con @end|ng |rom |hcrc@org (Seth Falcon)
+Date: Fri, 29 Sep 2006 11:12:02 -0700
+Subject: [R-sig-DB] timestamp support
+In-Reply-To: <17693.24353.270960.698419@basebud.nulle.part> (Dirk
+	Eddelbuettel's message of "Fri, 29 Sep 2006 13:00:01 -0500")
+References: <2AB7346A3227A74BB97F9A0D79E3E65A03F26D@mailserver.kalyptorisk.com>
+	<m2irj6ob9n.fsf@ziti.local> <451D5B8E.4060905@vanderbilt.edu>
+	<17693.24353.270960.698419@basebud.nulle.part>
+Message-ID: <m2slialez1.fsf@ziti.local>
+
+Dirk Eddelbuettel <edd at debian.org> writes:
+
+> On 29 September 2006 at 12:44, Jeffrey Horner wrote:
+> | But I do get the following message when calling dbGetQuery() when a 
+> | table contains the timestamp type:
+> | 
+> | 1: RS-DBI driver warning: (unrecognized MySQL field type 7 in column 2 
+> | imported as character)
+> | 2: RS-DBI driver warning: (unrecognized MySQL field type 7 in column 2 
+> | imported as character)
+>
+> Turns out that I use timestamp quite heavily right now, and to the best of
+> limited knowledge timestamps are
+>
+> -- not supported by DBI and RMySQL/ RSQlite
+> -- not supported by Rdbi and RdbiPgSQL
+>
+> but are 
+>
+> -- supported natively by RODBC
+>
+> so I am back to using RODBC even though I dislike having to twiddle with
+> odbc.ini and friends.
+
+I will put this on the TODO list.  Patches, of course, are welcome :-)
+
++ seth
+
+-- 
+Seth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center
+http://bioconductor.org
+
+
+

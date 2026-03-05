@@ -1,0 +1,1273 @@
+From to@dy2k @end|ng |rom hotm@||@com  Wed Apr 19 15:11:02 2006
+From: to@dy2k @end|ng |rom hotm@||@com (Toad 2000)
+Date: Wed, 19 Apr 2006 14:11:02 +0100
+Subject: [R-sig-DB] Raster data and MySQL
+Message-ID: <BAY24-F177AD9C5D8D2AFBC3CB972F1C50@phx.gbl>
+
+Hi Folks,
+
+Hope this isn't too far off topic + apologies for cross posting if you're on 
+both lists...
+
+I'm in the lucky(?) position of setting up an archive of geophysical 
+(meteorological) data from scratch. R has been my working 
+language/environment for the last few years. I've had plenty of need for the 
+maptools + rgdal packages.  Ditto the RMySQL package but never inconjuction 
+with spatial analyses.  My worlds are about to collide.
+
+The data come in two types: Station data (irregular grid, irregular times, 
+lots of missing values) and Model output (regular grid, regular times, no 
+missing data).  The data come in hour after hour, day after day.
+
+Typical queries can be spatial (e.g. what did the rainfall over a given post 
+code area look like yesterday?), temporal (what were the houlry wind speeds 
+at a specific point for last month?), or both (what was the mean temperature 
+across the UK last year).
+
+So how best to store the data to facilitate such queries?  This is where I 
+hope you can help! :)
+
+My initial thoughts are to invoke the spatial capabilites of MySQL.  The 
+station data seem easy enough to store as POINT or MULTIPOINT and set up a 
+spatial index and another on the time stamp.  Spatial queries can be 
+performed using a WKB (Well Known Binary - new to me;) representation of the 
+region of interest.
+
+I'm stuck on the model data.  I could break it down into points and proceed 
+as above but this seems grossly inefficient.  I was hoping to find a RASTER 
+data type and store the grids in that.  Trouble is, I could be missing 
+something, that I can't seem to find anything like one in MySQL.  Don't know 
+about Postgre or SQL sever.  I'm open to suggestions.
+
+Your hopefully, T
+
+_________________________________________________________________
+
+7.5 today! http://join.msn.com/messenger/overview
+
+
+
+From Roger@B|v@nd @end|ng |rom nhh@no  Wed Apr 19 16:03:01 2006
+From: Roger@B|v@nd @end|ng |rom nhh@no (Roger Bivand)
+Date: Wed, 19 Apr 2006 16:03:01 +0200 (CEST)
+Subject: [R-sig-DB] [R-sig-Geo] Raster data and MySQL
+In-Reply-To: <BAY24-F177AD9C5D8D2AFBC3CB972F1C50@phx.gbl>
+Message-ID: <Pine.LNX.4.44.0604191557260.4198-100000@reclus.nhh.no>
+
+On Wed, 19 Apr 2006, Toad 2000 wrote:
+
+> Hi Folks,
+> 
+> Hope this isn't too far off topic + apologies for cross posting if you're on 
+> both lists...
+> 
+> I'm in the lucky(?) position of setting up an archive of geophysical 
+> (meteorological) data from scratch. R has been my working 
+> language/environment for the last few years. I've had plenty of need for the 
+> maptools + rgdal packages.  Ditto the RMySQL package but never inconjuction 
+> with spatial analyses.  My worlds are about to collide.
+> 
+> The data come in two types: Station data (irregular grid, irregular times, 
+> lots of missing values) and Model output (regular grid, regular times, no 
+> missing data).  The data come in hour after hour, day after day.
+> 
+> Typical queries can be spatial (e.g. what did the rainfall over a given post 
+> code area look like yesterday?), temporal (what were the houlry wind speeds 
+> at a specific point for last month?), or both (what was the mean temperature 
+> across the UK last year).
+> 
+> So how best to store the data to facilitate such queries?  This is where I 
+> hope you can help! :)
+
+Could you have a look at aRT? It has an R component, a database (typically 
+MySQL) component, and uses Terralib as glue:
+
+http://www.est.ufpr.br/art/
+
+I think you can use RMySQL directly for non-spatial tasks too. Terralib 
+has well-developed spatial data types.
+
+> 
+> My initial thoughts are to invoke the spatial capabilites of MySQL.  The 
+> station data seem easy enough to store as POINT or MULTIPOINT and set up a 
+> spatial index and another on the time stamp.  Spatial queries can be 
+> performed using a WKB (Well Known Binary - new to me;) representation of the 
+> region of interest.
+> 
+> I'm stuck on the model data.  I could break it down into points and proceed 
+> as above but this seems grossly inefficient.  I was hoping to find a RASTER 
+> data type and store the grids in that.  Trouble is, I could be missing 
+> something, that I can't seem to find anything like one in MySQL.  Don't know 
+> about Postgre or SQL sever.  I'm open to suggestions.
+> 
+> Your hopefully, T
+> 
+> _________________________________________________________________
+> 
+> 7.5 today! http://join.msn.com/messenger/overview
+> 
+> _______________________________________________
+> R-sig-Geo mailing list
+> R-sig-Geo at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand at nhh.no
+
+
+
+From je||@horner @end|ng |rom v@nderb||t@edu  Wed Apr 19 16:27:15 2006
+From: je||@horner @end|ng |rom v@nderb||t@edu (Jeffrey Horner)
+Date: Wed, 19 Apr 2006 09:27:15 -0500
+Subject: [R-sig-DB] Raster data and MySQL
+In-Reply-To: <BAY24-F177AD9C5D8D2AFBC3CB972F1C50@phx.gbl>
+References: <BAY24-F177AD9C5D8D2AFBC3CB972F1C50@phx.gbl>
+Message-ID: <444648C3.3000906@vanderbilt.edu>
+
+Toad 2000 wrote:
+> Hi Folks,
+> 
+> Hope this isn't too far off topic + apologies for cross posting if you're on 
+> both lists...
+> 
+> I'm in the lucky(?) position of setting up an archive of geophysical 
+> (meteorological) data from scratch. R has been my working 
+> language/environment for the last few years. I've had plenty of need for the 
+> maptools + rgdal packages.  Ditto the RMySQL package but never inconjuction 
+> with spatial analyses.  My worlds are about to collide.
+> 
+> The data come in two types: Station data (irregular grid, irregular times, 
+> lots of missing values) and Model output (regular grid, regular times, no 
+> missing data).  The data come in hour after hour, day after day.
+> 
+> Typical queries can be spatial (e.g. what did the rainfall over a given post 
+> code area look like yesterday?), temporal (what were the houlry wind speeds 
+> at a specific point for last month?), or both (what was the mean temperature 
+> across the UK last year).
+> 
+> So how best to store the data to facilitate such queries?  This is where I 
+> hope you can help! :)
+> 
+> My initial thoughts are to invoke the spatial capabilites of MySQL.  The 
+> station data seem easy enough to store as POINT or MULTIPOINT and set up a 
+> spatial index and another on the time stamp.  Spatial queries can be 
+> performed using a WKB (Well Known Binary - new to me;) representation of the 
+> region of interest.
+
+Neither RMySQL nor RODBC support BLOB types or any of the Spatial types. 
+BLOB (binary large object) types are useful for storing any binary data, 
+including raster images. Also, some of the comments here:
+
+http://dev.mysql.com/doc/refman/5.0/en/populating-spatial-columns.html
+
+suggest that actually getting data into MySQL may be difficult.
+
+What's really needed is an update to the R DBI spec to support prepared 
+statements, placeholders, and of course BLOB types. I'm actually 
+planning an R module which will use BLOB types, but not the way a DBI 
+spec would, so I'd be happy to consider helping write some of this after 
+I get my hands dirty with the MySQL client apis.
+
+> 
+> I'm stuck on the model data.  I could break it down into points and proceed 
+> as above but this seems grossly inefficient.  I was hoping to find a RASTER 
+> data type and store the grids in that.  Trouble is, I could be missing 
+> something, that I can't seem to find anything like one in MySQL.  Don't know 
+> about Postgre or SQL sever.  I'm open to suggestions.
+> 
+> Your hopefully, T
+> 
+> _________________________________________________________________
+> 
+> 7.5 today! http://join.msn.com/messenger/overview
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+-- 
+Jeffrey Horner       Computer Systems Analyst         School of Medicine
+615-322-8606         Department of Biostatistics   Vanderbilt University
+
+
+
+From mvyver @end|ng |rom gm@||@com  Tue May 23 00:02:17 2006
+From: mvyver @end|ng |rom gm@||@com (Mark Van De Vyver)
+Date: Tue, 23 May 2006 08:02:17 +1000
+Subject: [R-sig-DB] Time taken by dbExistsTable()
+Message-ID: <389c43e40605221502h24e162dekb9be4bad66d99f36@mail.gmail.com>
+
+Hi,
+Fristly thanks for the efforts put into the DBI package for R-project.
+ This has enhanced my use of R considerably - several colleagues raise
+their eye brows when I indicate I no-longer use SAS.....
+
+My set-up:
+Windows-xp
+R-2.2.1
+R-MySQL package.
+MySQL 5.0.19-nt (using TCP-IP connections)
+
+I will highlight that the db in question has 10,000+ tables, so the
+following may not be of general interest/concern.
+
+I have noticed that considerable time is used by the function
+dbExistsTable(), about 5 times more than the SQL 'show table' work
+around -  in my case this translates to about a 6 hour saving.
+This of course may be due to my 'set-up' rather than dbExistsTable()?
+
+Is it possible my set-up is at fault?
+Is it possible to improve this time further using R-DBI?
+
+The timing results are shown below.
+
+Regards
+Mark
+
+system.time(
+	for(tbli in tblunionlist[1:15]){
+		tblExist <- dbExistsTable(dbcon, tbli)
+	}
+)
+
+system.time(
+	for(tbli in tblunionlist[1:15]){
+		myshowstring<-paste("SHOW TABLE STATUS FROM `myDB` LIKE '",tbli, "'", sep="")
+		mytblstatus<-mysqlQuickSQL( dbcon, myshowstring )
+		if( identical( identical(mytblstatus,data.frame(NULL)),F) ) {
+			tblExist <- TRUE
+		}
+	}
+)
+
+
+[1]  4.96  1.52 29.20    NA    NA
+[1] 1.99 0.30 5.64   NA   NA
+
+
+
+From mvyver @end|ng |rom gm@||@com  Tue May 23 00:36:39 2006
+From: mvyver @end|ng |rom gm@||@com (Mark Van De Vyver)
+Date: Tue, 23 May 2006 08:36:39 +1000
+Subject: [R-sig-DB] Repeated errors with dbReadTable and one particular table
+Message-ID: <389c43e40605221536h452fd325g403800fb669b056c@mail.gmail.com>
+
+Hi
+Thanks for the effort put into developing the DBI and RMySQL packages.
+
+My set up:
+Windows xp (latest patches)
+MySQL 5.0.18- nt (and 5.0.19-nt) TCP-ip connections
+R 2.2.1
+DBI built with R 2.2.1
+RMySQL 0.5-7
+
+I have come across a problem when I use dbReadTable() to access one of
+my database tables.
+There are many (10,000+) tables on this DB but I have on always seen
+the same problem with this table and no other.  The relevant code has
+been run on three quite different occasions. E.g after a full disk
+defrag and chkdsk /f, and after creating the tables from 'scratch'
+i.e. from a 'load file'.
+
+I can run 'SHOW TABLE STATUS FROM' and 'SELECT * FROM' against this
+table using the MySQL command line tool - no errors are indicated.  I
+can also access/view the whole table using the MySQL QueryBrowser and
+Navicat's query tool.  Using Navicat's tools I have run their "check
+tables" ( normal and extended ) both return an OK indicator.
+
+This makes me suspect there may be something happening in dbReadTables
+or the RMySQL package?
+
+This does not seem to be 'R-session' or 'MySQL-connection' related,
+given that if I just skip the table in question I can process all
+remaining tables - without quiting R, without reestablishing the
+connection to the MySQL server.  Further, the table is at the smaller
+end of the spectrum, 147 rows, ave row length = 90 bytes.
+The data is such that I can't post this table on the web, but can send
+this table to a DBI or RMySQL developer if they wish.
+
+The R command used and it's output are below.
+
+Regards
+Mark
+
+dbReadTable( dbcon, tbli, row.names="tid" )
+
+Error in mysqlExecStatement(conn, statement, ...) :
+	RS-DBI driver: (could not run statement: You have an error in your
+SQL syntax; check the manual that corresponds to your MySQL server
+version for the right syntax to use near '6706e2_aggtradesquotes' at
+line 1)
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Tue May 23 08:32:37 2006
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Tue, 23 May 2006 07:32:37 +0100 (BST)
+Subject: [R-sig-DB] Repeated errors with dbReadTable and one particular
+ table
+In-Reply-To: <389c43e40605221536h452fd325g403800fb669b056c@mail.gmail.com>
+References: <389c43e40605221536h452fd325g403800fb669b056c@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0605230730110.17904@gannet.stats.ox.ac.uk>
+
+Both your issues are with the RMySQL package, and the R posting guide asks 
+that you contact the maintainer (who does read this list).
+
+I think you cannot expect a response on this list unless the maintainer 
+tells you that he is unable to help, AND that we have a means to reproduce 
+the problems.
+
+See  http://www.r-project.org/posting-guide.html
+
+
+On Tue, 23 May 2006, Mark Van De Vyver wrote:
+
+> Hi
+> Thanks for the effort put into developing the DBI and RMySQL packages.
+>
+> My set up:
+> Windows xp (latest patches)
+> MySQL 5.0.18- nt (and 5.0.19-nt) TCP-ip connections
+> R 2.2.1
+> DBI built with R 2.2.1
+> RMySQL 0.5-7
+>
+> I have come across a problem when I use dbReadTable() to access one of
+> my database tables.
+> There are many (10,000+) tables on this DB but I have on always seen
+> the same problem with this table and no other.  The relevant code has
+> been run on three quite different occasions. E.g after a full disk
+> defrag and chkdsk /f, and after creating the tables from 'scratch'
+> i.e. from a 'load file'.
+>
+> I can run 'SHOW TABLE STATUS FROM' and 'SELECT * FROM' against this
+> table using the MySQL command line tool - no errors are indicated.  I
+> can also access/view the whole table using the MySQL QueryBrowser and
+> Navicat's query tool.  Using Navicat's tools I have run their "check
+> tables" ( normal and extended ) both return an OK indicator.
+>
+> This makes me suspect there may be something happening in dbReadTables
+> or the RMySQL package?
+>
+> This does not seem to be 'R-session' or 'MySQL-connection' related,
+> given that if I just skip the table in question I can process all
+> remaining tables - without quiting R, without reestablishing the
+> connection to the MySQL server.  Further, the table is at the smaller
+> end of the spectrum, 147 rows, ave row length = 90 bytes.
+> The data is such that I can't post this table on the web, but can send
+> this table to a DBI or RMySQL developer if they wish.
+>
+> The R command used and it's output are below.
+>
+> Regards
+> Mark
+>
+> dbReadTable( dbcon, tbli, row.names="tid" )
+>
+> Error in mysqlExecStatement(conn, statement, ...) :
+> 	RS-DBI driver: (could not run statement: You have an error in your
+> SQL syntax; check the manual that corresponds to your MySQL server
+> version for the right syntax to use near '6706e2_aggtradesquotes' at
+> line 1)
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From |ou @end|ng |rom |ou@pr|nger@com  Thu Jun  8 05:50:21 2006
+From: |ou @end|ng |rom |ou@pr|nger@com (Louis Springer)
+Date: Wed, 7 Jun 2006 21:50:21 -0600
+Subject: [R-sig-DB] R, RMySQL and OSX
+Message-ID: <448B9B53-DF1D-442D-90B6-268CCD001CE5@louspringer.com>
+
+In reference to a meesage from "jhorn at bu.edu", installation and  
+build problems on OSX Tiger for R and RMySQL, "RMySQL Error Messages,  
+crashing R" (https://stat.ethz.ch/pipermail/r-sig-mac/2006-February/ 
+002686.html), was Jason ever able to resolve the issues? I'm not  
+getting any of the compile issues referred to, but am unable to  
+connect, getting:
+
+RS-DBI driver: (could not connect xxx at localhost on dbname "dbname"
+
+My R version is R for Mac OS X Aqua GUI, 1.16 (3198), R 2.3.1 Framework
+RMySQL version RMySQL_0.5-7
+MySQL version mysql  Ver 14.12 Distrib 5.0.13-rc, for apple- 
+darwin8.2.0 (powerpc) using readline 5.0
+
+Thanks,
+Lou
+
+
+
+From |ou @end|ng |rom |ou@pr|nger@com  Thu Jun  8 07:27:47 2006
+From: |ou @end|ng |rom |ou@pr|nger@com (Louis Springer)
+Date: Wed, 7 Jun 2006 23:27:47 -0600
+Subject: [R-sig-DB] [R-SIG-Mac] R, RMySQL and OSX
+In-Reply-To: <8A0CADA7-D38B-4352-AB3D-8FEC1E75B986@louspringer.com>
+References: <8A0CADA7-D38B-4352-AB3D-8FEC1E75B986@louspringer.com>
+Message-ID: <69ACEDBD-C944-4E8C-ABDE-1685A00D71D3@louspringer.com>
+
+I've got at least a partial resolution and workaround to my issue.
+
+The default unix.socket parameter on the dbConnect call is "/opt/ 
+local/var/run/mysql5/mysqld.sock" if unix.sock is not specified. I'm  
+not sure where this unix.socket is coming from, but it doesn't work  
+for me.
+
+The correct unix.sock parameter for my case is  "/tmp/mysql.sock".
+
+This works:
+
+con <- dbConnect(dbDriver("MySQL"), username="myuser",  
+host="localhost", dbname="mydb", password="secret", unix.sock="/tmp/ 
+mysql.sock")
+
+This does not:
+
+con <- dbConnect(dbDriver("MySQL"), username="myuser",  
+host="localhost", dbname="mydb", password="secret")
+
+I also have a patch to RS-MySQL.c to display the error message  
+returned by MySQL on a connect error. What should I do with this? Who  
+is the current maintainer for this code?
+
+The bit around the "my_sql_real_connect" should read something like:
+
+   if(!mysql_real_connect(my_connection, host, user, passwd, dbname,
+		       port, unix_socket, client_flags)){
+     char buf[2048];
+     sprintf(buf, "could not connect %s@%s on dbname \"%s\"\nError:%s 
+\n",
+	    user, host, dbname, mysql_error(my_connection));
+     RS_DBI_errorMessage(buf, RS_DBI_ERROR);
+   }
+
+The current version clobbers "my_connection" on a failed connection  
+rendering any call to "mysql_error(my_connection)" useless. My hacked  
+RS-MySQL.c returns:
+
+Error in mysqlNewConnection(drv, ...) : RS-DBI driver: (could not  
+connect myuser at localhost on dbname "mydb"
+Error:Can't connect to local MySQL server through socket '/opt/local/ 
+var/run/mysql5/mysqld.sock' (2)
+
+for the error I was having, returning an informative mysql error  
+message on the failed connection.
+
+
+Lou
+
+On Jun 7, 2006, at 9:58 PM, Louis Springer wrote:
+
+> In reference to a meesage from "jhorn at bu.edu", installation and
+> build problems on OSX Tiger for R and RMySQL, "RMySQL Error Messages,
+> crashing R" (https://stat.ethz.ch/pipermail/r-sig-mac/2006-February/
+> 002686.html), was Jason ever able to resolve the issues? I'm not
+> getting any of the compile issues referred to, but am unable to
+> connect, getting:
+>
+> RS-DBI driver: (could not connect xxx at localhost on dbname "dbname"
+>
+> My R version is R for Mac OS X Aqua GUI, 1.16 (3198), R 2.3.1  
+> Framework
+> RMySQL version RMySQL_0.5-7
+> MySQL version mysql  Ver 14.12 Distrib 5.0.13-rc, for apple-
+> darwin8.2.0 (powerpc) using readline 5.0
+>
+> Thanks,
+> Lou
+>
+> _______________________________________________
+> R-SIG-Mac mailing list
+> R-SIG-Mac at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-mac
+>
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Thu Jun  8 07:42:25 2006
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Thu, 8 Jun 2006 06:42:25 +0100 (BST)
+Subject: [R-sig-DB] [R-SIG-Mac] R, RMySQL and OSX
+In-Reply-To: <69ACEDBD-C944-4E8C-ABDE-1685A00D71D3@louspringer.com>
+References: <8A0CADA7-D38B-4352-AB3D-8FEC1E75B986@louspringer.com>
+	<69ACEDBD-C944-4E8C-ABDE-1685A00D71D3@louspringer.com>
+Message-ID: <Pine.LNX.4.64.0606080638070.14460@gannet.stats.ox.ac.uk>
+
+Please (as we ask) consult the R posting guide at
+
+http://www.r-project.org/posting-guide.html
+
+and
+
+0) Do not send HTML mail.
+1) Do not post to multiple lists.
+2) Contact the maintainer first as it asks you to there. (It also tells 
+you how to find out the maintainer and other relevant information.)
+
+
+On Wed, 7 Jun 2006, Louis Springer wrote:
+
+> I've got at least a partial resolution and workaround to my issue.
+>
+> The default unix.socket parameter on the dbConnect call is "/opt/
+> local/var/run/mysql5/mysqld.sock" if unix.sock is not specified. I'm
+> not sure where this unix.socket is coming from, but it doesn't work
+> for me.
+>
+> The correct unix.sock parameter for my case is  "/tmp/mysql.sock".
+>
+> This works:
+>
+> con <- dbConnect(dbDriver("MySQL"), username="myuser",
+> host="localhost", dbname="mydb", password="secret", unix.sock="/tmp/
+> mysql.sock")
+>
+> This does not:
+>
+> con <- dbConnect(dbDriver("MySQL"), username="myuser",
+> host="localhost", dbname="mydb", password="secret")
+>
+> I also have a patch to RS-MySQL.c to display the error message
+> returned by MySQL on a connect error. What should I do with this? Who
+> is the current maintainer for this code?
+>
+> The bit around the "my_sql_real_connect" should read something like:
+>
+>   if(!mysql_real_connect(my_connection, host, user, passwd, dbname,
+> 		       port, unix_socket, client_flags)){
+>     char buf[2048];
+>     sprintf(buf, "could not connect %s@%s on dbname \"%s\"\nError:%s
+> \n",
+> 	    user, host, dbname, mysql_error(my_connection));
+>     RS_DBI_errorMessage(buf, RS_DBI_ERROR);
+>   }
+>
+> The current version clobbers "my_connection" on a failed connection
+> rendering any call to "mysql_error(my_connection)" useless. My hacked
+> RS-MySQL.c returns:
+>
+> Error in mysqlNewConnection(drv, ...) : RS-DBI driver: (could not
+> connect myuser at localhost on dbname "mydb"
+> Error:Can't connect to local MySQL server through socket '/opt/local/
+> var/run/mysql5/mysqld.sock' (2)
+>
+> for the error I was having, returning an informative mysql error
+> message on the failed connection.
+>
+>
+> Lou
+>
+> On Jun 7, 2006, at 9:58 PM, Louis Springer wrote:
+>
+>> In reference to a meesage from "jhorn at bu.edu", installation and
+>> build problems on OSX Tiger for R and RMySQL, "RMySQL Error Messages,
+>> crashing R" (https://stat.ethz.ch/pipermail/r-sig-mac/2006-February/
+>> 002686.html), was Jason ever able to resolve the issues? I'm not
+>> getting any of the compile issues referred to, but am unable to
+>> connect, getting:
+>>
+>> RS-DBI driver: (could not connect xxx at localhost on dbname "dbname"
+>>
+>> My R version is R for Mac OS X Aqua GUI, 1.16 (3198), R 2.3.1
+>> Framework
+>> RMySQL version RMySQL_0.5-7
+>> MySQL version mysql  Ver 14.12 Distrib 5.0.13-rc, for apple-
+>> darwin8.2.0 (powerpc) using readline 5.0
+>>
+>> Thanks,
+>> Lou
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From venk@t @end|ng |rom concord|@c@p@com  Sun Jun 11 23:20:37 2006
+From: venk@t @end|ng |rom concord|@c@p@com (Venkat Chalasani)
+Date: Sun, 11 Jun 2006 17:20:37 -0400
+Subject: [R-sig-DB] Cannot Install RMySQL on MacOSX
+Message-ID: <C0B20165.F853%venkat@concordiacap.com>
+
+I am trying to install RMySQL and it is giving the following error ? I have
+looked at the previous messages and could not find a workable solution.
+
+Any suggestions are greatly welcome
+
+I have MacOS 10.4.6, R 2.3.1,  RMySQL_0.5-7.tar.gz, and MySQL 5.0
+
+-------------------------------
+trying URL 'http://www.imsv.unibe.ch/cran/src/contrib/RMySQL_0.5-7.tar.gz'
+Content type 'application/x-gzip' length 142507 bytes
+opened URL
+==================================================
+downloaded 139Kb
+
+WARNING: ignoring environment value of R_HOME
+* Installing *source* package 'RMySQL' ...
+creating cache ./config.cache
+checking how to run the C preprocessor... /lib/cpp
+checking for compress in -lz... no
+checking for getopt_long in -lc... no
+checking for mysql_init in -lmysqlclient... no
+checking for mysql.h... no
+checking for mysql_init in -lmysqlclient... no
+checking for mysql_init in -lmysqlclient...
+The downloaded packages are in
+    /private/tmp/RtmpMKx9nr/downloaded_packages
+no
+checking for mysql_init in -lmysqlclient... no
+checking for mysql_init in -lmysqlclient... no
+checking for mysql_init in -lmysqlclient... no
+
+Configuration error:
+   Could not locate the library "libz" required by MySQL.
+
+INSTRUCTIONS:
+
+   The "libz" library is required by the MySQL client library
+   in order to compress/uncompress connections between clients
+   and the MySQL engine.
+
+   Make sure you have "libz" installed properly and/or included
+   in your $LD_LIBRARY_PATH.  Perhaps it is not in any of the
+   standard directories (e.g., /usr/lib/, /usr/local/lib)?
+
+Aborting the installation of RMySQL.
+
+** Removing 
+'/Library/Frameworks/R.framework/Versions/2.3/Resources/library/RMySQL'
+ERROR: configuration failed for package 'RMySQL'
+
+
+
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From n|co|@@@deg@|||er @end|ng |rom |rd@|r  Tue Jun 13 09:47:04 2006
+From: n|co|@@@deg@|||er @end|ng |rom |rd@|r (Nicolas Degallier)
+Date: Tue, 13 Jun 2006 09:47:04 +0200
+Subject: [R-sig-DB] how to read CRU climatic data  files with R?
+Message-ID: <8B84E377-AD2C-47B7-AD6B-8FBCF3336B7F@ird.fr>
+
+Hi R helpers,
+
+I have downloaded time series of climatic data from CRU (Climatic  
+Research Unit) which are ASCII files with a specific format for the  
+data.
+The format is described here:
+
+http://www.cru.uea.ac.uk/~timm/grid/CRU_TS_2_1.html
+
+under the link "file format".
+
+I would like to know if somebody has already written some script in R  
+to open and manage these data, for example for selecting only  
+portions of the time series and/or pieces of the spatial grid?
+
+Cheers,
+
+Nicolas Degallier
+
+UMR 7159 / IRD UR182
+Laboratoire d'Oc?anographie et du Climat, Exp?rimentation et  
+Approches Num?riques (LOCEAN)
+Tour 45-55, 4e ?t., case 100, 4 place Jussieu
+75252  Paris Cedex 5  France
+
+t?l: (33) 01 44 27 51 57
+fax: (33) 01 44 27 38 05
+E-mail: <Nicolas.Degallier at ird.fr>
+
+Publications (anonymous ftp):
+
+ftp://ftp.lodyc.jussieu.fr/LOCEAN/ndelod
+
+
+
+From @nton|o@r@ju @end|ng |rom gm@||@com  Tue Jun 13 10:34:22 2006
+From: @nton|o@r@ju @end|ng |rom gm@||@com (antonio rodriguez)
+Date: Tue, 13 Jun 2006 10:34:22 +0200
+Subject: [R-sig-DB] [R-sig-Geo] how to read CRU climatic data files with
+	R?
+In-Reply-To: <8B84E377-AD2C-47B7-AD6B-8FBCF3336B7F@ird.fr>
+References: <8B84E377-AD2C-47B7-AD6B-8FBCF3336B7F@ird.fr>
+Message-ID: <448E788E.8080707@gmail.com>
+
+Nicolas Degallier wrote:
+> Hi R helpers,
+> 
+> I have downloaded time series of climatic data from CRU (Climatic  
+> Research Unit) which are ASCII files with a specific format for the  
+> data.
+> The format is described here:
+> 
+> http://www.cru.uea.ac.uk/~timm/grid/CRU_TS_2_1.html
+> 
+> under the link "file format".
+> 
+> I would like to know if somebody has already written some script in R  
+> to open and manage these data, for example for selecting only  
+> portions of the time series and/or pieces of the spatial grid?
+
+
+Hi Nicolas,
+
+You will find in that page, below Data structure section, a link to 
+'software'. There you will find a package 'CRU2nc.tgz' which converts 
+your ASCII data to 'netCDF' format. Then you can use any of the netCDF 
+libraries available in R: ncdf,ncvar, RNetCDF, and the old netCDF.
+
+I've found, at least for me, before to enter the data in R, to 
+manipulate them with Ferret (http://ferret.pmel.noaa.gov/Ferret/) 
+(subsetting regions and time intervals, etc.)
+
+Hope this helps,
+
+Antonio
+
+
+
+
+
+
+> 
+> Cheers,
+> 
+> Nicolas Degallier
+> 
+> UMR 7159 / IRD UR182
+> Laboratoire d'Oc?anographie et du Climat, Exp?rimentation et  
+> Approches Num?riques (LOCEAN)
+> Tour 45-55, 4e ?t., case 100, 4 place Jussieu
+> 75252  Paris Cedex 5  France
+> 
+> t?l: (33) 01 44 27 51 57
+> fax: (33) 01 44 27 38 05
+> E-mail: <Nicolas.Degallier at ird.fr>
+> 
+> Publications (anonymous ftp):
+> 
+> ftp://ftp.lodyc.jussieu.fr/LOCEAN/ndelod
+> 
+> _______________________________________________
+> R-sig-Geo mailing list
+> R-sig-Geo at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+> 
+
+
+-- 
+=====
+Por favor, si me mandas correos con copia a varias personas,
+pon mi direcci?n de correo en copia oculta (CCO), para evitar
+que acabe en montones de sitios, eliminando mi privacidad,
+favoreciendo la propagaci?n de virus y la proliferaci?n del SPAM. Gracias.
+-----
+If you send me e-mail which has also been sent to several other people,
+kindly mark my address as blind-carbon-copy (or BCC), to avoid its
+distribution, which affects my privacy, increases the likelihood of
+spreading viruses, and leads to more SPAM. Thanks.
+=====
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Tue Jun 13 10:40:30 2006
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Tue, 13 Jun 2006 09:40:30 +0100 (BST)
+Subject: [R-sig-DB] how to read CRU climatic data  files with R?
+In-Reply-To: <8B84E377-AD2C-47B7-AD6B-8FBCF3336B7F@ird.fr>
+References: <8B84E377-AD2C-47B7-AD6B-8FBCF3336B7F@ird.fr>
+Message-ID: <Pine.LNX.4.64.0606130940001.20518@gannet.stats.ox.ac.uk>
+
+This is the databases list, not for reading ASCII files.
+
+Please try R-help.
+
+On Tue, 13 Jun 2006, Nicolas Degallier wrote:
+
+> Hi R helpers,
+>
+> I have downloaded time series of climatic data from CRU (Climatic
+> Research Unit) which are ASCII files with a specific format for the
+> data.
+> The format is described here:
+>
+> http://www.cru.uea.ac.uk/~timm/grid/CRU_TS_2_1.html
+>
+> under the link "file format".
+>
+> I would like to know if somebody has already written some script in R
+> to open and manage these data, for example for selecting only
+> portions of the time series and/or pieces of the spatial grid?
+>
+> Cheers,
+>
+> Nicolas Degallier
+>
+> UMR 7159 / IRD UR182
+> Laboratoire d'Oc?anographie et du Climat, Exp?rimentation et
+> Approches Num?riques (LOCEAN)
+> Tour 45-55, 4e ?t., case 100, 4 place Jussieu
+> 75252  Paris Cedex 5  France
+>
+> t?l: (33) 01 44 27 51 57
+> fax: (33) 01 44 27 38 05
+> E-mail: <Nicolas.Degallier at ird.fr>
+>
+> Publications (anonymous ftp):
+>
+> ftp://ftp.lodyc.jussieu.fr/LOCEAN/ndelod
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+From r|c@rdd @end|ng |rom m@th@t@t@d@|@c@  Mon Jun 19 20:36:56 2006
+From: r|c@rdd @end|ng |rom m@th@t@t@d@|@c@ (Daniel Ricard)
+Date: Mon, 19 Jun 2006 15:36:56 -0300
+Subject: [R-sig-DB] RODBC query returns no results
+Message-ID: <200606191536.57458.ricardd@mathstat.dal.ca>
+
+Hello,
+I'm using RODBC to connect to a database but somehow the queries return no
+results. postgresql tells me that there are 963 entries in the table:
+
+gfsDB=# select count(*) from estimates;
+ count
+-------
+   963
+(1 row)
+
+
+but the query in R only returns the column names, not the anticipated data:
+
+> chan <- odbcConnect(dsn="gfsDB", uid="postgres")
+> qu <- paste("select * from estimates")
+> sqlQuery(chan, qu, errors= TRUE)
+
+ [1] specname    tsn         institution region      closedarea  modelno
+ [7] parameter   level1      df          estimate    stderr      lowerwaldcl
+[13] upperwaldcl chisq       probchisq
+<0 rows> (or 0-length row.names)
+
+> odbcGetInfo(chan)
+
+DBMS_Name "PostgreSQL"
+DBMS_Ver "08.01.0102 PostgreSQL 8.1.4 on i686-pc-linux-gnu, compiled by GCC
+gcc (GCC) 4.0.3 (Ubuntu 4.0.3-1ubuntu5)"
+Driver_ODBC_Ver "03.00"
+Data_Source_Name "gfsDB"
+Driver_Name "libpsqlodbc.so"
+Driver_Ver "08.01.0102"
+ODBC_Ver "03.52"
+Server_Name "localhost"
+
+I would like to know how to further troubleshoot this, I'm kind of stuck right 
+now. The same query returns the appropriate data when issued through Perl DBI 
+or SAS/CONNECT.
+Cheers,
+
+Dan
+
+
+
+From jprudent @end|ng |rom gm@||@com  Wed Jun 21 22:48:16 2006
+From: jprudent @end|ng |rom gm@||@com (jerome prudent)
+Date: Wed, 21 Jun 2006 15:48:16 -0500
+Subject: [R-sig-DB] RODBC
+Message-ID: <6762d810606211348l4324c51mceb7f9b4eb489f10@mail.gmail.com>
+
+I'm having trouble with RODBC and postgresql under Linux.
+My queries have no result. sqlTables works fine. Any idea?
+
+	[[alternative HTML version deleted]]
+
+
+
+From jprudent @end|ng |rom gm@||@com  Wed Jun 21 23:12:41 2006
+From: jprudent @end|ng |rom gm@||@com (jerome prudent)
+Date: Wed, 21 Jun 2006 16:12:41 -0500
+Subject: [R-sig-DB] RODBC
+In-Reply-To: <6762d810606211348l4324c51mceb7f9b4eb489f10@mail.gmail.com>
+References: <6762d810606211348l4324c51mceb7f9b4eb489f10@mail.gmail.com>
+Message-ID: <6762d810606211412w20d1382cn3b415aaf7945a074@mail.gmail.com>
+
+Hey!
+I solved my problem specifying password and believeNRows=FALSE in
+odbcConnect:
+channel <- odbcConnect("sc", uid="admin", pwd="pass", case="tolower",
+believeNRows=FALSE)
+
+Sorry!
+
+On 6/21/06, jerome prudent <jprudent at gmail.com> wrote:
+>
+> I'm having trouble with RODBC and postgresql under Linux.
+> My queries have no result. sqlTables works fine. Any idea?
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From r|c@rdd @end|ng |rom m@th@t@t@d@|@c@  Thu Jun 22 00:08:35 2006
+From: r|c@rdd @end|ng |rom m@th@t@t@d@|@c@ (Daniel Ricard)
+Date: Wed, 21 Jun 2006 19:08:35 -0300
+Subject: [R-sig-DB] Resolved: RODBC query returns no results
+In-Reply-To: <6762d810606211412w20d1382cn3b415aaf7945a074@mail.gmail.com>
+References: <6762d810606211348l4324c51mceb7f9b4eb489f10@mail.gmail.com>
+	<6762d810606211412w20d1382cn3b415aaf7945a074@mail.gmail.com>
+Message-ID: <200606211908.36419.ricardd@mathstat.dal.ca>
+
+J?r?me,
+Adding the "believeNRows=FALSE" to odbcConnect solved my problem too.
+
+
+chan <- odbcConnect(dsn="gfsDB", uid = "postgres", case='postgresql', 
+believeNRows=FALSE)
+
+
+Thanks, this is awesome.
+
+Re: RDBI, the developers are likely on this mailing list and may wish to 
+comment on the status of the package. From what I gather, RODBC is probably a 
+better option to connect to postgresql. The DBI website says "under 
+construction" from 5 years ago:
+http://developer.r-project.org/db/
+
+and this site:
+http://stat.bell-labs.com/RS-DBI/index.html
+
+points to the following link for postgresql support: 
+http://sourceforge.net/projects/rdbi
+
+However, the package is no longer under active development. So RODBC seems 
+like the most viable alternative.
+Cheers,
+
+Dan
+
+
+Le Mercredi 21 Juin 2006 18:12, jerome prudent a ?crit :
+> Hey!
+> I solved my problem specifying password and believeNRows=FALSE in
+> odbcConnect:
+> channel <- odbcConnect("sc", uid="admin", pwd="pass", case="tolower",
+> believeNRows=FALSE)
+>
+
+Le Mercredi 21 Juin 2006 17:56, jerome prudent a ?crit :
+> Hi!
+> I've seen you have problem with RODBC and I'm exactly in the same
+> unconfortable position: queries have no results.
+>
+>
+> Has you can see, we have exactly the same config and the same problem. Do
+> you think it's an ubuntu specific problem?
+>
+> Did you already solved your problem? How?
+> Have you tried the RDBI package?
+> Thanks!!
+> J?r?me Prudent
+
+
+
+From dj @end|ng |rom re@e@rch@be||-|@b@@com  Thu Jun 22 00:15:17 2006
+From: dj @end|ng |rom re@e@rch@be||-|@b@@com (David James)
+Date: Wed, 21 Jun 2006 18:15:17 -0400
+Subject: [R-sig-DB] Resolved: RODBC query returns no results
+In-Reply-To: <200606211908.36419.ricardd@mathstat.dal.ca>
+References: <6762d810606211348l4324c51mceb7f9b4eb489f10@mail.gmail.com>
+	<6762d810606211412w20d1382cn3b415aaf7945a074@mail.gmail.com>
+	<200606211908.36419.ricardd@mathstat.dal.ca>
+Message-ID: <20060621221517.GB18604@jessie.research.bell-labs.com>
+
+Daniel Ricard wrote:
+> J?r?me,
+> Adding the "believeNRows=FALSE" to odbcConnect solved my problem too.
+> 
+> 
+> chan <- odbcConnect(dsn="gfsDB", uid = "postgres", case='postgresql', 
+> believeNRows=FALSE)
+> 
+> 
+> Thanks, this is awesome.
+> 
+> Re: RDBI, the developers are likely on this mailing list and may wish to 
+> comment on the status of the package. From what I gather, RODBC is probably a 
+> better option to connect to postgresql. The DBI website says "under 
+> construction" from 5 years ago:
+> http://developer.r-project.org/db/
+> 
+> and this site:
+> http://stat.bell-labs.com/RS-DBI/index.html
+
+Yes, you're right, it should point to the bioconductor site.
+
+> 
+> points to the following link for postgresql support: 
+> http://sourceforge.net/projects/rdbi
+> 
+> However, the package is no longer under active development. So RODBC seems 
+> like the most viable alternative.
+> Cheers,
+> 
+> Dan
+> 
+> 
+> Le Mercredi 21 Juin 2006 18:12, jerome prudent a ?crit :
+> > Hey!
+> > I solved my problem specifying password and believeNRows=FALSE in
+> > odbcConnect:
+> > channel <- odbcConnect("sc", uid="admin", pwd="pass", case="tolower",
+> > believeNRows=FALSE)
+> >
+> 
+> Le Mercredi 21 Juin 2006 17:56, jerome prudent a ?crit :
+> > Hi!
+> > I've seen you have problem with RODBC and I'm exactly in the same
+> > unconfortable position: queries have no results.
+> >
+> >
+> > Has you can see, we have exactly the same config and the same problem. Do
+> > you think it's an ubuntu specific problem?
+> >
+> > Did you already solved your problem? How?
+> > Have you tried the RDBI package?
+> > Thanks!!
+> > J?r?me Prudent
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+-- 
+David A. James
+Statistics Research, Room 2C-276            Phone:  (908) 582-3082       
+Bell Labs, Lucent Technologies              Fax:    (908) 582-3340
+Murray Hill, NJ 07974-0636
+
+
+
+From @h|ndek@u@tubh @end|ng |rom hotm@||@com  Fri Jun 23 20:31:43 2006
+From: @h|ndek@u@tubh @end|ng |rom hotm@||@com (kaustubh shinde)
+Date: Fri, 23 Jun 2006 14:31:43 -0400
+Subject: [R-sig-DB] RMySQL problem with dbWriteTable
+Message-ID: <BAY109-W2846ACEBFBB6E13C5EBD9D57A0@phx.gbl>
+
+Hi,
+I am working with R and MySQL using RMySQL package.
+I am trying to write to a table in the database using 
+ dbWriteTable(mycon1, "DoubleProperty", frame, append = T,row.names=F)
+and I am getting error 
+Error in mysqlWriteTable(conn, name, value, ...) :         unimplemented type 'character' in 'asLogical'
+I had this error before and then I just wrote a separate function that took a dataframe as parameter and wrote it to DB using the above code.
+The error did not make any sense to me then and it's not making any now. Using the same approach is not doing it for me now.
+The connections are properly opened and closed and the dataframe is also good. 
+ 
+Here is what I am trying to do
+ 
+ibmtse<-as.data.frame(ibmtse)put(ibmtse)
+ 
+put<-function(frame){mycon1 <- dbConnect(MySQL(), user='***', dbname=db, host="******", password='******')dbWriteTable(mycon1, "DoubleProperty", frame, append = T,row.names=F)print("Data written")dbDisconnect(mycon1)}Any ideas on this would be really appreciated as I have absolutely no clue.
+Thank you,
+Kaustubh
+_________________________________________________________________
+	[[alternative HTML version deleted]]
+
+
+
+From dj @end|ng |rom re@e@rch@be||-|@b@@com  Fri Jun 23 20:49:42 2006
+From: dj @end|ng |rom re@e@rch@be||-|@b@@com (David James)
+Date: Fri, 23 Jun 2006 14:49:42 -0400
+Subject: [R-sig-DB] RMySQL problem with dbWriteTable
+In-Reply-To: <BAY109-W2846ACEBFBB6E13C5EBD9D57A0@phx.gbl>
+References: <BAY109-W2846ACEBFBB6E13C5EBD9D57A0@phx.gbl>
+Message-ID: <20060623184942.GA20422@jessie.research.bell-labs.com>
+
+Hello,
+
+Could you tell us what versions of MySQL (both client and server),
+R and RMySQL you're using?  E.g.,
+
+> summary(con, TRUE)
+<MySQLConnection:(14386,2)>
+  User: dj
+  Host: gaia
+  Dbname: rsdbdi
+  Connection type: tukey via TCP/IP
+  MySQL server version:  4.1.15-standard
+  MySQL client version:  4.1.7
+  MySQL protocol version:  10
+  MySQL server thread id:  160
+  No resultSet available
+
+--
+David
+
+
+kaustubh shinde wrote:
+> Hi,
+> I am working with R and MySQL using RMySQL package.
+> I am trying to write to a table in the database using 
+>  dbWriteTable(mycon1, "DoubleProperty", frame, append = T,row.names=F)
+> and I am getting error 
+> Error in mysqlWriteTable(conn, name, value, ...) :         unimplemented type 'character' in 'asLogical'
+> I had this error before and then I just wrote a separate function that took a dataframe as parameter and wrote it to DB using the above code.
+> The error did not make any sense to me then and it's not making any now. Using the same approach is not doing it for me now.
+> The connections are properly opened and closed and the dataframe is also good. 
+>  
+> Here is what I am trying to do
+>  
+> ibmtse<-as.data.frame(ibmtse)put(ibmtse)
+>  
+> put<-function(frame){mycon1 <- dbConnect(MySQL(), user='***', dbname=db, host="******", password='******')dbWriteTable(mycon1, "DoubleProperty", frame, append = T,row.names=F)print("Data written")dbDisconnect(mycon1)}Any ideas on this would be really appreciated as I have absolutely no clue.
+> Thank you,
+> Kaustubh
+> _________________________________________________________________
+> Add photos, news, and blogs about the World Cup to your Live.com homepage!
+> http://www.live.com/getstarted
+> 	[[alternative HTML version deleted]]
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From m@cq @end|ng |rom ||n|@gov  Fri Jun 30 19:41:52 2006
+From: m@cq @end|ng |rom ||n|@gov (Don MacQueen)
+Date: Fri, 30 Jun 2006 10:41:52 -0700
+Subject: [R-sig-DB] The "hack" in oraQuickSQL
+Message-ID: <p06230902c0cb0256e3f2@[128.115.153.6]>
+
+Hi, David,
+
+I have discovered what looks like an unexpected side-effect of a 
+(recent?) change in oraQuickSQL().
+
+The symptom I encountered was that within one R session, using 
+ROracle and dbGetQuery(), one query succeeds, yet another does not. 
+Both of them succeed if executed outside of R using Oracle's sqlplus. 
+This is a new behavior; 2 or 3 months ago both succeeded. Since then, 
+I have upgraded R from the 2.2.* series to the 2.3.* series, when I 
+do that I also reinstall all of my favorite packages.
+
+Here is an example:
+
+>  slocs <- dbGetQuery(con,sel.locs)
+>  dim(slocs)
+[1] 22  8
+>  dat <- dbGetQuery(con,dat.sql)
+>  dat
+<Expired OraResult:(11025,2,12)>
+>
+>  summary(con)
+<OraConnection:(11025,2)>
+   User: macq
+   Dbname: taurusdb.llnl.gov
+
+
+I traced the problem to this expression in oraQuickSQL
+
+   hack <- grep("^[ \\t]*select ", tolower(dbGetInfo(rs)$statement))
+
+I have (for quite some time now) made it a practice to start many but 
+not all of my queries with
+     "select\n"
+Note the absence of a space character after "select", which the hack 
+looks for. This then causes the expression block
+
+     if (dbHasCompleted(rs) || length(hack) == 0) {
+         dbClearResult(rs)
+         return(invisible(rs))
+     }
+
+to be executed.
+
+Here is the beginning of my query that failed. I put all the "\n" in 
+there so that when I cat(dat.sql) it's formatted nicely.
+
+>  dat.sql
+[1] "select\n   l.locgrp,\n   l.lgrpseq,\n   l.locsubgrp,\n 
+l.lsubgrpseq,\n   c.anlgrp,\n   c.agrpseq,\n   c.saerdesc,\n 
+c.anlseq,\n   l.saerloc,\n   l.locseq,\n   to_
+
+
+By way of testing, I first found that if I don't use dbGetQuery(), 
+retrieval succeeds:
+>  res <- dbSendQuery(con,dat.sql)
+>  res
+<OraResult:(11025,2,13)>
+>  foo <- fetch(res,n=-1)
+>  dim(foo)
+[1] 94 50
+
+I also added the space character, i.e., changed my query to start 
+with "select \n", and then dbGetQuery() succeeds.
+
+-Don
+
+>  sessionInfo()
+Version 2.3.1 (2006-06-01)
+powerpc-apple-darwin8.6.0
+
+attached base packages:
+[1] "stats"   "utils"   "methods" "base"
+
+other attached packages:
+    gdata    rmacq  ROracle      DBI
+  "2.1.2"    "1.0"  "0.5-7" "0.1-10"
+
+-- 
+--------------------------------------
+Don MacQueen
+Environmental Protection Department
+Lawrence Livermore National Laboratory
+Livermore, CA, USA
+
+
+

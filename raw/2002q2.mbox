@@ -1,0 +1,365 @@
+From p@murre|| @end|ng |rom @uck|@nd@@c@nz  Mon May 13 04:13:06 2002
+From: p@murre|| @end|ng |rom @uck|@nd@@c@nz (Paul Murrell)
+Date: Mon, 13 May 2002 14:13:06 +1200
+Subject: [R-sig-DB] request for examples
+Message-ID: <3CDF2132.692D36D7@stat.auckland.ac.nz>
+
+Hi
+
+I hope you don't mind this "cold call", but this seems like a really
+good place to contact people with interest/experience/expertise in stats
+and databases ... 
+
+I am busy producing a course on statistical computing for stage II
+students (to be delivered in the second half of this year).
+
+I will be teaching them about some databases issues:  advantages of
+databases as a way to store information, how to design databases
+properly, how to retrieve information using SQL.
+
+What I am seriously lacking are some killer examples.  
+
+Would anyone be able to help me with any of the following ...
+
+(i)  killer examples where a database is clearly a superior method of
+storing information than, say, plain text files or spreadsheets or
+statistical-package-specific formats
+
+(ii)  an actual real-life statistical database that could be copied to a
+local server for the students to practise accessing
+
+(iii)  killer examples where an important data source is stored in a
+database therefore requiring something like SQL knowledge to get access
+to the information.
+
+I would also obviously be interested in any general comments regarding
+which database issues people think are the most crucial for statistics
+students to learn.
+
+Again, apologies if this approach is an imposition.  
+Any help would be greatly appreciated.
+
+Paul
+
+Dr Paul Murrell
+Department of Statistics
+The University of Auckland
+Auckland
+New Zealand
+
+
+From znmeb @end|ng |rom @r@cnet@com  Mon May 13 04:39:33 2002
+From: znmeb @end|ng |rom @r@cnet@com (M. Edward Borasky)
+Date: Sun, 12 May 2002 19:39:33 -0700
+Subject: [R-sig-DB] request for examples
+In-Reply-To: <3CDF2132.692D36D7@stat.auckland.ac.nz>
+Message-ID: <HBEHIIBBKKNOBLMPKCBBIEHPEMAA.znmeb@aracnet.com>
+
+Well ... I don't know if the company I work for will let me send out any
+real data, but I can tell you what I do with databases and R. I collect
+large quantities of Linux and Windows performance data. For example, I will
+have perhaps 50 - 250 columns of high-frequency samples taken, say, every 15
+seconds over a 12-hour period. A typical benchmarking project will take two
+weeks (Saturdays and Sundays included!), giving about a dozen test cases to
+be processed. Excel can deal with the columns all right, but after 65536
+rows it rolls over and plays dead. And even if I just left the files in CSV
+format, R's "read.csv" function runs out of memory on my 128 MB workstation
+fairly quickly - somewhere in the vicinity of a 15 or 20 MB CSV file.
+
+So, I load all the raw data into tables in a Microsoft Access database. I
+then write queries to format the data, add case tags (factors) to the rows,
+do some date/time calculations, etc. Then I assign a Data Set Name to the
+".mdb" file and read from those queries using RODBC. I'm told all this magic
+can be made to work on Linux with PostGres, but we're mostly a Windows shop
+so I have Access and SQL Server available. Given the quantity of data I
+have, Access and SQL help me organize things as well, plus I can do much of
+the inevitable data cleaning much more easily with Access queries than I can
+in R. As far as I'm concerned it's a match made in heaven.
+
+-----Original Message-----
+From: r-sig-db-admin at stat.math.ethz.ch
+[mailto:r-sig-db-admin at stat.math.ethz.ch]On Behalf Of Paul Murrell
+Sent: Sunday, May 12, 2002 7:13 PM
+To: r-sig-db at stat.math.ethz.ch
+Subject: [R-sig-DB] request for examples
+
+Hi
+
+I hope you don't mind this "cold call", but this seems like a really
+good place to contact people with interest/experience/expertise in stats
+and databases ...
+
+I am busy producing a course on statistical computing for stage II
+students (to be delivered in the second half of this year).
+
+I will be teaching them about some databases issues:  advantages of
+databases as a way to store information, how to design databases
+properly, how to retrieve information using SQL.
+
+What I am seriously lacking are some killer examples.
+
+Would anyone be able to help me with any of the following ...
+
+(i)  killer examples where a database is clearly a superior method of
+storing information than, say, plain text files or spreadsheets or
+statistical-package-specific formats
+
+(ii)  an actual real-life statistical database that could be copied to a
+local server for the students to practise accessing
+
+(iii)  killer examples where an important data source is stored in a
+database therefore requiring something like SQL knowledge to get access
+to the information.
+
+I would also obviously be interested in any general comments regarding
+which database issues people think are the most crucial for statistics
+students to learn.
+
+Again, apologies if this approach is an imposition.
+Any help would be greatly appreciated.
+
+Paul
+
+Dr Paul Murrell
+Department of Statistics
+The University of Auckland
+Auckland
+New Zealand
+_______________________________________________
+R-sig-DB mailing list -- R Special Interest Group
+R-sig-DB at stat.math.ethz.ch
+http://www.stat.math.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From j@@ont @end|ng |rom |nd|go|ndu@tr|@|@co@nz  Mon May 13 09:55:05 2002
+From: j@@ont @end|ng |rom |nd|go|ndu@tr|@|@co@nz (Jason Turner)
+Date: Mon, 13 May 2002 07:55:05 +0000
+Subject: [R-sig-DB] request for examples
+In-Reply-To: <3CDF2132.692D36D7@stat.auckland.ac.nz>; from p.murrell@auckland.ac.nz on Mon, May 13, 2002 at 02:13:06PM +1200
+References: <3CDF2132.692D36D7@stat.auckland.ac.nz>
+Message-ID: <20020513075505.A23951@camille.indigoindustrial.co.nz>
+
+On Mon, May 13, 2002 at 02:13:06PM +1200, Paul Murrell wrote:
+> I am busy producing a course on statistical computing for stage II
+> students (to be delivered in the second half of this year).
+...
+> (iii)  killer examples where an important data source is stored in a
+> database therefore requiring something like SQL knowledge to get access
+> to the information.
+
+As an advanced something-to-think-about...
+The product "Pi" by OSI software is a Real-Time data storage, retrival,
+graphing and caluculation package.  While it has an SQL front-end,
+the data storage is done in a very non-relational way.  Files are stored in
+a binary format, optimised for quick reading of vast ammounts of data.
+Calling up a year's worth of data sampled every 10 sec happens in a few
+seconds.
+
+The interesting thing here is:
+
+1) SQL front-ends mean a *language* advantage - the advantage is
+compatibilty with other apps.
+
+2) the  file format means tight storage and fast bulk retrieval.
+Good Things (tm).
+
+The massive ammounts of data here are what makes a database front-end
+so useful.  There's just no way to store that ammount of information
+any other way, and hope to retrieve it.
+
+Cheers
+
+Jason
+-- 
+Indigo Industrial Controls Ltd.
+64-21-343-545
+jasont at indigoindustrial.co.nz
+
+
+From ripiey m@iii@g oii st@ts@ox@@c@uk  Mon May 13 10:18:57 2002
+From: ripiey m@iii@g oii st@ts@ox@@c@uk (ripiey m@iii@g oii st@ts@ox@@c@uk)
+Date: Mon, 13 May 2002 09:18:57 +0100 (BST)
+Subject: [R-sig-DB] request for examples
+In-Reply-To: <3CDF2132.692D36D7@stat.auckland.ac.nz>
+Message-ID: <Pine.LNX.4.31.0205130902510.10003-100000@gannet.stats>
+
+On Mon, 13 May 2002, Paul Murrell wrote:
+
+> Hi
+>
+> I hope you don't mind this "cold call", but this seems like a really
+> good place to contact people with interest/experience/expertise in stats
+> and databases ...
+>
+> I am busy producing a course on statistical computing for stage II
+> students (to be delivered in the second half of this year).
+>
+> I will be teaching them about some databases issues:  advantages of
+> databases as a way to store information, how to design databases
+> properly, how to retrieve information using SQL.
+>
+> What I am seriously lacking are some killer examples.
+>
+> Would anyone be able to help me with any of the following ...
+>
+> (i)  killer examples where a database is clearly a superior method of
+> storing information than, say, plain text files or spreadsheets or
+> statistical-package-specific formats
+
+That's true of almost all data mining applications.  Think about
+a supermarket chain collecting information on all transactions at tills.
+
+Reasons include scale (as above), integrity of data coming from multiple
+sources (also as above) and security (most organizations' financial data
+is in databases).   Related to scale is efficiency: lots of preprocessing
+(indices etc) makes online queries possible.
+
+Another good example is an online transaction system such as airlines'
+booking systems and those behind banks' ATM networks.  Or, since, I have
+just been browsing one, large discussion forums,  web search engines ....
+
+>From memory, Hand, Mannila, Smyth (2001) Principles of Data Mining
+MIT Press, is a good source for statistics/databases interaction.
+
+> (ii)  an actual real-life statistical database that could be copied to a
+> local server for the students to practise accessing
+
+On what DBMS?
+
+> (iii)  killer examples where an important data source is stored in a
+> database therefore requiring something like SQL knowledge to get access
+> to the information.
+
+(Many) pharamaceuticals have their gene chip data stored in databases.
+We had to set up Oracle lite and get help (thanks Fei) to get some
+results out last year.   Insurance companies have all their claims data on
+databases, and MSc summer projects have been 25% taken up extracting the
+data.
+
+Yet another one was work on university admissions data: both locally and
+nationally that was on a database, and about 70,000 records were extracted
+to a spreadsheet.  (And that was just one year's data.)
+
+Brian
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272860 (secr)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From @296180 @end|ng |rom m|c@@|mr@com  Wed May 15 14:06:17 2002
+From: @296180 @end|ng |rom m|c@@|mr@com (David Kane  <David Kane)
+Date: Wed, 15 May 2002 08:06:17 -0400
+Subject: [R-sig-DB] request for examples
+In-Reply-To: <3CDF2132.692D36D7@stat.auckland.ac.nz>
+References: <3CDF2132.692D36D7@stat.auckland.ac.nz>
+Message-ID: <15586.20281.161198.655613@gargle.gargle.HOWL>
+
+Paul Murrell writes:
+ > I would also obviously be interested in any general comments regarding
+ > which database issues people think are the most crucial for statistics
+ > students to learn.
+
+I am not sure if this counts as a "killer application", but statistics students
+should be aware that knowledge of SQL is very useful in the business world,
+especially in finance. I am much more likely to interview/hire someone with SQL
+experience. It is not so important that they know the database that I
+(currently) use. The key is that they know what a RDMS is, how different tables
+are related (or not) to one another, how to get data into and out of a database
+and so on.
+
+Regards,
+
+Dave Kane
+
+
+From b@te@ @end|ng |rom @t@t@w|@c@edu  Thu May 16 16:03:42 2002
+From: b@te@ @end|ng |rom @t@t@w|@c@edu (Douglas Bates)
+Date: 16 May 2002 09:03:42 -0500
+Subject: [R-sig-DB] Re: database example
+In-Reply-To: <3CE2FF59.387CD568@stat.auckland.ac.nz>
+References: <3CE1C827.C6159F50@stat.auckland.ac.nz>
+	<6r8z6lflvo.fsf@franz.stat.wisc.edu>
+	<3CE2FF59.387CD568@stat.auckland.ac.nz>
+Message-ID: <6relgctcjl.fsf@franz.stat.wisc.edu>
+
+Paul Murrell <p.murrell at auckland.ac.nz> writes:
+
+> > > I am preparing a new computing course for stage II stats students and I
+> > > will be doing some stuff on databases.
+> > >
+> > > I am on the lookout for example databases that I would be able to
+> > > provide for the students to practice querying.  I have a machine set up
+> > > for the job with MySQL installed, but I'm a bit light on actual
+> > > databases(!)
+
+> > I showed examples of the use of relational databases in a short
+> > course that I taught in Sweden and in a course here.  They are
+> > particularly useful in multilevel modeling because R wants the
+> > data as a single data frame but it is most useful to have the data
+> > stored in multiple tables according to the level of grouping.
+> > 
+> > We already have an example of that in the nlme package with the
+> > Mathematics Achievement used by Raudenbush and Bryk (2002).  The data
+> > are called MathAchieve and MathAchSchool.  Some slides describing the
+> > use of MySQL or PostgreSQL for these data are under the "Multilevel
+> > Models" link at http://www.stat.wisc.edu/~st850-1
+> 
+> That is fantastic.  Thank you!  May I use the examples freely in my
+> teaching?
+> 
+
+Certainly.
+
+> > It turns out that the data set as provided by Bryk and Raudenbush did
+> > not have the mean socioeconomic score calculated correctly.  John Fox,
+> > in his online appendix on Linear Mixed Models to his forthcoming book
+> > "An R and S-PLUS Companion to Applied Regression" shows how you could
+> > do that calculation in R.  In SQL the calculation would be
+> > 
+> > SELECT avg(ses) FROM student GROUP BY school ORDER BY school;
+> > 
+> > To put that into a new table I think it would be most effective to
+> > create the table from both the student and school tables.  (SQL is not
+> > very good at incorporating new values, calculated within SQL, into
+> > existing tables.)
+> > 
+> > If you check John's appendix you will see that social scientists
+> > typically use within-group centered values of covariates like ses,
+> > which can be achieved with a SELECT statement joining the tables.
+> > When I do this example in PostgreSQL I create a view then use
+> > db.copy.table to copy the view.  With MySQL you would need to use an
+> > explicit select statement.
+> > 
+> > CREATE VIEW df AS
+> >    SELECT c.School, c.MEANSES, c.Sector, t.SES - c.MEANSES as cses, t.MathAch
+> >       FROM school as c, student as t
+> >       WHERE c.School = t.School
+> > 
+> > Another interesting multilevel data set, used by Rodriguez and
+> > Goldman, is available at http://data.princeton.edu/multilevel/
+> > That page has links both to the real data and to simulated data sets.  All
+> > have a three-level structure of child within family within community.
+> 
+> This also looks very useful.  Thanks again!
+> 
+> > Finally I was involved in a large project on the analysis of data from
+> > the Texas Assessment of Academic Skills (TAAS) which consisted of 10.5
+> > million test scores on 3.5 million students in thousands of schools
+> > (campuses) within hundreds of school districts.
+> > 
+> > The enclosed file, installation.txt, describes the installation of the
+> > database and some cleaning up of the records.  Cleaning the database
+> > was a major part of the analysis.
+> 
+> Again superb!  Thank you so much Doug!  With this, and other responses
+> from the mailing list, I have a plenty of examples for my course to
+> justify the use of databases (by statisticians) and to demonstrate their
+> use (by statisticians).  This is such a huge help for me.
+
+

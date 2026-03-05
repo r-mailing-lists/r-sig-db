@@ -1,0 +1,2783 @@
+From @|@|con @end|ng |rom |hcrc@org  Wed Jan  3 17:43:21 2007
+From: @|@|con @end|ng |rom |hcrc@org (Seth Falcon)
+Date: Wed, 03 Jan 2007 08:43:21 -0800
+Subject: [R-sig-DB] [R] SQLite: When reading a table,
+	a "\r" is padded onto the last column. Why?
+In-Reply-To: <Pine.LNX.4.64.0701030719120.25219@gannet.stats.ox.ac.uk> (Brian
+	Ripley's message of "Wed, 3 Jan 2007 07:43:05 +0000 (GMT)")
+References: <C83C5E3DEEE97E498B74729A33F6EAEC038785AA@DJFPOST01.djf.agrsci.dk>
+	<C83C5E3DEEE97E498B74729A33F6EAEC038785AB@DJFPOST01.djf.agrsci.dk>
+	<Pine.LNX.4.64.0701030719120.25219@gannet.stats.ox.ac.uk>
+Message-ID: <m2zm90jc2e.fsf@fhcrc.org>
+
+Prof Brian Ripley <ripley at stats.ox.ac.uk> writes:
+> [I am not sure who is actually maintaining RSQLite, so am Cc: both the
+> stated maintainer and the person who prepared the package for
+> distribution. The posting guide asked you to contact the maintainer:
+> what response did _you_ get?]
+
+For the record, I will be (have been) taking on the maintainer role
+for RSQLite.  The Maintainer field will be updated in the next
+version.
+
+As to the '\r' problem, a release candidate RSQLite 0.4-17 is
+available here:
+
+    http://bioconductor.org/packages/misc/
+
+This version uses prepared queries to implement dbWriteTable.  This
+should resolve the '\r' issue on Windows and should also be
+considerably more efficient.  Soren, can you give this one a try and
+let me know if it works for you?
+
+Recent work on RSQLite has focused on integrating SQLite3's type
+system into the interface.  We now rely on the column type in the DB
+when retrieving results.  Previously, type.convert was used.  I'm
+fairly certain these changes will result in changes in behavior -- in
+most cases, I think the changes are for the better.
+
++ seth
+
+
+
+From ronggu|@hu@ng @end|ng |rom gm@||@com  Thu Jan  4 02:22:23 2007
+From: ronggu|@hu@ng @end|ng |rom gm@||@com (ronggui)
+Date: Thu, 4 Jan 2007 09:22:23 +0800
+Subject: [R-sig-DB] [R] SQLite: When reading a table,
+	a "\r" is padded onto the last column. Why?
+In-Reply-To: <m2zm90jc2e.fsf@fhcrc.org>
+References: <C83C5E3DEEE97E498B74729A33F6EAEC038785AA@DJFPOST01.djf.agrsci.dk>
+	<C83C5E3DEEE97E498B74729A33F6EAEC038785AB@DJFPOST01.djf.agrsci.dk>
+	<Pine.LNX.4.64.0701030719120.25219@gannet.stats.ox.ac.uk>
+	<m2zm90jc2e.fsf@fhcrc.org>
+Message-ID: <38b9f0350701031722h2099128fld57807a1e33965b7@mail.gmail.com>
+
+On 1/4/07, Seth Falcon <sfalcon at fhcrc.org> wrote:
+> Prof Brian Ripley <ripley at stats.ox.ac.uk> writes:
+> > [I am not sure who is actually maintaining RSQLite, so am Cc: both the
+> > stated maintainer and the person who prepared the package for
+> > distribution. The posting guide asked you to contact the maintainer:
+> > what response did _you_ get?]
+>
+> For the record, I will be (have been) taking on the maintainer role
+> for RSQLite.  The Maintainer field will be updated in the next
+> version.
+>
+> As to the '\r' problem, a release candidate RSQLite 0.4-17 is
+> available here:
+>
+>     http://bioconductor.org/packages/misc/
+>
+> This version uses prepared queries to implement dbWriteTable.  This
+> should resolve the '\r' issue on Windows and should also be
+> considerably more efficient.  Soren, can you give this one a try and
+> let me know if it works for you?
+
+When write a data frame to db table, the problem of "\r" is fixed. But
+for importing data frome file, the problem is still there. When if the
+final line lacks the eol sign "\n", "\001x\001(" comes up.
+
+> dbWriteTable(con,"test","c:/test.txt",sep="\t",head=T,over=T,eol="\n")
+[1] TRUE
+Warning message:
+incomplete final line found by readTableHeader on 'c://test.txt'
+> dbReadTable(con,"test")
+  a           b
+1 1         2\r
+2 3          \r
+3 1         3\r
+4 0 5\001x\001(
+> dbWriteTable(con,"test","c:/test.txt",sep="\t",head=T,over=T,eol="\n")
+[1] TRUE
+> dbReadTable(con,"test")
+  a   b
+1 1 2\r
+2 3  \r
+3 1 3\r
+4 0 5\r
+>   data(USArrests)
+>         dbWriteTable(con, "USArrests", USArrests, overwrite = T)
+[1] TRUE
+> dbReadTable(con, "USArrests")
+               Murder Assault UrbanPop Rape
+Alabama          13.2     236       58 21.2
+Alaska           10.0     263       48 44.5
+Arizona           8.1     294       80 31.0
+Arkansas          8.8     190       50 19.5
+California        9.0     276       91 40.6
+Colorado          7.9     204       78 38.7
+
+
+> sessionInfo()
+R version 2.4.0 Patched (2006-11-21 r39949)
+i386-pc-mingw32
+
+locale:
+LC_COLLATE=Chinese_People's Republic of
+China.936;LC_CTYPE=Chinese_People's Republic of
+China.936;LC_MONETARY=Chinese_People's Republic of
+China.936;LC_NUMERIC=C;LC_TIME=Chinese_People's Republic of China.936
+
+attached base packages:
+[1] "stats"     "graphics"  "grDevices" "utils"     "datasets"  "methods"
+[7] "base"
+
+other attached packages:
+ RSQLite      DBI
+"0.4-17" "0.1-11"
+
+> Recent work on RSQLite has focused on integrating SQLite3's type
+> system into the interface.  We now rely on the column type in the DB
+> when retrieving results.  Previously, type.convert was used.  I'm
+> fairly certain these changes will result in changes in behavior -- in
+> most cases, I think the changes are for the better.
+>
+> + seth
+>
+> ______________________________________________
+> R-help at stat.math.ethz.ch mailing list
+> https://stat.ethz.ch/mailman/listinfo/r-help
+> PLEASE do read the posting guide http://www.R-project.org/posting-guide.html
+> and provide commented, minimal, self-contained, reproducible code.
+>
+
+
+-- 
+Ronggui Huang
+Department of Sociology
+Fudan University, Shanghai, China
+???
+????????
+
+
+
+From @|@|con @end|ng |rom |hcrc@org  Thu Jan  4 16:56:24 2007
+From: @|@|con @end|ng |rom |hcrc@org (Seth Falcon)
+Date: Thu, 04 Jan 2007 07:56:24 -0800
+Subject: [R-sig-DB] [R] SQLite: When reading a table,
+	a "\r" is padded onto the last column. Why?
+In-Reply-To: <38b9f0350701031722h2099128fld57807a1e33965b7@mail.gmail.com>
+	(ronggui's message of "Thu, 4 Jan 2007 09:22:23 +0800")
+References: <C83C5E3DEEE97E498B74729A33F6EAEC038785AA@DJFPOST01.djf.agrsci.dk>
+	<C83C5E3DEEE97E498B74729A33F6EAEC038785AB@DJFPOST01.djf.agrsci.dk>
+	<Pine.LNX.4.64.0701030719120.25219@gannet.stats.ox.ac.uk>
+	<m2zm90jc2e.fsf@fhcrc.org>
+	<38b9f0350701031722h2099128fld57807a1e33965b7@mail.gmail.com>
+Message-ID: <m2irfm945z.fsf@fhcrc.org>
+
+ronggui <ronggui.huang at gmail.com> writes:
+
+> When write a data frame to db table, the problem of "\r" is fixed. But
+> for importing data frome file, the problem is still there. When if the
+> final line lacks the eol sign "\n", "\001x\001(" comes up.
+
+Thanks for the report.  I will look into it.
+
++ seth
+
+
+
+From @|@|con @end|ng |rom |hcrc@org  Thu Jan  4 19:57:07 2007
+From: @|@|con @end|ng |rom |hcrc@org (Seth Falcon)
+Date: Thu, 04 Jan 2007 10:57:07 -0800
+Subject: [R-sig-DB] [R] SQLite: When reading a table,
+	a "\r" is padded onto the last column. Why?
+In-Reply-To: <38b9f0350701031722h2099128fld57807a1e33965b7@mail.gmail.com>
+	(ronggui's message of "Thu, 4 Jan 2007 09:22:23 +0800")
+References: <C83C5E3DEEE97E498B74729A33F6EAEC038785AA@DJFPOST01.djf.agrsci.dk>
+	<C83C5E3DEEE97E498B74729A33F6EAEC038785AB@DJFPOST01.djf.agrsci.dk>
+	<Pine.LNX.4.64.0701030719120.25219@gannet.stats.ox.ac.uk>
+	<m2zm90jc2e.fsf@fhcrc.org>
+	<38b9f0350701031722h2099128fld57807a1e33965b7@mail.gmail.com>
+Message-ID: <m2bqle62nw.fsf@fhcrc.org>
+
+ronggui <ronggui.huang at gmail.com> writes:
+> When write a data frame to db table, the problem of "\r" is fixed. But
+> for importing data frome file, the problem is still there. When if the
+> final line lacks the eol sign "\n", "\001x\001(" comes up.
+>
+>> dbWriteTable(con,"test","c:/test.txt",sep="\t",head=T,over=T,eol="\n")
+
+You've specified eol="\n", but I'm pretty sure that is not the eol in
+your file.  I suspect that if you try eol="\r\n", things will look as
+you expect.
+
+The bug that you found when there is no trailing eol is something I
+will see about fixing.  But for now, the workaround is rather
+clear. :-)
+
++ seth
+
+
+
+From @|@|con @end|ng |rom |hcrc@org  Thu Jan  4 22:09:40 2007
+From: @|@|con @end|ng |rom |hcrc@org (Seth Falcon)
+Date: Thu, 04 Jan 2007 13:09:40 -0800
+Subject: [R-sig-DB] [R] SQLite: When reading a table,
+	a "\r" is padded onto the last column. Why?
+In-Reply-To: <38b9f0350701031722h2099128fld57807a1e33965b7@mail.gmail.com>
+	(ronggui's message of "Thu, 4 Jan 2007 09:22:23 +0800")
+References: <C83C5E3DEEE97E498B74729A33F6EAEC038785AA@DJFPOST01.djf.agrsci.dk>
+	<C83C5E3DEEE97E498B74729A33F6EAEC038785AB@DJFPOST01.djf.agrsci.dk>
+	<Pine.LNX.4.64.0701030719120.25219@gannet.stats.ox.ac.uk>
+	<m2zm90jc2e.fsf@fhcrc.org>
+	<38b9f0350701031722h2099128fld57807a1e33965b7@mail.gmail.com>
+Message-ID: <m2wt4233e3.fsf@fhcrc.org>
+
+ronggui <ronggui.huang at gmail.com> writes:
+> When write a data frame to db table, the problem of "\r" is fixed. But
+> for importing data frome file, the problem is still there. When if the
+> final line lacks the eol sign "\n", "\001x\001(" comes up.
+
+I've pushed version 0.4-18 to CRAN (should appear in a day or so).
+Importing from text files with and without trailing eol marker should
+be working.
+
+You still have to tell it what eol is.
+
+If you would like to give this new version a try right away, you can
+grab it here:
+
+    http://bioconductor.org/packages/misc/
+
++ seth
+
+
+
+From @|@|con @end|ng |rom |hcrc@org  Thu Jan  4 22:20:23 2007
+From: @|@|con @end|ng |rom |hcrc@org (Seth Falcon)
+Date: Thu, 04 Jan 2007 13:20:23 -0800
+Subject: [R-sig-DB] RSQLite 0.4-18 sent to CRAN
+Message-ID: <m2odpe32w8.fsf@fhcrc.org>
+
+A new version of RSQLite has been pushed to CRAN.
+
+In this version...
+
+* Further integration of the manifest type system available since
+  SQLite 3.  We now obtain the column type from the DB instead of
+  pulling everything across as a character vector and calling
+  type.convert.  This should improve performance and provide a more
+  reliable interface to build on top of.  Note, however, that since
+  type.convert is no longer called, return values will be different.
+  In particular, text columns will come across as text, not factor.
+
+* dbWriteTable has been refactored and no longer uses temp files.
+  This resolves performance issues and line ending quandries on
+  Windows.
+
+* Fix for a bug in dbWriteTable when used to import text files; files
+  lacking a trailing end of line marker can now be used.
+
+Questions?  Send them to the r-sig-db mailing list.
+
+Best Wishes,
+
++ seth
+
+-- 
+Seth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center
+http://bioconductor.org
+
+
+
+From ronggu|@hu@ng @end|ng |rom gm@||@com  Fri Jan  5 03:02:29 2007
+From: ronggu|@hu@ng @end|ng |rom gm@||@com (ronggui)
+Date: Fri, 5 Jan 2007 10:02:29 +0800
+Subject: [R-sig-DB] [R] SQLite: When reading a table,
+	a "\r" is padded onto the last column. Why?
+In-Reply-To: <m2wt4233e3.fsf@fhcrc.org>
+References: <C83C5E3DEEE97E498B74729A33F6EAEC038785AA@DJFPOST01.djf.agrsci.dk>
+	<C83C5E3DEEE97E498B74729A33F6EAEC038785AB@DJFPOST01.djf.agrsci.dk>
+	<Pine.LNX.4.64.0701030719120.25219@gannet.stats.ox.ac.uk>
+	<m2zm90jc2e.fsf@fhcrc.org>
+	<38b9f0350701031722h2099128fld57807a1e33965b7@mail.gmail.com>
+	<m2wt4233e3.fsf@fhcrc.org>
+Message-ID: <38b9f0350701041802g75ca7824i81f046927190164@mail.gmail.com>
+
+I think there is still one more thins need to do. RSQLite does not
+take care of the "NA" (my case: na.strings is  Blank fields in the
+test.txt file ) when import from a file to db table.
+
+> library(RSQLite)
+Loading required package: DBI
+Warning message:
+package 'RSQLite' was built under R version 2.4.1
+> con <- dbConnect("SQLite", dbname = "c:/test.db3")
+> dbWriteTable(con, "test2","c:/test.txt",sep="\t",eol="\r\n",over=T,head=T)
+[1] TRUE
+> rs <- dbSendQuery(con, "select * from test2")
+> fetch(rs)
+  a b
+1 1 2
+2 3 0
+3 1 3
+4 0 5
+5 1 2
+6 2 0
+7 1 2
+> read.table("c:/test.txt",sep="\t",head=T)
+   a  b
+1  1  2
+2  3 NA
+3  1  3
+4 NA  5
+5  1  2
+6  2 NA
+7  1  2
+> dat=read.table("c:/test.txt",sep="\t",head=T)
+> dat
+   a  b
+1  1  2
+2  3 NA
+3  1  3
+4 NA  5
+5  1  2
+6  2 NA
+7  1  2
+
+
+2007/1/5, Seth Falcon <sfalcon at fhcrc.org>:
+> ronggui <ronggui.huang at gmail.com> writes:
+> > When write a data frame to db table, the problem of "\r" is fixed. But
+> > for importing data frome file, the problem is still there. When if the
+> > final line lacks the eol sign "\n", "\001x\001(" comes up.
+>
+> I've pushed version 0.4-18 to CRAN (should appear in a day or so).
+> Importing from text files with and without trailing eol marker should
+> be working.
+>
+> You still have to tell it what eol is.
+>
+> If you would like to give this new version a try right away, you can
+> grab it here:
+>
+>     http://bioconductor.org/packages/misc/
+>
+> + seth
+>
+
+
+-- 
+Ronggui Huang
+Department of Sociology
+Fudan University, Shanghai, China
+???
+????????
+
+
+
+From edd @end|ng |rom deb|@n@org  Fri Jan  5 03:36:01 2007
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Thu, 4 Jan 2007 20:36:01 -0600
+Subject: [R-sig-DB] [R] SQLite: When reading a table,
+	a "\r" is padded onto the last column. Why?
+In-Reply-To: <38b9f0350701041802g75ca7824i81f046927190164@mail.gmail.com>
+References: <C83C5E3DEEE97E498B74729A33F6EAEC038785AA@DJFPOST01.djf.agrsci.dk>
+	<C83C5E3DEEE97E498B74729A33F6EAEC038785AB@DJFPOST01.djf.agrsci.dk>
+	<Pine.LNX.4.64.0701030719120.25219@gannet.stats.ox.ac.uk>
+	<m2zm90jc2e.fsf@fhcrc.org>
+	<38b9f0350701031722h2099128fld57807a1e33965b7@mail.gmail.com>
+	<m2wt4233e3.fsf@fhcrc.org>
+	<38b9f0350701041802g75ca7824i81f046927190164@mail.gmail.com>
+Message-ID: <17821.47505.846011.878093@basebud.nulle.part>
+
+
+On 5 January 2007 at 10:02, ronggui wrote:
+| I think there is still one more thins need to do. RSQLite does not
+| take care of the "NA" (my case: na.strings is  Blank fields in the
+| test.txt file ) when import from a file to db table.
+| 
+| > library(RSQLite)
+| Loading required package: DBI
+| Warning message:
+| package 'RSQLite' was built under R version 2.4.1
+| > con <- dbConnect("SQLite", dbname = "c:/test.db3")
+| > dbWriteTable(con, "test2","c:/test.txt",sep="\t",eol="\r\n",over=T,head=T)
+| [1] TRUE
+| > rs <- dbSendQuery(con, "select * from test2")
+| > fetch(rs)
+|   a b
+| 1 1 2
+| 2 3 0
+| 3 1 3
+| 4 0 5
+| 5 1 2
+| 6 2 0
+| 7 1 2
+| > read.table("c:/test.txt",sep="\t",head=T)
+|    a  b
+| 1  1  2
+| 2  3 NA
+| 3  1  3
+| 4 NA  5
+| 5  1  2
+| 6  2 NA
+| 7  1  2
+| > dat=read.table("c:/test.txt",sep="\t",head=T)
+| > dat
+|    a  b
+| 1  1  2
+| 2  3 NA
+| 3  1  3
+| 4 NA  5
+| 5  1  2
+| 6  2 NA
+| 7  1  2
+
+I can't reproduce that. Works for me even with earlier RSQLite versions:
+
+> library(RSQLite)
+Loading required package: DBI
+> con <- dbConnect("SQLite", dbname = "/tmp/test.sqlite")
+> test2<-data.frame(a=runif(10)*10, b=runif(10)*10)
+> test2[c(2,4,7),2] <- NA
+> test2
+           a        b
+1  2.4896019 2.028301
+2  8.6978219       NA
+3  0.4284225 8.272148
+4  7.3035881       NA
+5  4.8419792 9.690563
+6  1.2404994 8.112080
+7  7.6554241       NA
+8  6.6188917 1.084093
+9  5.9969942 4.659705
+10 0.2409261 6.286225
+> dbWriteTable(con, "test2", test2)
+[1] TRUE
+> rs <- dbSendQuery(con, "select * from test2")
+> fetch(rs)
+   row_names         a        b
+1          1 2.4896019 2.028301
+2          2 8.6978219       NA
+3          3 0.4284225 8.272148
+4          4 7.3035881       NA
+5          5 4.8419792 9.690563
+6          6 1.2404994 8.112080
+7          7 7.6554241       NA
+8          8 6.6188917 1.084093
+9          9 5.9969942 4.659705
+10        10 0.2409261 6.286225
+> 
+
+Dirk
+
+-- 
+Hell, there are no rules here - we're trying to accomplish something. 
+                                                  -- Thomas A. Edison
+
+
+
+From ronggu|@hu@ng @end|ng |rom gm@||@com  Fri Jan  5 03:55:36 2007
+From: ronggu|@hu@ng @end|ng |rom gm@||@com (ronggui)
+Date: Fri, 5 Jan 2007 10:55:36 +0800
+Subject: [R-sig-DB] [R] SQLite: When reading a table,
+	a "\r" is padded onto the last column. Why?
+In-Reply-To: <17821.47505.846011.878093@basebud.nulle.part>
+References: <C83C5E3DEEE97E498B74729A33F6EAEC038785AA@DJFPOST01.djf.agrsci.dk>
+	<C83C5E3DEEE97E498B74729A33F6EAEC038785AB@DJFPOST01.djf.agrsci.dk>
+	<Pine.LNX.4.64.0701030719120.25219@gannet.stats.ox.ac.uk>
+	<m2zm90jc2e.fsf@fhcrc.org>
+	<38b9f0350701031722h2099128fld57807a1e33965b7@mail.gmail.com>
+	<m2wt4233e3.fsf@fhcrc.org>
+	<38b9f0350701041802g75ca7824i81f046927190164@mail.gmail.com>
+	<17821.47505.846011.878093@basebud.nulle.part>
+Message-ID: <38b9f0350701041855h484adfdfj6dbfbd87820a2077@mail.gmail.com>
+
+dbWriteTable from a data fram with NA works fine.
+But importing data frame txt file has problem.
+## txt file begins
+a	b
+1	2
+3	
+1	3
+ 	5
+1	2
+2	
+1	2
+## txt file ends
+
+> library(RSQLite)
+> con <- dbConnect("SQLite", dbname = "c:/test.db3")
+> dbWriteTable(con, "test","c:/test.txt",sep="\t",eol="\r\n",over=T,head=T)
+[1] TRUE
+> dbGetQuery(con,"select * from test")
+  a b
+1 1 2
+2 3 0
+3 1 3
+4 0 5
+5 1 2
+6 2 0
+7 1 2
+> dat <- read.table("c:/test.txt",sep="\t",head=T)
+> dbWriteTable(con, "test2",dat,over=T)
+[1] TRUE
+> dbGetQuery(con,"select * from test2")
+  row_names  a  b
+1         1  1  2
+2         2  3 NA
+3         3  1  3
+4         4 NA  5
+5         5  1  2
+6         6  2 NA
+7         7  1  2
+>
+
+
+2007/1/5, Dirk Eddelbuettel <edd at debian.org>:
+>
+> On 5 January 2007 at 10:02, ronggui wrote:
+> | I think there is still one more thins need to do. RSQLite does not
+> | take care of the "NA" (my case: na.strings is  Blank fields in the
+> | test.txt file ) when import from a file to db table.
+> |
+> | > library(RSQLite)
+> | Loading required package: DBI
+> | Warning message:
+> | package 'RSQLite' was built under R version 2.4.1
+> | > con <- dbConnect("SQLite", dbname = "c:/test.db3")
+> | > dbWriteTable(con, "test2","c:/test.txt",sep="\t",eol="\r\n",over=T,head=T)
+> | [1] TRUE
+> | > rs <- dbSendQuery(con, "select * from test2")
+> | > fetch(rs)
+> |   a b
+> | 1 1 2
+> | 2 3 0
+> | 3 1 3
+> | 4 0 5
+> | 5 1 2
+> | 6 2 0
+> | 7 1 2
+> | > read.table("c:/test.txt",sep="\t",head=T)
+> |    a  b
+> | 1  1  2
+> | 2  3 NA
+> | 3  1  3
+> | 4 NA  5
+> | 5  1  2
+> | 6  2 NA
+> | 7  1  2
+> | > dat=read.table("c:/test.txt",sep="\t",head=T)
+> | > dat
+> |    a  b
+> | 1  1  2
+> | 2  3 NA
+> | 3  1  3
+> | 4 NA  5
+> | 5  1  2
+> | 6  2 NA
+> | 7  1  2
+>
+> I can't reproduce that. Works for me even with earlier RSQLite versions:
+>
+> > library(RSQLite)
+> Loading required package: DBI
+> > con <- dbConnect("SQLite", dbname = "/tmp/test.sqlite")
+> > test2<-data.frame(a=runif(10)*10, b=runif(10)*10)
+> > test2[c(2,4,7),2] <- NA
+> > test2
+>            a        b
+> 1  2.4896019 2.028301
+> 2  8.6978219       NA
+> 3  0.4284225 8.272148
+> 4  7.3035881       NA
+> 5  4.8419792 9.690563
+> 6  1.2404994 8.112080
+> 7  7.6554241       NA
+> 8  6.6188917 1.084093
+> 9  5.9969942 4.659705
+> 10 0.2409261 6.286225
+> > dbWriteTable(con, "test2", test2)
+> [1] TRUE
+> > rs <- dbSendQuery(con, "select * from test2")
+> > fetch(rs)
+>    row_names         a        b
+> 1          1 2.4896019 2.028301
+> 2          2 8.6978219       NA
+> 3          3 0.4284225 8.272148
+> 4          4 7.3035881       NA
+> 5          5 4.8419792 9.690563
+> 6          6 1.2404994 8.112080
+> 7          7 7.6554241       NA
+> 8          8 6.6188917 1.084093
+> 9          9 5.9969942 4.659705
+> 10        10 0.2409261 6.286225
+> >
+>
+> Dirk
+>
+> --
+> Hell, there are no rules here - we're trying to accomplish something.
+>                                                   -- Thomas A. Edison
+>
+
+
+-- 
+Ronggui Huang
+Department of Sociology
+Fudan University, Shanghai, China
+???
+????????
+
+
+
+From edd @end|ng |rom deb|@n@org  Fri Jan  5 04:11:13 2007
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Thu, 4 Jan 2007 21:11:13 -0600
+Subject: [R-sig-DB] [R] SQLite: When reading a table,
+	a "\r" is padded onto the last column. Why?
+In-Reply-To: <38b9f0350701041855h484adfdfj6dbfbd87820a2077@mail.gmail.com>
+References: <C83C5E3DEEE97E498B74729A33F6EAEC038785AA@DJFPOST01.djf.agrsci.dk>
+	<C83C5E3DEEE97E498B74729A33F6EAEC038785AB@DJFPOST01.djf.agrsci.dk>
+	<Pine.LNX.4.64.0701030719120.25219@gannet.stats.ox.ac.uk>
+	<m2zm90jc2e.fsf@fhcrc.org>
+	<38b9f0350701031722h2099128fld57807a1e33965b7@mail.gmail.com>
+	<m2wt4233e3.fsf@fhcrc.org>
+	<38b9f0350701041802g75ca7824i81f046927190164@mail.gmail.com>
+	<17821.47505.846011.878093@basebud.nulle.part>
+	<38b9f0350701041855h484adfdfj6dbfbd87820a2077@mail.gmail.com>
+Message-ID: <17821.49617.434501.506895@basebud.nulle.part>
+
+
+(off-list)
+
+On 5 January 2007 at 10:55, ronggui wrote:
+| dbWriteTable from a data fram with NA works fine.
+| But importing data frame txt file has problem.
+
+Isn't that a different problem? And are you sure that you understand the
+NULL-to-NA mapping correctly? 
+
+Dirk
+
+-- 
+Hell, there are no rules here - we're trying to accomplish something. 
+                                                  -- Thomas A. Edison
+
+
+
+From d@j025 @end|ng |rom gm@||@com  Fri Jan  5 04:38:34 2007
+From: d@j025 @end|ng |rom gm@||@com (David James)
+Date: Thu, 4 Jan 2007 22:38:34 -0500
+Subject: [R-sig-DB] RMySQL 0.5-11 uploaded to CRAN
+Message-ID: <74c69e370701041938g50c2147fn3cfb767fe219487b@mail.gmail.com>
+
+Hello,
+
+I've uploaded  version 0.5-11 of RMySQL into CRAN, and it should be available
+soon.
+
+>From the NEWS file:
+
+Version 0.5-11
+
+* Fixed a bug that would crash R with a failed mysql_real_connect().
+
+* dbApply() is now working again (but still experimentally).
+
+* Re-formatted the C code.
+
+[0.5-9 through 0.5-10 were maintanance releases that Seth Falcon
+kindly put out.]
+
+Regards,
+
+--
+David
+
+
+
+From @|@|con @end|ng |rom |hcrc@org  Fri Jan  5 16:34:12 2007
+From: @|@|con @end|ng |rom |hcrc@org (Seth Falcon)
+Date: Fri, 05 Jan 2007 07:34:12 -0800
+Subject: [R-sig-DB] [R] SQLite: When reading a table,
+	a "\r" is padded onto the last column. Why?
+In-Reply-To: <38b9f0350701041802g75ca7824i81f046927190164@mail.gmail.com>
+	(ronggui's message of "Fri, 5 Jan 2007 10:02:29 +0800")
+References: <C83C5E3DEEE97E498B74729A33F6EAEC038785AA@DJFPOST01.djf.agrsci.dk>
+	<C83C5E3DEEE97E498B74729A33F6EAEC038785AB@DJFPOST01.djf.agrsci.dk>
+	<Pine.LNX.4.64.0701030719120.25219@gannet.stats.ox.ac.uk>
+	<m2zm90jc2e.fsf@fhcrc.org>
+	<38b9f0350701031722h2099128fld57807a1e33965b7@mail.gmail.com>
+	<m2wt4233e3.fsf@fhcrc.org>
+	<38b9f0350701041802g75ca7824i81f046927190164@mail.gmail.com>
+Message-ID: <m2odpdtrm3.fsf@fhcrc.org>
+
+ronggui <ronggui.huang at gmail.com> writes:
+
+> I think there is still one more thins need to do. RSQLite does not
+> take care of the "NA" (my case: na.strings is  Blank fields in the
+> test.txt file ) when import from a file to db table.
+
+You are right that an na.strings argument is missing.  You will find
+that if you use '\N' in your text files, it will be recognized as NA.
+
+This file import feature is implemented by reading the file in C and
+borrows heavily from the SQLite command line tool's .import command.
+With this implementation, changes such as adding a flexible na.strings
+argument will not be trivial to implement.
+
+Now that dbWriteTable (using data.frame) is more efficient, it can be
+used in a straight forward way to load very large text files.  I
+prefer this approach.  And a possibly easier patch is to refactor
+dbWriteTable (file path) such that it does something like the code
+below (and remove the C code entirely):
+
+(untested, approx code)
+
+    con <- file(fname, open="r")
+    on.exit(close(con))
+
+    df <- read.table(con, sep=sep, stringsAsFactors=FALSE, nrows=10,
+                     na.strings=na.strings, header=TRUE)
+    # use DBI helper function here instead
+    header <- gsub(".", "_", names(df), fixed=TRUE) 
+    names(df) <- header
+
+    dbWriteTable(db, tablename, df)
+
+    ## Now do the rest in batches
+    done <- FALSE
+    while (!done) {
+        df <- read.table(con, sep=sep, stringsAsFactors=FALSE,
+                         nrows=batch_size, na.strings=na.strings,
+                         header=FALSE)
+        if (nrow(df) < batch_size) {
+            done <- TRUE
+            if (nrow(df) == 0)
+              break
+        }
+        names(df) <- header
+        dbWriteTable(db, tablename, df, append=TRUE)
+    }
+
++ seth
+
+
+
+From ronggu|@hu@ng @end|ng |rom gm@||@com  Fri Jan  5 16:58:47 2007
+From: ronggu|@hu@ng @end|ng |rom gm@||@com (ronggui)
+Date: Fri, 5 Jan 2007 23:58:47 +0800
+Subject: [R-sig-DB] [R] SQLite: When reading a table,
+	a "\r" is padded onto the last column. Why?
+In-Reply-To: <m2odpdtrm3.fsf@fhcrc.org>
+References: <C83C5E3DEEE97E498B74729A33F6EAEC038785AA@DJFPOST01.djf.agrsci.dk>
+	<C83C5E3DEEE97E498B74729A33F6EAEC038785AB@DJFPOST01.djf.agrsci.dk>
+	<Pine.LNX.4.64.0701030719120.25219@gannet.stats.ox.ac.uk>
+	<m2zm90jc2e.fsf@fhcrc.org>
+	<38b9f0350701031722h2099128fld57807a1e33965b7@mail.gmail.com>
+	<m2wt4233e3.fsf@fhcrc.org>
+	<38b9f0350701041802g75ca7824i81f046927190164@mail.gmail.com>
+	<m2odpdtrm3.fsf@fhcrc.org>
+Message-ID: <38b9f0350701050758p1251b23dp6e9acea3113a8dc6@mail.gmail.com>
+
+On 1/5/07, Seth Falcon <sfalcon at fhcrc.org> wrote:
+> ronggui <ronggui.huang at gmail.com> writes:
+>
+> > I think there is still one more thins need to do. RSQLite does not
+> > take care of the "NA" (my case: na.strings is  Blank fields in the
+> > test.txt file ) when import from a file to db table.
+>
+> You are right that an na.strings argument is missing.  You will find
+> that if you use '\N' in your text files, it will be recognized as NA.
+
+And if NA is used to represent as missing in txt file, it will be
+recognized as NA too.
+
+> This file import feature is implemented by reading the file in C and
+> borrows heavily from the SQLite command line tool's .import command.
+> With this implementation, changes such as adding a flexible na.strings
+> argument will not be trivial to implement.
+
+Oops, so let it be, I should not ask for too much:)
+I have no idea with C, so I can't give a patch.
+
+> Now that dbWriteTable (using data.frame) is more efficient, it can be
+> used in a straight forward way to load very large text files.  I
+> prefer this approach.  And a possibly easier patch is to refactor
+> dbWriteTable (file path) such that it does something like the code
+> below (and remove the C code entirely):
+
+This is the way I follow before dbWriteTable can read file directly:)
+
+Thanks for your quick reply:)
+
+Ronggui Huang
+
+> (untested, approx code)
+>
+>     con <- file(fname, open="r")
+>     on.exit(close(con))
+>
+>     df <- read.table(con, sep=sep, stringsAsFactors=FALSE, nrows=10,
+>                      na.strings=na.strings, header=TRUE)
+>     # use DBI helper function here instead
+>     header <- gsub(".", "_", names(df), fixed=TRUE)
+>     names(df) <- header
+>
+>     dbWriteTable(db, tablename, df)
+>
+>     ## Now do the rest in batches
+>     done <- FALSE
+>     while (!done) {
+>         df <- read.table(con, sep=sep, stringsAsFactors=FALSE,
+>                          nrows=batch_size, na.strings=na.strings,
+>                          header=FALSE)
+>         if (nrow(df) < batch_size) {
+>             done <- TRUE
+>             if (nrow(df) == 0)
+>               break
+>         }
+>         names(df) <- header
+>         dbWriteTable(db, tablename, df, append=TRUE)
+>     }
+>
+> + seth
+>
+
+
+-- 
+Ronggui Huang
+Department of Sociology
+Fudan University, Shanghai, China
+???
+????????
+
+
+
+From d@j025 @end|ng |rom gm@||@com  Fri Jan  5 18:05:39 2007
+From: d@j025 @end|ng |rom gm@||@com (David James)
+Date: Fri, 5 Jan 2007 12:05:39 -0500
+Subject: [R-sig-DB] [R] SQLite: When reading a table,
+	a "\r" is padded onto the last column. Why?
+In-Reply-To: <m2odpdtrm3.fsf@fhcrc.org>
+References: <C83C5E3DEEE97E498B74729A33F6EAEC038785AA@DJFPOST01.djf.agrsci.dk>
+	<C83C5E3DEEE97E498B74729A33F6EAEC038785AB@DJFPOST01.djf.agrsci.dk>
+	<Pine.LNX.4.64.0701030719120.25219@gannet.stats.ox.ac.uk>
+	<m2zm90jc2e.fsf@fhcrc.org>
+	<38b9f0350701031722h2099128fld57807a1e33965b7@mail.gmail.com>
+	<m2wt4233e3.fsf@fhcrc.org>
+	<38b9f0350701041802g75ca7824i81f046927190164@mail.gmail.com>
+	<m2odpdtrm3.fsf@fhcrc.org>
+Message-ID: <74c69e370701050905r287f171bw63d082a82499067e@mail.gmail.com>
+
+Hi,
+
+A word of caution:  relying on read.table() to read very large
+files (even piecemeal) can be extremely inefficient.  The reason
+I implemented the dbWriteTable from a file is exactly to circumvent
+this problem.  You can upload a huge data file into the db
+extremely fast, but going through read.table() could be considerably
+slower.
+
+Perhaps we're considering two slightly different situations:
+(1) export a data.frame to sqlite (here, the prepared statement/binding
+approach is optimal).
+(2) load a csv file into R or SQLite (here using the C code from .import
+is optimal).
+
+
+Thoughts?
+
+--
+David
+
+
+On 1/5/07, Seth Falcon <sfalcon at fhcrc.org> wrote:
+> ronggui <ronggui.huang at gmail.com> writes:
+>
+> > I think there is still one more thins need to do. RSQLite does not
+> > take care of the "NA" (my case: na.strings is  Blank fields in the
+> > test.txt file ) when import from a file to db table.
+>
+> You are right that an na.strings argument is missing.  You will find
+> that if you use '\N' in your text files, it will be recognized as NA.
+>
+> This file import feature is implemented by reading the file in C and
+> borrows heavily from the SQLite command line tool's .import command.
+> With this implementation, changes such as adding a flexible na.strings
+> argument will not be trivial to implement.
+>
+> Now that dbWriteTable (using data.frame) is more efficient, it can be
+> used in a straight forward way to load very large text files.  I
+> prefer this approach.  And a possibly easier patch is to refactor
+> dbWriteTable (file path) such that it does something like the code
+> below (and remove the C code entirely):
+>
+> (untested, approx code)
+>
+>    con <- file(fname, open="r")
+>    on.exit(close(con))
+>
+>    df <- read.table(con, sep=sep, stringsAsFactors=FALSE, nrows=10,
+>                     na.strings=na.strings, header=TRUE)
+>    # use DBI helper function here instead
+>    header <- gsub(".", "_", names(df), fixed=TRUE)
+>    names(df) <- header
+>
+>    dbWriteTable(db, tablename, df)
+>
+>    ## Now do the rest in batches
+>    done <- FALSE
+>    while (!done) {
+>        df <- read.table(con, sep=sep, stringsAsFactors=FALSE,
+>                         nrows=batch_size, na.strings=na.strings,
+>                         header=FALSE)
+>        if (nrow(df) < batch_size) {
+>            done <- TRUE
+>            if (nrow(df) == 0)
+>              break
+>        }
+>        names(df) <- header
+>        dbWriteTable(db, tablename, df, append=TRUE)
+>    }
+>
+> + seth
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+-- 
+Regards,
+
+--
+David
+
+
+
+From @|@|con @end|ng |rom |hcrc@org  Fri Jan  5 22:27:26 2007
+From: @|@|con @end|ng |rom |hcrc@org (Seth Falcon)
+Date: Fri, 05 Jan 2007 13:27:26 -0800
+Subject: [R-sig-DB] [R] SQLite: When reading a table,
+	a "\r" is padded onto the last column. Why?
+In-Reply-To: <74c69e370701050905r287f171bw63d082a82499067e@mail.gmail.com>
+	(David James's message of "Fri, 5 Jan 2007 12:05:39 -0500")
+References: <C83C5E3DEEE97E498B74729A33F6EAEC038785AA@DJFPOST01.djf.agrsci.dk>
+	<C83C5E3DEEE97E498B74729A33F6EAEC038785AB@DJFPOST01.djf.agrsci.dk>
+	<Pine.LNX.4.64.0701030719120.25219@gannet.stats.ox.ac.uk>
+	<m2zm90jc2e.fsf@fhcrc.org>
+	<38b9f0350701031722h2099128fld57807a1e33965b7@mail.gmail.com>
+	<m2wt4233e3.fsf@fhcrc.org>
+	<38b9f0350701041802g75ca7824i81f046927190164@mail.gmail.com>
+	<m2odpdtrm3.fsf@fhcrc.org>
+	<74c69e370701050905r287f171bw63d082a82499067e@mail.gmail.com>
+Message-ID: <m2odpdp3k1.fsf@fhcrc.org>
+
+"David James" <daj025 at gmail.com> writes:
+
+> Hi,
+>
+> A word of caution:  relying on read.table() to read very large
+> files (even piecemeal) can be extremely inefficient.  The reason
+> I implemented the dbWriteTable from a file is exactly to circumvent
+> this problem.  You can upload a huge data file into the db
+> extremely fast, but going through read.table() could be considerably
+> slower.
+
+I wonder if things have changed at all in that regard.  I would expect
+read.table to be slower, but, if called carefully, not _extremely_
+slower.  We should do some timings...
+
+My concern with the .import-like code is on the maintenance
+side and in terms of providing all of the same features as read.table
+(at which point, perhaps the performance gain will diminish).
+
+> Perhaps we're considering two slightly different situations:
+> (1) export a data.frame to sqlite (here, the prepared statement/binding
+> approach is optimal).
+
+The prepared statement/binding approach is also the thing to do when
+you have a large text file that you want to import, but you need to do
+some massaging along the way (perhaps you only want parts of it,
+perhaps you want to load into two or more tables, etc).
+
+> (2) load a csv file into R or SQLite (here using the C code from .import
+> is optimal).
+
+I can see the use-case, but have some reservations.  Without the
+functionality we have now you could:
+
+  a. use SQLite directly and skip R.
+  b. use R and make a system call to the sqlite command line.
+
+The dbWriteTable functionality is more elegant than (a) or (b), and
+perhaps I would have fewer reservations if it was called
+sqliteImportFile() -- do the other DBI packages support file import in
+this way via dbWriteTable?
+
++ seth
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Fri Jan  5 22:57:17 2007
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Fri, 5 Jan 2007 21:57:17 +0000 (GMT)
+Subject: [R-sig-DB] [R] SQLite: When reading a table,
+ a "\r" is padded onto the last column. Why?
+In-Reply-To: <m2odpdp3k1.fsf@fhcrc.org>
+References: <C83C5E3DEEE97E498B74729A33F6EAEC038785AA@DJFPOST01.djf.agrsci.dk>
+	<C83C5E3DEEE97E498B74729A33F6EAEC038785AB@DJFPOST01.djf.agrsci.dk>
+	<Pine.LNX.4.64.0701030719120.25219@gannet.stats.ox.ac.uk>
+	<m2zm90jc2e.fsf@fhcrc.org>
+	<38b9f0350701031722h2099128fld57807a1e33965b7@mail.gmail.com>
+	<m2wt4233e3.fsf@fhcrc.org>
+	<38b9f0350701041802g75ca7824i81f046927190164@mail.gmail.com>
+	<m2odpdtrm3.fsf@fhcrc.org>
+	<74c69e370701050905r287f171bw63d082a82499067e@mail.gmail.com>
+	<m2odpdp3k1.fsf@fhcrc.org>
+Message-ID: <Pine.LNX.4.64.0701052143250.6220@gannet.stats.ox.ac.uk>
+
+On Fri, 5 Jan 2007, Seth Falcon wrote:
+
+> "David James" <daj025 at gmail.com> writes:
+>
+>> Hi,
+>>
+>> A word of caution:  relying on read.table() to read very large
+>> files (even piecemeal) can be extremely inefficient.  The reason
+>> I implemented the dbWriteTable from a file is exactly to circumvent
+>> this problem.  You can upload a huge data file into the db
+>> extremely fast, but going through read.table() could be considerably
+>> slower.
+>
+> I wonder if things have changed at all in that regard.  I would expect
+> read.table to be slower, but, if called carefully, not _extremely_
+> slower.  We should do some timings...
+
+I would be surprised if read.table used carefully took a significant part 
+of the time of a total analysis.  I hesitate to do timings without knowing 
+the sort of table you are discussing: does it have many columns or many 
+rows or both, and what variable types?
+
+Having some real-life examples to think about would be very helpful (as 
+it would be for some of the efficiency issues we have been working on 
+with data frames).
+
+> My concern with the .import-like code is on the maintenance
+> side and in terms of providing all of the same features as read.table
+> (at which point, perhaps the performance gain will diminish).
+>
+>> Perhaps we're considering two slightly different situations:
+>> (1) export a data.frame to sqlite (here, the prepared statement/binding
+>> approach is optimal).
+>
+> The prepared statement/binding approach is also the thing to do when
+> you have a large text file that you want to import, but you need to do
+> some massaging along the way (perhaps you only want parts of it,
+> perhaps you want to load into two or more tables, etc).
+>
+>> (2) load a csv file into R or SQLite (here using the C code from .import
+>> is optimal).
+>
+> I can see the use-case, but have some reservations.  Without the
+> functionality we have now you could:
+>
+>  a. use SQLite directly and skip R.
+>  b. use R and make a system call to the sqlite command line.
+
+Or
+    c. Send a suitable SQL query from the R package. I've done that in
+       RMySQL and RODBC in the past (e.g. using LOAD DATA INFILE in MySQL).
+
+> The dbWriteTable functionality is more elegant than (a) or (b), and
+> perhaps I would have fewer reservations if it was called
+> sqliteImportFile() -- do the other DBI packages support file import in
+> this way via dbWriteTable?
+>
+> + seth
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From d@j025 @end|ng |rom gm@||@com  Fri Jan  5 23:19:21 2007
+From: d@j025 @end|ng |rom gm@||@com (David James)
+Date: Fri, 5 Jan 2007 17:19:21 -0500
+Subject: [R-sig-DB] [R] SQLite: When reading a table,
+	a "\r" is padded onto the last column. Why?
+In-Reply-To: <m2odpdp3k1.fsf@fhcrc.org>
+References: <C83C5E3DEEE97E498B74729A33F6EAEC038785AA@DJFPOST01.djf.agrsci.dk>
+	<C83C5E3DEEE97E498B74729A33F6EAEC038785AB@DJFPOST01.djf.agrsci.dk>
+	<Pine.LNX.4.64.0701030719120.25219@gannet.stats.ox.ac.uk>
+	<m2zm90jc2e.fsf@fhcrc.org>
+	<38b9f0350701031722h2099128fld57807a1e33965b7@mail.gmail.com>
+	<m2wt4233e3.fsf@fhcrc.org>
+	<38b9f0350701041802g75ca7824i81f046927190164@mail.gmail.com>
+	<m2odpdtrm3.fsf@fhcrc.org>
+	<74c69e370701050905r287f171bw63d082a82499067e@mail.gmail.com>
+	<m2odpdp3k1.fsf@fhcrc.org>
+Message-ID: <74c69e370701051419i406b1482mc21bbd5cb0ca3b5d@mail.gmail.com>
+
+On 1/5/07, Seth Falcon <sfalcon at fhcrc.org> wrote:
+> "David James" <daj025 at gmail.com> writes:
+>
+> > Hi,
+> >
+> > A word of caution:  relying on read.table() to read very large
+> > files (even piecemeal) can be extremely inefficient.  The reason
+> > I implemented the dbWriteTable from a file is exactly to circumvent
+> > this problem.  You can upload a huge data file into the db
+> > extremely fast, but going through read.table() could be considerably
+> > slower.
+>
+> I wonder if things have changed at all in that regard.  I would expect
+> read.table to be slower, but, if called carefully, not _extremely_
+> slower.  We should do some timings...
+>
+> My concern with the .import-like code is on the maintenance
+> side and in terms of providing all of the same features as read.table
+> (at which point, perhaps the performance gain will diminish).
+
+Yes, doing a full-fledge csv parser would be painful, and the current
+code is fairly inflexible (quotes, locale-specific numbers, etc., etc.)
+
+>
+> > Perhaps we're considering two slightly different situations:
+> > (1) export a data.frame to sqlite (here, the prepared statement/binding
+> > approach is optimal).
+>
+> The prepared statement/binding approach is also the thing to do when
+> you have a large text file that you want to import, but you need to do
+> some massaging along the way (perhaps you only want parts of it,
+> perhaps you want to load into two or more tables, etc).
+>
+> > (2) load a csv file into R or SQLite (here using the C code from .import
+> > is optimal).
+>
+> I can see the use-case, but have some reservations.  Without the
+> functionality we have now you could:
+>
+>  a. use SQLite directly and skip R.
+>  b. use R and make a system call to the sqlite command line.
+
+Hmm, we could, but we would have to make sure that the Windows
+package includes the sqlite command-line interpreter (I seem to recall
+that it only include the sqlite library).  In general, RSQLite does not use
+anything but the library to ensure it's self-contained.
+
+>
+> The dbWriteTable functionality is more elegant than (a) or (b), and
+> perhaps I would have fewer reservations if it was called
+> sqliteImportFile() -- do the other DBI packages support file import in
+> this way via dbWriteTable?
+
+No, they don't.  I never thought about providing an import facility on top
+of those already provided natively by Oracle and MySQL; the case with
+SQLite is slightly different if we only consider it as an embedded engine in R.
+
+I guess you're suggestion of moving it to sqliteImportFile() is cleaner.
+
+--
+David
+
+>
+> + seth
+>
+
+
+
+From @|@|con @end|ng |rom |hcrc@org  Sat Jan  6 00:42:58 2007
+From: @|@|con @end|ng |rom |hcrc@org (Seth Falcon)
+Date: Fri, 05 Jan 2007 15:42:58 -0800
+Subject: [R-sig-DB] [R] SQLite: When reading a table,
+	a "\r" is padded onto the last column. Why?
+In-Reply-To: <Pine.LNX.4.64.0701052143250.6220@gannet.stats.ox.ac.uk> (Brian
+	Ripley's message of "Fri, 5 Jan 2007 21:57:17 +0000 (GMT)")
+References: <C83C5E3DEEE97E498B74729A33F6EAEC038785AA@DJFPOST01.djf.agrsci.dk>
+	<C83C5E3DEEE97E498B74729A33F6EAEC038785AB@DJFPOST01.djf.agrsci.dk>
+	<Pine.LNX.4.64.0701030719120.25219@gannet.stats.ox.ac.uk>
+	<m2zm90jc2e.fsf@fhcrc.org>
+	<38b9f0350701031722h2099128fld57807a1e33965b7@mail.gmail.com>
+	<m2wt4233e3.fsf@fhcrc.org>
+	<38b9f0350701041802g75ca7824i81f046927190164@mail.gmail.com>
+	<m2odpdtrm3.fsf@fhcrc.org>
+	<74c69e370701050905r287f171bw63d082a82499067e@mail.gmail.com>
+	<m2odpdp3k1.fsf@fhcrc.org>
+	<Pine.LNX.4.64.0701052143250.6220@gannet.stats.ox.ac.uk>
+Message-ID: <m2lkkhnipp.fsf@fhcrc.org>
+
+Prof Brian Ripley <ripley at stats.ox.ac.uk> writes:
+> I would be surprised if read.table used carefully took a significant
+> part of the time of a total analysis.  I hesitate to do timings
+> without knowing the sort of table you are discussing: does it have
+> many columns or many rows or both, and what variable types?
+>
+> Having some real-life examples to think about would be very helpful
+> (as it would be for some of the efficiency issues we have been working
+> on with data frames).
+
+We've been working with annotation data for Affymetrix Mapping arrays
+(SNP chips).  This translates to many rows (6M) and a handful of
+columns (6-10) with a mix of integer, double, and character columns.
+
+As you wrote, if one needs to do any manipulation of the data before
+loading into the DB, then read.table will most likely not be the
+bottleneck.
+
+>>  a. use SQLite directly and skip R.
+>>  b. use R and make a system call to the sqlite command line.
+>
+> Or
+>    c. Send a suitable SQL query from the R package. I've done that in
+>       RMySQL and RODBC in the past (e.g. using LOAD DATA INFILE in
+>       MySQL).
+
+Unfortunately, AFAIK, SQLite does not provide a SQL syntax to achieve
+that.  I think it did at one time and then it went away with one of
+the newer versions.
+
++ seth
+
+
+
+From @|@|con @end|ng |rom |hcrc@org  Sat Jan  6 00:44:56 2007
+From: @|@|con @end|ng |rom |hcrc@org (Seth Falcon)
+Date: Fri, 05 Jan 2007 15:44:56 -0800
+Subject: [R-sig-DB] [R] SQLite: When reading a table,
+	a "\r" is padded onto the last column. Why?
+In-Reply-To: <74c69e370701051419i406b1482mc21bbd5cb0ca3b5d@mail.gmail.com>
+	(David James's message of "Fri, 5 Jan 2007 17:19:21 -0500")
+References: <C83C5E3DEEE97E498B74729A33F6EAEC038785AA@DJFPOST01.djf.agrsci.dk>
+	<C83C5E3DEEE97E498B74729A33F6EAEC038785AB@DJFPOST01.djf.agrsci.dk>
+	<Pine.LNX.4.64.0701030719120.25219@gannet.stats.ox.ac.uk>
+	<m2zm90jc2e.fsf@fhcrc.org>
+	<38b9f0350701031722h2099128fld57807a1e33965b7@mail.gmail.com>
+	<m2wt4233e3.fsf@fhcrc.org>
+	<38b9f0350701041802g75ca7824i81f046927190164@mail.gmail.com>
+	<m2odpdtrm3.fsf@fhcrc.org>
+	<74c69e370701050905r287f171bw63d082a82499067e@mail.gmail.com>
+	<m2odpdp3k1.fsf@fhcrc.org>
+	<74c69e370701051419i406b1482mc21bbd5cb0ca3b5d@mail.gmail.com>
+Message-ID: <m2hcv5nimf.fsf@fhcrc.org>
+
+"David James" <daj025 at gmail.com> writes:
+
+> Hmm, we could, but we would have to make sure that the Windows
+> package includes the sqlite command-line interpreter (I seem to recall
+> that it only include the sqlite library).  In general, RSQLite does not use
+> anything but the library to ensure it's self-contained.
+
+Agreed.
+
+>> The dbWriteTable functionality is more elegant than (a) or (b), and
+>> perhaps I would have fewer reservations if it was called
+>> sqliteImportFile() -- do the other DBI packages support file import in
+>> this way via dbWriteTable?
+>
+> No, they don't.  I never thought about providing an import facility on top
+> of those already provided natively by Oracle and MySQL; the case with
+> SQLite is slightly different if we only consider it as an embedded engine in R.
+>
+> I guess you're suggestion of moving it to sqliteImportFile() is
+> cleaner.
+
+And so I guess the only thing to do is to document it :-)
+
+
++ seth
+
+
+
+From ronggu|@hu@ng @end|ng |rom gm@||@com  Sat Jan  6 11:14:29 2007
+From: ronggu|@hu@ng @end|ng |rom gm@||@com (ronggui)
+Date: Sat, 6 Jan 2007 18:14:29 +0800
+Subject: [R-sig-DB] [R] SQLite: When reading a table,
+	a "\r" is padded onto the last column. Why?
+In-Reply-To: <m2odpdp3k1.fsf@fhcrc.org>
+References: <C83C5E3DEEE97E498B74729A33F6EAEC038785AA@DJFPOST01.djf.agrsci.dk>
+	<C83C5E3DEEE97E498B74729A33F6EAEC038785AB@DJFPOST01.djf.agrsci.dk>
+	<Pine.LNX.4.64.0701030719120.25219@gannet.stats.ox.ac.uk>
+	<m2zm90jc2e.fsf@fhcrc.org>
+	<38b9f0350701031722h2099128fld57807a1e33965b7@mail.gmail.com>
+	<m2wt4233e3.fsf@fhcrc.org>
+	<38b9f0350701041802g75ca7824i81f046927190164@mail.gmail.com>
+	<m2odpdtrm3.fsf@fhcrc.org>
+	<74c69e370701050905r287f171bw63d082a82499067e@mail.gmail.com>
+	<m2odpdp3k1.fsf@fhcrc.org>
+Message-ID: <38b9f0350701060214k1023f211yafa615d77f38d35d@mail.gmail.com>
+
+On 1/6/07, Seth Falcon <sfalcon at fhcrc.org> wrote:
+> "David James" <daj025 at gmail.com> writes:
+>
+> > Hi,
+> >
+> > A word of caution:  relying on read.table() to read very large
+> > files (even piecemeal) can be extremely inefficient.  The reason
+> > I implemented the dbWriteTable from a file is exactly to circumvent
+> > this problem.  You can upload a huge data file into the db
+> > extremely fast, but going through read.table() could be considerably
+> > slower.
+>
+> I wonder if things have changed at all in that regard.  I would expect
+> read.table to be slower, but, if called carefully, not _extremely_
+> slower.  We should do some timings...
+
+Yeah, Things change a lot.
+I use system.time to do the timings on a large csv file (365M, with
+sep="\t", quote="")
+
+The result is as follow:
+1, use read.table and then dbWriteTable in chunck.
+> t1
+[1] 700.22  16.06 768.01     NA     NA
+2, use bdWriteTable to import file directly.
+> t2
+[1]  48.88   5.30 128.39     NA     NA
+
+This is one-shot test, and the result maybe is no reliable enough, but
+it indicates a huge difference.
+
+This is a working method, but not efficient. Of course, I agree that
+from the maintainer-perspective, this method is prefered:)
+
+Ronggui Huang
+
+> My concern with the .import-like code is on the maintenance
+> side and in terms of providing all of the same features as read.table
+> (at which point, perhaps the performance gain will diminish).
+>
+> > Perhaps we're considering two slightly different situations:
+> > (1) export a data.frame to sqlite (here, the prepared statement/binding
+> > approach is optimal).
+>
+> The prepared statement/binding approach is also the thing to do when
+> you have a large text file that you want to import, but you need to do
+> some massaging along the way (perhaps you only want parts of it,
+> perhaps you want to load into two or more tables, etc).
+>
+> > (2) load a csv file into R or SQLite (here using the C code from .import
+> > is optimal).
+>
+> I can see the use-case, but have some reservations.  Without the
+> functionality we have now you could:
+>
+>   a. use SQLite directly and skip R.
+>   b. use R and make a system call to the sqlite command line.
+>
+> The dbWriteTable functionality is more elegant than (a) or (b), and
+> perhaps I would have fewer reservations if it was called
+> sqliteImportFile() -- do the other DBI packages support file import in
+> this way via dbWriteTable?
+>
+> + seth
+>
+
+
+-- 
+Ronggui Huang
+Department of Sociology
+Fudan University, Shanghai, China
+???
+????????
+
+
+
+From @|@|con @end|ng |rom |hcrc@org  Sat Jan  6 17:14:27 2007
+From: @|@|con @end|ng |rom |hcrc@org (Seth Falcon)
+Date: Sat, 06 Jan 2007 08:14:27 -0800
+Subject: [R-sig-DB] [R] SQLite: When reading a table,
+	a "\r" is padded onto the last column. Why?
+In-Reply-To: <38b9f0350701060214k1023f211yafa615d77f38d35d@mail.gmail.com>
+	(ronggui's message of "Sat, 6 Jan 2007 18:14:29 +0800")
+References: <C83C5E3DEEE97E498B74729A33F6EAEC038785AA@DJFPOST01.djf.agrsci.dk>
+	<C83C5E3DEEE97E498B74729A33F6EAEC038785AB@DJFPOST01.djf.agrsci.dk>
+	<Pine.LNX.4.64.0701030719120.25219@gannet.stats.ox.ac.uk>
+	<m2zm90jc2e.fsf@fhcrc.org>
+	<38b9f0350701031722h2099128fld57807a1e33965b7@mail.gmail.com>
+	<m2wt4233e3.fsf@fhcrc.org>
+	<38b9f0350701041802g75ca7824i81f046927190164@mail.gmail.com>
+	<m2odpdtrm3.fsf@fhcrc.org>
+	<74c69e370701050905r287f171bw63d082a82499067e@mail.gmail.com>
+	<m2odpdp3k1.fsf@fhcrc.org>
+	<38b9f0350701060214k1023f211yafa615d77f38d35d@mail.gmail.com>
+Message-ID: <m2ps9sku8s.fsf@fhcrc.org>
+
+ronggui <ronggui.huang at gmail.com> writes:
+
+> On 1/6/07, Seth Falcon <sfalcon at fhcrc.org> wrote:
+>> I wonder if things have changed at all in that regard.  I would expect
+>> read.table to be slower, but, if called carefully, not _extremely_
+>> slower.  We should do some timings...
+>
+> Yeah, Things change a lot.
+> I use system.time to do the timings on a large csv file (365M, with
+> sep="\t", quote="")
+>
+> The result is as follow:
+> 1, use read.table and then dbWriteTable in chunck.
+>> t1
+> [1] 700.22  16.06 768.01     NA     NA
+
+Can you provide the exact call to read.table you used?  
+
+To give it a fair chance, you need to use the colClasses arg in
+read.table and choose a reasonable batch size (I think the buffer
+hard-coded in the RSQLite C code is 1024, so to compare you should
+choose a number of rows that is ~1MB).
+
++ seth
+
+
+
+From wr@|| @end|ng |rom t|tu@@u-@tr@@bg@|r  Mon Jan  8 12:42:17 2007
+From: wr@|| @end|ng |rom t|tu@@u-@tr@@bg@|r (Wolfgang Raffelsberger)
+Date: Mon, 08 Jan 2007 12:42:17 +0100
+Subject: [R-sig-DB] RODBC: Problem with reading 1st line of data
+Message-ID: <45A22E19.5090905@igbmc.u-strasbg.fr>
+
+
+Dear List,
+
+when reading MS Excel files in R using package RODBC I encountered the 
+problem of not being able to read the first line of data from the 
+original Excel sheets :
+This problem arises when the data start directly, i.e. when the original 
+sheets don?t contain header-names and the 1^st line starts immediately 
+with the (numeric) values I want to read.
+Any text/string component of original first line appears as 
+column-name(s) (in the case of strings) while numeric components are 
+replaced by F2, F3 etc.
+Then the 2nd line from my input appears then as 1st line of data in the 
+resulting R-object and, no surprise, the total number of lines is 1 too 
+few ...
+
+I read the data as :
+>  library(RODBC)
+>  channel1 <- odbcConnectExcel("myFile.xls")
+>  sheet1 <- sqlQuery(channel1, "SELECT * FROM [Cell measures (1)$]") # I 
+use sqlQuery() instead of sqlFetch() because of the name of the sheet I 
+want to extract ("Cell measures (1)")
+
+>  sheet1[1:3,1:5]
+D - 5(fld 10) F2 F3 F4 F5
+1 D - 5(fld 11) 162 182.110 0.042 184.695
+2 D - 5(fld 12) 163 198.154 0.086 201.932
+3 D - 5(fld 13) 164 182.403 0.034 182.816
+
+However, the 1st line in the original reads as :
+D - 5(fld 10) 161 182.929 0.045 188.819
+
+Do you have an idea how to formulate the query that I actually can read 
+the 1st line of data ?
+Is there some argument equivalent to the "col.names=FALSE" in 
+read.table() ?
+Or is there a way to circumvent the problem by adding an additional line 
+using the SQL command "INSERT" (so that the real data would start in 
+line 2) ?
+
+Since the original idea consist in generating an automatic protocol for 
+processing data available as several Excel sheets from a custom 
+application and since these sheets are packed until the last possible 
+line (#65536) manually inserting an additional line isn?t a suitable 
+option either.
+
+>  sessionInfo()
+R version 2.4.0 (2006-10-03)
+i386-pc-mingw32
+
+locale:
+LC_COLLATE=French_France.1252;LC_CTYPE=French_France.1252;LC_MONETARY=French_France.1252;LC_NUMERIC=C;LC_TIME=French_France.1252 
+
+
+attached base packages:
+[1] "methods" "stats" "graphics" "grDevices" "utils" "datasets" "tcltk" 
+"base"
+other attached packages:
+RODBC svIO R2HTML svMisc svSocket svIDE
+"1.1-7" "0.9-5" "1.58" "0.9-5" "0.9-5" "0.9-5"
+
+
+Thank's in advance,
+Wolfgang
+
+
+
+
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . .
+
+Wolfgang Raffelsberger, PhD
+Laboratoire de BioInformatique et G?nomique Int?gratives
+IGBMC
+1 rue Laurent Fries, 67404 Illkirch Strasbourg, France
+Tel (+33) 388 65 3314 Fax (+33) 388 65 3276
+wolfgang.raffelsberger at igbmc.u-strasbg.fr
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Mon Jan  8 13:29:28 2007
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Mon, 8 Jan 2007 12:29:28 +0000 (GMT)
+Subject: [R-sig-DB] RODBC: Problem with reading 1st line of data
+In-Reply-To: <45A22E19.5090905@igbmc.u-strasbg.fr>
+References: <45A22E19.5090905@igbmc.u-strasbg.fr>
+Message-ID: <Pine.LNX.4.64.0701081229080.17810@gannet.stats.ox.ac.uk>
+
+This is an issue with the ODBC driver, not RODBC.
+
+On Mon, 8 Jan 2007, Wolfgang Raffelsberger wrote:
+
+>
+> Dear List,
+>
+> when reading MS Excel files in R using package RODBC I encountered the
+> problem of not being able to read the first line of data from the
+> original Excel sheets :
+> This problem arises when the data start directly, i.e. when the original
+> sheets don?t contain header-names and the 1^st line starts immediately
+> with the (numeric) values I want to read.
+> Any text/string component of original first line appears as
+> column-name(s) (in the case of strings) while numeric components are
+> replaced by F2, F3 etc.
+> Then the 2nd line from my input appears then as 1st line of data in the
+> resulting R-object and, no surprise, the total number of lines is 1 too
+> few ...
+>
+> I read the data as :
+>>  library(RODBC)
+>>  channel1 <- odbcConnectExcel("myFile.xls")
+>>  sheet1 <- sqlQuery(channel1, "SELECT * FROM [Cell measures (1)$]") # I
+> use sqlQuery() instead of sqlFetch() because of the name of the sheet I
+> want to extract ("Cell measures (1)")
+>
+>>  sheet1[1:3,1:5]
+> D - 5(fld 10) F2 F3 F4 F5
+> 1 D - 5(fld 11) 162 182.110 0.042 184.695
+> 2 D - 5(fld 12) 163 198.154 0.086 201.932
+> 3 D - 5(fld 13) 164 182.403 0.034 182.816
+>
+> However, the 1st line in the original reads as :
+> D - 5(fld 10) 161 182.929 0.045 188.819
+>
+> Do you have an idea how to formulate the query that I actually can read
+> the 1st line of data ?
+> Is there some argument equivalent to the "col.names=FALSE" in
+> read.table() ?
+> Or is there a way to circumvent the problem by adding an additional line
+> using the SQL command "INSERT" (so that the real data would start in
+> line 2) ?
+>
+> Since the original idea consist in generating an automatic protocol for
+> processing data available as several Excel sheets from a custom
+> application and since these sheets are packed until the last possible
+> line (#65536) manually inserting an additional line isn?t a suitable
+> option either.
+>
+>>  sessionInfo()
+> R version 2.4.0 (2006-10-03)
+> i386-pc-mingw32
+>
+> locale:
+> LC_COLLATE=French_France.1252;LC_CTYPE=French_France.1252;LC_MONETARY=French_France.1252;LC_NUMERIC=C;LC_TIME=French_France.1252
+>
+>
+> attached base packages:
+> [1] "methods" "stats" "graphics" "grDevices" "utils" "datasets" "tcltk"
+> "base"
+> other attached packages:
+> RODBC svIO R2HTML svMisc svSocket svIDE
+> "1.1-7" "0.9-5" "1.58" "0.9-5" "0.9-5" "0.9-5"
+>
+>
+> Thank's in advance,
+> Wolfgang
+>
+>
+>
+>
+> . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+> . . . . .
+>
+> Wolfgang Raffelsberger, PhD
+> Laboratoire de BioInformatique et G?nomique Int?gratives
+> IGBMC
+> 1 rue Laurent Fries, 67404 Illkirch Strasbourg, France
+> Tel (+33) 388 65 3314 Fax (+33) 388 65 3276
+> wolfgang.raffelsberger at igbmc.u-strasbg.fr
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+From @je @end|ng |rom m@@t@queen@u@c@  Wed Jan 10 04:21:07 2007
+From: @je @end|ng |rom m@@t@queen@u@c@ (Stephen Bond)
+Date: Tue, 09 Jan 2007 21:21:07 -0600
+Subject: [R-sig-DB] using DBI
+Message-ID: <45A45BA3.90609@mast.queensu.ca>
+
+Dear DBI Maintainer,
+
+Please, help with the following connection: I need to connect to an 
+oracle database on HP Unix host.
+I looked at the DBI.pdf which I am sure is very informative for the 
+competent readers but it is French to me.
+I am not sure what is the difference between Oracle and ROracle drivers 
+and how to provide an IP address if that is at all possible.
+Also, is there a need for special libs on the host as the DBI.pdf says 
+that the drivers need to be extended on the backend?
+I know how to use SQL and conect from SAS or C++ using occi, but the R 
+DBI is a challenge.
+Thank you very much
+Stephen
+
+
+
+From m@cq @end|ng |rom ||n|@gov  Fri Jan 12 01:05:21 2007
+From: m@cq @end|ng |rom ||n|@gov (Don MacQueen)
+Date: Thu, 11 Jan 2007 16:05:21 -0800
+Subject: [R-sig-DB] using DBI
+In-Reply-To: <45A45BA3.90609@mast.queensu.ca>
+References: <45A45BA3.90609@mast.queensu.ca>
+Message-ID: <p06230907c1cc8041bf73@[128.115.153.6]>
+
+First:
+
+Have you successfully installed the ROracle package?
+
+(Until you've done that, I don't think there's any point in trying to 
+help with or answer the other questions.)
+
+At some point you will have to tell people what platform you're 
+running R on (see http://www.R-project.org/posting-guide.html), and 
+you may get asked to provide commented, minimal, self-contained, 
+reproducible code.
+
+-Don
+
+At 9:21 PM -0600 1/9/07, Stephen Bond wrote:
+>Dear DBI Maintainer,
+>
+>Please, help with the following connection: I need to connect to an
+>oracle database on HP Unix host.
+>I looked at the DBI.pdf which I am sure is very informative for the
+>competent readers but it is French to me.
+>I am not sure what is the difference between Oracle and ROracle drivers
+>and how to provide an IP address if that is at all possible.
+>Also, is there a need for special libs on the host as the DBI.pdf says
+>that the drivers need to be extended on the backend?
+>I know how to use SQL and conect from SAS or C++ using occi, but the R
+>DBI is a challenge.
+>Thank you very much
+>Stephen
+>
+>_______________________________________________
+>R-sig-DB mailing list -- R Special Interest Group
+>R-sig-DB at stat.math.ethz.ch
+>https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+-- 
+--------------------------------------
+Don MacQueen
+Environmental Protection Department
+Lawrence Livermore National Laboratory
+Livermore, CA, USA
+
+
+
+From @je @end|ng |rom m@@t@queen@u@c@  Fri Jan 12 19:05:24 2007
+From: @je @end|ng |rom m@@t@queen@u@c@ (Stephen Bond)
+Date: Fri, 12 Jan 2007 13:05:24 -0500 (EST)
+Subject: [R-sig-DB] using DBI
+In-Reply-To: <p06230907c1cc8041bf73@[128.115.153.6]>
+Message-ID: <Pine.GSO.4.44.0701120956300.219-100000@mast.queensu.ca>
+
+Yes I have that and
+drv=dbDriver("Oracle") executes without complaint.
+The platform is Solaris 10 on x86. I try
+
+conn=dbConnect(drv,user='user',password='password',dbname='dwsh.blabla.com')
+which fails complaining about no listener.
+
+the connect string that does the job using occi is:
+
+const string
+connectString="(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(COMMUNITY=
+mplstcp)(PROTOCOL=TCP)(Host=dwsh.blabla.com)(Port=1522)))(CONNECT_DATA=(SID=dwsh)))";
+
+Could you pls suggest the syntax to call dbConnect?
+Thank you greatly
+
+
+Stephen C. Bond
+Queen's University
+
+On Thu, 11 Jan 2007, Don MacQueen wrote:
+
+> First:
+>
+> Have you successfully installed the ROracle package?
+>
+> (Until you've done that, I don't think there's any point in trying to
+> help with or answer the other questions.)
+>
+> At some point you will have to tell people what platform you're
+> running R on (see http://www.R-project.org/posting-guide.html), and
+> you may get asked to provide commented, minimal, self-contained,
+> reproducible code.
+>
+> -Don
+>
+> At 9:21 PM -0600 1/9/07, Stephen Bond wrote:
+> >Dear DBI Maintainer,
+> >
+> >Please, help with the following connection: I need to connect to an
+> >oracle database on HP Unix host.
+> >I looked at the DBI.pdf which I am sure is very informative for the
+> >competent readers but it is French to me.
+> >I am not sure what is the difference between Oracle and ROracle drivers
+> >and how to provide an IP address if that is at all possible.
+> >Also, is there a need for special libs on the host as the DBI.pdf says
+> >that the drivers need to be extended on the backend?
+> >I know how to use SQL and conect from SAS or C++ using occi, but the R
+> >DBI is a challenge.
+> >Thank you very much
+> >Stephen
+> >
+> >_______________________________________________
+> >R-sig-DB mailing list -- R Special Interest Group
+> >R-sig-DB at stat.math.ethz.ch
+> >https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+>
+> --
+> --------------------------------------
+> Don MacQueen
+> Environmental Protection Department
+> Lawrence Livermore National Laboratory
+> Livermore, CA, USA
+> --------------------------------------
+>
+
+
+
+From m@cq @end|ng |rom ||n|@gov  Fri Jan 12 19:43:20 2007
+From: m@cq @end|ng |rom ||n|@gov (Don MacQueen)
+Date: Fri, 12 Jan 2007 10:43:20 -0800
+Subject: [R-sig-DB] using DBI
+In-Reply-To: <Pine.GSO.4.44.0701120956300.219-100000@mast.queensu.ca>
+References: <Pine.GSO.4.44.0701120956300.219-100000@mast.queensu.ca>
+Message-ID: <p06230903c1cd834274ad@[128.115.153.6]>
+
+I'm not particularly expert in making connections to Oracle ... but I 
+do have a working connection and am able to run queries. So maybe I 
+can help.
+
+My standard connection script is this:
+
+require(ROracle)
+dbm <- Oracle()
+con <- 
+dbConnect(dbm,user='user',dbname='db.host.domain.name',password='password')
+
+Where "db.host.domain.name" is an entry in my tnsnames.ora file. Do 
+you have ORACLE_HOME correctly defined in the environment?
+
+The standard port is 1521, as far as I know, and you have 1522 in 
+your occi example. The port is defined in the tnsnames.ora file, and 
+having the wrong port could explain the report of no listener.
+
+-Don
+
+
+At 1:05 PM -0500 1/12/07, Stephen Bond wrote:
+>Yes I have that and
+>drv=dbDriver("Oracle") executes without complaint.
+>The platform is Solaris 10 on x86. I try
+>
+>conn=dbConnect(drv,user='user',password='password',dbname='dwsh.blabla.com')
+>which fails complaining about no listener.
+>
+>the connect string that does the job using occi is:
+>
+>const string
+>connectString="(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(COMMUNITY=
+>mplstcp)(PROTOCOL=TCP)(Host=dwsh.blabla.com)(Port=1522)))(CONNECT_DATA=(SID=dwsh)))";
+>
+>Could you pls suggest the syntax to call dbConnect?
+>Thank you greatly
+>
+>
+>Stephen C. Bond
+>Queen's University
+>
+>On Thu, 11 Jan 2007, Don MacQueen wrote:
+>
+>>  First:
+>>
+>>  Have you successfully installed the ROracle package?
+>>
+>>  (Until you've done that, I don't think there's any point in trying to
+>>  help with or answer the other questions.)
+>>
+>>  At some point you will have to tell people what platform you're
+>>  running R on (see http://www.R-project.org/posting-guide.html), and
+>>  you may get asked to provide commented, minimal, self-contained,
+>>  reproducible code.
+>>
+>>  -Don
+>>
+>>  At 9:21 PM -0600 1/9/07, Stephen Bond wrote:
+>>  >Dear DBI Maintainer,
+>>  >
+>>  >Please, help with the following connection: I need to connect to an
+>>  >oracle database on HP Unix host.
+>>  >I looked at the DBI.pdf which I am sure is very informative for the
+>>  >competent readers but it is French to me.
+>>  >I am not sure what is the difference between Oracle and ROracle drivers
+>>  >and how to provide an IP address if that is at all possible.
+>>  >Also, is there a need for special libs on the host as the DBI.pdf says
+>>  >that the drivers need to be extended on the backend?
+>>  >I know how to use SQL and conect from SAS or C++ using occi, but the R
+>>  >DBI is a challenge.
+>>  >Thank you very much
+>>  >Stephen
+>>  >
+>>  >_______________________________________________
+>>  >R-sig-DB mailing list -- R Special Interest Group
+>>  >R-sig-DB at stat.math.ethz.ch
+>>  >https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+>>
+>>  --
+>>  --------------------------------------
+>>  Don MacQueen
+>>  Environmental Protection Department
+>>  Lawrence Livermore National Laboratory
+>  > Livermore, CA, USA
+>  > --------------------------------------
+>  >
+
+
+-- 
+--------------------------------------
+Don MacQueen
+Environmental Protection Department
+Lawrence Livermore National Laboratory
+Livermore, CA, USA
+
+
+
+From @|@|con @end|ng |rom |hcrc@org  Wed Jan 17 22:32:07 2007
+From: @|@|con @end|ng |rom |hcrc@org (Seth Falcon)
+Date: Wed, 17 Jan 2007 13:32:07 -0800
+Subject: [R-sig-DB] [R-SIG-Mac] Problem loading RSQLite
+In-Reply-To: <m2y7o176g6.fsf@ziti.local> (Seth Falcon's message of "Wed,
+	17 Jan 2007 12:18:33 -0800")
+References: <667A029A-591A-4E3D-8221-5735DD223E87@magpienest.org>
+	<m23b8b5x1q.fsf@ziti.local>
+	<67E0135C-DEDE-464F-A007-B01AB07A0C0A@ucla.edu>
+	<m2k5zlg0kx.fsf@ziti.local>
+	<A6582E2B-D897-4473-B26C-5DED91182642@r-project.org>
+	<359027A8-A869-478A-AA9A-604B2EDF19C0@r-project.org>
+	<m2y7o176g6.fsf@ziti.local>
+Message-ID: <m21wlt731k.fsf@ziti.local>
+
+Seth Falcon <sfalcon at fhcrc.org> writes:
+
+> Simon Urbanek <simon.urbanek at r-project.org> writes:
+>
+>> Seth,
+>>
+>> I have found the problem - it's a bug in the RSQLite package. The
+>> RSQLite package package provides its own SQLite version, but it uses
+>> the wrong compiler to compile it and therefore it compiles the wrong
+>> architecture (the result will be i386 binary of SQLite despite R
+>> being configured for ppc). In fact the configure script uses the
+>> wrong compiler as well. The fix is really easy - it's just the
+>> sequence of setting CC and failure to export it:
+>
+> Thanks for the patch.  I will apply it and send an update to CRAN this
+> week.
+
+An update has been uploaded to CRAN.  I assume that a new OS X binary
+for RSQLite will be available within a few days...
+
++ seth
+
+
+
+From JILWIL @end|ng |rom SAFECO@com  Fri Jan 26 14:51:04 2007
+From: JILWIL @end|ng |rom SAFECO@com (WILLIE, JILL)
+Date: Fri, 26 Jan 2007 05:51:04 -0800
+Subject: [R-sig-DB] FW: reducing RODBC odbcQuery memory use?
+Message-ID: <916551423F01504BA339BF69CBA3BE72016E7A47@psmrdcex18.psm.pin.safeco.com>
+
+New to R, sorry if one or either of these is an inappropriate list for a
+question like this below; please let me know if this is a general help
+question.
+
+Jill Willie 
+Open Seas
+Safeco Insurance
+jilwil at safeco.com 
+
+-----Original Message-----
+From: WILLIE, JILL 
+Sent: Thursday, January 25, 2007 2:27 PM
+To: r-help at stat.math.ethz.ch
+Subject: reducing RODBC odbcQuery memory use?
+
+Basic Questions:
+
+1.  Can I avoid having RODBC use so much memory (35 times the data size
+or more) making a data.frame & then .rda file via. sqlQuery/save?  
+
+2.  If not, is there some more appropriate way from w/in R to pull large
+data sets (2-5GB) into .rda files from sql? 
+
+Testing details (R transcript below): 1GB CPU, 1GB RAM windows machine.
+
+1.  testing bigger input table (AUTCombinedWA_BILossCost_1per), size is
+20MB in sql, 100000 rows, 2 numeric columns, 55 integer columns;
+consumes 350000kb of memory & 800000kb of virtual memory to execute the
+sqlQuery command.  Memory not released after the step finishes or upon
+execution of odbcCloseAll(), or gc().
+
+2.  tested small input table, size is 2MB in sql, 10000 rows, 2 numeric
+columns, 55 integer columns; consumes 55000kb of memory & 515000kb (vm
+seems oddly high to me) of virtual memory to execute the sqlQuery
+command.
+
+3.  concluded the high memory use is isolated to the odbcQuery step w/in
+the sqlQuery function as opposed to sqlGetResults or ODBC itself.
+
+
+Relevant R session transcript:
+
+>library(RODBC)
+>channel<-odbcConnect("psmrd") 
+>df_OnePer <-data.frame(sqlQuery(channel, "select * from
+AUTCombinedWA_BILossCost_1per"))
+>save(df_OnePer, file = "df_OnePer.rda")
+
+
+Additional testing details:
+I exited R which released all memory cleanly, then started R again,
+loaded the .rda saved in prior step as below.  This confirmed relatively
+little of the memory is consumed going from .rda to data frame;
+isolating to the RODBC step:
+
+> load("df_OnePer.rda")
+> df <- data.frame(df_OnePer)
+
+I closed R & opened MS Access & used the same DSN "psmrd", & to import
+the AUTCombinedWA_BILossCost_1per into MS Access which required about
+30000kb of memory & 20000kb of virtual.
+
+And finally, I have this excerpt from Prof Brian Ripley that seems
+potentially relevant (if it's not just confusion because I called them
+'byte-size' when really I should have said they're integers just having
+values limited to 1-255).  In any case I'm unable to see from the RODBC
+help how to specify this:  "...sqlQuery returns a data frame directly.
+I think you need to tell RODBC to translate your 'byte-sized factors' to
+numeric, as it will be going through character if these are a type it
+does not know about."  
+
+Read all the RODBC help, read all the data import guide & searched help
+archives...can't find an answer.  Would appreciate advice, experience,
+or direction.
+
+Jill Willie 
+Open Seas
+Safeco Insurance
+jilwil at safeco.com 
+
+
+-----Original Message-----
+From: Prof Brian Ripley [mailto:ripley at stats.ox.ac.uk] 
+Sent: Thursday, January 25, 2007 12:05 AM
+To: WILLIE, JILL
+Cc: r-help at stat.math.ethz.ch
+Subject: Re: [R] Size of data vs. needed memory...rule of thumb?
+
+On Wed, 24 Jan 2007, WILLIE, JILL wrote:
+
+> I have been searching all day & most of last night, but can't find any
+> benchmarking or recommendations regarding R system requirements for
+very
+> large (2-5GB) data sets to help guide our hardware configuration.  If
+> anybody has experience with this they're willing to share or could
+> anybody point me in a direction that might be productive to research,
+it
+> would be much appreciated.  Specifically:  will R simply use as much
+> memory as the OS makes available to it, unlimited?
+
+Under most OSes.  Because Windows has no means to limit the amount made 
+available, R under Windows does have it own limiting mechanism (which
+you 
+hit in the examples below).  R under Linux will allow you to run a 4GB 
+process on a machine with 2GB RAM, but you are likely to get around 0.7%
+
+usage.  (One of my colleagues did that on a server earlier this week, 
+hence the very specific answer.)
+
+> Is there a multi-threading version R, packages?
+
+Not to run computations in R.  Some parts of R (e.g. GUIs) and some 
+libraries (e.g. some BLAS) are multithreaded.  There are multiprocess
+packages, e.g. Rmpi, rpvm, snow.
+
+> Does the core R package support 64-bit
+
+Yes, and has for many years.
+
+> & should I expect to see any difference in how memory's handled under 
+> that version?
+
+yes, because the address space will not get seriously fragmented.  See
+the 
+appropriate section in R-admin.html (referenced from INSTALL).
+
+> Is 3 GB of memory to 1GB of data a reasonable ballpark?
+
+I'd say it was a bit low, but it really depends on the analysis you are 
+doing, how 1GB of data is made up (many rows?, many cols?, etc) and so
+on.
+Had you asked me to suggest a ratio I would have said 5.
+
+> Our testing thus far has been on a windows 32-bit box w/1GB of RAM & 1
+> CPU; it appears to indicate something like 3GB of RAM for every 1GB of
+> sql table (ex-indexes, byte-sized factors).  At this point, we're
+> planning on setting up a dual core 64-bit Linux box w/16GB of RAM for
+> starters, since we have summed-down sql tables of approx 2-5GB
+> generally.
+>
+> Here's details, just for context, or in case I'm misinterpreting the
+> results, or in case there's some more memory-efficient way to get data
+> in R's binary format than going w/the data.frame.
+
+Well, sqlQuery returns a data frame directly.  I think you need to tell 
+RODBC to translate your 'byte-sized factors' to numeric, as it will be 
+going through character if these are a type it does not know about.
+
+> R session:
+> 		> library(RODBC)
+> 		> channel<-odbcConnect("psmrd")
+> 		> FivePer <-data.frame(sqlQuery(channel, "select * from
+> AUTCombinedWA_BILossCost_5per"))
+>
+> 		Error: cannot allocate vector of size 2000 Kb
+> 		In addition: Warning messages:
+> 		1: Reached total allocation of 1023Mb: see
+> help(memory.size)
+> 		2: Reached total allocation of 1023Mb: see
+> help(memory.size)
+>
+>
+> ODBC connection:
+> 		Microsoft SQL Server ODBC Driver Version 03.86.1830
+>
+> 		Data Source Name: psmrd
+> 		Data Source Description:
+> 		Server: psmrdcdw01\modeling
+> 		Database: OpenSeas_Work1
+> 		Language: (Default)
+> 		Translate Character Data: Yes
+> 		Log Long Running Queries: No
+> 		Log Driver Statistics: No
+> 		Use Integrated Security: Yes
+> 		Use Regional Settings: No
+> 		Prepared Statements Option: Drop temporary procedures on
+> disconnect
+> 		Use Failover Server: No
+> 		Use ANSI Quoted Identifiers: Yes
+> 		Use ANSI Null, Paddings and Warnings: Yes
+> 		Data Encryption: No
+>
+> Please be patient, I'm a new R user (or at least I'm trying to be...at
+> this point I'm mostly a new R-help-reader); I'd appreciated being
+> pointed in the right direction if this isn't the right help list to
+send
+> this question to...or if this question is poorly worded (I did read
+the
+> posting guide).
+>
+> Jill Willie
+> Open Seas
+> Safeco Insurance
+> jilwil at safeco.com
+>
+>
+>
+> 	[[alternative HTML version deleted]]
+>
+> ______________________________________________
+> R-help at stat.math.ethz.ch mailing list
+> https://stat.ethz.ch/mailman/listinfo/r-help
+> PLEASE do read the posting guide
+http://www.R-project.org/posting-guide.html
+> and provide commented, minimal, self-contained, reproducible code.
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From @@m@y@@@r @end|ng |rom gm@||@com  Thu Feb  8 05:48:15 2007
+From: @@m@y@@@r @end|ng |rom gm@||@com (d. sarthi maheshwari)
+Date: Thu, 8 Feb 2007 10:18:15 +0530
+Subject: [R-sig-DB] R GUI is puzzling me
+Message-ID: <d4327f7e0702072048u2f3dd3a4s32dc6dd6dd783b0a@mail.gmail.com>
+
+Dear Sir/Madam,
+
+I have a data.frame which consist of two columns and several rows. The
+values of 2nd column can be either TRUE or FALSE.
+I want to save all the value of first column in another variable whose
+corresponding row in second column have value TRUE.
+
+Please consider the following example:
+
+#currently i am doing this.
+date <- 0
+j <- 1
+for (i in 1:nrow(final))
+{
+    if(final[i,2] == TRUE)
+    {
+        date[j] <- final[i,1]
+        j <- j+1
+    }
+}
+
+Is there any efficient method (single line code) to do the same?
+
+-- 
+Thanks & Regards
+Sarthi M.
+
+	[[alternative HTML version deleted]]
+
+
+
+From byron@e|||@ @end|ng |rom gm@||@com  Thu Feb  8 07:41:41 2007
+From: byron@e|||@ @end|ng |rom gm@||@com (Byron Ellis)
+Date: Wed, 7 Feb 2007 22:41:41 -0800
+Subject: [R-sig-DB] R GUI is puzzling me
+In-Reply-To: <d4327f7e0702072048u2f3dd3a4s32dc6dd6dd783b0a@mail.gmail.com>
+References: <d4327f7e0702072048u2f3dd3a4s32dc6dd6dd783b0a@mail.gmail.com>
+Message-ID: <7098abec0702072241m1b302c88o9e472e4989a7f8fe@mail.gmail.com>
+
+date = final[final[i,2],1]
+
+On 2/7/07, d. sarthi maheshwari <samay.sar at gmail.com> wrote:
+> Dear Sir/Madam,
+>
+> I have a data.frame which consist of two columns and several rows. The
+> values of 2nd column can be either TRUE or FALSE.
+> I want to save all the value of first column in another variable whose
+> corresponding row in second column have value TRUE.
+>
+> Please consider the following example:
+>
+> #currently i am doing this.
+> date <- 0
+> j <- 1
+> for (i in 1:nrow(final))
+> {
+>     if(final[i,2] == TRUE)
+>     {
+>         date[j] <- final[i,1]
+>         j <- j+1
+>     }
+> }
+>
+> Is there any efficient method (single line code) to do the same?
+>
+> --
+> Thanks & Regards
+> Sarthi M.
+>
+>         [[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+-- 
+Byron Ellis (byron.ellis at gmail.com)
+"Oook" -- The Librarian
+
+
+
+From @@m@y@@@r @end|ng |rom gm@||@com  Tue Feb 13 17:42:34 2007
+From: @@m@y@@@r @end|ng |rom gm@||@com (d. sarthi maheshwari)
+Date: Tue, 13 Feb 2007 22:12:34 +0530
+Subject: [R-sig-DB] R GUI : is there any GUI?
+Message-ID: <d4327f7e0702130842w6fa9ea58vde532970a2a5c6f5@mail.gmail.com>
+
+Hi
+
+Is there any way in R GUI to produce some GUI as we can do in MATLAB?
+Can we create some GUI to take some run time user inputs?
+Or is there any way to take run-time user input by some mean?
+
+-- 
+Thanks & Regards
+Sarthi M.
+
+	[[alternative HTML version deleted]]
+
+
+
+From @@m@y@@@r @end|ng |rom gm@||@com  Wed Feb 14 10:51:46 2007
+From: @@m@y@@@r @end|ng |rom gm@||@com (d. sarthi maheshwari)
+Date: Wed, 14 Feb 2007 15:21:46 +0530
+Subject: [R-sig-DB] R GUI : any suggestion??
+Message-ID: <d4327f7e0702140151j305a0413ta574a78e49a79b5a@mail.gmail.com>
+
+Hi
+
+Please suggest me how to implement "Group by" function of SQL in R GUI?
+
+e.g.
+ input data.frame
+x                  y
+============
+a                10
+b                20
+a                10
+a                10
+b                15
+b                15
+b                20
+
+In o/p i need
+
+x            y
+=========
+a           30
+b           70
+
+-- 
+Thanks
+Sarthi M.
+
+	[[alternative HTML version deleted]]
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Wed Feb 14 11:10:09 2007
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Wed, 14 Feb 2007 10:10:09 +0000 (GMT)
+Subject: [R-sig-DB] R GUI : any suggestion??
+In-Reply-To: <d4327f7e0702140151j305a0413ta574a78e49a79b5a@mail.gmail.com>
+References: <d4327f7e0702140151j305a0413ta574a78e49a79b5a@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0702141002380.21570@gannet.stats.ox.ac.uk>
+
+Please stop misusing this list, which is about DBMS interfaces in R.
+This is the third irrelevant posting from you this month, in each case 
+with a misleading and unspecific title.
+
+R-help is the list for basic R questions, and this has nothing to do with 
+any 'R GUI' (nor does this list).
+
+There is a posting guide, and it asks you to do your homework.  Try the 
+help on the functions aggregate(), by ()and tapply()
+
+On Wed, 14 Feb 2007, d. sarthi maheshwari wrote:
+
+> Hi
+>
+> Please suggest me how to implement "Group by" function of SQL in R GUI?
+>
+> e.g.
+> input data.frame
+> x                  y
+> ============
+> a                10
+> b                20
+> a                10
+> a                10
+> b                15
+> b                15
+> b                20
+>
+> In o/p i need
+>
+> x            y
+> =========
+> a           30
+> b           70
+>
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Wed Feb 14 16:58:20 2007
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Wed, 14 Feb 2007 10:58:20 -0500
+Subject: [R-sig-DB] R GUI : any suggestion??
+In-Reply-To: <d4327f7e0702140151j305a0413ta574a78e49a79b5a@mail.gmail.com>
+References: <d4327f7e0702140151j305a0413ta574a78e49a79b5a@mail.gmail.com>
+Message-ID: <200702141058.20597.sdavis2@mail.nih.gov>
+
+On Wednesday 14 February 2007 04:51, d. sarthi maheshwari wrote:
+> Hi
+>
+> Please suggest me how to implement "Group by" function of SQL in R GUI?
+>
+> e.g.
+>  input data.frame
+> x                  y
+> ============
+> a                10
+> b                20
+> a                10
+> a                10
+> b                15
+> b                15
+> b                20
+>
+> In o/p i need
+>
+> x            y
+> =========
+> a           30
+> b           70
+
+See help(aggregate).
+
+This is probably a question more appropriate for R-help, but I see where you 
+are coming from.
+
+Sean
+
+
+
+From w@northcott @end|ng |rom un@w@edu@@u  Sat Feb 24 06:06:05 2007
+From: w@northcott @end|ng |rom un@w@edu@@u (Bill Northcott)
+Date: Sat, 24 Feb 2007 16:06:05 +1100
+Subject: [R-sig-DB] RSQLite memory leak?
+Message-ID: <76740E06-A1D6-415E-8BAE-A238A08D59F6@unsw.edu.au>
+
+I am using RSQLite 0.4-19 with R 2.4.1 on MacOS X 10.4.8.  Both R and  
+RSQLite are compiled from source using Apple's compilers.
+
+The following simple script:
+library(DBI)
+library(RSQLite)
+
+drv <- dbDriver("SQLite")
+con <- dbConnect(drv,trad_db)
+
+dbDisconnect(con)
+dbUnloadDriver(drv)
+
+gives the output:
+Warning message:
+RS-DBI driver warning: (mgr->drvData was not freed (some memory leaked))
+
+This seems to be a meaningful warning as when I run a real script  
+with the same beginning and end a number of time R seems to get into  
+trouble.
+
+Bill Northcott
+
+
+
+From @|@|con @end|ng |rom |hcrc@org  Sat Feb 24 21:47:29 2007
+From: @|@|con @end|ng |rom |hcrc@org (Seth Falcon)
+Date: Sat, 24 Feb 2007 12:47:29 -0800
+Subject: [R-sig-DB] RSQLite memory leak?
+In-Reply-To: <76740E06-A1D6-415E-8BAE-A238A08D59F6@unsw.edu.au> (Bill
+	Northcott's message of "Sat, 24 Feb 2007 16:06:05 +1100")
+References: <76740E06-A1D6-415E-8BAE-A238A08D59F6@unsw.edu.au>
+Message-ID: <m2k5y7nuzi.fsf@ziti.local>
+
+Hi Bill,
+
+Bill Northcott <w.northcott at unsw.edu.au> writes:
+
+> I am using RSQLite 0.4-19 with R 2.4.1 on MacOS X 10.4.8.  Both R and  
+> RSQLite are compiled from source using Apple's compilers.
+>
+> The following simple script:
+> library(DBI)
+> library(RSQLite)
+>
+> drv <- dbDriver("SQLite")
+> con <- dbConnect(drv,trad_db)
+>
+> dbDisconnect(con)
+> dbUnloadDriver(drv)
+>
+> gives the output:
+> Warning message:
+> RS-DBI driver warning: (mgr->drvData was not freed (some memory leaked))
+>
+> This seems to be a meaningful warning as when I run a real script  
+> with the same beginning and end a number of time R seems to get into  
+> trouble.
+
+Thanks for the report.  I can reproduce the warning and will see if I
+can find out what's going on.  
+
+In the meantime, a workaround might be to simply not unload the
+driver.  I'm not sure why you would want to unload and reload it in
+the first place -- you can reuse the drv object for different
+connections.
+
++ seth
+
+
+
+From @|@|con @end|ng |rom |hcrc@org  Tue Feb 27 18:56:11 2007
+From: @|@|con @end|ng |rom |hcrc@org (Seth Falcon)
+Date: Tue, 27 Feb 2007 09:56:11 -0800
+Subject: [R-sig-DB] RSQLite memory leak?
+In-Reply-To: <m2k5y7nuzi.fsf@ziti.local> (Seth Falcon's message of "Sat,
+	24 Feb 2007 12:47:29 -0800")
+References: <76740E06-A1D6-415E-8BAE-A238A08D59F6@unsw.edu.au>
+	<m2k5y7nuzi.fsf@ziti.local>
+Message-ID: <m2irdniix0.fsf@ziti.local>
+
+Seth Falcon <sfalcon at fhcrc.org> writes:
+> Hi Bill,
+>
+> Bill Northcott <w.northcott at unsw.edu.au> writes:
+>
+>> I am using RSQLite 0.4-19 with R 2.4.1 on MacOS X 10.4.8.  Both R and  
+>> RSQLite are compiled from source using Apple's compilers.
+>>
+>> The following simple script:
+>> library(DBI)
+>> library(RSQLite)
+>>
+>> drv <- dbDriver("SQLite")
+>> con <- dbConnect(drv,trad_db)
+>>
+>> dbDisconnect(con)
+>> dbUnloadDriver(drv)
+>>
+>> gives the output:
+>> Warning message:
+>> RS-DBI driver warning: (mgr->drvData was not freed (some memory leaked))
+>>
+>> This seems to be a meaningful warning as when I run a real script  
+>> with the same beginning and end a number of time R seems to get into  
+>> trouble.
+>
+> Thanks for the report.  I can reproduce the warning and will see if I
+> can find out what's going on.  
+
+I believe that I've found and fixed the memory leak with
+dbUnloadDriver and have uploaded a new version (0.4-20) to CRAN this
+morning.
+
+In the meantime, you can get the updated source package here:
+
+http://bioconductor.org/packages/misc/
+
++ seth
+
+
+
+From @|@|con @end|ng |rom |hcrc@org  Tue Feb 27 18:58:09 2007
+From: @|@|con @end|ng |rom |hcrc@org (Seth Falcon)
+Date: Tue, 27 Feb 2007 09:58:09 -0800
+Subject: [R-sig-DB] New version of RSQLite sent to CRAN
+Message-ID: <m2ejobiitq.fsf@ziti.local>
+
+Hi all,
+
+Just a heads up that I've uploaded a new version of RSQLite 0.4-20 to
+CRAN this morning (probably won't appear for ~48hrs).  Changes:
+
+* Fix memory leak bug in dbUnloadDriver
+
+* Fix build on Solaris
+
+Updated source package is available here:
+
+    http://bioconductor.org/packages/misc/
+
+
++ seth
+
+
+
+From jo@e@@|err@ @end|ng |rom |ntegrom|c@@com  Fri Mar  2 08:59:10 2007
+From: jo@e@@|err@ @end|ng |rom |ntegrom|c@@com (Jose Sierra)
+Date: Fri, 02 Mar 2007 08:59:10 +0100
+Subject: [R-sig-DB] RJDBC
+Message-ID: <45E7D94E.2080402@integromics.com>
+
+I need help.
+
+I'm trying to connect with an Oracle DBMS and MySQL DBMS, I'm using 
+RJDBC package.
+
+My code is the next:
+
+library('rJava')
+library('DBI')
+library('RJDBC')
+
+//Mysql
+drv <- 
+JDBC("com.mysql.jdbc.Driver","C:\\Temporal\\mysql-connector-java-3.0.9-stable-bin.jar","'")
+conn <- dbConnect(drv, "jdbc:mysql://localhost:3306/bd", "user", "password")
+
+//Oracle
+drv <- 
+JDBC("oracle.jdbc.driver.OracleDriver","C:\\Temporal\\classes12.jar","'")
+conn <- dbConnect(drv, 
+"jdbc:oracle:thin:@192.168.1.70:1521:SDS22","user","password")
+
+R always returns for oracle
+ "Error en .local(drv, ...) : Unable to connect JDBC to 
+jdbc:oracle:thin:@192.168.1.70:1521:SDS22"
+and for mysql
+ "Error en .local(drv, ...) : Unable to connect JDBC to 
+jdbc:mysql://localhost:3306/bd"
+
+And the function summary(drv) returns:
+JDBCDriver
+name = JDBC
+driver.version = 0.1-1
+DBI.version = 0.1-1
+client.version = NA
+max.connections = NA
+
+Can you help me, please?
+
+Regards.
+Jose Sierra
+
+		
+______________________________________________ 
+LLama Gratis a cualquier PC del Mundo. 
+Llamadas a fijos y m?viles desde 1 c?ntimo por minuto. 
+http://es.voice.yahoo.com
+
+
+
+From edd @end|ng |rom deb|@n@org  Mon Mar  5 20:33:09 2007
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Mon, 5 Mar 2007 13:33:09 -0600
+Subject: [R-sig-DB] RdbiPgSQL: Sub-second support for type conversion
+Message-ID: <17900.28789.93532.767424@basebud.nulle.part>
+
+
+Brian Ripley did a lot of really nice work a year ago to support milli- (and
+even micro-) second resolutions in R's POSIXt types.  
+
+Trying to read such data back from Postgresql, I was getting
+
+   > Foo <- dbReadTable(db, someTable)
+   Warning messages:
+   1: Coercing PGSQL type 1114 to character in:
+   rpgsql.cast.values.default(data.col) 
+
+for columns of type timestamp (actually: 'timestamp without time zone'). 
+As I use
+
+   options("digits.secs"=7)
+
+a simple Sys.time() returns strings such
+
+   > Sys.time()
+   [1] "2007-03-05 13:28:39.260931 CST"
+
+
+Now, I just had a really quick look at the RdbiPgSQL sources, and it turns
+out that I can solve my problem with a simple one-liner similar to what is
+already at the end of R/types.R:
+
+   ## indented just for the mail
+   rpgsql.cast.values.1114 <- function(x) { 
+      as.POSIXct(strptime(x, "%a %b %d %H:%M:%OS %Y")) 
+   }
+
+But i presume that the format string is locale-dependent.  Is there a clever
+way to code the format in a way that will work in other settings?
+
+Dirk
+
+-- 
+Hell, there are no rules here - we're trying to accomplish something. 
+                                                  -- Thomas A. Edison
+
+
+
+From @|@|con @end|ng |rom |hcrc@org  Sat Mar 17 17:55:53 2007
+From: @|@|con @end|ng |rom |hcrc@org (Seth Falcon)
+Date: Sat, 17 Mar 2007 09:55:53 -0700
+Subject: [R-sig-DB] NAMESPACE for DBI and RSQLite
+Message-ID: <m2d53724iu.fsf@ziti.local>
+
+Hello all,
+
+As has been planned for some time, I have added a NAMESPACE file to
+DBI and RSQLite.
+
+Preview version is available here:
+
+    http://www.bioconductor.org/packages/misc/
+
+I would really appreciate feedback if someone has a chance to give
+these a try -- especially of interest would be installing the new DBI
+and testing RMySQL and ROracle.
+
+I plan on sending these updates to CRAN on Monday or Tuesday.
+
+Best Wishes,
+
++ seth
+
+-- 
+Seth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center
+http://bioconductor.org
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Sun Mar 18 02:33:59 2007
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Sat, 17 Mar 2007 21:33:59 -0400
+Subject: [R-sig-DB] NAMESPACE for DBI and RSQLite
+In-Reply-To: <m2d53724iu.fsf@ziti.local>
+References: <m2d53724iu.fsf@ziti.local>
+Message-ID: <45FC9707.6060708@mail.nih.gov>
+
+Seth Falcon wrote:
+> Hello all,
+>
+> As has been planned for some time, I have added a NAMESPACE file to
+> DBI and RSQLite.
+>
+> Preview version is available here:
+>
+>     http://www.bioconductor.org/packages/misc/
+>
+> I would really appreciate feedback if someone has a chance to give
+> these a try -- especially of interest would be installing the new DBI
+> and testing RMySQL and ROracle.
+>   
+Not directly related, but is Postgresql going to be wrapped in at some 
+point?  I'm just not sure where it stands in relation to DBI.  Just 
+curious, as RdbiPgSQL currently works fine.
+
+Thanks,
+Sean
+
+
+
+From @|@|con @end|ng |rom |hcrc@org  Sun Mar 18 18:40:56 2007
+From: @|@|con @end|ng |rom |hcrc@org (Seth Falcon)
+Date: Sun, 18 Mar 2007 10:40:56 -0700
+Subject: [R-sig-DB] NAMESPACE for DBI and RSQLite
+In-Reply-To: <45FC9707.6060708@mail.nih.gov> (Sean Davis's message of "Sat,
+	17 Mar 2007 21:33:59 -0400")
+References: <m2d53724iu.fsf@ziti.local> <45FC9707.6060708@mail.nih.gov>
+Message-ID: <m2ircyzbyv.fsf@ziti.local>
+
+Sean Davis <sdavis2 at mail.nih.gov> writes:
+> Not directly related, but is Postgresql going to be wrapped in at some
+> point?  I'm just not sure where it stands in relation to DBI.  Just
+> curious, as RdbiPgSQL currently works fine.
+
+Yes... at some point ;-)
+
+There are a number of people who would very much like to see RdbiPgSQL
+converted to a DBI-based package.  Having a namespace on DBI should
+make such a project easier, IMO.
+
+It seems not quite important enough for anyone to put at the top of
+their TODO list -- perhaps because RdbiPgSQL does work.
+
+Interested parties are welcome to contact me for suggestions in
+getting started. :-)
+
+Best,
+
++ seth
+
+-- 
+Seth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center
+http://bioconductor.org
+
+
+
+From @|@|con @end|ng |rom |hcrc@org  Wed Mar 28 00:59:00 2007
+From: @|@|con @end|ng |rom |hcrc@org (Seth Falcon)
+Date: Tue, 27 Mar 2007 15:59:00 -0700
+Subject: [R-sig-DB] New versions of DBI and RSQLite uploaded to CRAN
+Message-ID: <m2wt12qonf.fsf@ziti.fhcrc.org>
+
+Hello all,
+
+DBI 0.2-1 and RSQLite 0.5-2 have been uploaded to CRAN and should hit
+a mirror near you in a few days.
+
+Changes
+=======
+
+DBI
+---
+
+   Remove conditional definition of print, show, summary generics
+    
+    For now, it is probably better to just call setMethod on these
+    functions and let the generic get created where it may.  This will
+    break when another package defines their own summary generic, but
+    at least we won't be breaking other people.
+
+RSQLite
+-------
+
+   Add runnable examples to some of the man pages
+
+   Need to exportMethod format since we define a method for it
+    
+
++ seth
+
+-- 
+Seth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center
+http://bioconductor.org
+
+
+

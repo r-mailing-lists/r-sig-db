@@ -1,0 +1,251 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2006-03",
+  "messages": [
+    {
+      "id": "msg-9c8c0c8efad3",
+      "message_id": "<1C60DC60-24BD-4814-8479-AFCD58F0C7FF@bu.edu>",
+      "from_name": "Jason Horn",
+      "from_email_hash": "80dd4023238a0e62df6918318e42337d33260c364c22732a1c0797b782591571",
+      "date": "2006-03-02T09:57:07-05:00",
+      "subject": "[R-sig-DB] (no subject)",
+      "subject_clean": "(no subject)",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Does anyone know what this error means:\n\n\"RS-DBI driver warning: (unrecognized MySQL field type 246 in column 1)\"\n\nHere's the script:\n\nquery<-paste(\"select all_months.date as 'date', avg(all_months.count)  \nas 'counts' from (select date, time, loc, count(sum) as 'count' from  \nmeasurements where sum>0 and year(date)=2000 group by date, loc)  \nall_months group by all_months.date order by 'date'\",sep=\"\")\nrs <- dbSendQuery(con, query)\ndata<-fetch(rs, n=-1)\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Does anyone know what this error means:\n\n\"RS-DBI driver warning: (unrecognized MySQL field type 246 in column 1)\"\n\nHere's the script:\n\nquery<-paste(\"select all_months.date as 'date', avg(all_months.co",
+      "thread_id": "thread-9c8c0c8efad3",
+      "thread_depth": 0,
+      "month": "2006-03"
+    },
+    {
+      "id": "msg-493cc5728082",
+      "message_id": "<20060302182238.GA5370@jessie.research.bell-labs.com>",
+      "from_name": "David James",
+      "from_email_hash": "50db14ff16dfd88fa0516d6b3379e8ac0537ba1ef3b84fa4345e8a2fec6698f9",
+      "date": "2006-03-02T13:22:38-05:00",
+      "subject": "[R-sig-DB] (no subject)",
+      "subject_clean": "(no subject)",
+      "in_reply_to": "<1C60DC60-24BD-4814-8479-AFCD58F0C7FF@bu.edu>",
+      "references": [
+        "<1C60DC60-24BD-4814-8479-AFCD58F0C7FF@bu.edu>"
+      ],
+      "body_plain": "Jason Horn wrote:\n> Does anyone know what this error means:\n> \n> \"RS-DBI driver warning: (unrecognized MySQL field type 246 in column 1)\"\n> \n\nThat the data type in column 1 could not be mapped to a known \nR type (type here as in \"integer\", \"double\", \"logical\", ...),\nperhaps MYSQL_TYPE_NEWDATE.  If so, a workaround is to extract \ndates as strings, e.g.,\n\n  SELECT CONVERT(all_months_date USING ASCII) as date, ....\n\nand then use you favorite R date/time routine on the output data.frame.\n\nHTH,\n\n--\nDavid\n\n\n> Here's the script:\n> \n> query<-paste(\"select all_months.date as 'date', avg(all_months.count)  \n> as 'counts' from (select date, time, loc, count(sum) as 'count' from  \n> measurements where sum>0 and year(date)=2000 group by date, loc)  \n> all_months group by all_months.date order by 'date'\",sep=\"\")\n> rs <- dbSendQuery(con, query)\n> data<-fetch(rs, n=-1)\n> \t[[alternative HTML version deleted]]\n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "Jason Horn wrote:\n> Does anyone know what this error means:\n> \n> \"RS-DBI driver warning: (unrecognized MySQL field type 246 in column 1)\"\n> \n\nThat the data type in column 1 could not be mapped to a kn",
+      "thread_id": "thread-9c8c0c8efad3",
+      "thread_depth": 1,
+      "month": "2006-03"
+    },
+    {
+      "id": "msg-1d6d7b391692",
+      "message_id": "<27d1e6020603021939wbcc3527ke37b51a5ae85f63e@mail.gmail.com>",
+      "from_name": "Laurent Gautier",
+      "from_email_hash": "7f6f8a043f67fd9e9553a995a8f46531d47b1ac14ed253b2166f29ba46fa18fa",
+      "date": "2006-03-03T11:39:02+08:00",
+      "subject": "[R-sig-DB] [R] prepared query with RODBC ?",
+      "subject_clean": "prepared query with RODBC ?",
+      "in_reply_to": "<20060302163543.GD2955@jessie.research.bell-labs.com>",
+      "references": [
+        "<27d1e6020602270638u55cf0687na67c76a78b6cdf66@mail.gmail.com>",
+        "<20060302163543.GD2955@jessie.research.bell-labs.com>"
+      ],
+      "body_plain": "[A thread started on r-help, now moved to the r-sig-db list.]\n\nI am precisely about about something similar.\n>From what I read/heard some folks/DBMs make the distinction\nbetween prepared queries (as you give example code for) and\nbatch queries. Both of them speed up the process when similar\nqueries are to be performed, with the batch queries being the fastest\n(since in the case of the prepared query an answer is returned by\nthe database for each query...).\n\n>From what I could understand, RODBC will make a prepared query\n(at the C level) when one wants to write a data.frame and select the\noption 'fast=TRUE'...\n\nI shall experiment further...\n\n\nThanks,\n\n\nLaurent\n\n\nOn 3/3/06, David James <dj at research.bell-labs.com> wrote:\n> Perhaps this thread should be continued in the r-sig-db list?\n>\n> Laurent Gautier wrote:\n> > Dear List,\n> >\n> > Would anyone know how to perform prepared queries with ROBC ?\n> > I had a shot with some of the internal (non-exported) functions of the package\n> > but ended up with a segfault, so I prefer asking around before\n> > experimenting further...\n> >\n> > Thanks,\n> >\n> >\n> >\n> > Laurent\n> >\n> > ______________________________________________\n> > R-help at stat.math.ethz.ch mailing list\n> > https://stat.ethz.ch/mailman/listinfo/r-help\n> > PLEASE do read the posting guide! http://www.R-project.org/posting-guide.html\n>\n>\n> R applications that require a tighter interface to DBMSs could\n> greatly benefit from such a facility, but prepared statements\n> have not been used much from R, AFAIK.\n>\n> In a nutshell, a prepared statement is an SQL statement that is\n> parsed, optimized, cached in the server, and then repeatedly executed\n> with new data (using what is called \"data binding\").  Some of its\n> benefits are significant improved performance, breaking big tasks\n> into smaller, more manageable tasks, etc.\n>\n> A trivial example:\n>\n>   ## prepare an SQL statement for repeated insertions, and bind\n>   ## output data.frame columns 1, 2, 3, and 4 to the SQL statement\n>\n>   ps <- dbPrepareStatement(conn,\n>            \"INSERT into SCORING (id, x1, x2, score) VALUES (:1,:2,:3,:4)\",\n>            bind = c(\"char\", \"char\", \"numeric\", \"numeric\"))\n>\n>   ## compute new scores....\n>   while(condition){\n>      ...\n>      new_scores <- predict(model, newdata)\n>      dbExecStatement(ps, data = new_scores)\n>\n>   }\n>   dbCommit(con)\n>   dbClearResult(ps)\n>\n> I believe most DBMSs provide means to do this (PostgreSQL, MySQL,\n> Sybase, Oracle, SQLite, ODBC 3.0, ...), but I think only the\n> R-Oracle interface currently implements them (and only in an\n> experimental basis).\n>\n> Regards,\n>\n> --\n> David\n>",
+      "body_snippet": "[A thread started on r-help, now moved to the r-sig-db list.]\n\nI am precisely about about something similar.\n>From what I read/heard some folks/DBMs make the distinction\nbetween prepared queries (as y",
+      "thread_id": "thread-1d6d7b391692",
+      "thread_depth": 0,
+      "month": "2006-03"
+    },
+    {
+      "id": "msg-b4518cdbb2b3",
+      "message_id": "<27d1e6020603022006x40233150p3387a0b99405a6c5@mail.gmail.com>",
+      "from_name": "Laurent Gautier",
+      "from_email_hash": "7f6f8a043f67fd9e9553a995a8f46531d47b1ac14ed253b2166f29ba46fa18fa",
+      "date": "2006-03-03T12:06:33+08:00",
+      "subject": "[R-sig-DB] [R] prepared query with RODBC ?",
+      "subject_clean": "prepared query with RODBC ?",
+      "in_reply_to": "<67DCA285A2D7754280D3B8E88EB548020C946785@MSGBOSCLB2WIN.DMN1.FMR.COM>",
+      "references": [
+        "<67DCA285A2D7754280D3B8E88EB548020C946785@MSGBOSCLB2WIN.DMN1.FMR.COM>"
+      ],
+      "body_plain": "As said, my experience with (R)ODBC is limited.\nI am trying to decompose the steps to be clear (preparation of the\nquery with placeholders\nmarked with ? or :1, :2... then run of the prepared query with values for\nthe placeholders). From some of the database connectivity kits I also\nknow of (non-R ones), both steps can be bundled.\nAccording to your first paragraph, we may be talking about the same\nthing (and I do mean \"preparing\" in what you call a traditional sense).\n\nThe answer from David James (in this thread), matches what I am after.\n\n\nThanks.\n\n\nLaurent\n\nOn 3/2/06, McGehee, Robert <Robert.McGehee at geodecapital.com> wrote:\n> Well, I'm still not sure what you're trying to do, specifically because\n> I don't understand your distinction here between \"preparing\" and\n> \"running\" a query, especially if you do not mean preparing in the\n> traditional sense, i.e. pre-process a dynamic SQL query so that it can\n> be run multiple times without re-processing.\n>\n> Certainly, however, you can run a query and fetch its results in two\n> different steps using RODBC, and this can actually be quite useful for\n> fine-tuning performance and inserting error control in complex queries.\n> One does this by first using the odbcQuery() function to run the query\n> and then the sqlGetResults() function to fetch the rows (if as you said,\n> there are rows to be fetched).\n>\n> If you are more interested in batch processing multiple SQL queries,\n> which is not the same as preparing a query, an easy way to do this is to\n> just define a stored procedure and then run the stored procedure using\n> sqlQuery or odbcQuery, or alternatively use transaction control. You can\n> send an entire batch statement as a single string to sqlQuery.\n>\n> Lastly, a previous version of RODBC had a function odbcDirectQuery which\n> I made use of in the past to toggle between direct execution and batch\n> execution for multiple queries. This was most useful for me if I wanted\n> to make use of temporary tables. However, the odbcDirectQuery function\n> is no longer supported in the current version of RODBC, probably because\n> it was not stable across SQL platforms. That said, you might take a look\n> at the C code for ideas.\n>\n> HTH,\n> Robert\n>\n>\n> -----Original Message-----\n> From: Laurent Gautier [mailto:lgautier at gmail.com]\n> Sent: Thursday, March 02, 2006 3:20 AM\n> To: McGehee, Robert\n> Cc: r-help at stat.math.ethz.ch\n> Subject: Re: [R] prepared query with RODBC ?\n>\n> Well, I may not have been clear enough. My experience with database\n> drivers\n> is so far mostly limited to JDBC, Perl's DBI, and some other things with\n> Python.\n> I am rather new to (R)ODBC.\n>\n> What I am after is something like:\n> ## -- dummy R code\n> pq <- prepareQuery(\"SELECT * FROM foo WHERE bar = ?\", dbHandle)\n> res <- runQuery(pq, allMyBars, dbHandle)\n> ## then fetch the query if needed (may be not the case if 'pq'\n> ## is about updating tables).\n>\n> (as I am just told, this is may be more something like a BATCH query\n> than\n> a prepared query stricto senso).\n>\n> I have tracked down things to the C level, with the function\n> RODBCUpdate, that appear\n> to do something related (\n>     res = SQLPrepare( thisHandle->hStmt, (SQLCHAR *) cquery,\n>                       strlen(cquery) );\n> can be spotted around line 960)\n> but the documentation is rare down there, so I was asking if anyone\n> had experience\n> on the topic.\n>\n> If I understand correctly your suggestion, the idea would be to build a\n> complete\n> set of (Visual Basic ?) instructions into a (potentially very long)\n> string and send them to the SQL server ?\n>\n>\n> Thanks.\n>\n>\n> Laurent\n>\n>\n>\n> On 3/1/06, McGehee, Robert <Robert.McGehee at geodecapital.com> wrote:\n> > I may be misunderstanding you, but why can't you execute a prepared\n> > query the same in RODBC as you would directly on your SQL server? In\n> > Microsoft SQL server, for instance, I would just set up an ADO\n> > application and set the Prepared and CommandText properties before\n> > running the query.\n> >\n> > Here is an example from the Microsoft SQL help page. In this example,\n> I\n> > would try storing all of the below as a string in R, and simply pass\n> > this into the odbcQuery or sqlQuery.  However, see the help for your\n> > specific SQL application. Note that (for at least SQL server) one can\n> > disable the prepare/execute model, so you might have to check your\n> ODBC\n> > settings before running.\n> >\n> > --Robert\n> >\n> > Dim cn As New ADODB.Connection\n> > Dim cmdPrep1 As New ADODB.Command\n> > Dim prm1 As New ADODB.Parameter\n> > Dim prm2 As New ADODB.Parameter\n> > Dim strCn As String\n> >\n> > strCn = \"Server=MyServerName;Database=pubs;Trusted_Connection=yes\"\n> > cn.Provider = \"sqloledb\"\n> > cn.Open strCn\n> > Set cmdPrep1.ActiveConnection = cn\n> > cmdPrep1.CommandText = \"UPDATE titles SET type=? WHERE title_id =?\"\n> > cmdPrep1.CommandType = adCmdText\n> > cmdPrep1.Prepared = True\n> >\n> > Set prm1 = cmdPrep1.CreateParameter(\"Type\", adChar, adParamInput, 12,\n> > \"New Bus\")\n> > cmdPrep1.Parameters.Append prm1\n> >\n> > Set prm2 = cmdPrep1.CreateParameter(\"ProductID\", adInteger,\n> > adParamInput, 4, 3)\n> > cmdPrep1.Parameters.Append prm2\n> >\n> > cmdPrep1.Execute\n> >\n> > cmdPrep1(\"Type\") = \"New Cook\"\n> > cmdPrep1(\"title_id\") = \"TC7777\"\n> > cmdPrep1.Execute\n> >\n> > cn.Close\n> >\n> >\n> > -----Original Message-----\n> > From: r-help-bounces at stat.math.ethz.ch\n> > [mailto:r-help-bounces at stat.math.ethz.ch] On Behalf Of Laurent Gautier\n> > Sent: Monday, February 27, 2006 9:38 AM\n> > To: r-help at stat.math.ethz.ch\n> > Subject: [R] prepared query with RODBC ?\n> >\n> > Dear List,\n> >\n> > Would anyone know how to perform prepared queries with ROBC ?\n> > I had a shot with some of the internal (non-exported) functions of the\n> > package\n> > but ended up with a segfault, so I prefer asking around before\n> > experimenting further...\n> >\n> > Thanks,\n> >\n> >\n> >\n> > Laurent\n> >\n> > ______________________________________________\n> > R-help at stat.math.ethz.ch mailing list\n> > https://stat.ethz.ch/mailman/listinfo/r-help\n> > PLEASE do read the posting guide!\n> > http://www.R-project.org/posting-guide.html\n> >\n> >\n>\n>",
+      "body_snippet": "As said, my experience with (R)ODBC is limited.\nI am trying to decompose the steps to be clear (preparation of the\nquery with placeholders\nmarked with ? or :1, :2... then run of the prepared query wit",
+      "thread_id": "thread-b4518cdbb2b3",
+      "thread_depth": 0,
+      "month": "2006-03"
+    },
+    {
+      "id": "msg-9669629778c6",
+      "message_id": "<C02D9633.7419%sdavis2@mail.nih.gov>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2006-03-03T06:44:03-05:00",
+      "subject": "[R-sig-DB] [R] prepared query with RODBC ?",
+      "subject_clean": "prepared query with RODBC ?",
+      "in_reply_to": "<27d1e6020603022006x40233150p3387a0b99405a6c5@mail.gmail.com>",
+      "references": [],
+      "body_plain": "Laurent,\n\nWhat database are you using?  Some, like postgresql (just because I use it)\nsupport server-side prepared statements, something like:\n\nPREPARE my_prepped_stmt(text,text) as\n SELECT * \n   FROM mytable\n  WHERE col1 = $1 AND\n        col2 = $2;\n\nFollowed by:\n\nEXECUTE my_prepped_stmt('test1','test2');\n\nThe PREPAREd statement can be sent to the server as a SQL command and will\nremain on the server for the life of the connection.  You can then use\nsuccessive RODBC calls to EXECUTE that query as often as you like and get\nthe benefit of a PREPAREd statement.  Doing this two-step PREPARE/EXECUTE on\nthe server allows you to overcome the lack of prepared statements via the\nclient interface.  I don't know which other database engines offer such\nfunctionality, but it would probably be worth a quick question on the\nRDMS-specific mailing list or a glance at the documentation for a PREPARE\nsyntax.\n\nHope that helps.\n\nSean\n\n\nOn 3/2/06 11:06 PM, \"Laurent Gautier\" <lgautier at gmail.com> wrote:\n\n> As said, my experience with (R)ODBC is limited.\n> I am trying to decompose the steps to be clear (preparation of the\n> query with placeholders\n> marked with ? or :1, :2... then run of the prepared query with values for\n> the placeholders). From some of the database connectivity kits I also\n> know of (non-R ones), both steps can be bundled.\n> According to your first paragraph, we may be talking about the same\n> thing (and I do mean \"preparing\" in what you call a traditional sense).\n> \n> The answer from David James (in this thread), matches what I am after.\n> \n> \n> Thanks.\n> \n> \n> Laurent\n> \n> On 3/2/06, McGehee, Robert <Robert.McGehee at geodecapital.com> wrote:\n>> Well, I'm still not sure what you're trying to do, specifically because\n>> I don't understand your distinction here between \"preparing\" and\n>> \"running\" a query, especially if you do not mean preparing in the\n>> traditional sense, i.e. pre-process a dynamic SQL query so that it can\n>> be run multiple times without re-processing.\n>> \n>> Certainly, however, you can run a query and fetch its results in two\n>> different steps using RODBC, and this can actually be quite useful for\n>> fine-tuning performance and inserting error control in complex queries.\n>> One does this by first using the odbcQuery() function to run the query\n>> and then the sqlGetResults() function to fetch the rows (if as you said,\n>> there are rows to be fetched).\n>> \n>> If you are more interested in batch processing multiple SQL queries,\n>> which is not the same as preparing a query, an easy way to do this is to\n>> just define a stored procedure and then run the stored procedure using\n>> sqlQuery or odbcQuery, or alternatively use transaction control. You can\n>> send an entire batch statement as a single string to sqlQuery.\n>> \n>> Lastly, a previous version of RODBC had a function odbcDirectQuery which\n>> I made use of in the past to toggle between direct execution and batch\n>> execution for multiple queries. This was most useful for me if I wanted\n>> to make use of temporary tables. However, the odbcDirectQuery function\n>> is no longer supported in the current version of RODBC, probably because\n>> it was not stable across SQL platforms. That said, you might take a look\n>> at the C code for ideas.\n>> \n>> HTH,\n>> Robert\n>> \n>> \n>> -----Original Message-----\n>> From: Laurent Gautier [mailto:lgautier at gmail.com]\n>> Sent: Thursday, March 02, 2006 3:20 AM\n>> To: McGehee, Robert\n>> Cc: r-help at stat.math.ethz.ch\n>> Subject: Re: [R] prepared query with RODBC ?\n>> \n>> Well, I may not have been clear enough. My experience with database\n>> drivers\n>> is so far mostly limited to JDBC, Perl's DBI, and some other things with\n>> Python.\n>> I am rather new to (R)ODBC.\n>> \n>> What I am after is something like:\n>> ## -- dummy R code\n>> pq <- prepareQuery(\"SELECT * FROM foo WHERE bar = ?\", dbHandle)\n>> res <- runQuery(pq, allMyBars, dbHandle)\n>> ## then fetch the query if needed (may be not the case if 'pq'\n>> ## is about updating tables).\n>> \n>> (as I am just told, this is may be more something like a BATCH query\n>> than\n>> a prepared query stricto senso).\n>> \n>> I have tracked down things to the C level, with the function\n>> RODBCUpdate, that appear\n>> to do something related (\n>>     res = SQLPrepare( thisHandle->hStmt, (SQLCHAR *) cquery,\n>>                       strlen(cquery) );\n>> can be spotted around line 960)\n>> but the documentation is rare down there, so I was asking if anyone\n>> had experience\n>> on the topic.\n>> \n>> If I understand correctly your suggestion, the idea would be to build a\n>> complete\n>> set of (Visual Basic ?) instructions into a (potentially very long)\n>> string and send them to the SQL server ?\n>> \n>> \n>> Thanks.\n>> \n>> \n>> Laurent\n>> \n>> \n>> \n>> On 3/1/06, McGehee, Robert <Robert.McGehee at geodecapital.com> wrote:\n>>> I may be misunderstanding you, but why can't you execute a prepared\n>>> query the same in RODBC as you would directly on your SQL server? In\n>>> Microsoft SQL server, for instance, I would just set up an ADO\n>>> application and set the Prepared and CommandText properties before\n>>> running the query.\n>>> \n>>> Here is an example from the Microsoft SQL help page. In this example,\n>> I\n>>> would try storing all of the below as a string in R, and simply pass\n>>> this into the odbcQuery or sqlQuery.  However, see the help for your\n>>> specific SQL application. Note that (for at least SQL server) one can\n>>> disable the prepare/execute model, so you might have to check your\n>> ODBC\n>>> settings before running.\n>>> \n>>> --Robert\n>>> \n>>> Dim cn As New ADODB.Connection\n>>> Dim cmdPrep1 As New ADODB.Command\n>>> Dim prm1 As New ADODB.Parameter\n>>> Dim prm2 As New ADODB.Parameter\n>>> Dim strCn As String\n>>> \n>>> strCn = \"Server=MyServerName;Database=pubs;Trusted_Connection=yes\"\n>>> cn.Provider = \"sqloledb\"\n>>> cn.Open strCn\n>>> Set cmdPrep1.ActiveConnection = cn\n>>> cmdPrep1.CommandText = \"UPDATE titles SET type=? WHERE title_id =?\"\n>>> cmdPrep1.CommandType = adCmdText\n>>> cmdPrep1.Prepared = True\n>>> \n>>> Set prm1 = cmdPrep1.CreateParameter(\"Type\", adChar, adParamInput, 12,\n>>> \"New Bus\")\n>>> cmdPrep1.Parameters.Append prm1\n>>> \n>>> Set prm2 = cmdPrep1.CreateParameter(\"ProductID\", adInteger,\n>>> adParamInput, 4, 3)\n>>> cmdPrep1.Parameters.Append prm2\n>>> \n>>> cmdPrep1.Execute\n>>> \n>>> cmdPrep1(\"Type\") = \"New Cook\"\n>>> cmdPrep1(\"title_id\") = \"TC7777\"\n>>> cmdPrep1.Execute\n>>> \n>>> cn.Close\n>>> \n>>> \n>>> -----Original Message-----\n>>> From: r-help-bounces at stat.math.ethz.ch\n>>> [mailto:r-help-bounces at stat.math.ethz.ch] On Behalf Of Laurent Gautier\n>>> Sent: Monday, February 27, 2006 9:38 AM\n>>> To: r-help at stat.math.ethz.ch\n>>> Subject: [R] prepared query with RODBC ?\n>>> \n>>> Dear List,\n>>> \n>>> Would anyone know how to perform prepared queries with ROBC ?\n>>> I had a shot with some of the internal (non-exported) functions of the\n>>> package\n>>> but ended up with a segfault, so I prefer asking around before\n>>> experimenting further...\n>>> \n>>> Thanks,\n>>> \n>>> \n>>> \n>>> Laurent\n>>> \n>>> ______________________________________________\n>>> R-help at stat.math.ethz.ch mailing list\n>>> https://stat.ethz.ch/mailman/listinfo/r-help\n>>> PLEASE do read the posting guide!\n>>> http://www.R-project.org/posting-guide.html\n>>> \n>>> \n>> \n>> \n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "Laurent,\n\nWhat database are you using?  Some, like postgresql (just because I use it)\nsupport server-side prepared statements, something like:\n\nPREPARE my_prepped_stmt(text,text) as\n SELECT * \n   FROM",
+      "thread_id": "thread-b4518cdbb2b3",
+      "thread_depth": 1,
+      "month": "2006-03"
+    },
+    {
+      "id": "msg-31e41796187e",
+      "message_id": "<20060303194626.GE25278@jessie.research.bell-labs.com>",
+      "from_name": "David James",
+      "from_email_hash": "50db14ff16dfd88fa0516d6b3379e8ac0537ba1ef3b84fa4345e8a2fec6698f9",
+      "date": "2006-03-03T14:46:26-05:00",
+      "subject": "[R-sig-DB] [R] prepared query with RODBC ?",
+      "subject_clean": "prepared query with RODBC ?",
+      "in_reply_to": "<C02D9633.7419%sdavis2@mail.nih.gov>",
+      "references": [
+        "<27d1e6020603022006x40233150p3387a0b99405a6c5@mail.gmail.com>",
+        "<C02D9633.7419%sdavis2@mail.nih.gov>"
+      ],
+      "body_plain": "Hi Sean,\n\nMySQL also provides server-side or SQL-level PREPARE statements\nas of version 4.1.3, and behave similarly to what you describe;\nhowever, in general server-side prepared statements are not\nas efficient as \"binary\" or C-level prepared statements when\nit comes to transferring large amounts of data, which is what\none may want/need to do from R.\n\n--\nDavid\n\nSean Davis wrote:\n> Laurent,\n> \n> What database are you using?  Some, like postgresql (just because I use it)\n> support server-side prepared statements, something like:\n> \n> PREPARE my_prepped_stmt(text,text) as\n>  SELECT * \n>    FROM mytable\n>   WHERE col1 = $1 AND\n>         col2 = $2;\n> \n> Followed by:\n> \n> EXECUTE my_prepped_stmt('test1','test2');\n> \n> The PREPAREd statement can be sent to the server as a SQL command and will\n> remain on the server for the life of the connection.  You can then use\n> successive RODBC calls to EXECUTE that query as often as you like and get\n> the benefit of a PREPAREd statement.  Doing this two-step PREPARE/EXECUTE on\n> the server allows you to overcome the lack of prepared statements via the\n> client interface.  I don't know which other database engines offer such\n> functionality, but it would probably be worth a quick question on the\n> RDMS-specific mailing list or a glance at the documentation for a PREPARE\n> syntax.\n> \n> Hope that helps.\n> \n> Sean\n> \n> \n> On 3/2/06 11:06 PM, \"Laurent Gautier\" <lgautier at gmail.com> wrote:\n> \n> > As said, my experience with (R)ODBC is limited.\n> > I am trying to decompose the steps to be clear (preparation of the\n> > query with placeholders\n> > marked with ? or :1, :2... then run of the prepared query with values for\n> > the placeholders). From some of the database connectivity kits I also\n> > know of (non-R ones), both steps can be bundled.\n> > According to your first paragraph, we may be talking about the same\n> > thing (and I do mean \"preparing\" in what you call a traditional sense).\n> > \n> > The answer from David James (in this thread), matches what I am after.\n> > \n> > \n> > Thanks.\n> > \n> > \n> > Laurent\n> > \n> > On 3/2/06, McGehee, Robert <Robert.McGehee at geodecapital.com> wrote:\n> >> Well, I'm still not sure what you're trying to do, specifically because\n> >> I don't understand your distinction here between \"preparing\" and\n> >> \"running\" a query, especially if you do not mean preparing in the\n> >> traditional sense, i.e. pre-process a dynamic SQL query so that it can\n> >> be run multiple times without re-processing.\n> >> \n> >> Certainly, however, you can run a query and fetch its results in two\n> >> different steps using RODBC, and this can actually be quite useful for\n> >> fine-tuning performance and inserting error control in complex queries.\n> >> One does this by first using the odbcQuery() function to run the query\n> >> and then the sqlGetResults() function to fetch the rows (if as you said,\n> >> there are rows to be fetched).\n> >> \n> >> If you are more interested in batch processing multiple SQL queries,\n> >> which is not the same as preparing a query, an easy way to do this is to\n> >> just define a stored procedure and then run the stored procedure using\n> >> sqlQuery or odbcQuery, or alternatively use transaction control. You can\n> >> send an entire batch statement as a single string to sqlQuery.\n> >> \n> >> Lastly, a previous version of RODBC had a function odbcDirectQuery which\n> >> I made use of in the past to toggle between direct execution and batch\n> >> execution for multiple queries. This was most useful for me if I wanted\n> >> to make use of temporary tables. However, the odbcDirectQuery function\n> >> is no longer supported in the current version of RODBC, probably because\n> >> it was not stable across SQL platforms. That said, you might take a look\n> >> at the C code for ideas.\n> >> \n> >> HTH,\n> >> Robert\n> >> \n> >> \n> >> -----Original Message-----\n> >> From: Laurent Gautier [mailto:lgautier at gmail.com]\n> >> Sent: Thursday, March 02, 2006 3:20 AM\n> >> To: McGehee, Robert\n> >> Cc: r-help at stat.math.ethz.ch\n> >> Subject: Re: [R] prepared query with RODBC ?\n> >> \n> >> Well, I may not have been clear enough. My experience with database\n> >> drivers\n> >> is so far mostly limited to JDBC, Perl's DBI, and some other things with\n> >> Python.\n> >> I am rather new to (R)ODBC.\n> >> \n> >> What I am after is something like:\n> >> ## -- dummy R code\n> >> pq <- prepareQuery(\"SELECT * FROM foo WHERE bar = ?\", dbHandle)\n> >> res <- runQuery(pq, allMyBars, dbHandle)\n> >> ## then fetch the query if needed (may be not the case if 'pq'\n> >> ## is about updating tables).\n> >> \n> >> (as I am just told, this is may be more something like a BATCH query\n> >> than\n> >> a prepared query stricto senso).\n> >> \n> >> I have tracked down things to the C level, with the function\n> >> RODBCUpdate, that appear\n> >> to do something related (\n> >>     res = SQLPrepare( thisHandle->hStmt, (SQLCHAR *) cquery,\n> >>                       strlen(cquery) );\n> >> can be spotted around line 960)\n> >> but the documentation is rare down there, so I was asking if anyone\n> >> had experience\n> >> on the topic.\n> >> \n> >> If I understand correctly your suggestion, the idea would be to build a\n> >> complete\n> >> set of (Visual Basic ?) instructions into a (potentially very long)\n> >> string and send them to the SQL server ?\n> >> \n> >> \n> >> Thanks.\n> >> \n> >> \n> >> Laurent\n> >> \n> >> \n> >> \n> >> On 3/1/06, McGehee, Robert <Robert.McGehee at geodecapital.com> wrote:\n> >>> I may be misunderstanding you, but why can't you execute a prepared\n> >>> query the same in RODBC as you would directly on your SQL server? In\n> >>> Microsoft SQL server, for instance, I would just set up an ADO\n> >>> application and set the Prepared and CommandText properties before\n> >>> running the query.\n> >>> \n> >>> Here is an example from the Microsoft SQL help page. In this example,\n> >> I\n> >>> would try storing all of the below as a string in R, and simply pass\n> >>> this into the odbcQuery or sqlQuery.  However, see the help for your\n> >>> specific SQL application. Note that (for at least SQL server) one can\n> >>> disable the prepare/execute model, so you might have to check your\n> >> ODBC\n> >>> settings before running.\n> >>> \n> >>> --Robert\n> >>> \n> >>> Dim cn As New ADODB.Connection\n> >>> Dim cmdPrep1 As New ADODB.Command\n> >>> Dim prm1 As New ADODB.Parameter\n> >>> Dim prm2 As New ADODB.Parameter\n> >>> Dim strCn As String\n> >>> \n> >>> strCn = \"Server=MyServerName;Database=pubs;Trusted_Connection=yes\"\n> >>> cn.Provider = \"sqloledb\"\n> >>> cn.Open strCn\n> >>> Set cmdPrep1.ActiveConnection = cn\n> >>> cmdPrep1.CommandText = \"UPDATE titles SET type=? WHERE title_id =?\"\n> >>> cmdPrep1.CommandType = adCmdText\n> >>> cmdPrep1.Prepared = True\n> >>> \n> >>> Set prm1 = cmdPrep1.CreateParameter(\"Type\", adChar, adParamInput, 12,\n> >>> \"New Bus\")\n> >>> cmdPrep1.Parameters.Append prm1\n> >>> \n> >>> Set prm2 = cmdPrep1.CreateParameter(\"ProductID\", adInteger,\n> >>> adParamInput, 4, 3)\n> >>> cmdPrep1.Parameters.Append prm2\n> >>> \n> >>> cmdPrep1.Execute\n> >>> \n> >>> cmdPrep1(\"Type\") = \"New Cook\"\n> >>> cmdPrep1(\"title_id\") = \"TC7777\"\n> >>> cmdPrep1.Execute\n> >>> \n> >>> cn.Close\n> >>> \n> >>> \n> >>> -----Original Message-----\n> >>> From: r-help-bounces at stat.math.ethz.ch\n> >>> [mailto:r-help-bounces at stat.math.ethz.ch] On Behalf Of Laurent Gautier\n> >>> Sent: Monday, February 27, 2006 9:38 AM\n> >>> To: r-help at stat.math.ethz.ch\n> >>> Subject: [R] prepared query with RODBC ?\n> >>> \n> >>> Dear List,\n> >>> \n> >>> Would anyone know how to perform prepared queries with ROBC ?\n> >>> I had a shot with some of the internal (non-exported) functions of the\n> >>> package\n> >>> but ended up with a segfault, so I prefer asking around before\n> >>> experimenting further...\n> >>> \n> >>> Thanks,\n> >>> \n> >>> \n> >>> \n> >>> Laurent\n> >>> \n> >>> ______________________________________________\n> >>> R-help at stat.math.ethz.ch mailing list\n> >>> https://stat.ethz.ch/mailman/listinfo/r-help\n> >>> PLEASE do read the posting guide!\n> >>> http://www.R-project.org/posting-guide.html\n> >>> \n> >>> \n> >> \n> >> \n> > \n> > _______________________________________________\n> > R-sig-DB mailing list -- R Special Interest Group\n> > R-sig-DB at stat.math.ethz.ch\n> > https://stat.ethz.ch/mailman/listinfo/r-sig-db\n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "Hi Sean,\n\nMySQL also provides server-side or SQL-level PREPARE statements\nas of version 4.1.3, and behave similarly to what you describe;\nhowever, in general server-side prepared statements are not\nas",
+      "thread_id": "thread-b4518cdbb2b3",
+      "thread_depth": 2,
+      "month": "2006-03"
+    },
+    {
+      "id": "msg-1ee27fe9785d",
+      "message_id": "<4418453B.5070205@juttastange.de>",
+      "from_name": "Hendrik Stange",
+      "from_email_hash": "8e67336b0ed4b7f4e497d72d2394f7917f1cb80b999b8c27ea94a0d4dc5e3d27",
+      "date": "2006-03-15T17:47:55+01:00",
+      "subject": "[R-sig-DB] RODBC with an Oracle DBS",
+      "subject_clean": "RODBC with an Oracle DBS",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello,\n\ntoday, I tried saving a data.frame to Oracle by using an ODBC-connection.\nIt failed every single time, giving me a \"missing column name\" error.\nReading works perfectly fine, though.\n\nMy question is, how can I upload a df to Oracle using an ODBC connection?\n\nThe code I used looks like this:\nchannel <- odbcConnect(\"someODBCname\")\nsqlSave(channel, df, tablename=\"test\", rownames=FALSE, addPK=T, verbose=T)\n\ndf is a 100x100 matrix; dimnames are set.\n\nIn my desperation I tried uploading it to MS-Access and it worked \nabsolutely accurate - same statement just another ODBC-connector name.\n\nI'd appreciate any help.\n\nThanks in advanced,\nH. Stange",
+      "body_snippet": "Hello,\n\ntoday, I tried saving a data.frame to Oracle by using an ODBC-connection.\nIt failed every single time, giving me a \"missing column name\" error.\nReading works perfectly fine, though.\n\nMy questi",
+      "thread_id": "thread-1ee27fe9785d",
+      "thread_depth": 0,
+      "month": "2006-03"
+    },
+    {
+      "id": "msg-e45174ce775e",
+      "message_id": "<2310043c0603151132v19e4bd8fycce0777fd573be8@mail.gmail.com>",
+      "from_name": "¨Tariq Khan",
+      "from_email_hash": "0cde44933ddf3f31205a53f7875723d4ae44bc24b3edb486852442a97254e091",
+      "date": "2006-03-15T19:32:44Z",
+      "subject": "[R-sig-DB] RODBC with an Oracle DBS",
+      "subject_clean": "RODBC with an Oracle DBS",
+      "in_reply_to": "<4418453B.5070205@juttastange.de>",
+      "references": [
+        "<4418453B.5070205@juttastange.de>"
+      ],
+      "body_plain": "Hendrik,\n\ncan we see a sample of your column names?\n\nSeems like your code should work. what if safer=F?.. and if addPK=F?\n(not that I expect that to work).\n\n-Tariq\n\nOn 3/15/06, Hendrik Stange <hstange at juttastange.de> wrote:\n> Hello,\n>\n> today, I tried saving a data.frame to Oracle by using an ODBC-connection.\n> It failed every single time, giving me a \"missing column name\" error.\n> Reading works perfectly fine, though.\n>\n> My question is, how can I upload a df to Oracle using an ODBC connection?\n>\n> The code I used looks like this:\n> channel <- odbcConnect(\"someODBCname\")\n> sqlSave(channel, df, tablename=\"test\", rownames=FALSE, addPK=T, verbose=T)\n>\n> df is a 100x100 matrix; dimnames are set.\n>\n> In my desperation I tried uploading it to MS-Access and it worked\n> absolutely accurate - same statement just another ODBC-connector name.\n>\n> I'd appreciate any help.\n>\n> Thanks in advanced,\n> H. Stange\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "Hendrik,\n\ncan we see a sample of your column names?\n\nSeems like your code should work. what if safer=F?.. and if addPK=F?\n(not that I expect that to work).\n\n-Tariq\n\nOn 3/15/06, Hendrik Stange <hstange",
+      "thread_id": "thread-1ee27fe9785d",
+      "thread_depth": 1,
+      "month": "2006-03"
+    },
+    {
+      "id": "msg-1f10ac8cfa0c",
+      "message_id": "<9A503071B5428346A39E2AAF217FD912394FCF@mainserver.bodymedia.com>",
+      "from_name": "Jason Trimble",
+      "from_email_hash": "0107d2011fa0429138324d3b37d074036f0f7bc055c0484bb01b955b9f3395f1",
+      "date": "2006-03-24T17:02:23-05:00",
+      "subject": "[R-sig-DB] RMysql and MySQL 5 Decimal Type Support",
+      "subject_clean": "RMysql and MySQL 5 Decimal Type Support",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\n \n\nWhenever I have a MySQL query that returns a Decimal result to R I get\nthe following warning in R:\n\n \n\nWarning message:\n\nRS-DBI driver warning: (unrecognized MySQL field type 246 in column 1)\n\n \n\nI get this for a simple query like \"SELECT 2, 2.5\" !!\n\n \n\nI am using:\n\nR ver 2.1.1\n\nRMySQL ver. 0.5-7\n\nDBI ver. 0.1-10\n\nMySQL  Ver 14.12 Distrib 5.0.18. \n\n \n\nPlease Help!\n\nJason\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi,\n\n \n\nWhenever I have a MySQL query that returns a Decimal result to R I get\nthe following warning in R:\n\n \n\nWarning message:\n\nRS-DBI driver warning: (unrecognized MySQL field type 246 in column 1)\n",
+      "thread_id": "thread-1f10ac8cfa0c",
+      "thread_depth": 0,
+      "month": "2006-03"
+    },
+    {
+      "id": "msg-5b43e62bd27f",
+      "message_id": "<27d1e6020603260110n5e224b08w1ce55a54ef66b865@mail.gmail.com>",
+      "from_name": "Laurent Gautier",
+      "from_email_hash": "7f6f8a043f67fd9e9553a995a8f46531d47b1ac14ed253b2166f29ba46fa18fa",
+      "date": "2006-03-26T17:10:33+08:00",
+      "subject": "[R-sig-DB] Follow-up: prepared query with RODBC ?",
+      "subject_clean": "Follow-up: prepared query with RODBC ?",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear all,\n\nI have been experimenting with RODBC, and prepared queries.\n\nMy setting was as follows:\n* server:\n   - Linux desktop\n   - latest stable version for Postgres DBM (version 8.1.3)\n* client:\n   - Windows XP notebook\n   - 'psqlodbc' Postgres-ODBC drivers (latest stable version from\nhttp://pgfoundry.org/projects/psqlodbc/), and use of the\n\"Postgres-unicode\" driver\n   - R-2.2.1\n   - RODBC-1.1.5\n\nThis seemed a reasonable standard setting to me\n(and felt at times enough like opening a Pandora's box to keep me from\nventuring into devel versions for any of the components).\n\nThe outcome is 1) a bug (and a suggested patch), and 2) the belief\nthat it is not possible for pulling the result of 'SELECT' statements\nwithout writting C code (which I had no for):\n\n1- There is apparently a problem triggered when calling 'sqlSave' with\na data.frame that contains any uppercase letter in the identifiers. I\ntracked the problem up to\na call to a C function in \"odbcUpdate\"\n\n.Call(\"RODBCUpdate\", attr(channel, \"handle_ptr\"), as.character(query),\n    data, cnames, as.integer(nrow(data)), as.integer(ncol(data)),\n    as.character(params), as.integer(vflag), PACKAGE = \"RODBC\")\n\nwhere the column names in the 'query' were all turned to lower case\nwhile the original names remain in 'data' (the data.frame). A trivial fix could\nbe to have the names in 'data' converted to lower.case before the .Call\n(if this does not cause the copy of a potentially very large 'data'\nobject, naturally).\nThis is may be not the best possible fix, but it has the benefit of not touching\ntoo much of what is a non-exported function.\n\nThe following demonstrates the problem\nlibrary(RODBC)\n# assuming the existence of a database 'testdb' and the priviledges to\nwrite to it\nchannel <- sqlConnect(\"testdb\")\ndataf <- data.frame(ID = 1:10, values = rnorm(10))\nsqlSave(channel, dataf)\n## error about a missing column name\n\nThe problem is probably not noticeable on systems that have problems\ndistinguishing upper-case from lower-case (e.g., MS-Windows).\n\n2- My attempt at having prepared/batch queries ended with the conclusion that\none needs to extend the current package with C code to achieve for 'SELECT'\nqueries.\nThe C function 'RODBCUpdate' can be used for 'INSERT', 'UPDATE' or\n'DELETE' statements.\nIn the meanwhile, a hack can be to write temporary tables in the database\n(especially since the writting of tables can used prepared statements)\nand perform join operation on these (although this can be hair-rising\nin a multiple-users setting).\n\n\nLaurent",
+      "body_snippet": "Dear all,\n\nI have been experimenting with RODBC, and prepared queries.\n\nMy setting was as follows:\n* server:\n   - Linux desktop\n   - latest stable version for Postgres DBM (version 8.1.3)\n* client:\n  ",
+      "thread_id": "thread-5b43e62bd27f",
+      "thread_depth": 0,
+      "month": "2006-03"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-9c8c0c8efad3",
+      "subject": "(no subject)",
+      "message_count": 2,
+      "participants": [
+        "David James",
+        "Jason Horn"
+      ],
+      "started": "2006-03-02T09:57:07-05:00",
+      "last_reply": "2006-03-02T13:22:38-05:00",
+      "root_message_id": "msg-9c8c0c8efad3"
+    },
+    {
+      "id": "thread-1d6d7b391692",
+      "subject": "prepared query with RODBC ?",
+      "message_count": 1,
+      "participants": [
+        "Laurent Gautier"
+      ],
+      "started": "2006-03-03T11:39:02+08:00",
+      "last_reply": "2006-03-03T11:39:02+08:00",
+      "root_message_id": "msg-1d6d7b391692"
+    },
+    {
+      "id": "thread-b4518cdbb2b3",
+      "subject": "prepared query with RODBC ?",
+      "message_count": 3,
+      "participants": [
+        "David James",
+        "Laurent Gautier",
+        "Sean Davis"
+      ],
+      "started": "2006-03-03T12:06:33+08:00",
+      "last_reply": "2006-03-03T14:46:26-05:00",
+      "root_message_id": "msg-b4518cdbb2b3"
+    },
+    {
+      "id": "thread-1ee27fe9785d",
+      "subject": "RODBC with an Oracle DBS",
+      "message_count": 2,
+      "participants": [
+        "Hendrik Stange",
+        "¨Tariq Khan"
+      ],
+      "started": "2006-03-15T17:47:55+01:00",
+      "last_reply": "2006-03-15T19:32:44+00:00",
+      "root_message_id": "msg-1ee27fe9785d"
+    },
+    {
+      "id": "thread-1f10ac8cfa0c",
+      "subject": "RMysql and MySQL 5 Decimal Type Support",
+      "message_count": 1,
+      "participants": [
+        "Jason Trimble"
+      ],
+      "started": "2006-03-24T17:02:23-05:00",
+      "last_reply": "2006-03-24T17:02:23-05:00",
+      "root_message_id": "msg-1f10ac8cfa0c"
+    },
+    {
+      "id": "thread-5b43e62bd27f",
+      "subject": "Follow-up: prepared query with RODBC ?",
+      "message_count": 1,
+      "participants": [
+        "Laurent Gautier"
+      ],
+      "started": "2006-03-26T17:10:33+08:00",
+      "last_reply": "2006-03-26T17:10:33+08:00",
+      "root_message_id": "msg-5b43e62bd27f"
+    }
+  ]
+}

@@ -1,0 +1,266 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2007-08",
+  "messages": [
+    {
+      "id": "msg-2eff2bfe1ef5",
+      "message_id": "<971536df0708030515x520b6692w9421c65e1091cace@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2007-08-03T08:15:04-04:00",
+      "subject": "[R-sig-DB] RSQLite Wish List",
+      "subject_clean": "RSQLite Wish List",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Just thought I would post my wish list for RSQLite in case anyone\nis interested in adding some features to it:\n\n1. sqliteImportFile uses an eol argument which specifies line endings\nand currently defaults to \"\\n\".  It would be better if it queried the file\nto find out what line endings actually used were and use those as the\ndefault.\n\nSecond best would be to use a default based on the current\nplatform so on Windows it would use \"\\r\\n\" and on UNIX it would use \"\\n\".\nThis is only second best since it does not take into account use of\nUNIX files on Windows and Windows files on UNIX.\n\n2. sqliteImportFile is sufficiently important that it should\nhave its own .Rd page in RSQLite and the connection with\ndbWriteTable made clearer.  Alternately make it possible\nto read the dbWriteTable page without reference to\nsqliteImportFile.\n\n3. it would be nice if one could use arbitrary R functions in\nSQLite select statements such as:\n\n\"select avg(Sepal_Length), sd(Sepal Width) from iris\"\n\nwhere sd, not being part of SQLite, would be\nfound within R and used.  This would involve changes to the R\nversion of SQLite.   Next best would be to add a fixed set\nof common functions such as sd, var, etc.",
+      "body_snippet": "Just thought I would post my wish list for RSQLite in case anyone\nis interested in adding some features to it:\n\n1. sqliteImportFile uses an eol argument which specifies line endings\nand currently defa",
+      "thread_id": "thread-2eff2bfe1ef5",
+      "thread_depth": 0,
+      "month": "2007-08"
+    },
+    {
+      "id": "msg-1c054e5a2d73",
+      "message_id": "<971536df0708051256g5334ababo52beb27ec601bcaa@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2007-08-05T15:56:05-04:00",
+      "subject": "[R-sig-DB] RSQLite Wish List",
+      "subject_clean": "RSQLite Wish List",
+      "in_reply_to": "<971536df0708030515x520b6692w9421c65e1091cace@mail.gmail.com>",
+      "references": [
+        "<971536df0708030515x520b6692w9421c65e1091cace@mail.gmail.com>"
+      ],
+      "body_plain": "I've got one additional wish list item related to those below:\n\n4. dbWriteTable/sqlImportFile should support quoted fields so\nthat csv files can be supported.\n\nOn 8/3/07, Gabor Grothendieck <ggrothendieck at gmail.com> wrote:\n> Just thought I would post my wish list for RSQLite in case anyone\n> is interested in adding some features to it:\n>\n> 1. sqliteImportFile uses an eol argument which specifies line endings\n> and currently defaults to \"\\n\".  It would be better if it queried the file\n> to find out what line endings actually used were and use those as the\n> default.\n>\n> Second best would be to use a default based on the current\n> platform so on Windows it would use \"\\r\\n\" and on UNIX it would use \"\\n\".\n> This is only second best since it does not take into account use of\n> UNIX files on Windows and Windows files on UNIX.\n>\n> 2. sqliteImportFile is sufficiently important that it should\n> have its own .Rd page in RSQLite and the connection with\n> dbWriteTable made clearer.  Alternately make it possible\n> to read the dbWriteTable page without reference to\n> sqliteImportFile.\n>\n> 3. it would be nice if one could use arbitrary R functions in\n> SQLite select statements such as:\n>\n> \"select avg(Sepal_Length), sd(Sepal Width) from iris\"\n>\n> where sd, not being part of SQLite, would be\n> found within R and used.  This would involve changes to the R\n> version of SQLite.   Next best would be to add a fixed set\n> of common functions such as sd, var, etc.\n>",
+      "body_snippet": "I've got one additional wish list item related to those below:\n\n4. dbWriteTable/sqlImportFile should support quoted fields so\nthat csv files can be supported.\n\nOn 8/3/07, Gabor Grothendieck <ggrothend",
+      "thread_id": "thread-2eff2bfe1ef5",
+      "thread_depth": 1,
+      "month": "2007-08"
+    },
+    {
+      "id": "msg-bebc74c3b331",
+      "message_id": "<971536df0708062034k6ed5342g74410a9724163807@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2007-08-06T23:34:44-04:00",
+      "subject": "[R-sig-DB] Trailing \\r in RMySQL on Windows",
+      "subject_clean": "Trailing \\r in RMySQL on Windows",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I get \\r characters at the end of a table when using\nRMySQL on Windows.  See the setosa\\r lines below:\n\n> library(RMySQL)\nLoading required package: DBI\n> m <- dbDriver(\"MySQL\")\n> con <- dbConnect(m, dbname = \"db01\")\n> dbWriteTable(con, \"iris\", iris)\n[1] TRUE\nWarning message:\n$ operator is deprecated for atomic vectors, returning NULL in:\nfield.types$row.names\n> DF <- dbGetQuery(con, \"select * from iris limit 3\")\n> DF\n  row_names Sepal_Length Sepal_Width Petal_Length Petal_Width  Species\n1         1          5.1         3.5          1.4         0.2 setosa\\r\n2         2          4.9         3.0          1.4         0.2 setosa\\r\n3         3          4.7         3.2          1.3         0.2 setosa\\r\n> dbRemoveTable(con, \"iris\")\n[1] TRUE\n> dbDisconnect(con)\n[1] TRUE\n\n\nHere is the input:\n\nlibrary(RMySQL)\nm <- dbDriver(\"MySQL\")\ncon <- dbConnect(m, dbname = \"db01\")\ndbWriteTable(con, \"iris\", iris)\nDF <- dbGetQuery(con, \"select * from iris limit 3\")\nDF\ndbRemoveTable(con, \"iris\")\ndbDisconnect(con)\n\nI am using:\n\n- Server version: 5.0.41-community-nt MySQL Community Edition (GPL)\n- R version 2.5.1 (2007-06-27) on Windows XP\n- DBI 0.2-3\n- RMySQL 0.6-0 downloaded from Bioconductor\n- I also tried the Rodriguez RMySQL 0.6-0 build and got the same thing\n- I also tried the RMySQL 0,6-0 build from CRAN Extras but that one crashes",
+      "body_snippet": "I get \\r characters at the end of a table when using\nRMySQL on Windows.  See the setosa\\r lines below:\n\n> library(RMySQL)\nLoading required package: DBI\n> m <- dbDriver(\"MySQL\")\n> con <- dbConnect(m, d",
+      "thread_id": "thread-bebc74c3b331",
+      "thread_depth": 0,
+      "month": "2007-08"
+    },
+    {
+      "id": "msg-891c3d6a4c90",
+      "message_id": "<D5789F53873D29489402919BC2F97D7A018E431A@S0-OTT-X3.nrn.nrcan.gc.ca>",
+      "from_name": "Song, Alex",
+      "from_email_hash": "ce2d2465564561ba66d9634d22fe471f00e5b2b6256ccc125bf84d6b9bc85861",
+      "date": "2007-08-15T17:26:38-04:00",
+      "subject": "[R-sig-DB] Problem Connecting to Oracle with R from Windows XP",
+      "subject_clean": "Problem Connecting to Oracle with R from Windows XP",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello,\n\n \n\nI installed RGui 2.5.1 and package DBI on Windows XP and tried to connect to Oracle database which is on a Linux server. When I tried to use dbDriver(\"Oracle\"), I got an error as follows:\n\n \n\n> drv <- dbDriver(\"Oracle\")\n\nError in do.call(as.character(drvName), list(...)) : \n\n        could not find function \"Oracle\"\n\n> \n\n \n\nCould anyone tell me how to connect to Oracle with R from Windows XP? Do I need to configure any environment variables? Do I need to configure ODBC? Do I need to install any other packages? I have Oracle client 10g installed on my computer and I can connect to the Oracle database using other client software like Toad, SQLPlus, or SQL Developer.\n\n \n\nThank you very much.\n\n \n\nAlex\n\n \n\n \n\n \n\nAlex Song \n\nData Management Specialist / Sp?cialiste en gestion des donn?es\n\nNational Forest Inventory / Inventaire forestier national\n\nPacific Forestry Centre / Centre de foresterie du Pacifique\nCanadian Forest Service / Service canadien des for?ts\nNatural Resources Canada / Ressources naturelles Canada\n\nGovernment of Canada / Gouvernement du Canada\n\n506 West Burnside Road / 506 chemin Burnside ouest\n\nVictoria, BC V8Z 1M5\n\nPhone (250) 363-3342\n\nFacs: (250) 363-0775\n\n \n\nEmail: Alex.Song at nrcan.gc.ca <mailto:Alex.Song at nrcan.gc.ca> \n\n \n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hello,\n\n \n\nI installed RGui 2.5.1 and package DBI on Windows XP and tried to connect to Oracle database which is on a Linux server. When I tried to use dbDriver(\"Oracle\"), I got an error as follows:\n\n",
+      "thread_id": "thread-891c3d6a4c90",
+      "thread_depth": 0,
+      "month": "2007-08"
+    },
+    {
+      "id": "msg-d1ac68c993bc",
+      "message_id": "<m2eji48kof.fsf@fhcrc.org>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2007-08-15T16:03:44-07:00",
+      "subject": "[R-sig-DB] Problem Connecting to Oracle with R from Windows XP",
+      "subject_clean": "Problem Connecting to Oracle with R from Windows XP",
+      "in_reply_to": "<D5789F53873D29489402919BC2F97D7A018E431A@S0-OTT-X3.nrn.nrcan.gc.ca> (Alex Song's message of \"Wed\\, 15 Aug 2007 17\\:26\\:38 -0400\")",
+      "references": [
+        "<D5789F53873D29489402919BC2F97D7A018E431A@S0-OTT-X3.nrn.nrcan.gc.ca>"
+      ],
+      "body_plain": "\"Song, Alex\" <asong at pfc.cfs.nrcan.gc.ca> writes:\n\n> Hello,\n>\n>  \n>\n> I installed RGui 2.5.1 and package DBI on Windows XP and tried to\n> connect to Oracle database which is on a Linux server. When I tried to\n> use dbDriver(\"Oracle\"), I got an error as follows:\n\nYou need to install and load the ROracle package first.\n\n> Could anyone tell me how to connect to Oracle with R from Windows XP?\n> Do I need to configure any environment variables? Do I need to\n> configure ODBC?\n\nInstead of DBI, you could try the RODBC package.\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nBioC: http://bioconductor.org/\nBlog: http://userprimary.net/user/",
+      "body_snippet": "\"Song, Alex\" <asong at pfc.cfs.nrcan.gc.ca> writes:\n\n> Hello,\n>\n>  \n>\n> I installed RGui 2.5.1 and package DBI on Windows XP and tried to\n> connect to Oracle database which is on a Linux server. When ",
+      "thread_id": "thread-891c3d6a4c90",
+      "thread_depth": 1,
+      "month": "2007-08"
+    },
+    {
+      "id": "msg-39d4adc43d7d",
+      "message_id": "<11B432A67FA890438506C173F1CB03E60294486B@DENSMSXM01.amers.ime.reuters.com>",
+      "from_name": "Mark Labovitz",
+      "from_email_hash": "dabb984e39634961849956372e8f4bfcf410d777c47155f1464610d00529886b",
+      "date": "2007-08-22T14:42:23-06:00",
+      "subject": "[R-sig-DB] sqltablecreate",
+      "subject_clean": "sqltablecreate",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Anyone have an example of the syntax for sqltablecreate targeting MS\nSQLServer  for tables with compound primary keys?  Thanks.\n\n \n\nRegards,\n\n \n\nMark Labovitz\n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Anyone have an example of the syntax for sqltablecreate targeting MS\nSQLServer  for tables with compound primary keys?  Thanks.\n\n \n\nRegards,\n\n \n\nMark Labovitz\n\n\n\t[[alternative HTML version deleted]]",
+      "thread_id": "thread-39d4adc43d7d",
+      "thread_depth": 0,
+      "month": "2007-08"
+    },
+    {
+      "id": "msg-7658e22236ea",
+      "message_id": "<46D46F0D.8000104@mail.nih.gov>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2007-08-28T14:53:01-04:00",
+      "subject": "[R-sig-DB] RODBC and datadirect 64bit on linux",
+      "subject_clean": "RODBC and datadirect 64bit on linux",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Does RODBC work with the datadirect ODBC driver (in other words, I'm not\nusing iodbc or unixodbc)?  If so, are there any pointers to having RODBC\nfind the ODBC data sources?\n\nThanks,\nSean",
+      "body_snippet": "Does RODBC work with the datadirect ODBC driver (in other words, I'm not\nusing iodbc or unixodbc)?  If so, are there any pointers to having RODBC\nfind the ODBC data sources?\n\nThanks,\nSean",
+      "thread_id": "thread-7658e22236ea",
+      "thread_depth": 0,
+      "month": "2007-08"
+    },
+    {
+      "id": "msg-6fe19a628e66",
+      "message_id": "<Pine.LNX.4.64.0708282041290.19212@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2007-08-28T20:46:30+01:00",
+      "subject": "[R-sig-DB] RODBC and datadirect 64bit on linux",
+      "subject_clean": "RODBC and datadirect 64bit on linux",
+      "in_reply_to": "<46D46F0D.8000104@mail.nih.gov>",
+      "references": [
+        "<46D46F0D.8000104@mail.nih.gov>"
+      ],
+      "body_plain": "unixODBC and iodbc are driver managers, not drivers.  Looks like \nDataDirect (http://www.datadirect.com/products/odbc/index.ssp) is also a \n(commercial) driver manager that as far as I know no one has ever tested.\n\nOn Tue, 28 Aug 2007, Sean Davis wrote:\n\n> Does RODBC work with the datadirect ODBC driver (in other words, I'm not\n> using iodbc or unixodbc)?  If so, are there any pointers to having RODBC\n> find the ODBC data sources?\n>\n> Thanks,\n> Sean\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "unixODBC and iodbc are driver managers, not drivers.  Looks like \nDataDirect (http://www.datadirect.com/products/odbc/index.ssp) is also a \n(commercial) driver manager that as far as I know no one has",
+      "thread_id": "thread-7658e22236ea",
+      "thread_depth": 1,
+      "month": "2007-08"
+    },
+    {
+      "id": "msg-5462ba364521",
+      "message_id": "<46D47CC2.60601@mail.nih.gov>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2007-08-28T15:51:30-04:00",
+      "subject": "[R-sig-DB] RODBC and datadirect 64bit on linux",
+      "subject_clean": "RODBC and datadirect 64bit on linux",
+      "in_reply_to": "<Pine.LNX.4.64.0708282041290.19212@gannet.stats.ox.ac.uk>",
+      "references": [
+        "<46D46F0D.8000104@mail.nih.gov>",
+        "<Pine.LNX.4.64.0708282041290.19212@gannet.stats.ox.ac.uk>"
+      ],
+      "body_plain": "Prof Brian Ripley wrote:\n> unixODBC and iodbc are driver managers, not drivers.  Looks like\n> DataDirect (http://www.datadirect.com/products/odbc/index.ssp) is also a\n> (commercial) driver manager that as far as I know no one has ever tested.\n\nThanks for the clarified language.  Yes, that is indeed the case.  I\nhave a database vendor that is stating that the datadirect driver\nmanager is more stable than unixODBC and iODBC, so I am looking for how\nto tell RODBC to use the datadirect driver manager.  Is this something\nthat even makes sense to ask?\n\nSean",
+      "body_snippet": "Prof Brian Ripley wrote:\n> unixODBC and iodbc are driver managers, not drivers.  Looks like\n> DataDirect (http://www.datadirect.com/products/odbc/index.ssp) is also a\n> (commercial) driver manager tha",
+      "thread_id": "thread-7658e22236ea",
+      "thread_depth": 2,
+      "month": "2007-08"
+    },
+    {
+      "id": "msg-628ee29e078a",
+      "message_id": "<Pine.LNX.4.64.0708282201500.21063@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2007-08-28T22:03:19+01:00",
+      "subject": "[R-sig-DB] RODBC and datadirect 64bit on linux",
+      "subject_clean": "RODBC and datadirect 64bit on linux",
+      "in_reply_to": "<46D47CC2.60601@mail.nih.gov>",
+      "references": [
+        "<46D46F0D.8000104@mail.nih.gov>",
+        "<Pine.LNX.4.64.0708282041290.19212@gannet.stats.ox.ac.uk>",
+        "<46D47CC2.60601@mail.nih.gov>"
+      ],
+      "body_plain": "On Tue, 28 Aug 2007, Sean Davis wrote:\n\n> Prof Brian Ripley wrote:\n>> unixODBC and iodbc are driver managers, not drivers.  Looks like\n>> DataDirect (http://www.datadirect.com/products/odbc/index.ssp) is also a\n>> (commercial) driver manager that as far as I know no one has ever tested.\n>\n> Thanks for the clarified language.  Yes, that is indeed the case.  I\n> have a database vendor that is stating that the datadirect driver\n> manager is more stable than unixODBC and iODBC, so I am looking for how\n> to tell RODBC to use the datadirect driver manager.  Is this something\n> that even makes sense to ask?\n\nYes.  You need to tell configure how to link to it, and that will need \nreading both sets of manuals.\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "On Tue, 28 Aug 2007, Sean Davis wrote:\n\n> Prof Brian Ripley wrote:\n>> unixODBC and iodbc are driver managers, not drivers.  Looks like\n>> DataDirect (http://www.datadirect.com/products/odbc/index.ssp)",
+      "thread_id": "thread-7658e22236ea",
+      "thread_depth": 3,
+      "month": "2007-08"
+    },
+    {
+      "id": "msg-bba305937cd4",
+      "message_id": "<46D581B7.8070207@u-psud.fr>",
+      "from_name": "Sebastien",
+      "from_email_hash": "c95a07752936072c739ddde693c259bc9c7edf568b6f7f1a9b76e55f9d856523",
+      "date": "2007-08-29T16:24:55+02:00",
+      "subject": "[R-sig-DB] length of a factor",
+      "subject_clean": "length of a factor",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear R users,\n\nI work with the RODBC package. I would like to read the coordinates xy \nof a polyline in a table called 'populations'. The connexion with the \ndatabase (postgresql) seems good but when I try to select the \ncoordinates of a population, the string of characters is truncated at \n255 character which is too short to obtain all the point of the \ncorresponding polyline. An example with the populations 5396 :\n\nlibrary(RODBC)\nchannel <- odbcConnect(\"colza_ansi\")\ncde <- paste('select xy from populations where id_pop=5396;')\nxy <- sqlQuery(channel, cde)\n\nxy\n1 \n[(515041.60200000001,2306276.1310000001),(515041.59899999999,2306276.1359999999),\n(515041.59600000002,2306276.1320000002),(515041.59100000001,2306276.1409999998),\n(515041.59100000001,2306276.1340000001),(515041.61700000003,2306276.1170000001),\n(515041.618000\n \n\nThere is probably a parameter to change but I don't find which one. \nCould someone help me?\nThanks\n\nS?bastien Ollier\nUniversity of Paris\n\n\n\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: Sebastien.ollier.vcf\nType: text/x-vcard\nSize: 188 bytes\nDesc: not available\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20070829/4726057e/attachment.vcf>",
+      "body_snippet": "Dear R users,\n\nI work with the RODBC package. I would like to read the coordinates xy \nof a polyline in a table called 'populations'. The connexion with the \ndatabase (postgresql) seems good but when ",
+      "thread_id": "thread-bba305937cd4",
+      "thread_depth": 0,
+      "month": "2007-08"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-2eff2bfe1ef5",
+      "subject": "RSQLite Wish List",
+      "message_count": 2,
+      "participants": [
+        "Gabor Grothendieck"
+      ],
+      "started": "2007-08-03T08:15:04-04:00",
+      "last_reply": "2007-08-05T15:56:05-04:00",
+      "root_message_id": "msg-2eff2bfe1ef5"
+    },
+    {
+      "id": "thread-bebc74c3b331",
+      "subject": "Trailing \\r in RMySQL on Windows",
+      "message_count": 1,
+      "participants": [
+        "Gabor Grothendieck"
+      ],
+      "started": "2007-08-06T23:34:44-04:00",
+      "last_reply": "2007-08-06T23:34:44-04:00",
+      "root_message_id": "msg-bebc74c3b331"
+    },
+    {
+      "id": "thread-891c3d6a4c90",
+      "subject": "Problem Connecting to Oracle with R from Windows XP",
+      "message_count": 2,
+      "participants": [
+        "Seth Falcon",
+        "Song, Alex"
+      ],
+      "started": "2007-08-15T17:26:38-04:00",
+      "last_reply": "2007-08-15T16:03:44-07:00",
+      "root_message_id": "msg-891c3d6a4c90"
+    },
+    {
+      "id": "thread-39d4adc43d7d",
+      "subject": "sqltablecreate",
+      "message_count": 1,
+      "participants": [
+        "Mark Labovitz"
+      ],
+      "started": "2007-08-22T14:42:23-06:00",
+      "last_reply": "2007-08-22T14:42:23-06:00",
+      "root_message_id": "msg-39d4adc43d7d"
+    },
+    {
+      "id": "thread-7658e22236ea",
+      "subject": "RODBC and datadirect 64bit on linux",
+      "message_count": 4,
+      "participants": [
+        "Prof Brian Ripley",
+        "Sean Davis"
+      ],
+      "started": "2007-08-28T14:53:01-04:00",
+      "last_reply": "2007-08-28T22:03:19+01:00",
+      "root_message_id": "msg-7658e22236ea"
+    },
+    {
+      "id": "thread-bba305937cd4",
+      "subject": "length of a factor",
+      "message_count": 1,
+      "participants": [
+        "Sebastien"
+      ],
+      "started": "2007-08-29T16:24:55+02:00",
+      "last_reply": "2007-08-29T16:24:55+02:00",
+      "root_message_id": "msg-bba305937cd4"
+    }
+  ]
+}

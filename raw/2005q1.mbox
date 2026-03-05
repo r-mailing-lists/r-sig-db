@@ -1,0 +1,644 @@
+From je||@horner @end|ng |rom v@nderb||t@edu  Fri Jan 21 17:35:57 2005
+From: je||@horner @end|ng |rom v@nderb||t@edu (Jeffrey Horner)
+Date: Fri, 21 Jan 2005 10:35:57 -0600
+Subject: [R-sig-DB] Implementation of RMySQL
+Message-ID: <41F12F6D.2060909@vanderbilt.edu>
+
+I noticed that this package stores pointers to MySQL related data 
+structures i R objects as an integer vector of up to length 3:
+
+(from RMySQL/src/RS-DBI.h):
+/* In R/S a dbObject is a foreign reference consisting of a vector
+  * of 1, 2 or 3 integers.  In the C implementation we use these
+  * R/S vectors as handles (we could have use pointers).
+  */
+
+Why were they not stored in the R object using the R External Pointer 
+interface, described here:
+
+http://www.stat.uiowa.edu/~luke/R/references/weakfinex.html
+
+On a related note, the connection is not closed when assigning NULL to 
+the connection object. This could be accomplished by using the 
+Finalization Interface described in the above reference... Any reason 
+this was not used?
+
+Also, in light of a recent discussion on the R-devel mailing list(see 
+S3/S4 classes performance comparison), does the S4 implemented DBI 
+package hinder performance in any way for the RMySQL package?
+
+-- 
+Jeffrey Horner       Computer Systems Analyst         School of Medicine
+615-322-8606         Department of Biostatistics   Vanderbilt University
+
+
+
+From dj @end|ng |rom re@e@rch@be||-|@b@@com  Fri Jan 21 23:09:45 2005
+From: dj @end|ng |rom re@e@rch@be||-|@b@@com (David James)
+Date: Fri, 21 Jan 2005 17:09:45 -0500
+Subject: [R-sig-DB] Implementation of RMySQL
+In-Reply-To: <41F12F6D.2060909@vanderbilt.edu>;
+	from jeff.horner@vanderbilt.edu on Fri, Jan 21, 2005 at
+	10:35:57AM -0600
+References: <41F12F6D.2060909@vanderbilt.edu>
+Message-ID: <20050121170945.A20926@jessie.research.bell-labs.com>
+
+Jeffrey Horner wrote:
+> I noticed that this package stores pointers to MySQL related data 
+> structures i R objects as an integer vector of up to length 3:
+> 
+> (from RMySQL/src/RS-DBI.h):
+> /* In R/S a dbObject is a foreign reference consisting of a vector
+>   * of 1, 2 or 3 integers.  In the C implementation we use these
+>   * R/S vectors as handles (we could have use pointers).
+>   */
+> 
+> Why were they not stored in the R object using the R External Pointer 
+> interface, described here:
+> 
+> http://www.stat.uiowa.edu/~luke/R/references/weakfinex.html
+> 
+> On a related note, the connection is not closed when assigning NULL to 
+> the connection object. This could be accomplished by using the 
+> Finalization Interface described in the above reference... Any reason 
+> this was not used?
+> 
+> Also, in light of a recent discussion on the R-devel mailing list(see 
+> S3/S4 classes performance comparison), does the S4 implemented DBI 
+> package hinder performance in any way for the RMySQL package?
+> 
+> -- 
+> Jeffrey Horner       Computer Systems Analyst         School of Medicine
+> 615-322-8606         Department of Biostatistics   Vanderbilt University
+> 
+
+The original implementation predates external pointers/weak
+references.  Moreover, at that time I decided to make the package
+(plus ROracle and RSQLite) compatible with S-Plus both at the S
+level and the C underlying code (this is a decision I now regret).
+I expect to change the implementation, time permitting, in a
+future version.
+
+Re: S4 performance, I haven't noticed any disadvantages, perhaps
+because the delays due to running SQL queries on remote severs and/or
+data transmissions tend to be much larger than S4 object creation.
+I do feel that the S4 classes and methods provide a better mechanism
+than S3 instance-based methods for this type of packages.
+
+Regards,
+
+--
+David
+
+
+
+From bu||@rd @end|ng |rom berke|ey@edu  Thu Feb  3 10:50:42 2005
+From: bu||@rd @end|ng |rom berke|ey@edu (James Bullard)
+Date: Thu, 03 Feb 2005 01:50:42 -0800
+Subject: [R-sig-DB] RMySQL and factors
+Message-ID: <1107424242.25620.21.camel@localhost.localdomain>
+
+I have just started using the RMySQL package and things are working out
+well, but I would like to know if it is possible to return a data.frame
+from dbGetQuery with class(dta$race) => factor rather than
+class(dta$race) => character. I want to use glm on the resultant data,
+but I cant figure out how to change the columns without effort. 
+
+Currently what I do is write the dta to a local file and then re-read it
+at which point the columns is of class factor.
+
+Thanks in advance, The code I am using to get the data is:
+
+getrace <- function(connection) {
+  sql <- "SELECT race FROM PATIENT"
+  rs <- dbGetQuery(connection, sql)
+
+  class(rs$race)  
+}
+
+which returns "character" 
+
+
+Jim
+
+
+
+From m@cq @end|ng |rom ||n|@gov  Thu Feb  3 15:35:32 2005
+From: m@cq @end|ng |rom ||n|@gov (Don MacQueen)
+Date: Thu, 3 Feb 2005 06:35:32 -0800
+Subject: [R-sig-DB] RMySQL and factors
+In-Reply-To: <1107424242.25620.21.camel@localhost.localdomain>
+References: <1107424242.25620.21.camel@localhost.localdomain>
+Message-ID: <p06110418be27e6f7fe87@[128.115.153.6]>
+
+How about:
+
+getrace <- function(connection) {
+   sql <- "SELECT race FROM PATIENT"
+   rs <- dbGetQuery(connection, sql)
+
+   rs$trace <- factor(rs$trace)
+
+   class(rs$race)
+}
+
+At 1:50 AM -0800 2/3/05, James Bullard wrote:
+>I have just started using the RMySQL package and things are working out
+>well, but I would like to know if it is possible to return a data.frame
+>from dbGetQuery with class(dta$race) => factor rather than
+>class(dta$race) => character. I want to use glm on the resultant data,
+>but I cant figure out how to change the columns without effort.
+>
+>Currently what I do is write the dta to a local file and then re-read it
+>at which point the columns is of class factor.
+>
+>Thanks in advance, The code I am using to get the data is:
+>
+>getrace <- function(connection) {
+>   sql <- "SELECT race FROM PATIENT"
+>   rs <- dbGetQuery(connection, sql)
+>
+>   class(rs$race) 
+>}
+>
+>which returns "character"
+>
+>
+>Jim
+>
+>_______________________________________________
+>R-sig-DB mailing list -- R Special Interest Group
+>R-sig-DB at stat.math.ethz.ch
+>https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+-- 
+--------------------------------------
+Don MacQueen
+Environmental Protection Department
+Lawrence Livermore National Laboratory
+Livermore, CA, USA
+
+
+
+From mikko@virt@@e@ m@iii@g oii kti@ii  Thu Feb  3 21:03:17 2005
+From: mikko@virt@@e@ m@iii@g oii kti@ii (mikko@virt@@e@ m@iii@g oii kti@ii)
+Date: Thu, 03 Feb 2005 22:03:17 +0200
+Subject: [R-sig-DB] RMySQL and factors
+In-Reply-To: <p06110418be27e6f7fe87@[128.115.153.6]>
+References: <1107424242.25620.21.camel@localhost.localdomain>
+	<p06110418be27e6f7fe87@[128.115.153.6]>
+Message-ID: <1107460997.42028385b016e@webmail.ktl.fi>
+
+Don MacQueen <macq at llnl.gov> wrote:
+> How about:
+> 
+> getrace <- function(connection) {
+>    sql <- "SELECT race FROM PATIENT"
+>    rs <- dbGetQuery(connection, sql)
+> 
+>    rs$trace <- factor(rs$trace)
+> 
+>    class(rs$race)
+> }
+
+This has the potential problem that if the data changes or the sql statement has
+a WHERE in it, each run might get slightly different levels().
+
+I guess the MySQL does have the ENUM data type, and the RSDBI does have the
+hooks for using this information, but nothing seems to be implemented at the
+moment.
+
+   MJ;
+
+
+
+From m@cq @end|ng |rom ||n|@gov  Thu Feb  3 21:38:46 2005
+From: m@cq @end|ng |rom ||n|@gov (Don MacQueen)
+Date: Thu, 3 Feb 2005 12:38:46 -0800
+Subject: [R-sig-DB] RMySQL and factors
+In-Reply-To: <1107460997.42028385b016e@webmail.ktl.fi>
+References: <1107424242.25620.21.camel@localhost.localdomain>
+	<p06110418be27e6f7fe87@[128.115.153.6]>
+	<1107460997.42028385b016e@webmail.ktl.fi>
+Message-ID: <p0611041ebe2838621407@[128.115.153.6]>
+
+At 10:03 PM +0200 2/3/05, mikko.virtanen at ktl.fi wrote:
+>Don MacQueen <macq at llnl.gov> wrote:
+>>  How about:
+>>
+>>  getrace <- function(connection) {
+>>     sql <- "SELECT race FROM PATIENT"
+>>     rs <- dbGetQuery(connection, sql)
+>>
+>>     rs$trace <- factor(rs$trace)
+>>
+>>     class(rs$race)
+>>  }
+>
+>This has the potential problem that if the data changes or the sql 
+>statement has
+>a WHERE in it, each run might get slightly different levels().
+
+
+I don't think that presents a problem. Either you know from the 
+experimental design what all of the possible levels are, or you don't.
+
+If you don't, there is no way to make sure that all will be present 
+every time the function is used., no matter whether a 'where' clause 
+is added or not, or whether or not the table changes.
+
+If you do know what the possible levels are, you can explicitly list 
+them in the call to factor(). See ?factor.
+
+If at any given point in time the database table is considered to 
+have all the possible levels present, and you want to have all of 
+them present in the factor variable in R, even when not all levels 
+are retrieved from the database, it's still easy:
+
+Add another query, a select distinct on the field that is to become a 
+factor. Use the results to specify the levels in the call to 
+factor(). Then you will always have the same factors, regardless of 
+what subset is selected.
+
+>I guess the MySQL does have the ENUM data type, and the RSDBI does have the
+>hooks for using this information, but nothing seems to be implemented at the
+>moment.
+>
+>    MJ;
+
+-Don
+-- 
+--------------------------------------
+Don MacQueen
+Environmental Protection Department
+Lawrence Livermore National Laboratory
+Livermore, CA, USA
+
+
+
+From j|mmc|ough||n @end|ng |rom e@rth||nk@net  Fri Feb  4 00:08:55 2005
+From: j|mmc|ough||n @end|ng |rom e@rth||nk@net (Jim McLoughlin)
+Date: Thu, 3 Feb 2005 15:08:55 -0800
+Subject: [R-sig-DB] RMySQL and factors
+In-Reply-To: <p0611041ebe2838621407@[128.115.153.6]>
+References: <1107424242.25620.21.camel@localhost.localdomain>
+	<p06110418be27e6f7fe87@[128.115.153.6]>
+	<1107460997.42028385b016e@webmail.ktl.fi>
+	<p0611041ebe2838621407@[128.115.153.6]>
+Message-ID: <b98158504eae6c8d508557b59ef9498e@earthlink.net>
+
+>> This has the potential problem that if the data changes or the sql 
+>> statement has
+>> a WHERE in it, each run might get slightly different levels().
+>
+>
+> I don't think that presents a problem. Either you know from the 
+> experimental design what all of the possible levels are, or you don't.
+>
+> If you don't, there is no way to make sure that all will be present 
+> every time the function is used., no matter whether a 'where' clause 
+> is added or not, or whether or not the table changes.
+>
+> If you do know what the possible levels are, you can explicitly list 
+> them in the call to factor(). See ?factor.
+>
+> If at any given point in time the database table is considered to have 
+> all the possible levels present, and you want to have all of them 
+> present in the factor variable in R, even when not all levels are 
+> retrieved from the database, it's still easy:
+
+To expand on the above, one option is to make the database design 
+accurately reflect the experiment:
+
+Have two tables instead of one:
+Patient (int patient_id, char* name, int race_id)
+Race(int race_id, char* race_name)
+
+Race contains all possible factor levels, and might be useful elsewhere 
+in the experiment/project.  Patient reflects all observed patient 
+instances, which may or may not include all race levels.  You can 
+modify the query to something like:
+
+getAllRaces <- function(connection) {
+	sql <- "SELECT race_name FROM RACE"
+	rs <- dbGetQuery(connection, sql)
+	allRaces <- rs$race_name
+}
+	
+getRaceAsFactors <- function(connection) {
+	sql <- "SELECT t2.race_name FROM PATIENT t1, RACE t2 where t1.race_id 
+= t2.race_id"
+	rs <- dbGetQuery(connection, sql)
+	allRaces <- getAllRaces(connection)
+	raceFactors <- factor(rs$race_name, levels=allRaces)
+  }
+
+of course, making a second database table may be overkill depending on 
+the size of your project, and how often all race levels are needed in 
+your code.
+
+Jim
+
+
+
+From P@@c@|@N|k|@u@ @end|ng |rom un|b@@@ch  Tue Mar  8 16:52:14 2005
+From: P@@c@|@N|k|@u@ @end|ng |rom un|b@@@ch (Pascal A. Niklaus)
+Date: Tue, 8 Mar 2005 16:52:14 +0100
+Subject: [R-sig-DB] last_insert_id() problem
+Message-ID: <200503081652.14760.Pascal.Niklaus@unibas.ch>
+
+Hi all,
+
+I am trying to insert a row into a table and then to get the value of an 
+auto_increment field back. From the mysql command line, this looks like this:
+
+mysql> insert into results set fileid='abc';
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select last_insert_id();
++------------------+
+| last_insert_id() |
++------------------+
+|               12 |
++------------------+
+1 row in set (0.00 sec)
+
+However, I cannot successfully translate this into R. I tried:
+  
+  dbSendQuery(con,paste("insert into results set userID=",userID,sep="") )
+  id <- dbGetQuery(con, "select LAST_INSERT_ID() AS I");
+      
+However, while a new row of data is inserted, id always returns 0. I wonder 
+whether this is because dbSendQuery is not the appropriate method to simply 
+execute a command, but I could not find an alternative.
+
+Thanks for your help
+
+Pascal
+
+-- 
+Pascal A. Niklaus
+Institute of Botany
+University of Basel
+Sch?nbeinstrasse 6
+CH-4056 Basel / Switzerland
+
+ph. +41 61 267 3506
+fax +41 61 267 3504
+
+GPG public key: http://www.bot.unibas.ch/~pascal/pascal_niklaus.key
+
+Please avoid sending me Word or PowerPoint attachments.
+See http://www.fsf.org/philosophy/no-word-attachments.html
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Tue Mar  8 16:57:05 2005
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Tue, 8 Mar 2005 15:57:05 +0000 (GMT)
+Subject: [R-sig-DB] last_insert_id() problem
+In-Reply-To: <200503081652.14760.Pascal.Niklaus@unibas.ch>
+References: <200503081652.14760.Pascal.Niklaus@unibas.ch>
+Message-ID: <Pine.LNX.4.61.0503081556210.31283@gannet.stats>
+
+Which R package ...?  Please read the R posting guide ....
+
+On Tue, 8 Mar 2005, Pascal A. Niklaus wrote:
+
+> Hi all,
+>
+> I am trying to insert a row into a table and then to get the value of an
+> auto_increment field back. From the mysql command line, this looks like this:
+>
+> mysql> insert into results set fileid='abc';
+> Query OK, 1 row affected (0.00 sec)
+>
+> mysql> select last_insert_id();
+> +------------------+
+> | last_insert_id() |
+> +------------------+
+> |               12 |
+> +------------------+
+> 1 row in set (0.00 sec)
+>
+> However, I cannot successfully translate this into R. I tried:
+>
+>  dbSendQuery(con,paste("insert into results set userID=",userID,sep="") )
+>  id <- dbGetQuery(con, "select LAST_INSERT_ID() AS I");
+>
+> However, while a new row of data is inserted, id always returns 0. I wonder
+> whether this is because dbSendQuery is not the appropriate method to simply
+> execute a command, but I could not find an alternative.
+>
+> Thanks for your help
+>
+> Pascal
+>
+> -- 
+> Pascal A. Niklaus
+> Institute of Botany
+> University of Basel
+> Sch?nbeinstrasse 6
+> CH-4056 Basel / Switzerland
+>
+> ph. +41 61 267 3506
+> fax +41 61 267 3504
+>
+> GPG public key: http://www.bot.unibas.ch/~pascal/pascal_niklaus.key
+>
+> Please avoid sending me Word or PowerPoint attachments.
+> See http://www.fsf.org/philosophy/no-word-attachments.html
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+From dj @end|ng |rom re@e@rch@be||-|@b@@com  Tue Mar  8 18:10:49 2005
+From: dj @end|ng |rom re@e@rch@be||-|@b@@com (David James)
+Date: Tue, 8 Mar 2005 12:10:49 -0500
+Subject: [R-sig-DB] last_insert_id() problem
+In-Reply-To: <200503081652.14760.Pascal.Niklaus@unibas.ch>;
+	from Pascal.Niklaus@unibas.ch on Tue, Mar 08, 2005 at 04:52:14PM
+	+0100
+References: <200503081652.14760.Pascal.Niklaus@unibas.ch>
+Message-ID: <20050308121049.A8968@jessie.research.bell-labs.com>
+
+Pascal A. Niklaus wrote:
+> Hi all,
+> 
+> I am trying to insert a row into a table and then to get the value of an 
+> auto_increment field back. From the mysql command line, this looks like this:
+> 
+> mysql> insert into results set fileid='abc';
+> Query OK, 1 row affected (0.00 sec)
+> 
+> mysql> select last_insert_id();
+> +------------------+
+> | last_insert_id() |
+> +------------------+
+> |               12 |
+> +------------------+
+> 1 row in set (0.00 sec)
+> 
+> However, I cannot successfully translate this into R. I tried:
+>   
+>   dbSendQuery(con,paste("insert into results set userID=",userID,sep="") )
+>   id <- dbGetQuery(con, "select LAST_INSERT_ID() AS I");
+>       
+> However, while a new row of data is inserted, id always returns 0. I wonder 
+> whether this is because dbSendQuery is not the appropriate method to simply 
+> execute a command, but I could not find an alternative.
+> 
+> Thanks for your help
+> 
+> Pascal
+> 
+> -- 
+> Pascal A. Niklaus
+> Institute of Botany
+> University of Basel
+> Sch?nbeinstrasse 6
+> CH-4056 Basel / Switzerland
+> 
+> ph. +41 61 267 3506
+> fax +41 61 267 3504
+> 
+> GPG public key: http://www.bot.unibas.ch/~pascal/pascal_niklaus.key
+> 
+> Please avoid sending me Word or PowerPoint attachments.
+> See http://www.fsf.org/philosophy/no-word-attachments.html
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+Hi Pascal,
+
+In this case you should be using dbGetQuery() instead of dbSendQuery(), 
+since you don't require the result set object that dbSendQuery() 
+returns. (You could dbSendQuery(), but then make sure you
+dbClearResult() before requesting the LAST_INSERT_ID()). 
+
+Example:
+
+mysql> describe tmp_foo;
++-------+----------------------+------+-----+---------+----------------+
+| Field | Type                 | Null | Key | Default | Extra          |
++-------+----------------------+------+-----+---------+----------------+
+| i     | smallint(5) unsigned |      | PRI | NULL    | auto_increment |
+| txt   | char(3)              | YES  |     | NULL    |                |
++-------+----------------------+------+-----+---------+----------------+
+2 rows in set (0.01 sec)
+
+from R
+
+> dbGetQuery(con, "insert into tmp_foo set txt = 'y'")
+NULL
+
+> dbGetQuery(con, "select LAST_INSERT_ID() as I")
+  I
+1 9
+
+Regards,
+
+--
+David
+
+
+
+From P@sc@i@Niki@us m@iii@g oii u@ib@s@ch  Tue Mar  8 19:16:47 2005
+From: P@sc@i@Niki@us m@iii@g oii u@ib@s@ch (P@sc@i@Niki@us m@iii@g oii u@ib@s@ch)
+Date: Tue,  8 Mar 2005 19:16:47 +0100
+Subject: [R-sig-DB] last_insert_id() problem
+In-Reply-To: <20050308121049.A8968@jessie.research.bell-labs.com>
+References: <200503081652.14760.Pascal.Niklaus@unibas.ch>
+	<20050308121049.A8968@jessie.research.bell-labs.com>
+Message-ID: <1110305807.422dec0f2cc5c@webmail.unibas.ch>
+
+Thanks, this now works perfectly.
+
+Pascal
+
+
+
+From u@@zhouj|ng @end|ng |rom hotm@||@com  Fri Mar 11 22:34:53 2005
+From: u@@zhouj|ng @end|ng |rom hotm@||@com (Jing Zhou)
+Date: Fri, 11 Mar 2005 16:34:53 -0500
+Subject: [R-sig-DB] ROracle didn't work properly in such setting
+Message-ID: <BAY104-DAV11E92A40B4DD5E66F4E17DAA530@phx.gbl>
+
+I have encountered *many* problems when using ROracle functions, including
+the same problem with the one listed below (but I had such problem when
+using dbExistsTable() instead of dbListTables).
+
+My settings:
+ROracle      "0.5-5"
+DBI            "0.1-8"
+Oracle9i Enterprise Edition Release 9.2.0.6.0 - 64bit Production
+JServer Release 9.2.0.6.0 - Production
+Linux
+
+I am wondering whether or not ROracle *can* work in such settings.
+
+-Jing
+
+----------------------------------------------------------------------------
+----
+
+Hi,
+ 
+I just installed ROracle under R1.8.1 alpha. There is a funny error in
+dbListTables(). When you run dbListTables just after establishing a
+connection it fails at oraQuickSQL(conn, "select table_name from
+all_tables")[, 1], see below. However if you execute oraQuickSQL(conn,
+"select table_name from all_tables")[, 1] from the prompt it will work
+fine and, moreover, the dbListTables() will work fine after that too.
+ 
+> library("DBI"); library("ROracle")
+> con <- dbConnect(dbDriver("Oracle"), user="...")
+> dbListTables(con)
+Error in oraQuickSQL(conn, "select table_name from all_tables")[, 1] : 
+ incorrect number of dimensions
+> oraQuickSQL(conn, "select table_name from all_tables")[, 1]
+Error in .class1(object) : Object "conn" not found
+> oraQuickSQL(con, "select table_name from all_tables")[, 1]
+*** works fine:output flushed ***
+> dbListTables(con)
+*** works fine:output flushed ***
+ 
+ 
+Any clue?
+ 
+Thanks,
+Vadim
+ 
+
+ 
+> version
+         _                
+platform i686-pc-linux-gnu
+arch     i686             
+os       linux-gnu        
+system   i686, linux-gnu  
+status   alpha            
+major    1                
+minor    8.1              
+year     2003             
+month    11               
+day      05               
+language R
+
+
+

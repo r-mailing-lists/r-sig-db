@@ -1,0 +1,150 @@
+From m@ech|er @end|ng |rom @t@t@m@th@ethz@ch  Sat Apr  7 11:05:59 2001
+From: m@ech|er @end|ng |rom @t@t@m@th@ethz@ch (Martin Maechler)
+Date: Sat, 7 Apr 2001 11:05:59 +0200
+Subject: [R-sig-DB] First message .. test ..
+In-Reply-To: <200104070903.LAA20307@stat.math.ethz.ch>
+References: <200104070903.LAA20307@stat.math.ethz.ch>
+Message-ID: <15054.55415.674856.58565@gargle.gargle.HOWL>
+
+This first message is just to make sure the archiving works properly.
+Martin
+
+
+From T|mothy@Ke|tt @end|ng |rom StonyBrook@Edu  Tue Apr 24 20:12:11 2001
+From: T|mothy@Ke|tt @end|ng |rom StonyBrook@Edu (Timothy H. Keitt)
+Date: Tue, 24 Apr 2001 14:12:11 -0400
+Subject: [R-sig-DB] Rdbi package
+Message-ID: <3AE5C1FB.4000008@StonyBrook.Edu>
+
+I'm attaching my experimental Rdbi package with a reference 
+implementation for postgresql.  This is not meant for serious production 
+work, only to stimulate ideas for a common database interface for R.
+
+Cheers,
+Tim
+
+-- 
+Timothy H. Keitt
+Department of Ecology and Evolution
+State University of New York at Stony Brook
+Phone: 631-632-1101, FAX: 631-632-7626
+http://life.bio.sunysb.edu/ee/keitt/
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: Rdbi_0.1-1.tar.gz
+Type: application/gzip
+Size: 32471 bytes
+Desc: not available
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20010424/6910733f/attachment.gz>
+
+From dunc@n @end|ng |rom re@e@rch@be||-|@b@@com  Sat May  5 01:24:05 2001
+From: dunc@n @end|ng |rom re@e@rch@be||-|@b@@com (Duncan Temple Lang)
+Date: Fri, 4 May 2001 19:24:05 -0400
+Subject: [R-sig-DB] Re: RS-DBI using embedded Perl DBI
+In-Reply-To: <010401c0d4ea$14486b20$0201a8c0@me>; from jake@agere.com on Fri, May 04, 2001 at 06:32:18PM -0400
+References: <010401c0d4ea$14486b20$0201a8c0@me>
+Message-ID: <20010504192405.L10907@jessie.research.bell-labs.com>
+
+On Fri, May 04, 2001 at 06:32:18PM -0400, T Jake Luciani wrote:
+> All,
+> 
+> I've attached my implementation of David James RS-DBI interface using Perl DBI  (R Package).  I've found it to be quite quick.  The nice thing is you can connect to any database perl can.
+> 
+> The only big difference in S code is, you now have to specify the type of database your connecting to as well as host and port if applicable.  
+> 
+
+Great. Saikat, David and I did the same sort of thing with JDBC.  It
+is a good idea to leverage the existing code for the various
+databases.  In S-JDBC interface, we were using the SJava package to
+actually make the connection to Java. You appear to be using direct C
+code to connect to Perl rather than the RSPerl package which provides
+a way for embedding Perl in R. I do recognize some of the code that
+seems to be taken from that package, so perhaps you are using it but I
+don't thing directly, if it all.  You might find that using that
+package simplifies the code a bit and makes it easier for others to
+experiment with.
+
+> I've only tested this with Oracle. An example is:
+> 
+> library(RSPerlDBI)
+> ora <- dbManager("PerlDBI")
+> con <- dbConnect(ora, user = "query", password = "query", dbname = "rduxu",dbtype = "Oracle")
+> result <- quickSQL(con, "select * from ALL_TABLES")   
+> 
+> Unfortunetly if theres any Perl DBI errors it kills R.  Any ideas Duncan?
+> 
+
+Yep. The problem is that some errors in Perl jumps straight to exit()
+and _exit() rather than signalling an exception and returning control
+to the caller, in this case the C code invoked from R.  The RSPerl
+package has the same difficulty and I haven't found time to fix it
+yet. A simple solution is to provide an alternative implementation of
+Perl's fatal error handler routine. Then, when one links against the
+Perl library to create RSPerlDBI.so, the routine in your C code will
+be linked and used. This can be a bit tricky at times depending on
+linkers, how Perl was compiled, etc. But, if your routine is called,
+then it should throw and S error and the execution stack will return.
+That's the basic approach I use in embedding unless I have more
+specific needs.
+
+
+BTW, I am on the r-sig-db mailing list, so there's no need mail me
+separately.
+
+> Feel free to make suggestions, etc...
+> 
+> Thanks,
+> 
+> Jake
+> 
+> -------------------------
+> T Jake Luciani
+> Software Developer
+> Optoelectronics Unit
+> Agere Systems
+> jake at agere.com
+> 
+> 
+
+
+
+-- 
+_______________________________________________________________
+
+Duncan Temple Lang                duncan at research.bell-labs.com
+Bell Labs, Lucent Technologies    office: (908)582-3217
+700 Mountain Avenue, Room 2C-259  fax:    (908)582-3340
+Murray Hill, NJ  07974-2070       
+         http://cm.bell-labs.com/stat/duncan
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Sat May  5 08:22:46 2001
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian D Ripley)
+Date: Sat, 5 May 2001 07:22:46 +0100 (BST)
+Subject: [R-sig-DB] Re: RS-DBI using embedded Perl DBI
+In-Reply-To: <20010504192405.L10907@jessie.research.bell-labs.com>
+Message-ID: <Pine.GSO.4.31.0105050719150.21471-100000@auk.stats>
+
+> On Fri, May 04, 2001 at 06:32:18PM -0400, T Jake Luciani wrote:
+
+> >
+> > I've attached my implementation of David James RS-DBI interface using Perl
+DBI  (R Package).  I've found it to be quite quick.  The nice thing is you can
+connect to any database perl can.
+
+This hasn't gone to the list as it is too big.  There is a 40K limit
+on the list and more needs approval.  Could you put the actual code
+somewhere and send just the message please?
+
+Brian
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272860 (secr)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+

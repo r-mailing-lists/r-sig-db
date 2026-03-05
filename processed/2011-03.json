@@ -1,0 +1,726 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2011-03",
+  "messages": [
+    {
+      "id": "msg-d18e39ae5a7c",
+      "message_id": "<7085FAA3-B4C5-4A9A-A33E-8039DD8F5297@kenroku.kanazawa-u.ac.jp>",
+      "from_name": "Tomoaki NISHIYAMA",
+      "from_email_hash": "32104f251c35465c7b064ecaf7558a62b44d8fb01218b8a85e1f2cd3278271b5",
+      "date": "2011-03-01T09:20:35+09:00",
+      "subject": "[R-sig-DB] dbWriteTable on virtual linux box",
+      "subject_clean": "dbWriteTable on virtual linux box",
+      "in_reply_to": "<pan.2011.02.28.16.14.34.819000@gmail.com>",
+      "references": [
+        "<pan.2011.02.28.16.14.34.819000@gmail.com>"
+      ],
+      "body_plain": "Hi,\n\n> However, at a different\n> location, I only have access to a Windows computer, so I am running  \n> R on\n> Ubuntu on VirtualBox. On this setup, when I try the above code, I get:\n\n\nWhat version of RPostgreSQL are you using?\n\nIs the PostgreSQL server working on the same virtualbox or are\nyou to communicate the PostgreSQL server running on the host\nenvironment?\n\nIf you are using an old version of RPostgreSQL, it cannot\ndbWriteTable to other hosts, but the most\nrecent release version (0.1-7) should work.\n\nAnother comment on your code:\n> dbWriteTable(conn, \"<schema_name>.<table_anme\", df1, row.names =  \n> FALSE)\n\n\nthe table argument will only treated as the table name even if the  \nstring\ncontains one or more periods in current implementation.\nIf you want to write in non-default schema you need to change the\ndefault schema beforehand.\n\nFor future implementation, I am thinking of allowing\nsomething like c(\"schemaname\", \"tablename\"),\nbut not sure on how many people agree, and is not implemented anyway.\n-- \nTomoaki NISHIYAMA\n\nAdvanced Science Research Center,\nKanazawa University,\n13-1 Takara-machi,\nKanazawa, 920-0934, Japan",
+      "body_snippet": "Hi,\n\n> However, at a different\n> location, I only have access to a Windows computer, so I am running  \n> R on\n> Ubuntu on VirtualBox. On this setup, when I try the above code, I get:\n\n\nWhat version of",
+      "thread_id": "thread-d18e39ae5a7c",
+      "thread_depth": 0,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-76b14e989481",
+      "message_id": "<F4359191-B7FB-44F4-AE1A-98049B069476@kenroku.kanazawa-u.ac.jp>",
+      "from_name": "Tomoaki NISHIYAMA",
+      "from_email_hash": "32104f251c35465c7b064ecaf7558a62b44d8fb01218b8a85e1f2cd3278271b5",
+      "date": "2011-03-01T13:02:22+09:00",
+      "subject": "[R-sig-DB] dbWriteTable on virtual linux box",
+      "subject_clean": "dbWriteTable on virtual linux box",
+      "in_reply_to": "<4D6C60D8.3000800@gmail.com>",
+      "references": [
+        "<pan.2011.02.28.16.14.34.819000@gmail.com>",
+        "<7085FAA3-B4C5-4A9A-A33E-8039DD8F5297@kenroku.kanazawa-u.ac.jp>",
+        "<4D6C60D8.3000800@gmail.com>"
+      ],
+      "body_plain": "Hi,\n\n> dbSendQuery(conn, \"SET search_path = myschema;\")\n> dbGetQuery(conn, \"SHOW search_path\")\n\n\n> because the search_path only applies to the current session, and the\n> session ends when dbSendQuery returns a result.\n\n\nThis is something different from my understanding.\ndbSendQuery just sends query and does not end the session.\nOn the contrary, it leaves the connection open and in an unfinished  \nstate,\nand the second dbGetQuery will open a new connection, so that you get\n\n>      search_path\n> 1 \"$user\",public\n\n\nSo, please instead try\ndbGetQuery(conn, \"SET search_path = myschema\")\ndbGetQuery(conn, \"SHOW search_path\")\n\n> So is there a way to\n> write to anything other than the public schema in version 0.1-7?\n\nTo my understanding,\ndbGetQuery(conn, \"SET search_path = myschema\")\ndbWriteTable(conn, \"table_name\", ...)\nwill write the dataframe to myschema.table_name\n-- \nTomoaki NISHIYAMA\n\nAdvanced Science Research Center,\nKanazawa University,\n13-1 Takara-machi,\nKanazawa, 920-0934, Japan",
+      "body_snippet": "Hi,\n\n> dbSendQuery(conn, \"SET search_path = myschema;\")\n> dbGetQuery(conn, \"SHOW search_path\")\n\n\n> because the search_path only applies to the current session, and the\n> session ends when dbSendQuery ",
+      "thread_id": "thread-76b14e989481",
+      "thread_depth": 0,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-2a2bbdcfb356",
+      "message_id": "<AANLkTi=F7mB5VGb1MgXHtQ9UEHr_h_EaMhLDm5r4kY5P@mail.gmail.com>",
+      "from_name": "Chris Long",
+      "from_email_hash": "162949a7f0c818af99bbb0532530d3d618c65db63f8cc250967d46838ba9523c",
+      "date": "2011-03-01T03:40:05-08:00",
+      "subject": "[R-sig-DB] RPostgreSQL - dbWriteTable",
+      "subject_clean": "RPostgreSQL - dbWriteTable",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "What's the best way to coax RPostgreSQL into writing a table to a\nschema other than \"public\"? I've tried dbWriteTable(\"schema.foo\",data),\nsetting search_path to \"schema\" etc. Nothing's worked; it's either\ncreate \"foo\" in public, or the table \"schema.foo\" in public (!).\nIt will also refuse to write the table if it exists in any schema (!).\n\nUsing Ubuntu 10.10 64-bit,\n'http://cran.stat.ucla.edu/src/contrib/RPostgreSQL_0.1-7.tar.gz'\nR version 2.12.2 (2011-02-25)\n-- \nChris Long, San Diego Padres, 100 Park Boulevard, San Diego CA\n\nWARNING - HIGH SPIN SPEEDS - DO NOT put any person in this washer.\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "What's the best way to coax RPostgreSQL into writing a table to a\nschema other than \"public\"? I've tried dbWriteTable(\"schema.foo\",data),\nsetting search_path to \"schema\" etc. Nothing's worked; it's ei",
+      "thread_id": "thread-2a2bbdcfb356",
+      "thread_depth": 0,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-f26d359e3572",
+      "message_id": "<AANLkTim82T_csUs7unqjcPSTAfWcwtRECYRtyudd4czU@mail.gmail.com>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2011-03-01T06:55:13-05:00",
+      "subject": "[R-sig-DB] RPostgreSQL - dbWriteTable",
+      "subject_clean": "RPostgreSQL - dbWriteTable",
+      "in_reply_to": "<AANLkTi=F7mB5VGb1MgXHtQ9UEHr_h_EaMhLDm5r4kY5P@mail.gmail.com>",
+      "references": [
+        "<AANLkTi=F7mB5VGb1MgXHtQ9UEHr_h_EaMhLDm5r4kY5P@mail.gmail.com>"
+      ],
+      "body_plain": "On Tue, Mar 1, 2011 at 6:40 AM, Chris Long <galizur at gmail.com> wrote:\n\n> What's the best way to coax RPostgreSQL into writing a table to a\n> schema other than \"public\"? I've tried dbWriteTable(\"schema.foo\",data),\n> setting search_path to \"schema\" etc. Nothing's worked; it's either\n> create \"foo\" in public, or the table \"schema.foo\" in public (!).\n> It will also refuse to write the table if it exists in any schema (!).\n>\n>\nHi, Chris.  I think one needs to set the search_path prior to running the\ndbWriteTable command.  See the Postgresql docs:\n\nhttp://www.postgresql.org/docs/current/static/ddl-schemas.html\n\nYou'll want to do something like:\n\nset search_path to 'barschema'\n\nThen everything you do will go into barschema rather than public.\n\nSean\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "On Tue, Mar 1, 2011 at 6:40 AM, Chris Long <galizur at gmail.com> wrote:\n\n> What's the best way to coax RPostgreSQL into writing a table to a\n> schema other than \"public\"? I've tried dbWriteTable(\"sch",
+      "thread_id": "thread-2a2bbdcfb356",
+      "thread_depth": 1,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-4acab6c0990c",
+      "message_id": "<19820.62527.439885.162777@max.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2011-03-01T07:27:27-06:00",
+      "subject": "[R-sig-DB] dbWriteTable on virtual linux box",
+      "subject_clean": "dbWriteTable on virtual linux box",
+      "in_reply_to": "<4D6C60D8.3000800@gmail.com>",
+      "references": [
+        "<pan.2011.02.28.16.14.34.819000@gmail.com>",
+        "<7085FAA3-B4C5-4A9A-A33E-8039DD8F5297@kenroku.kanazawa-u.ac.jp>",
+        "<4D6C60D8.3000800@gmail.com>"
+      ],
+      "body_plain": "On 28 February 2011 at 21:58, Lee Hachadoorian wrote:\n| On 02/28/2011 07:20 PM, Tomoaki NISHIYAMA wrote:\n| > Hi,\n| >\n| >> However, at a different\n| >> location, I only have access to a Windows computer, so I am running R on\n| >> Ubuntu on VirtualBox. On this setup, when I try the above code, I get:\n| >\n| >\n| > What version of RPostgreSQL are you using?\n| >\n| > Is the PostgreSQL server working on the same virtualbox or are\n| > you to communicate the PostgreSQL server running on the host\n| > environment?\n| >\n| > If you are using an old version of RPostgreSQL, it cannot\n| > dbWriteTable to other hosts, but the most\n| > recent release version (0.1-7) should work.\n| >\n| > Another comment on your code:\n| >> dbWriteTable(conn, \"<schema_name>.<table_anme\", df1, row.names = FALSE)\n| >\n| >\n| > the table argument will only treated as the table name even if the string\n| > contains one or more periods in current implementation.\n| > If you want to write in non-default schema you need to change the\n| > default schema beforehand.\n| >\n| > For future implementation, I am thinking of allowing\n| > something like c(\"schemaname\", \"tablename\"),\n| > but not sure on how many people agree, and is not implemented anyway.\n| Tomoaki,\n| \n| You were right, I was using version 0.1-6. I upgraded to 0.1-7, and now\n| it, but with the additional complication, as you describe, that table\n| names are quoted. I can't figure out how to write to the desired schema.\n| In SQL I would use\n| \n| SET search_path = myschema;\n| \n| But when I\n| \n| dbSendQuery(conn, \"SET search_path = myschema;\")\n| dbGetQuery(conn, \"SHOW search_path\")\n| \n|      search_path\n| 1 \"$user\",public\n| \n| because the search_path only applies to the current session, and the\n| session ends when dbSendQuery returns a result.\n| \n| On the other hand\n| \n| dbGetQuery(connLocalhost, \"SET search_path = myschema; SHOW search_path;\")\n| \n|   search_path\n| 1        myschema\n| \n| but since dbWriteTable takes a table name (which it quotes) rather than\n| a SQL statement, this approach can't be followed. So is there a way to\n| write to anything other than the public schema in version 0.1-7?\n\nTomoaki detailed this in several examples here or on the rpostgresql-dev list\nat https://groups.google.com/forum/?pli=1#!forum/rpostgresql-dev --- sorry\nbut I don't have the exact same thread handy.  \n\nIn short, behaviour is fairly consistent now given the dual constraint of\nfollowing the DBI interface for R as well as PostgreSQL pattern where\nquoted/non-quoted tables make a difference.\n\nDirk\n\n| Thanks,\n| --Lee\n| \n| -- \n| Lee Hachadoorian\n| PhD Student, Geography\n| Program in Earth & Environmental Sciences\n| CUNY Graduate Center\n| \n| _______________________________________________\n| R-sig-DB mailing list -- R Special Interest Group\n| R-sig-DB at r-project.org\n| https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n-- \nDirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com",
+      "body_snippet": "On 28 February 2011 at 21:58, Lee Hachadoorian wrote:\n| On 02/28/2011 07:20 PM, Tomoaki NISHIYAMA wrote:\n| > Hi,\n| >\n| >> However, at a different\n| >> location, I only have access to a Windows compute",
+      "thread_id": "thread-4acab6c0990c",
+      "thread_depth": 0,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-63b9e94dccca",
+      "message_id": "<AANLkTinbAr91u-sjfM2CMFsAxpxcwihoXVL5d=jAoZ3Y@mail.gmail.com>",
+      "from_name": "Xiaobo Gu",
+      "from_email_hash": "176108762e20fc40c0ea5782a4cf2388d4cba8cdadb1f5a5481fccf34141e262",
+      "date": "2011-03-05T20:32:31+08:00",
+      "subject": "[R-sig-DB] How to write to database schema other than public using RPostgreSQL",
+      "subject_clean": "How to write to database schema other than public using RPostgreSQL",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\nIt seems there is not a shcema parameter for method dbWriteTable, and\nI have tried\n\"[schema].[testtable]\", \"\\\"schema\\\".\\\"testtable\\\", \"schema.testtable\"\nfor the tablename parameter of dbWriteTable, none of them works.\n\nDo you have workarounds about this.\n\nThanks,\n\nXiaobo Gu",
+      "body_snippet": "Hi,\nIt seems there is not a shcema parameter for method dbWriteTable, and\nI have tried\n\"[schema].[testtable]\", \"\\\"schema\\\".\\\"testtable\\\", \"schema.testtable\"\nfor the tablename parameter of dbWriteTable",
+      "thread_id": "thread-63b9e94dccca",
+      "thread_depth": 0,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-1996ce521a6b",
+      "message_id": "<AANLkTin8MXZuHM1vp1ZpH95gbEMc4cxmhxEzfeBatCaV@mail.gmail.com>",
+      "from_name": "Xiaobo Gu",
+      "from_email_hash": "176108762e20fc40c0ea5782a4cf2388d4cba8cdadb1f5a5481fccf34141e262",
+      "date": "2011-03-05T20:57:32+08:00",
+      "subject": "[R-sig-DB] How to write to database schema other than public using RPostgreSQL",
+      "subject_clean": "How to write to database schema other than public using RPostgreSQL",
+      "in_reply_to": "<AANLkTinbAr91u-sjfM2CMFsAxpxcwihoXVL5d=jAoZ3Y@mail.gmail.com>",
+      "references": [
+        "<AANLkTinbAr91u-sjfM2CMFsAxpxcwihoXVL5d=jAoZ3Y@mail.gmail.com>"
+      ],
+      "body_plain": "It seems dbWriteTable always create table in the public schema even if\nI put the target schema as the header of search_path,\nI'll check the source code.\n\nOn Sat, Mar 5, 2011 at 8:32 PM, Xiaobo Gu <guxiaobo1982 at gmail.com> wrote:\n> Hi,\n> It seems there is not a shcema parameter for method dbWriteTable, and\n> I have tried\n> \"[schema].[testtable]\", \"\\\"schema\\\".\\\"testtable\\\", \"schema.testtable\"\n> for the tablename parameter of dbWriteTable, none of them works.\n>\n> Do you have workarounds about this.\n>\n> Thanks,\n>\n> Xiaobo Gu\n>",
+      "body_snippet": "It seems dbWriteTable always create table in the public schema even if\nI put the target schema as the header of search_path,\nI'll check the source code.\n\nOn Sat, Mar 5, 2011 at 8:32 PM, Xiaobo Gu <gux",
+      "thread_id": "thread-63b9e94dccca",
+      "thread_depth": 1,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-453f9a5a8ae9",
+      "message_id": "<AANLkTimrEcMujn_M06ovSzCxSDPzr9U1jhY-YuTETsjC@mail.gmail.com>",
+      "from_name": "Xiaobo Gu",
+      "from_email_hash": "176108762e20fc40c0ea5782a4cf2388d4cba8cdadb1f5a5481fccf34141e262",
+      "date": "2011-03-05T21:56:41+08:00",
+      "subject": "[R-sig-DB] How to write to database schema other than public using RPostgreSQL",
+      "subject_clean": "How to write to database schema other than public using RPostgreSQL",
+      "in_reply_to": "<4D72379E.6010003@kenroku.kanazawa-u.ac.jp>",
+      "references": [
+        "<AANLkTinbAr91u-sjfM2CMFsAxpxcwihoXVL5d=jAoZ3Y@mail.gmail.com>",
+        "<AANLkTin8MXZuHM1vp1ZpH95gbEMc4cxmhxEzfeBatCaV@mail.gmail.com>",
+        "<4D72379E.6010003@kenroku.kanazawa-u.ac.jp>"
+      ],
+      "body_plain": "On Sat, Mar 5, 2011 at 9:16 PM, Tomoaki NISHIYAMA\n<tomoakin at kenroku.kanazawa-u.ac.jp> wrote:\n> Hi,\n>\n> Did you use dbSendQeury() to change the search path or dbGetQeury() ?\nI have tried both, both failed, the last error is because there is\nalready table named rtest.\n\n> dbGetQuery(con, \"set search_path to amber,public;\")\nNULL\n> dbGetQuery(con, \"show search_path;\")\n    search_path\n1 amber, public\n> dbWriteTable(con, \"rtest\", df, row.names=FALSE)\n[1] FALSE\nWarning message:\nIn postgresqlWriteTable(conn, name, value, ...) :\n  table rtest exists in database: aborting assignTable\n\n\n> As explained in the mail on 1 March on [R-sig-DB], dbSendQuery just sends\n> the query but does not finish the query\n> and other connection is created for later queries, which results as if the\n> effect is not taken place.\n>\n> https://stat.ethz.ch/pipermail/r-sig-db/2011q1/001032.html\n>\n>",
+      "body_snippet": "On Sat, Mar 5, 2011 at 9:16 PM, Tomoaki NISHIYAMA\n<tomoakin at kenroku.kanazawa-u.ac.jp> wrote:\n> Hi,\n>\n> Did you use dbSendQeury() to change the search path or dbGetQeury() ?\nI have tried both, both ",
+      "thread_id": "thread-453f9a5a8ae9",
+      "thread_depth": 0,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-b73ba26ceea1",
+      "message_id": "<AANLkTikhNpG1K=-ZeJM5pQwHhfDq62wWw__ATTOHdZPm@mail.gmail.com>",
+      "from_name": "Xiaobo Gu",
+      "from_email_hash": "176108762e20fc40c0ea5782a4cf2388d4cba8cdadb1f5a5481fccf34141e262",
+      "date": "2011-03-06T12:18:53+08:00",
+      "subject": "[R-sig-DB] How to write to database schema other than public using RPostgreSQL",
+      "subject_clean": "How to write to database schema other than public using RPostgreSQL",
+      "in_reply_to": "<4D72DD7E.9090805@kenroku.kanazawa-u.ac.jp>",
+      "references": [
+        "<AANLkTinbAr91u-sjfM2CMFsAxpxcwihoXVL5d=jAoZ3Y@mail.gmail.com>",
+        "<AANLkTin8MXZuHM1vp1ZpH95gbEMc4cxmhxEzfeBatCaV@mail.gmail.com>",
+        "<4D72379E.6010003@kenroku.kanazawa-u.ac.jp>",
+        "<AANLkTimrEcMujn_M06ovSzCxSDPzr9U1jhY-YuTETsjC@mail.gmail.com>",
+        "<4D72DD7E.9090805@kenroku.kanazawa-u.ac.jp>"
+      ],
+      "body_plain": "On Sun, Mar 6, 2011 at 9:03 AM, Tomoaki NISHIYAMA\n<tomoakin at kenroku.kanazawa-u.ac.jp> wrote:\n> Hi,\n>\n> Why don't you try\n>\n> dbGetQuery(con, \"set search_path to amber\")\n>\n> dbWriteTable(con, \"rtest\", df, row.names=FALSE)\n>\n> ?\nIt does not work, dbExistsTable returns TRUE if tablename exists in\nany of the schemas and if tablename is not with the format\nschema.tablename;\n\n> dbExistsTable(con, \"rtest\")\n[1] TRUE\n> dbExistsTable(con, \"public.rtest\")\n[1] TRUE\n> dbExistsTable(con, \"amber.rtest\")\n[1] FALSE\n>\nSo the idea is to let dbWriteTable work as dbExistsTable, if tablename\nis the with format schema.talename then the table will be created in\nthe target schema, else it will be created in the default search path\nschema.\n\n\n\n\n\n\n\n\n\n>\n> If table rtest exists in public you have to exclude public from\n> the search path. Isn't it?\n>\n>\n>\n> (2011/03/05 22:56), Xiaobo Gu wrote:\n>>\n>> On Sat, Mar 5, 2011 at 9:16 PM, Tomoaki NISHIYAMA\n>> <tomoakin at kenroku.kanazawa-u.ac.jp> ?wrote:\n>>>\n>>> Hi,\n>>>\n>>> Did you use dbSendQeury() to change the search path or dbGetQeury() ?\n>>\n>> I have tried both, both failed, the last error is because there is\n>> already table named rtest.\n>>\n>>> dbGetQuery(con, \"set search_path to amber,public;\")\n>>\n>> NULL\n>>>\n>>> dbGetQuery(con, \"show search_path;\")\n>>\n>> ? ? search_path\n>> 1 amber, public\n>>>\n>>> dbWriteTable(con, \"rtest\", df, row.names=FALSE)\n>>\n>> [1] FALSE\n>> Warning message:\n>> In postgresqlWriteTable(conn, name, value, ...) :\n>> ? table rtest exists in database: aborting assignTable\n>>\n>>\n>>> As explained in the mail on 1 March on [R-sig-DB], dbSendQuery just sends\n>>> the query but does not finish the query\n>>> and other connection is created for later queries, which results as if\n>>> the\n>>> effect is not taken place.\n>>>\n>>> https://stat.ethz.ch/pipermail/r-sig-db/2011q1/001032.html\n>>>\n>>>\n>>\n>\n>",
+      "body_snippet": "On Sun, Mar 6, 2011 at 9:03 AM, Tomoaki NISHIYAMA\n<tomoakin at kenroku.kanazawa-u.ac.jp> wrote:\n> Hi,\n>\n> Why don't you try\n>\n> dbGetQuery(con, \"set search_path to amber\")\n>\n> dbWriteTable(con, \"rtest",
+      "thread_id": "thread-b73ba26ceea1",
+      "thread_depth": 0,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-e74a998cb9b0",
+      "message_id": "<AANLkTin3qnUHAfMej-bbk02stzBADuRW++URdFGx4vSa@mail.gmail.com>",
+      "from_name": "Xiaobo Gu",
+      "from_email_hash": "176108762e20fc40c0ea5782a4cf2388d4cba8cdadb1f5a5481fccf34141e262",
+      "date": "2011-03-06T12:39:04+08:00",
+      "subject": "[R-sig-DB] How to write to database schema other than public using RPostgreSQL",
+      "subject_clean": "How to write to database schema other than public using RPostgreSQL",
+      "in_reply_to": "<AANLkTikhNpG1K=-ZeJM5pQwHhfDq62wWw__ATTOHdZPm@mail.gmail.com>",
+      "references": [
+        "<AANLkTinbAr91u-sjfM2CMFsAxpxcwihoXVL5d=jAoZ3Y@mail.gmail.com>",
+        "<AANLkTin8MXZuHM1vp1ZpH95gbEMc4cxmhxEzfeBatCaV@mail.gmail.com>",
+        "<4D72379E.6010003@kenroku.kanazawa-u.ac.jp>",
+        "<AANLkTimrEcMujn_M06ovSzCxSDPzr9U1jhY-YuTETsjC@mail.gmail.com>",
+        "<4D72DD7E.9090805@kenroku.kanazawa-u.ac.jp>",
+        "<AANLkTikhNpG1K=-ZeJM5pQwHhfDq62wWw__ATTOHdZPm@mail.gmail.com>"
+      ],
+      "body_plain": "My idea is to add a postgresTableQuoteName function as\n\npostgresqlTableQuoteName <- function(identifier){\n\tnames <- strsplit(identifier, \".\", fixed=TRUE)[[1]]\n\tif (length(names) == 2){\n\t\tres <- paste(postgresqlQuoteId(names[1]),\".\",\npostgresqlQuoteId(names[2]),sep=\"\");\n\t}else{\n\t\tres <- postgresqlQuoteId(identifier);\n\t}\n\treturn res;\n}\n\nthen change the following lines of code in the postgresqlWriteTable as\n1.\n\tchange\n        sql1 <- paste(\"create table \", postgresqlQuoteId(name),\n\"\\n(\\n\\t\", sep=\"\")\n        to\n        sql1 <- paste(\"create table \", postgresqlTableQuoteName(name),\n\"\\n(\\n\\t\", sep=\"\")\n2.\n\nchange\n\tsql4 <- paste(\"COPY\", postgresqlQuoteId(name), \"FROM STDIN\")\n to\n\n\tsql4 <- paste(\"COPY\", postgresqlTableQuoteName(name), \"FROM STDIN\")\n\nOn Sun, Mar 6, 2011 at 12:18 PM, Xiaobo Gu <guxiaobo1982 at gmail.com> wrote:\n> On Sun, Mar 6, 2011 at 9:03 AM, Tomoaki NISHIYAMA\n> <tomoakin at kenroku.kanazawa-u.ac.jp> wrote:\n>> Hi,\n>>\n>> Why don't you try\n>>\n>> dbGetQuery(con, \"set search_path to amber\")\n>>\n>> dbWriteTable(con, \"rtest\", df, row.names=FALSE)\n>>\n>> ?\n> It does not work, dbExistsTable returns TRUE if tablename exists in\n> any of the schemas and if tablename is not with the format\n> schema.tablename;\n>\n>> dbExistsTable(con, \"rtest\")\n> [1] TRUE\n>> dbExistsTable(con, \"public.rtest\")\n> [1] TRUE\n>> dbExistsTable(con, \"amber.rtest\")\n> [1] FALSE\n>>\n> So the idea is to let dbWriteTable work as dbExistsTable, if tablename\n> is the with format schema.talename then the table will be created in\n> the target schema, else it will be created in the default search path\n> schema.\nMy idea is to add a postgresTableQuoteName function as\n\npostgresqlTableQuoteName <- function(identifier){\n\tnames <- strsplit(identifier, \".\", fixed=TRUE)[[1]]\n\tif (length(names) == 2){\n\t\tres <- paste(postgresqlQuoteId(names[1]),\".\",\npostgresqlQuoteId(names[2]),sep=\"\");\n\t}else{\n\t\tres <- postgresqlQuoteId(identifier);\n\t}\n\treturn res;\n}\n\nthen change the following lines of code in the postgresqlWriteTable as\n1.\n\tchange\n        sql1 <- paste(\"create table \", postgresqlQuoteId(name),\n\"\\n(\\n\\t\", sep=\"\")\n        to\n        sql1 <- paste(\"create table \", postgresqlTableQuoteName(name),\n\"\\n(\\n\\t\", sep=\"\")\n2.\n\nchange\n\tsql4 <- paste(\"COPY\", postgresqlQuoteId(name), \"FROM STDIN\")\n to\n\n\tsql4 <- paste(\"COPY\", postgresqlTableQuoteName(name), \"FROM STDIN\")\n\n\n\n\n\n>\n>\n>\n>\n>\n>\n>\n>>\n>> If table rtest exists in public you have to exclude public from\n>> the search path. Isn't it?\n>>\n>>\n>>\n>> (2011/03/05 22:56), Xiaobo Gu wrote:\n>>>\n>>> On Sat, Mar 5, 2011 at 9:16 PM, Tomoaki NISHIYAMA\n>>> <tomoakin at kenroku.kanazawa-u.ac.jp> ?wrote:\n>>>>\n>>>> Hi,\n>>>>\n>>>> Did you use dbSendQeury() to change the search path or dbGetQeury() ?\n>>>\n>>> I have tried both, both failed, the last error is because there is\n>>> already table named rtest.\n>>>\n>>>> dbGetQuery(con, \"set search_path to amber,public;\")\n>>>\n>>> NULL\n>>>>\n>>>> dbGetQuery(con, \"show search_path;\")\n>>>\n>>> ? ? search_path\n>>> 1 amber, public\n>>>>\n>>>> dbWriteTable(con, \"rtest\", df, row.names=FALSE)\n>>>\n>>> [1] FALSE\n>>> Warning message:\n>>> In postgresqlWriteTable(conn, name, value, ...) :\n>>> ? table rtest exists in database: aborting assignTable\n>>>\n>>>\n>>>> As explained in the mail on 1 March on [R-sig-DB], dbSendQuery just sends\n>>>> the query but does not finish the query\n>>>> and other connection is created for later queries, which results as if\n>>>> the\n>>>> effect is not taken place.\n>>>>\n>>>> https://stat.ethz.ch/pipermail/r-sig-db/2011q1/001032.html\n>>>>\n>>>>\n>>>\n>>\n>>\n>",
+      "body_snippet": "My idea is to add a postgresTableQuoteName function as\n\npostgresqlTableQuoteName <- function(identifier){\n\tnames <- strsplit(identifier, \".\", fixed=TRUE)[[1]]\n\tif (length(names) == 2){\n\t\tres <- paste(",
+      "thread_id": "thread-b73ba26ceea1",
+      "thread_depth": 1,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-0d33a307694b",
+      "message_id": "<250F68B8-CC86-48BC-BF1E-F72723706EB2@kenroku.kanazawa-u.ac.jp>",
+      "from_name": "Tomoaki NISHIYAMA",
+      "from_email_hash": "32104f251c35465c7b064ecaf7558a62b44d8fb01218b8a85e1f2cd3278271b5",
+      "date": "2011-03-06T14:09:19+09:00",
+      "subject": "[R-sig-DB] How to write to database schema other than public using RPostgreSQL",
+      "subject_clean": "How to write to database schema other than public using RPostgreSQL",
+      "in_reply_to": "<AANLkTikhNpG1K=-ZeJM5pQwHhfDq62wWw__ATTOHdZPm@mail.gmail.com>",
+      "references": [
+        "<AANLkTinbAr91u-sjfM2CMFsAxpxcwihoXVL5d=jAoZ3Y@mail.gmail.com>",
+        "<AANLkTin8MXZuHM1vp1ZpH95gbEMc4cxmhxEzfeBatCaV@mail.gmail.com>",
+        "<4D72379E.6010003@kenroku.kanazawa-u.ac.jp>",
+        "<AANLkTimrEcMujn_M06ovSzCxSDPzr9U1jhY-YuTETsjC@mail.gmail.com>",
+        "<4D72DD7E.9090805@kenroku.kanazawa-u.ac.jp>",
+        "<AANLkTikhNpG1K=-ZeJM5pQwHhfDq62wWw__ATTOHdZPm@mail.gmail.com>"
+      ],
+      "body_plain": "Hi,\n\n> It does not work, dbExistsTable returns TRUE if tablename exists in\n> any of the schemas and if tablename is not with the format\n> schema.tablename;\n\nYou don't show what table exists in reality.\nThe code for dbExistsTable checks only for current schema and  \ntablename is just the\ntable name whethere or not tablename includes any number of periods.\n\nWhat do you get with the following and do you compare the results  \nwith dbExistsTable?\ndbGetQuery(con, 'select * from \"rtest\" LIMIT 0' )\ndbGetQuery(con, 'select * from \"public.rtest\" LIMIT 0' )\ndbGetQuery(con, 'select * from \"amber.rtest\" LIMIT 0' )\ndbGetQuery(con, 'select * from public.rtest LIMIT 0' )\ndbGetQuery(con, 'select * from amber.rtest LIMIT 0' )\n-- \nTomoaki NISHIYAMA\n\nAdvanced Science Research Center,\nKanazawa University,\n13-1 Takara-machi,\nKanazawa, 920-0934, Japan\n\n\nOn 2011/03/06, at 13:18, Xiaobo Gu wrote:\n\n> On Sun, Mar 6, 2011 at 9:03 AM, Tomoaki NISHIYAMA\n> <tomoakin at kenroku.kanazawa-u.ac.jp> wrote:\n>> Hi,\n>>\n>> Why don't you try\n>>\n>> dbGetQuery(con, \"set search_path to amber\")\n>>\n>> dbWriteTable(con, \"rtest\", df, row.names=FALSE)\n>>\n>> ?\n> It does not work, dbExistsTable returns TRUE if tablename exists in\n> any of the schemas and if tablename is not with the format\n> schema.tablename;\n>\n>> dbExistsTable(con, \"rtest\")\n> [1] TRUE\n>> dbExistsTable(con, \"public.rtest\")\n> [1] TRUE\n>> dbExistsTable(con, \"amber.rtest\")\n> [1] FALSE\n>>\n> So the idea is to let dbWriteTable work as dbExistsTable, if tablename\n> is the with format schema.talename then the table will be created in\n> the target schema, else it will be created in the default search path\n> schema.\n>\n>\n>\n>\n>\n>\n>\n>\n>\n>>\n>> If table rtest exists in public you have to exclude public from\n>> the search path. Isn't it?\n>>\n>>\n>>\n>> (2011/03/05 22:56), Xiaobo Gu wrote:\n>>>\n>>> On Sat, Mar 5, 2011 at 9:16 PM, Tomoaki NISHIYAMA\n>>> <tomoakin at kenroku.kanazawa-u.ac.jp>  wrote:\n>>>>\n>>>> Hi,\n>>>>\n>>>> Did you use dbSendQeury() to change the search path or dbGetQeury \n>>>> () ?\n>>>\n>>> I have tried both, both failed, the last error is because there is\n>>> already table named rtest.\n>>>\n>>>> dbGetQuery(con, \"set search_path to amber,public;\")\n>>>\n>>> NULL\n>>>>\n>>>> dbGetQuery(con, \"show search_path;\")\n>>>\n>>>     search_path\n>>> 1 amber, public\n>>>>\n>>>> dbWriteTable(con, \"rtest\", df, row.names=FALSE)\n>>>\n>>> [1] FALSE\n>>> Warning message:\n>>> In postgresqlWriteTable(conn, name, value, ...) :\n>>>   table rtest exists in database: aborting assignTable\n>>>\n>>>\n>>>> As explained in the mail on 1 March on [R-sig-DB], dbSendQuery  \n>>>> just sends\n>>>> the query but does not finish the query\n>>>> and other connection is created for later queries, which results  \n>>>> as if\n>>>> the\n>>>> effect is not taken place.\n>>>>\n>>>> https://stat.ethz.ch/pipermail/r-sig-db/2011q1/001032.html\n>>>>\n>>>>\n>>>\n>>\n>>\n>",
+      "body_snippet": "Hi,\n\n> It does not work, dbExistsTable returns TRUE if tablename exists in\n> any of the schemas and if tablename is not with the format\n> schema.tablename;\n\nYou don't show what table exists in reality",
+      "thread_id": "thread-b73ba26ceea1",
+      "thread_depth": 1,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-8e0bf942ad58",
+      "message_id": "<BD1D92C7-2A12-4D3C-8C2F-1AD5B0325507@kenroku.kanazawa-u.ac.jp>",
+      "from_name": "Tomoaki NISHIYAMA",
+      "from_email_hash": "32104f251c35465c7b064ecaf7558a62b44d8fb01218b8a85e1f2cd3278271b5",
+      "date": "2011-03-06T15:39:47+09:00",
+      "subject": "[R-sig-DB] How to write to database schema other than public using RPostgreSQL",
+      "subject_clean": "How to write to database schema other than public using RPostgreSQL",
+      "in_reply_to": "<AANLkTinbAr91u-sjfM2CMFsAxpxcwihoXVL5d=jAoZ3Y@mail.gmail.com>",
+      "references": [
+        "<AANLkTinbAr91u-sjfM2CMFsAxpxcwihoXVL5d=jAoZ3Y@mail.gmail.com>"
+      ],
+      "body_plain": "Hi,\n\nSince so many inquiry on schema access have been received,\nI have made a trial implementation and committed to the svn repository\nas r176.\n\nPleasy try to use c(\"schema\", \"table\") to the place where you want to  \nrefer \"schema\".\"table\".\n\nThe modification of the code is kept very minimal just add an option  \nof collapse=\".\" to paste\nin comparison to the postgresqlQuoteId.  However since this function  \nwas used to quote vector\nand return the quoted vector for the table definition construction,  \nthe new function was made\nunder a different name, as \"postgresqlTableRef\".  This name might not  \nbe optimal as this can\nbe also used for \"table\".\"column\" structure construction.  If any  \nbetter name is proposed,\nI will change.\n\nAlthough some brief tests have been done, I personally do not depend  \non schema now and\nthere might be shortcomings.  So, don't hesitate to tell me if  \nsomething is wrong.\n\nSincerely,\n-- \nTomoaki NISHIYAMA\n\nAdvanced Science Research Center,\nKanazawa University,\n13-1 Takara-machi,\nKanazawa, 920-0934, Japan\n\n\nOn 2011/03/05, at 21:32, Xiaobo Gu wrote:\n\n> Hi,\n> It seems there is not a shcema parameter for method dbWriteTable, and\n> I have tried\n> \"[schema].[testtable]\", \"\\\"schema\\\".\\\"testtable\\\", \"schema.testtable\"\n> for the tablename parameter of dbWriteTable, none of them works.\n>\n> Do you have workarounds about this.\n>\n> Thanks,\n>\n> Xiaobo Gu\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "Hi,\n\nSince so many inquiry on schema access have been received,\nI have made a trial implementation and committed to the svn repository\nas r176.\n\nPleasy try to use c(\"schema\", \"table\") to the place whe",
+      "thread_id": "thread-63b9e94dccca",
+      "thread_depth": 1,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-3ddf5f552413",
+      "message_id": "<AANLkTi=-OQcaLUujUGnu_Wwd8=HBL1py-Fv8CrcARqHK@mail.gmail.com>",
+      "from_name": "Xiaobo Gu",
+      "from_email_hash": "176108762e20fc40c0ea5782a4cf2388d4cba8cdadb1f5a5481fccf34141e262",
+      "date": "2011-03-06T23:05:37+08:00",
+      "subject": "[R-sig-DB] dbWriteTable in RPostgreSQL can't handle date and timestamp data types.",
+      "subject_clean": "dbWriteTable in RPostgreSQL can't handle date and timestamp data types.",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\nI have  data fram with columns of type date and timestamps, but\ndbWriteTable create text data type columns for them both, is it a bug?\n\nThanks.\n\nXiaobo Gu",
+      "body_snippet": "Hi,\n\nI have  data fram with columns of type date and timestamps, but\ndbWriteTable create text data type columns for them both, is it a bug?\n\nThanks.\n\nXiaobo Gu",
+      "thread_id": "thread-3ddf5f552413",
+      "thread_depth": 0,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-b26637037422",
+      "message_id": "<3156D035-1A24-44C8-8F33-5AB6F05C6D51@kenroku.kanazawa-u.ac.jp>",
+      "from_name": "Tomoaki NISHIYAMA",
+      "from_email_hash": "32104f251c35465c7b064ecaf7558a62b44d8fb01218b8a85e1f2cd3278271b5",
+      "date": "2011-03-07T01:07:24+09:00",
+      "subject": "[R-sig-DB] dbWriteTable in RPostgreSQL can't handle date and timestamp data types.",
+      "subject_clean": "dbWriteTable in RPostgreSQL can't handle date and timestamp data types.",
+      "in_reply_to": "<AANLkTi=-OQcaLUujUGnu_Wwd8=HBL1py-Fv8CrcARqHK@mail.gmail.com>",
+      "references": [
+        "<AANLkTi=-OQcaLUujUGnu_Wwd8=HBL1py-Fv8CrcARqHK@mail.gmail.com>"
+      ],
+      "body_plain": "Hi,\n\n> I have  data fram with columns of type date and timestamps, but\n> dbWriteTable create text data type columns for them both, is it a bug?\n\n\nIt is just not implemented.\nThe relevant code is in PostgreSQLSupport.R:\n\n## find a suitable SQL data type for the R/S object obj\n## TODO: Lots and lots!! (this is a very rough first draft)\n## need to register converters, abstract out PostgreSQL and generalize\n## to Oracle, Informix, etc.  Perhaps this should be table-driven.\n## NOTE: PostgreSQL data types differ from the SQL92 (e.g., varchar  \ntruncate\n## trailing spaces).\npostgresqlDataType <- function(obj, ...) {\n     rs.class <- data.class(obj)    ## this differs in R 1.4 from  \nolder vers\n     rs.mode <- storage.mode(obj)\n     if(rs.class==\"numeric\" || rs.class == \"integer\"){\n         sql.type <- if(rs.mode==\"integer\") \"bigint\" else  \"float8\"\n     }\n     else {\n         sql.type <- switch(rs.class,\n                            character = \"text\",\n                            logical = \"bool\",\n                            factor = \"text\",\n                            ordered = \"text\",\n                            \"text\")\n     }\n     sql.type\n}\n\n\nThis is all the default conversion.\nFor any other type, you need to do write respective codes.\n-- \nTomoaki NISHIYAMA\n\nAdvanced Science Research Center,\nKanazawa University,\n13-1 Takara-machi,\nKanazawa, 920-0934, Japan",
+      "body_snippet": "Hi,\n\n> I have  data fram with columns of type date and timestamps, but\n> dbWriteTable create text data type columns for them both, is it a bug?\n\n\nIt is just not implemented.\nThe relevant code is in Po",
+      "thread_id": "thread-3ddf5f552413",
+      "thread_depth": 1,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-6c9f23b55f41",
+      "message_id": "<AANLkTimX6Bf4GjEyW=XqBV9foUmbYysYZ1yabn9HLF=6@mail.gmail.com>",
+      "from_name": "Xiaobo Gu",
+      "from_email_hash": "176108762e20fc40c0ea5782a4cf2388d4cba8cdadb1f5a5481fccf34141e262",
+      "date": "2011-03-07T13:27:11+08:00",
+      "subject": "[R-sig-DB] dbWriteTable in RPostgreSQL can't handle date and timestamp data types.",
+      "subject_clean": "dbWriteTable in RPostgreSQL can't handle date and timestamp data types.",
+      "in_reply_to": "<3156D035-1A24-44C8-8F33-5AB6F05C6D51@kenroku.kanazawa-u.ac.jp>",
+      "references": [
+        "<AANLkTi=-OQcaLUujUGnu_Wwd8=HBL1py-Fv8CrcARqHK@mail.gmail.com>",
+        "<3156D035-1A24-44C8-8F33-5AB6F05C6D51@kenroku.kanazawa-u.ac.jp>"
+      ],
+      "body_plain": "Can you implement Date and Timestamp first please?\n\nXiaobo Gu\n\nOn Mon, Mar 7, 2011 at 12:07 AM, Tomoaki NISHIYAMA\n<tomoakin at kenroku.kanazawa-u.ac.jp> wrote:\n> Hi,\n>\n>> I have ?data fram with columns of type date and timestamps, but\n>> dbWriteTable create text data type columns for them both, is it a bug?\n>\n>\n> It is just not implemented.\n> The relevant code is in PostgreSQLSupport.R:\n>\n> ## find a suitable SQL data type for the R/S object obj\n> ## TODO: Lots and lots!! (this is a very rough first draft)\n> ## need to register converters, abstract out PostgreSQL and generalize\n> ## to Oracle, Informix, etc. ?Perhaps this should be table-driven.\n> ## NOTE: PostgreSQL data types differ from the SQL92 (e.g., varchar truncate\n> ## trailing spaces).\n> postgresqlDataType <- function(obj, ...) {\n> ? ?rs.class <- data.class(obj) ? ?## this differs in R 1.4 from older vers\n> ? ?rs.mode <- storage.mode(obj)\n> ? ?if(rs.class==\"numeric\" || rs.class == \"integer\"){\n> ? ? ? ?sql.type <- if(rs.mode==\"integer\") \"bigint\" else ?\"float8\"\n> ? ?}\n> ? ?else {\n> ? ? ? ?sql.type <- switch(rs.class,\n> ? ? ? ? ? ? ? ? ? ? ? ? ? character = \"text\",\n> ? ? ? ? ? ? ? ? ? ? ? ? ? logical = \"bool\",\n> ? ? ? ? ? ? ? ? ? ? ? ? ? factor = \"text\",\n> ? ? ? ? ? ? ? ? ? ? ? ? ? ordered = \"text\",\n> ? ? ? ? ? ? ? ? ? ? ? ? ? \"text\")\n> ? ?}\n> ? ?sql.type\n> }\n>\n>\n> This is all the default conversion.\n> For any other type, you need to do write respective codes.\n> --\n> Tomoaki NISHIYAMA\n>\n> Advanced Science Research Center,\n> Kanazawa University,\n> 13-1 Takara-machi,\n> Kanazawa, 920-0934, Japan\n>\n>",
+      "body_snippet": "Can you implement Date and Timestamp first please?\n\nXiaobo Gu\n\nOn Mon, Mar 7, 2011 at 12:07 AM, Tomoaki NISHIYAMA\n<tomoakin at kenroku.kanazawa-u.ac.jp> wrote:\n> Hi,\n>\n>> I have ?data fram with column",
+      "thread_id": "thread-3ddf5f552413",
+      "thread_depth": 2,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-e8d58a45e92c",
+      "message_id": "<051CA216-D458-4EB7-83AA-FAD2E3D31B19@kenroku.kanazawa-u.ac.jp>",
+      "from_name": "Tomoaki NISHIYAMA",
+      "from_email_hash": "32104f251c35465c7b064ecaf7558a62b44d8fb01218b8a85e1f2cd3278271b5",
+      "date": "2011-03-07T15:07:43+09:00",
+      "subject": "[R-sig-DB] dbWriteTable in RPostgreSQL can't handle date and timestamp data types.",
+      "subject_clean": "dbWriteTable in RPostgreSQL can't handle date and timestamp data types.",
+      "in_reply_to": "<AANLkTimX6Bf4GjEyW=XqBV9foUmbYysYZ1yabn9HLF=6@mail.gmail.com>",
+      "references": [
+        "<AANLkTi=-OQcaLUujUGnu_Wwd8=HBL1py-Fv8CrcARqHK@mail.gmail.com>",
+        "<3156D035-1A24-44C8-8F33-5AB6F05C6D51@kenroku.kanazawa-u.ac.jp>",
+        "<AANLkTimX6Bf4GjEyW=XqBV9foUmbYysYZ1yabn9HLF=6@mail.gmail.com>"
+      ],
+      "body_plain": "Hi,\n\n> Can you implement Date and Timestamp first please?\n\n\nIf you write a reasonable code with proper test cases, I can commit it.\nI personally do not have that motivation.\n\nNeither RMySQL nor ROracle, do have implemented that feature.\nAnyway, if the text is in a proper format, it is not very difficult\nto convert them to date or timestamp datatype within postgresql\nby issuing an appropriate SQL.\n\nBy the way, I really do not understand\n>>> data fram with columns of type date and timestamps\n\n\ndata frame implies it is R data, but what class in fact?\n\nIf you get that data from postgresql, it is already just a\nstring and putting a string as a text is the right job for\ndbWriteTable().\n-- \nTomoaki NISHIYAMA\n\nAdvanced Science Research Center,\nKanazawa University,\n13-1 Takara-machi,\nKanazawa, 920-0934, Japan",
+      "body_snippet": "Hi,\n\n> Can you implement Date and Timestamp first please?\n\n\nIf you write a reasonable code with proper test cases, I can commit it.\nI personally do not have that motivation.\n\nNeither RMySQL nor ROracl",
+      "thread_id": "thread-3ddf5f552413",
+      "thread_depth": 3,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-7bb49cc23fb8",
+      "message_id": "<AANLkTik-1U1WAMAreyU+hOpU6LNVbkvJcekRQkFR9My1@mail.gmail.com>",
+      "from_name": "Xiaobo Gu",
+      "from_email_hash": "176108762e20fc40c0ea5782a4cf2388d4cba8cdadb1f5a5481fccf34141e262",
+      "date": "2011-03-07T16:28:06+08:00",
+      "subject": "[R-sig-DB] dbWriteTable in RPostgreSQL can't handle date and timestamp data types.",
+      "subject_clean": "dbWriteTable in RPostgreSQL can't handle date and timestamp data types.",
+      "in_reply_to": "<051CA216-D458-4EB7-83AA-FAD2E3D31B19@kenroku.kanazawa-u.ac.jp>",
+      "references": [
+        "<AANLkTi=-OQcaLUujUGnu_Wwd8=HBL1py-Fv8CrcARqHK@mail.gmail.com>",
+        "<3156D035-1A24-44C8-8F33-5AB6F05C6D51@kenroku.kanazawa-u.ac.jp>",
+        "<AANLkTimX6Bf4GjEyW=XqBV9foUmbYysYZ1yabn9HLF=6@mail.gmail.com>",
+        "<051CA216-D458-4EB7-83AA-FAD2E3D31B19@kenroku.kanazawa-u.ac.jp>"
+      ],
+      "body_plain": "On Mon, Mar 7, 2011 at 2:07 PM, Tomoaki NISHIYAMA\n<tomoakin at kenroku.kanazawa-u.ac.jp> wrote:\n> Hi,\n>\n>> Can you implement Date and Timestamp first please?\n>\n>\n> If you write a reasonable code with proper test cases, I can commit it.\n> I personally do not have that motivation.\n>\n> Neither RMySQL nor ROracle, do have implemented that feature.\n> Anyway, if the text is in a proper format, it is not very difficult\n> to convert them to date or timestamp datatype within postgresql\n> by issuing an appropriate SQL.\n>\n> By the way, I really do not understand\n>>>>\n>>>> data fram with columns of type date and timestamps\n>\n\n> df <- dbReadTable(con, \"rtest\")\n> df\n  a     b          c                   d\n1 1 amber 2011-03-07 2011-03-07 16:30:39\n2 2 linda 2011-03-07 2011-03-07 16:30:39\n> class(df[[\"c\"]])\n[1] \"Date\"\n> class(df[[\"d\"]])\n[1] \"POSIXct\" \"POSIXt\"\n\n>\n> data frame implies it is R data, but what class in fact?\n>\n> If you get that data from postgresql, it is already just a\n> string and putting a string as a text is the right job for\n> dbWriteTable().\n\n> --\n> Tomoaki NISHIYAMA\n>\n> Advanced Science Research Center,\n> Kanazawa University,\n> 13-1 Takara-machi,\n> Kanazawa, 920-0934, Japan\n>\n>",
+      "body_snippet": "On Mon, Mar 7, 2011 at 2:07 PM, Tomoaki NISHIYAMA\n<tomoakin at kenroku.kanazawa-u.ac.jp> wrote:\n> Hi,\n>\n>> Can you implement Date and Timestamp first please?\n>\n>\n> If you write a reasonable code with ",
+      "thread_id": "thread-3ddf5f552413",
+      "thread_depth": 4,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-cac3cfd5d77d",
+      "message_id": "<C2281AC1-2DAB-4A6C-84C4-72C9DDB1B493@kenroku.kanazawa-u.ac.jp>",
+      "from_name": "Tomoaki NISHIYAMA",
+      "from_email_hash": "32104f251c35465c7b064ecaf7558a62b44d8fb01218b8a85e1f2cd3278271b5",
+      "date": "2011-03-07T19:37:48+09:00",
+      "subject": "[R-sig-DB] dbWriteTable in RPostgreSQL can't handle date and timestamp data types.",
+      "subject_clean": "dbWriteTable in RPostgreSQL can't handle date and timestamp data types.",
+      "in_reply_to": "<AANLkTik-1U1WAMAreyU+hOpU6LNVbkvJcekRQkFR9My1@mail.gmail.com>",
+      "references": [
+        "<AANLkTi=-OQcaLUujUGnu_Wwd8=HBL1py-Fv8CrcARqHK@mail.gmail.com>",
+        "<3156D035-1A24-44C8-8F33-5AB6F05C6D51@kenroku.kanazawa-u.ac.jp>",
+        "<AANLkTimX6Bf4GjEyW=XqBV9foUmbYysYZ1yabn9HLF=6@mail.gmail.com>",
+        "<051CA216-D458-4EB7-83AA-FAD2E3D31B19@kenroku.kanazawa-u.ac.jp>",
+        "<AANLkTik-1U1WAMAreyU+hOpU6LNVbkvJcekRQkFR9My1@mail.gmail.com>"
+      ],
+      "body_plain": "Hi,\n\n>> class(df[[\"c\"]])\n> [1] \"Date\"\n>> class(df[[\"d\"]])\n> [1] \"POSIXct\" \"POSIXt\"\n\n\nOk, if you know the class name, the change is simple as r179.\n(r178, r180 are cleanups of other part)\n-- \nTomoaki NISHIYAMA\n\nAdvanced Science Research Center,\nKanazawa University,\n13-1 Takara-machi,\nKanazawa, 920-0934, Japan",
+      "body_snippet": "Hi,\n\n>> class(df[[\"c\"]])\n> [1] \"Date\"\n>> class(df[[\"d\"]])\n> [1] \"POSIXct\" \"POSIXt\"\n\n\nOk, if you know the class name, the change is simple as r179.\n(r178, r180 are cleanups of other part)\n-- \nTomoaki N",
+      "thread_id": "thread-3ddf5f552413",
+      "thread_depth": 5,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-55d427f94a68",
+      "message_id": "<AANLkTimUW3FwyAWr6KcEH7h1mg3_xQbLHLhrQ7pZdtXD@mail.gmail.com>",
+      "from_name": "Xiaobo Gu",
+      "from_email_hash": "176108762e20fc40c0ea5782a4cf2388d4cba8cdadb1f5a5481fccf34141e262",
+      "date": "2011-03-07T20:32:42+08:00",
+      "subject": "[R-sig-DB] dbWriteTable in RPostgreSQL can't handle date and timestamp data types.",
+      "subject_clean": "dbWriteTable in RPostgreSQL can't handle date and timestamp data types.",
+      "in_reply_to": "<C2281AC1-2DAB-4A6C-84C4-72C9DDB1B493@kenroku.kanazawa-u.ac.jp>",
+      "references": [
+        "<AANLkTi=-OQcaLUujUGnu_Wwd8=HBL1py-Fv8CrcARqHK@mail.gmail.com>",
+        "<3156D035-1A24-44C8-8F33-5AB6F05C6D51@kenroku.kanazawa-u.ac.jp>",
+        "<AANLkTimX6Bf4GjEyW=XqBV9foUmbYysYZ1yabn9HLF=6@mail.gmail.com>",
+        "<051CA216-D458-4EB7-83AA-FAD2E3D31B19@kenroku.kanazawa-u.ac.jp>",
+        "<AANLkTik-1U1WAMAreyU+hOpU6LNVbkvJcekRQkFR9My1@mail.gmail.com>",
+        "<C2281AC1-2DAB-4A6C-84C4-72C9DDB1B493@kenroku.kanazawa-u.ac.jp>"
+      ],
+      "body_plain": "Can we specify data types for columns of the table created by\ndbWriteTable, most times we want timestamp without timezone.\nAnother case is numeric numbers, in current implement all numeric data\nare converted as float, but for some applications want it to be\ndecimal with scales,\n\nXiaobo Gu\n\n\nOn Mon, Mar 7, 2011 at 6:37 PM, Tomoaki NISHIYAMA\n<tomoakin at kenroku.kanazawa-u.ac.jp> wrote:\n> Hi,\n>\n>>> class(df[[\"c\"]])\n>>\n>> [1] \"Date\"\n>>>\n>>> class(df[[\"d\"]])\n>>\n>> [1] \"POSIXct\" \"POSIXt\"\n>\n>\n> Ok, if you know the class name, the change is simple as r179.\n> (r178, r180 are cleanups of other part)\n> --\n> Tomoaki NISHIYAMA\n>\n> Advanced Science Research Center,\n> Kanazawa University,\n> 13-1 Takara-machi,\n> Kanazawa, 920-0934, Japan\n>\n>",
+      "body_snippet": "Can we specify data types for columns of the table created by\ndbWriteTable, most times we want timestamp without timezone.\nAnother case is numeric numbers, in current implement all numeric data\nare co",
+      "thread_id": "thread-3ddf5f552413",
+      "thread_depth": 6,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-b295e155636e",
+      "message_id": "<D61A4518-D6CA-4972-ADCB-349D5FF68DC0@kenroku.kanazawa-u.ac.jp>",
+      "from_name": "Tomoaki NISHIYAMA",
+      "from_email_hash": "32104f251c35465c7b064ecaf7558a62b44d8fb01218b8a85e1f2cd3278271b5",
+      "date": "2011-03-07T23:00:55+09:00",
+      "subject": "[R-sig-DB] dbWriteTable in RPostgreSQL can't handle date and timestamp data types.",
+      "subject_clean": "dbWriteTable in RPostgreSQL can't handle date and timestamp data types.",
+      "in_reply_to": "<AANLkTimUW3FwyAWr6KcEH7h1mg3_xQbLHLhrQ7pZdtXD@mail.gmail.com>",
+      "references": [
+        "<AANLkTi=-OQcaLUujUGnu_Wwd8=HBL1py-Fv8CrcARqHK@mail.gmail.com>",
+        "<3156D035-1A24-44C8-8F33-5AB6F05C6D51@kenroku.kanazawa-u.ac.jp>",
+        "<AANLkTimX6Bf4GjEyW=XqBV9foUmbYysYZ1yabn9HLF=6@mail.gmail.com>",
+        "<051CA216-D458-4EB7-83AA-FAD2E3D31B19@kenroku.kanazawa-u.ac.jp>",
+        "<AANLkTik-1U1WAMAreyU+hOpU6LNVbkvJcekRQkFR9My1@mail.gmail.com>",
+        "<C2281AC1-2DAB-4A6C-84C4-72C9DDB1B493@kenroku.kanazawa-u.ac.jp>",
+        "<AANLkTimUW3FwyAWr6KcEH7h1mg3_xQbLHLhrQ7pZdtXD@mail.gmail.com>"
+      ],
+      "body_plain": "Hi,\n\n> Can we specify data types for columns of the table created by\n> dbWriteTable,\n\nYou can do anything by issuing an SQL.\n\n> most times we want timestamp without timezone\n\nThe reason/benefit is not explained.\n\n> want it to be decimal with scales,\n\n\nWhat do you mean with \"decimal with scales\"?\nWhat is the difference with float?\n-- \nTomoaki NISHIYAMA\n\nAdvanced Science Research Center,\nKanazawa University,\n13-1 Takara-machi,\nKanazawa, 920-0934, Japan\n\n\nOn 2011/03/07, at 21:32, Xiaobo Gu wrote:\n\n> Can we specify data types for columns of the table created by\n> dbWriteTable, most times we want timestamp without timezone.\n> Another case is numeric numbers, in current implement all numeric data\n> are converted as float, but for some applications want it to be\n> decimal with scales,\n>\n> Xiaobo Gu\n>\n>\n> On Mon, Mar 7, 2011 at 6:37 PM, Tomoaki NISHIYAMA\n> <tomoakin at kenroku.kanazawa-u.ac.jp> wrote:\n>> Hi,\n>>\n>>>> class(df[[\"c\"]])\n>>>\n>>> [1] \"Date\"\n>>>>\n>>>> class(df[[\"d\"]])\n>>>\n>>> [1] \"POSIXct\" \"POSIXt\"\n>>\n>>\n>> Ok, if you know the class name, the change is simple as r179.\n>> (r178, r180 are cleanups of other part)\n>> --\n>> Tomoaki NISHIYAMA\n>>\n>> Advanced Science Research Center,\n>> Kanazawa University,\n>> 13-1 Takara-machi,\n>> Kanazawa, 920-0934, Japan\n>>\n>>\n>",
+      "body_snippet": "Hi,\n\n> Can we specify data types for columns of the table created by\n> dbWriteTable,\n\nYou can do anything by issuing an SQL.\n\n> most times we want timestamp without timezone\n\nThe reason/benefit is not",
+      "thread_id": "thread-3ddf5f552413",
+      "thread_depth": 7,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-54bc4eaaa727",
+      "message_id": "<AANLkTinhddPvZpxrhXjxu1eerged=xQa=0+EsA0TS5uV@mail.gmail.com>",
+      "from_name": "Xiaobo Gu",
+      "from_email_hash": "176108762e20fc40c0ea5782a4cf2388d4cba8cdadb1f5a5481fccf34141e262",
+      "date": "2011-03-07T22:04:50+08:00",
+      "subject": "[R-sig-DB] dbWriteTable in RPostgreSQL can't handle date and timestamp data types.",
+      "subject_clean": "dbWriteTable in RPostgreSQL can't handle date and timestamp data types.",
+      "in_reply_to": "<D61A4518-D6CA-4972-ADCB-349D5FF68DC0@kenroku.kanazawa-u.ac.jp>",
+      "references": [
+        "<AANLkTi=-OQcaLUujUGnu_Wwd8=HBL1py-Fv8CrcARqHK@mail.gmail.com>",
+        "<3156D035-1A24-44C8-8F33-5AB6F05C6D51@kenroku.kanazawa-u.ac.jp>",
+        "<AANLkTimX6Bf4GjEyW=XqBV9foUmbYysYZ1yabn9HLF=6@mail.gmail.com>",
+        "<051CA216-D458-4EB7-83AA-FAD2E3D31B19@kenroku.kanazawa-u.ac.jp>",
+        "<AANLkTik-1U1WAMAreyU+hOpU6LNVbkvJcekRQkFR9My1@mail.gmail.com>",
+        "<C2281AC1-2DAB-4A6C-84C4-72C9DDB1B493@kenroku.kanazawa-u.ac.jp>",
+        "<AANLkTimUW3FwyAWr6KcEH7h1mg3_xQbLHLhrQ7pZdtXD@mail.gmail.com>",
+        "<D61A4518-D6CA-4972-ADCB-349D5FF68DC0@kenroku.kanazawa-u.ac.jp>"
+      ],
+      "body_plain": "On Mon, Mar 7, 2011 at 10:00 PM, Tomoaki NISHIYAMA\n<tomoakin at kenroku.kanazawa-u.ac.jp> wrote:\n> Hi,\n>\n>> Can we specify data types for columns of the table created by\n>> dbWriteTable,\n>\n> You can do anything by issuing an SQL.\nManually issue SQL is not so convenient\n\n>> most times we want timestamp without timezone\n>\n> The reason/benefit is not explained.\n>\n>> want it to be decimal with scales,\n>\n>\n> What do you mean with \"decimal with scales\"?\n\n> What is the difference with float?\n\nPlease seee http://www.postgresql.org/docs/9.0/interactive/datatype-numeric.html#DATATYPE-FLOAT.\n\n> --\n> Tomoaki NISHIYAMA\n>\n> Advanced Science Research Center,\n> Kanazawa University,\n> 13-1 Takara-machi,\n> Kanazawa, 920-0934, Japan\n>\n>\n> On 2011/03/07, at 21:32, Xiaobo Gu wrote:\n>\n>> Can we specify data types for columns of the table created by\n>> dbWriteTable, most times we want timestamp without timezone.\n>> Another case is numeric numbers, in current implement all numeric data\n>> are converted as float, but for some applications want it to be\n>> decimal with scales,\n>>\n>> Xiaobo Gu\n>>\n>>\n>> On Mon, Mar 7, 2011 at 6:37 PM, Tomoaki NISHIYAMA\n>> <tomoakin at kenroku.kanazawa-u.ac.jp> wrote:\n>>>\n>>> Hi,\n>>>\n>>>>> class(df[[\"c\"]])\n>>>>\n>>>> [1] \"Date\"\n>>>>>\n>>>>> class(df[[\"d\"]])\n>>>>\n>>>> [1] \"POSIXct\" \"POSIXt\"\n>>>\n>>>\n>>> Ok, if you know the class name, the change is simple as r179.\n>>> (r178, r180 are cleanups of other part)\n>>> --\n>>> Tomoaki NISHIYAMA\n>>>\n>>> Advanced Science Research Center,\n>>> Kanazawa University,\n>>> 13-1 Takara-machi,\n>>> Kanazawa, 920-0934, Japan\n>>>\n>>>\n>>\n>\n>",
+      "body_snippet": "On Mon, Mar 7, 2011 at 10:00 PM, Tomoaki NISHIYAMA\n<tomoakin at kenroku.kanazawa-u.ac.jp> wrote:\n> Hi,\n>\n>> Can we specify data types for columns of the table created by\n>> dbWriteTable,\n>\n> You can d",
+      "thread_id": "thread-3ddf5f552413",
+      "thread_depth": 8,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-46e3ead16a8c",
+      "message_id": "<3f814a80.116e9.12e93819c98.Coremail.januslian@126.com>",
+      "from_name": "Peng Lian",
+      "from_email_hash": "7324d8c60771db9da7b3cf6c7ef2f0bff7a2d0a60ac79b524030190c502c3f3b",
+      "date": "2011-03-08T11:27:48+08:00",
+      "subject": "[R-sig-DB] dbWriteTable in RPostgreSQL can't handle date and timestamp data types.",
+      "subject_clean": "dbWriteTable in RPostgreSQL can't handle date and timestamp data types.",
+      "in_reply_to": "<AANLkTimUW3FwyAWr6KcEH7h1mg3_xQbLHLhrQ7pZdtXD@mail.gmail.com>",
+      "references": [
+        "<AANLkTimUW3FwyAWr6KcEH7h1mg3_xQbLHLhrQ7pZdtXD@mail.gmail.com>",
+        "<AANLkTi=-OQcaLUujUGnu_Wwd8=HBL1py-Fv8CrcARqHK@mail.gmail.com>",
+        "<3156D035-1A24-44C8-8F33-5AB6F05C6D51@kenroku.kanazawa-u.ac.jp>",
+        "<AANLkTimX6Bf4GjEyW=XqBV9foUmbYysYZ1yabn9HLF=6@mail.gmail.com>",
+        "<051CA216-D458-4EB7-83AA-FAD2E3D31B19@kenroku.kanazawa-u.ac.jp>",
+        "<AANLkTik-1U1WAMAreyU+hOpU6LNVbkvJcekRQkFR9My1@mail.gmail.com>",
+        "<C2281AC1-2DAB-4A6C-84C4-72C9DDB1B493@kenroku.kanazawa-u.ac.jp>"
+      ],
+      "body_plain": "At 2011-03-07 20:32:42??\"Xiaobo Gu\" <guxiaobo1982 at gmail.com> wrote: >Can we specify data types for columns of the table created by >dbWriteTable, most times we want timestamp without timezone. >Another case is numeric numbers, in current implement all numeric data\n\nI think you can specify data types. Checking out the source file of RPostgreSQL\npackage, the function of dbWriteTable use argument *filed.types* to specify\ndata types, so through modifying default value of *filed.types*, which is\nrepresent by data type in PostgreSQL, may specify data types.\n\n\n>are converted as float, but for some applications want it to be >decimal with scales, > >Xiaobo Gu > > >On Mon, Mar 7, 2011 at 6:37 PM, Tomoaki NISHIYAMA ><tomoakin at kenroku.kanazawa-u.ac.jp> wrote: >> Hi, >> >>>> class(df[[\"c\"]]) >>> >>> [1] \"Date\" >>>> >>>> class(df[[\"d\"]]) >>> >>> [1] \"POSIXct\" \"POSIXt\" >> >> >> Ok, if you know the class name, the change is simple as r179. >> (r178, r180 are cleanups of other part) >> -- >> Tomoaki NISHIYAMA >> >> Advanced Science Research Center, >> Kanazawa University, >> 13-1 Takara-machi, >> Kanazawa, 920-0934, Japan >> >> > >_______________________________________________ >R-sig-DB mailing list -- R Special Interest Group >R-sig-DB at r-project.org >https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "At 2011-03-07 20:32:42??\"Xiaobo Gu\" <guxiaobo1982 at gmail.com> wrote: >Can we specify data types for columns of the table created by >dbWriteTable, most times we want timestamp without timezone. >Ano",
+      "thread_id": "thread-3ddf5f552413",
+      "thread_depth": 7,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-1dddd166627c",
+      "message_id": "<AANLkTikv6XKvJmsMsZnngYH+HbAOSvRD_OvKtRCwcnU0@mail.gmail.com>",
+      "from_name": "Xiaobo Gu",
+      "from_email_hash": "176108762e20fc40c0ea5782a4cf2388d4cba8cdadb1f5a5481fccf34141e262",
+      "date": "2011-03-08T20:32:06+08:00",
+      "subject": "[R-sig-DB] dbWriteTable in RPostgreSQL can't handle date and timestamp data types.",
+      "subject_clean": "dbWriteTable in RPostgreSQL can't handle date and timestamp data types.",
+      "in_reply_to": "<3f814a80.116e9.12e93819c98.Coremail.januslian@126.com>",
+      "references": [
+        "<AANLkTi=-OQcaLUujUGnu_Wwd8=HBL1py-Fv8CrcARqHK@mail.gmail.com>",
+        "<3156D035-1A24-44C8-8F33-5AB6F05C6D51@kenroku.kanazawa-u.ac.jp>",
+        "<AANLkTimX6Bf4GjEyW=XqBV9foUmbYysYZ1yabn9HLF=6@mail.gmail.com>",
+        "<051CA216-D458-4EB7-83AA-FAD2E3D31B19@kenroku.kanazawa-u.ac.jp>",
+        "<AANLkTik-1U1WAMAreyU+hOpU6LNVbkvJcekRQkFR9My1@mail.gmail.com>",
+        "<C2281AC1-2DAB-4A6C-84C4-72C9DDB1B493@kenroku.kanazawa-u.ac.jp>",
+        "<AANLkTimUW3FwyAWr6KcEH7h1mg3_xQbLHLhrQ7pZdtXD@mail.gmail.com>",
+        "<3f814a80.116e9.12e93819c98.Coremail.januslian@126.com>"
+      ],
+      "body_plain": "2011/3/8 Peng Lian <januslian at 126.com>:\n> At?2011-03-07?20:32:42?\"Xiaobo?Gu\"?<guxiaobo1982 at gmail.com>?wrote:\n>>Can?we?specify?data?types?for?columns?of?the?table?created?by\n>>dbWriteTable,?most?times?we?want?timestamp?without?timezone.\n>>Another?case?is?numeric?numbers,?in?current?implement?all?numeric?data\n>\n> I think you can specify?data?types. Checking out the source file of\n> RPostgreSQL\n> package, the function of dbWriteTable use argument *filed.types* to specify\n> data?types, so through modifying default value of *filed.types*, which is\n> represent by data type in PostgreSQL, may specify?data?types.\n\nSince I can't find any documentation about this, can you show me some\nsample code about specifying data types.\n\n Another feature we want is that we only want to specify the data type\nfor columns that we think the automatically mapping  implemented by\nRPostgreSQL is not suitable to us.\nFor example, supporse we have a data frame with about 100 columns,\nonly a few of which are numeric numbers,such as col1/col2/col3, we\nwant the column types to be decimal(18,2), but not float8, users only\nneed to pass col1/col2/col3 to the function, and let RPostgreSQL\nchoose the data types for the rest of the columns.\n\n>>are?converted?as?float,?but?for?some?applications?want?it?to?be\n>> >decimal?with?scales, > >Xiaobo?Gu > >\n>> >On?Mon,?Mar?7,?2011?at?6:37?PM,?Tomoaki?NISHIYAMA\n>> ><tomoakin at kenroku.kanazawa-u.ac.jp>?wrote: >>?Hi, >> >>>>?class(df[[\"c\"]])\n>> >>> >>>?[1]?\"Date\" >>>> >>>>?class(df[[\"d\"]]) >>> >>>?[1]?\"POSIXct\"?\"POSIXt\"\n>> >> >> >>?Ok,?if?you?know?the?class?name,?the?change?is?simple?as?r179.\n>> >>?(r178,?r180?are?cleanups?of?other?part) >>?-- >>?Tomoaki?NISHIYAMA >>\n>> >>?Advanced?Science?Research?Center, >>?Kanazawa?University,\n>> >>?13-1?Takara-machi, >>?Kanazawa,?920-0934,?Japan >> >> >\n>> >_______________________________________________\n>> >R-sig-DB?mailing?list?--?R?Special?Interest?Group >R-sig-DB at r-project.org\n>> >https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n>",
+      "body_snippet": "2011/3/8 Peng Lian <januslian at 126.com>:\n> At?2011-03-07?20:32:42?\"Xiaobo?Gu\"?<guxiaobo1982 at gmail.com>?wrote:\n>>Can?we?specify?data?types?for?columns?of?the?table?created?by\n>>dbWriteTable,?most?",
+      "thread_id": "thread-3ddf5f552413",
+      "thread_depth": 8,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-2cfa0195cee8",
+      "message_id": "<AANLkTimc8nxK4AZW8QeG1Jz-QU1fy9bi=ztXrv3H5ES_@mail.gmail.com>",
+      "from_name": "Harlan Harris",
+      "from_email_hash": "611206558041b3ccc178bb02493ee676170bbca58f0ab8c485d465fae70db625",
+      "date": "2011-03-22T13:31:43-04:00",
+      "subject": "[R-sig-DB] NULL data not mapped to NA with RODBC on 64-bit Mac OS X",
+      "subject_clean": "NULL data not mapped to NA with RODBC on 64-bit Mac OS X",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello,\n\nI seem to have hit a bug in RODBC on 64-bit versions of R on Mac OS X. I'm\nrunning R 2.12.1, and using R to talk to Oracle and other databases using\nRODBC 1.3-2. In 32-bit mode (R32), everything works. (The ODBC drivers are\nthe ones from Actual.) In 64-bit mode (R), it seems as if NULL data is not\nbeing treated as missing. For example, a NULL value in an integer column is\nbeing returned as a 0 instead, which is wrong/bad.\n\nDiving into the code and Google a bit, it seems like an issue that's been\nseen before in other contexts. Here's the relevant C code, from\nRODBCFetchRows:\n\n        for(row = thisHandle->rowsUsed;\n        row < thisHandle->rowsFetched && j <= maximum;\n        j++, row++)\n        {\n        thisHandle->rowsUsed++;\n        if(j > blksize) {\n            blksize *= 2;\n            for (i = 0; i < nc; i++)\n            SET_VECTOR_ELT(data, i,\n                       lengthgets(VECTOR_ELT(data, i), blksize));\n        }\n        for (i = 0; i < nc; i++) {\n            SQLLEN len = thisHandle->ColData[i].IndPtr[row];\n            switch(thisHandle->ColData[i].DataType) {\n            case SQL_DOUBLE:\n            REAL(VECTOR_ELT(data, i))[j-1] =\n                len == SQL_NULL_DATA ? NA_REAL :\n                thisHandle->ColData[i].RData[row];\n            break;\n\netc...\n\nGoogling for SQL_NULL_DATA and related terms finds this page, about the same\nissue in a Python driver:\n\nhttp://code.google.com/p/pyodbc/issues/detail?id=51\n\nIt appears as if SQLLEN might be unsigned in 64-bit builds, while\nSQL_NULL_DATA is -1. Casting len to be an int rather than an unsigned int\nseems to solve the problem for them.\n\nOn my machine, /usr/include/sqltypes.h starts like this:\n\n/*\n *  sqltypes.h\n *\n *  $Id: sqltypes.h,v 1.23 2007/10/07 13:27:13 source Exp $\n *\n *  ODBC typedefs\n *\n *  The iODBC driver manager.\n\nand defines SQLLEN as follows:\n\n#ifdef _WIN64\ntypedef INT64                   SQLLEN;\ntypedef UINT64                  SQLULEN;\ntypedef UINT64                  SQLSETPOSIROW;\n#elif defined(STRICT_ODBC_TYPES)\ntypedef long                    SQLLEN;\ntypedef unsigned long           SQLULEN;\ntypedef unsigned short          SQLSETPOSIROW;\n#else\n#define SQLLEN                  long\n#define SQLULEN                 unsigned long\n#define SQLSETPOSIROW           unsigned short\n#endif\n\nSeems to me like SQLLEN should be signed, but apparently not?\n\nCan anyone help? Thank you!\n\n -Harlan\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hello,\n\nI seem to have hit a bug in RODBC on 64-bit versions of R on Mac OS X. I'm\nrunning R 2.12.1, and using R to talk to Oracle and other databases using\nRODBC 1.3-2. In 32-bit mode (R32), everythi",
+      "thread_id": "thread-2cfa0195cee8",
+      "thread_depth": 0,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-d7ae2a30a592",
+      "message_id": "<AANLkTi=i9SHhc-jVAXSPvzOF_FQkGZc-7wXhyav-1AJx@mail.gmail.com>",
+      "from_name": "Harlan Harris",
+      "from_email_hash": "611206558041b3ccc178bb02493ee676170bbca58f0ab8c485d465fae70db625",
+      "date": "2011-03-23T15:29:24-04:00",
+      "subject": "[R-sig-DB] NULL data not mapped to NA with RODBC on 64-bit Mac OS X",
+      "subject_clean": "NULL data not mapped to NA with RODBC on 64-bit Mac OS X",
+      "in_reply_to": "<AANLkTimc8nxK4AZW8QeG1Jz-QU1fy9bi=ztXrv3H5ES_@mail.gmail.com>",
+      "references": [
+        "<AANLkTimc8nxK4AZW8QeG1Jz-QU1fy9bi=ztXrv3H5ES_@mail.gmail.com>"
+      ],
+      "body_plain": "Any thoughts? Is there someone else or somewhere else I might ask?\n\n -Harlan\n\nOn Tue, Mar 22, 2011 at 1:31 PM, Harlan Harris <harlan at harris.name> wrote:\n\n> Hello,\n>\n> I seem to have hit a bug in RODBC on 64-bit versions of R on Mac OS X. I'm\n> running R 2.12.1, and using R to talk to Oracle and other databases using\n> RODBC 1.3-2. In 32-bit mode (R32), everything works. (The ODBC drivers are\n> the ones from Actual.) In 64-bit mode (R), it seems as if NULL data is not\n> being treated as missing. For example, a NULL value in an integer column is\n> being returned as a 0 instead, which is wrong/bad.\n>\n> Diving into the code and Google a bit, it seems like an issue that's been\n> seen before in other contexts. Here's the relevant C code, from\n> RODBCFetchRows:\n>\n>         for(row = thisHandle->rowsUsed;\n>         row < thisHandle->rowsFetched && j <= maximum;\n>         j++, row++)\n>         {\n>         thisHandle->rowsUsed++;\n>         if(j > blksize) {\n>             blksize *= 2;\n>             for (i = 0; i < nc; i++)\n>             SET_VECTOR_ELT(data, i,\n>                        lengthgets(VECTOR_ELT(data, i), blksize));\n>         }\n>         for (i = 0; i < nc; i++) {\n>             SQLLEN len = thisHandle->ColData[i].IndPtr[row];\n>             switch(thisHandle->ColData[i].DataType) {\n>             case SQL_DOUBLE:\n>             REAL(VECTOR_ELT(data, i))[j-1] =\n>                 len == SQL_NULL_DATA ? NA_REAL :\n>                 thisHandle->ColData[i].RData[row];\n>             break;\n>\n> etc...\n>\n> Googling for SQL_NULL_DATA and related terms finds this page, about the\n> same issue in a Python driver:\n>\n> http://code.google.com/p/pyodbc/issues/detail?id=51\n>\n> It appears as if SQLLEN might be unsigned in 64-bit builds, while\n> SQL_NULL_DATA is -1. Casting len to be an int rather than an unsigned int\n> seems to solve the problem for them.\n>\n> On my machine, /usr/include/sqltypes.h starts like this:\n>\n> /*\n>  *  sqltypes.h\n>  *\n>  *  $Id: sqltypes.h,v 1.23 2007/10/07 13:27:13 source Exp $\n>  *\n>  *  ODBC typedefs\n>  *\n>  *  The iODBC driver manager.\n>\n> and defines SQLLEN as follows:\n>\n> #ifdef _WIN64\n> typedef INT64                   SQLLEN;\n> typedef UINT64                  SQLULEN;\n> typedef UINT64                  SQLSETPOSIROW;\n> #elif defined(STRICT_ODBC_TYPES)\n> typedef long                    SQLLEN;\n> typedef unsigned long           SQLULEN;\n> typedef unsigned short          SQLSETPOSIROW;\n> #else\n> #define SQLLEN                  long\n> #define SQLULEN                 unsigned long\n> #define SQLSETPOSIROW           unsigned short\n> #endif\n>\n> Seems to me like SQLLEN should be signed, but apparently not?\n>\n> Can anyone help? Thank you!\n>\n>  -Harlan\n>\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Any thoughts? Is there someone else or somewhere else I might ask?\n\n -Harlan\n\nOn Tue, Mar 22, 2011 at 1:31 PM, Harlan Harris <harlan at harris.name> wrote:\n\n> Hello,\n>\n> I seem to have hit a bug in RO",
+      "thread_id": "thread-2cfa0195cee8",
+      "thread_depth": 1,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-e718e38b617b",
+      "message_id": "<4D8A65BE.4000903@fhcrc.org>",
+      "from_name": "Hervé Pagès",
+      "from_email_hash": "fd1d1d7a6264909f0236d26dfae51520f3d3455c869422fce43a45549d197dbf",
+      "date": "2011-03-23T14:27:26-07:00",
+      "subject": "[R-sig-DB] Deprecating Rdbi/RdbiPgSQL in upcoming Bioconductor release (BioC 2.8)",
+      "subject_clean": "Deprecating Rdbi/RdbiPgSQL in upcoming Bioconductor release (BioC 2.8)",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\nThis is to announce that the Bioconductor core team has decided to deprecate\nRdbi/RdbiPgSQL (hosted in the Bioconductor repos) in favor of \nDBI/RPostgreSQL\n(hosted on CRAN).\nNote that Rdbi/RdbiPgSQL will still be available in the upcoming \nBioconductor release\n(BioC 2.8, scheduled for April 14) but they will issue a deprecation \nwarning at load\ntime and point the user to DBI/RPostgreSQL. Then later, during the BioC \n2.9 devel\ncycle, we will remove those 2 packages from the BioC 2.9 repositories.\n\nCheers,\nH.\n\n-- \nHerv? Pag?s\n\nProgram in Computational Biology\nDivision of Public Health Sciences\nFred Hutchinson Cancer Research Center\n1100 Fairview Ave. N, M2-B876\nP.O. Box 19024\nSeattle, WA 98109-1024\n\nE-mail: hpages at fhcrc.org\nPhone:  (206) 667-5791\nFax:    (206) 667-1319",
+      "body_snippet": "Hi,\n\nThis is to announce that the Bioconductor core team has decided to deprecate\nRdbi/RdbiPgSQL (hosted in the Bioconductor repos) in favor of \nDBI/RPostgreSQL\n(hosted on CRAN).\nNote that Rdbi/RdbiPg",
+      "thread_id": "thread-e718e38b617b",
+      "thread_depth": 0,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-86d4816d369a",
+      "message_id": "<11469CB8-DC47-4943-9187-4C764BBE5127@me.com>",
+      "from_name": "Marc Schwartz",
+      "from_email_hash": "040b2d09159b27cfd2853bc2dbb476bd637811586f307d9583c9ef7f806f3692",
+      "date": "2011-03-24T08:09:14-05:00",
+      "subject": "[R-sig-DB] NULL data not mapped to NA with RODBC on 64-bit Mac\tOS X",
+      "subject_clean": "NULL data not mapped to NA with RODBC on 64-bit Mac\tOS X",
+      "in_reply_to": "<AANLkTi=i9SHhc-jVAXSPvzOF_FQkGZc-7wXhyav-1AJx@mail.gmail.com>",
+      "references": [
+        "<AANLkTimc8nxK4AZW8QeG1Jz-QU1fy9bi=ztXrv3H5ES_@mail.gmail.com>",
+        "<AANLkTi=i9SHhc-jVAXSPvzOF_FQkGZc-7wXhyav-1AJx@mail.gmail.com>"
+      ],
+      "body_plain": "Hi Harlan,\n\nI suspect that we will need to wait for Prof. Ripley to be able to look into this further. There may be subtle issues at play here and I would defer to his more intimate knowledge of the ODBC tool chain.\n\nI do know that the Actual driver is both 32 and 64 bit in a single installation. However, I run R in 32 bit mode (don't need the extra address space, even though I now have 8Gb on my MacBook Pro), so have not encountered the 64 bit issues that you report here.\n\nI have the same header file. Note that SQLLEN is a signed declaration below. It is defined as a 'long' generally and as a INT64 for 64 bit Windows. It would be 'unsigned long' or UINT64, respectively for an unsigned value.\n\nOne question for you however, which is do you know if you are booting the 32 bit or 64 bit OSX kernel on your Mac? Macs prior to mid-2010 (like mine) running Snow Leopard typically default to the 32 bit kernel, though can be 64 bit 'capable'. It depends upon various factors including the presence of a 64 bit EFI. Newer Macs now boot into the 64 bit kernel by default. I have seen some problems reported on older Macs where the default kernel was changed from 32 bit to 64 bit, resulting in subtle and not so subtle problems with some drivers. Booting to the 32 bit kernel still allows you to run 64 bit apps under Snow Leopard, just that the kernel and extensions are 32 bit.\n\nRegards,\n\nMarc\n\n\nOn Mar 23, 2011, at 2:29 PM, Harlan Harris wrote:\n\n> Any thoughts? Is there someone else or somewhere else I might ask?\n> \n> -Harlan\n> \n> On Tue, Mar 22, 2011 at 1:31 PM, Harlan Harris <harlan at harris.name> wrote:\n> \n>> Hello,\n>> \n>> I seem to have hit a bug in RODBC on 64-bit versions of R on Mac OS X. I'm\n>> running R 2.12.1, and using R to talk to Oracle and other databases using\n>> RODBC 1.3-2. In 32-bit mode (R32), everything works. (The ODBC drivers are\n>> the ones from Actual.) In 64-bit mode (R), it seems as if NULL data is not\n>> being treated as missing. For example, a NULL value in an integer column is\n>> being returned as a 0 instead, which is wrong/bad.\n>> \n>> Diving into the code and Google a bit, it seems like an issue that's been\n>> seen before in other contexts. Here's the relevant C code, from\n>> RODBCFetchRows:\n>> \n>>        for(row = thisHandle->rowsUsed;\n>>        row < thisHandle->rowsFetched && j <= maximum;\n>>        j++, row++)\n>>        {\n>>        thisHandle->rowsUsed++;\n>>        if(j > blksize) {\n>>            blksize *= 2;\n>>            for (i = 0; i < nc; i++)\n>>            SET_VECTOR_ELT(data, i,\n>>                       lengthgets(VECTOR_ELT(data, i), blksize));\n>>        }\n>>        for (i = 0; i < nc; i++) {\n>>            SQLLEN len = thisHandle->ColData[i].IndPtr[row];\n>>            switch(thisHandle->ColData[i].DataType) {\n>>            case SQL_DOUBLE:\n>>            REAL(VECTOR_ELT(data, i))[j-1] =\n>>                len == SQL_NULL_DATA ? NA_REAL :\n>>                thisHandle->ColData[i].RData[row];\n>>            break;\n>> \n>> etc...\n>> \n>> Googling for SQL_NULL_DATA and related terms finds this page, about the\n>> same issue in a Python driver:\n>> \n>> http://code.google.com/p/pyodbc/issues/detail?id=51\n>> \n>> It appears as if SQLLEN might be unsigned in 64-bit builds, while\n>> SQL_NULL_DATA is -1. Casting len to be an int rather than an unsigned int\n>> seems to solve the problem for them.\n>> \n>> On my machine, /usr/include/sqltypes.h starts like this:\n>> \n>> /*\n>> *  sqltypes.h\n>> *\n>> *  $Id: sqltypes.h,v 1.23 2007/10/07 13:27:13 source Exp $\n>> *\n>> *  ODBC typedefs\n>> *\n>> *  The iODBC driver manager.\n>> \n>> and defines SQLLEN as follows:\n>> \n>> #ifdef _WIN64\n>> typedef INT64                   SQLLEN;\n>> typedef UINT64                  SQLULEN;\n>> typedef UINT64                  SQLSETPOSIROW;\n>> #elif defined(STRICT_ODBC_TYPES)\n>> typedef long                    SQLLEN;\n>> typedef unsigned long           SQLULEN;\n>> typedef unsigned short          SQLSETPOSIROW;\n>> #else\n>> #define SQLLEN                  long\n>> #define SQLULEN                 unsigned long\n>> #define SQLSETPOSIROW           unsigned short\n>> #endif\n>> \n>> Seems to me like SQLLEN should be signed, but apparently not?\n>> \n>> Can anyone help? Thank you!\n>> \n>> -Harlan",
+      "body_snippet": "Hi Harlan,\n\nI suspect that we will need to wait for Prof. Ripley to be able to look into this further. There may be subtle issues at play here and I would defer to his more intimate knowledge of the O",
+      "thread_id": "thread-2cfa0195cee8",
+      "thread_depth": 2,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-f0c3039584d7",
+      "message_id": "<AANLkTinaBgjAf+-tq8ChaM2P6zgyhqRYB=RY4-Zwp=i=@mail.gmail.com>",
+      "from_name": "Harlan Harris",
+      "from_email_hash": "611206558041b3ccc178bb02493ee676170bbca58f0ab8c485d465fae70db625",
+      "date": "2011-03-24T09:54:02-04:00",
+      "subject": "[R-sig-DB] NULL data not mapped to NA with RODBC on 64-bit Mac OS X",
+      "subject_clean": "NULL data not mapped to NA with RODBC on 64-bit Mac OS X",
+      "in_reply_to": "<11469CB8-DC47-4943-9187-4C764BBE5127@me.com>",
+      "references": [
+        "<AANLkTimc8nxK4AZW8QeG1Jz-QU1fy9bi=ztXrv3H5ES_@mail.gmail.com>",
+        "<AANLkTi=i9SHhc-jVAXSPvzOF_FQkGZc-7wXhyav-1AJx@mail.gmail.com>",
+        "<11469CB8-DC47-4943-9187-4C764BBE5127@me.com>"
+      ],
+      "body_plain": "Thanks for the reply, Marc!\n\nAh, it does appear I'm booting in 32-bit mode. From the terminal:\n\n> uname -a\nDarwin Harlan-Harris-MacBook-Pro.local 10.6.0 Darwin Kernel Version 10.6.0:\nWed Nov 10 18:13:17 PST 2010; root:xnu-1504.9.26~3/RELEASE_I386 i386\n\nI can usually run stuff in 32-bit mode, but sometimes I would like the\nability to use the extra RAM. Also, certain interfaces to R (such as the new\nRStudio) will run R in 64-bit mode, so for now, I can't use RStudio when I'm\npulling data via ODBC that might have NULLs. I think Rscript also wants to\nrun in 64-bit mode.\n\n -Harlan\n\nOn Thu, Mar 24, 2011 at 9:09 AM, Marc Schwartz <marc_schwartz at me.com> wrote:\n\n> Hi Harlan,\n>\n> I suspect that we will need to wait for Prof. Ripley to be able to look\n> into this further. There may be subtle issues at play here and I would defer\n> to his more intimate knowledge of the ODBC tool chain.\n>\n> I do know that the Actual driver is both 32 and 64 bit in a single\n> installation. However, I run R in 32 bit mode (don't need the extra address\n> space, even though I now have 8Gb on my MacBook Pro), so have not\n> encountered the 64 bit issues that you report here.\n>\n> I have the same header file. Note that SQLLEN is a signed declaration\n> below. It is defined as a 'long' generally and as a INT64 for 64 bit\n> Windows. It would be 'unsigned long' or UINT64, respectively for an unsigned\n> value.\n>\n> One question for you however, which is do you know if you are booting the\n> 32 bit or 64 bit OSX kernel on your Mac? Macs prior to mid-2010 (like mine)\n> running Snow Leopard typically default to the 32 bit kernel, though can be\n> 64 bit 'capable'. It depends upon various factors including the presence of\n> a 64 bit EFI. Newer Macs now boot into the 64 bit kernel by default. I have\n> seen some problems reported on older Macs where the default kernel was\n> changed from 32 bit to 64 bit, resulting in subtle and not so subtle\n> problems with some drivers. Booting to the 32 bit kernel still allows you to\n> run 64 bit apps under Snow Leopard, just that the kernel and extensions are\n> 32 bit.\n>\n> Regards,\n>\n> Marc\n>\n>\n> On Mar 23, 2011, at 2:29 PM, Harlan Harris wrote:\n>\n> > Any thoughts? Is there someone else or somewhere else I might ask?\n> >\n> > -Harlan\n> >\n> > On Tue, Mar 22, 2011 at 1:31 PM, Harlan Harris <harlan at harris.name>\n> wrote:\n> >\n> >> Hello,\n> >>\n> >> I seem to have hit a bug in RODBC on 64-bit versions of R on Mac OS X.\n> I'm\n> >> running R 2.12.1, and using R to talk to Oracle and other databases\n> using\n> >> RODBC 1.3-2. In 32-bit mode (R32), everything works. (The ODBC drivers\n> are\n> >> the ones from Actual.) In 64-bit mode (R), it seems as if NULL data is\n> not\n> >> being treated as missing. For example, a NULL value in an integer column\n> is\n> >> being returned as a 0 instead, which is wrong/bad.\n> >>\n> >> Diving into the code and Google a bit, it seems like an issue that's\n> been\n> >> seen before in other contexts. Here's the relevant C code, from\n> >> RODBCFetchRows:\n> >>\n> >>        for(row = thisHandle->rowsUsed;\n> >>        row < thisHandle->rowsFetched && j <= maximum;\n> >>        j++, row++)\n> >>        {\n> >>        thisHandle->rowsUsed++;\n> >>        if(j > blksize) {\n> >>            blksize *= 2;\n> >>            for (i = 0; i < nc; i++)\n> >>            SET_VECTOR_ELT(data, i,\n> >>                       lengthgets(VECTOR_ELT(data, i), blksize));\n> >>        }\n> >>        for (i = 0; i < nc; i++) {\n> >>            SQLLEN len = thisHandle->ColData[i].IndPtr[row];\n> >>            switch(thisHandle->ColData[i].DataType) {\n> >>            case SQL_DOUBLE:\n> >>            REAL(VECTOR_ELT(data, i))[j-1] =\n> >>                len == SQL_NULL_DATA ? NA_REAL :\n> >>                thisHandle->ColData[i].RData[row];\n> >>            break;\n> >>\n> >> etc...\n> >>\n> >> Googling for SQL_NULL_DATA and related terms finds this page, about the\n> >> same issue in a Python driver:\n> >>\n> >> http://code.google.com/p/pyodbc/issues/detail?id=51\n> >>\n> >> It appears as if SQLLEN might be unsigned in 64-bit builds, while\n> >> SQL_NULL_DATA is -1. Casting len to be an int rather than an unsigned\n> int\n> >> seems to solve the problem for them.\n> >>\n> >> On my machine, /usr/include/sqltypes.h starts like this:\n> >>\n> >> /*\n> >> *  sqltypes.h\n> >> *\n> >> *  $Id: sqltypes.h,v 1.23 2007/10/07 13:27:13 source Exp $\n> >> *\n> >> *  ODBC typedefs\n> >> *\n> >> *  The iODBC driver manager.\n> >>\n> >> and defines SQLLEN as follows:\n> >>\n> >> #ifdef _WIN64\n> >> typedef INT64                   SQLLEN;\n> >> typedef UINT64                  SQLULEN;\n> >> typedef UINT64                  SQLSETPOSIROW;\n> >> #elif defined(STRICT_ODBC_TYPES)\n> >> typedef long                    SQLLEN;\n> >> typedef unsigned long           SQLULEN;\n> >> typedef unsigned short          SQLSETPOSIROW;\n> >> #else\n> >> #define SQLLEN                  long\n> >> #define SQLULEN                 unsigned long\n> >> #define SQLSETPOSIROW           unsigned short\n> >> #endif\n> >>\n> >> Seems to me like SQLLEN should be signed, but apparently not?\n> >>\n> >> Can anyone help? Thank you!\n> >>\n> >> -Harlan\n>\n>\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Thanks for the reply, Marc!\n\nAh, it does appear I'm booting in 32-bit mode. From the terminal:\n\n> uname -a\nDarwin Harlan-Harris-MacBook-Pro.local 10.6.0 Darwin Kernel Version 10.6.0:\nWed Nov 10 18:13:",
+      "thread_id": "thread-2cfa0195cee8",
+      "thread_depth": 3,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-a1ae25f65cfe",
+      "message_id": "<AANLkTimaQcqx7csgVo=6KZJrFnWmqnRuPEMEMAWOxpt5@mail.gmail.com>",
+      "from_name": "Harlan Harris",
+      "from_email_hash": "611206558041b3ccc178bb02493ee676170bbca58f0ab8c485d465fae70db625",
+      "date": "2011-03-29T09:43:31-04:00",
+      "subject": "[R-sig-DB] NULL data not mapped to NA with RODBC on 64-bit Mac OS X",
+      "subject_clean": "NULL data not mapped to NA with RODBC on 64-bit Mac OS X",
+      "in_reply_to": "<AANLkTinaBgjAf+-tq8ChaM2P6zgyhqRYB=RY4-Zwp=i=@mail.gmail.com>",
+      "references": [
+        "<AANLkTimc8nxK4AZW8QeG1Jz-QU1fy9bi=ztXrv3H5ES_@mail.gmail.com>",
+        "<AANLkTi=i9SHhc-jVAXSPvzOF_FQkGZc-7wXhyav-1AJx@mail.gmail.com>",
+        "<11469CB8-DC47-4943-9187-4C764BBE5127@me.com>",
+        "<AANLkTinaBgjAf+-tq8ChaM2P6zgyhqRYB=RY4-Zwp=i=@mail.gmail.com>"
+      ],
+      "body_plain": "Following up on this... Prof. Ripley? Is this something you can address?\n\n -Harlan\n\nOn Thu, Mar 24, 2011 at 9:54 AM, Harlan Harris <harlan at harris.name> wrote:\n\n> Thanks for the reply, Marc!\n>\n> Ah, it does appear I'm booting in 32-bit mode. From the terminal:\n>\n> > uname -a\n> Darwin Harlan-Harris-MacBook-Pro.local 10.6.0 Darwin Kernel Version 10.6.0:\n> Wed Nov 10 18:13:17 PST 2010; root:xnu-1504.9.26~3/RELEASE_I386 i386\n>\n> I can usually run stuff in 32-bit mode, but sometimes I would like the\n> ability to use the extra RAM. Also, certain interfaces to R (such as the new\n> RStudio) will run R in 64-bit mode, so for now, I can't use RStudio when I'm\n> pulling data via ODBC that might have NULLs. I think Rscript also wants to\n> run in 64-bit mode.\n>\n>  -Harlan\n>\n>\n> On Thu, Mar 24, 2011 at 9:09 AM, Marc Schwartz <marc_schwartz at me.com>wrote:\n>\n>> Hi Harlan,\n>>\n>> I suspect that we will need to wait for Prof. Ripley to be able to look\n>> into this further. There may be subtle issues at play here and I would defer\n>> to his more intimate knowledge of the ODBC tool chain.\n>>\n>> I do know that the Actual driver is both 32 and 64 bit in a single\n>> installation. However, I run R in 32 bit mode (don't need the extra address\n>> space, even though I now have 8Gb on my MacBook Pro), so have not\n>> encountered the 64 bit issues that you report here.\n>>\n>> I have the same header file. Note that SQLLEN is a signed declaration\n>> below. It is defined as a 'long' generally and as a INT64 for 64 bit\n>> Windows. It would be 'unsigned long' or UINT64, respectively for an unsigned\n>> value.\n>>\n>> One question for you however, which is do you know if you are booting the\n>> 32 bit or 64 bit OSX kernel on your Mac? Macs prior to mid-2010 (like mine)\n>> running Snow Leopard typically default to the 32 bit kernel, though can be\n>> 64 bit 'capable'. It depends upon various factors including the presence of\n>> a 64 bit EFI. Newer Macs now boot into the 64 bit kernel by default. I have\n>> seen some problems reported on older Macs where the default kernel was\n>> changed from 32 bit to 64 bit, resulting in subtle and not so subtle\n>> problems with some drivers. Booting to the 32 bit kernel still allows you to\n>> run 64 bit apps under Snow Leopard, just that the kernel and extensions are\n>> 32 bit.\n>>\n>> Regards,\n>>\n>> Marc\n>>\n>>\n>> On Mar 23, 2011, at 2:29 PM, Harlan Harris wrote:\n>>\n>> > Any thoughts? Is there someone else or somewhere else I might ask?\n>> >\n>> > -Harlan\n>> >\n>> > On Tue, Mar 22, 2011 at 1:31 PM, Harlan Harris <harlan at harris.name>\n>> wrote:\n>> >\n>> >> Hello,\n>> >>\n>> >> I seem to have hit a bug in RODBC on 64-bit versions of R on Mac OS X.\n>> I'm\n>> >> running R 2.12.1, and using R to talk to Oracle and other databases\n>> using\n>> >> RODBC 1.3-2. In 32-bit mode (R32), everything works. (The ODBC drivers\n>> are\n>> >> the ones from Actual.) In 64-bit mode (R), it seems as if NULL data is\n>> not\n>> >> being treated as missing. For example, a NULL value in an integer\n>> column is\n>> >> being returned as a 0 instead, which is wrong/bad.\n>> >>\n>> >> Diving into the code and Google a bit, it seems like an issue that's\n>> been\n>> >> seen before in other contexts. Here's the relevant C code, from\n>> >> RODBCFetchRows:\n>> >>\n>> >>        for(row = thisHandle->rowsUsed;\n>> >>        row < thisHandle->rowsFetched && j <= maximum;\n>> >>        j++, row++)\n>> >>        {\n>> >>        thisHandle->rowsUsed++;\n>> >>        if(j > blksize) {\n>> >>            blksize *= 2;\n>> >>            for (i = 0; i < nc; i++)\n>> >>            SET_VECTOR_ELT(data, i,\n>> >>                       lengthgets(VECTOR_ELT(data, i), blksize));\n>> >>        }\n>> >>        for (i = 0; i < nc; i++) {\n>> >>            SQLLEN len = thisHandle->ColData[i].IndPtr[row];\n>> >>            switch(thisHandle->ColData[i].DataType) {\n>> >>            case SQL_DOUBLE:\n>> >>            REAL(VECTOR_ELT(data, i))[j-1] =\n>> >>                len == SQL_NULL_DATA ? NA_REAL :\n>> >>                thisHandle->ColData[i].RData[row];\n>> >>            break;\n>> >>\n>> >> etc...\n>> >>\n>> >> Googling for SQL_NULL_DATA and related terms finds this page, about the\n>> >> same issue in a Python driver:\n>> >>\n>> >> http://code.google.com/p/pyodbc/issues/detail?id=51\n>> >>\n>> >> It appears as if SQLLEN might be unsigned in 64-bit builds, while\n>> >> SQL_NULL_DATA is -1. Casting len to be an int rather than an unsigned\n>> int\n>> >> seems to solve the problem for them.\n>> >>\n>> >> On my machine, /usr/include/sqltypes.h starts like this:\n>> >>\n>> >> /*\n>> >> *  sqltypes.h\n>> >> *\n>> >> *  $Id: sqltypes.h,v 1.23 2007/10/07 13:27:13 source Exp $\n>> >> *\n>> >> *  ODBC typedefs\n>> >> *\n>> >> *  The iODBC driver manager.\n>> >>\n>> >> and defines SQLLEN as follows:\n>> >>\n>> >> #ifdef _WIN64\n>> >> typedef INT64                   SQLLEN;\n>> >> typedef UINT64                  SQLULEN;\n>> >> typedef UINT64                  SQLSETPOSIROW;\n>> >> #elif defined(STRICT_ODBC_TYPES)\n>> >> typedef long                    SQLLEN;\n>> >> typedef unsigned long           SQLULEN;\n>> >> typedef unsigned short          SQLSETPOSIROW;\n>> >> #else\n>> >> #define SQLLEN                  long\n>> >> #define SQLULEN                 unsigned long\n>> >> #define SQLSETPOSIROW           unsigned short\n>> >> #endif\n>> >>\n>> >> Seems to me like SQLLEN should be signed, but apparently not?\n>> >>\n>> >> Can anyone help? Thank you!\n>> >>\n>> >> -Harlan\n>>\n>>\n>>\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Following up on this... Prof. Ripley? Is this something you can address?\n\n -Harlan\n\nOn Thu, Mar 24, 2011 at 9:54 AM, Harlan Harris <harlan at harris.name> wrote:\n\n> Thanks for the reply, Marc!\n>\n> Ah,",
+      "thread_id": "thread-2cfa0195cee8",
+      "thread_depth": 4,
+      "month": "2011-03"
+    },
+    {
+      "id": "msg-9271f4bb42e2",
+      "message_id": "<AANLkTi=2WtXaVY0TBdBtcbKpEgtuayL7kyeZrF1-mS3D@mail.gmail.com>",
+      "from_name": "Harlan Harris",
+      "from_email_hash": "611206558041b3ccc178bb02493ee676170bbca58f0ab8c485d465fae70db625",
+      "date": "2011-03-31T09:35:40-04:00",
+      "subject": "[R-sig-DB] NULL data not mapped to NA with RODBC on 64-bit Mac OS X",
+      "subject_clean": "NULL data not mapped to NA with RODBC on 64-bit Mac OS X",
+      "in_reply_to": "<AANLkTimaQcqx7csgVo=6KZJrFnWmqnRuPEMEMAWOxpt5@mail.gmail.com>",
+      "references": [
+        "<AANLkTimc8nxK4AZW8QeG1Jz-QU1fy9bi=ztXrv3H5ES_@mail.gmail.com>",
+        "<AANLkTi=i9SHhc-jVAXSPvzOF_FQkGZc-7wXhyav-1AJx@mail.gmail.com>",
+        "<11469CB8-DC47-4943-9187-4C764BBE5127@me.com>",
+        "<AANLkTinaBgjAf+-tq8ChaM2P6zgyhqRYB=RY4-Zwp=i=@mail.gmail.com>",
+        "<AANLkTimaQcqx7csgVo=6KZJrFnWmqnRuPEMEMAWOxpt5@mail.gmail.com>"
+      ],
+      "body_plain": "Prof. Ripley? Anyone? Should I cross-post this to R-Help? If someone would\nbe willing to fix this for pay, please email me a proposal and I'll see if\nmy employer would be willing to sponsor a fix.\n\n -Harlan\n\nOn Tue, Mar 29, 2011 at 9:43 AM, Harlan Harris <harlan at harris.name> wrote:\n\n> Following up on this... Prof. Ripley? Is this something you can address?\n>\n>  -Harlan\n>\n>\n> On Thu, Mar 24, 2011 at 9:54 AM, Harlan Harris <harlan at harris.name> wrote:\n>\n>> Thanks for the reply, Marc!\n>>\n>> Ah, it does appear I'm booting in 32-bit mode. From the terminal:\n>>\n>> > uname -a\n>> Darwin Harlan-Harris-MacBook-Pro.local 10.6.0 Darwin Kernel Version\n>> 10.6.0: Wed Nov 10 18:13:17 PST 2010; root:xnu-1504.9.26~3/RELEASE_I386 i386\n>>\n>> I can usually run stuff in 32-bit mode, but sometimes I would like the\n>> ability to use the extra RAM. Also, certain interfaces to R (such as the new\n>> RStudio) will run R in 64-bit mode, so for now, I can't use RStudio when I'm\n>> pulling data via ODBC that might have NULLs. I think Rscript also wants to\n>> run in 64-bit mode.\n>>\n>>  -Harlan\n>>\n>>\n>> On Thu, Mar 24, 2011 at 9:09 AM, Marc Schwartz <marc_schwartz at me.com>wrote:\n>>\n>>> Hi Harlan,\n>>>\n>>> I suspect that we will need to wait for Prof. Ripley to be able to look\n>>> into this further. There may be subtle issues at play here and I would defer\n>>> to his more intimate knowledge of the ODBC tool chain.\n>>>\n>>> I do know that the Actual driver is both 32 and 64 bit in a single\n>>> installation. However, I run R in 32 bit mode (don't need the extra address\n>>> space, even though I now have 8Gb on my MacBook Pro), so have not\n>>> encountered the 64 bit issues that you report here.\n>>>\n>>> I have the same header file. Note that SQLLEN is a signed declaration\n>>> below. It is defined as a 'long' generally and as a INT64 for 64 bit\n>>> Windows. It would be 'unsigned long' or UINT64, respectively for an unsigned\n>>> value.\n>>>\n>>> One question for you however, which is do you know if you are booting the\n>>> 32 bit or 64 bit OSX kernel on your Mac? Macs prior to mid-2010 (like mine)\n>>> running Snow Leopard typically default to the 32 bit kernel, though can be\n>>> 64 bit 'capable'. It depends upon various factors including the presence of\n>>> a 64 bit EFI. Newer Macs now boot into the 64 bit kernel by default. I have\n>>> seen some problems reported on older Macs where the default kernel was\n>>> changed from 32 bit to 64 bit, resulting in subtle and not so subtle\n>>> problems with some drivers. Booting to the 32 bit kernel still allows you to\n>>> run 64 bit apps under Snow Leopard, just that the kernel and extensions are\n>>> 32 bit.\n>>>\n>>> Regards,\n>>>\n>>> Marc\n>>>\n>>>\n>>> On Mar 23, 2011, at 2:29 PM, Harlan Harris wrote:\n>>>\n>>> > Any thoughts? Is there someone else or somewhere else I might ask?\n>>> >\n>>> > -Harlan\n>>> >\n>>> > On Tue, Mar 22, 2011 at 1:31 PM, Harlan Harris <harlan at harris.name>\n>>> wrote:\n>>> >\n>>> >> Hello,\n>>> >>\n>>> >> I seem to have hit a bug in RODBC on 64-bit versions of R on Mac OS X.\n>>> I'm\n>>> >> running R 2.12.1, and using R to talk to Oracle and other databases\n>>> using\n>>> >> RODBC 1.3-2. In 32-bit mode (R32), everything works. (The ODBC drivers\n>>> are\n>>> >> the ones from Actual.) In 64-bit mode (R), it seems as if NULL data is\n>>> not\n>>> >> being treated as missing. For example, a NULL value in an integer\n>>> column is\n>>> >> being returned as a 0 instead, which is wrong/bad.\n>>> >>\n>>> >> Diving into the code and Google a bit, it seems like an issue that's\n>>> been\n>>> >> seen before in other contexts. Here's the relevant C code, from\n>>> >> RODBCFetchRows:\n>>> >>\n>>> >>        for(row = thisHandle->rowsUsed;\n>>> >>        row < thisHandle->rowsFetched && j <= maximum;\n>>> >>        j++, row++)\n>>> >>        {\n>>> >>        thisHandle->rowsUsed++;\n>>> >>        if(j > blksize) {\n>>> >>            blksize *= 2;\n>>> >>            for (i = 0; i < nc; i++)\n>>> >>            SET_VECTOR_ELT(data, i,\n>>> >>                       lengthgets(VECTOR_ELT(data, i), blksize));\n>>> >>        }\n>>> >>        for (i = 0; i < nc; i++) {\n>>> >>            SQLLEN len = thisHandle->ColData[i].IndPtr[row];\n>>> >>            switch(thisHandle->ColData[i].DataType) {\n>>> >>            case SQL_DOUBLE:\n>>> >>            REAL(VECTOR_ELT(data, i))[j-1] =\n>>> >>                len == SQL_NULL_DATA ? NA_REAL :\n>>> >>                thisHandle->ColData[i].RData[row];\n>>> >>            break;\n>>> >>\n>>> >> etc...\n>>> >>\n>>> >> Googling for SQL_NULL_DATA and related terms finds this page, about\n>>> the\n>>> >> same issue in a Python driver:\n>>> >>\n>>> >> http://code.google.com/p/pyodbc/issues/detail?id=51\n>>> >>\n>>> >> It appears as if SQLLEN might be unsigned in 64-bit builds, while\n>>> >> SQL_NULL_DATA is -1. Casting len to be an int rather than an unsigned\n>>> int\n>>> >> seems to solve the problem for them.\n>>> >>\n>>> >> On my machine, /usr/include/sqltypes.h starts like this:\n>>> >>\n>>> >> /*\n>>> >> *  sqltypes.h\n>>> >> *\n>>> >> *  $Id: sqltypes.h,v 1.23 2007/10/07 13:27:13 source Exp $\n>>> >> *\n>>> >> *  ODBC typedefs\n>>> >> *\n>>> >> *  The iODBC driver manager.\n>>> >>\n>>> >> and defines SQLLEN as follows:\n>>> >>\n>>> >> #ifdef _WIN64\n>>> >> typedef INT64                   SQLLEN;\n>>> >> typedef UINT64                  SQLULEN;\n>>> >> typedef UINT64                  SQLSETPOSIROW;\n>>> >> #elif defined(STRICT_ODBC_TYPES)\n>>> >> typedef long                    SQLLEN;\n>>> >> typedef unsigned long           SQLULEN;\n>>> >> typedef unsigned short          SQLSETPOSIROW;\n>>> >> #else\n>>> >> #define SQLLEN                  long\n>>> >> #define SQLULEN                 unsigned long\n>>> >> #define SQLSETPOSIROW           unsigned short\n>>> >> #endif\n>>> >>\n>>> >> Seems to me like SQLLEN should be signed, but apparently not?\n>>> >>\n>>> >> Can anyone help? Thank you!\n>>> >>\n>>> >> -Harlan\n>>>\n>>>\n>>>\n>>\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Prof. Ripley? Anyone? Should I cross-post this to R-Help? If someone would\nbe willing to fix this for pay, please email me a proposal and I'll see if\nmy employer would be willing to sponsor a fix.\n\n -",
+      "thread_id": "thread-2cfa0195cee8",
+      "thread_depth": 5,
+      "month": "2011-03"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-2a2bbdcfb356",
+      "subject": "RPostgreSQL - dbWriteTable",
+      "message_count": 2,
+      "participants": [
+        "Chris Long",
+        "Sean Davis"
+      ],
+      "started": "2011-03-01T03:40:05-08:00",
+      "last_reply": "2011-03-01T06:55:13-05:00",
+      "root_message_id": "msg-2a2bbdcfb356"
+    },
+    {
+      "id": "thread-4acab6c0990c",
+      "subject": "dbWriteTable on virtual linux box",
+      "message_count": 1,
+      "participants": [
+        "Dirk Eddelbuettel"
+      ],
+      "started": "2011-03-01T07:27:27-06:00",
+      "last_reply": "2011-03-01T07:27:27-06:00",
+      "root_message_id": "msg-4acab6c0990c"
+    },
+    {
+      "id": "thread-d18e39ae5a7c",
+      "subject": "dbWriteTable on virtual linux box",
+      "message_count": 1,
+      "participants": [
+        "Tomoaki NISHIYAMA"
+      ],
+      "started": "2011-03-01T09:20:35+09:00",
+      "last_reply": "2011-03-01T09:20:35+09:00",
+      "root_message_id": "msg-d18e39ae5a7c"
+    },
+    {
+      "id": "thread-76b14e989481",
+      "subject": "dbWriteTable on virtual linux box",
+      "message_count": 1,
+      "participants": [
+        "Tomoaki NISHIYAMA"
+      ],
+      "started": "2011-03-01T13:02:22+09:00",
+      "last_reply": "2011-03-01T13:02:22+09:00",
+      "root_message_id": "msg-76b14e989481"
+    },
+    {
+      "id": "thread-63b9e94dccca",
+      "subject": "How to write to database schema other than public using RPostgreSQL",
+      "message_count": 3,
+      "participants": [
+        "Tomoaki NISHIYAMA",
+        "Xiaobo Gu"
+      ],
+      "started": "2011-03-05T20:32:31+08:00",
+      "last_reply": "2011-03-06T15:39:47+09:00",
+      "root_message_id": "msg-63b9e94dccca"
+    },
+    {
+      "id": "thread-453f9a5a8ae9",
+      "subject": "How to write to database schema other than public using RPostgreSQL",
+      "message_count": 1,
+      "participants": [
+        "Xiaobo Gu"
+      ],
+      "started": "2011-03-05T21:56:41+08:00",
+      "last_reply": "2011-03-05T21:56:41+08:00",
+      "root_message_id": "msg-453f9a5a8ae9"
+    },
+    {
+      "id": "thread-b73ba26ceea1",
+      "subject": "How to write to database schema other than public using RPostgreSQL",
+      "message_count": 3,
+      "participants": [
+        "Tomoaki NISHIYAMA",
+        "Xiaobo Gu"
+      ],
+      "started": "2011-03-06T12:18:53+08:00",
+      "last_reply": "2011-03-06T14:09:19+09:00",
+      "root_message_id": "msg-b73ba26ceea1"
+    },
+    {
+      "id": "thread-3ddf5f552413",
+      "subject": "dbWriteTable in RPostgreSQL can't handle date and timestamp data types.",
+      "message_count": 11,
+      "participants": [
+        "Peng Lian",
+        "Tomoaki NISHIYAMA",
+        "Xiaobo Gu"
+      ],
+      "started": "2011-03-06T23:05:37+08:00",
+      "last_reply": "2011-03-08T20:32:06+08:00",
+      "root_message_id": "msg-3ddf5f552413"
+    },
+    {
+      "id": "thread-2cfa0195cee8",
+      "subject": "NULL data not mapped to NA with RODBC on 64-bit Mac OS X",
+      "message_count": 6,
+      "participants": [
+        "Harlan Harris",
+        "Marc Schwartz"
+      ],
+      "started": "2011-03-22T13:31:43-04:00",
+      "last_reply": "2011-03-31T09:35:40-04:00",
+      "root_message_id": "msg-2cfa0195cee8"
+    },
+    {
+      "id": "thread-e718e38b617b",
+      "subject": "Deprecating Rdbi/RdbiPgSQL in upcoming Bioconductor release (BioC 2.8)",
+      "message_count": 1,
+      "participants": [
+        "Hervé Pagès"
+      ],
+      "started": "2011-03-23T14:27:26-07:00",
+      "last_reply": "2011-03-23T14:27:26-07:00",
+      "root_message_id": "msg-e718e38b617b"
+    }
+  ]
+}

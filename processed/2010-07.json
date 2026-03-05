@@ -1,0 +1,344 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2010-07",
+  "messages": [
+    {
+      "id": "msg-914ca79b4b7d",
+      "message_id": "<AANLkTilG_6VI3kaotx4Dxk8uH8aC0X8Qpd_osQwIaosJ@mail.gmail.com>",
+      "from_name": "Jonathan Greenberg",
+      "from_email_hash": "a4df5b911cdb3fd3f70ac604839ebb4411c8b25668156d97baad1ceb32653cbe",
+      "date": "2010-07-05T12:36:52-07:00",
+      "subject": "[R-sig-DB] concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "subject_clean": "concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "in_reply_to": "<029e01cb180f$c6c7ccb0$54576610$@gmail.com>",
+      "references": [
+        "<AQIIZI94LA4uJIz37TVf3kl0/vXWeg==>",
+        "<029e01cb180f$c6c7ccb0$54576610$@gmail.com>"
+      ],
+      "body_plain": "Keith and Seth (and r-sig-db'ers):\n\nI somewhat understand the difference between both of your solutions --\nSeth, I'm not a database person (quickly learning tho) but does your\ncode hold the output in memory before writing it all at the end (via\ndbCommit), or is each iteration's output being stored in some \"waiting\nroom\" (on disk) where it gets written at the very end?  The key (for\nmy purposes) is to avoid keeping more than a chunk's worth of input\nAND output in memory at any one time.\n\nAlong the lines of Keith's solution, I noticed the COUNT query can be\nVERY slow -- there is no rapid way of getting the number of rows in a\ndatabase table?\n\nThanks again!\n\n--j\n\nOn Tue, Jun 29, 2010 at 9:50 PM, kMan <kchamberln at gmail.com> wrote:\n> Hi Seth,\n>\n> This particular list requires considerable stretching on my part, so I would not be surprised if I missed a goal implied by the code style used or off-list correspondence.\n>\n> If I understood the original code correctly, though, each iteration through the loop required (2) queries, a read and a write, where (I've assumed) the result sets are handled one at a time anyway. The code I proposed does the same thing, but overall there is (1) additional query prior to the loop to get the number of rows. The rest is just case processing b/c dbGetQuery() seemed to do funny things when LIMIT extended beyond the end of the table, and it wouldn't remember its last read location (e.g. didn't work like scan()). In addition, it works with dbWriteTable() and gets around the need for creating the table first, and filling it in later.\n>\n> I used the WHERE condition for lack of a better way to seek to a particular record. The fetch() & fetch_n, were those intended to get the read queries to start at the last read location (e.g. like serial reads using scan())? Eliminating need to condition match or generate a db index first would speed things up, and I'd very much like to learn that trick. I'd think it would also make for an excellent R-wiki post.\n>\n> Sincerely,\n> KeithC.\n>\n> -----Original Message-----\n> From: Seth Falcon [mailto:seth at userprimary.net]\n> Sent: Tuesday, June 29, 2010 9:37 PM\n> To: kMan\n> Cc: Jonathan Greenberg; r-sig-db at stat.math.ethz.ch\n> Subject: Re: R-sig-DB Digest, Vol 68, Issue 7\n>\n> On Tue, Jun 29, 2010 at 8:19 PM, kMan <kchamberln at gmail.com> wrote:\n>> Dear Jonathan,\n>>\n>>>I'm trying to cycle through a database, reading a chunk of data from one\n>> table in the DB, processing this data chunk, >and then writing the output to\n>> another table in the database. ?I'm having to set the fetch(n=) option\n>> because the >database is too large to read the entire thing into memory at\n>> once. ?Here's my sample code:\n>> [snip]\n>>\n>> There is no need to open separate connections for reading vs. writing.\n>\n> While it is true that you can read and write from a single connection,\n> you can only have one result set open at a time and so if you want to\n> iterate through a result set and then write, you do, I believe, need\n> two connections.\n>\n>\n> I suspect that the code you propose will be considerably slower as you\n> are issuing multiple queries along with a WHERE constraint.\n>\n> + seth\n>\n>\n>>\n>> Your code was corrupting the connection between R/driver, I think, and I\n>> don't know why. But when I close a connection in R and my OS won't let me\n>> delete the file, there is a different kind of problem. The code below works\n>> on my system. I wish I knew enough to explain wtf happened with your code.\n>> ------------------------------------------------------------------------\n>> ##\n>> ## Prelim/Declarations\n>> ##\n>> require(RSQLite)\n>> mysqldb <- \"test.sqlite\"\n>> m <- dbDriver(\"SQLite\")\n>> tbl.names <- c(\"TABLEA\", \"TABLEB\")\n>> q1<-paste(\"SELECT COUNT(*) FROM\", tbl.names[1])\n>>\n>> ##\n>> ## Surrogate data (if not allready done)\n>> ##\n>> (somedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3))\n>> con<-dbConnect(m, dbname=mysqldb)\n>> dbWriteTable(con,\"TABLEA\",somedata, overwrite=TRUE)\n>> dbDisconnect(con)\n>>\n>> ##\n>> ## Process TABLEA in parts, write to TABLEB\n>> ##\n>> con<-dbConnect(m, dbname=mysqldb)\n>> n.lines<-dbGetQuery(con, q1) #NOTE class is data.frame\n>> chunk.size<-3\n>> start.index<-seq(from = 1, to = n.lines[1,1], by = 3)\n>> limit<-c(diff(start.index), n.lines[1,1]-sum(diff(start.index)))\n>> i<-1\n>> for(i in 1:length(limit)){\n>> ?if(i<length(limit)) { q2<-paste(\"SELECT * FROM TABLEA WHERE row_names >=\",\n>>\n>> ? ? ?start.index[i], \"LIMIT\", limit[i])\n>> ?} else { q2<-paste(\"SELECT * FROM TABLEA WHERE row_names =\",\n>> ? ? ?start.index[i], \"LIMIT\", limit[i])\n>> ?}\n>> ?dat<-dbGetQuery(con, q2)\n>> ?dbWriteTable(con, tbl.names[2], dat, row.names=FALSE, append=TRUE)\n>> }\n>> dbGetQuery(con, \"SELECT * FROM TABLEB\")\n>> dbDisconnect(con)\n>> ------------------------------------------------------------------------\n>>\n>> Sincerely,\n>> KeithC.\n>>\n>>\n>>\n>\n>\n>\n> --\n> Seth Falcon | @sfalcon | http://userprimary.net/\n>\n>",
+      "body_snippet": "Keith and Seth (and r-sig-db'ers):\n\nI somewhat understand the difference between both of your solutions --\nSeth, I'm not a database person (quickly learning tho) but does your\ncode hold the output in ",
+      "thread_id": "thread-914ca79b4b7d",
+      "thread_depth": 0,
+      "month": "2010-07"
+    },
+    {
+      "id": "msg-6d10d56aa176",
+      "message_id": "<AANLkTikUvxFWON5sNCqeKi3Qbdemmolp3L5PbVXceXb2@mail.gmail.com>",
+      "from_name": "Jonathan Greenberg",
+      "from_email_hash": "a4df5b911cdb3fd3f70ac604839ebb4411c8b25668156d97baad1ceb32653cbe",
+      "date": "2010-07-05T12:48:08-07:00",
+      "subject": "[R-sig-DB] Fwd: concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "subject_clean": "concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "in_reply_to": "<AANLkTimi0rLaqIuCpyOTS4Ycnws4Q-m9SKCS5EV3n227@mail.gmail.com>",
+      "references": [
+        "<AANLkTimpByMYkw0BXjfKeW5lQB2wHpJ8QqiGPaWCF9Vi@mail.gmail.com>",
+        "<AANLkTikp6zjZ-_kcJnl0m6ORcNXs4uUkNHHxP2we_tvg@mail.gmail.com>",
+        "<AANLkTim7g5MZ5yFazRx-mTlj69lsHVPC5NEgcJ0kR8Eq@mail.gmail.com>",
+        "<AANLkTilFR5hroZROFN8LQNv5RNC9Bov7uzEUOs-QMQbd@mail.gmail.com>",
+        "<AANLkTimi0rLaqIuCpyOTS4Ycnws4Q-m9SKCS5EV3n227@mail.gmail.com>"
+      ],
+      "body_plain": "Seth:\n\nSecond follow-up question.  If you do NOT, in advance, know the number\nof columns that will be in the output table, is there any way to\nsafely perform the initial output table creation within the loop (e.g.\nthe end of the first fetch determine the table # of columns)?  Or\nshould I do a \"first pass\" on a single row of input data to determine\nthe output data table parameters?\n\n--j\n\nOn Mon, Jun 28, 2010 at 8:50 PM, Seth Falcon <seth at userprimary.net> wrote:\n> Hi again,\n>\n> I had a chance to play with this a bit. ?You may find it useful to\n> read up on the how SQLite does locking\n> (http://www.sqlite.org/lockingv3.html).\n>\n> I think what's happening is that read_con with the open read_query is\n> holding a shared lock on the db. ?While that shared lock is held,\n> writes are not allowed. ?The discussion of transaction in the SQLite\n> doc referenced above gave me the idea to try putting the writes into a\n> transaction and waiting to commit until after the read_query is\n> complete. ?This seems to work. ?Here's an example:\n>\n> library(\"RSQLite\")\n> mysqldb='test.sqlite'\n> unlink(mysqldb)\n> fetch_n=3\n>\n> # Create a data table.\n> somedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3)\n>\n> # Make a table in our database with it.\n> m <- dbDriver(\"SQLite\")\n> con=dbConnect(m, dbname=mysqldb)\n> dbWriteTable(con,\"TABLEA\",somedata,overwrite=TRUE)\n> dbGetQuery(con, \"CREATE table t2 (data1 INTEGER, data2 FLOAT)\")\n> dbDisconnect(con)\n>\n> # Now we want to read from TABLEA in \"chunks\" and write to TABLEB.\n> read_con=dbConnect(m, dbname=mysqldb)\n> write_con=dbConnect(m, dbname=mysqldb)\n>\n> read_query=dbSendQuery(read_con,\"SELECT * FROM TABLEA\")\n> dbBeginTransaction(write_con)\n> while (!dbHasCompleted(read_query))\n> {\n> ? ? ? read_chunk=fetch(read_query,fetch_n)\n> ? ? ? new_data=data.frame(data3=read_chunk$data1*4,data4=read_chunk$data2*4)\n> ? ? ? dbGetPreparedQuery(write_con, \"INSERT into t2 values (?, ?)\", new_data)\n> }\n> dbClearResult(read_query)\n> dbCommit(write_con)\n>\n> dbDisconnect(read_con)\n> dbDisconnect(write_con)\n>\n>\n>\n> Unfortunately, dbWriteTable does not currently allow you to interact\n> with transactions so I'm not sure there is a way to accomplish what\n> you want and still use the dbWriteTable convenience function.\n>\n> Hope that helps,\n>\n> + seth\n>\n> --\n> Seth Falcon | @sfalcon | http://userprimary.net/\n>",
+      "body_snippet": "Seth:\n\nSecond follow-up question.  If you do NOT, in advance, know the number\nof columns that will be in the output table, is there any way to\nsafely perform the initial output table creation within t",
+      "thread_id": "thread-6d10d56aa176",
+      "thread_depth": 0,
+      "month": "2010-07"
+    },
+    {
+      "id": "msg-2cd82bd11d7d",
+      "message_id": "<AANLkTikShzhompZgpJI8geE0krQ4LI9EfNorB5aloupd@mail.gmail.com>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2010-07-05T13:09:59-07:00",
+      "subject": "[R-sig-DB] concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "subject_clean": "concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "in_reply_to": "<AANLkTilG_6VI3kaotx4Dxk8uH8aC0X8Qpd_osQwIaosJ@mail.gmail.com>",
+      "references": [
+        "<029e01cb180f$c6c7ccb0$54576610$@gmail.com>",
+        "<AANLkTilG_6VI3kaotx4Dxk8uH8aC0X8Qpd_osQwIaosJ@mail.gmail.com>"
+      ],
+      "body_plain": "Jonathan,\n\nOn Mon, Jul 5, 2010 at 12:36 PM, Jonathan Greenberg\n<greenberg at ucdavis.edu> wrote:\n> Keith and Seth (and r-sig-db'ers):\n>\n> I somewhat understand the difference between both of your solutions --\n> Seth, I'm not a database person (quickly learning tho) but does your\n> code hold the output in memory before writing it all at the end (via\n> dbCommit), or is each iteration's output being stored in some \"waiting\n> room\" (on disk) where it gets written at the very end? ?The key (for\n> my purposes) is to avoid keeping more than a chunk's worth of input\n> AND output in memory at any one time.\n\nIt seems at this point that your simplified example is no longer\nsufficient for understanding what you want to achieve.  I'm pretty\nsure that data within a transaction will be written to disk (for a\ndisk-based db) before commit is called.  This is something that will\nbe determined by SQLite itself -- you can go read up on how things\nwork.  Or you can do some experiments with your data and see how it\nlooks.\n\nDepending on the manipulations you actually want to perform before\ninserting the data, you might be able to keep everything in the db.\nYou could use SQLite extension functions (see RSQLite.extfuns) to\nexpand what is possible at the SQL level\n\n> Along the lines of Keith's solution, I noticed the COUNT query can be\n> VERY slow -- there is no rapid way of getting the number of rows in a\n> database table?\n\nNo, there is no notion of number of rows in a table that I am aware\nof.  Note that COUNT is a way of aggregating the number of rows\nreturned from a query and in general there is no way for the db to\nknow how many rows will match a query.\n\nI expect Keith's solution to be quite slow.  It is executing a\nseparate query each time through the loop and making a linear scan\nthrough the table to do the offset.\n\n+ seth",
+      "body_snippet": "Jonathan,\n\nOn Mon, Jul 5, 2010 at 12:36 PM, Jonathan Greenberg\n<greenberg at ucdavis.edu> wrote:\n> Keith and Seth (and r-sig-db'ers):\n>\n> I somewhat understand the difference between both of your solu",
+      "thread_id": "thread-914ca79b4b7d",
+      "thread_depth": 1,
+      "month": "2010-07"
+    },
+    {
+      "id": "msg-909db9e42eeb",
+      "message_id": "<AANLkTinsyZnGujczzQ79bPuv-_pvTJyIxAaEgcvHtysf@mail.gmail.com>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2010-07-05T13:12:26-07:00",
+      "subject": "[R-sig-DB] Fwd: concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "subject_clean": "concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "in_reply_to": "<AANLkTikUvxFWON5sNCqeKi3Qbdemmolp3L5PbVXceXb2@mail.gmail.com>",
+      "references": [
+        "<AANLkTimpByMYkw0BXjfKeW5lQB2wHpJ8QqiGPaWCF9Vi@mail.gmail.com>",
+        "<AANLkTikp6zjZ-_kcJnl0m6ORcNXs4uUkNHHxP2we_tvg@mail.gmail.com>",
+        "<AANLkTim7g5MZ5yFazRx-mTlj69lsHVPC5NEgcJ0kR8Eq@mail.gmail.com>",
+        "<AANLkTilFR5hroZROFN8LQNv5RNC9Bov7uzEUOs-QMQbd@mail.gmail.com>",
+        "<AANLkTimi0rLaqIuCpyOTS4Ycnws4Q-m9SKCS5EV3n227@mail.gmail.com>",
+        "<AANLkTikUvxFWON5sNCqeKi3Qbdemmolp3L5PbVXceXb2@mail.gmail.com>"
+      ],
+      "body_plain": "On Mon, Jul 5, 2010 at 12:48 PM, Jonathan Greenberg\n<greenberg at ucdavis.edu> wrote:\n> Seth:\n>\n> Second follow-up question. ?If you do NOT, in advance, know the number\n> of columns that will be in the output table, is there any way to\n> safely perform the initial output table creation within the loop (e.g.\n> the end of the first fetch determine the table # of columns)? ?Or\n> should I do a \"first pass\" on a single row of input data to determine\n> the output data table parameters?\n\nProbably? :-)\n\nAgain, I think at this point, I don't have enough detail to be of much\nuse.  I don't understand how you can be doing a query and\nprogrammatically inserting and not know how many fields you have. Have\nyou tried creating the table within the loop (with the new arrangement\nfor commit?)\n\n\n>\n> --j\n>\n> On Mon, Jun 28, 2010 at 8:50 PM, Seth Falcon <seth at userprimary.net> wrote:\n>> Hi again,\n>>\n>> I had a chance to play with this a bit. ?You may find it useful to\n>> read up on the how SQLite does locking\n>> (http://www.sqlite.org/lockingv3.html).\n>>\n>> I think what's happening is that read_con with the open read_query is\n>> holding a shared lock on the db. ?While that shared lock is held,\n>> writes are not allowed. ?The discussion of transaction in the SQLite\n>> doc referenced above gave me the idea to try putting the writes into a\n>> transaction and waiting to commit until after the read_query is\n>> complete. ?This seems to work. ?Here's an example:\n>>\n>> library(\"RSQLite\")\n>> mysqldb='test.sqlite'\n>> unlink(mysqldb)\n>> fetch_n=3\n>>\n>> # Create a data table.\n>> somedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3)\n>>\n>> # Make a table in our database with it.\n>> m <- dbDriver(\"SQLite\")\n>> con=dbConnect(m, dbname=mysqldb)\n>> dbWriteTable(con,\"TABLEA\",somedata,overwrite=TRUE)\n>> dbGetQuery(con, \"CREATE table t2 (data1 INTEGER, data2 FLOAT)\")\n>> dbDisconnect(con)\n>>\n>> # Now we want to read from TABLEA in \"chunks\" and write to TABLEB.\n>> read_con=dbConnect(m, dbname=mysqldb)\n>> write_con=dbConnect(m, dbname=mysqldb)\n>>\n>> read_query=dbSendQuery(read_con,\"SELECT * FROM TABLEA\")\n>> dbBeginTransaction(write_con)\n>> while (!dbHasCompleted(read_query))\n>> {\n>> ? ? ? read_chunk=fetch(read_query,fetch_n)\n>> ? ? ? new_data=data.frame(data3=read_chunk$data1*4,data4=read_chunk$data2*4)\n>> ? ? ? dbGetPreparedQuery(write_con, \"INSERT into t2 values (?, ?)\", new_data)\n>> }\n>> dbClearResult(read_query)\n>> dbCommit(write_con)\n>>\n>> dbDisconnect(read_con)\n>> dbDisconnect(write_con)\n>>\n>>\n>>\n>> Unfortunately, dbWriteTable does not currently allow you to interact\n>> with transactions so I'm not sure there is a way to accomplish what\n>> you want and still use the dbWriteTable convenience function.\n>>\n>> Hope that helps,\n>>\n>> + seth\n>>\n>> --\n>> Seth Falcon | @sfalcon | http://userprimary.net/\n>>\n>\n\n\n\n-- \nSeth Falcon | @sfalcon | http://userprimary.net/",
+      "body_snippet": "On Mon, Jul 5, 2010 at 12:48 PM, Jonathan Greenberg\n<greenberg at ucdavis.edu> wrote:\n> Seth:\n>\n> Second follow-up question. ?If you do NOT, in advance, know the number\n> of columns that will be in th",
+      "thread_id": "thread-6d10d56aa176",
+      "thread_depth": 1,
+      "month": "2010-07"
+    },
+    {
+      "id": "msg-0b0837135b41",
+      "message_id": "<AANLkTilZlNGBiwp1sh3QuuEpbyb33X5fSBW4I7Qds9x2@mail.gmail.com>",
+      "from_name": "Jonathan Greenberg",
+      "from_email_hash": "a4df5b911cdb3fd3f70ac604839ebb4411c8b25668156d97baad1ceb32653cbe",
+      "date": "2010-07-05T15:12:56-07:00",
+      "subject": "[R-sig-DB] dbListConnections() not working in RSQLite?",
+      "subject_clean": "dbListConnections() not working in RSQLite?",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "This is a fork off my previous discussion -- trying to troubleshoot\nlocking and connections has led me to try using dbListConnections().\nUsing Seth's example for solving the problem of concurrent read/writes\nto a database, I tossed in a \"print(dbListConnections(m))\" into the\nmain while() loop:\n\n***\n\nlibrary(\"RSQLite\")\nmysqldb='test.sqlite'\nunlink(mysqldb)\nfetch_n=3\n\n# Create a data table.\nsomedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3)\n\n# Make a table in our database with it.\nm <- dbDriver(\"SQLite\")\ncon=dbConnect(m, dbname=mysqldb)\ndbWriteTable(con,\"TABLEA\",somedata,overwrite=TRUE)\ndbGetQuery(con, \"CREATE table t2 (data1 INTEGER, data2 FLOAT)\")\ndbDisconnect(con)\n\n# Now we want to read from TABLEA in \"chunks\" and write to TABLEB.\nread_con=dbConnect(m, dbname=mysqldb)\nwrite_con=dbConnect(m, dbname=mysqldb)\n\nread_query=dbSendQuery(read_con,\"SELECT * FROM TABLEA\")\ndbBeginTransaction(write_con)\nwhile (!dbHasCompleted(read_query))\n{\n\tread_chunk=fetch(read_query,fetch_n)\n\tnew_data=data.frame(data3=read_chunk$data1*4,data4=read_chunk$data2*4)\n\tdbGetPreparedQuery(write_con, \"INSERT into t2 values (?, ?)\", new_data)\n\tprint(dbListConnections(m))\n}\ndbClearResult(read_query)\ndbCommit(write_con)\n\ndbDisconnect(read_con)\ndbDisconnect(write_con)\n\n***\n\nThe response from this statement is:\nlist()\nlist()\nlist()\nlist()\n\nAm I missing something?  I'm noticing this behavior on the MacOS X\ninstall of RSQLite as well as a Debian amd x64 install.\n\n--j",
+      "body_snippet": "This is a fork off my previous discussion -- trying to troubleshoot\nlocking and connections has led me to try using dbListConnections().\nUsing Seth's example for solving the problem of concurrent read",
+      "thread_id": "thread-0b0837135b41",
+      "thread_depth": 0,
+      "month": "2010-07"
+    },
+    {
+      "id": "msg-e24e9d4824e2",
+      "message_id": "<AANLkTikPK75stAg_ZZxN3Q90ProEdv4n2tbabwdXCQtv@mail.gmail.com>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2010-07-05T18:23:22-04:00",
+      "subject": "[R-sig-DB] concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "subject_clean": "concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "in_reply_to": "<AANLkTikShzhompZgpJI8geE0krQ4LI9EfNorB5aloupd@mail.gmail.com>",
+      "references": [
+        "<029e01cb180f$c6c7ccb0$54576610$@gmail.com>",
+        "<AANLkTilG_6VI3kaotx4Dxk8uH8aC0X8Qpd_osQwIaosJ@mail.gmail.com>",
+        "<AANLkTikShzhompZgpJI8geE0krQ4LI9EfNorB5aloupd@mail.gmail.com>"
+      ],
+      "body_plain": "On Mon, Jul 5, 2010 at 4:09 PM, Seth Falcon <seth at userprimary.net> wrote:\n\n>\n> > Along the lines of Keith's solution, I noticed the COUNT query can be\n> > VERY slow -- there is no rapid way of getting the number of rows in a\n> > database table?\n>\n>\nOne way of dealing with this situation using RDBMs is to use a set of\ntriggers (an insert and delete pair) to keep the count in a separate table.\n I'm sure there are some examples/discussion online for creating triggers in\nSQLite.\n\nSean\n\n\n\n> No, there is no notion of number of rows in a table that I am aware\n> of.  Note that COUNT is a way of aggregating the number of rows\n> returned from a query and in general there is no way for the db to\n> know how many rows will match a query.\n>\n> I expect Keith's solution to be quite slow.  It is executing a\n> separate query each time through the loop and making a linear scan\n> through the table to do the offset.\n>\n> + seth\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "On Mon, Jul 5, 2010 at 4:09 PM, Seth Falcon <seth at userprimary.net> wrote:\n\n>\n> > Along the lines of Keith's solution, I noticed the COUNT query can be\n> > VERY slow -- there is no rapid way of gett",
+      "thread_id": "thread-914ca79b4b7d",
+      "thread_depth": 2,
+      "month": "2010-07"
+    },
+    {
+      "id": "msg-cb8576d58b9f",
+      "message_id": "<4C32A264.7070305@userprimary.net>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2010-07-05T20:26:28-07:00",
+      "subject": "[R-sig-DB] dbListConnections() not working in RSQLite?",
+      "subject_clean": "dbListConnections() not working in RSQLite?",
+      "in_reply_to": "<AANLkTilZlNGBiwp1sh3QuuEpbyb33X5fSBW4I7Qds9x2@mail.gmail.com>",
+      "references": [
+        "<AANLkTilZlNGBiwp1sh3QuuEpbyb33X5fSBW4I7Qds9x2@mail.gmail.com>"
+      ],
+      "body_plain": "Hi Jonathan,\n\nOn 7/5/10 3:12 PM, Jonathan Greenberg wrote:\n> This is a fork off my previous discussion -- trying to troubleshoot\n> locking and connections has led me to try using dbListConnections().\n> Using Seth's example for solving the problem of concurrent read/writes\n> to a database, I tossed in a \"print(dbListConnections(m))\" into the\n> main while() loop:\n> \n> ***\n\n[snip]\n\n> \n> \tprint(dbListConnections(m))\n\n[snip]\n\n> ***\n> \n> The response from this statement is:\n> list()\n> list()\n> list()\n> list()\n> \n> Am I missing something?  I'm noticing this behavior on the MacOS X\n> install of RSQLite as well as a Debian amd x64 install.\n\nUntil quite recently, this would have done what you are expecting.  In\nRSQLite 0.9-0, the memory model that handles SQLite db connections at\nthe R level was significantly refactored.  You can read some details as\nprovides in the NEWS file:\n\n   library(\"RSQLite\")\n   RShowDoc(\"NEWS\", package=\"RSQLite\")\n\nAt the R level, RSQLite db connections now behave like other R objects.\n When you no longer have any variables referring to a connection, they\nbecome available for garbage collection and will be auto-closed if\nneeded.  Aside from being a better choice for the R interface IMO, this\nchange also removes a predefined limit on the number of connections in\nan R session.\n\nIn my view, the dbListConnections function was only needed precisely\nbecause if you didn't close a connection and lost all references to it,\nit \"leaked\" and there would have been no way to close it without a\nglobal registry of connections.\n\nIn the new implementation, there is no such registry (hence no\npredefined limit on number of connections) and no way to list open\nconnections.  While it would be possible to add that back in, I feel\npretty strongly that it isn't worth the extra complexity.  If you want a\nlist of connections, you can maintain that yourself in your code.\n\nIt is worth mentioning that the connection count available from\ndbGetInfo(SQLite())$num_con does give some insight into number of open\nconnections, it can over-report, in a sense, if no gc has occured and\nthere is an orphaned connection.\n\nHope that helps some.\n\n+ seth",
+      "body_snippet": "Hi Jonathan,\n\nOn 7/5/10 3:12 PM, Jonathan Greenberg wrote:\n> This is a fork off my previous discussion -- trying to troubleshoot\n> locking and connections has led me to try using dbListConnections().\n",
+      "thread_id": "thread-0b0837135b41",
+      "thread_depth": 1,
+      "month": "2010-07"
+    },
+    {
+      "id": "msg-f9c112e3f9db",
+      "message_id": "<07f901cb1cd3$4070c2c0$c1524840$@gmail.com>",
+      "from_name": "kMan",
+      "from_email_hash": "da36b6c9f0d3bcf670ca0070ab21c08e2af9500102a69f3d58e008549eb10fc2",
+      "date": "2010-07-06T00:19:52-06:00",
+      "subject": "[R-sig-DB] concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "subject_clean": "concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "in_reply_to": "<AANLkTilG_6VI3kaotx4Dxk8uH8aC0X8Qpd_osQwIaosJ@mail.gmail.com>",
+      "references": [
+        "<AQIIZI94LA4uJIz37TVf3kl0/vXWeg==>",
+        "<029e01cb180f$c6c7ccb0$54576610$@gmail.com>",
+        "<AANLkTilG_6VI3kaotx4Dxk8uH8aC0X8Qpd_osQwIaosJ@mail.gmail.com>"
+      ],
+      "body_plain": "Dear Jonathan,\n\nI do not know of a quick way to query the number of records, the first time.\nAfter that, it should be a simpler matter. I suggest looking into \"CREATE\nINDEX\" as part of your dbGetQuery() call. With clever use of indexes you may\nwork around needing to create duplicate data in some cases. \n\nI have not actually used it for this particular case yet, so I do not have a\nworking example. \n\nSincerely,\nKeithC.\n\n\n-----Original Message-----\nFrom: jgrn307 at gmail.com [mailto:jgrn307 at gmail.com] On Behalf Of Jonathan\nGreenberg\nSent: Monday, July 05, 2010 1:37 PM\nTo: kMan\nCc: Seth Falcon; r-sig-db at stat.math.ethz.ch\nSubject: Re: concurrent reading/writing in \"chunks\" with RSQLite (need some\nhelp troubleshooting)\n\nKeith and Seth (and r-sig-db'ers):\n\nI somewhat understand the difference between both of your solutions -- Seth,\nI'm not a database person (quickly learning tho) but does your code hold the\noutput in memory before writing it all at the end (via dbCommit), or is each\niteration's output being stored in some \"waiting room\" (on disk) where it\ngets written at the very end?  The key (for my purposes) is to avoid keeping\nmore than a chunk's worth of input AND output in memory at any one time.\n\nAlong the lines of Keith's solution, I noticed the COUNT query can be VERY\nslow -- there is no rapid way of getting the number of rows in a database\ntable?\n\nThanks again!\n\n--j\n\nOn Tue, Jun 29, 2010 at 9:50 PM, kMan <kchamberln at gmail.com> wrote:\n> Hi Seth,\n>\n> This particular list requires considerable stretching on my part, so I\nwould not be surprised if I missed a goal implied by the code style used or\noff-list correspondence.\n>\n> If I understood the original code correctly, though, each iteration\nthrough the loop required (2) queries, a read and a write, where (I've\nassumed) the result sets are handled one at a time anyway. The code I\nproposed does the same thing, but overall there is (1) additional query\nprior to the loop to get the number of rows. The rest is just case\nprocessing b/c dbGetQuery() seemed to do funny things when LIMIT extended\nbeyond the end of the table, and it wouldn't remember its last read location\n(e.g. didn't work like scan()). In addition, it works with dbWriteTable()\nand gets around the need for creating the table first, and filling it in\nlater.\n>\n> I used the WHERE condition for lack of a better way to seek to a\nparticular record. The fetch() & fetch_n, were those intended to get the\nread queries to start at the last read location (e.g. like serial reads\nusing scan())? Eliminating need to condition match or generate a db index\nfirst would speed things up, and I'd very much like to learn that trick. I'd\nthink it would also make for an excellent R-wiki post.\n>\n> Sincerely,\n> KeithC.\n>\n> -----Original Message-----\n> From: Seth Falcon [mailto:seth at userprimary.net]\n> Sent: Tuesday, June 29, 2010 9:37 PM\n> To: kMan\n> Cc: Jonathan Greenberg; r-sig-db at stat.math.ethz.ch\n> Subject: Re: R-sig-DB Digest, Vol 68, Issue 7\n>\n> On Tue, Jun 29, 2010 at 8:19 PM, kMan <kchamberln at gmail.com> wrote:\n>> Dear Jonathan,\n>>\n>>>I'm trying to cycle through a database, reading a chunk of data from \n>>>one\n>> table in the DB, processing this data chunk, >and then writing the \n>> output to another table in the database. ?I'm having to set the \n>> fetch(n=) option because the >database is too large to read the \n>> entire thing into memory at once. ?Here's my sample code:\n>> [snip]\n>>\n>> There is no need to open separate connections for reading vs. writing.\n>\n> While it is true that you can read and write from a single connection, \n> you can only have one result set open at a time and so if you want to \n> iterate through a result set and then write, you do, I believe, need \n> two connections.\n>\n>\n> I suspect that the code you propose will be considerably slower as you \n> are issuing multiple queries along with a WHERE constraint.\n>\n> + seth\n>\n>\n>>\n>> Your code was corrupting the connection between R/driver, I think, \n>> and I don't know why. But when I close a connection in R and my OS \n>> won't let me delete the file, there is a different kind of problem. \n>> The code below works on my system. I wish I knew enough to explain wtf\nhappened with your code.\n>> ---------------------------------------------------------------------\n>> ---\n>> ##\n>> ## Prelim/Declarations\n>> ##\n>> require(RSQLite)\n>> mysqldb <- \"test.sqlite\"\n>> m <- dbDriver(\"SQLite\")\n>> tbl.names <- c(\"TABLEA\", \"TABLEB\")\n>> q1<-paste(\"SELECT COUNT(*) FROM\", tbl.names[1])\n>>\n>> ##\n>> ## Surrogate data (if not allready done) ##\n>> (somedata=data.frame(data1=seq(1:10),data2=seq(1:10)*3))\n>> con<-dbConnect(m, dbname=mysqldb)\n>> dbWriteTable(con,\"TABLEA\",somedata, overwrite=TRUE)\n>> dbDisconnect(con)\n>>\n>> ##\n>> ## Process TABLEA in parts, write to TABLEB ## con<-dbConnect(m, \n>> dbname=mysqldb) n.lines<-dbGetQuery(con, q1) #NOTE class is \n>> data.frame\n>> chunk.size<-3\n>> start.index<-seq(from = 1, to = n.lines[1,1], by = 3) \n>> limit<-c(diff(start.index), n.lines[1,1]-sum(diff(start.index)))\n>> i<-1\n>> for(i in 1:length(limit)){\n>> ?if(i<length(limit)) { q2<-paste(\"SELECT * FROM TABLEA WHERE \n>> row_names >=\",\n>>\n>> ? ? ?start.index[i], \"LIMIT\", limit[i])\n>> ?} else { q2<-paste(\"SELECT * FROM TABLEA WHERE row_names =\",\n>> ? ? ?start.index[i], \"LIMIT\", limit[i])\n>> ?}\n>> ?dat<-dbGetQuery(con, q2)\n>> ?dbWriteTable(con, tbl.names[2], dat, row.names=FALSE, append=TRUE) } \n>> dbGetQuery(con, \"SELECT * FROM TABLEB\")\n>> dbDisconnect(con)\n>> ---------------------------------------------------------------------\n>> ---\n>>\n>> Sincerely,\n>> KeithC.\n>>\n>>\n>>\n>\n>\n>\n> --\n> Seth Falcon | @sfalcon | http://userprimary.net/\n>\n>",
+      "body_snippet": "Dear Jonathan,\n\nI do not know of a quick way to query the number of records, the first time.\nAfter that, it should be a simpler matter. I suggest looking into \"CREATE\nINDEX\" as part of your dbGetQuery",
+      "thread_id": "thread-914ca79b4b7d",
+      "thread_depth": 1,
+      "month": "2010-07"
+    },
+    {
+      "id": "msg-67919d8b499a",
+      "message_id": "<B00E4D5E-526B-4B6C-BF37-378453BC4A15@forestinformatics.com>",
+      "from_name": "Jeff Hamann",
+      "from_email_hash": "8d5abd7a144b5d1e370d1a6ac42a3ba494c4b852f86713fe3943cc17a60bca7b",
+      "date": "2010-07-09T12:57:20-07:00",
+      "subject": "[R-sig-DB] PostgreSQL+PostGIS+PLR Class Announcement",
+      "subject_clean": "PostgreSQL+PostGIS+PLR Class Announcement",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "R Database List, \n\nCredativ and Forest Informatics are holding a short course on\nPostgreSQL, PostGIS, and PL/R as part of their newly announced\npartnership, GeoSpatial University. PL/R is an extension to PostgreSQL,\nwhich allows PostgreSQL stored procedures to be written in R.\n\nThis first course, \"Intro to PostgreSQL with Spatial Analysis\nExtensions\" will be offered from September 13-15, 2010 in San Diego, CA.\n\nStudents will learn the fundamentals of PostgreSQL, geospatial database\nmanagement using PostGIS, and basic analysis of geospatial database\nobjects using PL/R.\n\nFor more details, please visit the course web page:\nhttp://www.credativ.us/pg_w_spatial/\n\nRespectfully,\nJeff\n\n\nJeff Hamann, PhD\nPO Box 1421\nCorvallis, Oregon 97339-1421\n541-754-2457\njeff.hamann[at]forestinformatics[dot]com\nhttp://www.forestinformatics.com\n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "R Database List, \n\nCredativ and Forest Informatics are holding a short course on\nPostgreSQL, PostGIS, and PL/R as part of their newly announced\npartnership, GeoSpatial University. PL/R is an extension",
+      "thread_id": "thread-67919d8b499a",
+      "thread_depth": 0,
+      "month": "2010-07"
+    },
+    {
+      "id": "msg-6bcd19c6925a",
+      "message_id": "<AANLkTik2PeuaLF3dUaDqk3OZOkc9dCnudeJ4JuCirhZc@mail.gmail.com>",
+      "from_name": "Fabio Di Memmo",
+      "from_email_hash": "934154138eaac08c4ee87ba93d645d47285bf3d75704e8265389bf9454cbde2e",
+      "date": "2010-07-14T19:47:40+02:00",
+      "subject": "[R-sig-DB] Fwd: The results of your email commands",
+      "subject_clean": "The results of your email commands",
+      "in_reply_to": "<mailman.254.1279129426.4243.r-sig-db@stat.math.ethz.ch>",
+      "references": [
+        "<mailman.254.1279129426.4243.r-sig-db@stat.math.ethz.ch>"
+      ],
+      "body_plain": "Hi All\n\n   I am new member and I came from another world, SAP, business\n   applications and consulting...\n   I would like to use R within an SAP architecture. For several reasons\n   we don?t want to use SAS or SPSS.\n   We would like R for Optimization, stitistics and predictions. The SAP\n   DWH will send data to R. R will elaborate and send back info  to SAP.\n   Is there any experience on that?\n   how pawerfull are the R API's?\n   How many GB R can support?\nIs there any documents which describes the R architecture?\n   With kind regards,\n   Fabio\n   --\n   Fabio Di Memmo\n   Customer Value Practice Manager\n   CRM Professor at Milano Bicocca University\n   fabio.dimemmo at techedge.it\n   Cell. +39 335 6010678\n   Techedge - www.techedge.it\n   Milan Office\n\n- Ignored:\n   Via Caldera 21, Palazzo B1\n   20153 Milano\n   Tel: +39 (0)2 89075129, Fax: +39 (0)2 89075229\n   Rome Office\n   Via Mario Bianchini, 47\n   I-001442 Rome\n   Tel: +39 06 54281163, Fax: +39 06 54210971\n\n\n- Done.\n\n\n\n---------- Forwarded message ----------\nFrom: Fabio Di Memmo <fabio.dimemmo at techedge.it>\nTo: r-sig-db-request at stat.math.ethz.ch\nDate: Wed, 14 Jul 2010 19:43:38 +0200\nSubject: SAP????\nDear Members,\n\nI am new member and I came from another world, SAP, business\napplications and consulting...\nI would like to use R within an SAP architecture. For several reasons\nwe don?t want to use SAS or SPSS.\nWe would like R for Optimization, stitistics and predictions. THe SAP\nDWH will send data to R. R will elaborate and send back info  to SAP.\nIs there any experience on that?\nhow pawerfull are the R API's?\nHow many GB R can support?\n\nWith kind regards,\nFabio\n\n--\nFabio Di Memmo\nCustomer Value Practice Manager\nCRM Professor at Milano Bicocca University\n\nfabio.dimemmo at techedge.it\nCell. +39 335 6010678\n\nTechedge - www.techedge.it\nMilan Office\nVia Caldera 21, Palazzo B1\n20153 Milano\nTel: +39 (0)2 89075129, Fax: +39 (0)2 89075229\nRome Office\nVia Mario Bianchini, 47\nI-001442 Rome\nTel: +39 06 54281163, Fax: +39 06 54210971\n\n\n\n\n-- \nFabio Di Memmo\nCustomer Value Practice Manager\nCRM Professor at Milano Bicocca University\n\nfabio.dimemmo at techedge.it\nCell. +39 335 6010678\n\nTechedge - www.techedge.it\nMilan Office\nVia Caldera 21, Palazzo B1\n20153 Milano\nTel: +39 (0)2 89075129, Fax: +39 (0)2 89075229\nRome Office\nVia Mario Bianchini, 47\nI-001442 Rome\nTel: +39 06 54281163, Fax: +39 06 54210971",
+      "body_snippet": "Hi All\n\n   I am new member and I came from another world, SAP, business\n   applications and consulting...\n   I would like to use R within an SAP architecture. For several reasons\n   we don?t want to u",
+      "thread_id": "thread-6bcd19c6925a",
+      "thread_depth": 0,
+      "month": "2010-07"
+    },
+    {
+      "id": "msg-588e40c3e995",
+      "message_id": "<EEBC169715EB8C438D3C9283AF0F201C08A7CF7D@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+      "from_name": "McGehee, Robert",
+      "from_email_hash": "d6e856f0aa01f89698472702235348f1cd8814da0dffd4bae380a929d6d2736c",
+      "date": "2010-07-20T11:37:27-04:00",
+      "subject": "[R-sig-DB] RPostgreSQL Row Inserts on Remote Servers",
+      "subject_clean": "RPostgreSQL Row Inserts on Remote Servers",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello,\nAn issue discussed before on this list server is difficulty using\ndbWriteTable from the RPostgreSQL/DBI package to insert rows when\neither:\n1) the R client and PostgreSQL server are on different computers (or at\nleast don't share a common filesystem), and thus bulk copy is\nunavailable.\n2) the postgres user does not have read permission for the user's file\n(See https://stat.ethz.ch/pipermail/r-sig-db/2009q4/000741.html, for\nexample)\n\nTo address this, I wrote a helper function called dbInsert() that some\nof you may find useful. The function converts a data frame into a single\nINSERT query transaction that inserts the data frame into an existing\ntable. My hope is that this is a relatively fast way to insert rows when\nbulk copy is unavailable.\n\nIf any of you have already discovered a faster way to insert data\nwithout using bulk copy, or find ways of improving this code, please\nshare. I'm also CC:ing the RPostgreSQL package maintainer in case he\nthinks this functionality should be merged into the postgresWriteTable\nfunction for when bulk copy is not possible.\n\nCheers, \nRobert\n\ndbInsert <- function(con, name, value, row.names = TRUE, ...) {\n    xx <- dbSendQuery(con, paste(\"select * from\", name, \"LIMIT 1;\"))\n    cols <- dbColumnInfo(xx)$name\n    dbClearResult(xx)\n    if (row.names) {\n        if (!\"row_names\" %in% cols) stop(\"row_names column missing from\n\", sQuote(name))\n        value[[\"row_names\", exact=TRUE]] <- rownames(value)\n    }\n    if (length(setdiff(names(value), cols)))\n      stop(\"names of 'value' do not match columns of \", sQuote(name))\n    \n    cdt  <- which(sapply(value, inherits, c(\"Date\", \"POSIXt\")))\n    ctxt <- which(sapply(value, postgresqlDataType)==\"text\")\n    for (i in cdt)\n      value[[i]] <- ifelse(is.na(value[[i]]), \"NULL\",\nsQuote(format(value[[i]])))\n    for (i in setdiff(ctxt, cdt))\n      value[[i]] <- ifelse(is.na(value[[i]]), \"NULL\",\nsQuote(value[[i]]))\n\n    m <- as.matrix(value)\n    class(m) <- \"character\"\n    m[is.na(m)] <- \"NULL\"\n\n    q1 <- paste(\"BEGIN; INSERT INTO\", name, \"(\", paste(names(value),\ncollapse=\", \"), \") VALUES\")\n    q2 <- apply(m, 1, function(x) paste(\"(\", paste(x, collapse=\",\"),\n\")\", sep=\"\"))\n    q3 <- \"; COMMIT;\"\n    qry <- paste(q1, paste(q2, collapse=\",\"), q3)\n    dbGetQuery(con, qry)\n}\n\nRobert McGehee, CFA\nGeode Capital Management, LLC\nOne Post Office Square, 28th Floor | Boston, MA | 02109\nTel: 617/392-8396    Fax:617/476-6389\nmailto:robert.mcgehee at geodecapital.com\n\n\nThis e-mail, and any attachments hereto, are intended fo...{{dropped:12}}",
+      "body_snippet": "Hello,\nAn issue discussed before on this list server is difficulty using\ndbWriteTable from the RPostgreSQL/DBI package to insert rows when\neither:\n1) the R client and PostgreSQL server are on differen",
+      "thread_id": "thread-588e40c3e995",
+      "thread_depth": 0,
+      "month": "2010-07"
+    },
+    {
+      "id": "msg-4e688fbe7a31",
+      "message_id": "<AANLkTintFZfsAqe1jEHKwP9aXBKjlkWJdCHH6Y4F61wZ@mail.gmail.com>",
+      "from_name": "Whit Armstrong",
+      "from_email_hash": "461dbb6770715b86a360fd76345328501238bfd4dcdfb8fd08126ff3a6056c97",
+      "date": "2010-07-20T12:01:05-04:00",
+      "subject": "[R-sig-DB] RPostgreSQL Row Inserts on Remote Servers",
+      "subject_clean": "RPostgreSQL Row Inserts on Remote Servers",
+      "in_reply_to": "<EEBC169715EB8C438D3C9283AF0F201C08A7CF7D@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+      "references": [
+        "<EEBC169715EB8C438D3C9283AF0F201C08A7CF7D@MSGBOSCLM2WIN.DMN1.FMR.COM>"
+      ],
+      "body_plain": "you can use my driver. which will someday make it to cran.  it uses a\nbinary connection to write the data.\n\nhttp://github.com/armstrtw/unifieddbi\n\ndepending on what you are doing, you can get between a 10x and 50x speedup.\n\n-Whit\n\n\n\nOn Tue, Jul 20, 2010 at 11:37 AM, McGehee, Robert\n<Robert.McGehee at geodecapital.com> wrote:\n> Hello,\n> An issue discussed before on this list server is difficulty using\n> dbWriteTable from the RPostgreSQL/DBI package to insert rows when\n> either:\n> 1) the R client and PostgreSQL server are on different computers (or at\n> least don't share a common filesystem), and thus bulk copy is\n> unavailable.\n> 2) the postgres user does not have read permission for the user's file\n> (See https://stat.ethz.ch/pipermail/r-sig-db/2009q4/000741.html, for\n> example)\n>\n> To address this, I wrote a helper function called dbInsert() that some\n> of you may find useful. The function converts a data frame into a single\n> INSERT query transaction that inserts the data frame into an existing\n> table. My hope is that this is a relatively fast way to insert rows when\n> bulk copy is unavailable.\n>\n> If any of you have already discovered a faster way to insert data\n> without using bulk copy, or find ways of improving this code, please\n> share. I'm also CC:ing the RPostgreSQL package maintainer in case he\n> thinks this functionality should be merged into the postgresWriteTable\n> function for when bulk copy is not possible.\n>\n> Cheers,\n> Robert\n>\n> dbInsert <- function(con, name, value, row.names = TRUE, ...) {\n> ? ?xx <- dbSendQuery(con, paste(\"select * from\", name, \"LIMIT 1;\"))\n> ? ?cols <- dbColumnInfo(xx)$name\n> ? ?dbClearResult(xx)\n> ? ?if (row.names) {\n> ? ? ? ?if (!\"row_names\" %in% cols) stop(\"row_names column missing from\n> \", sQuote(name))\n> ? ? ? ?value[[\"row_names\", exact=TRUE]] <- rownames(value)\n> ? ?}\n> ? ?if (length(setdiff(names(value), cols)))\n> ? ? ?stop(\"names of 'value' do not match columns of \", sQuote(name))\n>\n> ? ?cdt ?<- which(sapply(value, inherits, c(\"Date\", \"POSIXt\")))\n> ? ?ctxt <- which(sapply(value, postgresqlDataType)==\"text\")\n> ? ?for (i in cdt)\n> ? ? ?value[[i]] <- ifelse(is.na(value[[i]]), \"NULL\",\n> sQuote(format(value[[i]])))\n> ? ?for (i in setdiff(ctxt, cdt))\n> ? ? ?value[[i]] <- ifelse(is.na(value[[i]]), \"NULL\",\n> sQuote(value[[i]]))\n>\n> ? ?m <- as.matrix(value)\n> ? ?class(m) <- \"character\"\n> ? ?m[is.na(m)] <- \"NULL\"\n>\n> ? ?q1 <- paste(\"BEGIN; INSERT INTO\", name, \"(\", paste(names(value),\n> collapse=\", \"), \") VALUES\")\n> ? ?q2 <- apply(m, 1, function(x) paste(\"(\", paste(x, collapse=\",\"),\n> \")\", sep=\"\"))\n> ? ?q3 <- \"; COMMIT;\"\n> ? ?qry <- paste(q1, paste(q2, collapse=\",\"), q3)\n> ? ?dbGetQuery(con, qry)\n> }\n>\n> Robert McGehee, CFA\n> Geode Capital Management, LLC\n> One Post Office Square, 28th Floor | Boston, MA | 02109\n> Tel: 617/392-8396 ? ?Fax:617/476-6389\n> mailto:robert.mcgehee at geodecapital.com\n>\n>\n> This e-mail, and any attachments hereto, are intended fo...{{dropped:12}}\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "you can use my driver. which will someday make it to cran.  it uses a\nbinary connection to write the data.\n\nhttp://github.com/armstrtw/unifieddbi\n\ndepending on what you are doing, you can get between ",
+      "thread_id": "thread-588e40c3e995",
+      "thread_depth": 1,
+      "month": "2010-07"
+    },
+    {
+      "id": "msg-b114d996a2fb",
+      "message_id": "<AANLkTinKS8L7SU1OAd3xNI9tPYWnjG0I6SghiSgiAr1E@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2010-07-20T12:16:05-04:00",
+      "subject": "[R-sig-DB] RPostgreSQL Row Inserts on Remote Servers",
+      "subject_clean": "RPostgreSQL Row Inserts on Remote Servers",
+      "in_reply_to": "<EEBC169715EB8C438D3C9283AF0F201C08A7CF7D@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+      "references": [
+        "<EEBC169715EB8C438D3C9283AF0F201C08A7CF7D@MSGBOSCLM2WIN.DMN1.FMR.COM>"
+      ],
+      "body_plain": "On Tue, Jul 20, 2010 at 11:37 AM, McGehee, Robert\n<Robert.McGehee at geodecapital.com> wrote:\n> Hello,\n> An issue discussed before on this list server is difficulty using\n> dbWriteTable from the RPostgreSQL/DBI package to insert rows when\n> either:\n> 1) the R client and PostgreSQL server are on different computers (or at\n> least don't share a common filesystem), and thus bulk copy is\n> unavailable.\n> 2) the postgres user does not have read permission for the user's file\n> (See https://stat.ethz.ch/pipermail/r-sig-db/2009q4/000741.html, for\n> example)\n>\n> To address this, I wrote a helper function called dbInsert() that some\n> of you may find useful. The function converts a data frame into a single\n> INSERT query transaction that inserts the data frame into an existing\n> table. My hope is that this is a relatively fast way to insert rows when\n> bulk copy is unavailable.\n>\n> If any of you have already discovered a faster way to insert data\n> without using bulk copy, or find ways of improving this code, please\n> share. I'm also CC:ing the RPostgreSQL package maintainer in case he\n> thinks this functionality should be merged into the postgresWriteTable\n> function for when bulk copy is not possible.\n\nI haven't tested the speed relative to other drivers but I have a\nPostgreSQL driver on CRAN,\nRpgSQL which supports PostgreSQL via a layer over RJDBC.\n\nIt was mainly developed for use with the sqldf package (which now\nsupports sqlite, H2 and\nPostgreSQL databases) since it needed functionality not supported by\nother CRAN drivers.",
+      "body_snippet": "On Tue, Jul 20, 2010 at 11:37 AM, McGehee, Robert\n<Robert.McGehee at geodecapital.com> wrote:\n> Hello,\n> An issue discussed before on this list server is difficulty using\n> dbWriteTable from the RPost",
+      "thread_id": "thread-588e40c3e995",
+      "thread_depth": 1,
+      "month": "2010-07"
+    },
+    {
+      "id": "msg-47154ae46199",
+      "message_id": "<EEBC169715EB8C438D3C9283AF0F201C08A7CFB9@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+      "from_name": "McGehee, Robert",
+      "from_email_hash": "d6e856f0aa01f89698472702235348f1cd8814da0dffd4bae380a929d6d2736c",
+      "date": "2010-07-20T13:52:27-04:00",
+      "subject": "[R-sig-DB] RpgSQL Install problems [was: RPostgreSQL Row Inserts on Remote Servers]",
+      "subject_clean": "RpgSQL Install problems [was: RPostgreSQL Row Inserts on Remote Servers]",
+      "in_reply_to": null,
+      "references": [
+        "<EEBC169715EB8C438D3C9283AF0F201C08A7CF7D@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+        "<AANLkTinKS8L7SU1OAd3xNI9tPYWnjG0I6SghiSgiAr1E@mail.gmail.com>"
+      ],
+      "body_plain": "Thanks to Gabor and Whit for replies.\n\nI thought I'd give these packages a try, starting with RpgSQL on my Mac.\nHowever, I'm running into installation troubles. If any of you are\nfeeling generous, and the below RpgSQL error message means something to\nyou, please let me know what I'm doing wrong.\n\nHere are the RpgSQL installation steps I tried:\n\nFirst I downloaded the latest JDBC4 driver and saved it here on my Mac:\n/Library/Java/Extensions/postgresql-8.4-701.jdbc4.jar\n\nAnd then per installation instructions I exported the environment\nvariable RpgSQL_JAR to point to the above file.\n\nNext, I successfully tested the JDBC installation by compiling and\nrunning the quick JDBC program found here:\nhttp://www.fankhausers.com/postgresql/jdbc/\nto show that I could create, drop, and populate a table using JDBC.\n\nLast, I successfully installed the latest RpgSQL and all dependencies (I\ndidn't specify any config options here). \n\nHowever, I can't seem to connect:\n\n> p <- dbDriver(\"pgSQL\")\nError in pgSQL() :\n  Could not find Postgres JDBC driver\non/Library/Java/Extensions/postgresql-8.4-701.jdbc4.jar./Library/Framewo\nrks/Python.framework/Versions/2.6/bin:/Users/a347549/Bin:/Users/a347549/\nbin:/opt/bin:/usr/local/bin:/usr/local/pgsql/bin:/usr/bin:/bin:/usr/sbin\n:/sbin:/usr/local/bin:/usr/texbin:/usr/X11/bin/usr/local/pgsql/share/jav\na\n\nThe error message indicates to me that the JDBC driver is not where I\nput it--but it is. The file is also world readable/executable, so there\nshouldn't be any permission problems. Any ideas? Note I already have\nRPostgreSQL installed and working, so it's (presumably) not a problem\nwith PostgreSQL.\n\nThanks, Robert\n\nSome possibly important information:\n\n> java -version\njava version \"1.6.0_20\"\nJava(TM) SE Runtime Environment (build 1.6.0_20-b02-279-9M3165)\nJava HotSpot(TM) 64-Bit Server VM (build 16.3-b01-279, mixed mode)\n\n> uname -a\nDarwin BOSA871443.fmr.com 9.8.0 Darwin Kernel Version 9.8.0: Wed Jul 15\n16:55:01 PDT 2009; root:xnu-1228.15.4~1/RELEASE_I386 i386\n\n> pg_config\nBINDIR = /usr/local/pgsql/bin\nDOCDIR = /usr/local/pgsql/share/doc\nHTMLDIR = /usr/local/pgsql/share/doc\nINCLUDEDIR = /usr/local/pgsql/include\nPKGINCLUDEDIR = /usr/local/pgsql/include\nINCLUDEDIR-SERVER = /usr/local/pgsql/include/server\nLIBDIR = /usr/local/pgsql/lib\nPKGLIBDIR = /usr/local/pgsql/lib\nLOCALEDIR = /usr/local/pgsql/share/locale\nMANDIR = /usr/local/pgsql/share/man\nSHAREDIR = /usr/local/pgsql/share\nSYSCONFDIR = /usr/local/pgsql/etc\nPGXS = /usr/local/pgsql/lib/pgxs/src/makefiles/pgxs.mk\nCONFIGURE = '--enable-thread-safety' '--with-bonjour' 'CFLAGS=-m64 -arch\nx86_64'\nCC = gcc -no-cpp-precomp\nCPPFLAGS =\nCFLAGS = -m64 -arch x86_64 -Wall -Wmissing-prototypes -Wpointer-arith\n-Wdeclaration-after-statement -Wendif-labels -fno-strict-aliasing\n-fwrapv\nCFLAGS_SL =\nLDFLAGS = -Wl,-dead_strip_dylibs\nLDFLAGS_SL =\nLIBS = -lpgport -lz -lreadline -lm\nVERSION = PostgreSQL 8.4.2\n\n> R.version\n               _\nplatform       x86_64-apple-darwin9.8.0\narch           x86_64\nos             darwin9.8.0\nsystem         x86_64, darwin9.8.0\nstatus         Patched\nmajor          2\nminor          11.0\nyear           2010\nmonth          05\nday            11\nsvn rev        51984\nlanguage       R\nversion.string R version 2.11.0 Patched (2010-05-11 r51984)\n\n-----Original Message-----\nFrom: Gabor Grothendieck [mailto:ggrothendieck at gmail.com] \nSent: Tuesday, July 20, 2010 12:16 PM\nTo: McGehee, Robert\nCc: r-sig-db at stat.math.ethz.ch\nSubject: Re: [R-sig-DB] RPostgreSQL Row Inserts on Remote Servers\n\nOn Tue, Jul 20, 2010 at 11:37 AM, McGehee, Robert\n<Robert.McGehee at geodecapital.com> wrote:\n> Hello,\n> An issue discussed before on this list server is difficulty using\n> dbWriteTable from the RPostgreSQL/DBI package to insert rows when\n> either:\n> 1) the R client and PostgreSQL server are on different computers (or\nat\n> least don't share a common filesystem), and thus bulk copy is\n> unavailable.\n> 2) the postgres user does not have read permission for the user's file\n> (See https://stat.ethz.ch/pipermail/r-sig-db/2009q4/000741.html, for\n> example)\n>\n> To address this, I wrote a helper function called dbInsert() that some\n> of you may find useful. The function converts a data frame into a\nsingle\n> INSERT query transaction that inserts the data frame into an existing\n> table. My hope is that this is a relatively fast way to insert rows\nwhen\n> bulk copy is unavailable.\n>\n> If any of you have already discovered a faster way to insert data\n> without using bulk copy, or find ways of improving this code, please\n> share. I'm also CC:ing the RPostgreSQL package maintainer in case he\n> thinks this functionality should be merged into the postgresWriteTable\n> function for when bulk copy is not possible.\n\nI haven't tested the speed relative to other drivers but I have a\nPostgreSQL driver on CRAN,\nRpgSQL which supports PostgreSQL via a layer over RJDBC.\n\nIt was mainly developed for use with the sqldf package (which now\nsupports sqlite, H2 and\nPostgreSQL databases) since it needed functionality not supported by\nother CRAN drivers.",
+      "body_snippet": "Thanks to Gabor and Whit for replies.\n\nI thought I'd give these packages a try, starting with RpgSQL on my Mac.\nHowever, I'm running into installation troubles. If any of you are\nfeeling generous, and",
+      "thread_id": "thread-588e40c3e995",
+      "thread_depth": 2,
+      "month": "2010-07"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-914ca79b4b7d",
+      "subject": "concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "message_count": 4,
+      "participants": [
+        "Jonathan Greenberg",
+        "Sean Davis",
+        "Seth Falcon",
+        "kMan"
+      ],
+      "started": "2010-07-05T12:36:52-07:00",
+      "last_reply": "2010-07-06T00:19:52-06:00",
+      "root_message_id": "msg-914ca79b4b7d"
+    },
+    {
+      "id": "thread-6d10d56aa176",
+      "subject": "concurrent reading/writing in \"chunks\" with RSQLite (need some help troubleshooting)",
+      "message_count": 2,
+      "participants": [
+        "Jonathan Greenberg",
+        "Seth Falcon"
+      ],
+      "started": "2010-07-05T12:48:08-07:00",
+      "last_reply": "2010-07-05T13:12:26-07:00",
+      "root_message_id": "msg-6d10d56aa176"
+    },
+    {
+      "id": "thread-0b0837135b41",
+      "subject": "dbListConnections() not working in RSQLite?",
+      "message_count": 2,
+      "participants": [
+        "Jonathan Greenberg",
+        "Seth Falcon"
+      ],
+      "started": "2010-07-05T15:12:56-07:00",
+      "last_reply": "2010-07-05T20:26:28-07:00",
+      "root_message_id": "msg-0b0837135b41"
+    },
+    {
+      "id": "thread-67919d8b499a",
+      "subject": "PostgreSQL+PostGIS+PLR Class Announcement",
+      "message_count": 1,
+      "participants": [
+        "Jeff Hamann"
+      ],
+      "started": "2010-07-09T12:57:20-07:00",
+      "last_reply": "2010-07-09T12:57:20-07:00",
+      "root_message_id": "msg-67919d8b499a"
+    },
+    {
+      "id": "thread-6bcd19c6925a",
+      "subject": "The results of your email commands",
+      "message_count": 1,
+      "participants": [
+        "Fabio Di Memmo"
+      ],
+      "started": "2010-07-14T19:47:40+02:00",
+      "last_reply": "2010-07-14T19:47:40+02:00",
+      "root_message_id": "msg-6bcd19c6925a"
+    },
+    {
+      "id": "thread-588e40c3e995",
+      "subject": "RPostgreSQL Row Inserts on Remote Servers",
+      "message_count": 4,
+      "participants": [
+        "Gabor Grothendieck",
+        "McGehee, Robert",
+        "Whit Armstrong"
+      ],
+      "started": "2010-07-20T11:37:27-04:00",
+      "last_reply": "2010-07-20T13:52:27-04:00",
+      "root_message_id": "msg-588e40c3e995"
+    }
+  ]
+}

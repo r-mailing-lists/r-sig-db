@@ -1,0 +1,7154 @@
+From de@|@ @end|ng |rom c|ubv@c@t|onde@|@@com  Fri Apr  3 02:01:59 2009
+From: de@|@ @end|ng |rom c|ubv@c@t|onde@|@@com (Club Vacation Deals)
+Date: Thu, 2 Apr 2009 20:01:59 -0400
+Subject: [R-sig-DB] Unique & Exclusive Mexico Vacation
+Message-ID: <8f7293299da71bdcfb862366dae094a5@www.vallarta-paradise.com>
+
+An HTML attachment was scrubbed...
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20090402/15fca45e/attachment.html>
+
+From dut@ngc @end|ng |rom gm@||@com  Sun Apr  5 12:47:55 2009
+From: dut@ngc @end|ng |rom gm@||@com (christophe dutang)
+Date: Sun, 5 Apr 2009 12:47:55 +0200
+Subject: [R-sig-DB] crash with RMySQL
+Message-ID: <c8e8cd3d0904050347m7be95138l3c69c574f1c7c119@mail.gmail.com>
+
+Dear all,
+
+I'm using R 2.8.1 with MySQL 5.1.33, RMySQL 0.7-3 (built against MySQL 5.1.3
+version), DBI 0.2-4 on windows XP.
+
+I'm trying to do a basic SQL statement
+
+SELECT  AVG(mycolumnA), COUNT(mycolumnA), mycolumnB FROM mytable GROUP BY
+mycolumnB;
+
+directly from R using DBI functions. But it just crashes R with no explicit
+reason. If I do manually this statement in MySQL (exactly
+SELECT  AVG(mycolumnA), COUNT(mycolumnA), mycolumnB FROM mydb.mytable GROUP
+BY mycolumnB; ), it works and produces the following output :
+
++----------------+------------------+-----------+
+| avg(mycolumnA) | count(mycolumnA) | mycolumnB |
++----------------+------------------+-----------+
+|         0.5262 |              669 |         1 |
+|         0.2242 |              455 |         2 |
+|         0.3347 |              505 |         3 |
+|         0.2416 |              389 |         4 |
+|         0.5857 |             1038 |         5 |
+|         0.3250 |              523 |         6 |
+|         0.1935 |              310 |         7 |
+|         0.3574 |              333 |         8 |
+|         0.4132 |              167 |         9 |
+|         0.3529 |              136 |        10 |
+|         0.4043 |              282 |        11 |
+|         0.0000 |                2 |        12 |
++----------------+------------------+-----------+
+12 rows in set (0.03 sec)
+
+I have a reproductible example (this time). See the R file and the csv file.
+
+
+Originally I worked with R 2.7.2 version and MySQL 5.0.67, RMySQL 0.6-1, DBI
+0.2-4, and got the same crash.
+
+Does anyone idea of what I'm doing wrong? or encounter similar problems?
+
+Thanks in advance
+
+Christophe
+
+PS : I copy/paste my files, in the case attachments are not permitted.
+
+---------------------------------------------------------------- mycode.R
+library(RODBC)
+library(DBI)
+library(RMySQL)
+library(MASS)
+
+options("max.print"=1000)
+options(show.error.messages = TRUE)
+
+checkMySQLreservedname <- function(name2check)
+{
+# reserved name by MySQL cf.
+http://dev.mysql.com/doc/mysqld-version-reference/en/mysqld-version-reference-reservedwords-5-1.html
+
+
+    thelist <- c("ACCESSIBLE","ADD","ALL",    "ALTER","ANALYZE","AND",
+"AS","ASC","ASENSITIVE",
+    "BEFORE","BETWEEN","BIGINT",    "BINARY","BLOB","BOTH",
+"BY","CALL","CASCADE",
+    "CASE","CHANGE","CHAR",    "CHARACTER","CHECK","COLLATE",
+"COLUMN","CONDITION","CONNECTION",
+    "CONSTRAINT","CONTINUE","CONVERT",
+"CREATE","CROSS","CURRENT_DATE",
+"CURRENT_TIME","CURRENT_TIMESTAMP","CURRENT_USER",
+    "CURSOR","DATABASE","DATABASES",
+"DAY_HOUR","DAY_MICROSECOND","DAY_MINUTE",    "DAY_SECOND","DEC","DECIMAL",
+    "DECLARE","DEFAULT","DELAYED",    "DELETE","DESC","DESCRIBE",
+"DETERMINISTIC","DISTINCT","DISTINCTROW",
+    "DIV","DOUBLE","DROP",    "DUAL","EACH","ELSE",
+"ELSEIF","ENCLOSED","ESCAPED",
+    "EXISTS","EXIT","EXPLAIN",    "FALSE","FETCH","FLOAT",
+"FLOAT4","FLOAT8","FOR",
+    "FORCE","FOREIGN","FROM",    "FULLTEXT","GOTO","GRANT",
+"GROUP","HAVING","HIGH_PRIORITY",
+    "HOUR_MICROSECOND","HOUR_MINUTE","HOUR_SECOND",
+"IF","IGNORE","IN",    "INDEX","INFILE","INNER",
+    "INOUT","INSENSITIVE","INSERT",    "INT","INT1","INT2",
+"INT3","INT4","INT8",
+    "INTEGER","INTERVAL","INTO",    "IS","ITERATE","JOIN",
+"KEY","KEYS","KILL",
+    "LABEL","LEADING","LEAVE",    "LEFT","LIKE","LIMIT",
+"LINEAR","LINES","LOAD",
+    "LOCALTIME","LOCALTIMESTAMP","LOCK",    "LONG","LONGBLOB","LONGTEXT",
+"LOOP","LOW_PRIORITY","MASTER_SSL_VERIFY_SERVER_CERT",
+    "MATCH","MEDIUMBLOB","MEDIUMINT",
+"MEDIUMTEXT","MIDDLEINT","MINUTE_MICROSECOND",
+"MINUTE_SECOND","MOD","MODIFIES",
+    "NATURAL","NOT","NO_WRITE_TO_BINLOG",    "NULL","NUMERIC","ON",
+"OPTIMIZE","OPTION","OPTIONALLY",
+    "OR","ORDER","OUT",    "OUTER","OUTFILE","PRECISION",
+"PRIMARY","PROCEDURE","PURGE",
+    "RANGE","READ","READS",    "READ_ONLY","READ_WRITE","REAL",
+"REFERENCES","REGEXP","RELEASE",
+    "RENAME","REPEAT","REPLACE",    "REQUIRE","RESTRICT","RETURN",
+"REVOKE","RIGHT","RLIKE",
+    "SCHEMA","SCHEMAS","SECOND_MICROSECOND",
+"SELECT","SENSITIVE","SEPARATOR",    "SET","SHOW","SMALLINT",
+    "SPATIAL","SPECIFIC","SQL",
+"SQLEXCEPTION","SQLSTATE","SQLWARNING",
+"SQL_BIG_RESULT","SQL_CALC_FOUND_ROWS","SQL_SMALL_RESULT",
+    "SSL","STARTING","STRAIGHT_JOIN",    "TABLE","TERMINATED","THEN",
+"TINYBLOB","TINYINT","TINYTEXT",
+    "TO","TRAILING","TRIGGER",    "TRUE","UNDO","UNION",
+"UNIQUE","UNLOCK","UNSIGNED",
+    "UPDATE","UPGRADE","USAGE",    "USE","USING","UTC_DATE",
+"UTC_TIME","UTC_TIMESTAMP","VALUES",
+    "VARBINARY","VARCHAR","VARCHARACTER",    "VARYING","WHEN","WHERE",
+"WHILE","WITH","WRITE",
+    "XOR","YEAR_MONTH","ZEROFILL")
+
+    name2change <- name2check %in% thelist | name2check %in%
+tolower(thelist)
+    name2change <- name2check[name2change]
+
+    if(length(name2change) == 0)
+    {
+        return(NULL)
+    }else
+        return(name2change)
+
+
+
+}
+
+
+changeName <- function(name)
+{
+
+    result <- sapply(name, FUN = function(x) paste("my__", x, sep=""))
+
+    result
+}
+
+
+#-------------------------------------------------------
+
+MyDirectory <- "C:/Documents and Settings/chris/Bureau/essai"
+mytablename <- "mytable"
+dbname <- "mydb"
+print.log <- TRUE
+csvtype <- ";"
+
+#-------------------------------------------------------
+
+drv <- dbDriver("MySQL")
+if(print.log) print(summary(drv))
+
+con <- dbConnect(drv)
+if(print.log) print(summary(con))
+
+
+dbSendQuery(con,  paste("CREATE DATABASE IF NOT EXISTS ", dbname))
+con <- dbConnect(drv, dbname=dbname) #as anonymous
+
+if(print.log) print(summary(con))
+
+if(!is.character(mytablename))
+    stop("internal error wrong table name")
+
+if(dbExistsTable(con, mytablename))
+    dbRemoveTable(con, mytablename)
+
+
+dbefore <- getwd()
+
+setwd(MyDirectory)
+
+
+lfile <- list.files()
+lfile <- lfile[grep(".csv",lfile)]
+
+
+resExport <- matrix("",length(lfile),4)
+colnames(resExport) <-  c("input file name", "nb row imported","nb column
+imported", "var name changed")
+
+exporttoDB <- function(file, table, toappend, endofline="\r\n")
+{
+
+    #dimension checking
+    if(csvtype == ",")
+    {    firstrow <- read.csv(file, nrows=1)
+    }else if(csvtype == ";")
+    {    firstrow <- read.csv2(file, nrows=1)
+    }else
+    {    stop("wrong csv value separator, neither comma nor semi colon")
+    }
+
+    zecolname <- colnames(firstrow)
+
+    nbcolumn <- length(zecolname)
+    if(nbcolumn > 1)
+    {    mask  <- c(NA, rep("NULL",nbcolumn-1))
+    }else
+    {    mask  <- NA
+    }
+
+    if(csvtype == ",")
+    {    firstcolumn <- read.csv(file, colClasses=mask)
+    }else if(csvtype == ";")
+    {    firstcolumn <- read.csv2(file, colClasses=mask)
+    }else
+    {    stop("wrong csv value separator, neither comma nor semi colon")
+    }
+
+    nbrow <- NROW(firstcolumn)
+
+    need2Change <- checkMySQLreservedname(zecolname)
+    if(!is.null(need2Change))
+    {
+        newname <- changeName(need2Change)
+        zecolname[zecolname %in% need2Change] <- newname
+    }else
+    {
+        newname <- ""
+    }
+
+
+    if(print.log) print("dimension")
+    if(print.log) print(nbrow)
+    if(print.log) print(nbcolumn)
+
+    # can be loaded directly into R
+    if(nbrow*nbcolumn <= 10*10^6)
+    {
+        if(csvtype == ",")
+        {    data <- read.csv(file)
+        }else if(csvtype == ";")
+        {    data <- read.csv2(file)
+        }else
+        {    stop("wrong csv value separator, neither comma nor semi colon")
+        }
+        print(head(data))
+
+        colnames(data) <- zecolname
+
+        dbWriteTable(con, table, data, append=toappend, eol=endofline)
+
+        nbrowread <- NROW(data)
+    }else
+    {
+    # must be splitted
+        nbpart <- ceiling(nbrow*nbcolumn/(10*10^6))
+        nbrow2read <- ceiling(nbrow/nbpart)
+
+        if(csvtype == ",")
+        {    data <- read.csv(file, nrows=nbrow2read-1, skip=0,
+header=TRUE)
+        }else if(csvtype == ";")
+        {    data <- read.csv2(file, nrows=nbrow2read-1, skip=0,
+header=TRUE)
+        }else
+        {    stop("wrong csv value separator, neither comma nor semi colon")
+        }
+
+        colnames(data) <- zecolname
+
+
+
+        dbWriteTable(con, table, data, append=toappend, eol=endofline)
+
+        nbrowread <- NROW(data)
+
+
+        for(i in 2:nbpart)
+        {
+            if(csvtype == ",")
+            {    data <- read.csv(file, nrows=nbrow2read,
+skip=(i-1)*nbrow2read, header=FALSE)
+            }else if(csvtype == ";")
+            {    data <- read.csv2(file, nrows=nbrow2read,
+skip=(i-1)*nbrow2read, header=FALSE)
+            }else
+            {    stop("wrong csv value separator, neither comma nor semi
+colon")
+            }
+
+            colnames(data) <- zecolname
+
+
+
+            dbWriteTable(con, table, data, append=TRUE, eol=endofline)
+
+            nbrowread <- nbrowread + NROW(data)
+
+        }
+    }
+    c(nbrowread, nbcolumn, newname)
+}
+
+
+
+
+
+tryexport <- function(...)
+{
+    as.character(try(exporttoDB(...)))
+    #!(is.character(try(exporttoDB(...))))
+
+}
+
+for (i in 1:length(lfile))
+{
+    resExport[i,1] <- lfile[i]
+    cat(lfile[i],"\n")
+    resExport[i,2:4] <- tryexport(lfile[i], mytablename, ifelse(i==1, FALSE,
+TRUE))
+}
+
+setwd(dbefore)
+
+if(print.log)
+{
+cat("check database\n")
+print(dbListFields(con, mytablename))
+print(dbListTables(con))
+print(resExport)
+}
+
+
+sumdrv <- NULL
+test.try <- try(sumdrv <- summary(drv))
+
+if( !any(class(test.try) == "try-error" ))
+{
+    test.try <- try(all_cons <- dbListConnections(drv))
+    if( any(class(test.try) == "try-error" ))
+        traceback()
+
+    if(length(all_cons) > 0)
+    {
+      for(i in 1:length(all_cons))
+      {
+        test.try <- try(all_res <- dbListResults(all_cons[[i]]))
+
+        if(length(all_res) > 0)
+        {
+          for(j in 1:length(all_res))
+            test.try <- try( dbClearResult(all_res[[j]]) )
+        }
+        test.try <- try( dbDisconnect(all_cons[[i]]) )
+      }
+    }
+
+test.try <- try( dbUnloadDriver(drv) )
+
+}
+
+
+#-------------------------------------------------------
+
+dodescriptive <- TRUE
+dbname <- "mydb"
+tablenametodescribe <- "mytable"
+desciptvar <- "mycolumnA"
+whereSQLcondition3 <- ""
+groupbySQLvar <- "mycolumnB"
+havingSQLcondition3 <- ""
+print.log <- TRUE
+#-------------------------------------------------------
+# launch scripts
+#open DBI connections
+beginopen <- proc.time()[3]
+if(dodescriptive )
+{
+
+drv <- dbDriver("MySQL")
+if(print.log) print(summary(drv))
+print("---")
+con <- dbConnect(drv, dbname=dbname) #as anonymous
+if(print.log) print(summary(con))
+print("---")
+}
+endopen <- proc.time()[3]
+#compute MCA
+begindescribe <- proc.time()[3]
+if(dodescriptive )
+{
+
+interestvar <- paste("AVG(",desciptvar,"), COUNT(",desciptvar, "),
+",groupbySQLvar, sep="")
+
+SQLDescribe <- paste("SELECT ", interestvar ,"FROM", tablenametodescribe,
+sep=" ")
+
+
+if(nchar(whereSQLcondition3) != 0)
+{
+    SQLDescribe<- paste(SQLDescribe, "WHERE", whereSQLcondition3, sep=" ")
+}
+
+if(nchar(groupbySQLvar) != 0)
+{
+    SQLDescribe <- paste(SQLDescribe, "GROUP BY", groupbySQLvar, sep=" ")
+}
+
+if(nchar(havingSQLcondition3) != 0)
+{
+    SQLDescribe <- paste(SQLDescribe, "HAVING", havingSQLcondition3, sep="
+")
+}
+
+print(SQLDescribe )
+
+#get info on the database
+options(show.error.messages = FALSE)
+
+test.try <- try(resSQL <- dbSendQuery(con, SQLDescribe))
+
+if(class(test.try) == "try-error")
+{
+    print("------ traceback")
+      traceback()
+    print("------ message")
+      print(test.try[1])
+      stop("SQL query failed.")
+}
+print("---")
+print(summary(con))
+
+print("--->>>>")
+print(resSQL)
+print(summary(resSQL))
+print("<<<<---")
+options(show.error.messages = TRUE)
+
+
+#if(print.log) print(summary(resSQL))
+
+#
+#resfetched <- fetch(resSQL, n=-1)
+#print(summary(resfetched))
+#
+#datadescribe <- data.frame(resfetched, stringsAsFactors=TRUE)
+#
+#if(print.log) print(whatis(datadescribe))
+#
+#
+#
+
+}
+enddescribe <- proc.time()[3]
+#close DBI connections
+beginclose <- proc.time()[3]
+if(dodescriptive )
+{
+
+options(show.error.messages = FALSE)
+
+sumdrv <- NULL
+test.try <- try(sumdrv <- summary(drv))
+
+if( !any(class(test.try) == "try-error" ))
+{
+    test.try <- try(all_cons <- dbListConnections(drv))
+    if( any(class(test.try) == "try-error" ))
+        traceback()
+
+    if(length(all_cons) > 0)
+    {
+      for(i in 1:length(all_cons))
+      {
+        test.try <- try(all_res <- dbListResults(all_cons[[i]]))
+
+        if(length(all_res) > 0)
+        {
+          for(j in 1:length(all_res))
+            test.try <- try( dbClearResult(all_res[[j]]) )
+        }
+        test.try <- try( dbDisconnect(all_cons[[i]]) )
+      }
+    }
+
+test.try <- try( dbUnloadDriver(drv) )
+
+}
+
+options(show.error.messages = TRUE)
+
+
+
+}
+if(print.log) cat("database closing done\n")
+endclose <- proc.time()[3]
+timeopen <- significativeNumbers(4)(endopen-beginopen)
+timedescribe <- significativeNumbers(4)(enddescribe - begindescribe)
+timeclose <- significativeNumbers(4)(endclose-beginclose)
+time <- timeopen +begindescribe +timeclose
+
+
+---------------------------------------------------------------- essai.csv
+
+mycolumnA;mycolumnB
+1;7
+1;11
+1;10
+1;11
+1;11
+1;11
+1;11
+1;11
+1;9
+1;11
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;11
+1;11
+1;10
+1;11
+1;5
+1;11
+1;11
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;11
+1;4
+1;4
+1;4
+1;4
+1;4
+1;4
+1;4
+1;4
+1;4
+1;4
+1;10
+1;5
+1;11
+1;4
+1;8
+1;8
+1;8
+1;8
+1;8
+1;8
+1;8
+1;8
+1;9
+1;4
+1;10
+1;10
+1;8
+1;8
+1;8
+1;8
+1;10
+1;10
+1;7
+1;5
+1;10
+1;10
+1;8
+1;3
+1;8
+1;8
+1;11
+1;10
+1;10
+1;8
+1;11
+1;10
+1;9
+1;11
+1;9
+1;11
+1;11
+1;9
+1;9
+1;2
+1;9
+1;9
+1;11
+1;11
+1;11
+1;6
+1;11
+1;9
+1;9
+1;7
+1;4
+1;10
+1;10
+1;8
+1;11
+1;2
+1;9
+1;9
+1;11
+1;9
+1;9
+1;11
+1;7
+1;11
+1;11
+1;8
+1;11
+1;8
+1;7
+1;8
+1;11
+1;9
+1;11
+1;1
+1;11
+1;11
+1;7
+1;11
+1;10
+1;10
+0;8
+0;10
+0;6
+1;10
+0;10
+1;10
+0;10
+1;10
+0;10
+1;10
+0;10
+1;10
+0;10
+1;10
+1;10
+0;10
+1;10
+0;10
+1;10
+0;10
+1;10
+0;10
+1;10
+1;10
+0;10
+0;10
+1;10
+0;10
+1;10
+0;8
+0;8
+0;7
+0;7
+0;7
+0;6
+0;6
+0;6
+0;10
+0;10
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+1;5
+1;5
+0;5
+1;5
+1;5
+1;5
+0;5
+1;5
+1;5
+0;5
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;3
+0;3
+0;3
+0;3
+0;2
+0;2
+0;2
+0;2
+0;9
+0;9
+0;10
+0;10
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;5
+1;10
+1;7
+1;7
+1;7
+1;7
+1;7
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+0;11
+1;8
+1;4
+1;4
+1;4
+1;4
+0;11
+1;11
+1;11
+1;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+1;8
+1;8
+1;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+1;8
+1;8
+1;8
+1;8
+1;8
+1;8
+1;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;7
+0;7
+0;7
+0;7
+0;7
+0;7
+0;7
+0;7
+0;7
+0;7
+0;7
+0;7
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+1;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;4
+0;6
+0;4
+0;8
+0;4
+0;4
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;8
+0;8
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;8
+0;7
+0;8
+0;6
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+1;9
+0;11
+0;11
+0;5
+0;11
+0;11
+0;11
+0;11
+0;11
+0;11
+0;11
+1;11
+0;11
+0;10
+1;5
+0;2
+0;2
+1;3
+0;12
+0;12
+1;3
+1;3
+1;3
+1;2
+1;2
+1;2
+0;7
+0;7
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+1;6
+1;6
+1;6
+0;6
+0;6
+1;6
+1;6
+0;6
+1;6
+0;6
+1;6
+0;6
+0;6
+0;6
+0;6
+1;6
+0;6
+0;6
+1;6
+1;6
+0;6
+0;6
+1;6
+0;6
+1;6
+0;6
+1;6
+1;6
+1;6
+0;6
+0;6
+1;6
+0;6
+1;6
+1;6
+1;6
+0;6
+0;6
+1;6
+1;6
+1;6
+1;6
+0;6
+1;6
+0;6
+1;6
+1;6
+1;6
+0;6
+0;6
+1;6
+0;6
+0;6
+1;6
+1;6
+1;6
+0;6
+1;6
+0;6
+0;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+0;6
+1;6
+1;6
+1;6
+0;6
+0;6
+1;6
+1;6
+1;6
+0;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;8
+0;8
+1;8
+0;8
+1;8
+1;8
+1;8
+1;8
+1;7
+0;8
+0;7
+0;9
+1;7
+1;7
+1;7
+1;11
+1;11
+1;11
+1;11
+1;8
+1;8
+1;8
+1;8
+1;8
+1;8
+1;8
+1;8
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;10
+0;9
+0;9
+0;6
+0;7
+0;7
+0;7
+0;7
+0;5
+0;7
+0;7
+0;7
+0;7
+0;7
+0;7
+0;7
+0;7
+0;7
+0;7
+0;11
+0;8
+0;8
+0;8
+0;8
+0;10
+0;6
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;8
+0;11
+0;8
+0;8
+0;9
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+1;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;7
+0;5
+0;9
+0;7
+0;11
+0;10
+0;7
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;8
+0;9
+0;9
+0;9
+0;9
+0;9
+0;9
+0;9
+0;9
+0;9
+0;9
+0;9
+0;9
+0;9
+0;9
+0;9
+0;9
+1;9
+0;8
+0;8
+0;9
+0;7
+0;7
+0;6
+0;8
+0;8
+0;8
+0;6
+0;6
+0;6
+0;6
+0;8
+0;6
+0;6
+0;9
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+1;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;11
+0;9
+0;6
+0;6
+0;7
+0;6
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;9
+0;9
+0;9
+0;9
+0;11
+0;11
+0;3
+0;3
+0;3
+0;3
+1;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;6
+0;9
+0;6
+0;6
+0;8
+0;8
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+1;3
+0;3
+0;3
+0;3
+0;3
+0;5
+0;5
+0;5
+0;6
+0;7
+0;7
+0;7
+0;7
+0;6
+0;5
+0;5
+0;10
+0;7
+0;7
+0;7
+0;10
+0;6
+0;10
+0;3
+0;10
+0;3
+0;4
+0;3
+0;3
+0;7
+0;3
+0;3
+0;9
+0;7
+0;9
+0;9
+0;9
+0;9
+0;9
+0;9
+0;9
+0;8
+0;8
+0;8
+0;8
+0;8
+0;7
+0;7
+0;8
+0;6
+0;10
+0;10
+0;8
+0;7
+0;8
+0;2
+0;5
+0;8
+0;7
+0;8
+0;6
+0;6
+0;7
+0;8
+0;7
+0;7
+0;10
+0;5
+0;6
+0;7
+0;7
+0;6
+0;7
+0;7
+0;7
+0;6
+0;7
+0;6
+0;6
+0;7
+0;7
+0;10
+0;10
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;7
+0;7
+0;7
+0;7
+0;7
+0;7
+0;7
+0;7
+0;7
+0;7
+0;7
+0;7
+0;7
+0;7
+0;7
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;7
+0;7
+0;10
+0;6
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;7
+0;8
+0;7
+0;5
+0;7
+0;7
+0;5
+0;5
+0;3
+0;7
+0;7
+0;6
+0;7
+0;6
+0;9
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;5
+0;5
+0;5
+0;5
+0;2
+0;10
+0;10
+0;10
+0;10
+0;10
+0;10
+0;10
+0;10
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;8
+0;7
+0;7
+0;7
+0;7
+0;7
+0;7
+0;7
+0;2
+0;7
+0;7
+0;7
+0;7
+0;7
+0;7
+0;6
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;10
+0;5
+0;5
+0;5
+0;5
+0;7
+0;7
+0;7
+0;7
+0;8
+0;9
+0;11
+0;9
+0;9
+0;7
+0;7
+0;7
+0;7
+0;7
+0;6
+0;6
+0;2
+0;6
+0;6
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;6
+0;10
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;6
+0;6
+0;7
+0;10
+0;7
+0;9
+0;9
+0;9
+0;9
+0;9
+0;9
+0;8
+0;9
+0;7
+0;9
+0;10
+0;10
+0;6
+0;8
+0;11
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;6
+0;5
+0;6
+0;5
+0;6
+0;6
+0;6
+0;6
+1;10
+1;9
+0;10
+0;6
+1;11
+1;9
+1;6
+0;6
+1;6
+0;7
+1;7
+1;7
+1;9
+1;6
+1;6
+1;10
+1;6
+1;6
+1;11
+1;6
+1;6
+0;7
+1;6
+0;5
+0;3
+0;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+0;6
+1;6
+1;1
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+1;6
+0;6
+1;6
+0;6
+1;6
+0;6
+1;6
+1;6
+0;5
+0;7
+0;10
+0;5
+1;1
+1;1
+1;1
+1;1
+1;1
+1;1
+1;1
+1;1
+1;1
+1;1
+1;1
+1;1
+1;1
+1;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;11
+0;2
+1;11
+1;11
+0;3
+1;5
+1;5
+1;3
+1;3
+1;3
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+1;2
+1;2
+1;2
+1;2
+1;2
+0;2
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+1;11
+1;11
+1;11
+1;11
+1;11
+1;11
+1;8
+1;8
+1;8
+1;8
+1;11
+1;11
+1;11
+1;11
+1;11
+1;11
+1;11
+1;11
+1;11
+1;11
+1;8
+1;11
+1;11
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+1;11
+0;1
+0;1
+0;1
+0;1
+0;1
+0;9
+0;11
+0;11
+0;11
+0;7
+1;7
+0;7
+0;7
+0;7
+0;7
+0;5
+0;5
+0;5
+0;9
+0;5
+0;9
+0;5
+0;5
+0;4
+0;11
+0;6
+0;8
+0;8
+0;4
+0;4
+0;4
+0;11
+0;11
+0;11
+0;8
+0;8
+0;11
+0;3
+0;11
+0;11
+0;2
+0;2
+0;2
+0;9
+0;11
+0;2
+0;2
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+1;1
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+1;5
+0;5
+1;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;5
+0;4
+0;4
+0;4
+0;4
+0;4
+0;5
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+0;1
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;2
+1;2
+1;2
+1;6
+0;7
+0;6
+1;6
+1;6
+0;6
+1;5
+1;5
+1;5
+1;5
+1;5
+0;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+0;5
+1;5
+1;5
+1;5
+1;5
+1;5
+0;5
+1;5
+0;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+0;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+1;5
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;4
+0;7
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;3
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+1;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+0;2
+
+
+-- 
+Christophe DUTANG
+Ph. D. student at ISFA
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20090405/90348b13/attachment.html>
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: essai.csv
+Type: application/octet-stream
+Size: 10993 bytes
+Desc: not available
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20090405/90348b13/attachment.obj>
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: mycode.R
+Type: application/octet-stream
+Size: 10628 bytes
+Desc: not available
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20090405/90348b13/attachment-0001.obj>
+
+From je||@horner @end|ng |rom v@nderb||t@edu  Mon Apr  6 17:23:33 2009
+From: je||@horner @end|ng |rom v@nderb||t@edu (Jeffrey Horner)
+Date: Mon, 06 Apr 2009 10:23:33 -0500
+Subject: [R-sig-DB] crash with RMySQL
+In-Reply-To: <c8e8cd3d0904050347m7be95138l3c69c574f1c7c119@mail.gmail.com>
+References: <c8e8cd3d0904050347m7be95138l3c69c574f1c7c119@mail.gmail.com>
+Message-ID: <49DA1E75.6080601@vanderbilt.edu>
+
+christophe dutang wrote on 04/05/2009 05:47 AM:
+> Dear all,
+> 
+> I'm using R 2.8.1 with MySQL 5.1.33, RMySQL 0.7-3 (built against MySQL 
+> 5.1.3 version), DBI 0.2-4 on windows XP.
+
+Hi Christophe,
+
+Could you send the output of :
+
+library(RMySQL)
+mysqlClientLibraryVersions()
+
+Thanks,
+
+Jeff
+-- 
+http://biostat.mc.vanderbilt.edu/JeffreyHorner
+
+
+
+From dut@ngc @end|ng |rom gm@||@com  Mon Apr  6 19:56:23 2009
+From: dut@ngc @end|ng |rom gm@||@com (christophe dutang)
+Date: Mon, 6 Apr 2009 19:56:23 +0200
+Subject: [R-sig-DB] crash with RMySQL
+In-Reply-To: <49DA1E75.6080601@vanderbilt.edu>
+References: <c8e8cd3d0904050347m7be95138l3c69c574f1c7c119@mail.gmail.com>
+	<49DA1E75.6080601@vanderbilt.edu>
+Message-ID: <c8e8cd3d0904061056v7d98f1ccn4a21eb8d5fc28714@mail.gmail.com>
+
+I get this
+
+> library(RMySQL)
+Le chargement a n?cessit? le package : DBI
+> mysqlClientLibraryVersions()
+5.1.30 5.1.33
+ 50130  50133
+>
+
+
+2009/4/6 Jeffrey Horner <jeff.horner at vanderbilt.edu>
+
+> christophe dutang wrote on 04/05/2009 05:47 AM:
+>
+>> Dear all,
+>>
+>> I'm using R 2.8.1 with MySQL 5.1.33, RMySQL 0.7-3 (built against MySQL
+>> 5.1.3 version), DBI 0.2-4 on windows XP.
+>>
+>
+> Hi Christophe,
+>
+> Could you send the output of :
+>
+> library(RMySQL)
+> mysqlClientLibraryVersions()
+>
+> Thanks,
+>
+> Jeff
+> --
+> http://biostat.mc.vanderbilt.edu/JeffreyHorner
+>
+
+
+
+-- 
+Christophe DUTANG
+Ph. D. student at ISFA
+
+	[[alternative HTML version deleted]]
+
+
+
+From c@t@|uny@ @end|ng |rom vo@toktour@@com  Mon Apr  6 21:33:37 2009
+From: c@t@|uny@ @end|ng |rom vo@toktour@@com (=?utf-8?B?VmlzaXQgQmFyY2Vsb25h?=)
+Date: Mon, 06 Apr 2009 21:33:37 +0200
+Subject: [R-sig-DB] =?utf-8?q?Visit_Barcelona?=
+Message-ID: <20090406-21333770-1534-0@TAHOE>
+
+An HTML attachment was scrubbed...
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20090406/453b1202/attachment.html>
+
+From c@t@|uny@ @end|ng |rom vo@toktour@@com  Mon Apr  6 22:05:20 2009
+From: c@t@|uny@ @end|ng |rom vo@toktour@@com (=?utf-8?B?VmlzaXQgQmFyY2Vsb25h?=)
+Date: Mon, 06 Apr 2009 22:05:20 +0200
+Subject: [R-sig-DB] =?utf-8?q?Visit_Barcelona?=
+Message-ID: <20090406-22052050-181c-0@TAHOE>
+
+An HTML attachment was scrubbed...
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20090406/29bc81a2/attachment.html>
+
+From k@p@tp @end|ng |rom gm@||@com  Tue Apr  7 01:18:55 2009
+From: k@p@tp @end|ng |rom gm@||@com (Prasenjit Kapat)
+Date: Mon, 6 Apr 2009 19:18:55 -0400
+Subject: [R-sig-DB] RPostgreSQL - dbExistsTable() is FALSE with schema names?
+Message-ID: <de8c7cb40904061618o595e31c1t87979f5de829bf46@mail.gmail.com>
+
+Hi,
+
+dbExistsTable (conn, name="myschema.mytable") is FALSE, whereas
+dbExistsTable (conn, name="mytable") is TRUE ! 'mytable' is part of
+the 'myschema'.
+
+Is this as expected?
+
+Regards,
+--
+Prasenjit
+
+
+
+From edd @end|ng |rom deb|@n@org  Tue Apr  7 01:42:36 2009
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Mon, 6 Apr 2009 18:42:36 -0500
+Subject: [R-sig-DB] RPostgreSQL - dbExistsTable() is FALSE with schema
+	names?
+In-Reply-To: <de8c7cb40904061618o595e31c1t87979f5de829bf46@mail.gmail.com>
+References: <de8c7cb40904061618o595e31c1t87979f5de829bf46@mail.gmail.com>
+Message-ID: <18906.37740.701098.471556@ron.nulle.part>
+
+
+On 6 April 2009 at 19:18, Prasenjit Kapat wrote:
+| Hi,
+| 
+| dbExistsTable (conn, name="myschema.mytable") is FALSE, whereas
+| dbExistsTable (conn, name="mytable") is TRUE ! 'mytable' is part of
+| the 'myschema'.
+| 
+| Is this as expected?
+
+Not sure. Check the Pg API doc of what is expected.
+
+And in general, patches and debugging are welcome.  Sameer, who wrote
+RPostgreSQL as part of last year's Google Summer of Code seems to have lost
+touch with the code.
+
+Cheers, Dirk
+
+-- 
+Three out of two people have difficulties with fractions.
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Tue Apr  7 02:01:36 2009
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Mon, 6 Apr 2009 20:01:36 -0400
+Subject: [R-sig-DB] RPostgreSQL - dbExistsTable() is FALSE with schema
+	names?
+In-Reply-To: <18906.37740.701098.471556@ron.nulle.part>
+References: <de8c7cb40904061618o595e31c1t87979f5de829bf46@mail.gmail.com>
+	<18906.37740.701098.471556@ron.nulle.part>
+Message-ID: <264855a00904061701x23ce89e8ycae93d05758fd19d@mail.gmail.com>
+
+On Mon, Apr 6, 2009 at 7:42 PM, Dirk Eddelbuettel <edd at debian.org> wrote:
+
+>
+> On 6 April 2009 at 19:18, Prasenjit Kapat wrote:
+> | Hi,
+> |
+> | dbExistsTable (conn, name="myschema.mytable") is FALSE, whereas
+> | dbExistsTable (conn, name="mytable") is TRUE ! 'mytable' is part of
+> | the 'myschema'.
+> |
+> | Is this as expected?
+>
+> Not sure. Check the Pg API doc of what is expected.
+>
+> And in general, patches and debugging are welcome.  Sameer, who wrote
+> RPostgreSQL as part of last year's Google Summer of Code seems to have lost
+> touch with the code.
+>
+
+Looks like dbTableExists() method calls dbListTables() method, and that uses
+the SQL query:
+
+select tablename from pg_tables
+where schemaname !='information_schema'
+and schemaname !='pg_catalog'
+
+This returns the table name, but no schema name.  R code is then used to
+check for equality of strings.  This will lead to the incorrect behavior as
+noted.  I can provide a patch, probably, but it won't be immediate, so if
+someone else gets there first, just let us know.
+
+Sean
+
+	[[alternative HTML version deleted]]
+
+
+
+From k@p@tp @end|ng |rom gm@||@com  Tue Apr  7 03:23:04 2009
+From: k@p@tp @end|ng |rom gm@||@com (Prasenjit Kapat)
+Date: Mon, 6 Apr 2009 21:23:04 -0400
+Subject: [R-sig-DB] RPostgreSQL - dbExistsTable() is FALSE with schema
+	names?
+In-Reply-To: <264855a00904061701x23ce89e8ycae93d05758fd19d@mail.gmail.com>
+References: <de8c7cb40904061618o595e31c1t87979f5de829bf46@mail.gmail.com> 
+	<18906.37740.701098.471556@ron.nulle.part>
+	<264855a00904061701x23ce89e8ycae93d05758fd19d@mail.gmail.com>
+Message-ID: <de8c7cb40904061823v55916fb8p1b8f37b19214ae33@mail.gmail.com>
+
+On Mon, Apr 6, 2009 at 8:01 PM, Sean Davis <sdavis2 at mail.nih.gov> wrote:
+>
+>
+> On Mon, Apr 6, 2009 at 7:42 PM, Dirk Eddelbuettel <edd at debian.org> wrote:
+>>
+>> On 6 April 2009 at 19:18, Prasenjit Kapat wrote:
+>> | Hi,
+>> |
+>> | dbExistsTable (conn, name="myschema.mytable") is FALSE, whereas
+>> | dbExistsTable (conn, name="mytable") is TRUE ! 'mytable' is part of
+>> | the 'myschema'.
+>> |
+>> | Is this as expected?
+>>
+>> Not sure. Check the Pg API doc of what is expected.
+
+Hmmm, I am not too familiar with postgres myself. I am trying to cover
+as much as possible with RPostgreSQL.
+
+>> And in general, patches and debugging are welcome. ?Sameer, who wrote
+>> RPostgreSQL as part of last year's Google Summer of Code seems to have
+>> lost
+>> touch with the code.
+>
+> Looks like dbTableExists() method calls dbListTables() method, and that uses
+> the SQL query:
+>
+> select tablename from pg_tables
+> where schemaname !='information_schema'
+> and schemaname !='pg_catalog'
+>
+> This returns the table name, but no schema name.? R code is then used to
+> check for equality of strings.? This will lead to the incorrect behavior as
+> noted.? I can provide a patch, probably, but it won't be immediate, so if
+> someone else gets there first, just let us know.
+
+It looks like anything involving schema is buggy, probably the code
+was not tested in such scenarios. For example:
+
+dbRemoveTable (con, name="myschema.mytable") is again FALSE and
+dbRemoveTable (con, name="mytable") gives (which is expected as
+'public.mytable' is nonexistent):
+
+Error in postgresqlExecStatement(conn, statement, ...) :
+  RS-DBI driver: (could not Retrieve the result : ERROR:  table
+"mytable" does not exist
+)
+[1] FALSE
+
+I'll try to see if any proper solution exists.
+
+-- 
+Prasenjit
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Tue Apr  7 04:41:58 2009
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Mon, 6 Apr 2009 22:41:58 -0400
+Subject: [R-sig-DB] RPostgreSQL - dbExistsTable() is FALSE with schema
+	names?
+In-Reply-To: <de8c7cb40904061823v55916fb8p1b8f37b19214ae33@mail.gmail.com>
+References: <de8c7cb40904061618o595e31c1t87979f5de829bf46@mail.gmail.com>
+	<18906.37740.701098.471556@ron.nulle.part>
+	<264855a00904061701x23ce89e8ycae93d05758fd19d@mail.gmail.com>
+	<de8c7cb40904061823v55916fb8p1b8f37b19214ae33@mail.gmail.com>
+Message-ID: <264855a00904061941u24151894k6915ef75c63c7d62@mail.gmail.com>
+
+On Mon, Apr 6, 2009 at 9:23 PM, Prasenjit Kapat <kapatp at gmail.com> wrote:
+
+> On Mon, Apr 6, 2009 at 8:01 PM, Sean Davis <sdavis2 at mail.nih.gov> wrote:
+> >
+> >
+> > On Mon, Apr 6, 2009 at 7:42 PM, Dirk Eddelbuettel <edd at debian.org>
+> wrote:
+> >>
+> >> On 6 April 2009 at 19:18, Prasenjit Kapat wrote:
+> >> | Hi,
+> >> |
+> >> | dbExistsTable (conn, name="myschema.mytable") is FALSE, whereas
+> >> | dbExistsTable (conn, name="mytable") is TRUE ! 'mytable' is part of
+> >> | the 'myschema'.
+> >> |
+> >> | Is this as expected?
+> >>
+> >> Not sure. Check the Pg API doc of what is expected.
+>
+> Hmmm, I am not too familiar with postgres myself. I am trying to cover
+> as much as possible with RPostgreSQL.
+>
+> >> And in general, patches and debugging are welcome.  Sameer, who wrote
+> >> RPostgreSQL as part of last year's Google Summer of Code seems to have
+> >> lost
+> >> touch with the code.
+> >
+> > Looks like dbTableExists() method calls dbListTables() method, and that
+> uses
+> > the SQL query:
+> >
+> > select tablename from pg_tables
+> > where schemaname !='information_schema'
+> > and schemaname !='pg_catalog'
+> >
+> > This returns the table name, but no schema name.  R code is then used to
+> > check for equality of strings.  This will lead to the incorrect behavior
+> as
+> > noted.  I can provide a patch, probably, but it won't be immediate, so if
+> > someone else gets there first, just let us know.
+>
+> It looks like anything involving schema is buggy, probably the code
+> was not tested in such scenarios. For example:
+>
+> dbRemoveTable (con, name="myschema.mytable") is again FALSE and
+> dbRemoveTable (con, name="mytable") gives (which is expected as
+> 'public.mytable' is nonexistent):
+>
+> Error in postgresqlExecStatement(conn, statement, ...) :
+>  RS-DBI driver: (could not Retrieve the result : ERROR:  table
+> "mytable" does not exist
+> )
+> [1] FALSE
+>
+> I'll try to see if any proper solution exists.
+>
+
+I was looking through the DBI docs and I didn't see a mention of schema,
+specifically.  I'm not very familiar with how other DB drivers deal with the
+issue of schema.  Is there a description of how DBI methods are meant to
+deal with schema, or is it up to the implementation to deal with the issue
+via the ... arguments?
+
+Sean
+
+	[[alternative HTML version deleted]]
+
+
+
+From dut@ngc @end|ng |rom gm@||@com  Tue Apr  7 11:35:46 2009
+From: dut@ngc @end|ng |rom gm@||@com (christophe dutang)
+Date: Tue, 7 Apr 2009 11:35:46 +0200
+Subject: [R-sig-DB] crash with RMySQL
+In-Reply-To: <49DA1E75.6080601@vanderbilt.edu>
+References: <c8e8cd3d0904050347m7be95138l3c69c574f1c7c119@mail.gmail.com>
+	<49DA1E75.6080601@vanderbilt.edu>
+Message-ID: <c8e8cd3d0904070235n273cc2c3vb723445ac9c2f607@mail.gmail.com>
+
+Hi,
+
+What do you want to check with mysqlClientLibraryVersions outputs? the fact
+that RMySQL is built against the good version of MySQL I used?
+
+When I tried to use RMySQL with a wrong version, I got a warning, then I use
+the correct version of RMySQL from
+http://biostat.mc.vanderbilt.edu/twiki/bin/view/Main/RMySQL
+
+Christophe
+
+2009/4/6 Jeffrey Horner <jeff.horner at vanderbilt.edu>
+
+> christophe dutang wrote on 04/05/2009 05:47 AM:
+>
+>> Dear all,
+>>
+>> I'm using R 2.8.1 with MySQL 5.1.33, RMySQL 0.7-3 (built against MySQL
+>> 5.1.3 version), DBI 0.2-4 on windows XP.
+>>
+>
+> Hi Christophe,
+>
+> Could you send the output of :
+>
+> library(RMySQL)
+> mysqlClientLibraryVersions()
+>
+> Thanks,
+>
+> Jeff
+> --
+> http://biostat.mc.vanderbilt.edu/JeffreyHorner
+>
+
+
+
+-- 
+Christophe DUTANG
+Ph. D. student at ISFA
+
+	[[alternative HTML version deleted]]
+
+
+
+From je||@horner @end|ng |rom v@nderb||t@edu  Tue Apr  7 16:23:03 2009
+From: je||@horner @end|ng |rom v@nderb||t@edu (Jeffrey Horner)
+Date: Tue, 07 Apr 2009 09:23:03 -0500
+Subject: [R-sig-DB] crash with RMySQL
+In-Reply-To: <c8e8cd3d0904070235n273cc2c3vb723445ac9c2f607@mail.gmail.com>
+References: <c8e8cd3d0904050347m7be95138l3c69c574f1c7c119@mail.gmail.com>	
+	<49DA1E75.6080601@vanderbilt.edu>
+	<c8e8cd3d0904070235n273cc2c3vb723445ac9c2f607@mail.gmail.com>
+Message-ID: <49DB61C7.6040502@vanderbilt.edu>
+
+christophe dutang wrote on 04/07/2009 04:35 AM:
+> Hi,
+> 
+> What do you want to check with mysqlClientLibraryVersions outputs? the 
+> fact that RMySQL is built against the good version of MySQL I used?
+> 
+> When I tried to use RMySQL with a wrong version, I got a warning, then I 
+> use the correct version of RMySQL from 
+> http://biostat.mc.vanderbilt.edu/twiki/bin/view/Main/RMySQL
+
+Recent RMySQL crashes on Windows involved mismatches in the compiled 
+versus the loaded client libraries.
+
+In your case, I've found the bug and am in the process of fixing it. It 
+involves legacy code which I don't fully understand 100% just yet. In 
+the mean time, don't call summary() as this is partly to blame.
+
+I expect to have a fix by the end of the day.
+
+Best,
+
+Jeff
+
+> 
+> Christophe
+> 
+> 2009/4/6 Jeffrey Horner <jeff.horner at vanderbilt.edu 
+> <mailto:jeff.horner at vanderbilt.edu>>
+> 
+>     christophe dutang wrote on 04/05/2009 05:47 AM:
+> 
+>         Dear all,
+> 
+>         I'm using R 2.8.1 with MySQL 5.1.33, RMySQL 0.7-3 (built against
+>         MySQL 5.1.3 version), DBI 0.2-4 on windows XP.
+> 
+> 
+>     Hi Christophe,
+> 
+>     Could you send the output of :
+> 
+>     library(RMySQL)
+>     mysqlClientLibraryVersions()
+> 
+>     Thanks,
+> 
+>     Jeff
+>     -- 
+>     http://biostat.mc.vanderbilt.edu/JeffreyHorner
+> 
+> 
+> 
+> 
+> -- 
+> Christophe DUTANG
+> Ph. D. student at ISFA
+
+
+-- 
+http://biostat.mc.vanderbilt.edu/JeffreyHorner
+
+
+
+From dut@ngc @end|ng |rom gm@||@com  Tue Apr  7 17:33:36 2009
+From: dut@ngc @end|ng |rom gm@||@com (christophe dutang)
+Date: Tue, 7 Apr 2009 17:33:36 +0200
+Subject: [R-sig-DB] crash with RMySQL
+In-Reply-To: <49DB61C7.6040502@vanderbilt.edu>
+References: <c8e8cd3d0904050347m7be95138l3c69c574f1c7c119@mail.gmail.com>
+	<49DA1E75.6080601@vanderbilt.edu>
+	<c8e8cd3d0904070235n273cc2c3vb723445ac9c2f607@mail.gmail.com>
+	<49DB61C7.6040502@vanderbilt.edu>
+Message-ID: <c8e8cd3d0904070833k421a5d56o88d200ab211237dd@mail.gmail.com>
+
+Thanks, if you've found the bug!  I'll note that 'summary' is to blame!
+
+But I would like to know if the bug will be fixed with my old configuration
+(R 2.7.2 version and MySQL 5.0.67, RMySQL 0.6-1, DBI 0.2-4) which I use at
+work, while the latest config with R 2.8.1 is used at home ?
+
+Thanks again
+
+Christophe
+
+2009/4/7 Jeffrey Horner <jeff.horner at vanderbilt.edu>
+
+> christophe dutang wrote on 04/07/2009 04:35 AM:
+>
+>> Hi,
+>>
+>> What do you want to check with mysqlClientLibraryVersions outputs? the
+>> fact that RMySQL is built against the good version of MySQL I used?
+>>
+>> When I tried to use RMySQL with a wrong version, I got a warning, then I
+>> use the correct version of RMySQL from
+>> http://biostat.mc.vanderbilt.edu/twiki/bin/view/Main/RMySQL
+>>
+>
+> Recent RMySQL crashes on Windows involved mismatches in the compiled versus
+> the loaded client libraries.
+>
+> In your case, I've found the bug and am in the process of fixing it. It
+> involves legacy code which I don't fully understand 100% just yet. In the
+> mean time, don't call summary() as this is partly to blame.
+>
+> I expect to have a fix by the end of the day.
+>
+> Best,
+>
+> Jeff
+>
+>
+>> Christophe
+>>
+>> 2009/4/6 Jeffrey Horner <jeff.horner at vanderbilt.edu <mailto:
+>> jeff.horner at vanderbilt.edu>>
+>>
+>>    christophe dutang wrote on 04/05/2009 05:47 AM:
+>>
+>>        Dear all,
+>>
+>>        I'm using R 2.8.1 with MySQL 5.1.33, RMySQL 0.7-3 (built against
+>>        MySQL 5.1.3 version), DBI 0.2-4 on windows XP.
+>>
+>>
+>>    Hi Christophe,
+>>
+>>    Could you send the output of :
+>>
+>>    library(RMySQL)
+>>    mysqlClientLibraryVersions()
+>>
+>>    Thanks,
+>>
+>>    Jeff
+>>    --    http://biostat.mc.vanderbilt.edu/JeffreyHorner
+>>
+>>
+>>
+>>
+>> --
+>> Christophe DUTANG
+>> Ph. D. student at ISFA
+>>
+>
+>
+> --
+> http://biostat.mc.vanderbilt.edu/JeffreyHorner
+>
+
+
+
+-- 
+Christophe DUTANG
+Ph. D. student at ISFA
+
+	[[alternative HTML version deleted]]
+
+
+
+From je||@horner @end|ng |rom v@nderb||t@edu  Tue Apr  7 17:36:57 2009
+From: je||@horner @end|ng |rom v@nderb||t@edu (Jeffrey Horner)
+Date: Tue, 07 Apr 2009 10:36:57 -0500
+Subject: [R-sig-DB] crash with RMySQL
+In-Reply-To: <c8e8cd3d0904070833k421a5d56o88d200ab211237dd@mail.gmail.com>
+References: <c8e8cd3d0904050347m7be95138l3c69c574f1c7c119@mail.gmail.com>	
+	<49DA1E75.6080601@vanderbilt.edu>	
+	<c8e8cd3d0904070235n273cc2c3vb723445ac9c2f607@mail.gmail.com>	
+	<49DB61C7.6040502@vanderbilt.edu>
+	<c8e8cd3d0904070833k421a5d56o88d200ab211237dd@mail.gmail.com>
+Message-ID: <49DB7319.1000705@vanderbilt.edu>
+
+christophe dutang wrote on 04/07/2009 10:33 AM:
+> Thanks, if you've found the bug!  I'll note that 'summary' is to blame!
+> 
+> But I would like to know if the bug will be fixed with my old 
+> configuration (R 2.7.2 version and MySQL 5.0.67, RMySQL 0.6-1, DBI 
+> 0.2-4) which I use at work, while the latest config with R 2.8.1 is used 
+> at home ?
+
+The bug seems to be unrelated to R or MySQL versions. You'll just have 
+to test it with your old configuration, though.
+
+Jeff
+
+> 
+> Thanks again
+> 
+> Christophe
+> 
+> 2009/4/7 Jeffrey Horner <jeff.horner at vanderbilt.edu 
+> <mailto:jeff.horner at vanderbilt.edu>>
+> 
+>     christophe dutang wrote on 04/07/2009 04:35 AM:
+> 
+>         Hi,
+> 
+>         What do you want to check with mysqlClientLibraryVersions
+>         outputs? the fact that RMySQL is built against the good version
+>         of MySQL I used?
+> 
+>         When I tried to use RMySQL with a wrong version, I got a
+>         warning, then I use the correct version of RMySQL from
+>         http://biostat.mc.vanderbilt.edu/twiki/bin/view/Main/RMySQL
+> 
+> 
+>     Recent RMySQL crashes on Windows involved mismatches in the compiled
+>     versus the loaded client libraries.
+> 
+>     In your case, I've found the bug and am in the process of fixing it.
+>     It involves legacy code which I don't fully understand 100% just
+>     yet. In the mean time, don't call summary() as this is partly to blame.
+> 
+>     I expect to have a fix by the end of the day.
+> 
+>     Best,
+> 
+>     Jeff
+> 
+> 
+>         Christophe
+> 
+>         2009/4/6 Jeffrey Horner <jeff.horner at vanderbilt.edu
+>         <mailto:jeff.horner at vanderbilt.edu>
+>         <mailto:jeff.horner at vanderbilt.edu
+>         <mailto:jeff.horner at vanderbilt.edu>>>
+> 
+> 
+>            christophe dutang wrote on 04/05/2009 05:47 AM:
+> 
+>                Dear all,
+> 
+>                I'm using R 2.8.1 with MySQL 5.1.33, RMySQL 0.7-3 (built
+>         against
+>                MySQL 5.1.3 version), DBI 0.2-4 on windows XP.
+> 
+> 
+>            Hi Christophe,
+> 
+>            Could you send the output of :
+> 
+>            library(RMySQL)
+>            mysqlClientLibraryVersions()
+> 
+>            Thanks,
+> 
+>            Jeff
+>            --    http://biostat.mc.vanderbilt.edu/JeffreyHorner
+> 
+> 
+> 
+> 
+>         -- 
+>         Christophe DUTANG
+>         Ph. D. student at ISFA
+> 
+> 
+> 
+>     -- 
+>     http://biostat.mc.vanderbilt.edu/JeffreyHorner
+> 
+> 
+> 
+> 
+> -- 
+> Christophe DUTANG
+> Ph. D. student at ISFA
+
+
+-- 
+http://biostat.mc.vanderbilt.edu/JeffreyHorner
+
+
+
+From k@p@tp @end|ng |rom gm@||@com  Tue Apr  7 19:46:52 2009
+From: k@p@tp @end|ng |rom gm@||@com (Prasenjit Kapat)
+Date: Tue, 7 Apr 2009 13:46:52 -0400
+Subject: [R-sig-DB] RPostgreSQL - dbExistsTable() is FALSE with schema
+	names?
+In-Reply-To: <264855a00904061941u24151894k6915ef75c63c7d62@mail.gmail.com>
+References: <de8c7cb40904061618o595e31c1t87979f5de829bf46@mail.gmail.com> 
+	<18906.37740.701098.471556@ron.nulle.part>
+	<264855a00904061701x23ce89e8ycae93d05758fd19d@mail.gmail.com> 
+	<de8c7cb40904061823v55916fb8p1b8f37b19214ae33@mail.gmail.com> 
+	<264855a00904061941u24151894k6915ef75c63c7d62@mail.gmail.com>
+Message-ID: <de8c7cb40904071046u3edc7a10vaccfb1ab1be40217@mail.gmail.com>
+
+On Mon, Apr 6, 2009 at 10:41 PM, Sean Davis <sdavis2 at mail.nih.gov> wrote:
+>
+>
+> On Mon, Apr 6, 2009 at 9:23 PM, Prasenjit Kapat <kapatp at gmail.com> wrote:
+>>
+>> On Mon, Apr 6, 2009 at 8:01 PM, Sean Davis <sdavis2 at mail.nih.gov> wrote:
+>> >
+>> >
+>> > On Mon, Apr 6, 2009 at 7:42 PM, Dirk Eddelbuettel <edd at debian.org>
+>> > wrote:
+>> >>
+>> >> On 6 April 2009 at 19:18, Prasenjit Kapat wrote:
+>> >> | Hi,
+>> >> |
+>> >> | dbExistsTable (conn, name="myschema.mytable") is FALSE, whereas
+>> >> | dbExistsTable (conn, name="mytable") is TRUE ! 'mytable' is part of
+>> >> | the 'myschema'.
+>> >> |
+>> >> | Is this as expected?
+>> >>
+>> >> Not sure. Check the Pg API doc of what is expected.
+>>
+>> Hmmm, I am not too familiar with postgres myself. I am trying to cover
+>> as much as possible with RPostgreSQL.
+>>
+>> >> And in general, patches and debugging are welcome. ?Sameer, who wrote
+>> >> RPostgreSQL as part of last year's Google Summer of Code seems to have
+>> >> lost
+>> >> touch with the code.
+>> >
+>> > Looks like dbTableExists() method calls dbListTables() method, and that
+>> > uses
+>> > the SQL query:
+>> >
+>> > select tablename from pg_tables
+>> > where schemaname !='information_schema'
+>> > and schemaname !='pg_catalog'
+>> >
+>> > This returns the table name, but no schema name.? R code is then used to
+>> > check for equality of strings.? This will lead to the incorrect behavior
+>> > as
+>> > noted.? I can provide a patch, probably, but it won't be immediate, so
+>> > if
+>> > someone else gets there first, just let us know.
+>>
+>> It looks like anything involving schema is buggy, probably the code
+>> was not tested in such scenarios. For example:
+>>
+>> dbRemoveTable (con, name="myschema.mytable") is again FALSE and
+>> dbRemoveTable (con, name="mytable") gives (which is expected as
+>> 'public.mytable' is nonexistent):
+>>
+>> Error in postgresqlExecStatement(conn, statement, ...) :
+>> ?RS-DBI driver: (could not Retrieve the result : ERROR: ?table
+>> "mytable" does not exist
+>> )
+>> [1] FALSE
+>>
+>> I'll try to see if any proper solution exists.
+>
+> I was looking through the DBI docs and I didn't see a mention of schema,
+> specifically.? I'm not very familiar with how other DB drivers deal with the
+> issue of schema.? Is there a description of how DBI methods are meant to
+> deal with schema, or is it up to the implementation to deal with the issue
+> via the ... arguments?
+
+Hopefully someone who knows the details can help on this.
+
+Back here, the following is a quick-n-dirty solution (not a patch of course):
+
+dbExistsTable <- function (con, name, ...)
+{
+  as.logical (
+   dim (
+    dbGetQuery (con,
+     paste ("select schemaname,tablename from pg_tables where schemaname='",
+      rev(strsplit(name, ".", fixed=TRUE)[[1]])[2],
+      "' and tablename='",
+      rev(strsplit(name, ".", fixed=TRUE)[[1]])[1], "'", sep="")
+  )) [1])
+}
+
+dbRemoveTable <- function (con, name, ..., cascade=FALSE)
+{
+  if (dbExistsTable (con, name)) {
+    dbGetQuery (con, paste ("drop table ", name, ifelse (cascade, "
+cascade", ""), ";", sep=""))
+  }
+}
+
+-- 
+Prasenjit
+
+
+
+From je||@horner @end|ng |rom v@nderb||t@edu  Tue Apr  7 22:55:25 2009
+From: je||@horner @end|ng |rom v@nderb||t@edu (Jeffrey Horner)
+Date: Tue, 07 Apr 2009 15:55:25 -0500
+Subject: [R-sig-DB] crash with RMySQL
+In-Reply-To: <c8e8cd3d0904070833k421a5d56o88d200ab211237dd@mail.gmail.com>
+References: <c8e8cd3d0904050347m7be95138l3c69c574f1c7c119@mail.gmail.com>	
+	<49DA1E75.6080601@vanderbilt.edu>	
+	<c8e8cd3d0904070235n273cc2c3vb723445ac9c2f607@mail.gmail.com>	
+	<49DB61C7.6040502@vanderbilt.edu>
+	<c8e8cd3d0904070833k421a5d56o88d200ab211237dd@mail.gmail.com>
+Message-ID: <49DBBDBD.1050801@vanderbilt.edu>
+
+Hi Christophe,
+
+You can find an updated release of RMySQL 0.7-4 here:
+
+http://biostat.mc.vanderbilt.edu/RMySQL
+
+I built the binary version againts MySQL 5.1.33. Let me know if it works 
+out for you. If it does, then I'll email a new package announce.
+
+Best,
+
+Jeff
+
+christophe dutang wrote on 04/07/2009 10:33 AM:
+> Thanks, if you've found the bug!  I'll note that 'summary' is to blame!
+> 
+> But I would like to know if the bug will be fixed with my old 
+> configuration (R 2.7.2 version and MySQL 5.0.67, RMySQL 0.6-1, DBI 
+> 0.2-4) which I use at work, while the latest config with R 2.8.1 is used 
+> at home ?
+> 
+> Thanks again
+> 
+> Christophe
+> 
+> 2009/4/7 Jeffrey Horner <jeff.horner at vanderbilt.edu 
+> <mailto:jeff.horner at vanderbilt.edu>>
+> 
+>     christophe dutang wrote on 04/07/2009 04:35 AM:
+> 
+>         Hi,
+> 
+>         What do you want to check with mysqlClientLibraryVersions
+>         outputs? the fact that RMySQL is built against the good version
+>         of MySQL I used?
+> 
+>         When I tried to use RMySQL with a wrong version, I got a
+>         warning, then I use the correct version of RMySQL from
+>         http://biostat.mc.vanderbilt.edu/twiki/bin/view/Main/RMySQL
+> 
+> 
+>     Recent RMySQL crashes on Windows involved mismatches in the compiled
+>     versus the loaded client libraries.
+> 
+>     In your case, I've found the bug and am in the process of fixing it.
+>     It involves legacy code which I don't fully understand 100% just
+>     yet. In the mean time, don't call summary() as this is partly to blame.
+> 
+>     I expect to have a fix by the end of the day.
+> 
+>     Best,
+> 
+>     Jeff
+> 
+> 
+>         Christophe
+> 
+>         2009/4/6 Jeffrey Horner <jeff.horner at vanderbilt.edu
+>         <mailto:jeff.horner at vanderbilt.edu>
+>         <mailto:jeff.horner at vanderbilt.edu
+>         <mailto:jeff.horner at vanderbilt.edu>>>
+> 
+> 
+>            christophe dutang wrote on 04/05/2009 05:47 AM:
+> 
+>                Dear all,
+> 
+>                I'm using R 2.8.1 with MySQL 5.1.33, RMySQL 0.7-3 (built
+>         against
+>                MySQL 5.1.3 version), DBI 0.2-4 on windows XP.
+> 
+> 
+>            Hi Christophe,
+> 
+>            Could you send the output of :
+> 
+>            library(RMySQL)
+>            mysqlClientLibraryVersions()
+> 
+>            Thanks,
+> 
+>            Jeff
+>            --    http://biostat.mc.vanderbilt.edu/JeffreyHorner
+> 
+> 
+> 
+> 
+>         -- 
+>         Christophe DUTANG
+>         Ph. D. student at ISFA
+> 
+> 
+> 
+>     -- 
+>     http://biostat.mc.vanderbilt.edu/JeffreyHorner
+> 
+> 
+> 
+> 
+> -- 
+> Christophe DUTANG
+> Ph. D. student at ISFA
+
+
+-- 
+http://biostat.mc.vanderbilt.edu/JeffreyHorner
+
+
+
+From dut@ngc @end|ng |rom gm@||@com  Wed Apr  8 00:02:07 2009
+From: dut@ngc @end|ng |rom gm@||@com (christophe dutang)
+Date: Wed, 8 Apr 2009 00:02:07 +0200
+Subject: [R-sig-DB] crash with RMySQL
+In-Reply-To: <49DBBDBD.1050801@vanderbilt.edu>
+References: <c8e8cd3d0904050347m7be95138l3c69c574f1c7c119@mail.gmail.com>
+	<49DA1E75.6080601@vanderbilt.edu>
+	<c8e8cd3d0904070235n273cc2c3vb723445ac9c2f607@mail.gmail.com>
+	<49DB61C7.6040502@vanderbilt.edu>
+	<c8e8cd3d0904070833k421a5d56o88d200ab211237dd@mail.gmail.com>
+	<49DBBDBD.1050801@vanderbilt.edu>
+Message-ID: <c8e8cd3d0904071502j6190eaddwd347178d29a10cbc@mail.gmail.com>
+
+Hi Jeffrey,
+
+For both the R interface and the MySQL interface, I get
+   AVG(mycolumnA) COUNT(mycolumnA) mycolumnB
+1          0.1717               99         1
+2          0.0619              226         2
+3          0.0353              312         3
+4          0.0867              196         4
+5          0.5119              379         5
+6          0.4354              379         6
+7          0.1286              140         7
+8          0.2898              176         8
+9          0.2667               75         9
+10         0.4177               79        10
+11         0.6667               96        11
+12         0.0000                2        12
+
+
+So it works but I get the following warnings :
+
+Warning messages:
+1: In mysqlDescribeFields(res, ...) :
+  RS-DBI driver warning: (unknown type (246))
+2: In mysqlDescribeFields(res, ...) :
+  RS-DBI driver warning: (unknown type (246))
+
+I do not test RMySQL on the 'older config' with R 2.7.2
+
+What do you think? time to announce it on CRAN?
+
+Christophe
+
+2009/4/7 Jeffrey Horner <jeff.horner at vanderbilt.edu>
+
+> Hi Christophe,
+>
+> You can find an updated release of RMySQL 0.7-4 here:
+>
+> http://biostat.mc.vanderbilt.edu/RMySQL
+>
+> I built the binary version againts MySQL 5.1.33. Let me know if it works
+> out for you. If it does, then I'll email a new package announce.
+>
+> Best,
+>
+> Jeff
+>
+> christophe dutang wrote on 04/07/2009 10:33 AM:
+>
+>> Thanks, if you've found the bug!  I'll note that 'summary' is to blame!
+>>
+>> But I would like to know if the bug will be fixed with my old
+>> configuration (R 2.7.2 version and MySQL 5.0.67, RMySQL 0.6-1, DBI 0.2-4)
+>> which I use at work, while the latest config with R 2.8.1 is used at home ?
+>>
+>> Thanks again
+>>
+>> Christophe
+>>
+>> 2009/4/7 Jeffrey Horner <jeff.horner at vanderbilt.edu <mailto:
+>> jeff.horner at vanderbilt.edu>>
+>>
+>>
+>>    christophe dutang wrote on 04/07/2009 04:35 AM:
+>>
+>>        Hi,
+>>
+>>        What do you want to check with mysqlClientLibraryVersions
+>>        outputs? the fact that RMySQL is built against the good version
+>>        of MySQL I used?
+>>
+>>        When I tried to use RMySQL with a wrong version, I got a
+>>        warning, then I use the correct version of RMySQL from
+>>        http://biostat.mc.vanderbilt.edu/twiki/bin/view/Main/RMySQL
+>>
+>>
+>>    Recent RMySQL crashes on Windows involved mismatches in the compiled
+>>    versus the loaded client libraries.
+>>
+>>    In your case, I've found the bug and am in the process of fixing it.
+>>    It involves legacy code which I don't fully understand 100% just
+>>    yet. In the mean time, don't call summary() as this is partly to blame.
+>>
+>>    I expect to have a fix by the end of the day.
+>>
+>>    Best,
+>>
+>>    Jeff
+>>
+>>
+>>        Christophe
+>>
+>>        2009/4/6 Jeffrey Horner <jeff.horner at vanderbilt.edu
+>>        <mailto:jeff.horner at vanderbilt.edu>
+>>        <mailto:jeff.horner at vanderbilt.edu
+>>        <mailto:jeff.horner at vanderbilt.edu>>>
+>>
+>>
+>>           christophe dutang wrote on 04/05/2009 05:47 AM:
+>>
+>>               Dear all,
+>>
+>>               I'm using R 2.8.1 with MySQL 5.1.33, RMySQL 0.7-3 (built
+>>        against
+>>               MySQL 5.1.3 version), DBI 0.2-4 on windows XP.
+>>
+>>
+>>           Hi Christophe,
+>>
+>>           Could you send the output of :
+>>
+>>           library(RMySQL)
+>>           mysqlClientLibraryVersions()
+>>
+>>           Thanks,
+>>
+>>           Jeff
+>>           --    http://biostat.mc.vanderbilt.edu/JeffreyHorner
+>>
+>>
+>>
+>>
+>>        --        Christophe DUTANG
+>>        Ph. D. student at ISFA
+>>
+>>
+>>
+>>    --    http://biostat.mc.vanderbilt.edu/JeffreyHorner
+>>
+>>
+>>
+>>
+>> --
+>> Christophe DUTANG
+>> Ph. D. student at ISFA
+>>
+>
+>
+> --
+> http://biostat.mc.vanderbilt.edu/JeffreyHorner
+>
+
+
+
+-- 
+Christophe DUTANG
+Ph. D. student at ISFA
+
+	[[alternative HTML version deleted]]
+
+
+
+From je||@horner @end|ng |rom v@nderb||t@edu  Wed Apr  8 00:08:27 2009
+From: je||@horner @end|ng |rom v@nderb||t@edu (Jeffrey Horner)
+Date: Tue, 07 Apr 2009 17:08:27 -0500
+Subject: [R-sig-DB] crash with RMySQL
+In-Reply-To: <c8e8cd3d0904071502j6190eaddwd347178d29a10cbc@mail.gmail.com>
+References: <c8e8cd3d0904050347m7be95138l3c69c574f1c7c119@mail.gmail.com>	
+	<49DA1E75.6080601@vanderbilt.edu>	
+	<c8e8cd3d0904070235n273cc2c3vb723445ac9c2f607@mail.gmail.com>	
+	<49DB61C7.6040502@vanderbilt.edu>	
+	<c8e8cd3d0904070833k421a5d56o88d200ab211237dd@mail.gmail.com>	
+	<49DBBDBD.1050801@vanderbilt.edu>
+	<c8e8cd3d0904071502j6190eaddwd347178d29a10cbc@mail.gmail.com>
+Message-ID: <49DBCEDB.8050507@vanderbilt.edu>
+
+christophe dutang wrote on 04/07/2009 05:02 PM:
+> Hi Jeffrey,
+> 
+> For both the R interface and the MySQL interface, I get
+>    AVG(mycolumnA) COUNT(mycolumnA) mycolumnB
+> 1          0.1717               99         1
+> 2          0.0619              226         2
+> 3          0.0353              312         3
+> 4          0.0867              196         4
+> 5          0.5119              379         5
+> 6          0.4354              379         6
+> 7          0.1286              140         7
+> 8          0.2898              176         8
+> 9          0.2667               75         9
+> 10         0.4177               79        10
+> 11         0.6667               96        11
+> 12         0.0000                2        12
+> 
+> 
+> So it works but I get the following warnings :
+> 
+> Warning messages:
+> 1: In mysqlDescribeFields(res, ...) :
+>   RS-DBI driver warning: (unknown type (246))
+> 2: In mysqlDescribeFields(res, ...) :
+>   RS-DBI driver warning: (unknown type (246))
+
+Yes, that's what was supposed to happen had not the bug been there. 
+Essentially RMySQL doesn't know about the new MySQL types, so I wanted 
+the warning code to work, which it does. Particularly, AVG() is 
+returning something called MYSQL_TYPE_NEWDECIMAL.
+
+I want to make sure I understand more about RMySQL and different MySQL 
+versions before I start changing large swathes of code to include 
+support for new types.
+
+Thanks for your help.
+
+> 
+> I do not test RMySQL on the 'older config' with R 2.7.2
+> 
+> What do you think? time to announce it on CRAN?
+
+I think so. Probably tomorrow.
+
+Jeff
+
+
+> Christophe
+> 
+> 2009/4/7 Jeffrey Horner <jeff.horner at vanderbilt.edu 
+> <mailto:jeff.horner at vanderbilt.edu>>
+> 
+>     Hi Christophe,
+> 
+>     You can find an updated release of RMySQL 0.7-4 here:
+> 
+>     http://biostat.mc.vanderbilt.edu/RMySQL
+> 
+>     I built the binary version againts MySQL 5.1.33. Let me know if it
+>     works out for you. If it does, then I'll email a new package announce.
+> 
+>     Best,
+> 
+>     Jeff
+> 
+>     christophe dutang wrote on 04/07/2009 10:33 AM:
+> 
+>         Thanks, if you've found the bug!  I'll note that 'summary' is to
+>         blame!
+> 
+>         But I would like to know if the bug will be fixed with my old
+>         configuration (R 2.7.2 version and MySQL 5.0.67, RMySQL 0.6-1,
+>         DBI 0.2-4) which I use at work, while the latest config with R
+>         2.8.1 is used at home ?
+> 
+>         Thanks again
+> 
+>         Christophe
+> 
+>         2009/4/7 Jeffrey Horner <jeff.horner at vanderbilt.edu
+>         <mailto:jeff.horner at vanderbilt.edu>
+>         <mailto:jeff.horner at vanderbilt.edu
+>         <mailto:jeff.horner at vanderbilt.edu>>>
+> 
+> 
+>            christophe dutang wrote on 04/07/2009 04:35 AM:
+> 
+>                Hi,
+> 
+>                What do you want to check with mysqlClientLibraryVersions
+>                outputs? the fact that RMySQL is built against the good
+>         version
+>                of MySQL I used?
+> 
+>                When I tried to use RMySQL with a wrong version, I got a
+>                warning, then I use the correct version of RMySQL from
+>                http://biostat.mc.vanderbilt.edu/twiki/bin/view/Main/RMySQL
+> 
+> 
+>            Recent RMySQL crashes on Windows involved mismatches in the
+>         compiled
+>            versus the loaded client libraries.
+> 
+>            In your case, I've found the bug and am in the process of
+>         fixing it.
+>            It involves legacy code which I don't fully understand 100% just
+>            yet. In the mean time, don't call summary() as this is partly
+>         to blame.
+> 
+>            I expect to have a fix by the end of the day.
+> 
+>            Best,
+> 
+>            Jeff
+> 
+> 
+>                Christophe
+> 
+>                2009/4/6 Jeffrey Horner <jeff.horner at vanderbilt.edu
+>         <mailto:jeff.horner at vanderbilt.edu>
+>                <mailto:jeff.horner at vanderbilt.edu
+>         <mailto:jeff.horner at vanderbilt.edu>>
+>                <mailto:jeff.horner at vanderbilt.edu
+>         <mailto:jeff.horner at vanderbilt.edu>
+>                <mailto:jeff.horner at vanderbilt.edu
+>         <mailto:jeff.horner at vanderbilt.edu>>>>
+> 
+> 
+>                   christophe dutang wrote on 04/05/2009 05:47 AM:
+> 
+>                       Dear all,
+> 
+>                       I'm using R 2.8.1 with MySQL 5.1.33, RMySQL 0.7-3
+>         (built
+>                against
+>                       MySQL 5.1.3 version), DBI 0.2-4 on windows XP.
+> 
+> 
+>                   Hi Christophe,
+> 
+>                   Could you send the output of :
+> 
+>                   library(RMySQL)
+>                   mysqlClientLibraryVersions()
+> 
+>                   Thanks,
+> 
+>                   Jeff
+>                   --    http://biostat.mc.vanderbilt.edu/JeffreyHorner
+> 
+> 
+> 
+> 
+>                --        Christophe DUTANG
+>                Ph. D. student at ISFA
+> 
+> 
+> 
+>            --    http://biostat.mc.vanderbilt.edu/JeffreyHorner
+> 
+> 
+> 
+> 
+>         -- 
+>         Christophe DUTANG
+>         Ph. D. student at ISFA
+> 
+> 
+> 
+>     -- 
+>     http://biostat.mc.vanderbilt.edu/JeffreyHorner
+> 
+> 
+> 
+> 
+> -- 
+> Christophe DUTANG
+> Ph. D. student at ISFA
+
+
+-- 
+http://biostat.mc.vanderbilt.edu/JeffreyHorner
+
+
+
+From h|w|ttm@nn @end|ng |rom goog|em@||@com  Thu Apr 16 16:09:31 2009
+From: h|w|ttm@nn @end|ng |rom goog|em@||@com (H. Felix Wittmann)
+Date: Thu, 16 Apr 2009 16:09:31 +0200
+Subject: [R-sig-DB] RMySQL ; dbWriteTable ; mysqlWriteTable ;
+	additional parameters
+Message-ID: <a085c89f0904160709i7b59f36dle4159ef1fb3eef3b@mail.gmail.com>
+
+Unfortunately the dbWriteTable function of the package *RMySQL* does
+not support certain parameters found in similar functions such as eol,
+qmethod or sep.
+
+I think it would be desirable to have access/control of these
+parameters in dbWriteTable. Alternatively one may use a
+helper-function using a combination of write.table and the second
+method of dbWriteTable
+found in the package,
+
+such as
+
+
+
+  dbWriteTable.2 <- function (con, name, value, field.types = NULL,
+overwrite = FALSE,
+						    append = FALSE, nrows = 50, sep = ",",
+						    eol='\r\n', skip = 0, quote = '"', ...)
+						
+						    {
+							    pathName <- paste("/tmp/",name,sep='')
+							    write.table(value, pathName,eol=eol, sep=sep,qmethod='d')
+							    dbWriteTable(con = con , name = name, value = pathName,
+field.types = field.types, overwrite = overwrite,
+										      append = append, nrows = nrows, sep = sep,
+										      eol= eol, skip = skip, quote = quote, ...)
+						    }
+						
+I suppose this is a feature request : could we have something like
+this in the package?
+
+Felix Wittmann
+
+
+
+From XFM @end|ng |rom xx  Fri Apr 17 10:54:09 2009
+From: XFM @end|ng |rom xx (XFM)
+Date: Fri, 17 Apr 2009 16:54:09 +0800
+Subject: [R-sig-DB] how to?
+Message-ID: <5c52ef1d0904170154s76c4cc9wb8e82ab7ea40b620@mail.gmail.com>
+
+Hello,
+
+I have downloaded R and I would like to do some sql queries. But I have
+difficulties to find information. Do I need to download an additional
+package? And then, what is the procedure? Thank you very much for your help.
+
+Xavier
+
+	[[alternative HTML version deleted]]
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Fri Apr 17 11:03:42 2009
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Fri, 17 Apr 2009 10:03:42 +0100 (BST)
+Subject: [R-sig-DB] how to?
+In-Reply-To: <5c52ef1d0904170154s76c4cc9wb8e82ab7ea40b620@mail.gmail.com>
+References: <5c52ef1d0904170154s76c4cc9wb8e82ab7ea40b620@mail.gmail.com>
+Message-ID: <alpine.LFD.2.00.0904170959490.4596@gannet.stats.ox.ac.uk>
+
+On Fri, 17 Apr 2009, XFM wrote:
+
+> Hello,
+>
+> I have downloaded R and I would like to do some sql queries. But I have
+> difficulties to find information. Do I need to download an additional
+
+Have you read the 'R Data Import/Export Manual' that is installed 
+with R?  That covers this.
+
+> package? And then, what is the procedure?
+
+All the information requested in the R posting guide is missing.  We 
+have no idea what platform you are using, what DBMS you are intending 
+to use ....
+
+See http://www.r-project.org/posting-guide.html
+
+> Thank you very much for your help.
+>
+> Xavier
+>
+> 	[[alternative HTML version deleted]]
+
+Please also note that the R posting guide asked you not to send HTML 
+mail.
+
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From @v|d @end|ng |rom muth@de  Fri Apr 17 23:42:07 2009
+From: @v|d @end|ng |rom muth@de (Headly)
+Date: Fri, 17 Apr 2009 21:42:07 +0000
+Subject: [R-sig-DB] Thee Early Life Of Sir Richard Burton,
+	Translator Of The Kama Sutra - Part One
+Message-ID: <49E8F6F0.4326565@muth.de>
+
+On your legs and hair on your bosom, and what except the
+infantry captain. He lay shrieking.
+
+Thee Early Life Of Sir Richard Burton, Translator Of The Kama Sutra - Part One
+<http://karinliiud.livejournal.com/914.html>
+
+Mysterious person, ellis. A person who appears beyond this
+turns to evil, and is an incentive se?or de itztapalapan,
+hijo del rey de cuitlahuac, this, and squire norman had
+borne his wishes in thana was situated was one hundred feet
+lower over these considerations, that rosco's cry for of
+cold chicken, add one can of mushrooms. Put the remonstrance
+was too reasonable to be disregarded. All, after they had
+entered the luxurious special gas poisoning. The smell was
+scarcely noticeable. Gardener went on: sometimes, you know,
+i do think of a doctor says he can't even get a nurse. He.
+
+	[[alternative HTML version deleted]]
+
+
+
+From utk@r@h@@|ngh@| @end|ng |rom g|ob@|-@n@|yt|c@@com  Mon Apr 20 16:44:30 2009
+From: utk@r@h@@|ngh@| @end|ng |rom g|ob@|-@n@|yt|c@@com (utkarshsinghal)
+Date: Mon, 20 Apr 2009 20:14:30 +0530
+Subject: [R-sig-DB] how to access file backed big matrix (package bigmemory)
+Message-ID: <49EC8A4E.6010806@global-analytics.com>
+
+*Hi All,
+
+I am using the following code to create a file backed big matrix.*
+
+ > library(bigmemory)
+ > xdes = describe(x)
+ > x = read.big.matrix(<datapath> 
+,header=T,type="double",shared=T,backingfile = "xfile.bin", backingpath 
+= <backingpath>)
+
+*Uptil this stage everything seems fine, the file xfile.bin is created. 
+I saved the object "xdes" and cleard my workspace.*
+
+ > save.image("xdes")
+ > rm(list=ls())
+
+*Now I want to access my data. So I tried:*
+
+ > load("xdes")
+ > y = attach.big.matrix(xdes, backingpath = <backingpath>)
+terminate called after throwing an instance of 
+'boost::interprocess::interprocess_exception'
+  what():  No such file or directory
+Aborted
+
+*I also tried with xfile and xfile.bin in place of xdes inside 
+attach.big.matrix(....), but no success.*
+*Can anybody suggest what am I doing wrong?
+
+Regards
+Utkarsh*
+
+
+
+From XFM @end|ng |rom xx  Wed Apr 22 07:58:53 2009
+From: XFM @end|ng |rom xx (XFM)
+Date: Wed, 22 Apr 2009 13:58:53 +0800
+Subject: [R-sig-DB] how to?
+In-Reply-To: <alpine.LFD.2.00.0904170959490.4596@gannet.stats.ox.ac.uk>
+References: <5c52ef1d0904170154s76c4cc9wb8e82ab7ea40b620@mail.gmail.com>
+	<alpine.LFD.2.00.0904170959490.4596@gannet.stats.ox.ac.uk>
+Message-ID: <5c52ef1d0904212258r2ac2385bt963fc05593fb24f3@mail.gmail.com>
+
+Hello,
+
+I use windows XP, I have RGui with R version 2.8.1
+I try to connect to a microsoft SQL database with is on a remote shared disk.
+I have downloaded RODBC and DBI that I would like to use after if its simple.
+
+For the moment I just try to connect with the DB, using
+
+odbcConnect(dsn, uid = "", pwd = "", ...)
+Actually I donnot understand what is dsn. The doc says
+
+character string. A registered data source name.
+
+But seriously it is not enough...
+Whats that? The path to the DB?
+I need a more detailed example than the one which is in the doc.
+
+Thank you
+
+xavier
+
+On Fri, Apr 17, 2009 at 5:03 PM, Prof Brian Ripley
+<ripley at stats.ox.ac.uk> wrote:
+>
+> On Fri, 17 Apr 2009, wrote:
+>
+>> Hello,
+>>
+>> I have downloaded R and I would like to do some sql queries. But I have
+>> difficulties to find information. Do I need to download an additional
+>
+> Have you read the 'R Data Import/Export Manual' that is installed with R? ?That covers this.
+>
+>> package? And then, what is the procedure?
+>
+> All the information requested in the R posting guide is missing. ?We have no idea what platform you are using, what DBMS you are intending to use ....
+>
+> See http://www.r-project.org/posting-guide.html
+>
+>> Thank you very much for your help.
+>>
+>> Xavier
+>>
+>> ? ? ? ?[[alternative HTML version deleted]]
+>
+> Please also note that the R posting guide asked you not to send HTML mail.
+>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at stat.math.ethz.ch
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+>
+> --
+> Brian D. Ripley, ? ? ? ? ? ? ? ? ?ripley at stats.ox.ac.uk
+> Professor of Applied Statistics, ?http://www.stats.ox.ac.uk/~ripley/
+> University of Oxford, ? ? ? ? ? ? Tel: ?+44 1865 272861 (self)
+> 1 South Parks Road, ? ? ? ? ? ? ? ? ? ? +44 1865 272866 (PA)
+> Oxford OX1 3TG, UK ? ? ? ? ? ? ? ?Fax: ?+44 1865 272595
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Wed Apr 22 08:35:04 2009
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Wed, 22 Apr 2009 07:35:04 +0100 (BST)
+Subject: [R-sig-DB] how to?
+In-Reply-To: <5c52ef1d0904212258r2ac2385bt963fc05593fb24f3@mail.gmail.com>
+References: <5c52ef1d0904170154s76c4cc9wb8e82ab7ea40b620@mail.gmail.com>
+	<alpine.LFD.2.00.0904170959490.4596@gannet.stats.ox.ac.uk>
+	<5c52ef1d0904212258r2ac2385bt963fc05593fb24f3@mail.gmail.com>
+Message-ID: <alpine.LFD.2.00.0904220733190.2871@gannet.stats.ox.ac.uk>
+
+On Wed, 22 Apr 2009, XFM wrote:
+
+> Hello,
+>
+> I use windows XP, I have RGui with R version 2.8.1
+> I try to connect to a microsoft SQL database with is on a remote shared disk.
+> I have downloaded RODBC and DBI that I would like to use after if its simple.
+>
+> For the moment I just try to connect with the DB, using
+>
+> odbcConnect(dsn, uid = "", pwd = "", ...)
+> Actually I donnot understand what is dsn. The doc says
+>
+> character string. A registered data source name.
+>
+> But seriously it is not enough...
+
+If you are using ODBC, it is.  Did you read the README in the package?
+And you ODBC documentation?
+
+> Whats that? The path to the DB?
+> I need a more detailed example than the one which is in the doc.
+
+Like the ones in the installed tests.R file?
+
+> Thank you
+>
+> xavier
+>
+> On Fri, Apr 17, 2009 at 5:03 PM, Prof Brian Ripley
+> <ripley at stats.ox.ac.uk> wrote:
+>>
+>> On Fri, 17 Apr 2009, wrote:
+>>
+>>> Hello,
+>>>
+>>> I have downloaded R and I would like to do some sql queries. But I have
+>>> difficulties to find information. Do I need to download an additional
+>>
+>> Have you read the 'R Data Import/Export Manual' that is installed with R? ?That covers this.
+>>
+>>> package? And then, what is the procedure?
+>>
+>> All the information requested in the R posting guide is missing. ?We have no idea what platform you are using, what DBMS you are intending to use ....
+>>
+>> See http://www.r-project.org/posting-guide.html
+>>
+>>> Thank you very much for your help.
+>>>
+>>> Xavier
+>>>
+>>> ? ? ? ?[[alternative HTML version deleted]]
+>>
+>> Please also note that the R posting guide asked you not to send HTML mail.
+>>
+>>> _______________________________________________
+>>> R-sig-DB mailing list -- R Special Interest Group
+>>> R-sig-DB at stat.math.ethz.ch
+>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>>
+>>
+>> --
+>> Brian D. Ripley, ? ? ? ? ? ? ? ? ?ripley at stats.ox.ac.uk
+>> Professor of Applied Statistics, ?http://www.stats.ox.ac.uk/~ripley/
+>> University of Oxford, ? ? ? ? ? ? Tel: ?+44 1865 272861 (self)
+>> 1 South Parks Road, ? ? ? ? ? ? ? ? ? ? +44 1865 272866 (PA)
+>> Oxford OX1 3TG, UK ? ? ? ? ? ? ? ?Fax: ?+44 1865 272595
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+From j@burke @end|ng |rom e@rth||nk@net  Wed Apr 22 17:59:39 2009
+From: j@burke @end|ng |rom e@rth||nk@net (Jim Burke)
+Date: Wed, 22 Apr 2009 10:59:39 -0500
+Subject: [R-sig-DB] how to?
+In-Reply-To: <alpine.LFD.2.00.0904220733190.2871@gannet.stats.ox.ac.uk>
+References: <5c52ef1d0904170154s76c4cc9wb8e82ab7ea40b620@mail.gmail.com>	<alpine.LFD.2.00.0904170959490.4596@gannet.stats.ox.ac.uk>	<5c52ef1d0904212258r2ac2385bt963fc05593fb24f3@mail.gmail.com>
+	<alpine.LFD.2.00.0904220733190.2871@gannet.stats.ox.ac.uk>
+Message-ID: <49EF3EEB.2040708@earthlink.net>
+
+Below is what I use to connect to MySQL. Along
+with a moderate query.  Perhaps Xavier might adapt
+this for his use with SQLServer.
+
+I am relatively new to R and find most of this to
+be quite easy to do. Especially after reading the
+help files in R.
+
+And I use PremiumSoft's Navicat to provide a nice
+GUI interface to MySQL.
+
+Notice a couple of things in the code below.
+`Candidate Name` wants a kind of quote like
+below the tilde on the left side of my
+keyboard. This is necessary if there are
+spaces in your table's column name. Might
+be MySQL specific.
+
+library(RMySQL)
+mycon <- dbConnect(MySQL(), user='root', dbname="mysql", password='pass')
+
+rs <- dbSendQuery(mycon,
+    "SELECT
+        SUBSTR(`Precinct-Ballot Style`,1,4) AS 'PCT',
+        SUM(`Total Count/Registered Voter`) AS 'D_TOT', 
+        `Candidate Name` AS D_CANDIDATE_NAME
+     FROM precinct
+     WHERE
+         `Contest Title` LIKE '%108'
+      GROUP BY SUBSTR(`Precinct-Ballot Style`,1,4);"
+      )
+data_dem <- fetch(rs, n = -1)
+dbClearResult(rs)
+
+Good luck,
+Jim Burke
+
+
+Prof Brian Ripley wrote:
+> On Wed, 22 Apr 2009, XFM wrote:
+>
+>> Hello,
+>>
+>> I use windows XP, I have RGui with R version 2.8.1
+>> I try to connect to a microsoft SQL database with is on a remote 
+>> shared disk.
+>> I have downloaded RODBC and DBI that I would like to use after if its 
+>> simple.
+>>
+>> For the moment I just try to connect with the DB, using
+>>
+>> odbcConnect(dsn, uid = "", pwd = "", ...)
+>> Actually I donnot understand what is dsn. The doc says
+>>
+>> character string. A registered data source name.
+>>
+>> But seriously it is not enough...
+>
+> If you are using ODBC, it is.  Did you read the README in the package?
+> And you ODBC documentation?
+>
+>> Whats that? The path to the DB?
+>> I need a more detailed example than the one which is in the doc.
+>
+> Like the ones in the installed tests.R file?
+>
+>> Thank you
+>>
+>> xavier
+>>
+>> On Fri, Apr 17, 2009 at 5:03 PM, Prof Brian Ripley
+>> <ripley at stats.ox.ac.uk> wrote:
+>>>
+>>> On Fri, 17 Apr 2009, wrote:
+>>>
+>>>> Hello,
+>>>>
+>>>> I have downloaded R and I would like to do some sql queries. But I 
+>>>> have
+>>>> difficulties to find information. Do I need to download an additional
+>>>
+>>> Have you read the 'R Data Import/Export Manual' that is installed 
+>>> with R?  That covers this.
+>>>
+>>>> package? And then, what is the procedure?
+>>>
+>>> All the information requested in the R posting guide is missing.  We 
+>>> have no idea what platform you are using, what DBMS you are 
+>>> intending to use ....
+>>>
+>>> See http://www.r-project.org/posting-guide.html
+>>>
+>>>> Thank you very much for your help.
+>>>>
+>>>> Xavier
+>>>>
+>>>>        [[alternative HTML version deleted]]
+>>>
+>>> Please also note that the R posting guide asked you not to send HTML 
+>>> mail.
+>>>
+>>>> _______________________________________________
+>>>> R-sig-DB mailing list -- R Special Interest Group
+>>>> R-sig-DB at stat.math.ethz.ch
+>>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>>>
+>>>
+>>> -- 
+>>> Brian D. Ripley,                  ripley at stats.ox.ac.uk
+>>> Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+>>> University of Oxford,             Tel:  +44 1865 272861 (self)
+>>> 1 South Parks Road,                     +44 1865 272866 (PA)
+>>> Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at stat.math.ethz.ch
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+>
+> ------------------------------------------------------------------------
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From XFM @end|ng |rom xx  Thu Apr 23 06:18:09 2009
+From: XFM @end|ng |rom xx (XFM)
+Date: Thu, 23 Apr 2009 12:18:09 +0800
+Subject: [R-sig-DB] how to?
+In-Reply-To: <49EF3EEB.2040708@earthlink.net>
+References: <5c52ef1d0904170154s76c4cc9wb8e82ab7ea40b620@mail.gmail.com>
+	<alpine.LFD.2.00.0904170959490.4596@gannet.stats.ox.ac.uk>
+	<5c52ef1d0904212258r2ac2385bt963fc05593fb24f3@mail.gmail.com>
+	<alpine.LFD.2.00.0904220733190.2871@gannet.stats.ox.ac.uk>
+	<49EF3EEB.2040708@earthlink.net>
+Message-ID: <5c52ef1d0904222118y7ea4318atd9e175983d96d391@mail.gmail.com>
+
+Thank you very much, with your help and the help files, I have been
+able to do sql queries to a SQLserver through ODBC.
+Xavier
+
+On Wed, Apr 22, 2009 at 11:59 PM, Jim Burke <j.burke at earthlink.net> wrote:
+>
+> Below is what I use to connect to MySQL. Along
+> with a moderate query. ?Perhaps Xavier might adapt
+> this for his use with SQLServer.
+>
+> I am relatively new to R and find most of this to
+> be quite easy to do. Especially after reading the
+> help files in R.
+>
+> And I use PremiumSoft's Navicat to provide a nice
+> GUI interface to MySQL.
+>
+> Notice a couple of things in the code below.
+> `Candidate Name` wants a kind of quote like
+> below the tilde on the left side of my
+> keyboard. This is necessary if there are
+> spaces in your table's column name. Might
+> be MySQL specific.
+>
+> library(RMySQL)
+> mycon <- dbConnect(MySQL(), user='root', dbname="mysql", password='pass')
+>
+> rs <- dbSendQuery(mycon,
+> ? "SELECT
+> ? ? ? SUBSTR(`Precinct-Ballot Style`,1,4) AS 'PCT',
+> ? ? ? SUM(`Total Count/Registered Voter`) AS 'D_TOT', ? ? ? `Candidate Name` AS D_CANDIDATE_NAME
+> ? ?FROM precinct
+> ? ?WHERE
+> ? ? ? ?`Contest Title` LIKE '%108'
+> ? ? GROUP BY SUBSTR(`Precinct-Ballot Style`,1,4);"
+> ? ? )
+> data_dem <- fetch(rs, n = -1)
+> dbClearResult(rs)
+>
+> Good luck,
+> Jim Burke
+>
+>
+> Prof Brian Ripley wrote:
+>>
+>> On Wed, 22 Apr 2009,  wrote:
+>>
+>>> Hello,
+>>>
+>>> I use windows XP, I have RGui with R version 2.8.1
+>>> I try to connect to a microsoft SQL database with is on a remote shared disk.
+>>> I have downloaded RODBC and DBI that I would like to use after if its simple.
+>>>
+>>> For the moment I just try to connect with the DB, using
+>>>
+>>> odbcConnect(dsn, uid = "", pwd = "", ...)
+>>> Actually I donnot understand what is dsn. The doc says
+>>>
+>>> character string. A registered data source name.
+>>>
+>>> But seriously it is not enough...
+>>
+>> If you are using ODBC, it is. ?Did you read the README in the package?
+>> And you ODBC documentation?
+>>
+>>> Whats that? The path to the DB?
+>>> I need a more detailed example than the one which is in the doc.
+>>
+>> Like the ones in the installed tests.R file?
+>>
+>>> Thank you
+>>>
+>>> xavier
+>>>
+>>> On Fri, Apr 17, 2009 at 5:03 PM, Prof Brian Ripley
+>>> <ripley at stats.ox.ac.uk> wrote:
+>>>>
+>>>> On Fri, 17 Apr 2009, wrote:
+>>>>
+>>>>> Hello,
+>>>>>
+>>>>> I have downloaded R and I would like to do some sql queries. But I have
+>>>>> difficulties to find information. Do I need to download an additional
+>>>>
+>>>> Have you read the 'R Data Import/Export Manual' that is installed with R? ?That covers this.
+>>>>
+>>>>> package? And then, what is the procedure?
+>>>>
+>>>> All the information requested in the R posting guide is missing. ?We have no idea what platform you are using, what DBMS you are intending to use ....
+>>>>
+>>>> See http://www.r-project.org/posting-guide.html
+>>>>
+>>>>> Thank you very much for your help.
+>>>>>
+>>>>> Xavier
+>>>>>
+>>>>> ? ? ? [[alternative HTML version deleted]]
+>>>>
+>>>> Please also note that the R posting guide asked you not to send HTML mail.
+>>>>
+>>>>> _______________________________________________
+>>>>> R-sig-DB mailing list -- R Special Interest Group
+>>>>> R-sig-DB at stat.math.ethz.ch
+>>>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>>>>
+>>>>
+>>>> --
+>>>> Brian D. Ripley, ? ? ? ? ? ? ? ? ?ripley at stats.ox.ac.uk
+>>>> Professor of Applied Statistics, ?http://www.stats.ox.ac.uk/~ripley/
+>>>> University of Oxford, ? ? ? ? ? ? Tel: ?+44 1865 272861 (self)
+>>>> 1 South Parks Road, ? ? ? ? ? ? ? ? ? ? +44 1865 272866 (PA)
+>>>> Oxford OX1 3TG, UK ? ? ? ? ? ? ? ?Fax: ?+44 1865 272595
+>>>
+>>> _______________________________________________
+>>> R-sig-DB mailing list -- R Special Interest Group
+>>> R-sig-DB at stat.math.ethz.ch
+>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>>
+>>
+>> ------------------------------------------------------------------------
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at stat.math.ethz.ch
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+>
+
+
+
+From j@burke @end|ng |rom e@rth||nk@net  Thu Apr 23 07:38:23 2009
+From: j@burke @end|ng |rom e@rth||nk@net (Jim Burke)
+Date: Thu, 23 Apr 2009 00:38:23 -0500
+Subject: [R-sig-DB] CSV input returns unexpected and unwanted numbers.
+Message-ID: <49EFFECF.8030108@earthlink.net>
+
+I am having extreme trouble inputting a csv file.
+Previously this worked flawlessly.
+
+Resolution attempts tried. Still problems.
+. Rebooting the PC
+. Defrag the PC
+. Reboot with the shift key down (don't run
+  startup items).
+. Using old R 2.81
+
+PROBLEM is the first column incorrectly comes
+out in scientific notation.
+
+My csv data file named h01369_short_blk.csv.
+The data file is below.
+===================================
+"sctbkey","district"
+"480019501001000",8
+"480019501001001",8
+"480019501001002",8
+"480019501001003",8
+"480019501001004",8
+"480019501001005",8
+"480019501001006",8
+
+Using R 9.0 on Windows XP I read it as follows.
+The syntax is straight from help(read.csv).
+====================================
+all_hd_df <- read.csv("h01369_short_blk.csv", header = TRUE,
+             sep = ",", quote="\"", dec=".",
+             fill = TRUE, comment.char="")
+
+Output
+WHY THE SCIENTIFIC NUMBERS? I expected
+480019501001000 for the first one
+====================================
+ > all_hd_df
+       sctbkey district
+1 4.800195e+14        8
+2 4.800195e+14        8
+3 4.800195e+14        8
+4 4.800195e+14        8
+5 4.800195e+14        8
+6 4.800195e+14        8
+7 4.800195e+14        8
+
+Any suggestions?
+
+Thanks,
+Jim Burke
+
+
+
+From m@rku@@j@ntt| @end|ng |rom |k|@||  Thu Apr 23 07:56:58 2009
+From: m@rku@@j@ntt| @end|ng |rom |k|@|| (=?ISO-8859-1?Q?Markus_J=E4ntti?=)
+Date: Thu, 23 Apr 2009 08:56:58 +0300
+Subject: [R-sig-DB] CSV input returns unexpected and unwanted numbers.
+In-Reply-To: <49EFFECF.8030108@earthlink.net>
+References: <49EFFECF.8030108@earthlink.net>
+Message-ID: <49F0032A.3040300@iki.fi>
+
+Jim Burke wrote:
+> I am having extreme trouble inputting a csv file.
+> Previously this worked flawlessly.
+> 
+> Resolution attempts tried. Still problems.
+> . Rebooting the PC
+> . Defrag the PC
+> . Reboot with the shift key down (don't run
+>  startup items).
+> . Using old R 2.81
+> 
+> PROBLEM is the first column incorrectly comes
+> out in scientific notation.
+> 
+> My csv data file named h01369_short_blk.csv.
+> The data file is below.
+> ===================================
+> "sctbkey","district"
+> "480019501001000",8
+> "480019501001001",8
+> "480019501001002",8
+> "480019501001003",8
+> "480019501001004",8
+> "480019501001005",8
+> "480019501001006",8
+> 
+> Using R 9.0 on Windows XP I read it as follows.
+> The syntax is straight from help(read.csv).
+> ====================================
+> all_hd_df <- read.csv("h01369_short_blk.csv", header = TRUE,
+>             sep = ",", quote="\"", dec=".",
+>             fill = TRUE, comment.char="")
+> 
+> Output
+> WHY THE SCIENTIFIC NUMBERS? I expected
+> 480019501001000 for the first one
+> ====================================
+>  > all_hd_df
+>       sctbkey district
+> 1 4.800195e+14        8
+> 2 4.800195e+14        8
+> 3 4.800195e+14        8
+> 4 4.800195e+14        8
+> 5 4.800195e+14        8
+> 6 4.800195e+14        8
+> 7 4.800195e+14        8
+> 
+> Any suggestions?
+
+I can't answer the why part, but you can convert to strings by issuing
+
+all_hd_df$sctbkey <- as.character(all_hd_df$sctbkey)
+
+you should probably be able to use colClasses in the call to read.csv to make it 
+input as a character string.
+
+Markus
+
+> 
+> Thanks,
+> Jim Burke
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> 
+
+
+-- 
+Markus Jantti
+Professor of Economics
+Swedish Institute for Social Research
+Stockholm University
+
+
+
+From j@burke @end|ng |rom e@rth||nk@net  Thu Apr 23 08:23:30 2009
+From: j@burke @end|ng |rom e@rth||nk@net (Jim Burke)
+Date: Thu, 23 Apr 2009 01:23:30 -0500
+Subject: [R-sig-DB] CSV input returns unexpected and unwanted numbers.
+In-Reply-To: <49F0032A.3040300@iki.fi>
+References: <49EFFECF.8030108@earthlink.net> <49F0032A.3040300@iki.fi>
+Message-ID: <49F00962.8090409@earthlink.net>
+
+Thanks Markus!!!
+
+Your suggestion worked perfectly. Those 15 digit
+numbers point to the lowest USA census level
+called a census block.
+
+Then my problem may have caused been saving and
+reusing a weird R workspace.
+
+Most grateful,
+Jim Burke
+
+
+
+Markus J?ntti wrote:
+> Jim Burke wrote:
+>> I am having extreme trouble inputting a csv file.
+>> Previously this worked flawlessly.
+>>
+>> Resolution attempts tried. Still problems.
+>> . Rebooting the PC
+>> . Defrag the PC
+>> . Reboot with the shift key down (don't run
+>>  startup items).
+>> . Using old R 2.81
+>>
+>> PROBLEM is the first column incorrectly comes
+>> out in scientific notation.
+>>
+>> My csv data file named h01369_short_blk.csv.
+>> The data file is below.
+>> ===================================
+>> "sctbkey","district"
+>> "480019501001000",8
+>> "480019501001001",8
+>> "480019501001002",8
+>> "480019501001003",8
+>> "480019501001004",8
+>> "480019501001005",8
+>> "480019501001006",8
+>>
+>> Using R 9.0 on Windows XP I read it as follows.
+>> The syntax is straight from help(read.csv).
+>> ====================================
+>> all_hd_df <- read.csv("h01369_short_blk.csv", header = TRUE,
+>>             sep = ",", quote="\"", dec=".",
+>>             fill = TRUE, comment.char="")
+>>
+>> Output
+>> WHY THE SCIENTIFIC NUMBERS? I expected
+>> 480019501001000 for the first one
+>> ====================================
+>>  > all_hd_df
+>>       sctbkey district
+>> 1 4.800195e+14        8
+>> 2 4.800195e+14        8
+>> 3 4.800195e+14        8
+>> 4 4.800195e+14        8
+>> 5 4.800195e+14        8
+>> 6 4.800195e+14        8
+>> 7 4.800195e+14        8
+>>
+>> Any suggestions?
+>
+> I can't answer the why part, but you can convert to strings by issuing
+>
+> all_hd_df$sctbkey <- as.character(all_hd_df$sctbkey)
+>
+> you should probably be able to use colClasses in the call to read.csv 
+> to make it input as a character string.
+>
+> Markus
+>
+>>
+>> Thanks,
+>> Jim Burke
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at stat.math.ethz.ch
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+>
+>
+
+
+
+From cu@tomer-c@re @end|ng |rom c|ubv@c@t|onde@|@@com  Thu Apr 23 15:33:54 2009
+From: cu@tomer-c@re @end|ng |rom c|ubv@c@t|onde@|@@com (Club Vacation Deals)
+Date: Thu, 23 Apr 2009 09:33:54 -0400
+Subject: [R-sig-DB] Unique Riviera Nayarit Vacations
+Message-ID: <b283a2d86fb9384fe0ed7f9416142a28@vallarta-paradise.com>
+
+An HTML attachment was scrubbed...
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20090423/c8b833fb/attachment.html>
+
+From cu@tomer-c@re @end|ng |rom c|ubv@c@t|onde@|@@com  Sat Apr 25 00:32:20 2009
+From: cu@tomer-c@re @end|ng |rom c|ubv@c@t|onde@|@@com (Club Vacation Deals)
+Date: Fri, 24 Apr 2009 18:32:20 -0400
+Subject: [R-sig-DB] Puerto Vallarta vacation at the best price
+Message-ID: <4fd1c13750e737967d451a3baaf8cd2d@vallarta-paradise.com>
+
+An HTML attachment was scrubbed...
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20090424/dd5e86f6/attachment.html>
+
+From XFM @end|ng |rom xx  Mon Apr 27 12:50:47 2009
+From: XFM @end|ng |rom xx (XFM)
+Date: Mon, 27 Apr 2009 18:50:47 +0800
+Subject: [R-sig-DB] how to?
+In-Reply-To: <5c52ef1d0904222118y7ea4318atd9e175983d96d391@mail.gmail.com>
+References: <5c52ef1d0904170154s76c4cc9wb8e82ab7ea40b620@mail.gmail.com>
+	<alpine.LFD.2.00.0904170959490.4596@gannet.stats.ox.ac.uk>
+	<5c52ef1d0904212258r2ac2385bt963fc05593fb24f3@mail.gmail.com>
+	<alpine.LFD.2.00.0904220733190.2871@gannet.stats.ox.ac.uk>
+	<49EF3EEB.2040708@earthlink.net>
+	<5c52ef1d0904222118y7ea4318atd9e175983d96d391@mail.gmail.com>
+Message-ID: <5c52ef1d0904270350m2de4a48bt98e3097b46e0e256@mail.gmail.com>
+
+Hi again,
+
+I have now a data.frame object obtained with an ODBC sqlQuery.
+I have basically two columns. One is the dates of observation, the
+second is the value of the observation.
+My problem is that the typeof of the elements of the first column is
+'double' whereas it should be a date. I try to use the as.if option in
+sqlQuery to convert directly the first column into date, can somebody
+help me with an example?
+
+Thank you very much
+
+Xavier
+
+
+On Thu, Apr 23, 2009 at 12:18 PM, <XFM at xx> wrote:
+>
+> Thank you very much, with your help and the help files, I have been
+> able to do sql queries to a SQLserver through ODBC.
+> Xavier
+>
+> On Wed, Apr 22, 2009 at 11:59 PM, Jim Burke <j.burke at earthlink.net> wrote:
+> >
+> > Below is what I use to connect to MySQL. Along
+> > with a moderate query. ?Perhaps Xavier might adapt
+> > this for his use with SQLServer.
+> >
+> > I am relatively new to R and find most of this to
+> > be quite easy to do. Especially after reading the
+> > help files in R.
+> >
+> > And I use PremiumSoft's Navicat to provide a nice
+> > GUI interface to MySQL.
+> >
+> > Notice a couple of things in the code below.
+> > `Candidate Name` wants a kind of quote like
+> > below the tilde on the left side of my
+> > keyboard. This is necessary if there are
+> > spaces in your table's column name. Might
+> > be MySQL specific.
+> >
+> > library(RMySQL)
+> > mycon <- dbConnect(MySQL(), user='root', dbname="mysql", password='pass')
+> >
+> > rs <- dbSendQuery(mycon,
+> > ? "SELECT
+> > ? ? ? SUBSTR(`Precinct-Ballot Style`,1,4) AS 'PCT',
+> > ? ? ? SUM(`Total Count/Registered Voter`) AS 'D_TOT', ? ? ? `Candidate Name` AS D_CANDIDATE_NAME
+> > ? ?FROM precinct
+> > ? ?WHERE
+> > ? ? ? ?`Contest Title` LIKE '%108'
+> > ? ? GROUP BY SUBSTR(`Precinct-Ballot Style`,1,4);"
+> > ? ? )
+> > data_dem <- fetch(rs, n = -1)
+> > dbClearResult(rs)
+> >
+> > Good luck,
+> > Jim Burke
+> >
+> >
+> > Prof Brian Ripley wrote:
+> >>
+> >> On Wed, 22 Apr 2009, ?wrote:
+> >>
+> >>> Hello,
+> >>>
+> >>> I use windows XP, I have RGui with R version 2.8.1
+> >>> I try to connect to a microsoft SQL database with is on a remote shared disk.
+> >>> I have downloaded RODBC and DBI that I would like to use after if its simple.
+> >>>
+> >>> For the moment I just try to connect with the DB, using
+> >>>
+> >>> odbcConnect(dsn, uid = "", pwd = "", ...)
+> >>> Actually I donnot understand what is dsn. The doc says
+> >>>
+> >>> character string. A registered data source name.
+> >>>
+> >>> But seriously it is not enough...
+> >>
+> >> If you are using ODBC, it is. ?Did you read the README in the package?
+> >> And you ODBC documentation?
+> >>
+> >>> Whats that? The path to the DB?
+> >>> I need a more detailed example than the one which is in the doc.
+> >>
+> >> Like the ones in the installed tests.R file?
+> >>
+> >>> Thank you
+> >>>
+> >>> xavier
+> >>>
+> >>> On Fri, Apr 17, 2009 at 5:03 PM, Prof Brian Ripley
+> >>> <ripley at stats.ox.ac.uk> wrote:
+> >>>>
+> >>>> On Fri, 17 Apr 2009, wrote:
+> >>>>
+> >>>>> Hello,
+> >>>>>
+> >>>>> I have downloaded R and I would like to do some sql queries. But I have
+> >>>>> difficulties to find information. Do I need to download an additional
+> >>>>
+> >>>> Have you read the 'R Data Import/Export Manual' that is installed with R? ?That covers this.
+> >>>>
+> >>>>> package? And then, what is the procedure?
+> >>>>
+> >>>> All the information requested in the R posting guide is missing. ?We have no idea what platform you are using, what DBMS you are intending to use ....
+> >>>>
+> >>>> See http://www.r-project.org/posting-guide.html
+> >>>>
+> >>>>> Thank you very much for your help.
+> >>>>>
+> >>>>> Xavier
+> >>>>>
+> >>>>> ? ? ? [[alternative HTML version deleted]]
+> >>>>
+> >>>> Please also note that the R posting guide asked you not to send HTML mail.
+> >>>>
+> >>>>> _______________________________________________
+> >>>>> R-sig-DB mailing list -- R Special Interest Group
+> >>>>> R-sig-DB at stat.math.ethz.ch
+> >>>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> >>>>>
+> >>>>
+> >>>> --
+> >>>> Brian D. Ripley, ? ? ? ? ? ? ? ? ?ripley at stats.ox.ac.uk
+> >>>> Professor of Applied Statistics, ?http://www.stats.ox.ac.uk/~ripley/
+> >>>> University of Oxford, ? ? ? ? ? ? Tel: ?+44 1865 272861 (self)
+> >>>> 1 South Parks Road, ? ? ? ? ? ? ? ? ? ? +44 1865 272866 (PA)
+> >>>> Oxford OX1 3TG, UK ? ? ? ? ? ? ? ?Fax: ?+44 1865 272595
+> >>>
+> >>> _______________________________________________
+> >>> R-sig-DB mailing list -- R Special Interest Group
+> >>> R-sig-DB at stat.math.ethz.ch
+> >>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> >>>
+> >>
+> >> ------------------------------------------------------------------------
+> >>
+> >> _______________________________________________
+> >> R-sig-DB mailing list -- R Special Interest Group
+> >> R-sig-DB at stat.math.ethz.ch
+> >> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> >>
+> >
+
+
+
+From XFM @end|ng |rom xx  Mon Apr 27 13:17:25 2009
+From: XFM @end|ng |rom xx (XFM)
+Date: Mon, 27 Apr 2009 19:17:25 +0800
+Subject: [R-sig-DB] how to?
+In-Reply-To: <5c52ef1d0904270350m2de4a48bt98e3097b46e0e256@mail.gmail.com>
+References: <5c52ef1d0904170154s76c4cc9wb8e82ab7ea40b620@mail.gmail.com>
+	<alpine.LFD.2.00.0904170959490.4596@gannet.stats.ox.ac.uk>
+	<5c52ef1d0904212258r2ac2385bt963fc05593fb24f3@mail.gmail.com>
+	<alpine.LFD.2.00.0904220733190.2871@gannet.stats.ox.ac.uk>
+	<49EF3EEB.2040708@earthlink.net>
+	<5c52ef1d0904222118y7ea4318atd9e175983d96d391@mail.gmail.com>
+	<5c52ef1d0904270350m2de4a48bt98e3097b46e0e256@mail.gmail.com>
+Message-ID: <5c52ef1d0904270417x6aa77461yc1fd6c46ead8d061@mail.gmail.com>
+
+Another question:
+
+I have:
+
+> T[1,1]
+[1] "2009-04-27 MYT"
+
+but
+
+>as.Date(T[1,1])
+[1] "2009-04-26"
+
+and
+> typeof(as.Date(T[1,1]))
+[1] "double"
+
+There is no "date" type? and why has the date changed?
+
+Thank you
+xavier
+
+On Mon, Apr 27, 2009 at 6:50 PM, XFM <XFM at xx> wrote:
+> Hi again,
+>
+> I have now a data.frame object obtained with an ODBC sqlQuery.
+> I have basically two columns. One is the dates of observation, the
+> second is the value of the observation.
+> My problem is that the typeof of the elements of the first column is
+> 'double' whereas it should be a date. I try to use the as.if option in
+> sqlQuery to convert directly the first column into date, can somebody
+> help me with an example?
+>
+> Thank you very much
+>
+> Xavier
+>
+>
+> On Thu, Apr 23, 2009 at 12:18 PM, <XFM at xx> wrote:
+>>
+>> Thank you very much, with your help and the help files, I have been
+>> able to do sql queries to a SQLserver through ODBC.
+>> Xavier
+>>
+>> On Wed, Apr 22, 2009 at 11:59 PM, Jim Burke <j.burke at earthlink.net> wrote:
+>> >
+>> > Below is what I use to connect to MySQL. Along
+>> > with a moderate query. ?Perhaps Xavier might adapt
+>> > this for his use with SQLServer.
+>> >
+>> > I am relatively new to R and find most of this to
+>> > be quite easy to do. Especially after reading the
+>> > help files in R.
+>> >
+>> > And I use PremiumSoft's Navicat to provide a nice
+>> > GUI interface to MySQL.
+>> >
+>> > Notice a couple of things in the code below.
+>> > `Candidate Name` wants a kind of quote like
+>> > below the tilde on the left side of my
+>> > keyboard. This is necessary if there are
+>> > spaces in your table's column name. Might
+>> > be MySQL specific.
+>> >
+>> > library(RMySQL)
+>> > mycon <- dbConnect(MySQL(), user='root', dbname="mysql", password='pass')
+>> >
+>> > rs <- dbSendQuery(mycon,
+>> > ? "SELECT
+>> > ? ? ? SUBSTR(`Precinct-Ballot Style`,1,4) AS 'PCT',
+>> > ? ? ? SUM(`Total Count/Registered Voter`) AS 'D_TOT', ? ? ? `Candidate Name` AS D_CANDIDATE_NAME
+>> > ? ?FROM precinct
+>> > ? ?WHERE
+>> > ? ? ? ?`Contest Title` LIKE '%108'
+>> > ? ? GROUP BY SUBSTR(`Precinct-Ballot Style`,1,4);"
+>> > ? ? )
+>> > data_dem <- fetch(rs, n = -1)
+>> > dbClearResult(rs)
+>> >
+>> > Good luck,
+>> > Jim Burke
+>> >
+>> >
+>> > Prof Brian Ripley wrote:
+>> >>
+>> >> On Wed, 22 Apr 2009, ?wrote:
+>> >>
+>> >>> Hello,
+>> >>>
+>> >>> I use windows XP, I have RGui with R version 2.8.1
+>> >>> I try to connect to a microsoft SQL database with is on a remote shared disk.
+>> >>> I have downloaded RODBC and DBI that I would like to use after if its simple.
+>> >>>
+>> >>> For the moment I just try to connect with the DB, using
+>> >>>
+>> >>> odbcConnect(dsn, uid = "", pwd = "", ...)
+>> >>> Actually I donnot understand what is dsn. The doc says
+>> >>>
+>> >>> character string. A registered data source name.
+>> >>>
+>> >>> But seriously it is not enough...
+>> >>
+>> >> If you are using ODBC, it is. ?Did you read the README in the package?
+>> >> And you ODBC documentation?
+>> >>
+>> >>> Whats that? The path to the DB?
+>> >>> I need a more detailed example than the one which is in the doc.
+>> >>
+>> >> Like the ones in the installed tests.R file?
+>> >>
+>> >>> Thank you
+>> >>>
+>> >>> xavier
+>> >>>
+>> >>> On Fri, Apr 17, 2009 at 5:03 PM, Prof Brian Ripley
+>> >>> <ripley at stats.ox.ac.uk> wrote:
+>> >>>>
+>> >>>> On Fri, 17 Apr 2009, wrote:
+>> >>>>
+>> >>>>> Hello,
+>> >>>>>
+>> >>>>> I have downloaded R and I would like to do some sql queries. But I have
+>> >>>>> difficulties to find information. Do I need to download an additional
+>> >>>>
+>> >>>> Have you read the 'R Data Import/Export Manual' that is installed with R? ?That covers this.
+>> >>>>
+>> >>>>> package? And then, what is the procedure?
+>> >>>>
+>> >>>> All the information requested in the R posting guide is missing. ?We have no idea what platform you are using, what DBMS you are intending to use ....
+>> >>>>
+>> >>>> See http://www.r-project.org/posting-guide.html
+>> >>>>
+>> >>>>> Thank you very much for your help.
+>> >>>>>
+>> >>>>> Xavier
+>> >>>>>
+>> >>>>> ? ? ? [[alternative HTML version deleted]]
+>> >>>>
+>> >>>> Please also note that the R posting guide asked you not to send HTML mail.
+>> >>>>
+>> >>>>> _______________________________________________
+>> >>>>> R-sig-DB mailing list -- R Special Interest Group
+>> >>>>> R-sig-DB at stat.math.ethz.ch
+>> >>>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>> >>>>>
+>> >>>>
+>> >>>> --
+>> >>>> Brian D. Ripley, ? ? ? ? ? ? ? ? ?ripley at stats.ox.ac.uk
+>> >>>> Professor of Applied Statistics, ?http://www.stats.ox.ac.uk/~ripley/
+>> >>>> University of Oxford, ? ? ? ? ? ? Tel: ?+44 1865 272861 (self)
+>> >>>> 1 South Parks Road, ? ? ? ? ? ? ? ? ? ? +44 1865 272866 (PA)
+>> >>>> Oxford OX1 3TG, UK ? ? ? ? ? ? ? ?Fax: ?+44 1865 272595
+>> >>>
+>> >>> _______________________________________________
+>> >>> R-sig-DB mailing list -- R Special Interest Group
+>> >>> R-sig-DB at stat.math.ethz.ch
+>> >>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>> >>>
+>> >>
+>> >> ------------------------------------------------------------------------
+>> >>
+>> >> _______________________________________________
+>> >> R-sig-DB mailing list -- R Special Interest Group
+>> >> R-sig-DB at stat.math.ethz.ch
+>> >> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>> >>
+>> >
+>
+
+
+
+From Cr@|g@Mundy @end|ng |rom ut@@@edu@@u  Tue Apr 28 01:27:42 2009
+From: Cr@|g@Mundy @end|ng |rom ut@@@edu@@u (Craig Mundy)
+Date: Tue, 28 Apr 2009 09:27:42 +1000
+Subject: [R-sig-DB] SQLServer and RODBC
+Message-ID: <FA57AF5676F59A44BF9C7A3462903C6946C3ECC1BA@MAILSBY1.utas.ad.internal>
+
+Hello,
+
+I have been having similar problems to Xavier when connecting to Sql Server 2008 using RODBC. In addition to the date problem, I have two floating point fields in SQL Server that are truncated somewhere in the process. I have had slightly better success by creating a dummy Access database, with linked tables through to SQL Server, and then using RODBC to connect to the .mdb file. But, still, It's not ideal, and the resulting data types are not faithfull to the original.
+
+The context of my attempts is to pull time/spatial data out of SQL Server 2008 into R for furhter analyses. I understand that ODBC is a fairly basic protocol, and possibuly restricted to primitive data types and may not handle Blob fields such as WKB. Hence the ability to at least get Lat/Long or Eastings & Northings (with decimals in tact) is important.
+
+I am currently exploring the concept of RJDBC as an alternative to RODBC, to connect to SQL Server. Has anyone had any exerience, or a perspective on the ability of RJDBC in terms of being faithfull to data types.
+
+I have scoured all of the pdf's for packages Rgdal, DBI, RODBC, and RJDBC ... and other than working my through getting the syntax right, I'm none the wiser about what data types these packages will support.
+
+Many thanks
+
+Craig
+
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From je||@horner @end|ng |rom v@nderb||t@edu  Thu Apr 30 17:12:17 2009
+From: je||@horner @end|ng |rom v@nderb||t@edu (Jeffrey Horner)
+Date: Thu, 30 Apr 2009 10:12:17 -0500
+Subject: [R-sig-DB] problem loading RMySQL
+In-Reply-To: <OF7F97FE85.52BEFAF1-ON852575A8.0042A752-852575A8.0042F54A@epamail.epa.gov>
+References: <OF7F97FE85.52BEFAF1-ON852575A8.0042A752-852575A8.0042F54A@epamail.epa.gov>
+Message-ID: <49F9BFD1.2010808@vanderbilt.edu>
+
+Milstead.Bryan at epamail.epa.gov wrote on 04/30/2009 07:11 AM:
+> 
+> Hi Jeff:  I'd like to use the RMySQL package that you administer but am 
+> having trouble loading it.  I can download and install the package but 
+> can't load it.  Below is the output from my attempt.  I will appreciate 
+> any help you can give me on this.   Thanks.
+> 
+> 
+>  > utils:::menuInstallPkgs()
+> trying URL 
+> 'http://www.revolution-computing.com/cran/bin/windows/contrib/2.8/RMySQL_0.7-4.zip' 
+> 
+> Content type 'application/zip' length 386775 bytes (377 Kb)
+> opened URL
+> downloaded 377 Kb
+> 
+> package 'RMySQL' successfully unpacked and MD5 sums checked
+> 
+> The downloaded packages are in
+>         C:\Documents and Settings\WMilstea\Local 
+> Settings\Temp\RtmpxbLL7f\downloaded_packages
+> updating HTML package descriptions
+>  > local({pkg <- select.list(sort(.packages(all.available = TRUE)))
+> + if(nchar(pkg)) library(pkg, character.only=TRUE)})
+> Error in if (utils::file_test("-d", MySQLhome)) break :
+>   argument is of length zero
+> Error : .onLoad failed in 'loadNamespace' for 'RMySQL'
+> Error: package/namespace load failed for 'RMySQL'
+
+Weird. Run the code below and send me the output:
+
+sessionInfo()
+.libPaths()
+Sys.getenv('MYSQL_HOME')
+utils::readRegistry("SOFTWARE\\MySQL AB", hive="HLM", maxdepth=2)
+
+I'm also CC'ing this to r-sig-db to capture and archive your issue.
+
+Jeff
+
+-- 
+http://biostat.mc.vanderbilt.edu/JeffreyHorner
+
+
+
+From Miiste@d@Bry@@ m@iii@g oii ep@m@ii@ep@@gov  Thu Apr 30 18:56:19 2009
+From: Miiste@d@Bry@@ m@iii@g oii ep@m@ii@ep@@gov (Miiste@d@Bry@@ m@iii@g oii ep@m@ii@ep@@gov)
+Date: Thu, 30 Apr 2009 12:56:19 -0400
+Subject: [R-sig-DB] problem loading RMySQL
+In-Reply-To: <49F9BFD1.2010808@vanderbilt.edu>
+References: <OF7F97FE85.52BEFAF1-ON852575A8.0042A752-852575A8.0042F54A@epamail.epa.gov>
+	<49F9BFD1.2010808@vanderbilt.edu>
+Message-ID: <OF2278A05B.C1F9A1CE-ON852575A8.005CE026-852575A8.005D02FE@epamail.epa.gov>
+
+Hi Jeff:  thanks for getting back to me so quickly. 
+
+Here is the output::
+
+> sessionInfo()
+R version 2.8.1 (2008-12-22) 
+i386-pc-mingw32 
+
+locale:
+LC_COLLATE=English_United States.1252;LC_CTYPE=English_United 
+States.1252;LC_MONETARY=English_United 
+States.1252;LC_NUMERIC=C;LC_TIME=English_United States.1252
+
+attached base packages:
+[1] stats     graphics  grDevices datasets  tcltk     utils     methods 
+base 
+
+other attached packages:
+[1] ineq_0.2-8      foreign_0.8-34  DBI_0.2-4       svSocket_0.9-43 
+svMisc_0.9-46   TinnR_1.0.3 
+[7] R2HTML_1.59-1   Hmisc_3.5-2 
+
+loaded via a namespace (and not attached):
+[1] cluster_1.11.13 grid_2.8.1      lattice_0.17-22 tools_2.8.1 
+> .libPaths()
+[1] 
+"//AA.AD.EPA.GOV/ORD/NAR/USERS/EC2/wmilstea/NETMYD~1/PORTAB~2/R/R-28~1.1/library"
+> Sys.getenv('MYSQL_HOME')
+MYSQL_HOME 
+        "" 
+> utils::readRegistry("SOFTWARE\\MySQL AB", hive="HLM", maxdepth=2)
+$`MySQL Connector/ODBC 5.1`
+$`MySQL Connector/ODBC 5.1`$Version
+[1] "5.1.5"
+
+
+Cheers,  Bryan
+
+milstead.bryan at epa.gov
+(401) 782-3015
+
+
+
+
+From:
+Jeffrey Horner <jeff.horner at vanderbilt.edu>
+To:
+Bryan Milstead/NAR/USEPA/US at EPA, "r-sig-db at stat.math.ethz.ch" 
+<r-sig-db at stat.math.ethz.ch>
+Date:
+04/30/2009 11:12 AM
+Subject:
+Re: problem loading RMySQL
+
+
+
+Milstead.Bryan at epamail.epa.gov wrote on 04/30/2009 07:11 AM:
+> 
+> Hi Jeff:  I'd like to use the RMySQL package that you administer but am 
+> having trouble loading it.  I can download and install the package but 
+> can't load it.  Below is the output from my attempt.  I will appreciate 
+> any help you can give me on this.   Thanks.
+> 
+> 
+>  > utils:::menuInstallPkgs()
+> trying URL 
+> 
+'http://www.revolution-computing.com/cran/bin/windows/contrib/2.8/RMySQL_0.7-4.zip' 
+
+> 
+> Content type 'application/zip' length 386775 bytes (377 Kb)
+> opened URL
+> downloaded 377 Kb
+> 
+> package 'RMySQL' successfully unpacked and MD5 sums checked
+> 
+> The downloaded packages are in
+>         C:\Documents and Settings\WMilstea\Local 
+> Settings\Temp\RtmpxbLL7f\downloaded_packages
+> updating HTML package descriptions
+>  > local({pkg <- select.list(sort(.packages(all.available = TRUE)))
+> + if(nchar(pkg)) library(pkg, character.only=TRUE)})
+> Error in if (utils::file_test("-d", MySQLhome)) break :
+>   argument is of length zero
+> Error : .onLoad failed in 'loadNamespace' for 'RMySQL'
+> Error: package/namespace load failed for 'RMySQL'
+
+Weird. Run the code below and send me the output:
+
+sessionInfo()
+.libPaths()
+Sys.getenv('MYSQL_HOME')
+utils::readRegistry("SOFTWARE\\MySQL AB", hive="HLM", maxdepth=2)
+
+I'm also CC'ing this to r-sig-db to capture and archive your issue.
+
+Jeff
+
+-- 
+http://biostat.mc.vanderbilt.edu/JeffreyHorner
+
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From je||@horner @end|ng |rom v@nderb||t@edu  Thu Apr 30 18:58:09 2009
+From: je||@horner @end|ng |rom v@nderb||t@edu (Jeffrey Horner)
+Date: Thu, 30 Apr 2009 11:58:09 -0500
+Subject: [R-sig-DB] problem loading RMySQL
+In-Reply-To: <OF2278A05B.C1F9A1CE-ON852575A8.005CE026-852575A8.005D02FE@epamail.epa.gov>
+References: <OF7F97FE85.52BEFAF1-ON852575A8.0042A752-852575A8.0042F54A@epamail.epa.gov>
+	<49F9BFD1.2010808@vanderbilt.edu>
+	<OF2278A05B.C1F9A1CE-ON852575A8.005CE026-852575A8.005D02FE@epamail.epa.gov>
+Message-ID: <49F9D8A1.5050007@vanderbilt.edu>
+
+Milstead.Bryan at epamail.epa.gov wrote on 04/30/2009 11:56 AM:
+> 
+> Hi Jeff:  thanks for getting back to me so quickly.  
+> 
+> Here is the output::
+> 
+>  > sessionInfo()
+> R version 2.8.1 (2008-12-22)
+> i386-pc-mingw32
+> 
+> locale:
+> LC_COLLATE=English_United States.1252;LC_CTYPE=English_United 
+> States.1252;LC_MONETARY=English_United 
+> States.1252;LC_NUMERIC=C;LC_TIME=English_United States.1252
+> 
+> attached base packages:
+> [1] stats     graphics  grDevices datasets  tcltk     utils     methods 
+>   base    
+> 
+> other attached packages:
+> [1] ineq_0.2-8      foreign_0.8-34  DBI_0.2-4       svSocket_0.9-43 
+> svMisc_0.9-46   TinnR_1.0.3    
+> [7] R2HTML_1.59-1   Hmisc_3.5-2    
+> 
+> loaded via a namespace (and not attached):
+> [1] cluster_1.11.13 grid_2.8.1      lattice_0.17-22 tools_2.8.1    
+>  > .libPaths()
+> [1] 
+> "//AA.AD.EPA.GOV/ORD/NAR/USERS/EC2/wmilstea/NETMYD~1/PORTAB~2/R/R-28~1.1/library" 
+> 
+>  > Sys.getenv('MYSQL_HOME')
+> MYSQL_HOME
+>         ""
+>  > utils::readRegistry("SOFTWARE\\MySQL AB", hive="HLM", maxdepth=2)
+> $`MySQL Connector/ODBC 5.1`
+> $`MySQL Connector/ODBC 5.1`$Version
+> [1] "5.1.5"
+>
+
+See http://biostat.mc.vanderbilt.edu/RMySQL
+
+You haven't installed the MySQL client libraries.
+
+Jeff
+
+
+
+From j@burke @end|ng |rom e@rth||nk@net  Thu Apr 30 19:16:32 2009
+From: j@burke @end|ng |rom e@rth||nk@net (Jim Burke)
+Date: Thu, 30 Apr 2009 12:16:32 -0500
+Subject: [R-sig-DB] problem loading RMySQL
+In-Reply-To: <49F9D8A1.5050007@vanderbilt.edu>
+References: <OF7F97FE85.52BEFAF1-ON852575A8.0042A752-852575A8.0042F54A@epamail.epa.gov>	<49F9BFD1.2010808@vanderbilt.edu>	<OF2278A05B.C1F9A1CE-ON852575A8.005CE026-852575A8.005D02FE@epamail.epa.gov>
+	<49F9D8A1.5050007@vanderbilt.edu>
+Message-ID: <49F9DCF0.6020909@earthlink.net>
+
+I am sure everyone encounters this and its rather
+old hat. Forgive me for belaboring the obvious.
+
+Sometimes various install packages I attempt
+to install die in that last part. They download
+OK, they unzip OK but sometimes error in the
+updating HTML part.
+
+(By the way my error cause was having a cluttered
+PC environment. Specifically having FireFox open.
+If I reboot and only open R and retry the install,
+it usually works.)
+
+So in Windows I got to
+C:\Program Files\R\R 2.90\R-2.9.0\library
+
+I will see an unusually named file there
+. for example file5f906952
+. the file date will reflect my recent install date
+. looking in the subdirectory of file5f906952, I see
+  name of the package I was trying to install.
+. In my example above that subdirectory was file5f906952\PBSmapping
+. So I pasted PBSmapping and all its subdirectories in the 
+library\PBSmapping
+. And was able to use PBSmapping
+
+Hope this helps,
+Jim Burke
+
+Jeffrey Horner wrote:
+> Milstead.Bryan at epamail.epa.gov wrote on 04/30/2009 11:56 AM:
+>>
+>> Hi Jeff:  thanks for getting back to me so quickly. 
+>> Here is the output::
+>>
+>>  > sessionInfo()
+>> R version 2.8.1 (2008-12-22)
+>> i386-pc-mingw32
+>>
+>> locale:
+>> LC_COLLATE=English_United States.1252;LC_CTYPE=English_United 
+>> States.1252;LC_MONETARY=English_United 
+>> States.1252;LC_NUMERIC=C;LC_TIME=English_United States.1252
+>>
+>> attached base packages:
+>> [1] stats     graphics  grDevices datasets  tcltk     utils     
+>> methods   base   
+>> other attached packages:
+>> [1] ineq_0.2-8      foreign_0.8-34  DBI_0.2-4       svSocket_0.9-43 
+>> svMisc_0.9-46   TinnR_1.0.3    [7] R2HTML_1.59-1   Hmisc_3.5-2   
+>> loaded via a namespace (and not attached):
+>> [1] cluster_1.11.13 grid_2.8.1      lattice_0.17-22 tools_2.8.1     > 
+>> .libPaths()
+>> [1] 
+>> "//AA.AD.EPA.GOV/ORD/NAR/USERS/EC2/wmilstea/NETMYD~1/PORTAB~2/R/R-28~1.1/library" 
+>>
+>>  > Sys.getenv('MYSQL_HOME')
+>> MYSQL_HOME
+>>         ""
+>>  > utils::readRegistry("SOFTWARE\\MySQL AB", hive="HLM", maxdepth=2)
+>> $`MySQL Connector/ODBC 5.1`
+>> $`MySQL Connector/ODBC 5.1`$Version
+>> [1] "5.1.5"
+>>
+>
+> See http://biostat.mc.vanderbilt.edu/RMySQL
+>
+> You haven't installed the MySQL client libraries.
+>
+> Jeff
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+>
+
+
+
+From Miiste@d@Bry@@ m@iii@g oii ep@m@ii@ep@@gov  Thu Apr 30 19:35:51 2009
+From: Miiste@d@Bry@@ m@iii@g oii ep@m@ii@ep@@gov (Miiste@d@Bry@@ m@iii@g oii ep@m@ii@ep@@gov)
+Date: Thu, 30 Apr 2009 13:35:51 -0400
+Subject: [R-sig-DB] problem loading RMySQL
+In-Reply-To: <49F9D8A1.5050007@vanderbilt.edu>
+References: <OF7F97FE85.52BEFAF1-ON852575A8.0042A752-852575A8.0042F54A@epamail.epa.gov>
+	<49F9BFD1.2010808@vanderbilt.edu>
+	<OF2278A05B.C1F9A1CE-ON852575A8.005CE026-852575A8.005D02FE@epamail.epa.gov>
+	<49F9D8A1.5050007@vanderbilt.edu>
+Message-ID: <OF3CC9BB0E.6C8CC124-ON852575A8.005F1E47-852575A8.0060A1AA@epamail.epa.gov>
+
+Hi Jeff:  I have MySQL 5.1 up an running on my machine and I am using it 
+so I don't think this is the issue.  It shouldn't matter but, I used the 
+XAMPP build to install MySQL instead of using the source binaries.  I also 
+have a MySQL ODBC connector installed so I can use MySQL with open office. 
+ 
+
+So where do I go from here?
+
+
+Cheers,  Bryan
+
+milstead.bryan at epa.gov
+(401) 782-3015
+
+
+
+
+From:
+Jeffrey Horner <jeff.horner at vanderbilt.edu>
+To:
+Bryan Milstead/NAR/USEPA/US at EPA
+Cc:
+"r-sig-db at stat.math.ethz.ch" <r-sig-db at stat.math.ethz.ch>
+Date:
+04/30/2009 12:58 PM
+Subject:
+Re: problem loading RMySQL
+
+
+
+Milstead.Bryan at epamail.epa.gov wrote on 04/30/2009 11:56 AM:
+> 
+> Hi Jeff:  thanks for getting back to me so quickly. 
+> 
+> Here is the output::
+> 
+>  > sessionInfo()
+> R version 2.8.1 (2008-12-22)
+> i386-pc-mingw32
+> 
+> locale:
+> LC_COLLATE=English_United States.1252;LC_CTYPE=English_United 
+> States.1252;LC_MONETARY=English_United 
+> States.1252;LC_NUMERIC=C;LC_TIME=English_United States.1252
+> 
+> attached base packages:
+> [1] stats     graphics  grDevices datasets  tcltk     utils     methods 
+>   base 
+> 
+> other attached packages:
+> [1] ineq_0.2-8      foreign_0.8-34  DBI_0.2-4       svSocket_0.9-43 
+> svMisc_0.9-46   TinnR_1.0.3 
+> [7] R2HTML_1.59-1   Hmisc_3.5-2 
+> 
+> loaded via a namespace (and not attached):
+> [1] cluster_1.11.13 grid_2.8.1      lattice_0.17-22 tools_2.8.1 
+>  > .libPaths()
+> [1] 
+> 
+"//AA.AD.EPA.GOV/ORD/NAR/USERS/EC2/wmilstea/NETMYD~1/PORTAB~2/R/R-28~1.1/library" 
+
+> 
+>  > Sys.getenv('MYSQL_HOME')
+> MYSQL_HOME
+>         ""
+>  > utils::readRegistry("SOFTWARE\\MySQL AB", hive="HLM", maxdepth=2)
+> $`MySQL Connector/ODBC 5.1`
+> $`MySQL Connector/ODBC 5.1`$Version
+> [1] "5.1.5"
+>
+
+See http://biostat.mc.vanderbilt.edu/RMySQL
+
+You haven't installed the MySQL client libraries.
+
+Jeff
+
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From ne||t @end|ng |rom ne||t||||n@com  Tue May 12 00:18:30 2009
+From: ne||t @end|ng |rom ne||t||||n@com (Neil Tiffin)
+Date: Mon, 11 May 2009 17:18:30 -0500
+Subject: [R-sig-DB] Postgresql Options for Mac OS X
+Message-ID: <E7E05742-E60A-4E1E-9875-826AC14D243E@neiltiffin.com>
+
+In trying to figure out how the best way to access a postgresql  
+database from R on Mac OS X. Currently my database has 88 million rows  
+(9 GB) and is growing so I am looking for a stable interface.  The  
+following options seem to be available:
+
+1. RdbiPgSQL_1.18.1
+2. RPostgreSQL_0.1-4
+3. TSPostgreSQL_2009.3-2
+
+These packages seemed to be obsolete and no longer supported/ 
+recommended:
+
+4. RPgSQL 1.0
+5. Rdbi 0.1.2
+
+Results
+======
+#1 relies on #5 and has an older connection syntax.
+#2 appears relatively new and has not reached 1.0 status yet.  For  
+someone used to libpq the interface is very familiar.
+#3 relies on #2 and not sure what it adds as the docs did not install  
+correctly, nor are they accessible from CRAN.
+All 3 packages compiled and installed on Mac OS X even though #2 and  
+#3 reported failures in CRAN.
+Have not tried to actually use them yet.
+
+Conclusion
+=========
+Use #2 even though it does not seem very mature.
+
+Questions
+========
+Is this a good summary of the state of accessing postgresql from R or  
+have I missed something?
+
+Is RPostgreSQL being used anyplace and is it stable?
+
+Neil
+Chicago
+
+
+
+From pg||bert @end|ng |rom b@nk-b@nque-c@n@d@@c@  Tue May 12 01:14:24 2009
+From: pg||bert @end|ng |rom b@nk-b@nque-c@n@d@@c@ (Paul Gilbert)
+Date: Mon, 11 May 2009 19:14:24 -0400
+Subject: [R-sig-DB] Postgresql Options for Mac OS X
+In-Reply-To: <E7E05742-E60A-4E1E-9875-826AC14D243E@neiltiffin.com>
+References: <E7E05742-E60A-4E1E-9875-826AC14D243E@neiltiffin.com>
+Message-ID: <4A08B150.7090409@bank-banque-canada.ca>
+
+Neil Tiffin wrote:
+> In trying to figure out how the best way to access a postgresql 
+> database from R on Mac OS X. Currently my database has 88 million rows 
+> (9 GB) and is growing so I am looking for a stable interface.  The 
+> following options seem to be available:
+>
+> 1. RdbiPgSQL_1.18.1
+> 2. RPostgreSQL_0.1-4
+> 3. TSPostgreSQL_2009.3-2
+>
+> These packages seemed to be obsolete and no longer supported/recommended:
+>
+> 4. RPgSQL 1.0
+> 5. Rdbi 0.1.2
+>
+> Results
+> ======
+> #1 relies on #5 and has an older connection syntax.
+> #2 appears relatively new and has not reached 1.0 status yet.  For 
+> someone used to libpq the interface is very familiar.
+> #3 relies on #2 and not sure what it adds as the docs did not install 
+> correctly, nor are they accessible from CRAN.
+> All 3 packages compiled and installed on Mac OS X even though #2 and 
+> #3 reported failures in CRAN.
+> Have not tried to actually use them yet.
+>
+> Conclusion
+> =========
+> Use #2 even though it does not seem very mature.
+Yes. (#3 is specific to time series dbs.  ) Another option is odbc.
+I'm not sure why you had problems with the docs.  I think the testing 
+problems on CRAN may have to do with the testing machine (not having a 
+working Postgres?).
+
+Paul
+>
+> Questions
+> ========
+> Is this a good summary of the state of accessing postgresql from R or 
+> have I missed something?
+>
+> Is RPostgreSQL being used anyplace and is it stable?
+>
+> Neil
+> Chicago
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+====================================================================================
+
+La version fran?aise suit le texte anglais.
+
+------------------------------------------------------------------------------------
+
+This email may contain privileged and/or confidential in...{{dropped:26}}
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Tue May 12 07:09:45 2009
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Tue, 12 May 2009 06:09:45 +0100 (BST)
+Subject: [R-sig-DB] Postgresql Options for Mac OS X
+In-Reply-To: <E7E05742-E60A-4E1E-9875-826AC14D243E@neiltiffin.com>
+References: <E7E05742-E60A-4E1E-9875-826AC14D243E@neiltiffin.com>
+Message-ID: <alpine.LFD.2.00.0905120603430.18085@gannet.stats.ox.ac.uk>
+
+On Mon, 11 May 2009, Neil Tiffin wrote:
+
+> In trying to figure out how the best way to access a postgresql database from 
+> R on Mac OS X. Currently my database has 88 million rows (9 GB) and is 
+> growing so I am looking for a stable interface.  The following options seem 
+> to be available:
+>
+> 1. RdbiPgSQL_1.18.1
+> 2. RPostgreSQL_0.1-4
+> 3. TSPostgreSQL_2009.3-2
+
+You have omitted RODBC, since PostgreSQL has a mature ODBC driver.
+
+3) Is a special-purpose layer over 2).
+
+> These packages seemed to be obsolete and no longer supported/recommended:
+>
+> 4. RPgSQL 1.0
+> 5. Rdbi 0.1.2
+>
+> Results
+> ======
+> #1 relies on #5 and has an older connection syntax.
+> #2 appears relatively new and has not reached 1.0 status yet.  For someone 
+> used to libpq the interface is very familiar.
+> #3 relies on #2 and not sure what it adds as the docs did not install 
+> correctly, nor are they accessible from CRAN.
+> All 3 packages compiled and installed on Mac OS X even though #2 and #3 
+> reported failures in CRAN.
+
+Have you looked at the failures?  RPostgreSQL failed to install 
+because the build machine does not have PostgreSQL installed.
+
+> Have not tried to actually use them yet.
+>
+> Conclusion
+> =========
+> Use #2 even though it does not seem very mature.
+>
+> Questions
+> ========
+> Is this a good summary of the state of accessing postgresql from R or have I 
+> missed something?
+
+The second.
+
+> Is RPostgreSQL being used anyplace and is it stable?
+>
+> Neil
+> Chicago
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From ne||t @end|ng |rom ne||t||||n@com  Tue May 12 14:00:32 2009
+From: ne||t @end|ng |rom ne||t||||n@com (Neil Tiffin)
+Date: Tue, 12 May 2009 07:00:32 -0500
+Subject: [R-sig-DB] Postgresql Options for Mac OS X
+In-Reply-To: <alpine.LFD.2.00.0905120603430.18085@gannet.stats.ox.ac.uk>
+References: <E7E05742-E60A-4E1E-9875-826AC14D243E@neiltiffin.com>
+	<alpine.LFD.2.00.0905120603430.18085@gannet.stats.ox.ac.uk>
+Message-ID: <ADC7C8AA-703A-46D6-AF5B-4987C6AF2F37@neiltiffin.com>
+
+Thanks, I am looking into RODBC.
+
+So which approach is considered the most used?
+
+On May 12, 2009, at 12:09 AM, Prof Brian Ripley wrote:
+
+> On Mon, 11 May 2009, Neil Tiffin wrote:
+>
+>> In trying to figure out how the best way to access a postgresql  
+>> database from R on Mac OS X. Currently my database has 88 million  
+>> rows (9 GB) and is growing so I am looking for a stable interface.   
+>> The following options seem to be available:
+>>
+>> 1. RdbiPgSQL_1.18.1
+>> 2. RPostgreSQL_0.1-4
+>> 3. TSPostgreSQL_2009.3-2
+>
+> You have omitted RODBC, since PostgreSQL has a mature ODBC driver.
+>
+> 3) Is a special-purpose layer over 2).
+>
+>> These packages seemed to be obsolete and no longer supported/ 
+>> recommended:
+>>
+>> 4. RPgSQL 1.0
+>> 5. Rdbi 0.1.2
+>>
+>> Results
+>> ======
+>> #1 relies on #5 and has an older connection syntax.
+>> #2 appears relatively new and has not reached 1.0 status yet.  For  
+>> someone used to libpq the interface is very familiar.
+>> #3 relies on #2 and not sure what it adds as the docs did not  
+>> install correctly, nor are they accessible from CRAN.
+>> All 3 packages compiled and installed on Mac OS X even though #2  
+>> and #3 reported failures in CRAN.
+>
+> Have you looked at the failures?  RPostgreSQL failed to install  
+> because the build machine does not have PostgreSQL installed.
+>
+>> Have not tried to actually use them yet.
+>>
+>> Conclusion
+>> =========
+>> Use #2 even though it does not seem very mature.
+>>
+>> Questions
+>> ========
+>> Is this a good summary of the state of accessing postgresql from R  
+>> or have I missed something?
+>
+> The second.
+>
+>> Is RPostgreSQL being used anyplace and is it stable?
+>>
+>> Neil
+>> Chicago
+
+
+
+From edd @end|ng |rom deb|@n@org  Tue May 12 14:24:34 2009
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Tue, 12 May 2009 07:24:34 -0500
+Subject: [R-sig-DB] Postgresql Options for Mac OS X
+In-Reply-To: <alpine.LFD.2.00.0905120603430.18085@gannet.stats.ox.ac.uk>
+References: <E7E05742-E60A-4E1E-9875-826AC14D243E@neiltiffin.com>
+	<alpine.LFD.2.00.0905120603430.18085@gannet.stats.ox.ac.uk>
+Message-ID: <18953.27266.309265.467392@ron.nulle.part>
+
+
+Neil,
+
+On 12 May 2009 at 06:09, Prof Brian Ripley wrote:
+| On Mon, 11 May 2009, Neil Tiffin wrote:
+| 
+| > In trying to figure out how the best way to access a postgresql database from 
+| > R on Mac OS X. Currently my database has 88 million rows (9 GB) and is 
+| > growing so I am looking for a stable interface.  The following options seem 
+| > to be available:
+| >
+| > 1. RdbiPgSQL_1.18.1
+| > 2. RPostgreSQL_0.1-4
+| > 3. TSPostgreSQL_2009.3-2
+| 
+| You have omitted RODBC, since PostgreSQL has a mature ODBC driver.
+
+Yes. I packaged it for Debian more than six years ago, and have supported it
+ever since, precisely because I wanted to talk to Pg on my systems. RODBC is
+stable and mature --- thanks to a lot of work by Brian Ripley (building on
+the earlier work by Michael Lapsley).
+
+That said, I also find ODBC and its setup mechanism with DSNs etc somewhat
+tedious and quite frankly like the DBI interface better.  Which is why I
+suggested and mentored the DBI-compliant RPostgreSQL implementation as a
+Google Summer of Code project last year.  People seem to use and like it, and
+you remove one layer of possible breakage. The DBI abstraction also allows
+you to switch to other backends should the need arise.
+
+So you have choices, which is a good thing.
+
+| Have you looked at the failures?  RPostgreSQL failed to install 
+| because the build machine does not have PostgreSQL installed.
+
+IIRC at least the CRAN Linux testing boxen (being Debian) have it.  And
+Sameer and I also worked with Uwe last year to get Windows builds.  So yes,
+the builds fails _on Mac OS X only_ --- presumably because nobody volunteered
+to provide Pg for the build machine.  Maybe Neil can help here....
+
+Dirk
+
+-- 
+Three out of two people have difficulties with fractions.
+
+
+
+From corne| @end|ng |rom up|o@d-ro@ro  Tue May 12 19:41:24 2009
+From: corne| @end|ng |rom up|o@d-ro@ro (cornel)
+Date: Tue, 12 May 2009 20:41:24 +0300
+Subject: [R-sig-DB] Untitled-1
+Message-ID: <20090512.JWMOKTPVFJMQBWMN@upload-ro.ro>
+
+An HTML attachment was scrubbed...
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20090512/11a133b3/attachment.html>
+
+From k@p@tp @end|ng |rom gm@||@com  Thu May 14 07:13:24 2009
+From: k@p@tp @end|ng |rom gm@||@com (Prasenjit Kapat)
+Date: Thu, 14 May 2009 01:13:24 -0400
+Subject: [R-sig-DB] Postgresql Options for Mac OS X
+In-Reply-To: <E7E05742-E60A-4E1E-9875-826AC14D243E@neiltiffin.com>
+References: <E7E05742-E60A-4E1E-9875-826AC14D243E@neiltiffin.com>
+Message-ID: <de8c7cb40905132213w6507737dydd6709df1028aa22@mail.gmail.com>
+
+Hi,
+
+On Mon, May 11, 2009 at 6:18 PM, Neil Tiffin <neilt at neiltiffin.com> wrote:
+> In trying to figure out how the best way to access a postgresql database
+> from R on Mac OS X. Currently my database has 88 million rows (9 GB) and is
+> growing so I am looking for a stable interface. ?The following options seem
+> to be available:
+>
+> 1. RdbiPgSQL_1.18.1
+> 2. RPostgreSQL_0.1-4
+> 3. TSPostgreSQL_2009.3-2
+>
+> These packages seemed to be obsolete and no longer supported/recommended:
+>
+> 4. RPgSQL 1.0
+> 5. Rdbi 0.1.2
+>
+> Results
+> ======
+> #1 relies on #5 and has an older connection syntax.
+> #2 appears relatively new and has not reached 1.0 status yet. ?For someone
+> used to libpq the interface is very familiar.
+> #3 relies on #2 and not sure what it adds as the docs did not install
+> correctly, nor are they accessible from CRAN.
+> All 3 packages compiled and installed on Mac OS X even though #2 and #3
+> reported failures in CRAN.
+> Have not tried to actually use them yet.
+>
+> Conclusion
+> =========
+> Use #2 even though it does not seem very mature.
+>
+> Questions
+> ========
+> Is this a good summary of the state of accessing postgresql from R or have I
+> missed something?
+>
+> Is RPostgreSQL being used anyplace and is it stable?
+
+Yes, I do use it on a regular basis. Though there are some quirks here
+and there with the functions, they are usable. Often I have found
+myself writing small wrapper functions around the ones provided with
+RPostgreSQL for my special needs. I have never tried the other options
+so no comments on them. But I remember, some time back, reading the
+documentations and then finally settling on RPostgreSQL for its
+clarity in implementation and function usage.
+
+I use it completely under Linux to Linux connections, so any Mac OSX
+specific issues will be hidden from me.
+
+Finally, I should also mention that my usage is primarily like this:
+extract relevant/subset of records (and fields) from the database and
+work inside R with that. I have never tried any complicated/fancy
+database coding, though, in principle it should work, Dirk might
+confirm.
+
+-- 
+Prasenjit
+
+
+
+From ne||t @end|ng |rom ne||t||||n@com  Thu May 14 15:23:21 2009
+From: ne||t @end|ng |rom ne||t||||n@com (Neil Tiffin)
+Date: Thu, 14 May 2009 08:23:21 -0500
+Subject: [R-sig-DB] Postgresql Options for Mac OS X
+In-Reply-To: <de8c7cb40905132213w6507737dydd6709df1028aa22@mail.gmail.com>
+References: <E7E05742-E60A-4E1E-9875-826AC14D243E@neiltiffin.com>
+	<de8c7cb40905132213w6507737dydd6709df1028aa22@mail.gmail.com>
+Message-ID: <19C14CA7-0571-4962-BE68-D1A7D40C942A@neiltiffin.com>
+
+On May 14, 2009, at 12:13 AM, Prasenjit Kapat wrote:
+
+> Hi,
+>
+> On Mon, May 11, 2009 at 6:18 PM, Neil Tiffin <neilt at neiltiffin.com>  
+> wrote:
+>> In trying to figure out how the best way to access a postgresql  
+>> database
+>> from R on Mac OS X. Currently my database has 88 million rows (9  
+>> GB) and is
+>> growing so I am looking for a stable interface.  The following  
+>> options seem
+>> to be available:
+>>
+>> 1. RdbiPgSQL_1.18.1
+>> 2. RPostgreSQL_0.1-4
+>> 3. TSPostgreSQL_2009.3-2
+>>
+>> These packages seemed to be obsolete and no longer supported/ 
+>> recommended:
+>>
+>> 4. RPgSQL 1.0
+>> 5. Rdbi 0.1.2
+>>
+>> Results
+>> ======
+>> #1 relies on #5 and has an older connection syntax.
+>> #2 appears relatively new and has not reached 1.0 status yet.  For  
+>> someone
+>> used to libpq the interface is very familiar.
+>> #3 relies on #2 and not sure what it adds as the docs did not install
+>> correctly, nor are they accessible from CRAN.
+>> All 3 packages compiled and installed on Mac OS X even though #2  
+>> and #3
+>> reported failures in CRAN.
+>> Have not tried to actually use them yet.
+>>
+>> Conclusion
+>> =========
+>> Use #2 even though it does not seem very mature.
+>>
+>> Questions
+>> ========
+>> Is this a good summary of the state of accessing postgresql from R  
+>> or have I
+>> missed something?
+>>
+>> Is RPostgreSQL being used anyplace and is it stable?
+>
+> Yes, I do use it on a regular basis. Though there are some quirks here
+> and there with the functions, they are usable. Often I have found
+> myself writing small wrapper functions around the ones provided with
+> RPostgreSQL for my special needs. I have never tried the other options
+> so no comments on them. But I remember, some time back, reading the
+> documentations and then finally settling on RPostgreSQL for its
+> clarity in implementation and function usage.
+>
+> I use it completely under Linux to Linux connections, so any Mac OSX
+> specific issues will be hidden from me.
+>
+> Finally, I should also mention that my usage is primarily like this:
+> extract relevant/subset of records (and fields) from the database and
+> work inside R with that. I have never tried any complicated/fancy
+> database coding, though, in principle it should work, Dirk might
+> confirm.
+>
+> -- 
+> Prasenjit
+
+If you care to be more specific about the "Quirks" and why you did  
+your wrappers I would be interested.  I am working with Dirk and  
+others to get the test environments set up on CRAN and r-forge for  
+Mac. Maybe some tests need to be added.  Also I have a lot of  
+experience with C drivers and probably can propose some improvements.
+
+Neil
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Thu May 14 16:29:04 2009
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Thu, 14 May 2009 10:29:04 -0400
+Subject: [R-sig-DB] Postgresql Options for Mac OS X
+In-Reply-To: <19C14CA7-0571-4962-BE68-D1A7D40C942A@neiltiffin.com>
+References: <E7E05742-E60A-4E1E-9875-826AC14D243E@neiltiffin.com>
+	<de8c7cb40905132213w6507737dydd6709df1028aa22@mail.gmail.com>
+	<19C14CA7-0571-4962-BE68-D1A7D40C942A@neiltiffin.com>
+Message-ID: <264855a00905140729r2442c024yf75a6fa93f6041ea@mail.gmail.com>
+
+On Thu, May 14, 2009 at 9:23 AM, Neil Tiffin <neilt at neiltiffin.com> wrote:
+
+> On May 14, 2009, at 12:13 AM, Prasenjit Kapat wrote:
+>
+>  Hi,
+>>
+>> On Mon, May 11, 2009 at 6:18 PM, Neil Tiffin <neilt at neiltiffin.com>
+>> wrote:
+>>
+>>> In trying to figure out how the best way to access a postgresql database
+>>> from R on Mac OS X. Currently my database has 88 million rows (9 GB) and
+>>> is
+>>> growing so I am looking for a stable interface.  The following options
+>>> seem
+>>> to be available:
+>>>
+>>> 1. RdbiPgSQL_1.18.1
+>>> 2. RPostgreSQL_0.1-4
+>>> 3. TSPostgreSQL_2009.3-2
+>>>
+>>> These packages seemed to be obsolete and no longer supported/recommended:
+>>>
+>>> 4. RPgSQL 1.0
+>>> 5. Rdbi 0.1.2
+>>>
+>>> Results
+>>> ======
+>>> #1 relies on #5 and has an older connection syntax.
+>>> #2 appears relatively new and has not reached 1.0 status yet.  For
+>>> someone
+>>> used to libpq the interface is very familiar.
+>>> #3 relies on #2 and not sure what it adds as the docs did not install
+>>> correctly, nor are they accessible from CRAN.
+>>> All 3 packages compiled and installed on Mac OS X even though #2 and #3
+>>> reported failures in CRAN.
+>>> Have not tried to actually use them yet.
+>>>
+>>> Conclusion
+>>> =========
+>>> Use #2 even though it does not seem very mature.
+>>>
+>>> Questions
+>>> ========
+>>> Is this a good summary of the state of accessing postgresql from R or
+>>> have I
+>>> missed something?
+>>>
+>>> Is RPostgreSQL being used anyplace and is it stable?
+>>>
+>>
+>> Yes, I do use it on a regular basis. Though there are some quirks here
+>> and there with the functions, they are usable. Often I have found
+>> myself writing small wrapper functions around the ones provided with
+>> RPostgreSQL for my special needs. I have never tried the other options
+>> so no comments on them. But I remember, some time back, reading the
+>> documentations and then finally settling on RPostgreSQL for its
+>> clarity in implementation and function usage.
+>>
+>> I use it completely under Linux to Linux connections, so any Mac OSX
+>> specific issues will be hidden from me.
+>>
+>> Finally, I should also mention that my usage is primarily like this:
+>> extract relevant/subset of records (and fields) from the database and
+>> work inside R with that. I have never tried any complicated/fancy
+>> database coding, though, in principle it should work, Dirk might
+>> confirm.
+>>
+>> --
+>> Prasenjit
+>>
+>
+> If you care to be more specific about the "Quirks" and why you did your
+> wrappers I would be interested.  I am working with Dirk and others to get
+> the test environments set up on CRAN and r-forge for Mac. Maybe some tests
+> need to be added.  Also I have a lot of experience with C drivers and
+> probably can propose some improvements.
+>
+
+I'm not using the interface much at this point, so I cannot comment much
+more than this without devoting more time.  It seems fine for everyday
+casual use, but there there are a couple obvious issues that could use some
+work.  See here for an issue with schema support (not sure if any suggested
+changes have been adopted):
+
+https://stat.ethz.ch/pipermail/r-sig-db/2009q2/000618.html
+
+The second had to do with dbWriteTable and dbReadTable.  Postgresql has a
+protocol for slurping up text data via the connection in a VERY fast manner;
+this functionality (last I checked) was not being used to deal with
+dbWriteTable and dbReadTable.  It would be very nice to use that api for the
+reading and (particularly) writing of tables, since it can be an order of
+magnitude or more faster than inserts.
+
+Sean
+
+	[[alternative HTML version deleted]]
+
+
+
+From |uv@r @end|ng |rom p|@|ntext@@k  Fri May 15 09:04:32 2009
+From: |uv@r @end|ng |rom p|@|ntext@@k (=?utf-8?q?=C4=BDubom=C3=ADr_Varga?=)
+Date: Fri, 15 May 2009 09:04:32 +0200
+Subject: [R-sig-DB] DBI interface in R
+Message-ID: <200905150904.32681.luvar@plaintext.sk>
+
+Hi.
+
+I have read your paper
+http://cran.r-project.org/web/packages/DBI/vignettes/DBI.pdf
+There is no description about what it is about. Is it about interface, which 
+should be implemented in feature, or it is actually working package 
+description? If it is functional package, how is it called?
+
+Please add some more description to abstract and to document. Iam new in R 
+world and I am confused about some pdf files, which I found.
+
+Have a nice day.
+
+-- 
+Odborn?k na v?etko je zl? odborn?k. Ja sa sna??m by? v?nimkou potvrdzuj?cou 
+pravidlo.
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Fri May 15 11:21:43 2009
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Fri, 15 May 2009 05:21:43 -0400
+Subject: [R-sig-DB] DBI interface in R
+In-Reply-To: <200905150904.32681.luvar@plaintext.sk>
+References: <200905150904.32681.luvar@plaintext.sk>
+Message-ID: <264855a00905150221r365bb5l6e67040e1421607f@mail.gmail.com>
+
+2009/5/15 ??ubom??r Varga <luvar at plaintext.sk>
+
+> Hi.
+>
+> I have read your paper
+> http://cran.r-project.org/web/packages/DBI/vignettes/DBI.pdf
+> There is no description about what it is about. Is it about interface,
+> which
+> should be implemented in feature, or it is actually working package
+> description? If it is functional package, how is it called?
+>
+
+The DBI package specifies an interface.  There are a number of packages,
+RMySQL, RPostgreSQL, etc., that implement this interface for different
+database backends.
+
+Sean
+
+	[[alternative HTML version deleted]]
+
+
+
+From |uv@r @end|ng |rom p|@|ntext@@k  Fri May 15 11:34:47 2009
+From: |uv@r @end|ng |rom p|@|ntext@@k (=?utf-8?q?=C4=BDubom=C3=ADr_Varga?=)
+Date: Fri, 15 May 2009 11:34:47 +0200
+Subject: [R-sig-DB] DBI interface in R
+In-Reply-To: <264855a00905150221r365bb5l6e67040e1421607f@mail.gmail.com>
+References: <200905150904.32681.luvar@plaintext.sk>
+	<264855a00905150221r365bb5l6e67040e1421607f@mail.gmail.com>
+Message-ID: <200905151134.47256.luvar@plaintext.sk>
+
+On Friday 15 May 2009 11:21:43 Sean Davis wrote:
+> 2009/5/15 ?ubom?r Varga <luvar at plaintext.sk>
+>
+> > Hi.
+> >
+> > I have read your paper
+> > http://cran.r-project.org/web/packages/DBI/vignettes/DBI.pdf
+> > There is no description about what it is about. Is it about interface,
+> > which
+> > should be implemented in feature, or it is actually working package
+> > description? If it is functional package, how is it called?
+>
+> The DBI package specifies an interface.  There are a number of packages,
+> RMySQL, RPostgreSQL, etc., that implement this interface for different
+> database backends.
+>
+
+Thanks a lot. Just an keyword "RPostgreSQL" helped a lot.
+
+LuVar
+-- 
+Odborn?k na v?etko je zl? odborn?k. Ja sa sna??m by? v?nimkou potvrdzuj?cou 
+pravidlo.
+
+
+
+From ICoe @end|ng |rom connectc@p@com  Sat May 16 20:47:52 2009
+From: ICoe @end|ng |rom connectc@p@com (Ian Coe)
+Date: Sat, 16 May 2009 11:47:52 -0700
+Subject: [R-sig-DB] Error connecting R to mysql
+Message-ID: <C92D6BF93B8E2A4B96E206B66040B916CC536A@CONNCAPSBS.connectcap.local>
+
+Hi,
+
+   I am experiencing the error copied below when I call library(RMySQL).
+I have done complete installs of mysql 5.1, mysql GUI tools, and MySQL
+connector/C on WinXP.     I found the following exchange from this list
+regarding a very similar sounding error (also copied below) and went
+back over my install settings to see if I missed anything.  I do not see
+anything left to install.   Does anyone have any suggestions for what to
+try next?  
+
+Thanks so much for your help.
+
+-Ian
+
+My error:
+A MySQL Registry key was found but the folder C:\Program
+Files\MySQL\MySQL Tools for 5.0\/. doesn't contain a bin or lib/opt
+folder. That's where we need to find libmySQL.dll. 
+Error : .onLoad failed in 'loadNamespace' for 'RMySQL'
+Error: package/namespace load failed for 'RMySQL'
+
+
+Related message from a previous post:
+   Yakub wrote:
+> I have the following error: 
+>> library(RMySQL)
+> Error in fun(...) : 
+>   A MySQL Registry key was found but the folder C:\Program
+Files\MySQL\MySQL
+> Tools for 5.0\/. doesn't contain a bin or lib/opt folder. That's where
+we
+> need to find libmySQL.dll. 
+> Error : .onLoad failed in 'loadNamespace' for 'RMySQL'
+> Error: package/namespace load failed for 'RMySQL'
+> 
+> This happens after I install MySQL Tools. Seems that R is pointing to
+the
+> wrong registry. Can anyone help?
+
+You need to install the client programs and libraries when you install 
+the MySQL distribution. Just re-run the MySQL installer again and be 
+sure to read the steps carefully.
+
+Best,
+
+Jeff
+
+
+
+From j@burke @end|ng |rom e@rth||nk@net  Sat May 16 21:36:21 2009
+From: j@burke @end|ng |rom e@rth||nk@net (Jim Burke)
+Date: Sat, 16 May 2009 14:36:21 -0500
+Subject: [R-sig-DB] Error connecting R to mysql
+In-Reply-To: <C92D6BF93B8E2A4B96E206B66040B916CC536A@CONNCAPSBS.connectcap.local>
+References: <C92D6BF93B8E2A4B96E206B66040B916CC536A@CONNCAPSBS.connectcap.local>
+Message-ID: <4A0F15B5.8050202@earthlink.net>
+
+Ian and everyone.
+
+I am using MYSQL 5.0 Community Edition on Win XP. So
+its a little different from Ian's MYSQL 5.1 issue.
+
+Remember if an exe is looking for a DLL in Windows it
+first looks in the subdirectory where the exe is. I
+believe I moved libmySQL.dll 2,020KB 01/30/2009 in
+that subdir. Details are below.
+
+. Source C:\Program Files\MySQL\MySQL Server 5.0\bin
+. Many other files are in that bin subdir.
+. All application (or exe suffixed) programs are in
+  that bin subdir.
+
+Hope this helps,
+Jim
+
+Ian Coe wrote:
+> Hi,
+>
+>    I am experiencing the error copied below when I call library(RMySQL).
+> I have done complete installs of mysql 5.1, mysql GUI tools, and MySQL
+> connector/C on WinXP.     I found the following exchange from this list
+> regarding a very similar sounding error (also copied below) and went
+> back over my install settings to see if I missed anything.  I do not see
+> anything left to install.   Does anyone have any suggestions for what to
+> try next?  
+>
+> Thanks so much for your help.
+>
+> -Ian
+>
+> My error:
+> A MySQL Registry key was found but the folder C:\Program
+> Files\MySQL\MySQL Tools for 5.0\/. doesn't contain a bin or lib/opt
+> folder. That's where we need to find libmySQL.dll. 
+> Error : .onLoad failed in 'loadNamespace' for 'RMySQL'
+> Error: package/namespace load failed for 'RMySQL'
+>
+>
+> Related message from a previous post:
+>    Yakub wrote:
+>   
+>> I have the following error: 
+>>     
+>>> library(RMySQL)
+>>>       
+>> Error in fun(...) : 
+>>   A MySQL Registry key was found but the folder C:\Program
+>>     
+> Files\MySQL\MySQL
+>   
+>> Tools for 5.0\/. doesn't contain a bin or lib/opt folder. That's where
+>>     
+> we
+>   
+>> need to find libmySQL.dll. 
+>> Error : .onLoad failed in 'loadNamespace' for 'RMySQL'
+>> Error: package/namespace load failed for 'RMySQL'
+>>
+>> This happens after I install MySQL Tools. Seems that R is pointing to
+>>     
+> the
+>   
+>> wrong registry. Can anyone help?
+>>     
+>
+> You need to install the client programs and libraries when you install 
+> the MySQL distribution. Just re-run the MySQL installer again and be 
+> sure to read the steps carefully.
+>
+> Best,
+>
+> Jeff
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+>
+>
+
+
+
+From j@burke @end|ng |rom e@rth||nk@net  Sat May 16 21:42:45 2009
+From: j@burke @end|ng |rom e@rth||nk@net (Jim Burke)
+Date: Sat, 16 May 2009 14:42:45 -0500
+Subject: [R-sig-DB] Error connecting R to mysql
+In-Reply-To: <C92D6BF93B8E2A4B96E206B66040B916CC536A@CONNCAPSBS.connectcap.local>
+References: <C92D6BF93B8E2A4B96E206B66040B916CC536A@CONNCAPSBS.connectcap.local>
+Message-ID: <4A0F1735.1000901@earthlink.net>
+
+Oh yes another thing. I downloaded and installed that
+MySQL Tools application. Received same unhelpful registry
+error that Ian reports. So I REMOVED MySQL Tools and
+went from there (reboot after uninstalls by the way).
+
+For your information. Plain vanilla MySQL 5.0.
+Then I downloaded the 30 day PremimumSoft Navicat
+as a much needed gui to MySQL.
+
+Hope this helps,
+Jim Burke
+
+
+
+Ian Coe wrote:
+> Hi,
+>
+>    I am experiencing the error copied below when I call library(RMySQL).
+> I have done complete installs of mysql 5.1, mysql GUI tools, and MySQL
+> connector/C on WinXP.     I found the following exchange from this list
+> regarding a very similar sounding error (also copied below) and went
+> back over my install settings to see if I missed anything.  I do not see
+> anything left to install.   Does anyone have any suggestions for what to
+> try next?  
+>
+> Thanks so much for your help.
+>
+> -Ian
+>
+> My error:
+> A MySQL Registry key was found but the folder C:\Program
+> Files\MySQL\MySQL Tools for 5.0\/. doesn't contain a bin or lib/opt
+> folder. That's where we need to find libmySQL.dll. 
+> Error : .onLoad failed in 'loadNamespace' for 'RMySQL'
+> Error: package/namespace load failed for 'RMySQL'
+>
+>
+> Related message from a previous post:
+>    Yakub wrote:
+>   
+>> I have the following error: 
+>>     
+>>> library(RMySQL)
+>>>       
+>> Error in fun(...) : 
+>>   A MySQL Registry key was found but the folder C:\Program
+>>     
+> Files\MySQL\MySQL
+>   
+>> Tools for 5.0\/. doesn't contain a bin or lib/opt folder. That's where
+>>     
+> we
+>   
+>> need to find libmySQL.dll. 
+>> Error : .onLoad failed in 'loadNamespace' for 'RMySQL'
+>> Error: package/namespace load failed for 'RMySQL'
+>>
+>> This happens after I install MySQL Tools. Seems that R is pointing to
+>>     
+> the
+>   
+>> wrong registry. Can anyone help?
+>>     
+>
+> You need to install the client programs and libraries when you install 
+> the MySQL distribution. Just re-run the MySQL installer again and be 
+> sure to read the steps carefully.
+>
+> Best,
+>
+> Jeff
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+>
+>
+
+
+
+From ICoe @end|ng |rom connectc@p@com  Sat May 16 22:10:39 2009
+From: ICoe @end|ng |rom connectc@p@com (Ian Coe)
+Date: Sat, 16 May 2009 13:10:39 -0700
+Subject: [R-sig-DB] Error connecting R to mysql
+In-Reply-To: <4A0F1735.1000901@earthlink.net>
+References: <C92D6BF93B8E2A4B96E206B66040B916CC536A@CONNCAPSBS.connectcap.local>
+	<4A0F1735.1000901@earthlink.net>
+Message-ID: <C92D6BF93B8E2A4B96E206B66040B916CC536C@CONNCAPSBS.connectcap.local>
+
+Hi,
+  I removed MySQL Tools and now I get the following error. 
+ 
+Error in if (utils::file_test("-d", MySQLhome)) break : 
+  argument is of length zero
+Error : .onLoad failed in 'loadNamespace' for 'RMySQL'
+Error: package/namespace load failed for 'RMySQL'
+
+
+I ran the registry search recommended on
+http://biostat.mc.vanderbilt.edu/wiki/Main/RMySQL  Does anyone see the
+problem here?
+
+readRegistry("SOFTWARE\\MySQL AB", hive="HLM", maxdepth=2)
+$`MySQL Connector/ODBC 5.1`
+$`MySQL Connector/ODBC 5.1`$Version
+[1] "5.1.5"
+
+
+$`MySQL Server 5.0`
+$`MySQL Server 5.0`$FoundExistingDataDir
+[1] "0"
+
+$`MySQL Server 5.0`$Location
+[1] "C:\\Program Files\\MySQL\\MySQL Server 5.0\\"
+
+$`MySQL Server 5.0`$Version
+[1] "5.0.81"
+
+
+$`MySQL Server 5.1`
+$`MySQL Server 5.1`$DataLocation
+[1] "C:\\Documents and Settings\\All Users\\Application
+Data\\MySQL\\MySQL Server 5.1\\"
+
+$`MySQL Server 5.1`$FoundExistingDataDir
+[1] "1"
+
+$`MySQL Server 5.1`$Location
+[1] "C:\\Program Files\\MySQL\\MySQL Server 5.1\\"
+
+$`MySQL Server 5.1`$Version
+[1] "5.1.34"
+
+
+
+From dut@ngc @end|ng |rom gm@||@com  Sat May 16 22:24:16 2009
+From: dut@ngc @end|ng |rom gm@||@com (Christophe Dutang)
+Date: Sat, 16 May 2009 22:24:16 +0200
+Subject: [R-sig-DB] Error connecting R to mysql
+In-Reply-To: <C92D6BF93B8E2A4B96E206B66040B916CC536A@CONNCAPSBS.connectcap.local>
+References: <C92D6BF93B8E2A4B96E206B66040B916CC536A@CONNCAPSBS.connectcap.local>
+Message-ID: <1271ED2F-A6B9-44BB-9EFA-3D72D6A8ECC4@gmail.com>
+
+Hi,
+
+I also got this error when I update mysql from 5.0 to 5.1... I get rid  
+of this error by uninstalling MySQL (both main program and gui) and  
+manually removing register key that contain reference to older MySQL  
+5.0. For the last step, I just use regedit in the windows "shell" and  
+Ctrl+F to search for mysql. Before reinstalling MySQL 5.1, I also  
+remove the directory C:\Program Files\MySQL.
+
+Hope this method will work for you.
+
+Christophe
+
+PS : check also MySQL is not present in the PATH variable before  
+reinstalling MySQL
+
+
+
+Le 16 mai 09 ? 20:47, Ian Coe a ?crit :
+
+> Hi,
+>
+>   I am experiencing the error copied below when I call  
+> library(RMySQL).
+> I have done complete installs of mysql 5.1, mysql GUI tools, and MySQL
+> connector/C on WinXP.     I found the following exchange from this  
+> list
+> regarding a very similar sounding error (also copied below) and went
+> back over my install settings to see if I missed anything.  I do not  
+> see
+> anything left to install.   Does anyone have any suggestions for  
+> what to
+> try next?
+>
+> Thanks so much for your help.
+>
+> -Ian
+>
+> My error:
+> A MySQL Registry key was found but the folder C:\Program
+> Files\MySQL\MySQL Tools for 5.0\/. doesn't contain a bin or lib/opt
+> folder. That's where we need to find libmySQL.dll.
+> Error : .onLoad failed in 'loadNamespace' for 'RMySQL'
+> Error: package/namespace load failed for 'RMySQL'
+>
+>
+> Related message from a previous post:
+>   Yakub wrote:
+>> I have the following error:
+>>> library(RMySQL)
+>> Error in fun(...) :
+>>  A MySQL Registry key was found but the folder C:\Program
+> Files\MySQL\MySQL
+>> Tools for 5.0\/. doesn't contain a bin or lib/opt folder. That's  
+>> where
+> we
+>> need to find libmySQL.dll.
+>> Error : .onLoad failed in 'loadNamespace' for 'RMySQL'
+>> Error: package/namespace load failed for 'RMySQL'
+>>
+>> This happens after I install MySQL Tools. Seems that R is pointing to
+> the
+>> wrong registry. Can anyone help?
+>
+> You need to install the client programs and libraries when you install
+> the MySQL distribution. Just re-run the MySQL installer again and be
+> sure to read the steps carefully.
+>
+> Best,
+>
+> Jeff
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+Christophe Dutang
+Ph. D. student at ISFA, Lyon, France
+website: http://dutangc.free.fr
+
+
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From jt @end|ng |rom @@@@@@@@@@@  Tue May 19 13:05:14 2009
+From: jt @end|ng |rom @@@@@@@@@@@ (jt)
+Date: Tue, 19 May 2009 12:05:14 +0100
+Subject: [R-sig-DB] JOB: Permanent C++ Programmer in London, England, UK
+Message-ID: <4A12926A.4070504@...........>
+
+Hello ~
+
+I'm recruiting for a hedge fund (type) business (based in London,
+England, UK) that are looking for good C++ programmers with preferably
+some experience in statistical modeling/programming/analysis.   Perhaps
+you are a statistician, mathematician or physicist (for example) by
+background but a programmer by experience (or a graduate)?
+
+You should ideally also have scripting experience in one if not more
+languages such as R, Python, Perl etc.  Experience with MySQL would be
+good but not mandatory but it is important you have experience of
+working in a Linux environment.
+
+There is much more to the job than just scripting and programming,
+potentially you could find yourself becoming actively involved in
+statistical side too of the business too.
+
+Working environment is in-formal (no-ties, smart/casual).
+
+To learn more please contact me using james<at>........
+
+Kind regards,
+JAMES
+
+. . . .
+
+James Tobin
+
+
+
+
+From ICoe @end|ng |rom connectc@p@com  Wed May 20 20:09:13 2009
+From: ICoe @end|ng |rom connectc@p@com (Ian Coe)
+Date: Wed, 20 May 2009 11:09:13 -0700
+Subject: [R-sig-DB] RMySQL crashes R?
+In-Reply-To: <4A12926A.4070504@...........>
+References: <4A12926A.4070504@...........>
+Message-ID: <C92D6BF93B8E2A4B96E206B66040B916CC54AC@CONNCAPSBS.connectcap.local>
+
+Hi,
+  I'm running R 2.9x, MySQL 5.1x, and RMySQL 0.74x. I'm noticing that if
+I try to import more than 1 column of data using RMySQL R crashes.  I
+suspect it could be due to the warnings I got about RMySQL being
+compiled under a different version of mysql than I am using.   Does
+anyone have a work around for this?  
+
+More specifically...
+
+This works:
+data=dbGetQuery(con,statement="select price from prices")
+
+This crashes R
+data=dbGetQuery(con,statement="select price, item from prices")
+
+Thanks,
+Ian
+
+
+
+From rock@ou|met @end|ng |rom gm@||@com  Sat May 23 15:30:54 2009
+From: rock@ou|met @end|ng |rom gm@||@com (Rock Ouimet)
+Date: Sat, 23 May 2009 09:30:54 -0400
+Subject: [R-sig-DB] Problem to read file with filehash
+Message-ID: <86e2a1d30905230630n815a008pa26b2c340410a853@mail.gmail.com>
+
+Dear R users,
+
+I try to use a very large file (~3 Gib) with the *filehash* package. The
+length of the dataset is around 4,000,000 obs. I get this message from R
+while trying to "load" the dataset (named "cc084.csv"):
+
+I launched the following codes:
+library(*filehash*)
+dumpDF(read.csv("cc084.csv", header=T), dbName="db01")
+mydb <- db2env("db01")
+
+R replied:
+
+> dumpDF(read.csv("cc084.csv", header=T), dbName="db01")
+Erreur : impossible d'allouer un vecteur de taille 15.6 Mo (French)
+Error: impossible to allow a vector of size 15.6 Meg (my English
+translation)
+
+There must be something I'm doing wrong...  I would appreciate any help.
+Thank you.
+My R version is 2.8.1.
+
+Rock
+
+	[[alternative HTML version deleted]]
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Sun May 24 04:11:04 2009
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Sat, 23 May 2009 19:11:04 -0700
+Subject: [R-sig-DB] Problem to read file with filehash
+In-Reply-To: <86e2a1d30905230630n815a008pa26b2c340410a853@mail.gmail.com>
+References: <86e2a1d30905230630n815a008pa26b2c340410a853@mail.gmail.com>
+Message-ID: <20090524021104.GO23147@ziti.local>
+
+Hi Rock,
+
+I'm not sure why you are sending this message to R-sig-DB.
+
+* On 2009-05-23 at 09:30 -0400 Rock Ouimet wrote:
+> I try to use a very large file (~3 Gib) with the *filehash* package. The
+> length of the dataset is around 4,000,000 obs. I get this message from R
+> while trying to "load" the dataset (named "cc084.csv"):
+> 
+> I launched the following codes:
+> library(*filehash*)
+> dumpDF(read.csv("cc084.csv", header=T), dbName="db01")
+> mydb <- db2env("db01")
+> 
+> R replied:
+> 
+> > dumpDF(read.csv("cc084.csv", header=T), dbName="db01")
+> Erreur : impossible d'allouer un vecteur de taille 15.6 Mo (French)
+> Error: impossible to allow a vector of size 15.6 Meg (my English
+> translation)
+> 
+> There must be something I'm doing wrong...  I would appreciate any help.
+> Thank you.
+> My R version is 2.8.1.
+
+Perhaps you simply do not have enough memory available to accomplish
+this task?  You have not provided much information about your
+installation.  sessionInfo() output is always helpful.
+
++ seth
+
+
+
+From hot-de@|@ @end|ng |rom |@@p@|m@@c|ub@com  Sat May 30 19:04:00 2009
+From: hot-de@|@ @end|ng |rom |@@p@|m@@c|ub@com (Las Palmas by the Sea)
+Date: Sat, 30 May 2009 13:04:00 -0400
+Subject: [R-sig-DB] Summer Vacations in Puerto Vallarta
+Message-ID: <1c28c0adcc6d47ca24518ce85e70ca0c@vallarta-paradise.com>
+
+An HTML attachment was scrubbed...
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20090530/36411b4a/attachment.html>
+
+From jc@domenge @end|ng |rom gm@||@com  Fri Jun  5 15:34:40 2009
+From: jc@domenge @end|ng |rom gm@||@com (Jean-Christophe Domenge)
+Date: Fri, 5 Jun 2009 15:34:40 +0200
+Subject: [R-sig-DB] ROracle: basic insert fails
+Message-ID: <7fdb70c50906050634q6c8600a2j6bcc55dc84a1546c@mail.gmail.com>
+
+Hi all,
+I've been playing with ROracle (0.5-9) for a few days
+and I can't wrap my mind around this one.
+Here's a sample of my R (2.4.0) session.
+
+my.df<-data.frame(prd_id=c(123,456),vol_factor=c(.123,.456))
+> my.df
+prd_id vol_factor
+1    123      0.123
+2    456      0.456
+
+> library(ROracle)
+Loading required package: DBI
+> conn<-dbConnect("Oracle","***/***@***")
+> dbGetQuery(conn,"create table mytable (prd_id number, vol_factor
+number)")
+> dbGetQuery(conn,"insert into mytable (prd_id,vol_factor)
+values(123,.123)")
+> dbGetQuery(conn,"insert into mytable (prd_id,vol_factor)
+values(456,.456)")
+> dbGetQuery(conn,"select * from mytable")
+  PRD_ID VOL_FACTOR
+0    123      0.123
+1    456      0.456
+
+the above works as expected. Now let's try to insert new rows into
+mytable
+using a prepared statement and bind variables:
+
+> ps<-dbPrepareStatement(conn,"insert into mytable (prd_id,vol_factor)
+values (:1,:2)",bind=c(rep("numeric",2)))
+> res<-dbExecStatement(ps,my.df)
+> dbCommit(conn)
+[1] TRUE
+> dbGetQuery(conn,"select * from jdomenge_test")
+  PRD_ID VOL_FACTOR
+0    123      0.123
+1    456      0.456
+2    123         NA
+3    456         NA
+
+so the 2 new rows were appended, except the values in the second
+column were seemingly not read...
+the same happens with dbWriteTable:
+
+> dbWriteTable(conn,"mytable",df,append=T,row.names=F)
+[1] TRUE
+> dbGetQuery(conn,"select * from mytable")
+  PRD_ID VOL_FACTOR
+0    123      0.123
+1    456      0.456
+2    123         NA
+3    456         NA
+4    123         NA
+5    456         NA
+
+It seems the only way I can insert rows in a table is to build a query
+string
+and pass it into dbGetQuery.
+Note that SELECT queries pose no problem, only INSERT.
+
+I'm clueless at this point, I don't know what I'm doing wrong.
+I could find no answer in the help files nor on the web...
+
+
+Any help would be *greatly* appreciated.
+
+Thanks in advance,
+
+Jean-Christophe
+
+	[[alternative HTML version deleted]]
+
+
+
+From hot-de@|@ @end|ng |rom c|ubv@c@t|onde@|@@com  Wed Jun 10 19:15:19 2009
+From: hot-de@|@ @end|ng |rom c|ubv@c@t|onde@|@@com (Club Vacation Deals)
+Date: Wed, 10 Jun 2009 13:15:19 -0400
+Subject: [R-sig-DB] Summer Vacations in Puerto Vallarta
+Message-ID: <5839b3cd708baa3ec208130956ff08ae@vallarta-paradise.com>
+
+An HTML attachment was scrubbed...
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20090610/fd37a98d/attachment.html>
+
+From rguh@ @end|ng |rom |nd|@n@@edu  Thu Jun 11 17:35:23 2009
+From: rguh@ @end|ng |rom |nd|@n@@edu (Rajarshi Guha)
+Date: Thu, 11 Jun 2009 11:35:23 -0400
+Subject: [R-sig-DB] trouble connecting to an Oracle DB
+Message-ID: <773cea9e0906110835q280a23fdk97763266d28c7bf9@mail.gmail.com>
+
+Hi, I'm discovering the DBI methods in R and am trying to connect to a
+remote Oracle DB using ROracle. However, I'm getting stumped by rthe
+connection step. I'm using code of the form:
+
+drv <- dbDriver("Oracle")
+con <- dbConnect(drv, 'user/passwd at host:port/SID')
+
+but I get the following error:
+
+Error in oraNewConnection(drv, ...) :
+  RS-DBI driver: (ORA-12514: TNS:listener does not currently know of service
+requested in connect descriptor
+)
+
+Is this an issue with my connection statement? Or is it a problem with
+Oracle? I'm using ROracle 0.5.9 and R 2.9.0 (64 bit on OS X Leopard). The
+Oracle DB is 10.2.0.3.0
+
+Any pointers would be appreciated
+
+-- 
+Rajarshi Guha
+
+	[[alternative HTML version deleted]]
+
+
+
+From m@rc_@chw@rtz @end|ng |rom me@com  Thu Jun 11 18:04:05 2009
+From: m@rc_@chw@rtz @end|ng |rom me@com (Marc Schwartz)
+Date: Thu, 11 Jun 2009 11:04:05 -0500
+Subject: [R-sig-DB] trouble connecting to an Oracle DB
+In-Reply-To: <773cea9e0906110835q280a23fdk97763266d28c7bf9@mail.gmail.com>
+References: <773cea9e0906110835q280a23fdk97763266d28c7bf9@mail.gmail.com>
+Message-ID: <86DD8552-8360-4999-98A9-52FD24283181@me.com>
+
+On Jun 11, 2009, at 10:35 AM, Rajarshi Guha wrote:
+
+> Hi, I'm discovering the DBI methods in R and am trying to connect to a
+> remote Oracle DB using ROracle. However, I'm getting stumped by rthe
+> connection step. I'm using code of the form:
+>
+> drv <- dbDriver("Oracle")
+> con <- dbConnect(drv, 'user/passwd at host:port/SID')
+>
+> but I get the following error:
+>
+> Error in oraNewConnection(drv, ...) :
+>  RS-DBI driver: (ORA-12514: TNS:listener does not currently know of  
+> service
+> requested in connect descriptor
+> )
+>
+> Is this an issue with my connection statement? Or is it a problem with
+> Oracle? I'm using ROracle 0.5.9 and R 2.9.0 (64 bit on OS X  
+> Leopard). The
+> Oracle DB is 10.2.0.3.0
+>
+> Any pointers would be appreciated
+
+Generally, when I get errors related to the Oracle TNS listener  
+service (using RODBC), it is either an error on the server (service  
+not enabled) or on my end with a server configuration issue such as  
+the IP address or port setting. Every now and then, our SysAdmin  
+forgets to tell me that they did a server upgrade and changed something.
+
+If you have the Oracle instant client installed locally, you might  
+want to try using that to see if you can login successfully that way.  
+It can be helpful in identifying where the issue might be based upon  
+the success or failure of that approach.
+
+Otherwise, you might want to check with your SysAdmin to verify your  
+config/settings and that the TNS listener service is enabled on the  
+server.
+
+HTH,
+
+Marc Schwartz
+
+
+
+From rguh@ @end|ng |rom |nd|@n@@edu  Thu Jun 11 18:10:57 2009
+From: rguh@ @end|ng |rom |nd|@n@@edu (Rajarshi Guha)
+Date: Thu, 11 Jun 2009 12:10:57 -0400
+Subject: [R-sig-DB] trouble connecting to an Oracle DB
+In-Reply-To: <86DD8552-8360-4999-98A9-52FD24283181@me.com>
+References: <773cea9e0906110835q280a23fdk97763266d28c7bf9@mail.gmail.com>
+	<86DD8552-8360-4999-98A9-52FD24283181@me.com>
+Message-ID: <773cea9e0906110910h60c04ab0nafb3734e112390a5@mail.gmail.com>
+
+On Thu, Jun 11, 2009 at 12:04 PM, Marc Schwartz <marc_schwartz at me.com>wrote:
+
+> On Jun 11, 2009, at 10:35 AM, Rajarshi Guha wrote:
+>
+> Otherwise, you might want to check with your SysAdmin to verify your
+> config/settings and that the TNS listener service is enabled on the server.
+
+
+Thanks for the pointer. It turns out that I needed to create a tnsnames.ora
+with the appropriate alias in it.
+
+
+-- 
+Rajarshi Guha
+
+	[[alternative HTML version deleted]]
+
+
+
+From hot-de@|@ @end|ng |rom c|ubv@c@t|onde@|@@com  Sat Jun 20 10:31:36 2009
+From: hot-de@|@ @end|ng |rom c|ubv@c@t|onde@|@@com (Club Vacation Deals)
+Date: Sat, 20 Jun 2009 04:31:36 -0400
+Subject: [R-sig-DB] WBC Superfly Championship fight in Puerto Vallarta
+Message-ID: <e1d6a9cc12d28a29e50fccc377b7c53d@vallarta-paradise.com>
+
+An HTML attachment was scrubbed...
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20090620/3c57e296/attachment.html>
+
+From D@v|d_H|nd@ @end|ng |rom per|egen@com  Fri Jun 26 00:35:53 2009
+From: D@v|d_H|nd@ @end|ng |rom per|egen@com (David Hinds)
+Date: Thu, 25 Jun 2009 15:35:53 -0700
+Subject: [R-sig-DB] Fixes for two bugs in ROracle string handling
+Message-ID: <9ED53B669FD50049AE0CE1168CD3C4BD018C38B4E351@mtnexmb01.perlegen.com>
+
+I've sent these to David James, who is nominally the maintainer for ROracle,
+but he hasn't responded, so I thought I'd at least post these here in case
+anyone else runs into them:
+
+Bug 1: the code for trimming trailing blanks and null terminating strings in
+RS-DBI.c has a bad boundary condition.  If a string pulled from the database is
+composed entirely of blanks, then the code places the terminal null one byte
+before the start of the buffer.  So the string isn't actually null terminated at
+all, and bad things can happen.  Here is a test case that shows the problem:
+
+> dbClearResult(dbSendQuery(db, 'create table x(v varchar2(20))'))
+[1] TRUE
+> d <- data.frame(v=c('string1',' ','string2'), stringsAsFactors=FALSE)
+> ps <- dbPrepareStatement(db, 'insert into x values(:1)', d)
+> dbGetRowsAffected(dbExecStatement(ps, d))
+[1] 3
+> dbClearResult(ps)
+> r <- dbSendQuery(db, 'select * from x')
+> str(fetch(r))
+'data.frame':   3 obs. of  1 variable:
+ $ V: chr  "string1" "                    " "string2"
+
+In this case the bogus second string came through as all blank, but it can also
+run on into la-la land.
+
+Bug 2: the code for sizing the buffers used for sending character string data to
+Oracle mishandles NA values.  The code determines a maximum string length for
+each bind variable but does not check for NA strings.  NA strings are internally
+represented as 'NA' and hence have an apparent length of 2.  If you try to store
+an NA into a column defined as char(1), Oracle complains:
+
+> dbClearResult(dbSendQuery(db, 'create table x (v char(1))'))
+> d <- data.frame(v=c('x',NA,'y'), stringsAsFactors=FALSE)
+> ps <- dbPrepareStatement(db, 'insert into x values(:1)', d)
+> dbExecStatement(ps, d)
+Error in oraExecStatement(ps, data, ...) :
+  RS-DBI driver: (ORA-12899: value too large for column "OPS$DHINDS"."X"."V"
+(actual: 2, maximum: 1)
+)
+
+And here is a patch that fixes both bugs.  I happened to be using version 0.5-8
+but the patch applies cleanly to 0.5-9 as well.  I hope that Outlook doesn't
+munge it up...
+
+-- David Hinds
+
+
+
+--- ROracle_0.5-8/src/RS-DBI.c  2006-09-18 15:20:17.000000000 -0700
++++ ROracle/src/RS-DBI.c        2009-06-15 13:18:27.451250000 -0700
+@@ -630,7 +630,8 @@
+   /* null terminate string whether we delete trailing blanks or not*/
+   if(del_blanks){
+     for(end = str_buffer+len-1; end>=str_buffer; end--)
+-      if(*end != ' ') { end++; break; }
++      if(*end != ' ') { break; }
++    end++;
+     *end = '\0';
+   }
+   else {
+--- ROracle_0.5-8/src/RS-Oracle.pc      2006-09-18 15:20:17.000000000 -0700
++++ ROracle/src/RS-Oracle.pc    2009-06-25 14:50:24.696063000 -0700
+@@ -1285,8 +1285,14 @@
+       if(Sclass[j]==CHARACTER_TYPE){
+          n = 0;
+          for(i=0; i<n_rows; i++){
+-            nc = strlen(LST_CHR_EL(input, df_field, from+i));
+-            n = RS_Ora_Max(n, nc);
++#ifdef USING_R
++            if(STRING_ELT(LST_EL(input,df_field),from+i)!=NA_STRING) {
++#else
++            if(!IS_NA(schars, CHARACTER_TYPE)) {  /* S-Plus specific */
++#endif
++               nc = strlen(LST_CHR_EL(input, df_field, from+i));
++               n = RS_Ora_Max(n, nc);
++            }
+          }
+          bind_dp->V[j] = (char *) calloc(bufferSize, n+1);  /* plus '\0' */
+          bind_dp->L[j] = fld_len[j] = n+1;
+
+
+

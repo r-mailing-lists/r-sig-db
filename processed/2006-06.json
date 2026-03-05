@@ -1,0 +1,363 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2006-06",
+  "messages": [
+    {
+      "id": "msg-0e497e82064c",
+      "message_id": "<448B9B53-DF1D-442D-90B6-268CCD001CE5@louspringer.com>",
+      "from_name": "Louis Springer",
+      "from_email_hash": "0c81b8ea51bc8f529d68241da33cd1a18ea4e07cca13d985c50e2d1f850a9397",
+      "date": "2006-06-07T21:50:21-06:00",
+      "subject": "[R-sig-DB] R, RMySQL and OSX",
+      "subject_clean": "R, RMySQL and OSX",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "In reference to a meesage from \"jhorn at bu.edu\", installation and  \nbuild problems on OSX Tiger for R and RMySQL, \"RMySQL Error Messages,  \ncrashing R\" (https://stat.ethz.ch/pipermail/r-sig-mac/2006-February/ \n002686.html), was Jason ever able to resolve the issues? I'm not  \ngetting any of the compile issues referred to, but am unable to  \nconnect, getting:\n\nRS-DBI driver: (could not connect xxx at localhost on dbname \"dbname\"\n\nMy R version is R for Mac OS X Aqua GUI, 1.16 (3198), R 2.3.1 Framework\nRMySQL version RMySQL_0.5-7\nMySQL version mysql  Ver 14.12 Distrib 5.0.13-rc, for apple- \ndarwin8.2.0 (powerpc) using readline 5.0\n\nThanks,\nLou",
+      "body_snippet": "In reference to a meesage from \"jhorn at bu.edu\", installation and  \nbuild problems on OSX Tiger for R and RMySQL, \"RMySQL Error Messages,  \ncrashing R\" (https://stat.ethz.ch/pipermail/r-sig-mac/2006-",
+      "thread_id": "thread-0e497e82064c",
+      "thread_depth": 0,
+      "month": "2006-06"
+    },
+    {
+      "id": "msg-2d05f3da099b",
+      "message_id": "<69ACEDBD-C944-4E8C-ABDE-1685A00D71D3@louspringer.com>",
+      "from_name": "Louis Springer",
+      "from_email_hash": "0c81b8ea51bc8f529d68241da33cd1a18ea4e07cca13d985c50e2d1f850a9397",
+      "date": "2006-06-07T23:27:47-06:00",
+      "subject": "[R-sig-DB] [R-SIG-Mac] R, RMySQL and OSX",
+      "subject_clean": "R, RMySQL and OSX",
+      "in_reply_to": "<8A0CADA7-D38B-4352-AB3D-8FEC1E75B986@louspringer.com>",
+      "references": [
+        "<8A0CADA7-D38B-4352-AB3D-8FEC1E75B986@louspringer.com>"
+      ],
+      "body_plain": "I've got at least a partial resolution and workaround to my issue.\n\nThe default unix.socket parameter on the dbConnect call is \"/opt/ \nlocal/var/run/mysql5/mysqld.sock\" if unix.sock is not specified. I'm  \nnot sure where this unix.socket is coming from, but it doesn't work  \nfor me.\n\nThe correct unix.sock parameter for my case is  \"/tmp/mysql.sock\".\n\nThis works:\n\ncon <- dbConnect(dbDriver(\"MySQL\"), username=\"myuser\",  \nhost=\"localhost\", dbname=\"mydb\", password=\"secret\", unix.sock=\"/tmp/ \nmysql.sock\")\n\nThis does not:\n\ncon <- dbConnect(dbDriver(\"MySQL\"), username=\"myuser\",  \nhost=\"localhost\", dbname=\"mydb\", password=\"secret\")\n\nI also have a patch to RS-MySQL.c to display the error message  \nreturned by MySQL on a connect error. What should I do with this? Who  \nis the current maintainer for this code?\n\nThe bit around the \"my_sql_real_connect\" should read something like:\n\n   if(!mysql_real_connect(my_connection, host, user, passwd, dbname,\n\t\t       port, unix_socket, client_flags)){\n     char buf[2048];\n     sprintf(buf, \"could not connect %s@%s on dbname \\\"%s\\\"\\nError:%s \n\\n\",\n\t    user, host, dbname, mysql_error(my_connection));\n     RS_DBI_errorMessage(buf, RS_DBI_ERROR);\n   }\n\nThe current version clobbers \"my_connection\" on a failed connection  \nrendering any call to \"mysql_error(my_connection)\" useless. My hacked  \nRS-MySQL.c returns:\n\nError in mysqlNewConnection(drv, ...) : RS-DBI driver: (could not  \nconnect myuser at localhost on dbname \"mydb\"\nError:Can't connect to local MySQL server through socket '/opt/local/ \nvar/run/mysql5/mysqld.sock' (2)\n\nfor the error I was having, returning an informative mysql error  \nmessage on the failed connection.\n\n\nLou\n\nOn Jun 7, 2006, at 9:58 PM, Louis Springer wrote:\n\n> In reference to a meesage from \"jhorn at bu.edu\", installation and\n> build problems on OSX Tiger for R and RMySQL, \"RMySQL Error Messages,\n> crashing R\" (https://stat.ethz.ch/pipermail/r-sig-mac/2006-February/\n> 002686.html), was Jason ever able to resolve the issues? I'm not\n> getting any of the compile issues referred to, but am unable to\n> connect, getting:\n>\n> RS-DBI driver: (could not connect xxx at localhost on dbname \"dbname\"\n>\n> My R version is R for Mac OS X Aqua GUI, 1.16 (3198), R 2.3.1  \n> Framework\n> RMySQL version RMySQL_0.5-7\n> MySQL version mysql  Ver 14.12 Distrib 5.0.13-rc, for apple-\n> darwin8.2.0 (powerpc) using readline 5.0\n>\n> Thanks,\n> Lou\n>\n> _______________________________________________\n> R-SIG-Mac mailing list\n> R-SIG-Mac at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-mac\n>\n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "I've got at least a partial resolution and workaround to my issue.\n\nThe default unix.socket parameter on the dbConnect call is \"/opt/ \nlocal/var/run/mysql5/mysqld.sock\" if unix.sock is not specified. ",
+      "thread_id": "thread-2d05f3da099b",
+      "thread_depth": 0,
+      "month": "2006-06"
+    },
+    {
+      "id": "msg-500f1efbd268",
+      "message_id": "<Pine.LNX.4.64.0606080638070.14460@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2006-06-08T06:42:25+01:00",
+      "subject": "[R-sig-DB] [R-SIG-Mac] R, RMySQL and OSX",
+      "subject_clean": "R, RMySQL and OSX",
+      "in_reply_to": "<69ACEDBD-C944-4E8C-ABDE-1685A00D71D3@louspringer.com>",
+      "references": [
+        "<8A0CADA7-D38B-4352-AB3D-8FEC1E75B986@louspringer.com>",
+        "<69ACEDBD-C944-4E8C-ABDE-1685A00D71D3@louspringer.com>"
+      ],
+      "body_plain": "Please (as we ask) consult the R posting guide at\n\nhttp://www.r-project.org/posting-guide.html\n\nand\n\n0) Do not send HTML mail.\n1) Do not post to multiple lists.\n2) Contact the maintainer first as it asks you to there. (It also tells \nyou how to find out the maintainer and other relevant information.)\n\n\nOn Wed, 7 Jun 2006, Louis Springer wrote:\n\n> I've got at least a partial resolution and workaround to my issue.\n>\n> The default unix.socket parameter on the dbConnect call is \"/opt/\n> local/var/run/mysql5/mysqld.sock\" if unix.sock is not specified. I'm\n> not sure where this unix.socket is coming from, but it doesn't work\n> for me.\n>\n> The correct unix.sock parameter for my case is  \"/tmp/mysql.sock\".\n>\n> This works:\n>\n> con <- dbConnect(dbDriver(\"MySQL\"), username=\"myuser\",\n> host=\"localhost\", dbname=\"mydb\", password=\"secret\", unix.sock=\"/tmp/\n> mysql.sock\")\n>\n> This does not:\n>\n> con <- dbConnect(dbDriver(\"MySQL\"), username=\"myuser\",\n> host=\"localhost\", dbname=\"mydb\", password=\"secret\")\n>\n> I also have a patch to RS-MySQL.c to display the error message\n> returned by MySQL on a connect error. What should I do with this? Who\n> is the current maintainer for this code?\n>\n> The bit around the \"my_sql_real_connect\" should read something like:\n>\n>   if(!mysql_real_connect(my_connection, host, user, passwd, dbname,\n> \t\t       port, unix_socket, client_flags)){\n>     char buf[2048];\n>     sprintf(buf, \"could not connect %s@%s on dbname \\\"%s\\\"\\nError:%s\n> \\n\",\n> \t    user, host, dbname, mysql_error(my_connection));\n>     RS_DBI_errorMessage(buf, RS_DBI_ERROR);\n>   }\n>\n> The current version clobbers \"my_connection\" on a failed connection\n> rendering any call to \"mysql_error(my_connection)\" useless. My hacked\n> RS-MySQL.c returns:\n>\n> Error in mysqlNewConnection(drv, ...) : RS-DBI driver: (could not\n> connect myuser at localhost on dbname \"mydb\"\n> Error:Can't connect to local MySQL server through socket '/opt/local/\n> var/run/mysql5/mysqld.sock' (2)\n>\n> for the error I was having, returning an informative mysql error\n> message on the failed connection.\n>\n>\n> Lou\n>\n> On Jun 7, 2006, at 9:58 PM, Louis Springer wrote:\n>\n>> In reference to a meesage from \"jhorn at bu.edu\", installation and\n>> build problems on OSX Tiger for R and RMySQL, \"RMySQL Error Messages,\n>> crashing R\" (https://stat.ethz.ch/pipermail/r-sig-mac/2006-February/\n>> 002686.html), was Jason ever able to resolve the issues? I'm not\n>> getting any of the compile issues referred to, but am unable to\n>> connect, getting:\n>>\n>> RS-DBI driver: (could not connect xxx at localhost on dbname \"dbname\"\n>>\n>> My R version is R for Mac OS X Aqua GUI, 1.16 (3198), R 2.3.1\n>> Framework\n>> RMySQL version RMySQL_0.5-7\n>> MySQL version mysql  Ver 14.12 Distrib 5.0.13-rc, for apple-\n>> darwin8.2.0 (powerpc) using readline 5.0\n>>\n>> Thanks,\n>> Lou\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "Please (as we ask) consult the R posting guide at\n\nhttp://www.r-project.org/posting-guide.html\n\nand\n\n0) Do not send HTML mail.\n1) Do not post to multiple lists.\n2) Contact the maintainer first as it a",
+      "thread_id": "thread-2d05f3da099b",
+      "thread_depth": 1,
+      "month": "2006-06"
+    },
+    {
+      "id": "msg-53626cf4c2f7",
+      "message_id": "<C0B20165.F853%venkat@concordiacap.com>",
+      "from_name": "Venkat Chalasani",
+      "from_email_hash": "5eeb0b91067a98776a0b90b7990962cc685d78723d3ba0b72b61ecf0e22e6816",
+      "date": "2006-06-11T17:20:37-04:00",
+      "subject": "[R-sig-DB] Cannot Install RMySQL on MacOSX",
+      "subject_clean": "Cannot Install RMySQL on MacOSX",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I am trying to install RMySQL and it is giving the following error ? I have\nlooked at the previous messages and could not find a workable solution.\n\nAny suggestions are greatly welcome\n\nI have MacOS 10.4.6, R 2.3.1,  RMySQL_0.5-7.tar.gz, and MySQL 5.0\n\n-------------------------------\ntrying URL 'http://www.imsv.unibe.ch/cran/src/contrib/RMySQL_0.5-7.tar.gz'\nContent type 'application/x-gzip' length 142507 bytes\nopened URL\n==================================================\ndownloaded 139Kb\n\nWARNING: ignoring environment value of R_HOME\n* Installing *source* package 'RMySQL' ...\ncreating cache ./config.cache\nchecking how to run the C preprocessor... /lib/cpp\nchecking for compress in -lz... no\nchecking for getopt_long in -lc... no\nchecking for mysql_init in -lmysqlclient... no\nchecking for mysql.h... no\nchecking for mysql_init in -lmysqlclient... no\nchecking for mysql_init in -lmysqlclient...\nThe downloaded packages are in\n    /private/tmp/RtmpMKx9nr/downloaded_packages\nno\nchecking for mysql_init in -lmysqlclient... no\nchecking for mysql_init in -lmysqlclient... no\nchecking for mysql_init in -lmysqlclient... no\n\nConfiguration error:\n   Could not locate the library \"libz\" required by MySQL.\n\nINSTRUCTIONS:\n\n   The \"libz\" library is required by the MySQL client library\n   in order to compress/uncompress connections between clients\n   and the MySQL engine.\n\n   Make sure you have \"libz\" installed properly and/or included\n   in your $LD_LIBRARY_PATH.  Perhaps it is not in any of the\n   standard directories (e.g., /usr/lib/, /usr/local/lib)?\n\nAborting the installation of RMySQL.\n\n** Removing \n'/Library/Frameworks/R.framework/Versions/2.3/Resources/library/RMySQL'\nERROR: configuration failed for package 'RMySQL'\n\n\n\n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "I am trying to install RMySQL and it is giving the following error ? I have\nlooked at the previous messages and could not find a workable solution.\n\nAny suggestions are greatly welcome\n\nI have MacOS 1",
+      "thread_id": "thread-53626cf4c2f7",
+      "thread_depth": 0,
+      "month": "2006-06"
+    },
+    {
+      "id": "msg-52c642586e66",
+      "message_id": "<8B84E377-AD2C-47B7-AD6B-8FBCF3336B7F@ird.fr>",
+      "from_name": "Nicolas Degallier",
+      "from_email_hash": "fa559d55ff535720663a1309b543c0748f9e2112f7fb994a3d9f0315e6bab455",
+      "date": "2006-06-13T09:47:04+02:00",
+      "subject": "[R-sig-DB] how to read CRU climatic data  files with R?",
+      "subject_clean": "how to read CRU climatic data  files with R?",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi R helpers,\n\nI have downloaded time series of climatic data from CRU (Climatic  \nResearch Unit) which are ASCII files with a specific format for the  \ndata.\nThe format is described here:\n\nhttp://www.cru.uea.ac.uk/~timm/grid/CRU_TS_2_1.html\n\nunder the link \"file format\".\n\nI would like to know if somebody has already written some script in R  \nto open and manage these data, for example for selecting only  \nportions of the time series and/or pieces of the spatial grid?\n\nCheers,\n\nNicolas Degallier\n\nUMR 7159 / IRD UR182\nLaboratoire d'Oc?anographie et du Climat, Exp?rimentation et  \nApproches Num?riques (LOCEAN)\nTour 45-55, 4e ?t., case 100, 4 place Jussieu\n75252  Paris Cedex 5  France\n\nt?l: (33) 01 44 27 51 57\nfax: (33) 01 44 27 38 05\nE-mail: <Nicolas.Degallier at ird.fr>\n\nPublications (anonymous ftp):\n\nftp://ftp.lodyc.jussieu.fr/LOCEAN/ndelod",
+      "body_snippet": "Hi R helpers,\n\nI have downloaded time series of climatic data from CRU (Climatic  \nResearch Unit) which are ASCII files with a specific format for the  \ndata.\nThe format is described here:\n\nhttp://www",
+      "thread_id": "thread-52c642586e66",
+      "thread_depth": 0,
+      "month": "2006-06"
+    },
+    {
+      "id": "msg-bf209a00b908",
+      "message_id": "<448E788E.8080707@gmail.com>",
+      "from_name": "antonio rodriguez",
+      "from_email_hash": "af2627b0f654b9fc65d33e68dbaf8c33a02eec5b8613c6f7c0a69adac0990214",
+      "date": "2006-06-13T10:34:22+02:00",
+      "subject": "[R-sig-DB] [R-sig-Geo] how to read CRU climatic data files with R?",
+      "subject_clean": "how to read CRU climatic data files with R?",
+      "in_reply_to": "<8B84E377-AD2C-47B7-AD6B-8FBCF3336B7F@ird.fr>",
+      "references": [
+        "<8B84E377-AD2C-47B7-AD6B-8FBCF3336B7F@ird.fr>"
+      ],
+      "body_plain": "Nicolas Degallier wrote:\n> Hi R helpers,\n> \n> I have downloaded time series of climatic data from CRU (Climatic  \n> Research Unit) which are ASCII files with a specific format for the  \n> data.\n> The format is described here:\n> \n> http://www.cru.uea.ac.uk/~timm/grid/CRU_TS_2_1.html\n> \n> under the link \"file format\".\n> \n> I would like to know if somebody has already written some script in R  \n> to open and manage these data, for example for selecting only  \n> portions of the time series and/or pieces of the spatial grid?\n\n\nHi Nicolas,\n\nYou will find in that page, below Data structure section, a link to \n'software'. There you will find a package 'CRU2nc.tgz' which converts \nyour ASCII data to 'netCDF' format. Then you can use any of the netCDF \nlibraries available in R: ncdf,ncvar, RNetCDF, and the old netCDF.\n\nI've found, at least for me, before to enter the data in R, to \nmanipulate them with Ferret (http://ferret.pmel.noaa.gov/Ferret/) \n(subsetting regions and time intervals, etc.)\n\nHope this helps,\n\nAntonio\n\n\n\n\n\n\n> \n> Cheers,\n> \n> Nicolas Degallier\n> \n> UMR 7159 / IRD UR182\n> Laboratoire d'Oc?anographie et du Climat, Exp?rimentation et  \n> Approches Num?riques (LOCEAN)\n> Tour 45-55, 4e ?t., case 100, 4 place Jussieu\n> 75252  Paris Cedex 5  France\n> \n> t?l: (33) 01 44 27 51 57\n> fax: (33) 01 44 27 38 05\n> E-mail: <Nicolas.Degallier at ird.fr>\n> \n> Publications (anonymous ftp):\n> \n> ftp://ftp.lodyc.jussieu.fr/LOCEAN/ndelod\n> \n> _______________________________________________\n> R-sig-Geo mailing list\n> R-sig-Geo at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-geo\n> \n\n\n-- \n=====\nPor favor, si me mandas correos con copia a varias personas,\npon mi direcci?n de correo en copia oculta (CCO), para evitar\nque acabe en montones de sitios, eliminando mi privacidad,\nfavoreciendo la propagaci?n de virus y la proliferaci?n del SPAM. Gracias.\n-----\nIf you send me e-mail which has also been sent to several other people,\nkindly mark my address as blind-carbon-copy (or BCC), to avoid its\ndistribution, which affects my privacy, increases the likelihood of\nspreading viruses, and leads to more SPAM. Thanks.\n=====",
+      "body_snippet": "Nicolas Degallier wrote:\n> Hi R helpers,\n> \n> I have downloaded time series of climatic data from CRU (Climatic  \n> Research Unit) which are ASCII files with a specific format for the  \n> data.\n> The ",
+      "thread_id": "thread-52c642586e66",
+      "thread_depth": 1,
+      "month": "2006-06"
+    },
+    {
+      "id": "msg-263cd5c7a3b8",
+      "message_id": "<Pine.LNX.4.64.0606130940001.20518@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2006-06-13T09:40:30+01:00",
+      "subject": "[R-sig-DB] how to read CRU climatic data  files with R?",
+      "subject_clean": "how to read CRU climatic data  files with R?",
+      "in_reply_to": "<8B84E377-AD2C-47B7-AD6B-8FBCF3336B7F@ird.fr>",
+      "references": [
+        "<8B84E377-AD2C-47B7-AD6B-8FBCF3336B7F@ird.fr>"
+      ],
+      "body_plain": "This is the databases list, not for reading ASCII files.\n\nPlease try R-help.\n\nOn Tue, 13 Jun 2006, Nicolas Degallier wrote:\n\n> Hi R helpers,\n>\n> I have downloaded time series of climatic data from CRU (Climatic\n> Research Unit) which are ASCII files with a specific format for the\n> data.\n> The format is described here:\n>\n> http://www.cru.uea.ac.uk/~timm/grid/CRU_TS_2_1.html\n>\n> under the link \"file format\".\n>\n> I would like to know if somebody has already written some script in R\n> to open and manage these data, for example for selecting only\n> portions of the time series and/or pieces of the spatial grid?\n>\n> Cheers,\n>\n> Nicolas Degallier\n>\n> UMR 7159 / IRD UR182\n> Laboratoire d'Oc?anographie et du Climat, Exp?rimentation et\n> Approches Num?riques (LOCEAN)\n> Tour 45-55, 4e ?t., case 100, 4 place Jussieu\n> 75252  Paris Cedex 5  France\n>\n> t?l: (33) 01 44 27 51 57\n> fax: (33) 01 44 27 38 05\n> E-mail: <Nicolas.Degallier at ird.fr>\n>\n> Publications (anonymous ftp):\n>\n> ftp://ftp.lodyc.jussieu.fr/LOCEAN/ndelod\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n>\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "This is the databases list, not for reading ASCII files.\n\nPlease try R-help.\n\nOn Tue, 13 Jun 2006, Nicolas Degallier wrote:\n\n> Hi R helpers,\n>\n> I have downloaded time series of climatic data from CRU",
+      "thread_id": "thread-52c642586e66",
+      "thread_depth": 1,
+      "month": "2006-06"
+    },
+    {
+      "id": "msg-cf7cc94b0745",
+      "message_id": "<200606191536.57458.ricardd@mathstat.dal.ca>",
+      "from_name": "Daniel Ricard",
+      "from_email_hash": "7614fb1eb98b7b27940962d8f868bb5c2e1fd7931f7ea72fcccb99473495ad87",
+      "date": "2006-06-19T15:36:56-03:00",
+      "subject": "[R-sig-DB] RODBC query returns no results",
+      "subject_clean": "RODBC query returns no results",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello,\nI'm using RODBC to connect to a database but somehow the queries return no\nresults. postgresql tells me that there are 963 entries in the table:\n\ngfsDB=# select count(*) from estimates;\n count\n-------\n   963\n(1 row)\n\n\nbut the query in R only returns the column names, not the anticipated data:\n\n> chan <- odbcConnect(dsn=\"gfsDB\", uid=\"postgres\")\n> qu <- paste(\"select * from estimates\")\n> sqlQuery(chan, qu, errors= TRUE)\n\n [1] specname    tsn         institution region      closedarea  modelno\n [7] parameter   level1      df          estimate    stderr      lowerwaldcl\n[13] upperwaldcl chisq       probchisq\n<0 rows> (or 0-length row.names)\n\n> odbcGetInfo(chan)\n\nDBMS_Name \"PostgreSQL\"\nDBMS_Ver \"08.01.0102 PostgreSQL 8.1.4 on i686-pc-linux-gnu, compiled by GCC\ngcc (GCC) 4.0.3 (Ubuntu 4.0.3-1ubuntu5)\"\nDriver_ODBC_Ver \"03.00\"\nData_Source_Name \"gfsDB\"\nDriver_Name \"libpsqlodbc.so\"\nDriver_Ver \"08.01.0102\"\nODBC_Ver \"03.52\"\nServer_Name \"localhost\"\n\nI would like to know how to further troubleshoot this, I'm kind of stuck right \nnow. The same query returns the appropriate data when issued through Perl DBI \nor SAS/CONNECT.\nCheers,\n\nDan",
+      "body_snippet": "Hello,\nI'm using RODBC to connect to a database but somehow the queries return no\nresults. postgresql tells me that there are 963 entries in the table:\n\ngfsDB=# select count(*) from estimates;\n count\n",
+      "thread_id": "thread-cf7cc94b0745",
+      "thread_depth": 0,
+      "month": "2006-06"
+    },
+    {
+      "id": "msg-8e9fa3a089ca",
+      "message_id": "<6762d810606211348l4324c51mceb7f9b4eb489f10@mail.gmail.com>",
+      "from_name": "jerome prudent",
+      "from_email_hash": "88526debba3132eec8eca6f0015e6a3e08e7f4db0acc76e6c0cef93dfd8611a1",
+      "date": "2006-06-21T15:48:16-05:00",
+      "subject": "[R-sig-DB] RODBC",
+      "subject_clean": "RODBC",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I'm having trouble with RODBC and postgresql under Linux.\nMy queries have no result. sqlTables works fine. Any idea?\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "I'm having trouble with RODBC and postgresql under Linux.\nMy queries have no result. sqlTables works fine. Any idea?\n\n\t[[alternative HTML version deleted]]",
+      "thread_id": "thread-8e9fa3a089ca",
+      "thread_depth": 0,
+      "month": "2006-06"
+    },
+    {
+      "id": "msg-cc1e3005e5a7",
+      "message_id": "<6762d810606211412w20d1382cn3b415aaf7945a074@mail.gmail.com>",
+      "from_name": "jerome prudent",
+      "from_email_hash": "88526debba3132eec8eca6f0015e6a3e08e7f4db0acc76e6c0cef93dfd8611a1",
+      "date": "2006-06-21T16:12:41-05:00",
+      "subject": "[R-sig-DB] RODBC",
+      "subject_clean": "RODBC",
+      "in_reply_to": "<6762d810606211348l4324c51mceb7f9b4eb489f10@mail.gmail.com>",
+      "references": [
+        "<6762d810606211348l4324c51mceb7f9b4eb489f10@mail.gmail.com>"
+      ],
+      "body_plain": "Hey!\nI solved my problem specifying password and believeNRows=FALSE in\nodbcConnect:\nchannel <- odbcConnect(\"sc\", uid=\"admin\", pwd=\"pass\", case=\"tolower\",\nbelieveNRows=FALSE)\n\nSorry!\n\nOn 6/21/06, jerome prudent <jprudent at gmail.com> wrote:\n>\n> I'm having trouble with RODBC and postgresql under Linux.\n> My queries have no result. sqlTables works fine. Any idea?\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hey!\nI solved my problem specifying password and believeNRows=FALSE in\nodbcConnect:\nchannel <- odbcConnect(\"sc\", uid=\"admin\", pwd=\"pass\", case=\"tolower\",\nbelieveNRows=FALSE)\n\nSorry!\n\nOn 6/21/06, jerom",
+      "thread_id": "thread-8e9fa3a089ca",
+      "thread_depth": 1,
+      "month": "2006-06"
+    },
+    {
+      "id": "msg-ea4e7e963f12",
+      "message_id": "<200606211908.36419.ricardd@mathstat.dal.ca>",
+      "from_name": "Daniel Ricard",
+      "from_email_hash": "7614fb1eb98b7b27940962d8f868bb5c2e1fd7931f7ea72fcccb99473495ad87",
+      "date": "2006-06-21T19:08:35-03:00",
+      "subject": "[R-sig-DB] Resolved: RODBC query returns no results",
+      "subject_clean": "Resolved: RODBC query returns no results",
+      "in_reply_to": "<6762d810606211412w20d1382cn3b415aaf7945a074@mail.gmail.com>",
+      "references": [
+        "<6762d810606211348l4324c51mceb7f9b4eb489f10@mail.gmail.com>",
+        "<6762d810606211412w20d1382cn3b415aaf7945a074@mail.gmail.com>"
+      ],
+      "body_plain": "J?r?me,\nAdding the \"believeNRows=FALSE\" to odbcConnect solved my problem too.\n\n\nchan <- odbcConnect(dsn=\"gfsDB\", uid = \"postgres\", case='postgresql', \nbelieveNRows=FALSE)\n\n\nThanks, this is awesome.\n\nRe: RDBI, the developers are likely on this mailing list and may wish to \ncomment on the status of the package. From what I gather, RODBC is probably a \nbetter option to connect to postgresql. The DBI website says \"under \nconstruction\" from 5 years ago:\nhttp://developer.r-project.org/db/\n\nand this site:\nhttp://stat.bell-labs.com/RS-DBI/index.html\n\npoints to the following link for postgresql support: \nhttp://sourceforge.net/projects/rdbi\n\nHowever, the package is no longer under active development. So RODBC seems \nlike the most viable alternative.\nCheers,\n\nDan\n\n\nLe Mercredi 21 Juin 2006 18:12, jerome prudent a ?crit :\n> Hey!\n> I solved my problem specifying password and believeNRows=FALSE in\n> odbcConnect:\n> channel <- odbcConnect(\"sc\", uid=\"admin\", pwd=\"pass\", case=\"tolower\",\n> believeNRows=FALSE)\n>\n\nLe Mercredi 21 Juin 2006 17:56, jerome prudent a ?crit :\n> Hi!\n> I've seen you have problem with RODBC and I'm exactly in the same\n> unconfortable position: queries have no results.\n>\n>\n> Has you can see, we have exactly the same config and the same problem. Do\n> you think it's an ubuntu specific problem?\n>\n> Did you already solved your problem? How?\n> Have you tried the RDBI package?\n> Thanks!!\n> J?r?me Prudent",
+      "body_snippet": "J?r?me,\nAdding the \"believeNRows=FALSE\" to odbcConnect solved my problem too.\n\n\nchan <- odbcConnect(dsn=\"gfsDB\", uid = \"postgres\", case='postgresql', \nbelieveNRows=FALSE)\n\n\nThanks, this is awesome.\n\nR",
+      "thread_id": "thread-8e9fa3a089ca",
+      "thread_depth": 2,
+      "month": "2006-06"
+    },
+    {
+      "id": "msg-4b1f94453640",
+      "message_id": "<20060621221517.GB18604@jessie.research.bell-labs.com>",
+      "from_name": "David James",
+      "from_email_hash": "50db14ff16dfd88fa0516d6b3379e8ac0537ba1ef3b84fa4345e8a2fec6698f9",
+      "date": "2006-06-21T18:15:17-04:00",
+      "subject": "[R-sig-DB] Resolved: RODBC query returns no results",
+      "subject_clean": "Resolved: RODBC query returns no results",
+      "in_reply_to": "<200606211908.36419.ricardd@mathstat.dal.ca>",
+      "references": [
+        "<6762d810606211348l4324c51mceb7f9b4eb489f10@mail.gmail.com>",
+        "<6762d810606211412w20d1382cn3b415aaf7945a074@mail.gmail.com>",
+        "<200606211908.36419.ricardd@mathstat.dal.ca>"
+      ],
+      "body_plain": "Daniel Ricard wrote:\n> J?r?me,\n> Adding the \"believeNRows=FALSE\" to odbcConnect solved my problem too.\n> \n> \n> chan <- odbcConnect(dsn=\"gfsDB\", uid = \"postgres\", case='postgresql', \n> believeNRows=FALSE)\n> \n> \n> Thanks, this is awesome.\n> \n> Re: RDBI, the developers are likely on this mailing list and may wish to \n> comment on the status of the package. From what I gather, RODBC is probably a \n> better option to connect to postgresql. The DBI website says \"under \n> construction\" from 5 years ago:\n> http://developer.r-project.org/db/\n> \n> and this site:\n> http://stat.bell-labs.com/RS-DBI/index.html\n\nYes, you're right, it should point to the bioconductor site.\n\n> \n> points to the following link for postgresql support: \n> http://sourceforge.net/projects/rdbi\n> \n> However, the package is no longer under active development. So RODBC seems \n> like the most viable alternative.\n> Cheers,\n> \n> Dan\n> \n> \n> Le Mercredi 21 Juin 2006 18:12, jerome prudent a ?crit :\n> > Hey!\n> > I solved my problem specifying password and believeNRows=FALSE in\n> > odbcConnect:\n> > channel <- odbcConnect(\"sc\", uid=\"admin\", pwd=\"pass\", case=\"tolower\",\n> > believeNRows=FALSE)\n> >\n> \n> Le Mercredi 21 Juin 2006 17:56, jerome prudent a ?crit :\n> > Hi!\n> > I've seen you have problem with RODBC and I'm exactly in the same\n> > unconfortable position: queries have no results.\n> >\n> >\n> > Has you can see, we have exactly the same config and the same problem. Do\n> > you think it's an ubuntu specific problem?\n> >\n> > Did you already solved your problem? How?\n> > Have you tried the RDBI package?\n> > Thanks!!\n> > J?r?me Prudent\n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n-- \nDavid A. James\nStatistics Research, Room 2C-276            Phone:  (908) 582-3082       \nBell Labs, Lucent Technologies              Fax:    (908) 582-3340\nMurray Hill, NJ 07974-0636",
+      "body_snippet": "Daniel Ricard wrote:\n> J?r?me,\n> Adding the \"believeNRows=FALSE\" to odbcConnect solved my problem too.\n> \n> \n> chan <- odbcConnect(dsn=\"gfsDB\", uid = \"postgres\", case='postgresql', \n> believeNRows=FAL",
+      "thread_id": "thread-8e9fa3a089ca",
+      "thread_depth": 3,
+      "month": "2006-06"
+    },
+    {
+      "id": "msg-e7f745982b62",
+      "message_id": "<BAY109-W2846ACEBFBB6E13C5EBD9D57A0@phx.gbl>",
+      "from_name": "kaustubh shinde",
+      "from_email_hash": "83f1b56f987f0fe18dc9202837e426c54c5b9d50ee52687d432924c4776fa576",
+      "date": "2006-06-23T14:31:43-04:00",
+      "subject": "[R-sig-DB] RMySQL problem with dbWriteTable",
+      "subject_clean": "RMySQL problem with dbWriteTable",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\nI am working with R and MySQL using RMySQL package.\nI am trying to write to a table in the database using \n dbWriteTable(mycon1, \"DoubleProperty\", frame, append = T,row.names=F)\nand I am getting error \nError in mysqlWriteTable(conn, name, value, ...) :         unimplemented type 'character' in 'asLogical'\nI had this error before and then I just wrote a separate function that took a dataframe as parameter and wrote it to DB using the above code.\nThe error did not make any sense to me then and it's not making any now. Using the same approach is not doing it for me now.\nThe connections are properly opened and closed and the dataframe is also good. \n \nHere is what I am trying to do\n \nibmtse<-as.data.frame(ibmtse)put(ibmtse)\n \nput<-function(frame){mycon1 <- dbConnect(MySQL(), user='***', dbname=db, host=\"******\", password='******')dbWriteTable(mycon1, \"DoubleProperty\", frame, append = T,row.names=F)print(\"Data written\")dbDisconnect(mycon1)}Any ideas on this would be really appreciated as I have absolutely no clue.\nThank you,\nKaustubh\n_________________________________________________________________\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi,\nI am working with R and MySQL using RMySQL package.\nI am trying to write to a table in the database using \n dbWriteTable(mycon1, \"DoubleProperty\", frame, append = T,row.names=F)\nand I am getting e",
+      "thread_id": "thread-e7f745982b62",
+      "thread_depth": 0,
+      "month": "2006-06"
+    },
+    {
+      "id": "msg-9c91368d7655",
+      "message_id": "<20060623184942.GA20422@jessie.research.bell-labs.com>",
+      "from_name": "David James",
+      "from_email_hash": "50db14ff16dfd88fa0516d6b3379e8ac0537ba1ef3b84fa4345e8a2fec6698f9",
+      "date": "2006-06-23T14:49:42-04:00",
+      "subject": "[R-sig-DB] RMySQL problem with dbWriteTable",
+      "subject_clean": "RMySQL problem with dbWriteTable",
+      "in_reply_to": "<BAY109-W2846ACEBFBB6E13C5EBD9D57A0@phx.gbl>",
+      "references": [
+        "<BAY109-W2846ACEBFBB6E13C5EBD9D57A0@phx.gbl>"
+      ],
+      "body_plain": "Hello,\n\nCould you tell us what versions of MySQL (both client and server),\nR and RMySQL you're using?  E.g.,\n\n> summary(con, TRUE)\n<MySQLConnection:(14386,2)>\n  User: dj\n  Host: gaia\n  Dbname: rsdbdi\n  Connection type: tukey via TCP/IP\n  MySQL server version:  4.1.15-standard\n  MySQL client version:  4.1.7\n  MySQL protocol version:  10\n  MySQL server thread id:  160\n  No resultSet available\n\n--\nDavid\n\n\nkaustubh shinde wrote:\n> Hi,\n> I am working with R and MySQL using RMySQL package.\n> I am trying to write to a table in the database using \n>  dbWriteTable(mycon1, \"DoubleProperty\", frame, append = T,row.names=F)\n> and I am getting error \n> Error in mysqlWriteTable(conn, name, value, ...) :         unimplemented type 'character' in 'asLogical'\n> I had this error before and then I just wrote a separate function that took a dataframe as parameter and wrote it to DB using the above code.\n> The error did not make any sense to me then and it's not making any now. Using the same approach is not doing it for me now.\n> The connections are properly opened and closed and the dataframe is also good. \n>  \n> Here is what I am trying to do\n>  \n> ibmtse<-as.data.frame(ibmtse)put(ibmtse)\n>  \n> put<-function(frame){mycon1 <- dbConnect(MySQL(), user='***', dbname=db, host=\"******\", password='******')dbWriteTable(mycon1, \"DoubleProperty\", frame, append = T,row.names=F)print(\"Data written\")dbDisconnect(mycon1)}Any ideas on this would be really appreciated as I have absolutely no clue.\n> Thank you,\n> Kaustubh\n> _________________________________________________________________\n> Add photos, news, and blogs about the World Cup to your Live.com homepage!\n> http://www.live.com/getstarted\n> \t[[alternative HTML version deleted]]\n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "Hello,\n\nCould you tell us what versions of MySQL (both client and server),\nR and RMySQL you're using?  E.g.,\n\n> summary(con, TRUE)\n<MySQLConnection:(14386,2)>\n  User: dj\n  Host: gaia\n  Dbname: rsdbdi\n",
+      "thread_id": "thread-e7f745982b62",
+      "thread_depth": 1,
+      "month": "2006-06"
+    },
+    {
+      "id": "msg-00889a1aa1ec",
+      "message_id": "<p06230902c0cb0256e3f2@[128.115.153.6]>",
+      "from_name": "Don MacQueen",
+      "from_email_hash": "e13bfb89115e8e835b0ed57c9de9e35a69bd33cf720ea654a4529b9050b00e0b",
+      "date": "2006-06-30T10:41:52-07:00",
+      "subject": "[R-sig-DB] The \"hack\" in oraQuickSQL",
+      "subject_clean": "The \"hack\" in oraQuickSQL",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi, David,\n\nI have discovered what looks like an unexpected side-effect of a \n(recent?) change in oraQuickSQL().\n\nThe symptom I encountered was that within one R session, using \nROracle and dbGetQuery(), one query succeeds, yet another does not. \nBoth of them succeed if executed outside of R using Oracle's sqlplus. \nThis is a new behavior; 2 or 3 months ago both succeeded. Since then, \nI have upgraded R from the 2.2.* series to the 2.3.* series, when I \ndo that I also reinstall all of my favorite packages.\n\nHere is an example:\n\n>  slocs <- dbGetQuery(con,sel.locs)\n>  dim(slocs)\n[1] 22  8\n>  dat <- dbGetQuery(con,dat.sql)\n>  dat\n<Expired OraResult:(11025,2,12)>\n>\n>  summary(con)\n<OraConnection:(11025,2)>\n   User: macq\n   Dbname: taurusdb.llnl.gov\n\n\nI traced the problem to this expression in oraQuickSQL\n\n   hack <- grep(\"^[ \\\\t]*select \", tolower(dbGetInfo(rs)$statement))\n\nI have (for quite some time now) made it a practice to start many but \nnot all of my queries with\n     \"select\\n\"\nNote the absence of a space character after \"select\", which the hack \nlooks for. This then causes the expression block\n\n     if (dbHasCompleted(rs) || length(hack) == 0) {\n         dbClearResult(rs)\n         return(invisible(rs))\n     }\n\nto be executed.\n\nHere is the beginning of my query that failed. I put all the \"\\n\" in \nthere so that when I cat(dat.sql) it's formatted nicely.\n\n>  dat.sql\n[1] \"select\\n   l.locgrp,\\n   l.lgrpseq,\\n   l.locsubgrp,\\n \nl.lsubgrpseq,\\n   c.anlgrp,\\n   c.agrpseq,\\n   c.saerdesc,\\n \nc.anlseq,\\n   l.saerloc,\\n   l.locseq,\\n   to_\n\n\nBy way of testing, I first found that if I don't use dbGetQuery(), \nretrieval succeeds:\n>  res <- dbSendQuery(con,dat.sql)\n>  res\n<OraResult:(11025,2,13)>\n>  foo <- fetch(res,n=-1)\n>  dim(foo)\n[1] 94 50\n\nI also added the space character, i.e., changed my query to start \nwith \"select \\n\", and then dbGetQuery() succeeds.\n\n-Don\n\n>  sessionInfo()\nVersion 2.3.1 (2006-06-01)\npowerpc-apple-darwin8.6.0\n\nattached base packages:\n[1] \"stats\"   \"utils\"   \"methods\" \"base\"\n\nother attached packages:\n    gdata    rmacq  ROracle      DBI\n  \"2.1.2\"    \"1.0\"  \"0.5-7\" \"0.1-10\"\n\n-- \n--------------------------------------\nDon MacQueen\nEnvironmental Protection Department\nLawrence Livermore National Laboratory\nLivermore, CA, USA",
+      "body_snippet": "Hi, David,\n\nI have discovered what looks like an unexpected side-effect of a \n(recent?) change in oraQuickSQL().\n\nThe symptom I encountered was that within one R session, using \nROracle and dbGetQuery",
+      "thread_id": "thread-00889a1aa1ec",
+      "thread_depth": 0,
+      "month": "2006-06"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-0e497e82064c",
+      "subject": "R, RMySQL and OSX",
+      "message_count": 1,
+      "participants": [
+        "Louis Springer"
+      ],
+      "started": "2006-06-07T21:50:21-06:00",
+      "last_reply": "2006-06-07T21:50:21-06:00",
+      "root_message_id": "msg-0e497e82064c"
+    },
+    {
+      "id": "thread-2d05f3da099b",
+      "subject": "R, RMySQL and OSX",
+      "message_count": 2,
+      "participants": [
+        "Louis Springer",
+        "Prof Brian Ripley"
+      ],
+      "started": "2006-06-07T23:27:47-06:00",
+      "last_reply": "2006-06-08T06:42:25+01:00",
+      "root_message_id": "msg-2d05f3da099b"
+    },
+    {
+      "id": "thread-53626cf4c2f7",
+      "subject": "Cannot Install RMySQL on MacOSX",
+      "message_count": 1,
+      "participants": [
+        "Venkat Chalasani"
+      ],
+      "started": "2006-06-11T17:20:37-04:00",
+      "last_reply": "2006-06-11T17:20:37-04:00",
+      "root_message_id": "msg-53626cf4c2f7"
+    },
+    {
+      "id": "thread-52c642586e66",
+      "subject": "how to read CRU climatic data  files with R?",
+      "message_count": 3,
+      "participants": [
+        "Nicolas Degallier",
+        "Prof Brian Ripley",
+        "antonio rodriguez"
+      ],
+      "started": "2006-06-13T09:47:04+02:00",
+      "last_reply": "2006-06-13T09:40:30+01:00",
+      "root_message_id": "msg-52c642586e66"
+    },
+    {
+      "id": "thread-cf7cc94b0745",
+      "subject": "RODBC query returns no results",
+      "message_count": 1,
+      "participants": [
+        "Daniel Ricard"
+      ],
+      "started": "2006-06-19T15:36:56-03:00",
+      "last_reply": "2006-06-19T15:36:56-03:00",
+      "root_message_id": "msg-cf7cc94b0745"
+    },
+    {
+      "id": "thread-8e9fa3a089ca",
+      "subject": "RODBC",
+      "message_count": 4,
+      "participants": [
+        "Daniel Ricard",
+        "David James",
+        "jerome prudent"
+      ],
+      "started": "2006-06-21T15:48:16-05:00",
+      "last_reply": "2006-06-21T18:15:17-04:00",
+      "root_message_id": "msg-8e9fa3a089ca"
+    },
+    {
+      "id": "thread-e7f745982b62",
+      "subject": "RMySQL problem with dbWriteTable",
+      "message_count": 2,
+      "participants": [
+        "David James",
+        "kaustubh shinde"
+      ],
+      "started": "2006-06-23T14:31:43-04:00",
+      "last_reply": "2006-06-23T14:49:42-04:00",
+      "root_message_id": "msg-e7f745982b62"
+    },
+    {
+      "id": "thread-00889a1aa1ec",
+      "subject": "The \"hack\" in oraQuickSQL",
+      "message_count": 1,
+      "participants": [
+        "Don MacQueen"
+      ],
+      "started": "2006-06-30T10:41:52-07:00",
+      "last_reply": "2006-06-30T10:41:52-07:00",
+      "root_message_id": "msg-00889a1aa1ec"
+    }
+  ]
+}

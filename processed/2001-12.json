@@ -1,0 +1,163 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2001-12",
+  "messages": [
+    {
+      "id": "msg-0c204ab01e2f",
+      "message_id": "<XFMail.20011208215709.detlef.steuer@unibw-hamburg.de>",
+      "from_name": "detiei@steuer m@iii@g oii u@ibw-h@mburg@de",
+      "from_email_hash": "ed44d7b838eb84d7ded06c757f7c75ea9a4a5725f5dffafc2f41af5403861ae8",
+      "date": "2001-12-08T21:57:09+01:00",
+      "subject": "[R-sig-DB] RBI and front-ends to RODBC and RPgSQL",
+      "subject_clean": "RBI and front-ends to RODBC and RPgSQL",
+      "in_reply_to": "<15383.10056.542126.669091@mithrandir.hornik.net>",
+      "references": [],
+      "body_plain": "On 12-Dec-2001 Kurt Hornik wrote:\n>>>>>> Torsten Hothorn writes:\n> \n>>> \n>>> > please do not invest any time into RmSQL: nobody uses that (for good\n>>> > reasons)! It was a design study (nearly 3 years ago) and was good for\n>>> > that special issue.\n>>> \n>>> Torsten: should we remove the package along with the 1.4 release then?\n>>> \n> \n>> well, I expected this question and thought about it :-)\n> \n>> it is, technically, out of date in some way. but it is maintained and\n>> passes R CMD check and supports yet another db-system. \n> \n>> I feel that it should stay, but I can accept if you like to remove it\n>> from CRAN :-)\n> \n> Your call.\n\nWell, \n\n1. maintained\n2. passes R CMD check.\n+\n3. mSQL not supported by RDBI for now.\n\ngives a definitve \"stay in archive\".\n(Is very nice for any new user to find her database usable.)\n\ndetlef\n\n\n\n> \n> -k\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> http://www.stat.math.ethz.ch/mailman/listinfo/r-sig-db\n\nDetlef Steuer --- http://fawn.unibw-hamburg.de/steuer.html\n\n***** Encrypted mail preferred *****",
+      "body_snippet": "On 12-Dec-2001 Kurt Hornik wrote:\n>>>>>> Torsten Hothorn writes:\n> \n>>> \n>>> > please do not invest any time into RmSQL: nobody uses that (for good\n>>> > reasons)! It was a design study (nearly 3 year",
+      "thread_id": "thread-27ee7cc43b4a",
+      "thread_depth": 5,
+      "month": "2001-12"
+    },
+    {
+      "id": "msg-27ee7cc43b4a",
+      "message_id": "<20011211105127.A4995@jessie.research.bell-labs.com>",
+      "from_name": "David James",
+      "from_email_hash": "50db14ff16dfd88fa0516d6b3379e8ac0537ba1ef3b84fa4345e8a2fec6698f9",
+      "date": "2001-12-11T10:51:27-05:00",
+      "subject": "[R-sig-DB] RBI and front-ends to RODBC and RPgSQL",
+      "subject_clean": "RBI and front-ends to RODBC and RPgSQL",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\nA few weeks back, I suggested that we could implement the database\ninterface (DBI) that Tim initially wrote in Rdbi using the new style\nclasses and methods.  Also, I thought that having a DBI front-end\nto some of the existing packages would make it easier for the R-SIG-DB\nto try the proposed DBI with real data.  Thus, Kurt has agreed to put\nthe 3 packages below in the 1.4.0/Other/Devel area.\n\n1. DBI -- The API for the database interface.  This package\n   consists of virtual class definitions and their generic functions,\n   and it requires the \"methods\" package.  The API is fully described\n   in the file \"DBI.pdf\", found in the package directory (i.e., once\n   DBI is installed).   That document identifies a number of open\n   issues that we should close before we make the DBI \"official\",\n   and it would be very useful if you could comment on (at least)\n   those issues.\n\n2. DBI.RODBC -- this is a DBI front-end to the current RODBC (0.8-3).\n   This package requires the DBI package above, and it implements the\n   DBI on top of existing RODBC (but see the caveats below).\n\n3. DBI.RPgSQL -- similarly, this is a DBI front-end to the existing\n   RPgSQL (1.0-0), and it also requires the DBI package.\n\n(I should have implemented front-ends for Torsten's mSQL, and MySQL, \netc., but there's only so much time...)\n\nWhat the R-SIG-DB needs to do is to experiment with these packages\nand make suggestions and/or modifications to ensure we're not\nleaving out important functionality in the API.  It's probably time\nto freeze the API soon, so that we can move to implement other things\non top of it (e.g., the attach() that Duncan has already working).\n\nSample R Session \n----------------\n\n##\n## attach the appropriate library\n##\n\nlibrary(DBI.RPgSQL)   ## this attaches methods, RPgSQL (if needed)\nlibrary(DBI.RODBC)    ## this attaches methods, RODBC (if needed)\n\n##\n## instantiate one or both driver\n##\n\npg <- RPgSQL()   ## equivalent to pg <- dbDriver(\"RPgSQL\")  \nod <- RODBC()    ## equivalent to od <- dbDriver(\"RODBC\")\n\n##\n## print/show/summary methods to print a one-line object identification\n## and produce a brief description (meta-data) of an object\n##\n\n> print(pg)\n<PgSQLDriver:(27642)> \n\n> summary(pg)\nPgSQLDriver \nId = (27642) \ndriver.name = RPgSQL \ndriver.version = 1.0-0 \nDBI.version = 0.1-2 \nclient.version = NA \nmax.connections = 1 \n \n> show(od)\n<ODBCDriver:(27642)> \n\n> summary(od)\nODBCDriver \nId = (27642) \ndriver.name = RODBC \ndriver.version = 0.8-3 \nDBI.version = 0.1-2 \nclient.version = NA \nmax.connections = 16 \n\n##\n## connect to a database \n##\n\n> dbConnect(pg, \"user\", \"password\", \"dbname\")\n<PgSQLConnection:(27642,0)> \n> pg\n<PgSQLDriver:(27642)> \n\n## Oops!  I forgot to assign the connection --\npcon <- dbListConnections(pg)     ## (RPgSQL returns one connection obj)\n\n> summary(pcon)\nPgSQLConnection \ndbname = rsdbi \nuser = rsdbi \nstatus = 0 \nopen = TRUE \nserver.version = NA \n\n> ocon <- dbConnect(od, \"dsn\", \"uid\", \"pwd\")\n> summary(ocon)\nODBCConnection \nserver.version = NA \nresults = NA \n\n##\n## convenience methods on connection objects:\n##\n## dbLisTables(), dbExistsTable(), dbReadTable(), dbWriteTable(), and\n## dbRemoveTable()\n\n> dbListTables(pcon)[10:14]\n[1] \"USArrests\"     \"USJudgeRatings\"     \"USPersonalExpenditure\"\n[4] \"VADeaths\"      \"airmiles\"             \n\n> dbListTables(ocon)[1:5]\n[1] \"Formaldehyde\"  \"HairEyeColor\"   \"InsectSprays\"  \"LifeCycleSavings\"\n[5] \"OrchardSprays\"   \n\n> dbExistsTable(ocon, \"quakes\")\n[1] TRUE\n\n> dbExistsTable(pcon, \"quakes\")\n[1] FALSE\n\n> dbWriteTable(pcon, \"quakes\", dbReadTable(ocon, \"quakes\"))\n\n> dbRemoveTable(ocon, \"quakes\")\n[1] TRUE\n\n##\n## Queries, result sets.\n##\n\n> prs <- dbSendQuery(pcon, \"select * from quakes\")  ## leave output in dbms\n> prs\n<PgSQLResult:(27642,0,0)> \n\n> summary(prs)\nPgSQLResult \nrows = 1000 \ncols = 5 \nfield.names = long, lat, depth, mag, stations \nhasCompleted = NA \n\n> dbColumnInfo(prs)    ## column info of the result set\n  field.name field.type  R.type Nullable\n1       long        701 numeric       NA\n2        lat        701 numeric       NA\n3      depth         23 integer       NA\n4        mag        701 numeric       NA\n5   stations         23 integer       NA\n\n\n> x <- fetch(ors, n = 0)      ## bring entire output in\n\n## combine dbSendQuery()/fetch() in one operation\ny <- dbGetQuery(ocon, \"select * from quakes\")  \n\n##\n## free up resources\n##\n\n> dbClearResult(prs) \n[1] TRUE\n\n> dbDisconnect(pcon)  \n[1] TRUE\n> dbDisconnect(ocon)\n[1] TRUE\n\n> dbUnloadDriver(pg)\n[1] TRUE\n> dbUnloadDriver(od)\n[1] TRUE\n#################################################################\n\nCaveats:\n--------\n\n  I ran into some problems with the RODBC package where I could\n  not get sqlSave() to work when invoked from within a function\n  (it may have something to do with calls to substitute()) thus\n  dbWriteTable() fails with an ODBC connection.  I'd appreciate\n  help on the correct usage of RODBC's sqlSave().  Notice that I\n  ran into similar problems with sqlDrop(), but I was able to get\n  it working by using do.call() to invoke sqlDrop().\n\n-- \nDavid A. James\nStatistics Research, Room 2C-253            Phone:  (908) 582-3082       \nBell Labs, Lucent Technologies              Fax:    (908) 582-3340\nMurray Hill, NJ 09794-0636",
+      "body_snippet": "Hi,\n\nA few weeks back, I suggested that we could implement the database\ninterface (DBI) that Tim initially wrote in Rdbi using the new style\nclasses and methods.  Also, I thought that having a DBI fro",
+      "thread_id": "thread-27ee7cc43b4a",
+      "thread_depth": 0,
+      "month": "2001-12"
+    },
+    {
+      "id": "msg-5db0c12b3ad5",
+      "message_id": "<Pine.LNX.4.21.0112111658170.402-100000@artemis.imbe.med.uni-erlangen.de>",
+      "from_name": "Torsten Hothorn",
+      "from_email_hash": "b1d11660552bf48604769d33963570decf05ba5d09797fdebf712b78880d0a8b",
+      "date": "2001-12-11T17:00:38+01:00",
+      "subject": "[R-sig-DB] RBI and front-ends to RODBC and RPgSQL",
+      "subject_clean": "RBI and front-ends to RODBC and RPgSQL",
+      "in_reply_to": "<20011211105127.A4995@jessie.research.bell-labs.com>",
+      "references": [],
+      "body_plain": "> \n> (I should have implemented front-ends for Torsten's mSQL, and MySQL, \n> etc., but there's only so much time...)\n\nplease do not invest any time into RmSQL: nobody uses that (for good\nreasons)! It was a design study (nearly 3 years ago) and was good for that\nspecial issue. Anyway, \n\nTorsten",
+      "body_snippet": "> \n> (I should have implemented front-ends for Torsten's mSQL, and MySQL, \n> etc., but there's only so much time...)\n\nplease do not invest any time into RmSQL: nobody uses that (for good\nreasons)! It ",
+      "thread_id": "thread-27ee7cc43b4a",
+      "thread_depth": 1,
+      "month": "2001-12"
+    },
+    {
+      "id": "msg-d9f6d547c11f",
+      "message_id": "<3C163522.2010009@StonyBrook.Edu>",
+      "from_name": "Timothy H. Keitt",
+      "from_email_hash": "9485c09ba53cbe423f3d2a55c5c66cc75e2a647def885e744ac1743c93187a25",
+      "date": "2001-12-11T11:32:34-05:00",
+      "subject": "[R-sig-DB] Re: RBI and front-ends to RODBC and RPgSQL",
+      "subject_clean": "RBI and front-ends to RODBC and RPgSQL",
+      "in_reply_to": null,
+      "references": [
+        "<20011211105127.A4995@jessie.research.bell-labs.com>"
+      ],
+      "body_plain": "Great! Send me the code for DBI.RPgSQL and I will substitute in the \nRdbi.PgSQL backend (much faster + support for multiple connections).\n\nTim\n\nDavid James wrote:\n\n> Hi,\n> \n> A few weeks back, I suggested that we could implement the database\n> interface (DBI) that Tim initially wrote in Rdbi using the new style\n\n-- \nTimothy H. Keitt\nDepartment of Ecology and Evolution\nState University of New York at Stony Brook\nStony Brook, New York 11794 USA\nPhone: 631-632-1101, FAX: 631-632-7626\nhttp://life.bio.sunysb.edu/ee/keitt/",
+      "body_snippet": "Great! Send me the code for DBI.RPgSQL and I will substitute in the \nRdbi.PgSQL backend (much faster + support for multiple connections).\n\nTim\n\nDavid James wrote:\n\n> Hi,\n> \n> A few weeks back, I sugge",
+      "thread_id": "thread-27ee7cc43b4a",
+      "thread_depth": 1,
+      "month": "2001-12"
+    },
+    {
+      "id": "msg-d4740a231a4f",
+      "message_id": "<15383.9438.941063.455557@mithrandir.hornik.net>",
+      "from_name": "Kurt Hornik",
+      "from_email_hash": "5fdd62c89908b35631fd3aa4127ba4f89c8f2b9d3a5d0c8ba23d23f69dbbda7a",
+      "date": "2001-12-12T10:35:26+01:00",
+      "subject": "[R-sig-DB] RBI and front-ends to RODBC and RPgSQL",
+      "subject_clean": "RBI and front-ends to RODBC and RPgSQL",
+      "in_reply_to": "<Pine.LNX.4.21.0112111658170.402-100000@artemis.imbe.med.uni-erlangen.de>",
+      "references": [
+        "<20011211105127.A4995@jessie.research.bell-labs.com>",
+        "<Pine.LNX.4.21.0112111658170.402-100000@artemis.imbe.med.uni-erlangen.de>"
+      ],
+      "body_plain": ">>>>> Torsten Hothorn writes:\n\n>> \n>> (I should have implemented front-ends for Torsten's mSQL, and MySQL, \n>> etc., but there's only so much time...)\n\n> please do not invest any time into RmSQL: nobody uses that (for good\n> reasons)! It was a design study (nearly 3 years ago) and was good for\n> that special issue.\n\nTorsten: should we remove the package along with the 1.4 release then?\n\n-k",
+      "body_snippet": ">>>>> Torsten Hothorn writes:\n\n>> \n>> (I should have implemented front-ends for Torsten's mSQL, and MySQL, \n>> etc., but there's only so much time...)\n\n> please do not invest any time into RmSQL: nobo",
+      "thread_id": "thread-27ee7cc43b4a",
+      "thread_depth": 2,
+      "month": "2001-12"
+    },
+    {
+      "id": "msg-22844cc64aa4",
+      "message_id": "<Pine.LNX.4.21.0112121037330.1271-100000@artemis.imbe.med.uni-erlangen.de>",
+      "from_name": "Torsten Hothorn",
+      "from_email_hash": "b1d11660552bf48604769d33963570decf05ba5d09797fdebf712b78880d0a8b",
+      "date": "2001-12-12T10:43:17+01:00",
+      "subject": "[R-sig-DB] RBI and front-ends to RODBC and RPgSQL",
+      "subject_clean": "RBI and front-ends to RODBC and RPgSQL",
+      "in_reply_to": "<15383.9438.941063.455557@mithrandir.hornik.net>",
+      "references": [],
+      "body_plain": "> \n> > please do not invest any time into RmSQL: nobody uses that (for good\n> > reasons)! It was a design study (nearly 3 years ago) and was good for\n> > that special issue.\n> \n> Torsten: should we remove the package along with the 1.4 release then?\n> \n\nwell, I expected this question and thought about it :-)\n\nit is, technically, out of date in some way. but it is maintained and\npasses R CMD check and supports yet another db-system. \n\nI feel that it should stay, but I can accept if you like to remove it from\nCRAN :-)\n\nTorsten\n\n> -k\n>",
+      "body_snippet": "> \n> > please do not invest any time into RmSQL: nobody uses that (for good\n> > reasons)! It was a design study (nearly 3 years ago) and was good for\n> > that special issue.\n> \n> Torsten: should we re",
+      "thread_id": "thread-27ee7cc43b4a",
+      "thread_depth": 3,
+      "month": "2001-12"
+    },
+    {
+      "id": "msg-15c37d753c73",
+      "message_id": "<15383.10056.542126.669091@mithrandir.hornik.net>",
+      "from_name": "Kurt Hornik",
+      "from_email_hash": "5fdd62c89908b35631fd3aa4127ba4f89c8f2b9d3a5d0c8ba23d23f69dbbda7a",
+      "date": "2001-12-12T10:45:44+01:00",
+      "subject": "[R-sig-DB] RBI and front-ends to RODBC and RPgSQL",
+      "subject_clean": "RBI and front-ends to RODBC and RPgSQL",
+      "in_reply_to": "<Pine.LNX.4.21.0112121037330.1271-100000@artemis.imbe.med.uni-erlangen.de>",
+      "references": [
+        "<15383.9438.941063.455557@mithrandir.hornik.net>",
+        "<Pine.LNX.4.21.0112121037330.1271-100000@artemis.imbe.med.uni-erlangen.de>"
+      ],
+      "body_plain": ">>>>> Torsten Hothorn writes:\n\n>> \n>> > please do not invest any time into RmSQL: nobody uses that (for good\n>> > reasons)! It was a design study (nearly 3 years ago) and was good for\n>> > that special issue.\n>> \n>> Torsten: should we remove the package along with the 1.4 release then?\n>> \n\n> well, I expected this question and thought about it :-)\n\n> it is, technically, out of date in some way. but it is maintained and\n> passes R CMD check and supports yet another db-system. \n\n> I feel that it should stay, but I can accept if you like to remove it\n> from CRAN :-)\n\nYour call.\n\n-k",
+      "body_snippet": ">>>>> Torsten Hothorn writes:\n\n>> \n>> > please do not invest any time into RmSQL: nobody uses that (for good\n>> > reasons)! It was a design study (nearly 3 years ago) and was good for\n>> > that specia",
+      "thread_id": "thread-27ee7cc43b4a",
+      "thread_depth": 4,
+      "month": "2001-12"
+    },
+    {
+      "id": "msg-aa717b2449b9",
+      "message_id": "<15383.10709.757450.684488@mithrandir.hornik.net>",
+      "from_name": "Kurt Hornik",
+      "from_email_hash": "5fdd62c89908b35631fd3aa4127ba4f89c8f2b9d3a5d0c8ba23d23f69dbbda7a",
+      "date": "2001-12-12T10:56:37+01:00",
+      "subject": "[R-sig-DB] Re: RBI and front-ends to RODBC and RPgSQL",
+      "subject_clean": "RBI and front-ends to RODBC and RPgSQL",
+      "in_reply_to": "<3C163522.2010009@StonyBrook.Edu>",
+      "references": [
+        "<20011211105127.A4995@jessie.research.bell-labs.com>",
+        "<3C163522.2010009@StonyBrook.Edu>"
+      ],
+      "body_plain": ">>>>> Timothy H Keitt writes:\n\n> Great! Send me the code for DBI.RPgSQL and I will substitute in the \n> Rdbi.PgSQL backend (much faster + support for multiple connections).\n\nTim\n\nThe packages are available via\n\n\thttp://cran.r-project.org/src/contrib/1.4.0/Other/Devel/\n\nPls advise what to do with the Rdbi* packages in contrib/Devel.\n\nBest\n-k",
+      "body_snippet": ">>>>> Timothy H Keitt writes:\n\n> Great! Send me the code for DBI.RPgSQL and I will substitute in the \n> Rdbi.PgSQL backend (much faster + support for multiple connections).\n\nTim\n\nThe packages are avai",
+      "thread_id": "thread-27ee7cc43b4a",
+      "thread_depth": 2,
+      "month": "2001-12"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-27ee7cc43b4a",
+      "subject": "RBI and front-ends to RODBC and RPgSQL",
+      "message_count": 8,
+      "participants": [
+        "David James",
+        "Kurt Hornik",
+        "Timothy H. Keitt",
+        "Torsten Hothorn",
+        "detiei@steuer m@iii@g oii u@ibw-h@mburg@de"
+      ],
+      "started": "2001-12-11T10:51:27-05:00",
+      "last_reply": "2001-12-12T10:56:37+01:00",
+      "root_message_id": "msg-27ee7cc43b4a"
+    }
+  ]
+}

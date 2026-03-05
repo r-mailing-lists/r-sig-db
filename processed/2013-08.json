@@ -1,0 +1,139 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2013-08",
+  "messages": [
+    {
+      "id": "msg-a2a94656b25b",
+      "message_id": "<CAOBt=y_9Crsp_bvC4Lz9HwaB3nZHGJkxEp3z+JRJHVu2uGY2Bg@mail.gmail.com>",
+      "from_name": "Grant Farnsworth",
+      "from_email_hash": "6fc3bca02d84c75c1bece87d837aaa0b350dab99967e4cb700aba063b5907f54",
+      "date": "2013-08-05T20:23:20-04:00",
+      "subject": "[R-sig-DB] RSQLite and transparent compression",
+      "subject_clean": "RSQLite and transparent compression",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I frequently create, write to, and read from large SQLite databases\nfrom within R using RSQLite, sometimes across the network.  As\nsize/performance can be a consideration for me, I find myself wishing\nI could compress my sqlite database files and interact with them\ndirectly, the way one can interact with a gzipped text file using\nread.table() or scan().  In case anyone wasn't aware, you can read\nfrom a gzipped  text file without any additional arguments\n\nG <- read.table(\"myfile.txt.gz\")\n\nand so forth.\n\nThe syntax doesn't have to be that simple, but does anyone know of a\nworkaround to allow me to read from an SQLite database that has been\ncompressed?   Or if you have a different solution/workaround, I would\nlove to hear it.  Thanks!",
+      "body_snippet": "I frequently create, write to, and read from large SQLite databases\nfrom within R using RSQLite, sometimes across the network.  As\nsize/performance can be a consideration for me, I find myself wishing",
+      "thread_id": "thread-a2a94656b25b",
+      "thread_depth": 0,
+      "month": "2013-08"
+    },
+    {
+      "id": "msg-bee659ffc10e",
+      "message_id": "<CAC2h7utxuNwmkdjxPSTqJP68X+soBn+iHaoVJJqtxPqB=JQo7Q@mail.gmail.com>",
+      "from_name": "Kasper Daniel Hansen",
+      "from_email_hash": "d93d2b6e7e026786d1329cc362094fa8cf7678c5556ec56db24b97db9e327685",
+      "date": "2013-08-06T00:02:02-04:00",
+      "subject": "[R-sig-DB] RSQLite and transparent compression",
+      "subject_clean": "RSQLite and transparent compression",
+      "in_reply_to": "<CAOBt=y_9Crsp_bvC4Lz9HwaB3nZHGJkxEp3z+JRJHVu2uGY2Bg@mail.gmail.com>",
+      "references": [
+        "<CAOBt=y_9Crsp_bvC4Lz9HwaB3nZHGJkxEp3z+JRJHVu2uGY2Bg@mail.gmail.com>"
+      ],
+      "body_plain": "What do you mean by large?  You are aware you can have an in-memory version\nof a SQLite database (whether that helps depends on the size of course)?\n If you operate on a disk based database, fast I/O helps a lot, perhaps\neven copying the database to a local drive. I don't know anything about\ncompression though, but in general I have found the sqlite.org website and\nits mailing list to be super helpful.\n\nKasper\n\n\nOn Mon, Aug 5, 2013 at 8:23 PM, Grant Farnsworth <gvfarns at gmail.com> wrote:\n\n> I frequently create, write to, and read from large SQLite databases\n> from within R using RSQLite, sometimes across the network.  As\n> size/performance can be a consideration for me, I find myself wishing\n> I could compress my sqlite database files and interact with them\n> directly, the way one can interact with a gzipped text file using\n> read.table() or scan().  In case anyone wasn't aware, you can read\n> from a gzipped  text file without any additional arguments\n>\n> G <- read.table(\"myfile.txt.gz\")\n>\n> and so forth.\n>\n> The syntax doesn't have to be that simple, but does anyone know of a\n> workaround to allow me to read from an SQLite database that has been\n> compressed?   Or if you have a different solution/workaround, I would\n> love to hear it.  Thanks!\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "What do you mean by large?  You are aware you can have an in-memory version\nof a SQLite database (whether that helps depends on the size of course)?\n If you operate on a disk based database, fast I/O ",
+      "thread_id": "thread-a2a94656b25b",
+      "thread_depth": 1,
+      "month": "2013-08"
+    },
+    {
+      "id": "msg-5edd5c162bde",
+      "message_id": "<CAOBt=y8ZGYn3rqU_tL8RXuFFNazFh1TZM2ri226h_fc13HAbUA@mail.gmail.com>",
+      "from_name": "Grant Farnsworth",
+      "from_email_hash": "6fc3bca02d84c75c1bece87d837aaa0b350dab99967e4cb700aba063b5907f54",
+      "date": "2013-08-06T00:35:44-04:00",
+      "subject": "[R-sig-DB] RSQLite and transparent compression",
+      "subject_clean": "RSQLite and transparent compression",
+      "in_reply_to": "<CAC2h7utxuNwmkdjxPSTqJP68X+soBn+iHaoVJJqtxPqB=JQo7Q@mail.gmail.com>",
+      "references": [
+        "<CAOBt=y_9Crsp_bvC4Lz9HwaB3nZHGJkxEp3z+JRJHVu2uGY2Bg@mail.gmail.com>",
+        "<CAC2h7utxuNwmkdjxPSTqJP68X+soBn+iHaoVJJqtxPqB=JQo7Q@mail.gmail.com>"
+      ],
+      "body_plain": "On Tue, Aug 6, 2013 at 12:02 AM, Kasper Daniel Hansen\n<kasperdanielhansen at gmail.com> wrote:\n> What do you mean by large?  You are aware you can have an in-memory version\n> of a SQLite database (whether that helps depends on the size of course)?  If\n> you operate on a disk based database, fast I/O helps a lot, perhaps even\n> copying the database to a local drive. I don't know anything about\n> compression though, but in general I have found the sqlite.org website and\n> its mailing list to be super helpful.\n\n\nNot outrageously large.  I'd say 10-20GB each as text delimited files.\n Still, it's too large to put in RAM and work with.  This is why I use\nSQLite.  I get these files as gzipped delimited text files, then I\nread them a million lines or so at a time using scan(), do some basic\nclean up, and stuff them into a big SQLite database.  When I want to\nuse the data, I just subset the stuff I need, which fits comfortably\ninto RAM.  If the datasets were small enough, I'd just store them in\nan R data file...then I wouldn't have to worry about type conversions\nor variable name issues.\n\nI guess it just seems wasteful to have these huge files sitting around\n(or move them across networks) when the raw data was compressed and I\nknow the sqlite databases would compress nicely as well.  That's why\nI'm specifically looking for a compression solution.  I'd be open to\nother approaches, of course.  For example, I could imagine ways to\nappend the data into a dataframe in an .rda or .rds file and then\nsubset it later without ever having to load the whole thing into ram\nif I used some of the big data packages, but besides the file size I'm\npretty happy with the SQLite solution---it just seemed like\ntransparent zipping might be available and I was surprised to find\nthat it wasn't.\n\nBy the way, speed isn't a critical issue.  It's not super\ntime-sensitive work and the network to my file server is plenty fast.\nIt just seems like I might have missed an obvious way to save the\nspace and time that lack of compression causes.",
+      "body_snippet": "On Tue, Aug 6, 2013 at 12:02 AM, Kasper Daniel Hansen\n<kasperdanielhansen at gmail.com> wrote:\n> What do you mean by large?  You are aware you can have an in-memory version\n> of a SQLite database (whe",
+      "thread_id": "thread-a2a94656b25b",
+      "thread_depth": 2,
+      "month": "2013-08"
+    },
+    {
+      "id": "msg-fe2206613681",
+      "message_id": "<CAC2h7uv5R=pGGq7g635cRDi6yktBnTBoVQzjq6Y-QV4ThW=r8Q@mail.gmail.com>",
+      "from_name": "Kasper Daniel Hansen",
+      "from_email_hash": "d93d2b6e7e026786d1329cc362094fa8cf7678c5556ec56db24b97db9e327685",
+      "date": "2013-08-06T08:21:25-04:00",
+      "subject": "[R-sig-DB] RSQLite and transparent compression",
+      "subject_clean": "RSQLite and transparent compression",
+      "in_reply_to": "<CAOBt=y8ZGYn3rqU_tL8RXuFFNazFh1TZM2ri226h_fc13HAbUA@mail.gmail.com>",
+      "references": [
+        "<CAOBt=y_9Crsp_bvC4Lz9HwaB3nZHGJkxEp3z+JRJHVu2uGY2Bg@mail.gmail.com>",
+        "<CAC2h7utxuNwmkdjxPSTqJP68X+soBn+iHaoVJJqtxPqB=JQo7Q@mail.gmail.com>",
+        "<CAOBt=y8ZGYn3rqU_tL8RXuFFNazFh1TZM2ri226h_fc13HAbUA@mail.gmail.com>"
+      ],
+      "body_plain": "Well, the technical questions is really whether you can do sqlite\noperations on a compressed database.  Otherwise, all you can do is\nexternally compresed the database and then decompress it every time you\nwant to access it, which may be tedious and slow.  sqlite is used a lot on\ndevices with very limited resources, so it is entirely possible that there\nis some compression possibility, which is why I suggest you read the\ndocumentation (argh!).\n\nFinally, 10-20GB for a textfile is not that big.  If you do not have enough\nRAM you must be working on a constrained system.\n\nKasper\n\n\nOn Tue, Aug 6, 2013 at 12:35 AM, Grant Farnsworth <gvfarns at gmail.com> wrote:\n\n> On Tue, Aug 6, 2013 at 12:02 AM, Kasper Daniel Hansen\n> <kasperdanielhansen at gmail.com> wrote:\n> > What do you mean by large?  You are aware you can have an in-memory\n> version\n> > of a SQLite database (whether that helps depends on the size of course)?\n>  If\n> > you operate on a disk based database, fast I/O helps a lot, perhaps even\n> > copying the database to a local drive. I don't know anything about\n> > compression though, but in general I have found the sqlite.org website\n> and\n> > its mailing list to be super helpful.\n>\n>\n> Not outrageously large.  I'd say 10-20GB each as text delimited files.\n>  Still, it's too large to put in RAM and work with.  This is why I use\n> SQLite.  I get these files as gzipped delimited text files, then I\n> read them a million lines or so at a time using scan(), do some basic\n> clean up, and stuff them into a big SQLite database.  When I want to\n> use the data, I just subset the stuff I need, which fits comfortably\n> into RAM.  If the datasets were small enough, I'd just store them in\n> an R data file...then I wouldn't have to worry about type conversions\n> or variable name issues.\n>\n> I guess it just seems wasteful to have these huge files sitting around\n> (or move them across networks) when the raw data was compressed and I\n> know the sqlite databases would compress nicely as well.  That's why\n> I'm specifically looking for a compression solution.  I'd be open to\n> other approaches, of course.  For example, I could imagine ways to\n> append the data into a dataframe in an .rda or .rds file and then\n> subset it later without ever having to load the whole thing into ram\n> if I used some of the big data packages, but besides the file size I'm\n> pretty happy with the SQLite solution---it just seemed like\n> transparent zipping might be available and I was surprised to find\n> that it wasn't.\n>\n> By the way, speed isn't a critical issue.  It's not super\n> time-sensitive work and the network to my file server is plenty fast.\n> It just seems like I might have missed an obvious way to save the\n> space and time that lack of compression causes.\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Well, the technical questions is really whether you can do sqlite\noperations on a compressed database.  Otherwise, all you can do is\nexternally compresed the database and then decompress it every time",
+      "thread_id": "thread-a2a94656b25b",
+      "thread_depth": 3,
+      "month": "2013-08"
+    },
+    {
+      "id": "msg-092957a32034",
+      "message_id": "<m2pptrne9o.fsf@krugs.de>",
+      "from_name": "Rainer M Krug",
+      "from_email_hash": "1c54506f356013c044ac0f443a529ed55b43a5a79b20d7218e75266c764f4069",
+      "date": "2013-08-06T15:24:19+02:00",
+      "subject": "[R-sig-DB] RSQLite and transparent compression",
+      "subject_clean": "RSQLite and transparent compression",
+      "in_reply_to": null,
+      "references": [
+        "<CAOBt=y_9Crsp_bvC4Lz9HwaB3nZHGJkxEp3z+JRJHVu2uGY2Bg@mail.gmail.com>",
+        "<CAC2h7utxuNwmkdjxPSTqJP68X+soBn+iHaoVJJqtxPqB=JQo7Q@mail.gmail.com>",
+        "<CAOBt=y8ZGYn3rqU_tL8RXuFFNazFh1TZM2ri226h_fc13HAbUA@mail.gmail.com>",
+        "<CAC2h7uv5R=pGGq7g635cRDi6yktBnTBoVQzjq6Y-QV4ThW=r8Q@mail.gmail.com>"
+      ],
+      "body_plain": "Kasper Daniel Hansen\n<kasperdanielhansen at gmail.com> writes:\n\n> Well, the technical questions is really whether you can do sqlite\n> operations on a compressed database.  Otherwise, all you can do is\n> externally compresed the database and then decompress it every time you\n> want to access it, which may be tedious and slow.  sqlite is used a lot on\n> devices with very limited resources, so it is entirely possible that there\n> is some compression possibility, which is why I suggest you read the\n> documentation (argh!).\n\nMight this help:\nhttp://lserinol.blogspot.fr/2008/02/sqlite-compression.html\n\nCheers,\n\nRainer\n\n>\n> Finally, 10-20GB for a textfile is not that big.  If you do not have enough\n> RAM you must be working on a constrained system.\n>\n> Kasper\n>\n>\n> On Tue, Aug 6, 2013 at 12:35 AM, Grant Farnsworth <gvfarns at gmail.com> wrote:\n>\n>> On Tue, Aug 6, 2013 at 12:02 AM, Kasper Daniel Hansen\n>> <kasperdanielhansen at gmail.com> wrote:\n>> > What do you mean by large?  You are aware you can have an in-memory\n>> version\n>> > of a SQLite database (whether that helps depends on the size of course)?\n>>  If\n>> > you operate on a disk based database, fast I/O helps a lot, perhaps even\n>> > copying the database to a local drive. I don't know anything about\n>> > compression though, but in general I have found the sqlite.org website\n>> and\n>> > its mailing list to be super helpful.\n>>\n>>\n>> Not outrageously large.  I'd say 10-20GB each as text delimited files.\n>>  Still, it's too large to put in RAM and work with.  This is why I use\n>> SQLite.  I get these files as gzipped delimited text files, then I\n>> read them a million lines or so at a time using scan(), do some basic\n>> clean up, and stuff them into a big SQLite database.  When I want to\n>> use the data, I just subset the stuff I need, which fits comfortably\n>> into RAM.  If the datasets were small enough, I'd just store them in\n>> an R data file...then I wouldn't have to worry about type conversions\n>> or variable name issues.\n>>\n>> I guess it just seems wasteful to have these huge files sitting around\n>> (or move them across networks) when the raw data was compressed and I\n>> know the sqlite databases would compress nicely as well.  That's why\n>> I'm specifically looking for a compression solution.  I'd be open to\n>> other approaches, of course.  For example, I could imagine ways to\n>> append the data into a dataframe in an .rda or .rds file and then\n>> subset it later without ever having to load the whole thing into ram\n>> if I used some of the big data packages, but besides the file size I'm\n>> pretty happy with the SQLite solution---it just seemed like\n>> transparent zipping might be available and I was surprised to find\n>> that it wasn't.\n>>\n>> By the way, speed isn't a critical issue.  It's not super\n>> time-sensitive work and the network to my file server is plenty fast.\n>> It just seems like I might have missed an obvious way to save the\n>> space and time that lack of compression causes.\n>>\n>> _______________________________________________\n>> R-sig-DB mailing list -- R Special Interest Group\n>> R-sig-DB at r-project.org\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>>\n>\n> \t[[alternative HTML version deleted]]\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n<#secure method=pgpmime mode=sign>\n\n-- \nRainer M. Krug\n\nemail: RMKrug<at>gmail<dot>com",
+      "body_snippet": "Kasper Daniel Hansen\n<kasperdanielhansen at gmail.com> writes:\n\n> Well, the technical questions is really whether you can do sqlite\n> operations on a compressed database.  Otherwise, all you can do is",
+      "thread_id": "thread-a2a94656b25b",
+      "thread_depth": 4,
+      "month": "2013-08"
+    },
+    {
+      "id": "msg-e64d4401b915",
+      "message_id": "<CANeAVB=jFtYZdbPwc13EcFc9Ow7Pbb=qmiJ4RsfUe1MbHxTZvw@mail.gmail.com>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2013-08-06T10:15:23-04:00",
+      "subject": "[R-sig-DB] RSQLite and transparent compression",
+      "subject_clean": "RSQLite and transparent compression",
+      "in_reply_to": "<m2pptrne9o.fsf@krugs.de>",
+      "references": [
+        "<CAOBt=y_9Crsp_bvC4Lz9HwaB3nZHGJkxEp3z+JRJHVu2uGY2Bg@mail.gmail.com>",
+        "<CAC2h7utxuNwmkdjxPSTqJP68X+soBn+iHaoVJJqtxPqB=JQo7Q@mail.gmail.com>",
+        "<CAOBt=y8ZGYn3rqU_tL8RXuFFNazFh1TZM2ri226h_fc13HAbUA@mail.gmail.com>",
+        "<CAC2h7uv5R=pGGq7g635cRDi6yktBnTBoVQzjq6Y-QV4ThW=r8Q@mail.gmail.com>",
+        "<m2pptrne9o.fsf@krugs.de>"
+      ],
+      "body_plain": "On Tue, Aug 6, 2013 at 9:24 AM, Rainer M Krug <Rainer at krugs.de> wrote:\n> Kasper Daniel Hansen\n> <kasperdanielhansen at gmail.com> writes:\n>\n>> Well, the technical questions is really whether you can do sqlite\n>> operations on a compressed database.  Otherwise, all you can do is\n>> externally compresed the database and then decompress it every time you\n>> want to access it, which may be tedious and slow.  sqlite is used a lot on\n>> devices with very limited resources, so it is entirely possible that there\n>> is some compression possibility, which is why I suggest you read the\n>> documentation (argh!).\n>\n> Might this help:\n> http://lserinol.blogspot.fr/2008/02/sqlite-compression.html\n\nShort of an SQLite plugin, you might look at using a FUSE-based\ncompressed filesystem to store the SQLite database.  I have no idea\nhow well this plays with sqlite or what the performance will be, but\nit should be simple enough to test.\n\nhttp://sourceforge.net/apps/mediawiki/fuse/?title=CompressedFileSystems\n\nSean\n\n\n\n> Cheers,\n>\n> Rainer\n>\n>>\n>> Finally, 10-20GB for a textfile is not that big.  If you do not have enough\n>> RAM you must be working on a constrained system.\n>>\n>> Kasper\n>>\n>>\n>> On Tue, Aug 6, 2013 at 12:35 AM, Grant Farnsworth <gvfarns at gmail.com> wrote:\n>>\n>>> On Tue, Aug 6, 2013 at 12:02 AM, Kasper Daniel Hansen\n>>> <kasperdanielhansen at gmail.com> wrote:\n>>> > What do you mean by large?  You are aware you can have an in-memory\n>>> version\n>>> > of a SQLite database (whether that helps depends on the size of course)?\n>>>  If\n>>> > you operate on a disk based database, fast I/O helps a lot, perhaps even\n>>> > copying the database to a local drive. I don't know anything about\n>>> > compression though, but in general I have found the sqlite.org website\n>>> and\n>>> > its mailing list to be super helpful.\n>>>\n>>>\n>>> Not outrageously large.  I'd say 10-20GB each as text delimited files.\n>>>  Still, it's too large to put in RAM and work with.  This is why I use\n>>> SQLite.  I get these files as gzipped delimited text files, then I\n>>> read them a million lines or so at a time using scan(), do some basic\n>>> clean up, and stuff them into a big SQLite database.  When I want to\n>>> use the data, I just subset the stuff I need, which fits comfortably\n>>> into RAM.  If the datasets were small enough, I'd just store them in\n>>> an R data file...then I wouldn't have to worry about type conversions\n>>> or variable name issues.\n>>>\n>>> I guess it just seems wasteful to have these huge files sitting around\n>>> (or move them across networks) when the raw data was compressed and I\n>>> know the sqlite databases would compress nicely as well.  That's why\n>>> I'm specifically looking for a compression solution.  I'd be open to\n>>> other approaches, of course.  For example, I could imagine ways to\n>>> append the data into a dataframe in an .rda or .rds file and then\n>>> subset it later without ever having to load the whole thing into ram\n>>> if I used some of the big data packages, but besides the file size I'm\n>>> pretty happy with the SQLite solution---it just seemed like\n>>> transparent zipping might be available and I was surprised to find\n>>> that it wasn't.\n>>>\n>>> By the way, speed isn't a critical issue.  It's not super\n>>> time-sensitive work and the network to my file server is plenty fast.\n>>> It just seems like I might have missed an obvious way to save the\n>>> space and time that lack of compression causes.\n>>>\n>>> _______________________________________________\n>>> R-sig-DB mailing list -- R Special Interest Group\n>>> R-sig-DB at r-project.org\n>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>>>\n>>\n>>       [[alternative HTML version deleted]]\n>>\n>> _______________________________________________\n>> R-sig-DB mailing list -- R Special Interest Group\n>> R-sig-DB at r-project.org\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>>\n> <#secure method=pgpmime mode=sign>\n>\n> --\n> Rainer M. Krug\n>\n> email: RMKrug<at>gmail<dot>com\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "On Tue, Aug 6, 2013 at 9:24 AM, Rainer M Krug <Rainer at krugs.de> wrote:\n> Kasper Daniel Hansen\n> <kasperdanielhansen at gmail.com> writes:\n>\n>> Well, the technical questions is really whether you ca",
+      "thread_id": "thread-a2a94656b25b",
+      "thread_depth": 5,
+      "month": "2013-08"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-a2a94656b25b",
+      "subject": "RSQLite and transparent compression",
+      "message_count": 6,
+      "participants": [
+        "Grant Farnsworth",
+        "Kasper Daniel Hansen",
+        "Rainer M Krug",
+        "Sean Davis"
+      ],
+      "started": "2013-08-05T20:23:20-04:00",
+      "last_reply": "2013-08-06T10:15:23-04:00",
+      "root_message_id": "msg-a2a94656b25b"
+    }
+  ]
+}

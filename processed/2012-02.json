@@ -1,0 +1,139 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2012-02",
+  "messages": [
+    {
+      "id": "msg-dcf5de63fae8",
+      "message_id": "<CAFxiOZVRQjR5-E3_PZ4fTV10tiAQAETFq2HXvB9yBzX57xTG5w@mail.gmail.com>",
+      "from_name": "Henri Mone",
+      "from_email_hash": "23b5ff957ef8cd29cb908c5ed925e3e69759c58a81f5773d8270e1d9009edd22",
+      "date": "2012-02-08T19:24:38+01:00",
+      "subject": "[R-sig-DB] MySQL R Encoding Utf8",
+      "subject_clean": "MySQL R Encoding Utf8",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear R Users and Experts,\n\nI got a MySQL table with German special characters (umlaute like ?,?,?\netc.) . The MySQL database table is in the UTF8 format, and if I\nsubmit a query over the MySql client the umlaute are displayed\ncorrectly. If I submit the same query via R the umlaute are displayed\nwrong. That is a little confusing for me, R as well as the MySQL\nsupport UTF8.\nIs there any option which I should use to get the umlaute in R correct?\n\nThanks,\nHenri\n\n\n> t.m <-dbDriver(\"MySQL\")\n> t.con <- try(dbConnect(t.m))\n> t.rs <- try(dbSendQuery(t.con, t.sql))\n> t.data <- fetch(t.rs,-1)\n> t.data  # correct would be \"?sterreichische Schilling\"\n  \\xd6sterreichische Schilling\n  ...",
+      "body_snippet": "Dear R Users and Experts,\n\nI got a MySQL table with German special characters (umlaute like ?,?,?\netc.) . The MySQL database table is in the UTF8 format, and if I\nsubmit a query over the MySql client ",
+      "thread_id": "thread-dcf5de63fae8",
+      "thread_depth": 0,
+      "month": "2012-02"
+    },
+    {
+      "id": "msg-d453f3f4062e",
+      "message_id": "<1B0584E1-A254-46E8-80E6-206E095E5957@kenroku.kanazawa-u.ac.jp>",
+      "from_name": "Tomoaki NISHIYAMA",
+      "from_email_hash": "32104f251c35465c7b064ecaf7558a62b44d8fb01218b8a85e1f2cd3278271b5",
+      "date": "2012-02-09T09:20:38+09:00",
+      "subject": "[R-sig-DB] MySQL R Encoding Utf8",
+      "subject_clean": "MySQL R Encoding Utf8",
+      "in_reply_to": "<CAFxiOZVRQjR5-E3_PZ4fTV10tiAQAETFq2HXvB9yBzX57xTG5w@mail.gmail.com>",
+      "references": [
+        "<CAFxiOZVRQjR5-E3_PZ4fTV10tiAQAETFq2HXvB9yBzX57xTG5w@mail.gmail.com>"
+      ],
+      "body_plain": "Hi,\n\ndbGetQuery(t.con, \"SET NAMES 'utf8'\")\nbefore dbSendQuery(t.con, t.sql)\nand fetch()\nmight work.\nhttp://dev.mysql.com/doc/refman/5.6/en/charset-connection.html\n\nYou might alternatively change the default values for these \ncharacter_set_* variables in MySQL database.\n\n-- \nTomoaki NISHIYAMA\n\nAdvanced Science Research Center,\nKanazawa University,\n13-1 Takara-machi, \nKanazawa, 920-0934, Japan\n\nOn 2012/02/09, at 3:24, Henri Mone wrote:\n\n> Dear R Users and Experts,\n> \n> I got a MySQL table with German special characters (umlaute like ??,??,??\n> etc.) . The MySQL database table is in the UTF8 format, and if I\n> submit a query over the MySql client the umlaute are displayed\n> correctly. If I submit the same query via R the umlaute are displayed\n> wrong. That is a little confusing for me, R as well as the MySQL\n> support UTF8.\n> Is there any option which I should use to get the umlaute in R correct?\n> \n> Thanks,\n> Henri\n> \n> \n>> t.m <-dbDriver(\"MySQL\")\n>> t.con <- try(dbConnect(t.m))\n>> t.rs <- try(dbSendQuery(t.con, t.sql))\n>> t.data <- fetch(t.rs,-1)\n>> t.data  # correct would be \"??sterreichische Schilling\"\n> \\xd6sterreichische Schilling\n> ...\n> \n\n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi,\n\ndbGetQuery(t.con, \"SET NAMES 'utf8'\")\nbefore dbSendQuery(t.con, t.sql)\nand fetch()\nmight work.\nhttp://dev.mysql.com/doc/refman/5.6/en/charset-connection.html\n\nYou might alternatively change the d",
+      "thread_id": "thread-dcf5de63fae8",
+      "thread_depth": 1,
+      "month": "2012-02"
+    },
+    {
+      "id": "msg-ba40a0d76722",
+      "message_id": "<CAFxiOZXgVCteMDm6H++revEo-02NFZ0mUG90FyFS0ueZEUim8w@mail.gmail.com>",
+      "from_name": "Henri Mone",
+      "from_email_hash": "23b5ff957ef8cd29cb908c5ed925e3e69759c58a81f5773d8270e1d9009edd22",
+      "date": "2012-02-09T11:10:59+01:00",
+      "subject": "[R-sig-DB] MySQL R Encoding Utf8",
+      "subject_clean": "MySQL R Encoding Utf8",
+      "in_reply_to": "<BBF1F8B9-A3E0-430D-8196-AB90BFD2F806@staff.kanazawa-u.ac.jp>",
+      "references": [
+        "<CAFxiOZVRQjR5-E3_PZ4fTV10tiAQAETFq2HXvB9yBzX57xTG5w@mail.gmail.com>",
+        "<BBF1F8B9-A3E0-430D-8196-AB90BFD2F806@staff.kanazawa-u.ac.jp>"
+      ],
+      "body_plain": "Dear Nishiyama,\n\nThank you very much for your fast help. I worked out of the the box\nlike a charm :) .\n\nThanks,\nHenri\n\nOn Thu, Feb 9, 2012 at 1:17 AM, NISHIYAMA Tomoaki\n<tomoakin at staff.kanazawa-u.ac.jp> wrote:\n> Hi,\n>\n> dbGetQuery(t.con, \"SET NAMES 'utf8'\")\n> before dbSendQuery(t.con, t.sql)\n> and fetch()\n> might work.\n> http://dev.mysql.com/doc/refman/5.6/en/charset-connection.html\n>\n> You might alternatively change the default values for these\n> character_set_* variables in MySQL database.\n>\n> On 2012/02/09, at 3:24, Henri Mone wrote:\n>\n>> Dear R Users and Experts,\n>>\n>> I got a MySQL table with German special characters (umlaute like ?,?,?\n>> etc.) . The MySQL database table is in the UTF8 format, and if I\n>> submit a query over the MySql client the umlaute are displayed\n>> correctly. If I submit the same query via R the umlaute are displayed\n>> wrong. That is a little confusing for me, R as well as the MySQL\n>> support UTF8.\n>> Is there any option which I should use to get the umlaute in R correct?\n>>\n>> Thanks,\n>> Henri\n>>\n>>\n>>> t.m <-dbDriver(\"MySQL\")\n>>> t.con <- try(dbConnect(t.m))\n>>> t.rs <- try(dbSendQuery(t.con, t.sql))\n>>> t.data <- fetch(t.rs,-1)\n>>> t.data ?# correct would be \"?sterreichische Schilling\"\n>> ?\\xd6sterreichische Schilling\n>> ?...\n>>\n>> _______________________________________________\n>> R-sig-DB mailing list -- R Special Interest Group\n>> R-sig-DB at r-project.org\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>>\n>",
+      "body_snippet": "Dear Nishiyama,\n\nThank you very much for your fast help. I worked out of the the box\nlike a charm :) .\n\nThanks,\nHenri\n\nOn Thu, Feb 9, 2012 at 1:17 AM, NISHIYAMA Tomoaki\n<tomoakin at staff.kanazawa-u.a",
+      "thread_id": "thread-ba40a0d76722",
+      "thread_depth": 0,
+      "month": "2012-02"
+    },
+    {
+      "id": "msg-8211a58e1156",
+      "message_id": "<CAE=vM6NFBS4VvZxs-8u9S+DiUBwb2Sm8imajO=88RFf+r671Ww@mail.gmail.com>",
+      "from_name": "Nilza BARROS",
+      "from_email_hash": "30d3c3a70854317e1774795dd909f4d61c014c2a0c5d202ff579bc802cb3c6d9",
+      "date": "2012-02-11T22:49:07-02:00",
+      "subject": "[R-sig-DB] Reading data from a worksheet on the Internet",
+      "subject_clean": "Reading data from a worksheet on the Internet",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear R-users,\n\nI have to read data from a worksheet that is available on the Internet. I\nhave been doing this by copying the worksheet from the browser.\nBut I would like to be able to copy the data automatically using the url\ncommand.\n\nBut when using  \"url\" command the result is the source code, I mean, a html\ncode.\nI see that the data I need is in the source code but before thinking about\nreading the data from the html code I wonder if there is a package or\nanoher way to extract these data since reading  from the code will demand\nmany work and it can be not so accurate.\n\nBelow one can see the from where I am trying to export the data:\n\ndados<-url(\"\nhttp://www.mar.mil.br/dhn/chm/meteo/prev/dados/pnboia/sc1201_arquivos/sheet002.htm\",\"r\n\")\nI am looking forward  any help.\n\nThanks in advance ,\n\nNilza Barros\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Dear R-users,\n\nI have to read data from a worksheet that is available on the Internet. I\nhave been doing this by copying the worksheet from the browser.\nBut I would like to be able to copy the data au",
+      "thread_id": "thread-8211a58e1156",
+      "thread_depth": 0,
+      "month": "2012-02"
+    },
+    {
+      "id": "msg-6d6bbccfbf7c",
+      "message_id": "<CAM0SUu8eg4z8TdYVtMjy_WZCZi8Oh=b50c1FTYBbMT8vWyXsOw@mail.gmail.com>",
+      "from_name": "Rolf Marvin Bøe Lindgren",
+      "from_email_hash": "73af5ea2379e70fe7417ebea866af34f1d0c9b79fdeb5d119ee43cb0a0289cbd",
+      "date": "2012-02-23T23:02:11+01:00",
+      "subject": "[R-sig-DB] Problem with ODBC from FileMaker - can read labels but not data",
+      "subject_clean": "Problem with ODBC from FileMaker - can read labels but not data",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\nI've encountered a snag when trying to create a dataframe from FileMaker\ndata. For what it's woth, I'm uising FileMaker Pro 11, FileMaker's ODBC\ndriver, and ODBC Administrator on MacOS Lion. I am able to sucessfully make\nthe connection. Thus,\n\n> library(RODBC)\n> myconn <- odbcConnect (\"AGA_1\",\"Admin\",\"********\")\n> D <- sqlFetch (myconn,\"DATA_AGANorway\")\n\nexecutes and gives no error messages. However,\n\n> D\n\ngives a list of all of the label names of the table (53 in all), but\nwithout the variables.\n\n> fix(D)\n\nconfirms this: The editor labels the columns correctly, but the cells are\nempty.\n\nIs this expected behavior, or a bug? Have I overlooked something?\n\nAny and all help appreciated!\n\nThank you,\n\n-- \nRolf Marvin B?e Lindgren\nGrendel evidenbasert psykologi\n+47 400 61 755\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi,\n\nI've encountered a snag when trying to create a dataframe from FileMaker\ndata. For what it's woth, I'm uising FileMaker Pro 11, FileMaker's ODBC\ndriver, and ODBC Administrator on MacOS Lion. I am",
+      "thread_id": "thread-6d6bbccfbf7c",
+      "thread_depth": 0,
+      "month": "2012-02"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-dcf5de63fae8",
+      "subject": "MySQL R Encoding Utf8",
+      "message_count": 2,
+      "participants": [
+        "Henri Mone",
+        "Tomoaki NISHIYAMA"
+      ],
+      "started": "2012-02-08T19:24:38+01:00",
+      "last_reply": "2012-02-09T09:20:38+09:00",
+      "root_message_id": "msg-dcf5de63fae8"
+    },
+    {
+      "id": "thread-ba40a0d76722",
+      "subject": "MySQL R Encoding Utf8",
+      "message_count": 1,
+      "participants": [
+        "Henri Mone"
+      ],
+      "started": "2012-02-09T11:10:59+01:00",
+      "last_reply": "2012-02-09T11:10:59+01:00",
+      "root_message_id": "msg-ba40a0d76722"
+    },
+    {
+      "id": "thread-8211a58e1156",
+      "subject": "Reading data from a worksheet on the Internet",
+      "message_count": 1,
+      "participants": [
+        "Nilza BARROS"
+      ],
+      "started": "2012-02-11T22:49:07-02:00",
+      "last_reply": "2012-02-11T22:49:07-02:00",
+      "root_message_id": "msg-8211a58e1156"
+    },
+    {
+      "id": "thread-6d6bbccfbf7c",
+      "subject": "Problem with ODBC from FileMaker - can read labels but not data",
+      "message_count": 1,
+      "participants": [
+        "Rolf Marvin Bøe Lindgren"
+      ],
+      "started": "2012-02-23T23:02:11+01:00",
+      "last_reply": "2012-02-23T23:02:11+01:00",
+      "root_message_id": "msg-6d6bbccfbf7c"
+    }
+  ]
+}

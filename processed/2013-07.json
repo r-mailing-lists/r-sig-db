@@ -1,0 +1,100 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2013-07",
+  "messages": [
+    {
+      "id": "msg-4ca495018778",
+      "message_id": "<47CF4BFE84895047B17252A1823261550743EE39@BRSPCG221M.la.Corp.Cargill.com>",
+      "from_name": "Daniel Reis",
+      "from_email_hash": "7e242f0bf5d46a1dad578852bf7f550bb03d630e663b58520490981868c916a8",
+      "date": "2013-07-11T16:29:16-03:00",
+      "subject": "[R-sig-DB] [RODBC] Error (ORA-12560 ) when trying to connect to Oracle database",
+      "subject_clean": "[RODBC] Error (ORA-12560 ) when trying to connect to Oracle database",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello,\n\n \n\nI installed the Oracle 11g client on my machine, and tested the\nconnection to my target Oracle database through MS Access. All seems to\nbe working fine.\n\nWhen I try to connect to the very same DB using R with:\n\n \n\nchannel <- odbcConnect(dsn=\"MyDSN\", uid=\"XXXXX\", pwd=\"XXXXXXXX\",\nbelieveNRows=FALSE)\n\n \n\nI get the following error:\n\nIn odbcDriverConnect(\"DSN=MyDSN;UID=XXXX;PWD=XXX\",  :\n\n[RODBC] ERROR: state HY000, code 12560, message\n[Oracle][ODBC][Ora]ORA-12560: TNS:protocol adapter error\n\n \n\n \n\nAm I missing the installation of some component/driver? I read something\nabout installing the Oracle Instant Client (free) but thought the Oracle\n11g client would be sufficient. What am I missing?\n\n \n\nDan\n\n \n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hello,\n\n \n\nI installed the Oracle 11g client on my machine, and tested the\nconnection to my target Oracle database through MS Access. All seems to\nbe working fine.\n\nWhen I try to connect to the very s",
+      "thread_id": "thread-4ca495018778",
+      "thread_depth": 0,
+      "month": "2013-07"
+    },
+    {
+      "id": "msg-2d8fac7eb71f",
+      "message_id": "<CD38E3C7-174F-4D4D-9858-2723190476D9@me.com>",
+      "from_name": "Marc Schwartz",
+      "from_email_hash": "040b2d09159b27cfd2853bc2dbb476bd637811586f307d9583c9ef7f806f3692",
+      "date": "2013-07-12T07:22:20-05:00",
+      "subject": "[R-sig-DB] [RODBC] Error (ORA-12560 ) when trying to connect to\tOracle database",
+      "subject_clean": "[RODBC] Error (ORA-12560 ) when trying to connect to\tOracle database",
+      "in_reply_to": "<47CF4BFE84895047B17252A1823261550743EE39@BRSPCG221M.la.Corp.Cargill.com>",
+      "references": [
+        "<47CF4BFE84895047B17252A1823261550743EE39@BRSPCG221M.la.Corp.Cargill.com>"
+      ],
+      "body_plain": "On Jul 11, 2013, at 2:29 PM, Daniel Reis <Daniel_Reis at cargill.com> wrote:\n\n> Hello,\n> \n> \n> I installed the Oracle 11g client on my machine, and tested the\n> connection to my target Oracle database through MS Access. All seems to\n> be working fine.\n> \n> When I try to connect to the very same DB using R with:\n> \n> \n> channel <- odbcConnect(dsn=\"MyDSN\", uid=\"XXXXX\", pwd=\"XXXXXXXX\",\n> believeNRows=FALSE)\n> \n> \n> I get the following error:\n> \n> In odbcDriverConnect(\"DSN=MyDSN;UID=XXXX;PWD=XXX\",  :\n> \n> [RODBC] ERROR: state HY000, code 12560, message\n> [Oracle][ODBC][Ora]ORA-12560: TNS:protocol adapter error\n> \n> \n> \n> Am I missing the installation of some component/driver? I read something\n> about installing the Oracle Instant Client (free) but thought the Oracle\n> 11g client would be sufficient. What am I missing?\n> \n> \n> \n> Dan\n\n\nPresuming that you are on a 64 bit version of Windows, my first guess is that this might be a 32 bit/64 bit architecture conflict. \n\nI am guessing that Access is 32 bit and so is the ODBC driver, hence it works. \n\nIn the case of R/RODBC, if you are running 64 bit R, you need to be running 64 bit ODBC drivers. See:\n\n  vignette(\"RODBC\")\n\nand pay attention to Appendix B on Specifying DSNs, notably footnote 15 at the bottom of page 26. Also the second full paragraph on page 23, discussing Oracle and Windows.\n\nA Google search for the Oracle error code above also brings up some other possibilities if this is not a 32/64 bit issue.\n\nRegards,\n\nMarc Schwartz",
+      "body_snippet": "On Jul 11, 2013, at 2:29 PM, Daniel Reis <Daniel_Reis at cargill.com> wrote:\n\n> Hello,\n> \n> \n> I installed the Oracle 11g client on my machine, and tested the\n> connection to my target Oracle database",
+      "thread_id": "thread-4ca495018778",
+      "thread_depth": 1,
+      "month": "2013-07"
+    },
+    {
+      "id": "msg-646ea327a739",
+      "message_id": "<CA8EED80-CE93-4288-B2BF-52AF92A73E23@uni-bonn.de>",
+      "from_name": "Simon Zehnder",
+      "from_email_hash": "da5b76725f1013c56060a39b28d0240b738b9d4478ececb0beb6e8f5d7370897",
+      "date": "2013-07-16T10:39:31+02:00",
+      "subject": "[R-sig-DB] Serialize data.frame to database",
+      "subject_clean": "Serialize data.frame to database",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear all,\n\nI need a very fast and reliable database solution so I try to serialize a data.frame (to binary data) and to store this data to an SQLite database (I might be wrong with this approach and a data.frame can be efficiently and faster stored and fetched in a database row in a different manner - please feel free to make suggestions. It is just what I know from Java how to store a matrix). \n\nThis is what I tried to do:\n\nlibrary(RSQLite)\ncon <- dbDriver(\"SQLite\")\ndb <- dbConnect(con, \"test\")\ndbSendQuery(db, 'CREATE TABLE frames(\"simID\" INT, \"data\" BLOB)')\ndata.bin <- serialize(iris, NULL, ascii = FALSE)\ndbSendQuery(db, paste(\"INSERT INTO frames VALUES(1, X'\", data.bin, \"')\", sep = \"\"))\ndata.bin2 <- dbGetQuery(db, \"SELECT DATA FROM frames WHERE simID = 1\")\ndata.bin2\n data\n1   58\n\nSo, only the first entry of data.bin is saved to the database. I tried to first convert the binary data to raw data:\ndata.raw <- rawToChar(data.bin)\nError in rawToChar(data.bin) :\n embedded nul in string: 'X\\n\\0\\0\\0\\002\\0\\003\\0\\001\\0\\002\\003\\0\\0\\0\\003\\023\\0\\0\\0\\005\\0\\0\\0\\016\\0\\0\\0\\x96@\\024ffffff@\\023\\x99\\x99\\x99\\x99\\x99\\x9a@\\022\\xcc\\xcc\\xcc\\xcc\\xcc\\xcd@\\022ffffff@\\024\\0\\0\\0\\0\\0\\0@\\025\\x99\\x99\\x99\\x99\\x99\\x9a@\\022ffffff@\\024\\0\\0\\0\\0\\0\\0@\\021\\x99\\x99\\x99\\x99\\x99\\x9a@\\023\\x99\\x99\\x99\\x99\\x99\\x9a@\\025\\x99\\x99\\x99\\x99\\x99\\x9a@\\023333333@\\023333333@\\021333333@\\027333333@\\026\\xcc\\xcc\\xcc\\xcc\\xcc\\xcd@\\025\\x99\\x99\\x99\\x99\\x99\\x9a@\\024ffffff@\\026\\xcc\\xcc\\xcc\\xcc\\xcc\\xcd@\\024ffffff@\\025\\x99\\x99\\x99\\x99\\x99\\x9a@\\024ffffff@\\022ffffff@\\024ffffff@\\023333333@\\024\\0\\0\\0\\0\\0\\0@\\024\\0\\0\\0\\0\\0\\0@\\024\\xcc\\xcc\\xcc\\xcc\\xcc\\xcd@\\024\\xcc\\xcc\\xcc\\xcc\\xcc\\xcd@\\022\\xcc\\xcc\\xcc\\xcc\\xcc\\xcd@\\023333333@\\025\\x99\\x99\\x99\\x99\\x99\\x9a@\\024\\xcc\\xcc\\xcc\\xcc\\xcc\\xcd@\\026\\0\\0\\0\\0\\0\\0@\\023\\x99\\x99\\x99\\x99\\x99\\x9a@\\024\\0\\0\\0\\0\\0\\0@\\026\\0\\0\\0\\0\\0\\0@\\023\\x99\\x99\\x99\\x99\\x99\\x9a@\\021\\x99\\x99\\x99\\x99\\x99\\x9a@\\024ffffff@\\024\\0\\0\\0\\0\\0\\0@\\022\\0\\0\\0\\0\\0\\0@\\021\\x99\\x99\\x99\\x99\\x99\\x9a@\\024\\0\\0\\0\\0\\0\\0\n\nI don't know what this error should tell me. Then I tried to use the ASCII format\n\ndata.ascii <- serialize(iris, NULL, ascii = TRUE)\ndata.raw <- rawToChar(data.ascii)\ndbSendQuery(db, \"DELETE FROM frames\")\ndbSendQuery(db, paste(\"INSERT INTO frames VALUES(1, X'\", data.raw, \"')\", sep = \"\"))\nError in sqliteExecStatement(conn, statement, ...) :\n RS-DBI driver: (error in statement: unrecognized token: \"X'A\n\nThis also does not work. It seems the driver does not deal that nicely with the regular INSERT query for BLOB objects in SQLite. Then I used a simpler way:\n\ndbSendQuery(db, \"DELETE FROM frames\")\ndbSendQuery(db, \"DROP TABLE frames\")\ndbSendQuery(db, 'CREATE TABLE frames(\"simID\" INT, \"data\" TEXT DEFAULT NULL)')\ndbSendQuery(db, paste(\"INSERT INTO frames VALUES(1, '\", data.raw, \"')\", sep = \"\"))\ndata.bin2 <- dbGetQuery(db, \"SELECT data FROM frames WHERE simID = 1\")\n\nNice, that worked. Now I want to unserialize the data:\n\nunserialize(data.bin2)\nError in unserialize(data.bin2) : 'connection' must be a connection\n\nunserialize(data.bin2[1, 'data'])\nError in unserialize(data.bin2[1, \"data\"]) :\n character vectors are no longer accepted by unserialize()\n\nI feel a little stuck here, but I am very sure, that converting data.frames to binary data and storing them to a database is not that unusual. So I hope somebody has already done this and could give me the missing piece.\n\n\nBest\n\nSimon",
+      "body_snippet": "Dear all,\n\nI need a very fast and reliable database solution so I try to serialize a data.frame (to binary data) and to store this data to an SQLite database (I might be wrong with this approach and a",
+      "thread_id": "thread-646ea327a739",
+      "thread_depth": 0,
+      "month": "2013-07"
+    },
+    {
+      "id": "msg-f093984696f1",
+      "message_id": "<3B674FB8-C41A-4276-9A64-5D77AAE0DCCA@uni-bonn.de>",
+      "from_name": "Simon Zehnder",
+      "from_email_hash": "da5b76725f1013c56060a39b28d0240b738b9d4478ececb0beb6e8f5d7370897",
+      "date": "2013-07-16T22:58:33+02:00",
+      "subject": "[R-sig-DB] Serialize data.frame to database",
+      "subject_clean": "Serialize data.frame to database",
+      "in_reply_to": "<CA8EED80-CE93-4288-B2BF-52AF92A73E23@uni-bonn.de>",
+      "references": [
+        "<CA8EED80-CE93-4288-B2BF-52AF92A73E23@uni-bonn.de>"
+      ],
+      "body_plain": "So I found finally a way how it can be done.... don't know though if it can be called efficient:\n\nlibrary(RSQLite)\ncon <- dbDriver(\"SQLite\")\ndb <- dbConnect(con, dbname = \"test\")\ndbSendQuery(\"CREATE TABLE frames(simID INT, data TEXT)\")\niris.ascii <- serialize(head(iris), NULL, ascii = TRUE)\ndbSendQuery(db, paste(\"INSERT INTO frames VALUES(1, '\", rawToChar(iris.ascii), \"')\", sep = \"\"))\nres <- dbGetQuery(\"SELECT * FROM frames WHERE simID = 1\")\nunserialize(charToRaw(res$data)) \n\ndbDisconnect(db)\nsqliteCloseDriver(con)\n\nWIth this, an R data.frame can be stored into ONE ROW of a database table and therefore be related to an ID for which it can be searched quickly inside the database. Furthermore a pure character (or long character) does not consume much space (It can also be used a BLOB instead of a TEXT type in the CREATE TABLE query).\n\nStill, there are some questions left to me: \n\n1. Why isn't it possible to convert a binary raw vector to a character?\n\niris.bin <- serialize(head(iris), NULL, ascii = FALSE)\nrawToChar(iris.bin)\nError in rawToChar(iris.bin)\n  embedded nul in string: X'...\n\n2. Is a binary raw more efficient than an ascii? If so why?\n\n\tSee https://stat.ethz.ch/pipermail/r-sig-db/2008q1/000423.html from Dirk Eddelbuettel \n\n3. Why aren't BLOBs supported for matrices, vectors, dataframes in R directly? Isn't this the usual way to store for example arrays from Java, C, C++, Python, etc. in databases, like serialize to binary, store, fetch unserialize?\n\n4. How efficient is this solution really (independent from the problem to be solved by a database solution)? It is one simple query: Go to the line with simID = 1 take what is in the second field. \n\n\nBest \n\nSimon\n\nOn Jul 16, 2013, at 10:39 AM, Simon Zehnder <szehnder at uni-bonn.de> wrote:\n\n> Dear all,\n> \n> I need a very fast and reliable database solution so I try to serialize a data.frame (to binary data) and to store this data to an SQLite database (I might be wrong with this approach and a data.frame can be efficiently and faster stored and fetched in a database row in a different manner - please feel free to make suggestions. It is just what I know from Java how to store a matrix). \n> \n> This is what I tried to do:\n> \n> library(RSQLite)\n> con <- dbDriver(\"SQLite\")\n> db <- dbConnect(con, \"test\")\n> dbSendQuery(db, 'CREATE TABLE frames(\"simID\" INT, \"data\" BLOB)')\n> data.bin <- serialize(iris, NULL, ascii = FALSE)\n> dbSendQuery(db, paste(\"INSERT INTO frames VALUES(1, X'\", data.bin, \"')\", sep = \"\"))\n> data.bin2 <- dbGetQuery(db, \"SELECT DATA FROM frames WHERE simID = 1\")\n> data.bin2\n> data\n> 1   58\n> \n> So, only the first entry of data.bin is saved to the database. I tried to first convert the binary data to raw data:\n> data.raw <- rawToChar(data.bin)\n> Error in rawToChar(data.bin) :\n> embedded nul in string: 'X\\n\\0\\0\\0\\002\\0\\003\\0\\001\\0\\002\\003\\0\\0\\0\\003\\023\\0\\0\\0\\005\\0\\0\\0\\016\\0\\0\\0\\x96@\\024ffffff@\\023\\x99\\x99\\x99\\x99\\x99\\x9a@\\022\\xcc\\xcc\\xcc\\xcc\\xcc\\xcd@\\022ffffff@\\024\\0\\0\\0\\0\\0\\0@\\025\\x99\\x99\\x99\\x99\\x99\\x9a@\\022ffffff@\\024\\0\\0\\0\\0\\0\\0@\\021\\x99\\x99\\x99\\x99\\x99\\x9a@\\023\\x99\\x99\\x99\\x99\\x99\\x9a@\\025\\x99\\x99\\x99\\x99\\x99\\x9a@\\023333333@\\023333333@\\021333333@\\027333333@\\026\\xcc\\xcc\\xcc\\xcc\\xcc\\xcd@\\025\\x99\\x99\\x99\\x99\\x99\\x9a@\\024ffffff@\\026\\xcc\\xcc\\xcc\\xcc\\xcc\\xcd@\\024ffffff@\\025\\x99\\x99\\x99\\x99\\x99\\x9a@\\024ffffff@\\022ffffff@\\024ffffff@\\023333333@\\024\\0\\0\\0\\0\\0\\0@\\024\\0\\0\\0\\0\\0\\0@\\024\\xcc\\xcc\\xcc\\xcc\\xcc\\xcd@\\024\\xcc\\xcc\\xcc\\xcc\\xcc\\xcd@\\022\\xcc\\xcc\\xcc\\xcc\\xcc\\xcd@\\023333333@\\025\\x99\\x99\\x99\\x99\\x99\\x9a@\\024\\xcc\\xcc\\xcc\\xcc\\xcc\\xcd@\\026\\0\\0\\0\\0\\0\\0@\\023\\x99\\x99\\x99\\x99\\x99\\x9a@\\024\\0\\0\\0\\0\\0\\0@\\026\\0\\0\\0\\0\\0\\0@\\023\\x99\\x99\\x99\\x99\\x99\\x9a@\\021\\x99\\x99\\x99\\x99\\x99\\x9a@\\024ffffff@\\024\\0\\0\\0\\0\\0\\0@\\022\\0\\0\\0\\0\\0\\0@\\021\\x99\\x99\\x99\\x99\\x99\\x9a@\\024\\0\\0\\0\\0\\0!\n> \\0\n> \n> I don't know what this error should tell me. Then I tried to use the ASCII format\n> \n> data.ascii <- serialize(iris, NULL, ascii = TRUE)\n> data.raw <- rawToChar(data.ascii)\n> dbSendQuery(db, \"DELETE FROM frames\")\n> dbSendQuery(db, paste(\"INSERT INTO frames VALUES(1, X'\", data.raw, \"')\", sep = \"\"))\n> Error in sqliteExecStatement(conn, statement, ...) :\n> RS-DBI driver: (error in statement: unrecognized token: \"X'A\n> \n> This also does not work. It seems the driver does not deal that nicely with the regular INSERT query for BLOB objects in SQLite. Then I used a simpler way:\n> \n> dbSendQuery(db, \"DELETE FROM frames\")\n> dbSendQuery(db, \"DROP TABLE frames\")\n> dbSendQuery(db, 'CREATE TABLE frames(\"simID\" INT, \"data\" TEXT DEFAULT NULL)')\n> dbSendQuery(db, paste(\"INSERT INTO frames VALUES(1, '\", data.raw, \"')\", sep = \"\"))\n> data.bin2 <- dbGetQuery(db, \"SELECT data FROM frames WHERE simID = 1\")\n> \n> Nice, that worked. Now I want to unserialize the data:\n> \n> unserialize(data.bin2)\n> Error in unserialize(data.bin2) : 'connection' must be a connection\n> \n> unserialize(data.bin2[1, 'data'])\n> Error in unserialize(data.bin2[1, \"data\"]) :\n> character vectors are no longer accepted by unserialize()\n> \n> I feel a little stuck here, but I am very sure, that converting data.frames to binary data and storing them to a database is not that unusual. So I hope somebody has already done this and could give me the missing piece.\n> \n> \n> Best\n> \n> Simon\n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "So I found finally a way how it can be done.... don't know though if it can be called efficient:\n\nlibrary(RSQLite)\ncon <- dbDriver(\"SQLite\")\ndb <- dbConnect(con, dbname = \"test\")\ndbSendQuery(\"CREATE T",
+      "thread_id": "thread-646ea327a739",
+      "thread_depth": 1,
+      "month": "2013-07"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-4ca495018778",
+      "subject": "[RODBC] Error (ORA-12560 ) when trying to connect to Oracle database",
+      "message_count": 2,
+      "participants": [
+        "Daniel Reis",
+        "Marc Schwartz"
+      ],
+      "started": "2013-07-11T16:29:16-03:00",
+      "last_reply": "2013-07-12T07:22:20-05:00",
+      "root_message_id": "msg-4ca495018778"
+    },
+    {
+      "id": "thread-646ea327a739",
+      "subject": "Serialize data.frame to database",
+      "message_count": 2,
+      "participants": [
+        "Simon Zehnder"
+      ],
+      "started": "2013-07-16T10:39:31+02:00",
+      "last_reply": "2013-07-16T22:58:33+02:00",
+      "root_message_id": "msg-646ea327a739"
+    }
+  ]
+}

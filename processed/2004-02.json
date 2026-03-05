@@ -1,0 +1,36 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2004-02",
+  "messages": [
+    {
+      "id": "msg-1e2530add649",
+      "message_id": "<C698D707214E6F4AB39AB7096C3DE5A50C3A54@phost015.intermedia.net>",
+      "from_name": "Vadim Ogranovich",
+      "from_email_hash": "0b506e2db021f2bd4c2278f64dfad283749d52a94f3f353a4b5c0dacf59d9470",
+      "date": "2004-02-16T00:26:18-08:00",
+      "subject": "[R-sig-DB] problems with ROracle",
+      "subject_clean": "problems with ROracle",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n \nI've was playing around with ROracle and have run into various (randomly\nlooking) problems which I guess relate to some db-results not being\nproperly released. Below I compiled a short session that\ndeterministically reproduces a couple of the problems.\n \nThe systems I use are:\nRedhat 7.3\nOracle9i Release 9.2.0.1.0 - Production\nJServer Release 9.2.0.1.0 - Production\n\n \nAny help is greatly appreciated,\nVadim\n \n \n> version\n         _                \nplatform i686-pc-linux-gnu\narch     i686             \nos       linux-gnu        \nsystem   i686, linux-gnu  \nstatus   alpha            \nmajor    1                \nminor    8.1              \nyear     2003             \nmonth    11               \nday      05               \nlanguage R                \n\n# I use the most recent (as of 14/02/2004) version of ROracle, which is\n0.5-3 I think. Don't know if there is a sort of package.version()\nfunction to figure this out for sure.\n \n \n# open a connection \n> con <- dbConnect(dbDriver(\"Oracle\"), user=\"user/password at database\")\n> ora9.workaround(con)\n[1] TRUE\n> \n\n# make sure there is no table in the user's schema\n> oraQuickSQL(con, \"select table_name from user_tables\")[,1]\ncharacter(0)\n \n# create a table\n> dbWriteTable(con, \"GOO\", data.frame(x=rnorm(10)), overwrite=TRUE)\n[1] TRUE\n \n\n## check if the table is created\n# the first time the select doesn't work (this is a suspected bug)\n> oraQuickSQL(con, \"select table_name from user_tables\")[,1]\nError in oraQuickSQL(con, \"select table_name from user_tables\")[, 1] : \n incorrect number of dimensions\n# the second time it works\n> oraQuickSQL(con, \"select table_name from user_tables\")[,1]\n[1] \"GOO\"\n \n# try to overwrite the table. This wouldn't work. I suspect this is\nbecause the sesion is already corrupted (second suspected bug).\n> dbWriteTable(con, \"GOO\", data.frame(x=rnorm(10)), overwrite=TRUE)\nError in oraFetch(rs, n = -1) : RS-DBI driver: (ORA-24374: define not\ndone before fetch or execute and fetch\n)\n[1] FALSE\nWarning message: \ntable GOO couldn't be overwritten in: oraWriteTable(conn, name, value,\n...) \n# As you see it didn't work though it should. To test the permission I\nsuccessfully dropped the table from a plsql session\n \n\n# Now I can not disconnect (third suspected bug) \n> dbDisconnect(con)\nError in oraCloseConnection(conn, ...) : pending result sets in the\nOracle server -- must close manually\n> \n> lapply(dbListResults(con), dbClearResult)\n[[1]]\n[1] TRUE\n \n> dbDisconnect(con)\n[1] TRUE\n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi,\n \nI've was playing around with ROracle and have run into various (randomly\nlooking) problems which I guess relate to some db-results not being\nproperly released. Below I compiled a short session t",
+      "thread_id": "thread-1e2530add649",
+      "thread_depth": 0,
+      "month": "2004-02"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-1e2530add649",
+      "subject": "problems with ROracle",
+      "message_count": 1,
+      "participants": [
+        "Vadim Ogranovich"
+      ],
+      "started": "2004-02-16T00:26:18-08:00",
+      "last_reply": "2004-02-16T00:26:18-08:00",
+      "root_message_id": "msg-1e2530add649"
+    }
+  ]
+}

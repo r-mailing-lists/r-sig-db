@@ -1,0 +1,66 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2005-11",
+  "messages": [
+    {
+      "id": "msg-1ff6a98a92c9",
+      "message_id": "<2310043c0511100721q788c07a1of076689f8a7a47fd@mail.gmail.com>",
+      "from_name": "¨Tariq Khan",
+      "from_email_hash": "0cde44933ddf3f31205a53f7875723d4ae44bc24b3edb486852442a97254e091",
+      "date": "2005-11-10T15:21:21Z",
+      "subject": "[R-sig-DB] RODBC/ROracle Oracle and VB automation with R(D)COM",
+      "subject_clean": "RODBC/ROracle Oracle and VB automation with R(D)COM",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear All,\n Months ago, I posted the question below and wanted to keep the question and\nthe thread alive since Im sure many would agree that it is an important one,\nespecially since many like myself find it very easy to make VB the interface\nwith R the statistical back-end engine. Maybe in today's world there is a\nsolution?\n As i am revisiting the problem, I just downloaded and compiled ROracle on\nWindows XP along with the DBI package. I can connect to my database fine\nfrom the RConsole using either ROracle or RODBC.\n So fine, these packages work, and so does my database. My computer can\nresolve my DSN, tnsping works, and my system is accessing the right\ntnsnames.ora file.\n The problem arises when I use R(D)COM to request that R connect to the\ndatabase. After tracing and manipulating the RODBC.c source code I finally\ngot the following error message (from sqlDriverConnect()):\nstate was 08004, code 12154, message [Oracle][ODBC][Ora]ORA-12154: TNS:could\nnot resolve service name\nROracle confirms this error code and message.\n So why not post this on the R Com help list? because all the variables are\nthe same whether I am running it directly from the Rconsole or not (except\nthat Rconsole is only defined in one case but this is not the problem).\nSomething is different in the context of the connection request, but ive\nconfirmed that the variables can still be read. Furthermore, database\nrequests with (D)COM work with microsoft products (Access and ive heard it\nworks with SQL server). It just does not work with Oracle.\n I found out that the flow is something like this:\nApp->ODBC32.dll->sqora32.dll->SQL net->SQL-Net Listener->database\n I used the microsoft driver for oracle as well, without avail.. i then get\nthe following generic looking error:\nstate was NA000, code 6413, message [Microsoft][ODBC driver for\nOracle][Oracle]ORA-06413: Connection not open.\n I opened up security on ORACLE_HOME and subdirectories ensuring 'Everyone'\nas access and did the same to Oracle Registry directories.\n Why not contact Oracle? Indeed, and I believe we will; but either way maybe\nsomeone knows the answer because this problem with Oracle ony occurs when\ntrying to use RODBC/ROracle together with VB or some other C language, so\nmaybe by now someone knows the answer? Please let me know if you have seen\nthis before or you know the answer.\n My sincere thanks to all of you,\n Tariq\n\n---------- Forwarded message ----------\nFrom: ?Tariq Khan <tariq.khan at gmail.com>\nDate: May 12, 2005 7:33 AM\nSubject: RODBC Oracle and VB automation with R(D)COM\nTo: rcom-l at mailman.csd.univie.ac.at\n\nI haven't been able to find any help on this and am really struggling.\nProf. Ripley thought this might be an appropriate forum for the\nquestion.\nI've been using RODBC 1.1-3 and R(D)COM v1.35 for a little over a year\nsuccessfully with my Access Database, and now im switching to Oracle 9i.\nI use R 2.0.1 on a Windows XP platform, 1GB ram, 2GHz Intel Processor)\n\nWhen I connect through the Rgui R console, the connection is successful\n(but through VB, using R(D)COM, the attempt fails):\n>library(RODBC)\n>channel <- odbcConnect(dsn=\"MY_DB\", uid=\"MYUID\", pwd=\"MYPWD\", case =\n\"oracle\")\n>channel\nRODB Connection 4\nDetails:\ncase=toupper\nDSN=MY_DB\nUID=MYUID\nPWD=MYPWD\nDBQ=LT10G\nDBA=W\nAPA=T\nEXC=F\nFEN=T\nQTO=T\nFRC=10\nFDL=10\nLOB=T\nRST=T\nGDE=F\nFRL=F\nBAM=IfAllSuccessful\nNUM=NLS\nDPM=F\nMTS=T\nMDI=F\nCSR=F\nFWC=F\nFBS=64000\nTLO=0\n\nWhen I run the same code through VBA (and VB .NET). I would have:\n\nRinterface.RRun(\"channel<- odbcConnect(dsn='MY_DB', uid='MYUID',\npwd='MYPWD', case = 'oracle')\")\n\nAnd then to check that there is a connection (since the rest of the code\nfails I debug by putting the channel variable to a .Rdata file and then\ninspect the value from the RGUI console:\n\nRinterface.Rrun(\"dput(channel, 'c:/channel.RData')\")\n\nIn the Rconsole I can see that the value is -1, which occurs when a\nconnection fails:\n>channel<-dget(\"c:/channel.Rdata\")\n>channel\n[1] -1\n\nI have identified the problem to the a piece of code trying to establish\nthe connection (residing in the odbcConnect function):\nodbcDriverConnect(st, case = case, believeNRows = believeNRows)\n\nWhere st has the value \"DSN=MY_DB;UID=MYUID;PWD=MYPWD\", and this I\nbelieve is the case in both instances since I tried to replicate the\nodbcConnect code manually in VB, and the two connection strings checked\nout.\n\nIt seems to boil down to the following code in odbcDriverConnect, which\nseems to either succeed or fail depending on whether I am attempting it\nfrom VB or from the Rconsole:\nstat <- .Call(\"RODBCDriverConnect\", as.character(connection),\nid, as.integer(believeNRows), PACKAGE = \"RODBC\")\n\nI am wondering whether a check is performed on the environment calling\nit, such as is the code being run from the Rconsole or not? This is the\nonly thing I can think of which might affect its behaviour. I tried\ninspecting the C code for the .DLL but am in over my head.\n\nI am using the Microsoft ODBC for Oracle provider and connections and\nqueries succeed when ADO connects, and when R connects through the\nconsole.\n\nAny ideas for the disparities would be greatly appreciated. Anyone\nexperienced anything similar?\n\nKind Regards,\n\nTariq Khan\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Dear All,\n Months ago, I posted the question below and wanted to keep the question and\nthe thread alive since Im sure many would agree that it is an important one,\nespecially since many like myself fi",
+      "thread_id": "thread-1ff6a98a92c9",
+      "thread_depth": 0,
+      "month": "2005-11"
+    },
+    {
+      "id": "msg-85872a1e0a24",
+      "message_id": "<2D9EF6AA-6FA0-4FC0-B1B0-9619D582FA24@mac.com>",
+      "from_name": "Parlamis Franklin",
+      "from_email_hash": "8670ceafb06f1b0a8b712b51dcd4f9941fa37cc76e410224992229c6fe696c1f",
+      "date": "2005-11-19T10:52:07-10:00",
+      "subject": "[R-sig-DB] DBI problem after R upgrade",
+      "subject_clean": "DBI problem after R upgrade",
+      "in_reply_to": "<Pine.LNX.4.61.0510201218190.10265@gannet.stats>",
+      "references": [
+        "<89CC323A-CD3A-4CEA-B6C0-B01B194AE9F0@mac.com>",
+        "<Pine.LNX.4.61.0510201218190.10265@gannet.stats>"
+      ],
+      "body_plain": "Update on this thread:\n\nIt turned out that, not only did I need to install RMySQL from  \nsources, I also needed to reinstall MySQL from sources, using gcc 3.3  \nas the c and c++ compiler.  The binary version of MySQL 5.0.15 was  \ncompiled using gcc 4.0, which caused some kind of conflict with R  \nrelating to the C API (R complained as follows):\n\n>> ld: truncated or malformed archive: /usr/local/mysql/lib/\n>> libmysqlclient.a (ranlib structures in table of contents extends past\n>> the end of the table of contents, can't load from it)\n\nAnyway, it all works now.  I am not sure whether it was the compiler  \nversion that did the trick, of whether something else in my  \nconfiguration was different than in the MySQL binary (perhaps  \nrelating to the ld flags) but it works.\n\nFP\n\nOn Oct 20, 2005, at 1:22 AM, Prof Brian Ripley wrote:\n\n> On Thu, 20 Oct 2005, Parlamis Franklin wrote:\n>\n>> I upgraded R to 2.2.0 (Mac Cocoa GUI 1.13) this evening.  I am\n>> running MySQL Standard version 4.1.14 locally, which I installed\n>> several months ago from binaries on the MySQL web site (mysql-\n>> standard-4.1.14-apple-darwin8.2.0-powerpc-64bit.dmg).  Before I\n>> upgraded R, everything worked fine with RMySQL and DBI (all I used\n>> was DBSendQuery, DBReadTable and DBWriteTable).\n>>\n>> However, now when I load the DBI package I get the following error:\n>>\n>>         Warning message:\n>>         RS-DBI driver warning: (MySQL mismatch between compiled\n>> version 4.0.24 and runtime version 4.1.14)\n>>\n>> Then, if I attempt to use one of the DBI functions, say DBReadTable,\n>> R quits unexpectedly.  I reinstalled MySQL from binaries, and I also\n>> reinstalled the DBI and RMySQL packages from binaries.  Nothing has\n>> helped.  I have never had MySQL 4.0.24 on my computer (4.1.14 was my\n>> first and only install).\n>\n> It is the (powerpc/2.2) RMySQL MacOS X binary that is compiled  \n> against MySQL 4.0.24.  It seems you need to install RMySQL from the  \n> sources.\n>\n> This is not really a R-sig-DB topic but a MacOS one.\n>\n> -- \n> Brian D. Ripley,                  ripley at stats.ox.ac.uk\n> Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\n> University of Oxford,             Tel:  +44 1865 272861 (self)\n> 1 South Parks Road,                     +44 1865 272866 (PA)\n> Oxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "Update on this thread:\n\nIt turned out that, not only did I need to install RMySQL from  \nsources, I also needed to reinstall MySQL from sources, using gcc 3.3  \nas the c and c++ compiler.  The binary ",
+      "thread_id": "thread-85872a1e0a24",
+      "thread_depth": 0,
+      "month": "2005-11"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-1ff6a98a92c9",
+      "subject": "RODBC/ROracle Oracle and VB automation with R(D)COM",
+      "message_count": 1,
+      "participants": [
+        "¨Tariq Khan"
+      ],
+      "started": "2005-11-10T15:21:21+00:00",
+      "last_reply": "2005-11-10T15:21:21+00:00",
+      "root_message_id": "msg-1ff6a98a92c9"
+    },
+    {
+      "id": "thread-85872a1e0a24",
+      "subject": "DBI problem after R upgrade",
+      "message_count": 1,
+      "participants": [
+        "Parlamis Franklin"
+      ],
+      "started": "2005-11-19T10:52:07-10:00",
+      "last_reply": "2005-11-19T10:52:07-10:00",
+      "root_message_id": "msg-85872a1e0a24"
+    }
+  ]
+}

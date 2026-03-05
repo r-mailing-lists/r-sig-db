@@ -1,0 +1,325 @@
+From @296180 @end|ng |rom m|c@@|mr@com  Wed Jan 16 20:19:04 2002
+From: @296180 @end|ng |rom m|c@@|mr@com (David Kane  <David Kane)
+Date: Wed, 16 Jan 2002 14:19:04 -0500
+Subject: [R-sig-DB] dbSetDataMappings with DBI.RODBC
+Message-ID: <15429.53800.798524.275946@gargle.gargle.HOWL>
+
+Many thanks to all the participants in the R Special Interest Group on Database
+Interfaces, especially David James and Michael Lapsley, for constructing such a
+cool set of tools. We are currently experimenting with the latest version of
+DBI/DBI.RODBC/RODBC using R 1.4.0 patched with SQL Server 7. Everything is
+working as it should, so far.
+
+Our main remaining concern is with dbSetDataMappings. The documentation reports
+that "No driver has yet implemented this functionality." My questions:
+
+1) Is this still true?
+
+2) Are there any plans to change this in RODBC in the near future?
+
+3) How hard would it be for us to try and implement this ourselves? We would be
+more than willing to give this a shot with or without some adult
+supervision. Any pointers would be much appreciated.
+
+Note that the conversion problem is tripping us up in at least two ways. First,
+items like factors and POSIX dates are not converted appropriately. Second
+(although we might be doing something wrong) conversion of base types (see the
+description below) is not so automatic.
+
+Description:
+
+     Sets one or more conversion functions to handle the translation 
+     of DBMS data types to R/S objects.   This is only needed for
+     non-primitive data, since all DBI drivers  handle the common base
+     types (integers, numeric, strings, etc.)
+
+For example, we have a variable "cusip" that is VARCHAR 10 in SQL Server. When we
+select a subset of the data for which "cusip" happens to only include values
+that look like numbers (with no decimals), the variable in R is of class
+integer. I am not asserting that this is unreasonable, but it was somewhat
+surprising. Of course, what we want is for the R type to be determined by the
+SQL Server type regardless of what the variables might look like in any particular
+subset. 
+
+Thanks in advance for any pointers or suggestions.
+
+Regards,
+
+Dave Kane
+
+
+From dj @end|ng |rom re@e@rch@be||-|@b@@com  Wed Jan 16 23:31:13 2002
+From: dj @end|ng |rom re@e@rch@be||-|@b@@com (David James)
+Date: Wed, 16 Jan 2002 17:31:13 -0500
+Subject: [R-sig-DB] Re: dbSetDataMappings with DBI.RODBC
+In-Reply-To: <15429.53800.798524.275946@gargle.gargle.HOWL>; from a296180@mica.fmr.com on Wed, Jan 16, 2002 at 02:19:04PM -0500
+References: <15429.53800.798524.275946@gargle.gargle.HOWL>
+Message-ID: <20020116173112.A25817@jessie.research.bell-labs.com>
+
+Hi,
+
+David Kane  <David Kane wrote:
+> Many thanks to all the participants in the R Special Interest Group on Database
+> Interfaces, especially David James and Michael Lapsley, for constructing such a
+> cool set of tools. We are currently experimenting with the latest version of
+> DBI/DBI.RODBC/RODBC using R 1.4.0 patched with SQL Server 7. Everything is
+> working as it should, so far.
+> 
+> Our main remaining concern is with dbSetDataMappings. The documentation reports
+> that "No driver has yet implemented this functionality." My questions:
+> 
+> 1) Is this still true?
+
+Unfortunately, yes (AFAIK).
+
+> 
+> 2) Are there any plans to change this in RODBC in the near future?
+> 
+> 3) How hard would it be for us to try and implement this ourselves? We would be
+> more than willing to give this a shot with or without some adult
+> supervision. Any pointers would be much appreciated.
+> 
+> Note that the conversion problem is tripping us up in at least two ways. First,
+> items like factors and POSIX dates are not converted appropriately. Second
+> (although we might be doing something wrong) conversion of base types (see the
+> description below) is not so automatic.
+> 
+> Description:
+> 
+>      Sets one or more conversion functions to handle the translation 
+>      of DBMS data types to R/S objects.   This is only needed for
+>      non-primitive data, since all DBI drivers  handle the common base
+>      types (integers, numeric, strings, etc.)
+> 
+> For example, we have a variable "cusip" that is VARCHAR 10 in SQL Server. When we
+> select a subset of the data for which "cusip" happens to only include values
+> that look like numbers (with no decimals), the variable in R is of class
+> integer. I am not asserting that this is unreasonable, but it was somewhat
+> surprising. Of course, what we want is for the R type to be determined by the
+> SQL Server type regardless of what the variables might look like in any particular
+> subset. 
+> 
+
+I believe RODBC imports data from the DBMS as character
+data, regardless of the type there, then it invokes 
+.Internal(type.convert(...)) on the R character vectors which does the 
+actual data mapping at that point (the idea is similar to read.table).
+
+> Thanks in advance for any pointers or suggestions.
+
+A workaround would be to post-process the data.frames
+produced by fetch().  One could pass to fetch() a list of 
+conversion functions to key off the field name (as below) or
+field type, or some other meta-data.
+
+The following example overloads the fetch() method to allow specific 
+fields to be converted by user-specified functions (in the example
+we convert a numeric field to an ordered factor):
+
+res <- dbSendQuery(con, "select * from cars")  ## cars is from data(cars)
+
+# build a list with conversion functions for those fields we're want
+# to change ("speed").  The overloaded fetch() method looks for an argument
+# called "post" and uses its names to convert those fields on the data.frame.
+
+d <- fetch(res, post = list(speed = function(x) ordered(x, levels = sort(x)))
+
+> sapply(d, class)
+$speed
+[1] "ordered" "factor" 
+
+$dist
+[1] "integer"
+
+setMethod("fetch", "ODBCResult",
+   def = function(res, n = 0, ...) {
+      if(n<0) n <- 0
+      ch <- res at Id[2]
+      d <- sqlGetResults(ch, max = n)
+
+      ## post process the fields of the output data.frame
+      ## (may be able to use meta-data instead of field name)
+
+      post <- list(...)$post
+      if(!is.null(post) && is.list(post)){
+         dnames <- names(d)
+         for(fname in names(post))
+            if(fname %in% dnames)
+               d[[fname]] <- post[[fname]](d[[fname]])
+      }
+      d
+   },
+   valueClass = "data.frame"
+)
+
+One problem with this approach is that fetch() may be invoked repeatedly 
+to fetch subsets of the result set, so the levels built at each invocation
+will only include levels that appear during that fetch.  One could think
+of using closures as converters to better manage data across invocations
+of fetch(), but it doesn't seem very clean.
+
+Doug Bates, Tim Keitt, Frank Harrell, and others have already brought up 
+some of these issues in this list precisely in the context of factors -- 
+e.g., you may need to store the levels of a factor outside the table where 
+the factor itself resides.  I believe MS SQL server has facilities to 
+define new types -- it may be worthwhile looking into that...
+
+> 
+> Regards,
+> 
+> Dave Kane
+
+-- 
+David A. James
+Statistics Research, Room 2C-253            Phone:  (908) 582-3082       
+Bell Labs, Lucent Technologies              Fax:    (908) 582-3340
+Murray Hill, NJ 09794-0636
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Thu Jan 17 09:02:10 2002
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Thu, 17 Jan 2002 08:02:10 +0000 (GMT)
+Subject: [R-sig-DB] Re: dbSetDataMappings with DBI.RODBC
+In-Reply-To: <20020116173112.A25817@jessie.research.bell-labs.com>
+Message-ID: <Pine.LNX.4.31.0201170759460.2465-100000@gannet.stats>
+
+On Wed, 16 Jan 2002, David James wrote:
+
+> Hi,
+>
+> David Kane  <David Kane wrote:
+> > Many thanks to all the participants in the R Special Interest Group on Database
+> > Interfaces, especially David James and Michael Lapsley, for constructing such a
+> > cool set of tools. We are currently experimenting with the latest version of
+> > DBI/DBI.RODBC/RODBC using R 1.4.0 patched with SQL Server 7. Everything is
+> > working as it should, so far.
+> >
+> > Our main remaining concern is with dbSetDataMappings. The documentation reports
+> > that "No driver has yet implemented this functionality." My questions:
+> >
+> > 1) Is this still true?
+>
+> Unfortunately, yes (AFAIK).
+>
+> >
+> > 2) Are there any plans to change this in RODBC in the near future?
+> >
+> > 3) How hard would it be for us to try and implement this ourselves? We would be
+> > more than willing to give this a shot with or without some adult
+> > supervision. Any pointers would be much appreciated.
+> >
+> > Note that the conversion problem is tripping us up in at least two ways. First,
+> > items like factors and POSIX dates are not converted appropriately. Second
+> > (although we might be doing something wrong) conversion of base types (see the
+> > description below) is not so automatic.
+> >
+> > Description:
+> >
+> >      Sets one or more conversion functions to handle the translation
+> >      of DBMS data types to R/S objects.   This is only needed for
+> >      non-primitive data, since all DBI drivers  handle the common base
+> >      types (integers, numeric, strings, etc.)
+> >
+> > For example, we have a variable "cusip" that is VARCHAR 10 in SQL Server. When we
+> > select a subset of the data for which "cusip" happens to only include values
+> > that look like numbers (with no decimals), the variable in R is of class
+> > integer. I am not asserting that this is unreasonable, but it was somewhat
+> > surprising. Of course, what we want is for the R type to be determined by the
+> > SQL Server type regardless of what the variables might look like in any particular
+> > subset.
+> >
+>
+> I believe RODBC imports data from the DBMS as character
+> data, regardless of the type there, then it invokes
+> .Internal(type.convert(...)) on the R character vectors which does the
+> actual data mapping at that point (the idea is similar to read.table).
+
+It certainly used to. I once sent patches to Michael to do otherwise, but
+I don't think they got incorporated.  But it's hard to be general: SQL
+allows a very large range of types, much larger than R's.
+
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272860 (secr)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From @@|k@t @end|ng |rom @t@t@w|@c@edu  Tue Jan 22 18:32:31 2002
+From: @@|k@t @end|ng |rom @t@t@w|@c@edu (Saikat DebRoy)
+Date: 22 Jan 2002 11:32:31 -0600
+Subject: [R-sig-DB] Re: dbSetDataMappings with DBI.RODBC
+In-Reply-To: <20020116173112.A25817@jessie.research.bell-labs.com>
+References: <15429.53800.798524.275946@gargle.gargle.HOWL>
+	<20020116173112.A25817@jessie.research.bell-labs.com>
+Message-ID: <qxpk7uanvf4.fsf@verdi.stat.wisc.edu>
+
+>>>>> "David" == David James <dj at research.bell-labs.com> writes:
+
+  David> One problem with this approach is that fetch() may be invoked repeatedly 
+  David> to fetch subsets of the result set, so the levels built at each invocation
+  David> will only include levels that appear during that fetch.  One could think
+  David> of using closures as converters to better manage data across invocations
+  David> of fetch(), but it doesn't seem very clean.
+
+  David> Doug Bates, Tim Keitt, Frank Harrell, and others have already brought up 
+  David> some of these issues in this list precisely in the context of factors -- 
+  David> e.g., you may need to store the levels of a factor outside the table where 
+  David> the factor itself resides.  I believe MS SQL server has facilities to 
+  David> define new types -- it may be worthwhile looking into that...
+
+I am not familiar with MS SQL server but I have experimented with various
+ways of defining a factor type in Postgresql. The simplest (but
+storage wise expensive) way to do this is define a new type which
+internally has two fields - an integer (representing the level of this
+element of the factor) and a VARCHAR array which represents the labels
+of the factor. The problem with this is that the labels vector has to
+be stored in each row of the factor column and there is no way to
+ensure that the labels in each row are identical. A better approach
+might be to store the labels externally in another table with two
+columns. The first column would have the level numbers from 1 to n - n
+being total number of levels. The second column would have the
+labels. For example -
+
+create table cars (
+ speed integer, -- this is an ordered factor
+ dist integer
+);
+
+create table cars_speed_levels (
+ level integer,
+ label varchar
+);
+
+You can view the table cars with factor labels by using a join:
+select * from cars, cars_speed_levels where cars.speed = cars_speed_levels.level;
+
+When you are fetching a result from within R, you would have to use a
+version of fetch which accepts names of the level tables. Here is a
+modified version of David's example (with his overloaded fetch method).
+
+res <- dbSendQuery(con, "select * from cars")  ## cars is from data(cars)
+d <- fetch(res, post = list(speed = function(x, con)
+                                    {
+                                        levels <- fetch(dbSendQuery(con, "select label from cars_speed_levels order by level")
+                                        ordered(x, levels = levels)
+                                    })
+
+The main advantage of this approach is that it follows the principle
+of normalizing database tables. It also uses minimal storage. You do
+have to create extra tables for each factor in each table in the
+database. Also note that you have to supply the connection to the
+function so that it can fetch the labels from the database.
+
+Saikat
+ -- 
+Department of Statistics                       Email: saikat at stat.wisc.edu
+University of Wisconsin - Madison              Phone: (608) 263 5948
+1210 West Dayton Street                        Fax:   (608) 262 0032
+Madison, WI 53706-1685
+
+
+

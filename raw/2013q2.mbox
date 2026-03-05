@@ -1,0 +1,1302 @@
+From n@de| @end|ng |rom n@b@y@@com  Tue Apr  2 19:09:40 2013
+From: n@de| @end|ng |rom n@b@y@@com (Mark Nadel)
+Date: Tue, 2 Apr 2013 13:09:40 -0400
+Subject: [R-sig-DB] RODBC Filemaker connection on a Mac
+Message-ID: <CAG=4UpizKKK9+A1tz-6r3k4_COLvn=QSbPVBzJLaT48sFu4aGw@mail.gmail.com>
+
+I am trying to communicate through RODBC with a remote Filemaker database.
+Searching the web has turned up a number of recipes, but I have not been
+able to make any of them work.
+Does anyone currently have RODBC working successfully with a remote
+Filemaker database? If so, I would appreciate knowing  what driver you are
+using and how you do the necessary setup. The more detailed and explicit
+the directions, the better.
+
+Thanks in advance,
+
+Mark
+
+-- 
+*Mark Nadel*
+*Principal Scientist
+*
+Nabsys Inc.
+60 Clifford Street
+Providence, RI  02903
+
+Phone   401-276-9100 x204
+Fax 401-276-9122
+
+	[[alternative HTML version deleted]]
+
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Fri Apr  5 19:32:01 2013
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Fri, 05 Apr 2013 13:32:01 -0400
+Subject: [R-sig-DB] RMySQL cannot allocate a new connection
+Message-ID: <515F0A91.8050100@gmail.com>
+
+  I have recently started getting error messages
+
+Error: RS-DBI driver: (d/mysqld.sockcannot allocate a new connection -- 
+maximum
+of 16 connections already opened)
+
+The server has a max connections set to 500, which is verified from the 
+R session with
+
+    mysqlQuickSQL(ets, "show variables;")
+
+so the error message does not seem to be reflecting the real problem. I 
+am also getting
+
+Warning in mysqlQuickSQL(conn, statement, ...) : pending rows
+Warning in mysqlFetch(res, n, ...) :
+   RS-DBI driver warning: (error while fetching rows)
+
+I am using  RMySQL 0.9-3 (on Ubuntu)  and am now using R-3.0.0 but the 
+problem started before the new R version.  The same code did work in the 
+past (circa Dec 2012), but I'm not certain about the version numbers 
+then. I've probably upgraded my server since then too.
+
+Does anyone know how to deal with this, or what the cause is?
+
+Is anyone else having a similar problem?
+
+Thanks,
+Paul
+
+
+
+From edd @end|ng |rom deb|@n@org  Fri Apr  5 20:09:59 2013
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Fri, 5 Apr 2013 13:09:59 -0500
+Subject: [R-sig-DB] RMySQL cannot allocate a new connection
+In-Reply-To: <515F0A91.8050100@gmail.com>
+References: <515F0A91.8050100@gmail.com>
+Message-ID: <20831.4983.903945.626328@max.nulle.part>
+
+
+Paul,
+
+I also bit me recently; can't quite recall the circumstances but it was
+somehow related to an error.  What binds here, as far as a I know, is the
+'open files' constraint from the OS and shell, not so much R's.
+
+I do not know a way to increase it on a running session. Sorry.
+
+Hth, Dirk
+
+-- 
+Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Fri Apr  5 20:55:49 2013
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Fri, 05 Apr 2013 14:55:49 -0400
+Subject: [R-sig-DB] RMySQL cannot allocate a new connection
+In-Reply-To: <20831.4983.903945.626328@max.nulle.part>
+References: <515F0A91.8050100@gmail.com>
+	<20831.4983.903945.626328@max.nulle.part>
+Message-ID: <515F1E35.5090007@gmail.com>
+
+But I cannot think why it would have just started. I've been running 
+this code for years. I'm suspicious of the warning about pending rows, I 
+have not seen that before either.  Do you know if the size of returned 
+chunks is controlled at the client or server side, or both?
+
+Thanks,
+Paul
+
+On 13-04-05 02:09 PM, Dirk Eddelbuettel wrote:
+>
+> Paul,
+>
+> I also bit me recently; can't quite recall the circumstances but it was
+> somehow related to an error.  What binds here, as far as a I know, is the
+> 'open files' constraint from the OS and shell, not so much R's.
+>
+> I do not know a way to increase it on a running session. Sorry.
+>
+> Hth, Dirk
+>
+
+
+
+From edd @end|ng |rom deb|@n@org  Fri Apr  5 22:19:42 2013
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Fri, 5 Apr 2013 15:19:42 -0500
+Subject: [R-sig-DB] RMySQL cannot allocate a new connection
+In-Reply-To: <515F1E35.5090007@gmail.com>
+References: <515F0A91.8050100@gmail.com>
+	<20831.4983.903945.626328@max.nulle.part>
+	<515F1E35.5090007@gmail.com>
+Message-ID: <20831.12766.564252.388659@max.nulle.part>
+
+
+On 5 April 2013 at 14:55, Paul Gilbert wrote:
+| But I cannot think why it would have just started. I've been running 
+| this code for years. I'm suspicious of the warning about pending rows, I 
+| have not seen that before either.  Do you know if the size of returned 
+| chunks is controlled at the client or server side, or both?
+
+Sorry -- I should have clarified that my 'cannot allocate new connection'
+what not related to MySQL which I don't use often.
+
+Dirk
+
+-- 
+Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+
+
+From tomo@k|n @end|ng |rom @t@||@k@n@z@w@-u@@c@jp  Wed Apr 17 02:13:01 2013
+From: tomo@k|n @end|ng |rom @t@||@k@n@z@w@-u@@c@jp (NISHIYAMA Tomoaki)
+Date: Wed, 17 Apr 2013 09:13:01 +0900
+Subject: [R-sig-DB] R and PostgreSQL - Writing data?
+In-Reply-To: <3521b0fc-c37d-4fae-87c2-8cb06581480b@googlegroups.com>
+References: <CAMu32ACFMBa7Z-6ZepagkdsXvqxi7ObSXCa-hn0FMcLQUZ9Y+g@mail.gmail.com>
+	<CANeAVB=5Rm17sQnfvAThu0X7z3P=gOX5WcqadJjss+0J0QzBZA@mail.gmail.com>
+	<CAMu32ADVRDn=ExeAYnVn-Xv7YDhFJgAe=qAJC4ai0OaQohV3qA@mail.gmail.com>
+	<CANeAVBksja5EyLYNbCk_mz=msidSFjKU8RgCzr09-j9a5y23iQ@mail.gmail.com>
+	<f3b9eca0-6059-440d-b636-729bf05438f0@default>
+	<CAMu32ADKqtR44G6PrOm-GxkropMiuHSoNxpVn1n3rcjjVVUoLw@mail.gmail.com>
+	<20664.53299.715207.913771@max.nulle.part>
+	<B504D445-75F5-4417-A2A2-3D0CA433217D@staff.kanazawa-u.ac.jp>
+	<3521b0fc-c37d-4fae-87c2-8cb06581480b@googlegroups.com>
+Message-ID: <8C603D7B-9D08-4096-91F6-752DBB72E9F8@staff.kanazawa-u.ac.jp>
+
+Dear Kevin,
+
+>    The problem I'm trying to solve right now is being able to efficiently load 70 million chemical compounds into postgres. I know there are other avenues for accomplishing this, but using R is the best solution in this case. 
+
+dbWriteTable() should be used to load all rows of a data frame to PostgreSQL.
+This uses a single COPY and should be much faster than calling PQexecPrepared many times.
+
+For prepared statement in RPostgreSQL, I think we should implement some mechanism to
+access the prepared statement from R and make use of it by dbGetQuery or dbApply?
+functions.
+
+Best regards,
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi, 
+Kanazawa, 920-0934, Japan
+
+
+On 2013/04/17, at 8:19, horank01 at ucr.edu wrote:
+
+> 
+> Hi, I would be interested in implementing what ever is required to support prepared queries. I was thinking of allowing dbSendQuery take a data frame instead of a vector, and then prepare the query once and run it on all rows of the data frame. This is basically what RSQLite does. I have already made a quick modification to RS_PostgreSQL_pqexecParams to call PQexecPrepared instead on an already prepared statement, and that worked. So it seems its mostly a case of modifying the C code to prepare the query first and then read through the data frame calling PQexecPrepared. 
+>    The problem I'm trying to solve right now is being able to efficiently load 70 million chemical compounds into postgres. I know there are other avenues for accomplishing this, but using R is the best solution in this case. 
+>    Please let me know how I can best help, how you want things done, etc. Thanks. 
+> 
+> Kevin
+> 
+> On Thursday, December 6, 2012 6:57:22 AM UTC-8, Tomoaki wrote:
+> Hi, 
+> 
+> PostgreSQL have library function PQexecParams and also supports prepared statements. 
+> String expansion in the SQL statement is cumbersome for escaping special characters and 
+> therefore error prone. 
+> 
+> I just commited to the SVN repository a very simple and primitive implementation that 
+> allows to pass vector of characters as parameters. 
+> 
+> A sample statement is like: 
+> 
+>     res <- dbGetQuery(con, "SELECT * FROM rockdata WHERE peri > $1 AND shape < $2 LIMIT $3", c(4000, 0.2, 10)) 
+>     print(res) 
+> 
+> The syntax for a positional parameter is a dollar sign ($) followed by digits 
+> rather than a colon followed by digits in PostgreSQL. 
+> http://www.postgresql.org/docs/9.2/static/sql-syntax-lexical.html#SQL-SYNTAX-SPECIAL-CHARS 
+> 
+> This mechanism is required for the support of prepared statements. 
+> It is nicer if I could make automatic conversions for various type and binary transfer, 
+> but this is not implemented right now. 
+> So all parameters are simply passed as strings at the moment. 
+> 
+> Note this is the very initial implementation and the interface may change. 
+> 
+> Any enhancement, feedback, or test case/program is welcome. 
+> Especially, on what would be the best interface/syntax. 
+> 
+> Best regards, 
+> -- 
+> Tomoaki NISHIYAMA 
+> 
+> Advanced Science Research Center, 
+> Kanazawa University, 
+> 13-1 Takara-machi, 
+> Kanazawa, 920-0934, Japan 
+> 
+> 
+> On 2012/12/01, at 0:26, Dirk Eddelbuettel wrote: 
+> 
+> > 
+> > On 30 November 2012 at 15:05, James David Smith wrote: 
+> > | Hi all, 
+> > | 
+> > | Sorry for the thread re-activation. I was wondering if anyone has 
+> > | successfully used the syntax below with the library RPostgreSQL? 
+> > 
+> > Nope. 
+> > 
+> > I always expand the strings explicitly. It would be news to me of that 
+> > worked.  Good news, for sure, but still news... 
+> > 
+> > Dirk 
+> > 
+> > 
+> > | dbGetQuery(con, "update foo set sal = :1 where empno = :2", 
+> > |            data = dat[,c("SAL","EMPNO")]) 
+> > | 
+> > | I've been messing about with it but can't get it to work. I get the error: 
+> > | 
+> > | Error in postgresqlQuickSQL(conn, statement, ...) : 
+> > |   unused argument(s) (data = list(bc = c(NA, NA, NA etc. 
+> > | 
+> > | Thanks 
+> > | 
+> > | James 
+> > | 
+> > | 
+> > | 
+> > | On 28 September 2012 17:13, Denis Mukhin <denis.x... at oracle.com> wrote: 
+> > | > James, 
+> > | > 
+> > | > I have never tried RPostgreSQL before but in ROracle which is also a DBI based interface you can do something like this: 
+> > | > 
+> > | > library(ROracle) 
+> > | > con <- dbConnect(Oracle(), "scott", "tiger") 
+> > | > dbGetQuery(con, "create table foo as select * from emp") 
+> > | > 
+> > | > dat <- dbGetQuery(con, "select * from foo") 
+> > | > dat$SAL <- dat$SAL*10 
+> > | > dbGetQuery(con, "update foo set sal = :1 where empno = :2", 
+> > | >            data = dat[,c("SAL","EMPNO")]) 
+> > | > dbCommit(con) 
+> > | > dbGetQuery(con, "select * from foo") 
+> > | > 
+> > | > dbGetQuery(con, "drop table foo purge") 
+> > | > dbDisconnect(con) 
+> > | > 
+> > | > Denis 
+> > | > 
+> > | > -----Original Message----- 
+> > | > From: Sean Davis [mailto:sda... at mail.nih.gov] 
+> > | > Sent: Friday, September 28, 2012 11:43 AM 
+> > | > To: James David Smith 
+> > | > Cc: r-si... at r-project.org 
+> > | > Subject: Re: [R-sig-DB] R and PostgreSQL - Writing data? 
+> > | > 
+> > | > On Fri, Sep 28, 2012 at 10:36 AM, James David Smith <james.da... at gmail.com> wrote: 
+> > | >> Hi Sean, 
+> > | >> 
+> > | >> Thanks for the reply. I'm familiar with UPDATE queries when working in 
+> > | >> PostgreSQL, but not from within R. Would it look something like this? 
+> > | >> 
+> > | >> dbWriteTable(con, " UPDATE table SET ucam_no2 = 
+> > | >> 'ucam_no2$interpolated_data' ") 
+> > | >> 
+> > | >> My problem is how to get the R data 'within' my SQL statement I think. 
+> > | > 
+> > | > To do an update, you'll need to loop through your data.frame and issue a dbSendQuery().  To create the SQL string, I often use something 
+> > | > like: 
+> > | > 
+> > | > sprintf("UPDATE originalTable SET ucam_no2=%f WHERE originalTable.id = %d",....) 
+> > | > 
+> > | > You can't do this in one step, unfortunately.  This is how UPDATE works and has nothing to do with R. 
+> > | > 
+> > | > Sean 
+> > | > 
+> > | > 
+> > | >> 
+> > | >> On 28 September 2012 15:19, Sean Davis <sda... at mail.nih.gov> wrote: 
+> > | >>> On Fri, Sep 28, 2012 at 10:14 AM, James David Smith 
+> > | >>> <james.da... at gmail.com> wrote: 
+> > | >>>> Dear all, 
+> > | >>>> 
+> > | >>>> Sorry if this isn't quite the right place, but it's the first time 
+> > | >> SendSave NowDiscardDraft autosaved at 15:36 (0 minutes ago) 33% full 
+> > | >> Using 3.4 GB of your 10.1 GB 
+> > | >> ??2012 Google - Terms & Privacy 
+> > | >> Last account activity: 50 minutes ago 
+> > | >> Details 
+> > | >> People (2) 
+> > | >> Sean Davis 
+> > | >> Add to circles 
+> > | >> 
+> > | >> Show details 
+> > | >> Ads ??? Why these ads? 
+> > | >> Big Data Too Slow? 
+> > | >> Real-Time Analytics for Big Data. Visual Drag & Drop UI. Quick & Easy 
+> > | >> PentahoBigData.com Talend Open Source ESB Open Source ESB Based on 
+> > | >> Apache CXF and Apache Camel. Free Download! 
+> > | >> www.talend.com/Free_ESB_Software 
+> > | >> Warp I/O for SQL Server 
+> > | >> Speed SQL Server performance 3x Faster I/O, reduced storage 
+> > | >> www.confio.com/warp-io Storage Container Sussex Ex-Shipping Containers 
+> > | >> Sale & Hire Storage Container 0800 043 6311 
+> > | >> www.CsShippingContainers.co.uk More about... 
+> > | >> MS Access Database SQL ?? 
+> > | >> Database ?? 
+> > | >> Excel Database Query ?? 
+> > | >> Oracle Database Problems ?? 
+> > | >> 
+> > | >>>> I've posted here. My issue is to do with writing to a PostgreSQL 
+> > | >>>> database from within R. My situation is best explained by some R 
+> > | >>>> code to start: 
+> > | >>>> 
+> > | >>>> #Connect to the database 
+> > | >>>> con <- dbConnect(PostgreSQL(), user="postgres", password="password", 
+> > | >>>> dbname="database") 
+> > | >>>> 
+> > | >>>> #Get some data out of the database. 
+> > | >>>> ucam_no2$original_data <- dbGetQuery(con, "select ucam_no2 FROM 
+> > | >>>> table") 
+> > | >>>> 
+> > | >>>> This returns say 10000 rows of data, but there is only data in about 
+> > | >>>> half of those rows. What I want to do is interpolate the missing 
+> > | >>>> data so I do this: 
+> > | >>>> 
+> > | >>>> #Generate some data 
+> > | >>>> ucam_no2$interpolated_data <- na.approx(ucam_data$ucam_no2, na.rm = 
+> > | >>>> FALSE) 
+> > | >>>> 
+> > | >>>> This works well and I now have 10000 rows of data with no empty cells. 
+> > | >>>> I now want to write this back into my PostgresSQL database. Into the 
+> > | >>>> same row that I took the data from in the first place. But I don't 
+> > | >>>> know how. I can write to a new table with something like the below, 
+> > | >>>> but what I'd really like to do is put the data back into the table I 
+> > | >>>> got it from. 
+> > | >>>> 
+> > | >>>> # Try to write the data back 
+> > | >>>> dbWriteTable(con, "new_data", ucam_no2$interpolated_data) 
+> > | >>> 
+> > | >>> Hi, James. 
+> > | >>> 
+> > | >>> You'll need to look into doing a SQL UPDATE.  That is the standard 
+> > | >>> way to "put data back into the table I got it from". 
+> > | >>> 
+> > | >>> Sean 
+> > | > 
+> > | > _______________________________________________ 
+> > | > R-sig-DB mailing list -- R Special Interest Group R-si... at r-project.org https://stat.ethz.ch/mailman/listinfo/r-sig-db 
+> > | > 
+> > | > _______________________________________________ 
+> > | > R-sig-DB mailing list -- R Special Interest Group 
+> > | > R-si... at r-project.org 
+> > | > https://stat.ethz.ch/mailman/listinfo/r-sig-db 
+> > | 
+> > | _______________________________________________ 
+> > | R-sig-DB mailing list -- R Special Interest Group 
+> > | R-si... at r-project.org 
+> > | https://stat.ethz.ch/mailman/listinfo/r-sig-db 
+> > 
+> > -- 
+> > Dirk Eddelbuettel | e... at debian.org | http://dirk.eddelbuettel.com   
+> > 
+> > _______________________________________________ 
+> > R-sig-DB mailing list -- R Special Interest Group 
+> > R-si... at r-project.org 
+> > https://stat.ethz.ch/mailman/listinfo/r-sig-db 
+> 
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From tomo@k|n @end|ng |rom @t@||@k@n@z@w@-u@@c@jp  Thu Apr 18 02:38:35 2013
+From: tomo@k|n @end|ng |rom @t@||@k@n@z@w@-u@@c@jp (NISHIYAMA Tomoaki)
+Date: Thu, 18 Apr 2013 09:38:35 +0900
+Subject: [R-sig-DB] R and PostgreSQL - Writing data?
+In-Reply-To: <57135f48-c958-4908-b37c-7aa3819acd5e@googlegroups.com>
+References: <CAMu32ACFMBa7Z-6ZepagkdsXvqxi7ObSXCa-hn0FMcLQUZ9Y+g@mail.gmail.com>
+	<CANeAVB=5Rm17sQnfvAThu0X7z3P=gOX5WcqadJjss+0J0QzBZA@mail.gmail.com>
+	<CAMu32ADVRDn=ExeAYnVn-Xv7YDhFJgAe=qAJC4ai0OaQohV3qA@mail.gmail.com>
+	<CANeAVBksja5EyLYNbCk_mz=msidSFjKU8RgCzr09-j9a5y23iQ@mail.gmail.com>
+	<f3b9eca0-6059-440d-b636-729bf05438f0@default>
+	<CAMu32ADKqtR44G6PrOm-GxkropMiuHSoNxpVn1n3rcjjVVUoLw@mail.gmail.com>
+	<20664.53299.715207.913771@max.nulle.part>
+	<B504D445-75F5-4417-A2A2-3D0CA433217D@staff.kanazawa-u.ac.jp>
+	<3521b0fc-c37d-4fae-87c2-8cb06581480b@googlegroups.com>
+	<8C603D7B-9D08-4096-91F6-752DBB72E9F8@staff.kanazawa-u.ac.jp>
+	<57135f48-c958-4908-b37c-7aa3819acd5e@googlegroups.com>
+Message-ID: <B4887449-A463-4493-8B6E-ACC95928A608@staff.kanazawa-u.ac.jp>
+
+Dear Kevin,
+
+> The problem I have though is that I need to leave the primary key
+> field un-specified so that it will fill in the key from a sequence.
+
+
+I do not understand why you need to leave the primary key unspecified.
+You can change the field characteristics with ALTER TABLE, ALTER SEQUENCE,
+and so on.  To see what operation is needed you can prepare a small
+example table and use pg_dump.
+
+"row.names" are copied by dbWriteTable
+to ensure that every record is distinguishable.
+It is by default a text field.
+If you need a serial primary key, you may create a new column, and compute
+the initial values and add constraints and index. 
+(or just alter the column may work depending on the data.frame)
+
+Note that pg_dump/restore should have been very well tested by 
+PostgreSQL developers to ensure the reliability and the speed.
+So, it would be a very hard to invent a better method.
+
+>   So, right now it executes "COPY tablename FROM", but could it be changed to grab
+> the list of fields from the given data frame and then add them to the copy command,
+> like so: "COPY tablename (col1, col2, ... ) FROM"?
+
+
+What would be the calling convention of dbWriteTable, then?
+Current one is very simple, that is,
+dbWrtieTable(con, tablename, data.frame)
+
+If you want to write the list of columns, then wouldn't 
+it easier to make a data.frame that have only those columns?
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi, 
+Kanazawa, 920-0934, Japan
+
+
+On 2013/04/18, at 2:50, khoran at globalrecordings.net wrote:
+
+> Tomoaki,
+>    dbWriteTable could work, I'd not looked too closely at it before. The problem I have though is that I need to leave the primary key field un-specified so that it will fill in the key from a sequence. Using a column of NA values does not work. This could be fixed by having dbWriteTable explicitly state the list of columns given in the data frame in the COPY command.  So, right now it executes "COPY tablename FROM", but could it be changed to grab the list of fields from the given data frame and then add them to the copy command, like so: "COPY tablename (col1, col2, ... ) FROM"? Then I would not need any prepared statements though ....
+> 
+> Thanks
+> 
+> Kevin
+> 
+> On Tuesday, April 16, 2013 5:13:01 PM UTC-7, Tomoaki wrote:
+> Dear Kevin,
+> 
+>>    The problem I'm trying to solve right now is being able to efficiently load 70 million chemical compounds into postgres. I know there are other avenues for accomplishing this, but using R is the best solution in this case. 
+> 
+> dbWriteTable() should be used to load all rows of a data frame to PostgreSQL.
+> This uses a single COPY and should be much faster than calling PQexecPrepared many times.
+> 
+> For prepared statement in RPostgreSQL, I think we should implement some mechanism to
+> access the prepared statement from R and make use of it by dbGetQuery or dbApply?
+> functions.
+> 
+> Best regards,
+> -- 
+> Tomoaki NISHIYAMA
+> 
+> Advanced Science Research Center,
+> Kanazawa University,
+> 13-1 Takara-machi, 
+> Kanazawa, 920-0934, Japan
+> 
+> 
+> On 2013/04/17, at 8:19, hora... at ucr.edu wrote:
+> 
+>> 
+>> Hi, I would be interested in implementing what ever is required to support prepared queries. I was thinking of allowing dbSendQuery take a data frame instead of a vector, and then prepare the query once and run it on all rows of the data frame. This is basically what RSQLite does. I have already made a quick modification to RS_PostgreSQL_pqexecParams to call PQexecPrepared instead on an already prepared statement, and that worked. So it seems its mostly a case of modifying the C code to prepare the query first and then read through the data frame calling PQexecPrepared. 
+>>    The problem I'm trying to solve right now is being able to efficiently load 70 million chemical compounds into postgres. I know there are other avenues for accomplishing this, but using R is the best solution in this case. 
+>>    Please let me know how I can best help, how you want things done, etc. Thanks. 
+>> 
+>> Kevin
+>> 
+>> On Thursday, December 6, 2012 6:57:22 AM UTC-8, Tomoaki wrote:
+>> Hi, 
+>> 
+>> PostgreSQL have library function PQexecParams and also supports prepared statements. 
+>> String expansion in the SQL statement is cumbersome for escaping special characters and 
+>> therefore error prone. 
+>> 
+>> I just commited to the SVN repository a very simple and primitive implementation that 
+>> allows to pass vector of characters as parameters. 
+>> 
+>> A sample statement is like: 
+>> 
+>>     res <- dbGetQuery(con, "SELECT * FROM rockdata WHERE peri > $1 AND shape < $2 LIMIT $3", c(4000, 0.2, 10)) 
+>>     print(res) 
+>> 
+>> The syntax for a positional parameter is a dollar sign ($) followed by digits 
+>> rather than a colon followed by digits in PostgreSQL. 
+>> http://www.postgresql.org/docs/9.2/static/sql-syntax-lexical.html#SQL-SYNTAX-SPECIAL-CHARS 
+>> 
+>> This mechanism is required for the support of prepared statements. 
+>> It is nicer if I could make automatic conversions for various type and binary transfer, 
+>> but this is not implemented right now. 
+>> So all parameters are simply passed as strings at the moment. 
+>> 
+>> Note this is the very initial implementation and the interface may change. 
+>> 
+>> Any enhancement, feedback, or test case/program is welcome. 
+>> Especially, on what would be the best interface/syntax. 
+>> 
+>> Best regards, 
+>> -- 
+>> Tomoaki NISHIYAMA 
+>> 
+>> Advanced Science Research Center, 
+>> Kanazawa University, 
+>> 13-1 Takara-machi, 
+>> Kanazawa, 920-0934, Japan 
+>> 
+>> 
+>> On 2012/12/01, at 0:26, Dirk Eddelbuettel wrote: 
+>> 
+>> > 
+>> > On 30 November 2012 at 15:05, James David Smith wrote: 
+>> > | Hi all, 
+>> > | 
+>> > | Sorry for the thread re-activation. I was wondering if anyone has 
+>> > | successfully used the syntax below with the library RPostgreSQL? 
+>> > 
+>> > Nope. 
+>> > 
+>> > I always expand the strings explicitly. It would be news to me of that 
+>> > worked.  Good news, for sure, but still news... 
+>> > 
+>> > Dirk 
+>> > 
+>> > 
+>> > | dbGetQuery(con, "update foo set sal = :1 where empno = :2", 
+>> > |            data = dat[,c("SAL","EMPNO")]) 
+>> > | 
+>> > | I've been messing about with it but can't get it to work. I get the error: 
+>> > | 
+>> > | Error in postgresqlQuickSQL(conn, statement, ...) : 
+>> > |   unused argument(s) (data = list(bc = c(NA, NA, NA etc. 
+>> > | 
+>> > | Thanks 
+>> > | 
+>> > | James 
+>> > | 
+>> > | 
+>> > | 
+>> > | On 28 September 2012 17:13, Denis Mukhin <denis.x... at oracle.com> wrote: 
+>> > | > James, 
+>> > | > 
+>> > | > I have never tried RPostgreSQL before but in ROracle which is also a DBI based interface you can do something like this: 
+>> > | > 
+>> > | > library(ROracle) 
+>> > | > con <- dbConnect(Oracle(), "scott", "tiger") 
+>> > | > dbGetQuery(con, "create table foo as select * from emp") 
+>> > | > 
+>> > | > dat <- dbGetQuery(con, "select * from foo") 
+>> > | > dat$SAL <- dat$SAL*10 
+>> > | > dbGetQuery(con, "update foo set sal = :1 where empno = :2", 
+>> > | >            data = dat[,c("SAL","EMPNO")]) 
+>> > | > dbCommit(con) 
+>> > | > dbGetQuery(con, "select * from foo") 
+>> > | > 
+>> > | > dbGetQuery(con, "drop table foo purge") 
+>> > | > dbDisconnect(con) 
+>> > | > 
+>> > | > Denis 
+>> > | > 
+>> > | > -----Original Message----- 
+>> > | > From: Sean Davis [mailto:sda... at mail.nih.gov] 
+>> > | > Sent: Friday, September 28, 2012 11:43 AM 
+>> > | > To: James David Smith 
+>> > | > Cc: r-si... at r-project.org 
+>> > | > Subject: Re: [R-sig-DB] R and PostgreSQL - Writing data? 
+>> > | > 
+>> > | > On Fri, Sep 28, 2012 at 10:36 AM, James David Smith <james.da... at gmail.com> wrote: 
+>> > | >> Hi Sean, 
+>> > | >> 
+>> > | >> Thanks for the reply. I'm familiar with UPDATE queries when working in 
+>> > | >> PostgreSQL, but not from within R. Would it look something like this? 
+>> > | >> 
+>> > | >> dbWriteTable(con, " UPDATE table SET ucam_no2 = 
+>> > | >> 'ucam_no2$interpolated_data' ") 
+>> > | >> 
+>> > | >> My problem is how to get the R data 'within' my SQL statement I think. 
+>> > | > 
+>> > | > To do an update, you'll need to loop through your data.frame and issue a dbSendQuery().  To create the SQL string, I often use something 
+>> > | > like: 
+>> > | > 
+>> > | > sprintf("UPDATE originalTable SET ucam_no2=%f WHERE originalTable.id = %d",....) 
+>> > | > 
+>> > | > You can't do this in one step, unfortunately.  This is how UPDATE works and has nothing to do with R. 
+>> > | > 
+>> > | > Sean 
+>> > | > 
+>> > | > 
+>> > | >> 
+>> > | >> On 28 September 2012 15:19, Sean Davis <sda... at mail.nih.gov> wrote: 
+>> > | >>> On Fri, Sep 28, 2012 at 10:14 AM, James David Smith 
+>> > | >>> <james.da... at gmail.com> wrote: 
+>> > | >>>> Dear all, 
+>> > | >>>> 
+>> > | >>>> Sorry if this isn't quite the right place, but it's the first time 
+>> > | >> SendSave NowDiscardDraft autosaved at 15:36 (0 minutes ago) 33% full 
+>> > | >> Using 3.4 GB of your 10.1 GB 
+>> > | >> ?2012 Google - Terms & Privacy 
+>> > | >> Last account activity: 50 minutes ago 
+>> > | >> Details 
+>> > | >> People (2) 
+>> > | >> Sean Davis 
+>> > | >> Add to circles 
+>> > | >> 
+>> > | >> Show details 
+>> > | >> Ads ? Why these ads? 
+>> > | >> Big Data Too Slow? 
+>> > | >> Real-Time Analytics for Big Data. Visual Drag & Drop UI. Quick & Easy 
+>> > | >> PentahoBigData.com Talend Open Source ESB Open Source ESB Based on 
+>> > | >> Apache CXF and Apache Camel. Free Download! 
+>> > | >> www.talend.com/Free_ESB_Software 
+>> > | >> Warp I/O for SQL Server 
+>> > | >> Speed SQL Server performance 3x Faster I/O, reduced storage 
+>> > | >> www.confio.com/warp-io Storage Container Sussex Ex-Shipping Containers 
+>> > | >> Sale & Hire Storage Container 0800 043 6311 
+>> > | >> www.CsShippingContainers.co.uk More about... 
+>> > | >> MS Access Database SQL ? 
+>> > | >> Database ? 
+>> > | >> Excel Database Query ? 
+>> > | >> Oracle Database Problems ? 
+>> > | >> 
+>> > | >>>> I've posted here. My issue is to do with writing to a PostgreSQL 
+>> > | >>>> database from within R. My situation is best explained by some R 
+>> > | >>>> code to start: 
+>> > | >>>> 
+>> > | >>>> #Connect to the database 
+>> > | >>>> con <- dbConnect(PostgreSQL(), user="postgres", password="password", 
+>> > | >>>> dbname="database") 
+>> > | >>>> 
+>> > | >>>> #Get some data out of the database. 
+>> > | >>>> ucam_no2$original_data <- dbGetQuery(con, "select ucam_no2 FROM 
+>> > | >>>> table") 
+>> > | >>>> 
+>> > | >>>> This returns say 10000 rows of data, but there is only data in about 
+>> > | >>>> half of those rows. What I want to do is interpolate the missing 
+>> > | >>>> data so I do this: 
+>> > | >>>> 
+>> > | >>>> #Generate some data 
+>> > | >>>> ucam_no2$interpolated_data <- na.approx(ucam_data$ucam_no2, na.rm = 
+>> > | >>>> FALSE) 
+>> > | >>>> 
+>> > | >>>> This works well and I now have 10000 rows of data with no empty cells. 
+>> > | >>>> I now want to write this back into my PostgresSQL database. Into the 
+>> > | >>>> same row that I took the data from in the first place. But I don't 
+>> > | >>>> know how. I can write to a new table with something like the below, 
+>> > | >>>> but what I'd really like to do is put the data back into the table I 
+>> > | >>>> got it from. 
+>> > | >>>> 
+>> > | >>>> # Try to write the data back 
+>> > | >>>> dbWriteTable(con, "new_data", ucam_no2$interpolated_data) 
+>> > | >>> 
+>> > | >>> Hi, James. 
+>> > | >>> 
+>> > | >>> You'll need to look into doing a SQL UPDATE.  That is the standard 
+>> > | >>> way to "put data back into the table I got it from". 
+>> > | >>> 
+>> > | >>> Sean 
+>> > | > 
+>> > | > _______________________________________________ 
+>> > | > R-sig-DB mailing list -- R Special Interest Group R-si... at r-project.org https://stat.ethz.ch/mailman/listinfo/r-sig-db 
+>> > | > 
+>> > | > _______________________________________________ 
+>> > | > R-sig-DB mailing list -- R Special Interest Group 
+>> > | > R-si... at r-project.org 
+>> > | > https://stat.ethz.ch/mailman/listinfo/r-sig-db 
+>> > | 
+>> > | _______________________________________________ 
+>> > | R-sig-DB mailing list -- R Special Interest Group 
+>> > | R-si... at r-project.org 
+>> > | https://stat.ethz.ch/mailman/listinfo/r-sig-db 
+>> > 
+>> > -- 
+>> > Dirk Eddelbuettel | e... at debian.org | http://dirk.eddelbuettel.com   
+>> > 
+>> > _______________________________________________ 
+>> > R-sig-DB mailing list -- R Special Interest Group 
+>> > R-si... at r-project.org 
+>> > https://stat.ethz.ch/mailman/listinfo/r-sig-db 
+>> 
+> 
+> 
+> -- 
+> You received this message because you are subscribed to the Google Groups "RPostgreSQL Development and Discussion List" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to rpostgresql-dev+unsubscribe at googlegroups.com.
+> For more options, visit https://groups.google.com/groups/opt_out.
+>  
+>  
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From edd @end|ng |rom deb|@n@org  Tue Apr 23 15:22:40 2013
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Tue, 23 Apr 2013 08:22:40 -0500
+Subject: [R-sig-DB] GSoC R project (Port pymssql core to R)
+In-Reply-To: <CAOnfVqBXnzskwGcAKsz4R9PQH4P=fNPLdttBGV48VzOA1P7dCg@mail.gmail.com>
+References: <CAOnfVqBXnzskwGcAKsz4R9PQH4P=fNPLdttBGV48VzOA1P7dCg@mail.gmail.com>
+Message-ID: <20854.35616.884228.283205@max.nulle.part>
+
+
+Hi Taras,
+
+On 23 April 2013 at 16:05, Taras Murzhiev wrote:
+| Hi Dirk,
+| 
+| My name is Taras Murzhiev, I am a last-year student from Ukraine and want to
+| participate in Google Summer of Code this year.
+| I have experience in programming (C++, Python, less Matlab and R) and math with
+
+For this project, you may to look a little at the R packages (all on CRAN)
+
+    DBI	 	  -- generic database interface
+
+    RSQLite	  -- use DBI to access SQLite
+    RMySQL	  --  "   "   "    "   MySQL
+    RPostgreSQL   --  "   "   "    "   PostgreSQL
+    ROracle       --  "   "   "    "   Oracle
+
+depending on what backend you have. SQLite does NOT need a server and is
+easiest to get going.
+
+| theory background.
+| 
+| I'm interested in working on project 'Port?pymssql?core to R and DBI as
+| RMSSql' that you proposed on GSoC R wiki page.
+| It would be very pleasant if you could briefly describe main goals, expectation
+| and usage aspect of this project and your vision of techical side and
+| implementation details that give me ability to go forward.
+
+Simple goal:  Extend this to access Microsoft SQL Server which continues to
+be popular (esp in work places, luckily not mine).  The "pymssql" provides a
+working framework, so there is little need for reinvention but some need for
+honkering down and doing a quality implementation.
+
+We did the same for RPostgreSQL back in the day -- this was a GSoC project I
+mentored a few years ago, and which provided a first bare-bones packages.
+Which has since been adopted by a proper maintainer who has made a really
+excellent package out of it (and if you use RPostgreSQL you really do owe
+Tomoaki for all his work).
+
+I do not have time to mentor you on this, so you'd also need a mentor.
+
+Dirk
+
+(CC to gsoc-r for R/GSoC and r-sig-db to see if someone wants to mentor)
+
+ 
+| Thanks in advance.
+| 
+| Best regards,
+| Taras
+| 
+| 
+| 
+| 
+| 
+| 
+
+-- 
+Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+
+
+From tomo@k|n @end|ng |rom @t@||@k@n@z@w@-u@@c@jp  Tue Apr 23 16:00:04 2013
+From: tomo@k|n @end|ng |rom @t@||@k@n@z@w@-u@@c@jp (NISHIYAMA Tomoaki)
+Date: Tue, 23 Apr 2013 23:00:04 +0900
+Subject: [R-sig-DB] R and PostgreSQL - Writing data?
+In-Reply-To: <01a78040-44d7-44c8-bb1c-8349ddb21815@googlegroups.com>
+References: <CAMu32ACFMBa7Z-6ZepagkdsXvqxi7ObSXCa-hn0FMcLQUZ9Y+g@mail.gmail.com>
+	<CANeAVB=5Rm17sQnfvAThu0X7z3P=gOX5WcqadJjss+0J0QzBZA@mail.gmail.com>
+	<CAMu32ADVRDn=ExeAYnVn-Xv7YDhFJgAe=qAJC4ai0OaQohV3qA@mail.gmail.com>
+	<CANeAVBksja5EyLYNbCk_mz=msidSFjKU8RgCzr09-j9a5y23iQ@mail.gmail.com>
+	<f3b9eca0-6059-440d-b636-729bf05438f0@default>
+	<CAMu32ADKqtR44G6PrOm-GxkropMiuHSoNxpVn1n3rcjjVVUoLw@mail.gmail.com>
+	<20664.53299.715207.913771@max.nulle.part>
+	<B504D445-75F5-4417-A2A2-3D0CA433217D@staff.kanazawa-u.ac.jp>
+	<3521b0fc-c37d-4fae-87c2-8cb06581480b@googlegroups.com>
+	<8C603D7B-9D08-4096-91F6-752DBB72E9F8@staff.kanazawa-u.ac.jp>
+	<57135f48-c958-4908-b37c-7aa3819acd5e@googlegroups.com>
+	<B4887449-A463-4493-8B6E-ACC95928A608@staff.kanazawa-u.ac.jp>
+	<01a78040-44d7-44c8-bb1c-8349ddb21815@googlegroups.com>
+Message-ID: <C7CF6E1B-7069-47A2-85BB-890EC309C9D1@staff.kanazawa-u.ac.jp>
+
+Dear Kevin,
+
+In case you do need computation to construct the data to store in the
+database that is under normal work load, it is unlikely that 
+the way the SQL is issued dominate the overall time.
+The DBMS have to lock the record while it is accepting an access from
+one client, and during that time other clients should just wait.
+
+> Thus, I need to leave it un-specified 
+> and let postgres generate valid ids. 
+You can still let postgres generate a valid id by a specialized table
+and use it to specify the primary key.  
+There are quite a lot more of ways than what you state "I need".
+
+So, while implementing prepared statement more useful is welcome,
+I recommend not go such detail for now for your aim.
+More important are to analyze what is the real bottleneck.
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi, 
+Kanazawa, 920-0934, Japan
+
+
+On 2013/04/20, at 13:58, khoran at globalrecordings.net wrote:
+
+> 
+> 
+> On Wednesday, April 17, 2013 5:38:35 PM UTC-7, Tomoaki wrote:
+> Dear Kevin,
+> 
+>> The problem I have though is that I need to leave the primary key
+>> field un-specified so that it will fill in the key from a sequence.
+> 
+> 
+> I do not understand why you need to leave the primary key unspecified.
+> You can change the field characteristics with ALTER TABLE, ALTER SEQUENCE,
+> and so on.  To see what operation is needed you can prepare a small
+> example table and use pg_dump.
+> 
+> "row.names" are copied by dbWriteTable
+> to ensure that every record is distinguishable.
+> It is by default a text field.
+> If you need a serial primary key, you may create a new column, and compute
+> the initial values and add constraints and index. 
+> (or just alter the column may work depending on the data.frame)
+> 
+> I want to use the serial primary key provided by postgres. I intend to 
+> do parallel inserts into the table and it is not practical to have the 
+> application generate unique ids. Thus, I need to leave it un-specified 
+> and let postgres generate valid ids.  This is not really a "one time 
+> load". It needs to work under normal database usages and be very fast at 
+> the same time, to the extent possible.
+>  
+> Note that pg_dump/restore should have been very well tested by 
+> PostgreSQL developers to ensure the reliability and the speed.
+> So, it would be a very hard to invent a better method.
+> 
+>>   So, right now it executes "COPY tablename FROM", but could it be changed to grab
+>> the list of fields from the given data frame and then add them to the copy command,
+>> like so: "COPY tablename (col1, col2, ... ) FROM"?
+> 
+> 
+> What would be the calling convention of dbWriteTable, then?
+> Current one is very simple, that is,
+> dbWrtieTable(con, tablename, data.frame)
+> 
+> If you want to write the list of columns, then wouldn't 
+> it easier to make a data.frame that have only those columns?
+> Yes, that was my intention. The calling convention would be the same, 
+> just see what column names are in the given data frame
+> 
+> ( sorry for the delay, I actually sent this from my email client 2 days ago and then the bounce got sent to my junk bin, just now found it)
+>  
+> -- 
+> Tomoaki NISHIYAMA
+> 
+> Advanced Science Research Center,
+> Kanazawa University,
+> 13-1 Takara-machi, 
+> Kanazawa, 920-0934, Japan
+> 
+> 
+> On 2013/04/18, at 2:50, kho... at globalrecordings.net wrote:
+> 
+>> Tomoaki,
+>>    dbWriteTable could work, I'd not looked too closely at it before. The problem I have though is that I need to leave the primary key field un-specified so that it will fill in the key from a sequence. Using a column of NA values does not work. This could be fixed by having dbWriteTable explicitly state the list of columns given in the data frame in the COPY command.  So, right now it executes "COPY tablename FROM", but could it be changed to grab the list of fields from the given data frame and then add them to the copy command, like so: "COPY tablename (col1, col2, ... ) FROM"? Then I would not need any prepared statements though ....
+>> 
+>> Thanks
+>> 
+>> Kevin
+>> 
+>> On Tuesday, April 16, 2013 5:13:01 PM UTC-7, Tomoaki wrote:
+>> Dear Kevin,
+>> 
+>>>    The problem I'm trying to solve right now is being able to efficiently load 70 million chemical compounds into postgres. I know there are other avenues for accomplishing this, but using R is the best solution in this case. 
+>> 
+>> dbWriteTable() should be used to load all rows of a data frame to PostgreSQL.
+>> This uses a single COPY and should be much faster than calling PQexecPrepared many times.
+>> 
+>> For prepared statement in RPostgreSQL, I think we should implement some mechanism to
+>> access the prepared statement from R and make use of it by dbGetQuery or dbApply?
+>> functions.
+>> 
+>> Best regards,
+>> -- 
+>> Tomoaki NISHIYAMA
+>> 
+>> Advanced Science Research Center,
+>> Kanazawa University,
+>> 13-1 Takara-machi, 
+>> Kanazawa, 920-0934, Japan
+>> 
+>> 
+>> On 2013/04/17, at 8:19, hora... at ucr.edu wrote:
+>> 
+>>> 
+>>> Hi, I would be interested in implementing what ever is required to support prepared queries. I was thinking of allowing dbSendQuery take a data frame instead of a vector, and then prepare the query once and run it on all rows of the data frame. This is basically what RSQLite does. I have already made a quick modification to RS_PostgreSQL_pqexecParams to call PQexecPrepared instead on an already prepared statement, and that worked. So it seems its mostly a case of modifying the C code to prepare the query first and then read through the data frame calling PQexecPrepared. 
+>>>    The problem I'm trying to solve right now is being able to efficiently load 70 million chemical compounds into postgres. I know there are other avenues for accomplishing this, but using R is the best solution in this case. 
+>>>    Please let me know how I can best help, how you want things done, etc. Thanks. 
+>>> 
+>>> Kevin
+>>> 
+>>> On Thursday, December 6, 2012 6:57:22 AM UTC-8, Tomoaki wrote:
+>>> Hi, 
+>>> 
+>>> PostgreSQL have library function PQexecParams and also supports prepared statements. 
+>>> String expansion in the SQL statement is cumbersome for escaping special characters and 
+>>> therefore error prone. 
+>>> 
+>>> I just commited to the SVN repository a very simple and primitive implementation that 
+>>> allows to pass vector of characters as parameters. 
+>>> 
+>>> A sample statement is like: 
+>>> 
+>>>     res <- dbGetQuery(con, "SELECT * FROM rockdata WHERE peri > $1 AND shape < $2 LIMIT $3", c(4000, 0.2, 10)) 
+>>>     print(res) 
+>>> 
+>>> The syntax for a positional parameter is a dollar sign ($) followed by digits 
+>>> rather than a colon followed by digits in PostgreSQL. 
+>>> http://www.postgresql.org/docs/9.2/static/sql-syntax-lexical.html#SQL-SYNTAX-SPECIAL-CHARS 
+>>> 
+>>> This mechanism is required for the support of prepared statements. 
+>>> It is nicer if I could make automatic conversions for various type and binary transfer, 
+>>> but this is not implemented right now. 
+>>> So all parameters are simply passed as strings at the moment. 
+>>> 
+>>> Note this is the very initial implementation and the interface may change. 
+>>> 
+>>> Any enhancement, feedback, or test case/program is welcome. 
+>>> Especially, on what would be the best interface/syntax. 
+>>> 
+>>> Best regards, 
+>>> -- 
+>>> Tomoaki NISHIYAMA 
+>>> 
+>>> Advanced Science Research Center, 
+>>> Kanazawa University, 
+>>> 13-1 Takara-machi, 
+>>> Kanazawa, 920-0934, Japan 
+>>> 
+>>> 
+>>> On 2012/12/01, at 0:26, Dirk Eddelbuettel wrote: 
+>>> 
+>>> > 
+>>> > On 30 November 2012 at 15:05, James David Smith wrote: 
+>>> > | Hi all, 
+>>> > | 
+>>> > | Sorry for the thread re-activation. I was wondering if anyone has 
+>>> > | successfully used the syntax below with the library RPostgreSQL? 
+>>> > 
+>>> > Nope. 
+>>> > 
+>>> > I always expand the strings explicitly. It would be news to me of that 
+>>> > worked.  Good news, for sure, but still news... 
+>>> > 
+>>> > Dirk 
+>>> > 
+>>> > 
+>>> > | dbGetQuery(con, "update foo set sal = :1 where empno = :2", 
+>>> > |            data = dat[,c("SAL","EMPNO")]) 
+>>> > | 
+>>> > | I've been messing about with it but can't get it to work. I get the error: 
+>>> > | 
+>>> > | Error in postgresqlQuickSQL(conn, statement, ...) : 
+>>> > |   unused argument(s) (data = list(bc = c(NA, NA, NA etc. 
+>>> > | 
+>>> > | Thanks 
+>>> > | 
+>>> > | James 
+>>> > | 
+>>> > | 
+>>> > | 
+>>> > | On 28 September 2012 17:13, Denis Mukhin <denis.x... at oracle.com> wrote: 
+>>> > | > James, 
+>>> > | > 
+>>> > | > I have never tried RPostgreSQL before but in ROracle which is also a DBI based interface you can do something like this: 
+>>> > | > 
+>>> > | > library(ROracle) 
+>>> > | > con <- dbConnect(Oracle(), "scott", "tiger") 
+>>> > | > dbGetQuery(con, "create table foo as select * from emp") 
+>>> > | > 
+>>> > | > dat <- dbGetQuery(con, "select * from foo") 
+>>> > | > dat$SAL <- dat$SAL*10 
+>>> > | > dbGetQuery(con, "update foo set sal = :1 where empno = :2", 
+>>> > | >            data = dat[,c("SAL","EMPNO")]) 
+>>> > | > dbCommit(con) 
+>>> > | > dbGetQuery(con, "select * from foo") 
+>>> > | > 
+>>> > | > dbGetQuery(con, "drop table foo purge") 
+>>> > | > dbDisconnect(con) 
+>>> > | > 
+>>> > | > Denis 
+>>> > | > 
+>>> > | > -----Original Message----- 
+>>> > | > From: Sean Davis [mailto:sda... at mail.nih.gov] 
+>>> > | > Sent: Friday, September 28, 2012 11:43 AM 
+>>> > | > To: James David Smith 
+>>> > | > Cc: r-si... at r-project.org 
+>>> > | > Subject: Re: [R-sig-DB] R and PostgreSQL - Writing data? 
+>>> > | > 
+>>> > | > On Fri, Sep 28, 2012 at 10:36 AM, James David Smith <james.da... at gmail.com> wrote: 
+>>> > | >> Hi Sean, 
+>>> > | >> 
+>>> > | >> Thanks for the reply. I'm familiar with UPDATE queries when working in 
+>>> > | >> PostgreSQL, but not from within R. Would it look something like this? 
+>>> > | >> 
+>>> > | >> dbWriteTable(con, " UPDATE table SET ucam_no2 = 
+>>> > | >> 'ucam_no2$interpolated_data' ") 
+>>> > | >> 
+>>> > | >> My problem is how to get the R data 'within' my SQL statement I think. 
+>>> > | > 
+>>> > | > To do an update, you'll need to loop through your data.frame and issue a dbSendQuery().  To create the SQL string, I often use something 
+>>> > | > like: 
+>>> > | > 
+>>> > | > sprintf("UPDATE originalTable SET ucam_no2=%f WHERE originalTable.id = %d",....) 
+>>> > | > 
+>>> > | > You can't do this in one step, unfortunately.  This is how UPDATE works and has nothing to do with R. 
+>>> > | > 
+>>> > | > Sean 
+>>> > | > 
+>>> > | > 
+>>> > | >> 
+>>> > | >> On 28 September 2012 15:19, Sean Davis <sda... at mail.nih.gov> wrote: 
+>>> > | >>> On Fri, Sep 28, 2012 at 10:14 AM, James David Smith 
+>>> > | >>> <james.da... at gmail.com> wrote: 
+>>> > | >>>> Dear all, 
+>>> > | >>>> 
+>>> > | >>>> Sorry if this isn't quite the right place, but it's the first time 
+>>> > | >> SendSave NowDiscardDraft autosaved at 15:36 (0 minutes ago) 33% full 
+>>> > | >> Using 3.4 GB of your 10.1 GB 
+>>> > | >> ?2012 Google - Terms & Privacy 
+>>> > | >> Last account activity: 50 minutes ago 
+>>> > | >> Details 
+>>> > | >> People (2) 
+>>> > | >> Sean Davis 
+>>> > | >> Add to circles 
+>>> > | >> 
+>>> > | >> Show details 
+>>> > | >> Ads ? Why these ads? 
+>>> > | >> Big Data Too Slow? 
+>>> > | >> Real-Time Analytics for Big Data. Visual Drag & Drop UI. Quick & Easy 
+>>> > | >> PentahoBigData.com Talend Open Source ESB Open Source ESB Based on 
+>>> > | >> Apache CXF and Apache Camel. Free Download! 
+>>> > | >> www.talend.com/Free_ESB_Software 
+>>> > | >> Warp I/O for SQL Server 
+>>> > | >> Speed SQL Server performance 3x Faster I/O, reduced storage 
+>>> > | >> www.confio.com/warp-io Storage Container Sussex Ex-Shipping Containers 
+>>> > | >> Sale & Hire Storage Container 0800 043 6311 
+>>> > | >> www.CsShippingContainers.co.uk More about... 
+>>> > | >> MS Access Database SQL ? 
+>>> > | >> Database ? 
+>>> > | >> Excel Database Query ? 
+>>> > | >> Oracle Database Problems ? 
+>>> > | >> 
+>>> > | >>>> I've posted here. My issue is to do with writing to a PostgreSQL 
+>>> > | >>>> database from within R. My situation is best explained by some R 
+>>> > | >>>> code to start: 
+>>> > | >>>> 
+>>> > | >>>> #Connect to the database 
+>>> > | >>>> con <- dbConnect(PostgreSQL(), user="postgres", password="password", 
+>>> > | >>>> dbname="database") 
+>>> > | >>>> 
+>>> > | >>>> #Get some data out of the database. 
+>>> > | >>>> ucam_no2$original_data <- dbGetQuery(con, "select ucam_no2 FROM 
+>>> > | >>>> table") 
+>>> > | >>>> 
+>>> > | >>>> This returns say 10000 rows of data, but there is only data in about 
+>>> > | >>>> half of those rows. What I want to do is interpolate the missing 
+>>> > | >>>> data so I do this: 
+>>> > | >>>> 
+>>> > | >>>> #Generate some data 
+>>> > | >>>> ucam_no2$interpolated_data <- na.approx(ucam_data$ucam_no2, na.rm = 
+>>> > | >>>> FALSE) 
+>>> > | >>>> 
+>>> > | >>>> This works well and I now have 10000 rows of data with no empty cells. 
+>>> > | >>>> I now want to write this back into my PostgresSQL database. Into the 
+>>> > | >>>> same row that I took the data from in the first place. But I don't 
+>>> > | >>>> know how. I can write to a new table with something like the below, 
+>>> > | >>>> but what I'd really like to do is put the data back into the table I 
+>>> > | >>>> got it from. 
+>>> > | >>>> 
+>>> > | >>>> # Try to write the data back 
+>>> > | >>>> dbWriteTable(con, "new_data", ucam_no2$interpolated_data) 
+>>> > | >>> 
+>>> > | >>> Hi, James. 
+>>> > | >>> 
+>>> > | >>> You'll need to look into doing a SQL UPDATE.  That is the standard 
+>>> > | >>> way to "put data back into the table I got it from". 
+>>> > | >>> 
+>>> > | >>> Sean 
+>>> > | > 
+>>> > | > _______________________________________________ 
+>>> > | > R-sig-DB mailing list -- R Special Interest Group R-si... at r-project.org https://stat.ethz.ch/mailman/listinfo/r-sig-db 
+>>> > | > 
+>>> > | > _______________________________________________ 
+>>> > | > R-sig-DB mailing list -- R Special Interest Group 
+>>> > | > R-si... at r-project.org 
+>>> > | > https://stat.ethz.ch/mailman/listinfo/r-sig-db 
+>>> > | 
+>>> > | _______________________________________________ 
+>>> > | R-sig-DB mailing list -- R Special Interest Group 
+>>> > | R-si... at r-project.org 
+>>> > | https://stat.ethz.ch/mailman/listinfo/r-sig-db 
+>>> > 
+>>> > -- 
+>>> > Dirk Eddelbuettel | e... at debian.org | http://dirk.eddelbuettel.com   
+>>> > 
+>>> > _______________________________________________ 
+>>> > R-sig-DB mailing list -- R Special Interest Group 
+>>> > R-si... at r-project.org 
+>>> > https://stat.ethz.ch/mailman/listinfo/r-sig-db 
+>>> 
+>> 
+>> 
+>> -- 
+>> You received this message because you are subscribed to the Google Groups "RPostgreSQL Development and Discussion List" group.
+>> To unsubscribe from this group and stop receiving emails from it, send an email to rpostgresql-d... at googlegroups.com.
+>> For more options, visit https://groups.google.com/groups/opt_out.
+>>  
+>>  
+> 
+> 
+> -- 
+> You received this message because you are subscribed to the Google Groups "RPostgreSQL Development and Discussion List" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to rpostgresql-dev+unsubscribe at googlegroups.com.
+> For more options, visit https://groups.google.com/groups/opt_out.
+>  
+>  
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From chr|@@h@co|burn @end|ng |rom gm@||@com  Thu May  9 14:48:36 2013
+From: chr|@@h@co|burn @end|ng |rom gm@||@com (Chris Colburn)
+Date: Thu, 9 May 2013 05:48:36 -0700
+Subject: [R-sig-DB] RODBC error when connecting to postgres
+Message-ID: <CAPOKgUwP60FQNT+a1xd8K19vHyyo2heg9LGdk+K9KNYoU10x9Q@mail.gmail.com>
+
+Hello All,
+
+I?m trying to connect via ODBC to a postgres database. Although I?ve been
+able to test my ODBC configurations using isql I am now getting the
+following error in R.  This seems like a memory issue, but cannot tell if
+the ?calloc? error is a red herring.  Let me know if you need any more
+information.  Many thanks in advance!
+
+> library(RODBC)> myconn <- odbcConnect("postgres_dsn", uid="test",
+pwd="<PASSWD>")
+> sqlQuery(myconn,"select count(*) from test_table;")
+Error in odbcQuery(channel, query, rows_at_time) :  'Calloc' could not
+allocate memory (18446744073709551616 of 22816 bytes)
+
+> versionplatform       x86_64-suse-linux-gnu
+arch           x86_64
+os             linux-gnu
+system         x86_64, linux-gnu
+status
+major          3
+minor          0.0
+year           2013
+month          04
+day            03
+svn rev        62481
+language       R
+version.string R version 3.0.0 (2013-04-03)
+nickname       Masked Marvel
+
+Any help that you can provide is greatly appreciate, and I will try to
+respond as quickly as possible.
+
+Very Sincerely,
+Chris
+
+	[[alternative HTML version deleted]]
+
+
+
+From edd @end|ng |rom deb|@n@org  Thu May  9 15:12:43 2013
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Thu, 9 May 2013 08:12:43 -0500
+Subject: [R-sig-DB] RODBC error when connecting to postgres
+In-Reply-To: <CAPOKgUwP60FQNT+a1xd8K19vHyyo2heg9LGdk+K9KNYoU10x9Q@mail.gmail.com>
+References: <CAPOKgUwP60FQNT+a1xd8K19vHyyo2heg9LGdk+K9KNYoU10x9Q@mail.gmail.com>
+Message-ID: <20875.41163.859193.137787@max.nulle.part>
+
+
+On 9 May 2013 at 05:48, Chris Colburn wrote:
+| Hello All,
+| 
+| I?m trying to connect via ODBC to a postgres database. Although I?ve been
+| able to test my ODBC configurations using isql I am now getting the
+| following error in R.  This seems like a memory issue, but cannot tell if
+| the ?calloc? error is a red herring.  Let me know if you need any more
+| information.  Many thanks in advance!
+| 
+| > library(RODBC)> myconn <- odbcConnect("postgres_dsn", uid="test",
+| pwd="<PASSWD>")
+| > sqlQuery(myconn,"select count(*) from test_table;")
+| Error in odbcQuery(channel, query, rows_at_time) :  'Calloc' could not
+| allocate memory (18446744073709551616 of 22816 bytes)
+
+That sort of rings a bell.  As the number is HUGE it could be a type
+mismatch.  Are you sure you are not mixing 32 and 64 bit libraries?
+
+Also note that there is a _native_ connection package in RPostgreSQL which
+you could try.
+
+Dirk
+
+| 
+| > versionplatform       x86_64-suse-linux-gnu
+| arch           x86_64
+| os             linux-gnu
+| system         x86_64, linux-gnu
+| status
+| major          3
+| minor          0.0
+| year           2013
+| month          04
+| day            03
+| svn rev        62481
+| language       R
+| version.string R version 3.0.0 (2013-04-03)
+| nickname       Masked Marvel
+| 
+| Any help that you can provide is greatly appreciate, and I will try to
+| respond as quickly as possible.
+| 
+| Very Sincerely,
+| Chris
+| 
+| 	[[alternative HTML version deleted]]
+| 
+| 
+| ----------------------------------------------------------------------
+| _______________________________________________
+| R-sig-DB mailing list -- R Special Interest Group
+| R-sig-DB at r-project.org
+| https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+-- 
+Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+
+

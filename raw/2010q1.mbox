@@ -1,0 +1,3252 @@
+From m@|||ng||@t@honeypot @end|ng |rom gm@||@com  Tue Jan  5 03:02:50 2010
+From: m@|||ng||@t@honeypot @end|ng |rom gm@||@com (Steve Lianoglou)
+Date: Mon, 4 Jan 2010 21:02:50 -0500
+Subject: [R-sig-DB] Managing transactions with RSQLite?
+Message-ID: <bbdc7ed01001041802q2384a83bqaa77a6145d90a23b@mail.gmail.com>
+
+Hi all,
+
+I'm sorry if the answer is obvious, but my searches haven't been
+bearing fruit. I'm trying to wrap a large "insert into" query into a
+transaction to optimize its speed. I have something like so:
+
+  dbGetPreparedQuery(conn, "INSERT INTO restriction_read (id, nhits)
+VALUES(?, ?)",
+                     bind.data=counts.df)
+
+where:
+  * `conn` is my sqlite connection
+  * `counts.df` is my data.frame with id and nhits colums
+
+`counts.df` can be several 100k to 1 million rows.
+
+I thought this would wrap the inserts into a transaction, but I just
+happened to notice that a "mydb.sqlite3-journal" file is being created
+and removed lots of times on my file system while R is running this
+query (upwards of 30mins), so I'm guessing the queries are being
+executed 1 at a time, and not wrapped into a transaction.
+
+Am I correct? If so, what's the appropriate way to handle transactions
+(if any) using RSQLite?
+
+BTW, I'm using RSQLite_0.8-0
+
+Thanks,
+-steve
+
+-- 
+Steve Lianoglou
+Graduate Student: Computational Systems Biology
+ | Memorial Sloan-Kettering Cancer Center
+ | Weill Medical College of Cornell University
+Contact Info: http://cbio.mskcc.org/~lianos/contact
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Tue Jan  5 06:37:49 2010
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Mon, 04 Jan 2010 21:37:49 -0800
+Subject: [R-sig-DB] Managing transactions with RSQLite?
+In-Reply-To: <bbdc7ed01001041802q2384a83bqaa77a6145d90a23b@mail.gmail.com>
+References: <bbdc7ed01001041802q2384a83bqaa77a6145d90a23b@mail.gmail.com>
+Message-ID: <4B42D02D.3040405@userprimary.net>
+
+On 1/4/10 6:02 PM, Steve Lianoglou wrote:
+> Hi all,
+> 
+> I'm sorry if the answer is obvious, but my searches haven't been
+> bearing fruit. I'm trying to wrap a large "insert into" query into a
+> transaction to optimize its speed. I have something like so:
+> 
+>   dbGetPreparedQuery(conn, "INSERT INTO restriction_read (id, nhits)
+> VALUES(?, ?)",
+>                      bind.data=counts.df)
+> 
+> where:
+>   * `conn` is my sqlite connection
+>   * `counts.df` is my data.frame with id and nhits colums
+> 
+> `counts.df` can be several 100k to 1 million rows.
+> 
+> I thought this would wrap the inserts into a transaction, but I just
+> happened to notice that a "mydb.sqlite3-journal" file is being created
+> and removed lots of times on my file system while R is running this
+> query (upwards of 30mins), so I'm guessing the queries are being
+> executed 1 at a time, and not wrapped into a transaction.
+> 
+> Am I correct? If so, what's the appropriate way to handle transactions
+> (if any) using RSQLite?
+
+Try doing:
+
+  dbBeginTransaction(db)
+  ##  insert here
+  dbCommit(db)
+
++ seth
+
+
+
+From m@|||ng||@t@honeypot @end|ng |rom gm@||@com  Tue Jan  5 16:20:08 2010
+From: m@|||ng||@t@honeypot @end|ng |rom gm@||@com (Steve Lianoglou)
+Date: Tue, 5 Jan 2010 10:20:08 -0500
+Subject: [R-sig-DB] Managing transactions with RSQLite?
+In-Reply-To: <4B42D02D.3040405@userprimary.net>
+References: <bbdc7ed01001041802q2384a83bqaa77a6145d90a23b@mail.gmail.com>
+	<4B42D02D.3040405@userprimary.net>
+Message-ID: <bbdc7ed01001050720icbc298ai9c7cfac136fd2107@mail.gmail.com>
+
+Hi,
+
+On Tue, Jan 5, 2010 at 12:37 AM, Seth Falcon <seth at userprimary.net> wrote:
+<snip>
+> Try doing:
+>
+> ?dbBeginTransaction(db)
+> ?## ?insert here
+> ?dbCommit(db)
+</snip>
+
+Wow ... what a weird name for a function that handles database transactions ...
+
+Yeesh, that's embarrassing ... not sure how I missed that.
+
+Thanks for the tip,
+
+-steve
+
+-- 
+Steve Lianoglou
+Graduate Student: Computational Systems Biology
+ | Memorial Sloan-Kettering Cancer Center
+ | Weill Medical College of Cornell University
+Contact Info: http://cbio.mskcc.org/~lianos/contact
+
+
+
+From @p|uque @end|ng |rom gm@||@com  Wed Jan 13 05:42:55 2010
+From: @p|uque @end|ng |rom gm@||@com (Sebastian P. Luque)
+Date: Tue, 12 Jan 2010 22:42:55 -0600
+Subject: [R-sig-DB] RPostgreSQL driver timestamp data type mapping
+Message-ID: <877hrmobsg.fsf@kolob.sebmags.homelinux.org>
+
+Hi,
+
+Using the RPostgreSQL driver to access a view on a PostgreSQL 8.4
+database:
+
+library(RPostgreSQL)
+m <- dbDriver("PostgreSQL")
+con <- dbConnect(m, user="me", password="pwd", dbname="dbname")
+qry <- "SELECT * FROM mytable"
+rs <- dbSendQuery(con, qry)
+
+Fields corresponding to timestamp data type are mapped to POSIXct, as
+shown by dbColumnInfo():
+
+        name    Sclass      type len precision scale nullOK
+...
+...
+8  date_time   POSIXct TIMESTAMP   8        -1    -1   TRUE
+
+I'd like to have a bit more control over this conversion, as it
+currently results in the POSIXct object having the time zone of my
+locale, whereas I need to set it to GMT.  Reading the DBI manual, I
+can't see how this could be done.  Any pointers would be appreciated.
+Thanks.
+
+
+Cheers,
+
+-- 
+Seb
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Wed Jan 13 08:09:57 2010
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Wed, 13 Jan 2010 07:09:57 +0000 (GMT)
+Subject: [R-sig-DB] RPostgreSQL driver timestamp data type mapping
+In-Reply-To: <877hrmobsg.fsf@kolob.sebmags.homelinux.org>
+References: <877hrmobsg.fsf@kolob.sebmags.homelinux.org>
+Message-ID: <alpine.LFD.2.00.1001130705370.23279@gannet.stats.ox.ac.uk>
+
+On Tue, 12 Jan 2010, Sebastian P. Luque wrote:
+
+> Hi,
+>
+> Using the RPostgreSQL driver to access a view on a PostgreSQL 8.4
+> database:
+>
+> library(RPostgreSQL)
+> m <- dbDriver("PostgreSQL")
+> con <- dbConnect(m, user="me", password="pwd", dbname="dbname")
+> qry <- "SELECT * FROM mytable"
+> rs <- dbSendQuery(con, qry)
+>
+> Fields corresponding to timestamp data type are mapped to POSIXct, as
+> shown by dbColumnInfo():
+>
+>        name    Sclass      type len precision scale nullOK
+> ...
+> ...
+> 8  date_time   POSIXct TIMESTAMP   8        -1    -1   TRUE
+>
+> I'd like to have a bit more control over this conversion, as it
+> currently results in the POSIXct object having the time zone of my
+> locale,
+
+Not really: POSIXct times are absolute times: it is when they are 
+displayed that you see the locale.  So just add a tzone attribute to 
+the result, as in
+
+> x <- Sys.time()
+> x
+[1] "2010-01-13 07:07:26 GMT"
+> attr(x, "tzone") <- "PST8DST"
+> x
+[1] "2010-01-12 23:07:26 PST"
+> attr(x, "tzone") <- NULL
+> x
+[1] "2010-01-13 07:07:26 GMT"
+
+
+> whereas I need to set it to GMT.  Reading the DBI manual, I
+> can't see how this could be done.  Any pointers would be appreciated.
+> Thanks.
+>
+>
+> Cheers,
+>
+> -- 
+> Seb
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From @p|uque @end|ng |rom gm@||@com  Wed Jan 13 12:47:03 2010
+From: @p|uque @end|ng |rom gm@||@com (Sebastian P. Luque)
+Date: Wed, 13 Jan 2010 05:47:03 -0600
+Subject: [R-sig-DB] RPostgreSQL driver timestamp data type mapping
+In-Reply-To: <alpine.LFD.2.00.1001130705370.23279@gannet.stats.ox.ac.uk>
+	(Brian Ripley's message of "Wed, 13 Jan 2010 07:09:57 +0000 (GMT)")
+References: <877hrmobsg.fsf@kolob.sebmags.homelinux.org>
+	<alpine.LFD.2.00.1001130705370.23279@gannet.stats.ox.ac.uk>
+Message-ID: <87r5pumdl4.fsf@kolob.sebmags.homelinux.org>
+
+On Wed, 13 Jan 2010 07:09:57 +0000 (GMT),
+Prof Brian Ripley <ripley-+7o2aNKnwVPQzY9nttDBhA at public.gmane.org> wrote:
+
+[...]
+
+> Not really: POSIXct times are absolute times: it is when they are
+> displayed that you see the locale.  So just add a tzone attribute to
+> the result, as in
+
+> > x <- Sys.time()
+> > x
+> [1] "2010-01-13 07:07:26 GMT"
+> > attr(x, "tzone") <- "PST8DST"
+> > x
+> [1] "2010-01-12 23:07:26 PST"
+> > attr(x, "tzone") <- NULL
+> > x
+> [1] "2010-01-13 07:07:26 GMT"
+
+Does setting tzone=NULL have the same effect as setting it to "GMT", in
+that daylight savings are no longer relevant?  This is the only reason I
+wanted to set it "GMT", and avoid daylight savings issues that I don't
+need to deal with.  Usually I do this starting from a character vector,
+as in:
+
+as.POSIXct(strptime("2010-01-13 01:00:00", "%Y-%m-%d %H:%M:%S), tz="GMT")
+
+Thanks,
+
+-- 
+Seb
+
+
+
+From k@r| @end|ng |rom hu|t|@@org  Wed Jan 13 12:13:31 2010
+From: k@r| @end|ng |rom hu|t|@@org (Karl Ove Hufthammer)
+Date: Wed, 13 Jan 2010 12:13:31 +0100
+Subject: [R-sig-DB] R crash when closing DB connection from command-line
+Message-ID: <MPG.25b7c9429e12fe6a9896cd@news.gmane.org>
+
+I'm experiencing a rather curious crash related to accessing a database 
+in R 2.10.1 on Windows. I'm using RODBC on an Oracle database, which 
+works fine, but closing the database connection from the command-line 
+leads to a crash:
+
+library(RODBC)
+db = odbcConnect("dbname", uid="username", pwd="password")
+close(db)
+
+When I run the above lines inside R, everything is fine. If I store the 
+commands in a file and then source the file, everything is fine. But if 
+I run the file using
+
+Rterm --file=test.R
+
+RTerm.exe crashes, with the following Windows error message (my 
+translation from Norwegian Nynorsk):
+
+  The instruction in "0x7c9109f9" referenced adress "0xffffffff". The
+  memory could not be "read". Click OK to terminate the program.
+
+The problem seems not to be related to the amount of time between 
+opening the connection and closing it, BTW, as it still occurs 100% of 
+the time if I add a 'Sys.sleep(5)' between 'odbcConnect' and 'close'.
+
+Any ideas that the problem could be? Here's some system information from 
+a clean start of R:
+
+> sessionInfo()
+R version 2.10.1 (2009-12-14)
+i386-pc-mingw32
+
+locale:
+[1] LC_COLLATE=Norwegian-Nynorsk_Norway.1252  LC_CTYPE=Norwegian-
+Nynorsk_Norway.1252    LC_MONETARY=Norwegian-Nynorsk_Norway.1252
+[4] LC_NUMERIC=C                              LC_TIME=Norwegian-
+Nynorsk_Norway.1252
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+>
+
+-- 
+Karl Ove Hufthammer
+
+
+
+From joh@nne@r@j@ @end|ng |rom gm@||@com  Tue Feb 16 16:08:03 2010
+From: joh@nne@r@j@ @end|ng |rom gm@||@com (johannes rara)
+Date: Tue, 16 Feb 2010 17:08:03 +0200
+Subject: [R-sig-DB] Native SQL Server driver for R?
+Message-ID: <f49fcd831002160708y7a1d863ekf040d4774baf3a2d@mail.gmail.com>
+
+Hi,
+
+Is there a native SQL Server driver for R?
+
+-J
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Tue Feb 16 17:16:55 2010
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Tue, 16 Feb 2010 16:16:55 +0000 (GMT)
+Subject: [R-sig-DB] Native SQL Server driver for R?
+In-Reply-To: <f49fcd831002160708y7a1d863ekf040d4774baf3a2d@mail.gmail.com>
+References: <f49fcd831002160708y7a1d863ekf040d4774baf3a2d@mail.gmail.com>
+Message-ID: <alpine.LFD.2.00.1002161612210.29979@gannet.stats.ox.ac.uk>
+
+On Tue, 16 Feb 2010, johannes rara wrote:
+
+> Hi,
+>
+> Is there a native SQL Server driver for R?
+
+What do you mean by 'native'.  See e.g.
+
+https://stat.ethz.ch/pipermail/r-help/2010-February/228470.html
+
+which suggests that ODBC should be regarded as 'native' (and it is 
+just as native to Redmond as SQL Server).
+
+And as you surely would have found out from your preliminary homework, 
+there is a ODBC interface for R.
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From r|or|er @end|ng |rom uch|c@go@edu  Tue Feb 16 21:06:18 2010
+From: r|or|er @end|ng |rom uch|c@go@edu (Rob Forler)
+Date: Tue, 16 Feb 2010 14:06:18 -0600
+Subject: [R-sig-DB] RODBC missing values in integer columns repost
+Message-ID: <eb472fec1002161206l5accbe23y7d6280a3d981bb91@mail.gmail.com>
+
+Hello, (this is a repost from
+http://n4.nabble.com/RODBC-missing-values-in-integer-columns-td1557679.html),
+but I get the feeling it is more appropriate to post this question in this
+mailing list.
+
+We are having some strange issues with RODBC related to integer columns.
+Whenever we do a sql query the data in a integer column is 150 actual data
+points then 150 0's then 150 actual data points then 150 0's. However, our
+database actually has numbers where the 0's are filled in. Furthermore,
+other datatypes do not have this problem: double and varchar are correct and
+do not alternate to null. Also, if we increase the rows_at_time to 1024
+there are larger gaps between the 0's and actual data. The server is a
+sybase IQ database. We have tested it on a different database sybase ASE and
+we still get this issue.
+
+For example :
+
+We have the following query
+
+sqlString = "Select ActionID, Velocity from ActionDataTable"
+
+#where ActionID is of integer type and Velocity is of double type.
+connection = odbcConnect("IQDatabase"); #this database is a sybase IQ
+database
+sqlData = sqlQuery(connection, sqlString);
+
+
+sqlData$ActionID might be 1,2,3,4,5,6,....150, 0,0,0,0,0,0,0,....,0,0,0,
+301,302,303,304,.....448,449,
+500,0,0,0...,0,0
+
+and Velocity will have data values along the whole column without these big
+areas of 0's.
+
+Thanks for the help,
+Robert Forler
+
+
+some more info
+> t(t(odbcGetInfo(connection)))
+                 [,1]
+DBMS_Name        "Adaptive Server Anywhere"
+DBMS_Ver         "12.70.0000"
+Driver_ODBC_Ver  "03.51"
+Data_Source_Name "dbname"
+Driver_Name      "Adaptive Server Anywhere"
+Driver_Ver       "09.00.0001"
+ODBC_Ver         "03.52.0000"
+Server_Name      "dbname"
+
+	[[alternative HTML version deleted]]
+
+
+
+From h|w|ttm@nn @end|ng |rom goog|em@||@com  Wed Feb 17 15:06:42 2010
+From: h|w|ttm@nn @end|ng |rom goog|em@||@com (H. Felix Wittmann)
+Date: Wed, 17 Feb 2010 15:06:42 +0100
+Subject: [R-sig-DB] TSSQLite
+Message-ID: <4B7BF7F2.50107@gmail.com>
+
+Hi Paul,
+
+thanks for your excellent package family centered around 'TSdbi'. In the 
+latest version I've run into a bug (or is it just me?).  The bug 
+concerns the generic function TSexists (and by extension TSreplace).
+
+I am  using the following *setup*
+
+    /Ubuntu Karmic Koala/
+    /R version 2.10.1 (2009-12-14)/
+
+    /'TSSQLite' version 2009.10-1/
+    /'TSdbi' version 2009.11-1/
+
+    /'RMySQL' version 0.7-4/
+
+    /'timeSeries' version 2110.87/
+
+
+
+I have noticed that in the /TSSQLite/-package there is no method defined 
+for the the generic function TSexists. I am not sure whether this is 
+intended.
+
+If I load a connection to a database, and run */TSexists("xyz", con)/*, 
+where xyz is not yet in the database I get the following error
+
+    Error in TSdbi:::TSgetSQL(serIDs, con, TSrepresentation =
+    TSrepresentation,  :
+       Meta lookup for series xyz table result empty. Series does not
+    exist on database.
+    Calls: TSexists ... <Anonymous> -> TSget -> TSget -> .local ->
+    <Anonymous>
+
+
+
+I can make it work using the following patch
+
+    setMethod("TSexists",   signature(serIDs="character",
+    con="SQLiteConnection"),
+        definition=function(serIDs, con, ...) {
+
+
+         sqlQuery <- paste("select count(*) from meta where id = '",
+    serIDs , "'" , sep ="")
+
+         out <- new("logicalId",as.logical(dbGetQuery (con,sqlQuery)))
+
+         return(out)
+         })
+
+
+
+
+best regards
+
+Felix
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From tech_dev @end|ng |rom w||d|nte||ect@com  Sun Feb 21 05:20:05 2010
+From: tech_dev @end|ng |rom w||d|nte||ect@com (Alex Mandel)
+Date: Sat, 20 Feb 2010 20:20:05 -0800
+Subject: [R-sig-DB] RSQLite load extension
+Message-ID: <4B80B475.108@wildintellect.com>
+
+Does anyone have a working example of loading an SQLite extension.
+(There was a similar email in Nov but no answer)
+
+I've tried the following, and it doesn't throw any errors during the
+load, but none of the extension functions work those throw errors.
+
+library(RSQLite)
+m <- dbDriver("SQLite")
+con <- dbConnect(m, dbname = "test.db",loadable.extensions = TRUE)
+sql <- "SELECT load_extension('libspatialite.so')"
+rs <- dbSendQuery(con, sql)
+dbGetException(con)
+dbClearResult(rs)
+
+sql <- "SELECT id, AsText(geom) as points FROM locations Limit 10;"
+dtest <- dbGetQuery(con, sql)
+Error in sqliteExecStatement(con, statement, bind.data) :
+  RS-DBI driver: (error in statement: no such function: AsText)
+
+This query works fine via other SQLite interfaces.
+
+Thanks,
+Alex
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Sun Feb 21 11:21:54 2010
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Sun, 21 Feb 2010 05:21:54 -0500
+Subject: [R-sig-DB] RSQLite load extension
+In-Reply-To: <4B80B475.108@wildintellect.com>
+References: <4B80B475.108@wildintellect.com>
+Message-ID: <971536df1002210221r3fed7eb7w55d997a1a3d602cc@mail.gmail.com>
+
+sqldf in the sqldf package automatically loads spatialite if its in
+its path.   That feature has only been tested on Windows but it works
+at least there.  Here is the source code that is used in sqldf -- the
+spatialite feature has only been tested on Windows and I have omitted
+the part here  that checks whether spatialite is actually present or
+not:
+
+   m <- dbDriver("SQLite")
+   connection <- dbConnect(m, dbname = dbname, loadable.extensions = TRUE)
+   s <- sprintf("select load_extension('%s')", dll)
+   dbGetQuery(connection, s)
+
+References:
+example of using spatialite from sqldf:
+http://code.google.com/p/sqldf/#Example_14._Use_of_spatialite_library_functions
+
+important bug to be aware of in spatialite 2.3.1:
+https://groups.google.com/group/spatialite-users/msg/182f1f629c922607
+
+sqldf home page:
+http://sqldf.googlecode.com
+
+On Sat, Feb 20, 2010 at 11:20 PM, Alex Mandel
+<tech_dev at wildintellect.com> wrote:
+> Does anyone have a working example of loading an SQLite extension.
+> (There was a similar email in Nov but no answer)
+>
+> I've tried the following, and it doesn't throw any errors during the
+> load, but none of the extension functions work those throw errors.
+>
+> library(RSQLite)
+> m <- dbDriver("SQLite")
+> con <- dbConnect(m, dbname = "test.db",loadable.extensions = TRUE)
+> sql <- "SELECT load_extension('libspatialite.so')"
+> rs <- dbSendQuery(con, sql)
+> dbGetException(con)
+> dbClearResult(rs)
+>
+> sql <- "SELECT id, AsText(geom) as points FROM locations Limit 10;"
+> dtest <- dbGetQuery(con, sql)
+> Error in sqliteExecStatement(con, statement, bind.data) :
+> ?RS-DBI driver: (error in statement: no such function: AsText)
+>
+> This query works fine via other SQLite interfaces.
+>
+> Thanks,
+> Alex
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From nb@umberger @end|ng |rom y@hoo@com  Mon Feb 22 12:15:40 2010
+From: nb@umberger @end|ng |rom y@hoo@com (Nick Baumberger)
+Date: Mon, 22 Feb 2010 03:15:40 -0800 (PST)
+Subject: [R-sig-DB] RSQLite load extension
+Message-ID: <827246.82822.qm@web36208.mail.mud.yahoo.com>
+
+Hi there,
+
+this response brings me a bit further but there is still missing some piece in the puzzle. I can now load the 'main' dll (libspatialite-2.dll), and RSQLite is finding the function stubs - however they don't do anything - I guess because the underlying dll's are yet not loaded. And funnily I can't load these dll's (libgeos-3-0-0.dll, libgeos_c-1.dll, libproj-0.dll) in the same manner as libspatialite-2.dll. (They are in the same directory which is on the path.)
+
+So what I get on Windows XP using R 2.9.1 is
+
+
+library(SQLiteMap)
+library(RSQLite)
+dbDisconnect(con)
+sqli.db <- system.file("sqlimaps/sids.db3", package="SQLiteMap")
+drv <- dbDriver("SQLite")
+con <- dbConnect(drv, dbname = sqli.db, loadable.extensions = TRUE)
+s <- sprintf("select load_extension('%s')","libspatialite-2.dll")
+dbGetQuery(con,s)
+
+sql <- 'select isempty(sids.geom) from sids where gid <= 10'
+dbGetQuery(con,sql)
+  isempty(sids.geom)
+1                  -1
+2                  -1
+..
+
+sql <- 'select centroid(sids.geom) from sids where gid <= 10'
+dbGetQuery(con,sql)
+  centroid(sids.geom)
+1                 <NA>
+2                 <NA>
+..
+
+.. nice that I don't get an error, but the result is a bit empty ! This I get when I try to load the other dll's ..
+
+sql <- 'SELECT load_extension("libgeos-3-0-0.dll")'
+dbGetQuery(con, sql)
+Fehler in sqliteFetch(rs, n = -1, ...) : 
+  RSQLite driver: (RS_SQLite_fetch: failed first step: The specified procedure could not be found.
+
+unfortunately the links in Gabor's mail don't help the R users
+any idea ??
+
+regards
+Nick
+
+
+
+
+
+
+
+--- On Sun, 2/21/10, Gabor Grothendieck <ggrothendieck at gmail.com> wrote:
+
+> From: Gabor Grothendieck <ggrothendieck at gmail.com>
+> Subject: Re: [R-sig-DB] RSQLite load extension
+> To: tech at wildintellect.com
+> Cc: r-sig-db at stat.math.ethz.ch
+> Date: Sunday, February 21, 2010, 12:21 AM
+> sqldf in the sqldf package
+> automatically loads spatialite if its in
+> its path.   That feature has only been
+> tested on Windows but it works
+> at least there.  Here is the source code that is used
+> in sqldf -- the
+> spatialite feature has only been tested on Windows and I
+> have omitted
+> the part here  that checks whether spatialite is
+> actually present or
+> not:
+> 
+>    m <- dbDriver("SQLite")
+>    connection <- dbConnect(m, dbname =
+> dbname, loadable.extensions = TRUE)
+>    s <- sprintf("select
+> load_extension('%s')", dll)
+>    dbGetQuery(connection, s)
+> 
+> References:
+> example of using spatialite from sqldf:
+> http://code.google.com/p/sqldf/#Example_14._Use_of_spatialite_library_functions
+> 
+> important bug to be aware of in spatialite 2.3.1:
+> https://groups.google.com/group/spatialite-users/msg/182f1f629c922607
+> 
+> sqldf home page:
+> http://sqldf.googlecode.com
+> 
+> On Sat, Feb 20, 2010 at 11:20 PM, Alex Mandel
+> <tech_dev at wildintellect.com>
+> wrote:
+> > Does anyone have a working example of loading an
+> SQLite extension.
+> > (There was a similar email in Nov but no answer)
+> >
+> > I've tried the following, and it doesn't throw any
+> errors during the
+> > load, but none of the extension functions work those
+> throw errors.
+> >
+> > library(RSQLite)
+> > m <- dbDriver("SQLite")
+> > con <- dbConnect(m, dbname =
+> "test.db",loadable.extensions = TRUE)
+> > sql <- "SELECT load_extension('libspatialite.so')"
+> > rs <- dbSendQuery(con, sql)
+> > dbGetException(con)
+> > dbClearResult(rs)
+> >
+> > sql <- "SELECT id, AsText(geom) as points FROM
+> locations Limit 10;"
+> > dtest <- dbGetQuery(con, sql)
+> > Error in sqliteExecStatement(con, statement,
+> bind.data) :
+> >  RS-DBI driver: (error in statement: no such
+> function: AsText)
+> >
+> > This query works fine via other SQLite interfaces.
+> >
+> > Thanks,
+> > Alex
+> >
+> > _______________________________________________
+> > R-sig-DB mailing list -- R Special Interest Group
+> > R-sig-DB at stat.math.ethz.ch
+> > https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> >
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Mon Feb 22 16:25:54 2010
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Mon, 22 Feb 2010 10:25:54 -0500
+Subject: [R-sig-DB] RSQLite load extension
+In-Reply-To: <827246.82822.qm@web36208.mail.mud.yahoo.com>
+References: <827246.82822.qm@web36208.mail.mud.yahoo.com>
+Message-ID: <971536df1002220725u27477476w7e5ae83553c66563@mail.gmail.com>
+
+sqldf uses libspatiate-1.dll which is from 2.3.1 stable.  I think you
+are using the development version.
+
+You might want to use the stable version until you have it working
+since there are too many unknowns otherwise.
+
+The main dll seems to load all the others so you its unnecessary to do
+that yourself.  For example, try moving the other dll files so that it
+cannot find them.  You will get an error when you try to load the main
+dll showing that its trying to load the others.
+
+On Mon, Feb 22, 2010 at 6:15 AM, Nick Baumberger <nbaumberger at yahoo.com> wrote:
+> Hi there,
+>
+> this response brings me a bit further but there is still missing some piece in the puzzle. I can now load the 'main' dll (libspatialite-2.dll), and RSQLite is finding the function stubs - however they don't do anything - I guess because the underlying dll's are yet not loaded. And funnily I can't load these dll's (libgeos-3-0-0.dll, libgeos_c-1.dll, libproj-0.dll) in the same manner as libspatialite-2.dll. (They are in the same directory which is on the path.)
+>
+> So what I get on Windows XP using R 2.9.1 is
+>
+>
+> library(SQLiteMap)
+> library(RSQLite)
+> dbDisconnect(con)
+> sqli.db <- system.file("sqlimaps/sids.db3", package="SQLiteMap")
+> drv <- dbDriver("SQLite")
+> con <- dbConnect(drv, dbname = sqli.db, loadable.extensions = TRUE)
+> s <- sprintf("select load_extension('%s')","libspatialite-2.dll")
+> dbGetQuery(con,s)
+>
+> sql <- 'select isempty(sids.geom) from sids where gid <= 10'
+> dbGetQuery(con,sql)
+> ?isempty(sids.geom)
+> 1 ? ? ? ? ? ? ? ? ?-1
+> 2 ? ? ? ? ? ? ? ? ?-1
+> ..
+>
+> sql <- 'select centroid(sids.geom) from sids where gid <= 10'
+> dbGetQuery(con,sql)
+> ?centroid(sids.geom)
+> 1 ? ? ? ? ? ? ? ? <NA>
+> 2 ? ? ? ? ? ? ? ? <NA>
+> ..
+>
+> .. nice that I don't get an error, but the result is a bit empty ! This I get when I try to load the other dll's ..
+>
+> sql <- 'SELECT load_extension("libgeos-3-0-0.dll")'
+> dbGetQuery(con, sql)
+> Fehler in sqliteFetch(rs, n = -1, ...) :
+> ?RSQLite driver: (RS_SQLite_fetch: failed first step: The specified procedure could not be found.
+>
+> unfortunately the links in Gabor's mail don't help the R users
+> any idea ??
+>
+> regards
+> Nick
+>
+>
+>
+>
+>
+>
+>
+> --- On Sun, 2/21/10, Gabor Grothendieck <ggrothendieck at gmail.com> wrote:
+>
+>> From: Gabor Grothendieck <ggrothendieck at gmail.com>
+>> Subject: Re: [R-sig-DB] RSQLite load extension
+>> To: tech at wildintellect.com
+>> Cc: r-sig-db at stat.math.ethz.ch
+>> Date: Sunday, February 21, 2010, 12:21 AM
+>> sqldf in the sqldf package
+>> automatically loads spatialite if its in
+>> its path. ? That feature has only been
+>> tested on Windows but it works
+>> at least there. ?Here is the source code that is used
+>> in sqldf -- the
+>> spatialite feature has only been tested on Windows and I
+>> have omitted
+>> the part here ?that checks whether spatialite is
+>> actually present or
+>> not:
+>>
+>> ? ?m <- dbDriver("SQLite")
+>> ? ?connection <- dbConnect(m, dbname =
+>> dbname, loadable.extensions = TRUE)
+>> ? ?s <- sprintf("select
+>> load_extension('%s')", dll)
+>> ? ?dbGetQuery(connection, s)
+>>
+>> References:
+>> example of using spatialite from sqldf:
+>> http://code.google.com/p/sqldf/#Example_14._Use_of_spatialite_library_functions
+>>
+>> important bug to be aware of in spatialite 2.3.1:
+>> https://groups.google.com/group/spatialite-users/msg/182f1f629c922607
+>>
+>> sqldf home page:
+>> http://sqldf.googlecode.com
+>>
+>> On Sat, Feb 20, 2010 at 11:20 PM, Alex Mandel
+>> <tech_dev at wildintellect.com>
+>> wrote:
+>> > Does anyone have a working example of loading an
+>> SQLite extension.
+>> > (There was a similar email in Nov but no answer)
+>> >
+>> > I've tried the following, and it doesn't throw any
+>> errors during the
+>> > load, but none of the extension functions work those
+>> throw errors.
+>> >
+>> > library(RSQLite)
+>> > m <- dbDriver("SQLite")
+>> > con <- dbConnect(m, dbname =
+>> "test.db",loadable.extensions = TRUE)
+>> > sql <- "SELECT load_extension('libspatialite.so')"
+>> > rs <- dbSendQuery(con, sql)
+>> > dbGetException(con)
+>> > dbClearResult(rs)
+>> >
+>> > sql <- "SELECT id, AsText(geom) as points FROM
+>> locations Limit 10;"
+>> > dtest <- dbGetQuery(con, sql)
+>> > Error in sqliteExecStatement(con, statement,
+>> bind.data) :
+>> > ?RS-DBI driver: (error in statement: no such
+>> function: AsText)
+>> >
+>> > This query works fine via other SQLite interfaces.
+>> >
+>> > Thanks,
+>> > Alex
+>> >
+>> > _______________________________________________
+>> > R-sig-DB mailing list -- R Special Interest Group
+>> > R-sig-DB at stat.math.ethz.ch
+>> > https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>> >
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at stat.math.ethz.ch
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From Lu|@r @end|ng |rom h@v@|o  Mon Mar  1 14:28:16 2010
+From: Lu|@r @end|ng |rom h@v@|o (Luis Ridao Cruz)
+Date: Mon, 01 Mar 2010 13:28:16 +0000
+Subject: [R-sig-DB] ORACLE driver Ubuntu
+Message-ID: <4B8BC0F00200008700002C92@mail.elektron.fo>
+
+Hi,
+
+I already asked for help regarding the following topic. 
+I have worked on it ever since but the problem is still unsolved.
+
+I have installed an ODBC Driver for Linux (from the easySoft website)
+
+I want to connect to our database through R via:
+
+
+
+
+>library(RODBC)
+> odbcDriverConnect("SERVER=IP_address:PORT;DRIVER=ORACLE;DATABASE=MAGNUS")
+[1] -1
+Warning messages:
+1: In odbcDriverConnect("SERVER=IP_address:1521;DRIVER=ORACLE;DATABASE=MAGNUS") :
+  [RODBC] ERROR: state IM002, code 0, message [unixODBC][Driver Manager]Data source name not found, and no default driver specified
+2: In odbcDriverConnect("SERVER=IP_address:1521;DRIVER=ORACLE;DATABASE=MAGNUS") :
+  ODBC connection failed
+
+I tried several other possibilities, e.g. 
+
+> odbcDriverConnect("SERVER=oserver:PORT;DRIVER=ORACLE;DATABASE=IP_address/MAGNUS")
+ 
+but all of them fail
+
+Attached are my odbc.ini and odbcinst.ini files.
+Can anyone let me know how to fix this?
+
+
+## file odbc.ini
+[ORACLE]
+driver		= Easysoft ODBC-Oracle WP
+description		= Easysoft Oracle ODBC WP driver
+server		= oserver
+port		= 1521
+sid		= xxx.xxx.xx.xxx/MAGNUS
+user		= luisr
+password		= myPassword
+logging		= No
+logfile		= 
+enable_user_catalog		= yes
+enable_synonyms		= yes
+metadata_dont_change_case		= no
+metadata_dont_do_schema		= no
+metadata_id		= no
+limit_long		= 0
+
+## file odbcinst.ini
+[Easysoft ODBC-Oracle WP]
+Description		= Easysoft Oracle ODBC WP Driver
+Driver		= /usr/local/easysoft/oraclewp/lib/libesorawp.so
+Setup		= /usr/local/easysoft/oraclewp/lib/libesorawpS.so
+Threading		= 0
+FileUsage		= 1
+DontDLClose		= 1
+UsageCount		= 1
+
+
+Running on Ubuntu 9.10 karmic
+
+Thanks in advance
+
+
+
+From @tp @end|ng |rom p|@kor@k|@com  Tue Mar  2 14:36:07 2010
+From: @tp @end|ng |rom p|@kor@k|@com (Andrew Piskorski)
+Date: Tue, 2 Mar 2010 08:36:07 -0500
+Subject: [R-sig-DB] ORACLE driver Ubuntu
+In-Reply-To: <4B8BC0F00200008700002C92@mail.elektron.fo>
+References: <4B8BC0F00200008700002C92@mail.elektron.fo>
+Message-ID: <20100302133607.GA92279@piskorski.com>
+
+On Mon, Mar 01, 2010 at 01:28:16PM +0000, Luis Ridao Cruz wrote:
+
+> I have installed an ODBC Driver for Linux (from the easySoft website)
+> 
+> I want to connect to our database through R via:
+
+Is there any particular reason you want to use ODBC to talk to Oracle?
+Have you verified that you can connect to Oracle via other means,
+e.g., does sqlplus work?  You've installed the Oracle client libraries
+on your Linux box, right?
+
+I've never tried ODBC with Oracle so I can't help you there, but in my
+experience ROracle mostly works for basic use, and Oratcl works very well.
+
+-- 
+Andrew Piskorski <atp at piskorski.com>
+http://www.piskorski.com/
+
+
+
+From Lu|@r @end|ng |rom h@v@|o  Tue Mar  2 17:02:26 2010
+From: Lu|@r @end|ng |rom h@v@|o (Luis Ridao Cruz)
+Date: Tue, 02 Mar 2010 16:02:26 +0000
+Subject: [R-sig-DB] ORACLE driver Ubuntu
+In-Reply-To: <20100302133607.GA92279@piskorski.com>
+References: <4B8BC0F00200008700002C92@mail.elektron.fo>
+	<20100302133607.GA92279@piskorski.com>
+Message-ID: <4B8D36920200008700002CE2@mail.elektron.fo>
+
+
+sqlplus works fine and I encountered  problems with ROracle
+so I did not want to deep further.
+
+Best,
+Luis
+
+
+>>> "Andrew Piskorski" <atp at piskorski.com> 02/03/2010 13:36 >>>
+On Mon, Mar 01, 2010 at 01:28:16PM +0000, Luis Ridao Cruz wrote:
+
+> I have installed an ODBC Driver for Linux (from the easySoft website)
+> 
+> I want to connect to our database through R via:
+
+Is there any particular reason you want to use ODBC to talk to Oracle?
+Have you verified that you can connect to Oracle via other means,
+e.g., does sqlplus work?  You've installed the Oracle client libraries
+on your Linux box, right?
+
+I've never tried ODBC with Oracle so I can't help you there, but in my
+experience ROracle mostly works for basic use, and Oratcl works very well.
+
+-- 
+Andrew Piskorski <atp at piskorski.com>
+http://www.piskorski.com/
+
+
+
+From m@rc_@chw@rtz @end|ng |rom me@com  Tue Mar  2 22:31:20 2010
+From: m@rc_@chw@rtz @end|ng |rom me@com (Marc Schwartz)
+Date: Tue, 02 Mar 2010 15:31:20 -0600
+Subject: [R-sig-DB] ORACLE driver Ubuntu
+In-Reply-To: <4B8BC0F00200008700002C92@mail.elektron.fo>
+References: <4B8BC0F00200008700002C92@mail.elektron.fo>
+Message-ID: <5FF1BBA9-E8A1-4CCF-BB24-DEAC14DEADCE@me.com>
+
+Luis,
+
+The service id setting that you have in odbc.ini seems a bit strange. Typically the sid does not contain the server's IP address, but a name that corresponds to the service name designated for the Oracle server and possibly associated with a particular database on the server. This is typically where the tnsnames.ora file comes into play in order to match up with the tns listener service configuration on the Oracle server. 
+
+There is a need to have consistency in the names and configuration settings used across tnsnames.ora, odbcinst.ini and odbc.ini. 
+
+
+There is a bunch of config information on the Oracle site here:
+
+  http://download.oracle.com/docs/cd/B28359_01/gateways.111/b31042/configodbc.htm
+
+that you might find helpful.
+
+
+BTW, I believe that the Easysoft drivers are still purchased? Oracle does offer free ODBC drivers for 32 and 64 bit Linux:
+
+  http://www.oracle.com/technology/software/tech/oci/instantclient/index.html
+
+
+EasySoft also has a Getting Started Guide here:
+
+  http://www.easysoft.com/products/data_access/odbc_oracle_driver/getting_started.html
+
+and some additional technical content here:
+
+  http://www.easysoft.com/support/kb/products/odbc_oracle_driver/index.html
+
+
+You may need to contact the EasySoft folks for additional support, which you should be entitled to since you have presumably paid for their product.
+
+HTH,
+
+Marc Schwartz
+
+
+On Mar 1, 2010, at 7:28 AM, Luis Ridao Cruz wrote:
+
+> Hi,
+> 
+> I already asked for help regarding the following topic. 
+> I have worked on it ever since but the problem is still unsolved.
+> 
+> I have installed an ODBC Driver for Linux (from the easySoft website)
+> 
+> I want to connect to our database through R via:
+> 
+> 
+> 
+> 
+>> library(RODBC)
+>> odbcDriverConnect("SERVER=IP_address:PORT;DRIVER=ORACLE;DATABASE=MAGNUS")
+> [1] -1
+> Warning messages:
+> 1: In odbcDriverConnect("SERVER=IP_address:1521;DRIVER=ORACLE;DATABASE=MAGNUS") :
+>  [RODBC] ERROR: state IM002, code 0, message [unixODBC][Driver Manager]Data source name not found, and no default driver specified
+> 2: In odbcDriverConnect("SERVER=IP_address:1521;DRIVER=ORACLE;DATABASE=MAGNUS") :
+>  ODBC connection failed
+> 
+> I tried several other possibilities, e.g. 
+> 
+>> odbcDriverConnect("SERVER=oserver:PORT;DRIVER=ORACLE;DATABASE=IP_address/MAGNUS")
+> 
+> but all of them fail
+> 
+> Attached are my odbc.ini and odbcinst.ini files.
+> Can anyone let me know how to fix this?
+> 
+> 
+> ## file odbc.ini
+> [ORACLE]
+> driver		= Easysoft ODBC-Oracle WP
+> description		= Easysoft Oracle ODBC WP driver
+> server		= oserver
+> port		= 1521
+> sid		= xxx.xxx.xx.xxx/MAGNUS
+> user		= luisr
+> password		= myPassword
+> logging		= No
+> logfile		= 
+> enable_user_catalog		= yes
+> enable_synonyms		= yes
+> metadata_dont_change_case		= no
+> metadata_dont_do_schema		= no
+> metadata_id		= no
+> limit_long		= 0
+> 
+> ## file odbcinst.ini
+> [Easysoft ODBC-Oracle WP]
+> Description		= Easysoft Oracle ODBC WP Driver
+> Driver		= /usr/local/easysoft/oraclewp/lib/libesorawp.so
+> Setup		= /usr/local/easysoft/oraclewp/lib/libesorawpS.so
+> Threading		= 0
+> FileUsage		= 1
+> DontDLClose		= 1
+> UsageCount		= 1
+> 
+> 
+> Running on Ubuntu 9.10 karmic
+> 
+> Thanks in advance
+
+
+
+From jjo_ch|c@go @end|ng |rom y@hoo@com  Fri Mar  5 02:07:58 2010
+From: jjo_ch|c@go @end|ng |rom y@hoo@com (Joe O)
+Date: Thu, 4 Mar 2010 17:07:58 -0800 (PST)
+Subject: [R-sig-DB] RODBC and Oracle 11g Issue.....
+Message-ID: <171129.3973.qm@web50603.mail.re2.yahoo.com>
+
+I am running CentOS release 5.3. This is the 64 bit version.
+
+R Version is "R version 2.10.0 (2009-10-26)"
+RODBC version is "1.3-1"
+
+I have installed unix-odbc version unixODBC-2.2.14, and configured it (odbcinst.ini and odbc.ini).
+
+I've got the 11.1 Oracle instant client installed, and configured (and all the environment variables set).
+
+iSQL works:
+
+[ruser at akoyavsrv05 instantclient_11_2]$ isql -v OracleLocal parts parts
++---------------------------------------+
+| Connected!                            |
+|                                       |
+| sql-statement                         |
+| help [tablename]                      |
+| quit                                  |
+|                                       |
++---------------------------------------+
+SQL> select distinct segment from parts
++-----------------------------------------+
+| SEGMENT                                 |
++-----------------------------------------+
+| BTS                                     |
+| FABRICATIONS                            |
+| BAR STOCK                               |
+| FORGINGS                                |
+| TUBES                                   |
+| CASTINGS                                |
+| STATUS6                                 |
++-----------------------------------------+
+SQLRowCount returns -1
+7 rows fetched
+
+as does sqlplus:
+
+[ruser at akoyavsrv05 instantclient_11_2]$ ./sqlplus parts/parts at VSRV06
+
+SQL*Plus: Release 11.2.0.1.0 Production on Thu Mar 4 19:02:47 2010
+
+Copyright (c) 1982, 2009, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 10g Enterprise Edition Release 10.2.0.4.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+SQL> select distinct segment from parts;
+
+SEGMENT
+----------------------------------------
+BTS
+FABRICATIONS
+BAR STOCK
+FORGINGS
+TUBES
+CASTINGS
+STATUS6
+
+7 rows selected.
+
+SQL> 
+
+
+But R does not seem to want to work:
+
+R version 2.10.0 (2009-10-26)
+Copyright (C) 2009 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+[...]
+
+Type 'q()' to quit R.
+
+> library(RODBC)
+> channel <- odbcConnect("OracleLocal", uid="parts", pwd="parts")
+> sqlQuery(channel, "select distinct segment from parts", errors=TRUE)
+character(0)
+> sqlTables(channel)
+> 
+
+Any ideas? The sqlQuery should return 7 rows, right?
+
+Thanks in advance
+
+
+
+From m@rc_@chw@rtz @end|ng |rom me@com  Fri Mar  5 05:34:34 2010
+From: m@rc_@chw@rtz @end|ng |rom me@com (Marc Schwartz)
+Date: Thu, 04 Mar 2010 22:34:34 -0600
+Subject: [R-sig-DB] RODBC and Oracle 11g Issue.....
+In-Reply-To: <171129.3973.qm@web50603.mail.re2.yahoo.com>
+References: <171129.3973.qm@web50603.mail.re2.yahoo.com>
+Message-ID: <127C96E8-3D91-4329-BDEA-55F0959A02B7@me.com>
+
+On Mar 4, 2010, at 7:07 PM, Joe O wrote:
+
+> I am running CentOS release 5.3. This is the 64 bit version.
+> 
+> R Version is "R version 2.10.0 (2009-10-26)"
+> RODBC version is "1.3-1"
+> 
+> I have installed unix-odbc version unixODBC-2.2.14, and configured it (odbcinst.ini and odbc.ini).
+> 
+> I've got the 11.1 Oracle instant client installed, and configured (and all the environment variables set).
+> 
+> iSQL works:
+> 
+> [ruser at akoyavsrv05 instantclient_11_2]$ isql -v OracleLocal parts parts
+> +---------------------------------------+
+> | Connected!                            |
+> |                                       |
+> | sql-statement                         |
+> | help [tablename]                      |
+> | quit                                  |
+> |                                       |
+> +---------------------------------------+
+> SQL> select distinct segment from parts
+> +-----------------------------------------+
+> | SEGMENT                                 |
+> +-----------------------------------------+
+> | BTS                                     |
+> | FABRICATIONS                            |
+> | BAR STOCK                               |
+> | FORGINGS                                |
+> | TUBES                                   |
+> | CASTINGS                                |
+> | STATUS6                                 |
+> +-----------------------------------------+
+> SQLRowCount returns -1
+> 7 rows fetched
+> 
+> as does sqlplus:
+> 
+> [ruser at akoyavsrv05 instantclient_11_2]$ ./sqlplus parts/parts at VSRV06
+> 
+> SQL*Plus: Release 11.2.0.1.0 Production on Thu Mar 4 19:02:47 2010
+> 
+> Copyright (c) 1982, 2009, Oracle.  All rights reserved.
+> 
+> 
+> Connected to:
+> Oracle Database 10g Enterprise Edition Release 10.2.0.4.0 - 64bit Production
+> With the Partitioning, OLAP, Data Mining and Real Application Testing options
+> 
+> SQL> select distinct segment from parts;
+> 
+> SEGMENT
+> ----------------------------------------
+> BTS
+> FABRICATIONS
+> BAR STOCK
+> FORGINGS
+> TUBES
+> CASTINGS
+> STATUS6
+> 
+> 7 rows selected.
+> 
+> SQL> 
+> 
+> 
+> But R does not seem to want to work:
+> 
+> R version 2.10.0 (2009-10-26)
+> Copyright (C) 2009 The R Foundation for Statistical Computing
+> ISBN 3-900051-07-0
+> 
+> [...]
+> 
+> Type 'q()' to quit R.
+> 
+>> library(RODBC)
+>> channel <- odbcConnect("OracleLocal", uid="parts", pwd="parts")
+>> sqlQuery(channel, "select distinct segment from parts", errors=TRUE)
+> character(0)
+>> sqlTables(channel)
+>> 
+> 
+> Any ideas? The sqlQuery should return 7 rows, right?
+> 
+> Thanks in advance
+
+Hi,
+
+In your calls to odbcConnect() and sqlQuery() try using 'rows_at_time = 1':
+
+  channel <- odbcConnect("OracleLocal", uid="parts", pwd="parts", rows_at_time = 1)
+  sqlQuery(channel, "select distinct segment from parts", errors=TRUE, rows_at_time = 1)
+
+In the recent versions of RODBC, the default for rows_at_time is now 100, which has been known to cause problems on certain systems, Oracle being one. On my system, which is OSX 10.6.2 connecting to Oracle 11g on RHEL with RODBC, I need to make this adjustment in order to get reliable query results. This is touched on in the Details section of ?sqlQuery.
+
+HTH,
+
+Marc Schwartz
+
+
+
+From jjo_ch|c@go @end|ng |rom y@hoo@com  Fri Mar  5 16:18:28 2010
+From: jjo_ch|c@go @end|ng |rom y@hoo@com (Joe O)
+Date: Fri, 5 Mar 2010 07:18:28 -0800 (PST)
+Subject: [R-sig-DB] RODBC and Oracle 11g Issue.....
+In-Reply-To: <127C96E8-3D91-4329-BDEA-55F0959A02B7@me.com>
+Message-ID: <999101.36698.qm@web50603.mail.re2.yahoo.com>
+
+Marc - 
+
+ Thanks for the help. I tried your suggestion:
+
+[ruser at vsrv05 ~]$ R
+
+R version 2.10.0 (2009-10-26)
+Type 'q()' to quit R.
+
+> library(RODBC)
+> channel <- odbcConnect("OracleLocal", uid="parts", pwd="parts",rows_at_time = 1)
+> sqlQuery(channel, "select distinct segment from parts", errors=TRUE,rows_at_time = 1)
+character(0)
+> sqlTables(channel)
+>
+
+..and no joy. 
+
+Has anyone gotten R running on 64 bit Linux to connect to Oracle 11g running on 64 bit Linux using the Linux unixODBC library and R RODBC library? Works fine on a 32 bit Windows environment.
+
+
+
+From m@rc_@chw@rtz @end|ng |rom me@com  Fri Mar  5 16:39:23 2010
+From: m@rc_@chw@rtz @end|ng |rom me@com (Marc Schwartz)
+Date: Fri, 05 Mar 2010 09:39:23 -0600
+Subject: [R-sig-DB] RODBC and Oracle 11g Issue.....
+In-Reply-To: <999101.36698.qm@web50603.mail.re2.yahoo.com>
+References: <999101.36698.qm@web50603.mail.re2.yahoo.com>
+Message-ID: <09A84067-41AF-454C-82AF-220EDEA053BB@me.com>
+
+On Mar 5, 2010, at 9:18 AM, Joe O wrote:
+
+> Marc - 
+> 
+> Thanks for the help. I tried your suggestion:
+> 
+> [ruser at vsrv05 ~]$ R
+> 
+> R version 2.10.0 (2009-10-26)
+> Type 'q()' to quit R.
+> 
+>> library(RODBC)
+>> channel <- odbcConnect("OracleLocal", uid="parts", pwd="parts",rows_at_time = 1)
+>> sqlQuery(channel, "select distinct segment from parts", errors=TRUE,rows_at_time = 1)
+> character(0)
+>> sqlTables(channel)
+>> 
+> 
+> ..and no joy. 
+> 
+> Has anyone gotten R running on 64 bit Linux to connect to Oracle 11g running on 64 bit Linux using the Linux unixODBC library and R RODBC library? Works fine on a 32 bit Windows environment.
+
+
+OK....stoopid question time:
+
+1. I presume that you installed the 64 bit version of Oracle's instant client and ODBC driver from:
+
+   http://www.oracle.com/technology/software/tech/oci/instantclient/htdocs/linuxx86_64soft.html
+
+
+2. You are running a 64 bit version of R?  Check the output of .Machine$sizeof.pointer and be sure that it shows 8, not 4.
+
+
+3. You are using a 64 bit version of unixODBC?
+
+
+Just to be sure, since the entire tool chain needs to be 64 bit, although typically you might get a segfault or other problem when mixing 32/64 bit.
+
+
+Also, just for the heck of it, can you post the output of:
+
+  unclass(channel)
+
+
+Lastly, try using 'case = "toupper"' in the odbcConnect() call to see if that makes any difference:
+
+  channel <- odbcConnect("OracleLocal", uid="parts", pwd="parts", rows_at_time = 1, case = "toupper")
+
+
+Marc
+
+
+
+From jjo_ch|c@go @end|ng |rom y@hoo@com  Fri Mar  5 16:54:21 2010
+From: jjo_ch|c@go @end|ng |rom y@hoo@com (Joe O)
+Date: Fri, 5 Mar 2010 07:54:21 -0800 (PST)
+Subject: [R-sig-DB] RODBC and Oracle 11g Issue.....
+In-Reply-To: <09A84067-41AF-454C-82AF-220EDEA053BB@me.com>
+Message-ID: <896595.59966.qm@web50603.mail.re2.yahoo.com>
+
+
+> OK....stoopid question time:
+> 
+> 1. I presume that you installed the 64 bit version of
+> Oracle's instant client and ODBC driver from:
+> 
+> ???http://www.oracle.com/technology/software/tech/oci/instantclien/htdocs/linuxx86_64soft.html
+
+ Absolutely. From my first post, I know this was done properly (and configured properly) since the sqlplus interface works just fine.
+ 
+> 2. You are running a 64 bit version of R?? Check the
+> output of .Machine$sizeof.pointer and be sure that it shows
+> 8, not 4.
+
+  It is showing 8, see session output below.
+> 
+> 3. You are using a 64 bit version of unixODBC?
+
+  Yes, I downloaded the latest version yesterday, and compiled it on the machine locally. I also know this is configured correctly because the iSQL session output in my first post is correct as well.
+ 
+> Just to be sure, since the entire tool chain needs to be 64
+> bit, although typically you might get a segfault or other
+> problem when mixing 32/64 bit.
+
+ Yep, that is clear. iSQL and sqlplus are working OK, so I think the stack is aligned properly. 
+
+> Also, just for the heck of it, can you post the output of:
+> 
+> ? unclass(channel)
+
+  See below
+ 
+> 
+> Lastly, try using 'case = "toupper"' in the odbcConnect()
+> call to see if that makes any difference:
+> 
+> ? channel <- odbcConnect("OracleLocal",
+> uid="parts", pwd="parts", rows_at_time = 1, case =
+> "toupper")
+
+  Again, no dice. See below
+
+[ruser at akoyavsrv05 ~]$ R
+
+R version 2.10.0 (2009-10-26)
+Type 'q()' to quit R.
+
+> .Machine$sizeof.pointer
+[1] 8
+> library(RODBC)
+> channel <- odbcConnect("OracleLocal", uid="parts", pwd="parts", rows_at_time = 1, case = "toupper")
+> unclass(channel)
+
+[1] 1
+attr(,"connection.string")
+[1] "DSN=OracleLocal;UID=parts;PWD=******;DBQ=VSRV06;DBA=W;APA=T;EXC=T;FEN=T;QTO=T;FRC=10;FDL=10;LOB=T;RST=T;BTD=F;BNF=F;BAM=IfAllSuccessful;NUM=NLS;DPM=F;MTS=T;MDI=F;CSR=F;FWC=F;FBS=64000;TLO=0;MLD=0;ODA=F;"
+attr(,"handle_ptr")
+<pointer: 0x1495a80>
+attr(,"case")
+[1] "toupper"
+attr(,"id")
+[1] 83755
+attr(,"believeNRows")
+[1] TRUE
+attr(,"colQuote")
+[1] "\""
+attr(,"tabQuote")
+[1] "\""
+attr(,"interpretDot")
+[1] TRUE
+attr(,"encoding")
+[1] ""
+attr(,"rows_at_time")
+[1] 1
+attr(,"isMySQL")
+[1] FALSE
+attr(,"call")
+odbcDriverConnect(connection = "DSN=OracleLocal;UID=parts;PWD=******;",
+    case = "toupper", rows_at_time = 1)
+> sqlQuery(channel, "select distinct segment from parts", errors=TRUE, rows_at_time = 1)
+
+character(0)
+
+
+
+Now here is something interesting...at least R is talking to Oracle:
+
+> sqlQuery(channel, "select distinct segment from partsddddddddd",errors=TRUE,rows_at_time = 1)
+
+[1] "42S02 942 [Oracle][ODBC][Ora]ORA-00942: table or view does not exist\n"
+
+[2] "[RODBC] ERROR: Could not SQLExecDirect 'select distinct segment from partsddddddddd'"
+
+It knows no table named 'partsddddddddd' exists....so Oracle is processing the query and returning an error, which R is getting.
+
+
+No errors in the machine wide ODBC log that is enabled.
+
+
+
+
+
+
+From m@rc_@chw@rtz @end|ng |rom me@com  Fri Mar  5 18:17:30 2010
+From: m@rc_@chw@rtz @end|ng |rom me@com (Marc Schwartz)
+Date: Fri, 05 Mar 2010 11:17:30 -0600
+Subject: [R-sig-DB] RODBC and Oracle 11g Issue.....
+In-Reply-To: <896595.59966.qm@web50603.mail.re2.yahoo.com>
+References: <896595.59966.qm@web50603.mail.re2.yahoo.com>
+Message-ID: <68EB9664-93D4-4305-ACD7-CAFB14947FC1@me.com>
+
+<snip>
+
+Joe,
+
+Thanks very much for the additional information. It may in the end prove helpful for debugging.
+
+In the intervening time frame, I received an offlist communication from Prof. Ripley, who now believes that there may be an issue with Oracle's 64 bit driver at play and he will need to investigate further.
+
+Unfortunately, he will be unable to look at this for at least a week or so. At that point he will have access to a platform for the local testing of Oracle's 64 bit ODBC driver and associated tools to see if he can better identify the etiology of the problem and go from there as appropriate.
+
+Sorry that I cannot be of more help at the moment.
+
+Regards,
+
+Marc
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Thu Mar 11 18:18:14 2010
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Thu, 11 Mar 2010 09:18:14 -0800
+Subject: [R-sig-DB] New version of RSQLite on CRAN
+Message-ID: <4B9925D6.3040003@userprimary.net>
+
+Hi all,
+
+Sorry if you've already seen an announcement via the r-packages list...
+
+A new version of RSQLite (0.8-4) is now available on CRAN.  Highlights
+of this release:
+
+Version 0.8-4
+
+- Fix a memory leak in bound parameter management and resolve a
+    missing PROTECT bug that caused spurious crashes when performing
+    many prepared queries.
+
+- There is now a fairly comprehensive example of using prepared
+    queries in the man page for dbSendQuery-methods.
+
+- Upgrade to SQLite 3.6.21 => 3.6.22 (minor bug fixes).
+
+- Enable full-text search module by default.  See
+    http://www.sqlite.org/fts3.html for details on this SQLite
+    module.
+
+- Add support for prepared queries that involve a SELECT.  This was
+    previously unsupported.  SELECT queries can now be used with
+    dbSendPreparedQuery.  The return value is the same as rbind'ing the
+    results of the individual queries.  This means that parameters that
+    return no results are ignored in the result.
+
+Full NEWS items available here:
+http://cran.r-project.org/web/packages/RSQLite/NEWS
+
++ seth
+
+-- 
+Seth Falcon | @sfalcon | http://userprimary.net/
+
+
+
+From zhgu|@pku @end|ng |rom gm@||@com  Fri Mar  5 01:54:25 2010
+From: zhgu|@pku @end|ng |rom gm@||@com (gui zhenghui)
+Date: Fri, 05 Mar 2010 00:54:25 -0000
+Subject: [R-sig-DB] help - can't connect to sqlserver with odbc. unixODBC is
+	ok
+Message-ID: <31a1526a1003041654y22c2760exdf03458896e11e37@mail.gmail.com>
+
+hi, all:
+
+    I installed freetds and unixODBC, and with unixODBC/bin/isql,  i can
+retrieve data from the sqlserver
+    however, I can't use RODBC, and i got an error message :
+
+   1: In odbcDriverConnect("DSN=ocean;UID=sa;PWD=passwd") :
+  [RODBC] ERROR: state IM002, code 0, message [unixODBC][Driver Manager]Data
+source name not found, and no default driver specified
+
+  2: In odbcDriverConnect("DSN=ocean;UID=sa;PWD=passwd") :
+  ODBC connection failed
+
+Could any one help ?  Thanks~
+
+	[[alternative HTML version deleted]]
+
+
+
+From zhgu|@pku @end|ng |rom gm@||@com  Fri Mar  5 01:59:21 2010
+From: zhgu|@pku @end|ng |rom gm@||@com (gui zhenghui)
+Date: Fri, 05 Mar 2010 00:59:21 -0000
+Subject: [R-sig-DB] help - can't connect to sqlserver with odbc.
+	unixODBC is ok
+In-Reply-To: <31a1526a1003041654y22c2760exdf03458896e11e37@mail.gmail.com>
+References: <31a1526a1003041654y22c2760exdf03458896e11e37@mail.gmail.com>
+Message-ID: <31a1526a1003041659t6b5ed733ifeccf480c1ca4b3d@mail.gmail.com>
+
+O, the error message was :
+
+Warning messages:
+1: In odbcDriverConnect("DSN=ocean;UID=sa;PWD=passwd") :
+  [RODBC] ERROR: state IM004, code 0, message [unixODBC][Driver
+Manager]Driver's SQLAllocHandle on SQL_HANDLE_HENV failed
+2: In odbcDriverConnect("DSN=ocean;UID=sa;PWD=passwd") :
+  ODBC connection failed
+
+2010/3/5 gui zhenghui <zhgui.pku at gmail.com>
+
+> hi, all:
+>
+>     I installed freetds and unixODBC, and with unixODBC/bin/isql,  i can
+> retrieve data from the sqlserver
+>     however, I can't use RODBC, and i got an error message :
+>
+>    1: In odbcDriverConnect("DSN=ocean;UID=sa;PWD=passwd") :
+>   [RODBC] ERROR: state IM002, code 0, message [unixODBC][Driver
+> Manager]Data source name not found, and no default driver specified
+>
+>   2: In odbcDriverConnect("DSN=ocean;UID=sa;PWD=passwd") :
+>   ODBC connection failed
+>
+> Could any one help ?  Thanks~
+>
+>
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From koen@@tegen @end|ng |rom om@@be  Tue Mar  9 09:56:40 2010
+From: koen@@tegen @end|ng |rom om@@be (Koen Stegen)
+Date: Tue, 09 Mar 2010 09:56:40 +0100
+Subject: [R-sig-DB] Timestamp with time zone type conversion from PostgreSQL
+	to R
+Message-ID: <4B960D48.6030208@oma.be>
+
+Dear all,
+
+The maintainer of the RPostgreSQL package suggested to post this on R-sig-DB,
+because of Linus' Law.
+
+My apologies for a long post, but I hope the explanation makes life easy on the
+eyeballs.
+
+While doing a dbReadTable on a PostgreSQL database, I have noticed that some
+columns with type "timestamp with time zone" behave differently from what I
+expect: in R there seems to be a time zone related offset in the data values.
+
+I have reduced the problem to the following code:
+
+    library("RPostgreSQL")
+    Sys.setenv(TZ="UTC")        # Just to level the playing field, not crucial
+
+    databaseConnection = dbConnect(dbDriver("PostgreSQL"), dbname="template1",
+                                   user="postgres", password="*****")
+
+    # The input: any day, midnight, in UTC
+    query = "SELECT TIMESTAMP WITH TIME ZONE '1999-12-31 00:00:00 UTC'"
+    result = dbGetQuery(databaseConnection, query)
+
+    # The problem:
+    strftime(result$timestamptz, usetz=TRUE)  # prints:"1999-12-31 01:00:00 UTC"
+    as.numeric(result$timestamptz)            # prints: 946602000
+
+
+The value of strftime is 1 am instead of midnight. The numeric value is 3600
+seconds higher than I expect, so it is not *just* a display problem.
+
+First, I have checked my expectations with the date command in a Bash shell:
+  date --date='1999-12-31 00:00:00 UTC' +%s
+
+Then I have checked my database with the psql command line client:
+  SELECT EXTRACT(epoch FROM TIMESTAMP WITH TIME ZONE '1999-12-31 00:00:00 UTC');
+
+Both show: 946598400, 3600 less than what R shows.
+
+To verify that this is indeed the correct value, I have used the online tool
+from epochconverter dot com, and the human readable version of this time is, as
+expected, midnight:  Fri, 31 Dec 1999 00:00:00 GMT
+
+This was all done on:
+
+    OS: OpenSUSE 11.2
+    R: R version 2.10.1 Patched (2010-03-07 r51225)
+    DBI: 0.2-5
+    RPostgreSQL: 0.1-6
+    PostgreSQL: 8.4.2
+
+
+I have repeated this procedure on a Windows XP machine. To get the RPostgreSQL
+package working, I have manually copied some .dll files to the system32
+directory, but I think this is not relevant.
+
+The result on Windows may actually shed some light on what is going on:
+
+
+Warning messages:
+1: In strptime(xx, f <- "%Y-%m-%d %H:%M:%OS", tz = tz) :
+  unknown timezone '%Y-%m-%d %H:%M:%S'
+2: In structure(.Internal(as.POSIXct(x, tz)), class = c("POSIXt", "POSIXct"),  :
+  unknown timezone '%Y-%m-%d %H:%M:%S'
+3: In strptime(x, f, tz = tz) : unknown timezone '%Y-%m-%d %H:%M:%S'
+4: In structure(.Internal(as.POSIXct(x, tz)), class = c("POSIXt", "POSIXct"),  :
+  unknown timezone '%Y-%m-%d %H:%M:%S'
+
+
+It is clear that '%Y-%m-%d %H:%M:%S' is a date format, and not a time zone.
+
+My guess would be that this is simple copy-paste mistake in the code, unintended
+recycling, or an off-by-one in a C char**.
+
+
+I don't have sufficient expertise to test this against other databases (afaics
+MySQL doesn't even have a data type that includes the time zone) so I don't know
+whether this is a problem specific to RPostgreSQL, or it encompasses all DBI
+implementations.
+
+Could any of the RPostgreSQL developers please have a look at this, and pass it
+on to DBI and/or R core devs if necessary?
+
+
+Thanks in advance,
+Koen
+Royal Meteorological Institute of Belgium
+
+
+
+From jjc @end|ng |rom jjceng@com  Wed Mar 10 02:52:07 2010
+From: jjc @end|ng |rom jjceng@com (Jay Castino)
+Date: Tue, 9 Mar 2010 17:52:07 -0800
+Subject: [R-sig-DB] RMySQL_0.7-4 core dumped on dbWriteTable
+Message-ID: <d2154d2b1003091752l5c8c289ewa5e09dce3f186515@mail.gmail.com>
+
+Good Afternoon:
+
+Have an R script that uses RMySQL package.
+
+Everything works great within 32 bit ubuntu linux environment
+(/usr/sbin/mysqld: ELF 32-bit LSB shared object, Intel 80386, version
+1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.15,
+stripped).
+> mysqlClientLibraryVersions()
+5.1.41 5.1.37
+ 50141  50137
+
+Now testing on 64 bit ubuntu linux environment (/usr/sbin/mysqld:ELF
+64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked
+(uses shared libs), for GNU/Linux 2.6.15, stripped).
+> mysqlClientLibraryVersions()
+5.0.75 5.0.75
+ 50075  50075
+
+Followed instructions for RMySQL installation (specifying MySQL
+headers and library directories)
+export PKG_CPPFLAGS="-I/usr/include/mysql"
+export PKG_LIBS="-L/usr/lib/ -lmysqlclient" (This is where the
+'/usr/lib64/mysql' symbolic link ends up).
+
+Made sure I could successfully query and write to the database
+otherwise (with RODBC).
+
+So far, can successfully connect and disconnect using RMySQL
+
+Also, am able to execute dbGetQuery command.
+
+However, upon executing the dbWriteTable command (see partial .RHistory below),
+
+R crashes with "***buffer overflow detected***:
+/usr/lib64/R/bin/exec/R terminated"
+
+How can I fix this?
+
+Appreciate your help.
+
+Sincerely,
+
+Jay James Castino, PE
+Principal
+JJCENG.COM, PC
+www.jjceng.com
++1 (541) 633-7990
+1560 NE 1st ST. #14
+Bend, OR USA 97701
+
+###### partial .RHistory #######
+>sessionInfo()
+R version 2.10.1 (2009-12-14)
+x86_64-pc-linux-gnu
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8
+ [5] LC_MONETARY=C              LC_MESSAGES=en_US.UTF-8
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+> library(RMySQL)
+Loading required package: DBI
+> con<- dbConnect(dbDriver("MySQL"), dbname = "knottlf_local",user="mysql", password="xxxxxx", host="localhost")
+> ch4dd<-data.frame(6,"2010-03-06")
+> names(ch4dd)<-c("scada_terminal_id","timestamp_on")
+> ch4dd
+  scada_terminal_id timestamp_on
+1                 6   2010-03-06
+> dbGetQuery(con, "SELECT LAST_INSERT_ID() FROM `knottlf_local`.`R_ch4_concentrations`")
+data frame with 0 columns and 0 rows
+> dbWriteTable(con, name = "R_ch4_concentrations",ch4dd, append = TRUE, row.names = FALSE)
+*** buffer overflow detected ***: /usr/lib64/R/bin/exec/R terminated
+======= Backtrace: =========
+/lib/libc.so.6(__fortify_fail+0x37)[0x7fb4375292c7]
+/lib/libc.so.6[0x7fb437527170]
+/lib/libc.so.6[0x7fb437526519]
+/lib/libc.so.6(_IO_default_xsputn+0x96)[0x7fb4374a0426]
+/lib/libc.so.6(_IO_vfprintf+0x348d)[0x7fb437472e2d]
+/lib/libc.so.6(__vsprintf_chk+0x99)[0x7fb4375265b9]
+/lib/libc.so.6(__sprintf_chk+0x80)[0x7fb437526500]
+/home/jbiztino/R/x86_64-pc-linux-gnu-library/2.10/RMySQL/libs/RMySQL.so(RS_MySQL_exec+0x1be)[0x7fb4348630de]
+/usr/lib64/R/lib/libR.so[0x7fb437847ace]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x6b6)[0x7fb437877ed6]
+/usr/lib64/R/lib/libR.so[0x7fb43787a0e0]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x46e)[0x7fb437877c8e]
+/usr/lib64/R/lib/libR.so[0x7fb43787a1ce]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x46e)[0x7fb437877c8e]
+/usr/lib64/R/lib/libR.so(Rf_applyClosure+0x2d3)[0x7fb43787ba93]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x3c3)[0x7fb437877be3]
+/usr/lib64/R/lib/libR.so[0x7fb43787b39c]
+/usr/lib64/R/lib/libR.so(R_execMethod+0x241)[0x7fb43787b6d1]
+/usr/lib64/R/library/methods/libs/methods.so[0x7fb435259655]
+/usr/lib64/R/lib/libR.so[0x7fb4378c205c]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x5dc)[0x7fb437877dfc]
+/usr/lib64/R/lib/libR.so[0x7fb43787802f]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x26d)[0x7fb437877a8d]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x64b)[0x7fb437877e6b]
+/usr/lib64/R/lib/libR.so[0x7fb43787802f]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x26d)[0x7fb437877a8d]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x64b)[0x7fb437877e6b]
+/usr/lib64/R/lib/libR.so[0x7fb437878f7d]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x58e)[0x7fb437877dae]
+/usr/lib64/R/lib/libR.so[0x7fb43787a0e0]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x46e)[0x7fb437877c8e]
+/usr/lib64/R/lib/libR.so[0x7fb43787a1ce]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x46e)[0x7fb437877c8e]
+/usr/lib64/R/lib/libR.so(Rf_applyClosure+0x2d3)[0x7fb43787ba93]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x3c3)[0x7fb437877be3]
+/usr/lib64/R/lib/libR.so[0x7fb43787ae41]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x46e)[0x7fb437877c8e]
+/usr/lib64/R/lib/libR.so[0x7fb43787a7e6]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x46e)[0x7fb437877c8e]
+/usr/lib64/R/lib/libR.so[0x7fb43787a1ce]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x46e)[0x7fb437877c8e]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x46e)[0x7fb437877c8e]
+/usr/lib64/R/lib/libR.so[0x7fb43787a1ce]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x46e)[0x7fb437877c8e]
+/usr/lib64/R/lib/libR.so(Rf_applyClosure+0x2d3)[0x7fb43787ba93]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x3c3)[0x7fb437877be3]
+/usr/lib64/R/lib/libR.so(Rf_applyClosure+0x2d3)[0x7fb43787ba93]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x3c3)[0x7fb437877be3]
+/usr/lib64/R/lib/libR.so[0x7fb43787802f]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x26d)[0x7fb437877a8d]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x64b)[0x7fb437877e6b]
+/usr/lib64/R/lib/libR.so[0x7fb43787802f]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x26d)[0x7fb437877a8d]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x64b)[0x7fb437877e6b]
+/usr/lib64/R/lib/libR.so[0x7fb43787802f]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x26d)[0x7fb437877a8d]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x64b)[0x7fb437877e6b]
+/usr/lib64/R/lib/libR.so[0x7fb43787802f]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x26d)[0x7fb437877a8d]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x64b)[0x7fb437877e6b]
+/usr/lib64/R/lib/libR.so[0x7fb437878bc5]
+/usr/lib64/R/lib/libR.so[0x7fb437878d63]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x46e)[0x7fb437877c8e]
+======= Memory map: ========
+00400000-00401000 r-xp 00000000 fc:00 5693955
+  /usr/lib/R/bin/exec/R
+00600000-00601000 r--p 00000000 fc:00 5693955
+  /usr/lib/R/bin/exec/R
+00601000-00602000 rw-p 00001000 fc:00 5693955
+  /usr/lib/R/bin/exec/R
+01c83000-033c1000 rw-p 01c83000 00:00 0                                  [heap]
+7fb434008000-7fb434011000 r-xp 00000000 fc:00 7069897
+  /lib/libcrypt-2.9.so
+7fb434011000-7fb434210000 ---p 00009000 fc:00 7069897
+  /lib/libcrypt-2.9.so
+7fb434210000-7fb434211000 r--p 00008000 fc:00 7069897
+  /lib/libcrypt-2.9.so
+7fb434211000-7fb434212000 rw-p 00009000 fc:00 7069897
+  /lib/libcrypt-2.9.so
+7fb434212000-7fb434240000 rw-p 7fb434212000 00:00 0
+7fb434240000-7fb434257000 r-xp 00000000 fc:00 7069915
+  /lib/libpthread-2.9.so
+7fb434257000-7fb434456000 ---p 00017000 fc:00 7069915
+  /lib/libpthread-2.9.so
+7fb434456000-7fb434457000 r--p 00016000 fc:00 7069915
+  /lib/libpthread-2.9.so
+7fb434457000-7fb434458000 rw-p 00017000 fc:00 7069915
+  /lib/libpthread-2.9.so
+7fb434458000-7fb43445c000 rw-p 7fb434458000 00:00 0
+7fb43445c000-7fb434611000 r-xp 00000000 fc:00 4699043
+  /usr/lib/libmysqlclient.so.15.0.0
+7fb434611000-7fb434810000 ---p 001b5000 fc:00 4699043
+  /usr/lib/libmysqlclient.so.15.0.0
+7fb434810000-7fb434815000 r--p 001b4000 fc:00 4699043
+  /usr/lib/libmysqlclient.so.15.0.0
+7fb434815000-7fb434859000 rw-p 001b9000 fc:00 4699043
+  /usr/lib/libmysqlclient.so.15.0.0
+7fb434859000-7fb43485b000 rw-p 7fb434859000 00:00 0
+7fb43485b000-7fb434866000 r-xp 00000000 fc:00 6750241
+  /home/jbiztino/R/x86_64-pc-linux-gnu-library/2.10/RMySQL/libs/RMySQL.so
+7fb434866000-7fb434a65000 ---p 0000b000 fc:00 6750241
+  /home/jbiztino/R/x86_64-pc-linux-gnu-library/2.10/RMySQL/libs/RMySQL.so
+7fb434a65000-7fb434a66000 r--p 0000a000 fc:00 6750241
+  /home/jbiztino/R/x86_64-pc-linux-gnu-library/2.10/RMySQL/libs/RMySQL.so
+7fb434a66000-7fb434a67000 rw-p 0000b000 fc:00 6750241
+  /home/jbiztino/R/x86_64-pc-linux-gnu-library/2.10/RMySQL/libs/RMySQL.so
+7fb434a67000-7fb434aef000 r-xp 00000000 fc:00 5694532
+  /usr/lib/R/library/stats/libs/stats.so
+7fb434aef000-7fb434cee000 ---p 00088000 fc:00 5694532
+  /usr/lib/R/library/stats/libs/stats.so
+7fb434cee000-7fb434cf0000 r--p 00087000 fc:00 5694532
+  /usr/lib/R/library/stats/libs/stats.so
+7fb434cf0000-7fb434cf2000 rw-p 00089000 fc:00 5694532
+  /usr/lib/R/library/stats/libs/stats.so
+7fb434cf2000-7fb434d16000 r-xp 00000000 fc:00 5694379
+  /usr/lib/R/library/grDevices/libs/grDevices.so
+7fb434d16000-7fb434f16000 ---p 00024000 fc:00 5694379
+  /usr/lib/R/library/grDevices/libs/grDevices.so
+7fb434f16000-7fb434f17000 r--p 00024000 fc:00 5694379
+  /usr/lib/R/library/grDevices/libs/grDevices.so
+7fb434f17000-7fb434f18000 rw-p 00025000 fc:00 5694379
+  /usr/lib/R/library/grDevices/libs/grDevices.so
+7fb434fe0000-7fb434fe2000 r-xp 00000000 fc:00 4700210
+  /usr/lib/gconv/ISO8859-1.so
+7fb434fe2000-7fb4351e1000 ---p 00002000 fc:00 4700210
+  /usr/lib/gconv/ISO8859-1.so
+7fb4351e1000-7fb4351e2000 r--p 00001000 fc:00 4700210
+  /usr/lib/gconv/ISO8859-1.so
+7fb4351e2000-7fb4351e3000 rw-p 00002000 fc:00 4700210
+  /usr/lib/gconv/ISO8859-1.so
+7fb4351e3000-7fb435255000 rw-p 7fb4351e3000 00:00 0
+7fb435255000-7fb43525c000 r-xp 00000000 fc:00 5694776
+  /usr/lib/R/library/methods/libs/methods.so
+7fb43525c000-7fb43545b000 ---p 00007000 fc:00 5694776
+  /usr/lib/R/library/methods/libs/methods.so
+7fb43545b000-7fb43545c000 r--p 00006000 fc:00 5694776
+  /usr/lib/R/library/methods/libs/methods.so
+7fb43545c000-7fb43545d000 rw-p 00007000 fc:00 5694776
+  /usr/lib/R/library/methods/libs/methods.so
+7fb43545d000-7fb43548d000 rw-p 7fb43545d000 00:00 0
+7fb43548d000-7fb435499000 r-xp 00000000 fc:00 7069909
+  /lib/libnss_files-2.9.so
+7fb435499000-7fb435698000 ---p 0000c000 fc:00 7069909
+  /lib/libnss_files-2.9.so
+7fb435698000-7fb435699000 r--p 0000b000 fc:00 7069909
+  /lib/libnss_files-2.9.so
+7fb435699000-7fb43569a000 rw-p 0000c000 fc:00 7069909
+  /lib/libnss_files-2.9.so
+7fb43569a000-7fb4356a4000 r-xp 00000000 fc:00 7069911
+  /lib/libnss_nis-2.9.so
+7fb4356a4000-7fb4358a3000 ---p 0000a000 fc:00 7069911
+  /lib/libnss_nis-2.9.so
+7fb4358a3000-7fb4358a4000 r--p 00009000 fc:00 7069911
+  /lib/libnss_nis-2.9.so
+7fb4358a4000-7fb4358a5000 rw-p 0000a000 fc:00 7069911
+  /lib/libnss_nis-2.9.so
+7fb4358a5000-7fb4358bb000 r-xp 00000000 fc:00 7069905
+  /lib/libnsl-2.9.so
+7fb4358bb000-7fb43Aborted (core dumped)
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Tue Mar 23 16:16:05 2010
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Tue, 23 Mar 2010 11:16:05 -0400
+Subject: [R-sig-DB] Timestamp with time zone type conversion from
+	PostgreSQL to R
+In-Reply-To: <4B960D48.6030208@oma.be>
+References: <4B960D48.6030208@oma.be>
+Message-ID: <971536df1003230816j6700812am1359ba91cb777b3d@mail.gmail.com>
+
+This works for me on Windows Vista with the development version of the
+RpgSQL package's DBI/RJDBC driver.
+
+The CRAN version of the RpgSQL driver gives problems here too and if
+we use Sys.setenv(TZ = "GMT") or Sys.setenv(TZ = "UTC") we also have
+problems even with the development version of the RpgSQL package's
+driver.
+
+>    library(RpgSQL)
+>    Sys.setenv(TZ="")        # NOTE
+>
+>    # may need to modify next statement based on your setup
+>    databaseConnection = dbConnect(dbDriver("pgSQL"), dbname = "mydb")
+>
+>    # The input: any day, midnight, in UTC
+>    query = "SELECT TIMESTAMP WITH TIME ZONE '1999-12-31 00:00:00 UTC'"
+>
+>    result = dbGetQuery(databaseConnection, query)
+>
+>    strftime(result$timestamptz, usetz=TRUE)  # prints:"1999-12-31 01:00:00 UTC"
+[1] "1999-12-30 19:00:00 EST"
+
+>    as.numeric(result$timestamptz)
+[1] 946598400
+> format(result, tz = "GMT")
+  timestamptz
+1  1999-12-31
+
+
+> dbGetQuery(databaseConnection, "select version()")
+                                                      version
+1 PostgreSQL 8.4.2, compiled by Visual C++ build 1400, 32-bit
+> R.version.string
+[1] "R version 2.10.1 Patched (2010-03-10 r51276)"
+> win.version()
+[1] "Windows Vista (build 6002) Service Pack 2"
+
+On Tue, Mar 9, 2010 at 4:56 AM, Koen Stegen <koen.stegen at oma.be> wrote:
+> Dear all,
+>
+> The maintainer of the RPostgreSQL package suggested to post this on R-sig-DB,
+> because of Linus' Law.
+>
+> My apologies for a long post, but I hope the explanation makes life easy on the
+> eyeballs.
+>
+> While doing a dbReadTable on a PostgreSQL database, I have noticed that some
+> columns with type "timestamp with time zone" behave differently from what I
+> expect: in R there seems to be a time zone related offset in the data values.
+>
+> I have reduced the problem to the following code:
+>
+> ? ?library("RPostgreSQL")
+> ? ?Sys.setenv(TZ="UTC") ? ? ? ?# Just to level the playing field, not crucial
+>
+> ? ?databaseConnection = dbConnect(dbDriver("PostgreSQL"), dbname="template1",
+> ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? user="postgres", password="*****")
+>
+> ? ?# The input: any day, midnight, in UTC
+> ? ?query = "SELECT TIMESTAMP WITH TIME ZONE '1999-12-31 00:00:00 UTC'"
+> ? ?result = dbGetQuery(databaseConnection, query)
+>
+> ? ?# The problem:
+> ? ?strftime(result$timestamptz, usetz=TRUE) ?# prints:"1999-12-31 01:00:00 UTC"
+> ? ?as.numeric(result$timestamptz) ? ? ? ? ? ?# prints: 946602000
+>
+>
+> The value of strftime is 1 am instead of midnight. The numeric value is 3600
+> seconds higher than I expect, so it is not *just* a display problem.
+>
+> First, I have checked my expectations with the date command in a Bash shell:
+> ?date --date='1999-12-31 00:00:00 UTC' +%s
+>
+> Then I have checked my database with the psql command line client:
+> ?SELECT EXTRACT(epoch FROM TIMESTAMP WITH TIME ZONE '1999-12-31 00:00:00 UTC');
+>
+> Both show: 946598400, 3600 less than what R shows.
+>
+> To verify that this is indeed the correct value, I have used the online tool
+> from epochconverter dot com, and the human readable version of this time is, as
+> expected, midnight: ?Fri, 31 Dec 1999 00:00:00 GMT
+>
+> This was all done on:
+>
+> ? ?OS: OpenSUSE 11.2
+> ? ?R: R version 2.10.1 Patched (2010-03-07 r51225)
+> ? ?DBI: 0.2-5
+> ? ?RPostgreSQL: 0.1-6
+> ? ?PostgreSQL: 8.4.2
+>
+>
+> I have repeated this procedure on a Windows XP machine. To get the RPostgreSQL
+> package working, I have manually copied some .dll files to the system32
+> directory, but I think this is not relevant.
+>
+> The result on Windows may actually shed some light on what is going on:
+>
+>
+> Warning messages:
+> 1: In strptime(xx, f <- "%Y-%m-%d %H:%M:%OS", tz = tz) :
+> ?unknown timezone '%Y-%m-%d %H:%M:%S'
+> 2: In structure(.Internal(as.POSIXct(x, tz)), class = c("POSIXt", "POSIXct"), ?:
+> ?unknown timezone '%Y-%m-%d %H:%M:%S'
+> 3: In strptime(x, f, tz = tz) : unknown timezone '%Y-%m-%d %H:%M:%S'
+> 4: In structure(.Internal(as.POSIXct(x, tz)), class = c("POSIXt", "POSIXct"), ?:
+> ?unknown timezone '%Y-%m-%d %H:%M:%S'
+>
+>
+> It is clear that '%Y-%m-%d %H:%M:%S' is a date format, and not a time zone.
+>
+> My guess would be that this is simple copy-paste mistake in the code, unintended
+> recycling, or an off-by-one in a C char**.
+>
+>
+> I don't have sufficient expertise to test this against other databases (afaics
+> MySQL doesn't even have a data type that includes the time zone) so I don't know
+> whether this is a problem specific to RPostgreSQL, or it encompasses all DBI
+> implementations.
+>
+> Could any of the RPostgreSQL developers please have a look at this, and pass it
+> on to DBI and/or R core devs if necessary?
+>
+>
+> Thanks in advance,
+> Koen
+> Royal Meteorological Institute of Belgium
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From h@r|@n @end|ng |rom h@rr|@@n@me  Tue Mar 23 20:47:13 2010
+From: h@r|@n @end|ng |rom h@rr|@@n@me (Harlan Harris)
+Date: Tue, 23 Mar 2010 15:47:13 -0400
+Subject: [R-sig-DB] RODBC connection to Oracle on 64-bit RHEL box failing
+Message-ID: <924bb5e21003231247qf510cdaq70bb23f21d296b43@mail.gmail.com>
+
+Hi, we've been using the following pathway to an Oracle server from R
+successfully for quite a while:
+
+32-bit R 2.9.2 on Mac OS X -> RODBC -> ODBC Manager -> Actual Oracle -> DB
+
+(We've also been able to get this working with 64-bit R 2.10.1 and a beta
+version of the Actual Oracle driver...)
+
+We need to be able to run our software on a 64-bit Redhat Linux box now. We
+installed instantclient_11_2_0_1_0-linux-64bit with ODBC support. That
+works. We also compiled and installed unixODBC version 2.2.14, and that
+works too. (Version 2.2.11, which is shipped with RedHat, does NOT work.)
+
+I then installed the RODBC source, as follows (we have to install packages
+in the user directory, for uninteresting reasons):
+
+> Sys.info()[c(1:3,5)]
+                              sysname                               release
+                              "Linux"                  "2.6.18-164.6.1.el5"
+                              version                               machine
+"#1 SMP Tue Oct 27 11:28:30 EDT 2009"                              "x86_64"
+
+> sessionInfo()
+R version 2.10.1 (2009-12-14)
+x86_64-redhat-linux-gnu
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8
+ [5] LC_MONETARY=C              LC_MESSAGES=en_US.UTF-8
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+loaded via a namespace (and not attached):
+[1] tools_2.10.1
+
+> install.packages("RODBC", "~/R/x86_64-redhat-linux-gnu-library/2.10/")
+trying URL '
+http://cran.revolution-computing.com/src/contrib/RODBC_1.3-1.tar.gz'
+Content type 'application/x-gzip' length 990220 bytes (967 Kb)
+opened URL
+==================================================
+downloaded 967 Kb
+
+* installing *source* package ?RODBC? ...
+checking for gcc... gcc -m64 -std=gnu99
+checking for C compiler default output file name... a.out
+checking whether the C compiler works... yes
+checking whether we are cross compiling... no
+checking for suffix of executables...
+checking for suffix of object files... o
+checking whether we are using the GNU C compiler... yes
+checking whether gcc -m64 -std=gnu99 accepts -g... yes
+checking for gcc -m64 -std=gnu99 option to accept ANSI C... none needed
+checking how to run the C preprocessor... gcc -m64 -std=gnu99 -E
+checking for egrep... grep -E
+checking for ANSI C header files... yes
+checking for sys/types.h... yes
+checking for sys/stat.h... yes
+checking for stdlib.h... yes
+checking for string.h... yes
+checking for memory.h... yes
+checking for strings.h... yes
+checking for inttypes.h... yes
+checking for stdint.h... yes
+checking for unistd.h... yes
+checking sql.h usability... yes
+checking sql.h presence... yes
+checking for sql.h... yes
+checking sqlext.h usability... yes
+checking sqlext.h presence... yes
+checking for sqlext.h... yes
+checking for library containing SQLTables... -lodbc
+checking for SQLLEN... yes
+checking for SQLULEN... yes
+checking for long... yes
+checking size of long... 8
+configure: creating ./config.status
+config.status: creating src/Makevars
+config.status: creating src/config.h
+** libs
+gcc -m64 -std=gnu99 -I/usr/include/R -I. -I/home/rproj/unixODBC/include/
+-I/usr/local/include    -fpic  -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2
+-fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic
+-c RODBC.c -o RODBC.o
+In file included from /home/rproj/unixODBC/include/sql.h:19,
+                 from RODBC.c:41:
+/home/rproj/unixODBC/include/sqltypes.h:400: warning: type defaults to ?int?
+in declaration of ?SQLBIGINT?
+/home/rproj/unixODBC/include/sqltypes.h:403: warning: type defaults to ?int?
+in declaration of ?SQLUBIGINT?
+gcc -m64 -std=gnu99 -shared -L/usr/local/lib64 -o RODBC.so RODBC.o -lodbc
+-L/home/rproj/unixODBC/lib/ -L/usr/lib64/R/lib -lR
+** R
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+  converting help for package ?RODBC?
+    finding HTML links ... done
+    RODBC-internal                          html
+    RODBC-package                           html
+    odbc                                    html
+    odbcClose                               html
+    odbcConnect                             html
+    odbcDataSources                         html
+    odbcGetInfo                             html
+    odbcSetAutoCommit                       html
+    setSqlTypeInfo                          html
+    sqlColumns                              html
+    sqlCopy                                 html
+    sqlDrop                                 html
+    sqlFetch                                html
+    sqlQuery                                html
+    sqlSave                                 html
+    sqlTables                               html
+    sqlTypeInfo                             html
+** building package indices ...
+* DONE (RODBC)
+
+The downloaded packages are in
+    ?/tmp/RtmpLzupy7/downloaded_packages?
+> library(RODBC)
+> hdl <- odbcConnect("ktparep")
+
+ *** caught segfault ***
+address (nil), cause 'unknown'
+
+Traceback:
+ 1: .Call(C_RODBCDriverConnect, as.character(connection), id,
+as.integer(believeNRows),     as.logical(readOnlyOptimize))
+ 2: odbcDriverConnect("DSN=ktparep")
+ 3: eval(expr, envir, enclos)
+ 4: eval(expr, p)
+ 5: eval.parent(Call)
+ 6: odbcConnect("ktparep")
+
+
+Anyone have any ideas? This sort of seg fault seems like a 64-bit/32-bit
+issue, but as far as I can see, everything in the chain is 64-bit...
+
+Also, unixODBC does not seem to be under active development or support. Are
+there alternatives for accessing Oracle servers? ROracle seems even less
+active than unixODBC...
+
+Thank you!
+
+ -Harlan
+
+	[[alternative HTML version deleted]]
+
+
+
+From m@rc_@chw@rtz @end|ng |rom me@com  Wed Mar 24 14:44:45 2010
+From: m@rc_@chw@rtz @end|ng |rom me@com (Marc Schwartz)
+Date: Wed, 24 Mar 2010 08:44:45 -0500
+Subject: [R-sig-DB] RODBC connection to Oracle on 64-bit RHEL box failing
+In-Reply-To: <924bb5e21003231247qf510cdaq70bb23f21d296b43@mail.gmail.com>
+References: <924bb5e21003231247qf510cdaq70bb23f21d296b43@mail.gmail.com>
+Message-ID: <C6DFDC86-7D92-4632-AA52-3D50DC4D520D@me.com>
+
+On Mar 23, 2010, at 2:47 PM, Harlan Harris wrote:
+
+> Hi, we've been using the following pathway to an Oracle server from R
+> successfully for quite a while:
+> 
+> 32-bit R 2.9.2 on Mac OS X -> RODBC -> ODBC Manager -> Actual Oracle -> DB
+> 
+> (We've also been able to get this working with 64-bit R 2.10.1 and a beta
+> version of the Actual Oracle driver...)
+
+
+Is Actual making a 64 bit Oracle ODBC driver available?  I had not seen anything on that and had in fact queried them some time ago specifically on the availability of one. I use their 32 bit version on Snow Leopard.
+
+
+> We need to be able to run our software on a 64-bit Redhat Linux box now. We
+> installed instantclient_11_2_0_1_0-linux-64bit with ODBC support. That
+> works. We also compiled and installed unixODBC version 2.2.14, and that
+> works too. (Version 2.2.11, which is shipped with RedHat, does NOT work.)
+> 
+> I then installed the RODBC source, as follows (we have to install packages
+> in the user directory, for uninteresting reasons):
+> 
+>> Sys.info()[c(1:3,5)]
+>                              sysname                               release
+>                              "Linux"                  "2.6.18-164.6.1.el5"
+>                              version                               machine
+> "#1 SMP Tue Oct 27 11:28:30 EDT 2009"                              "x86_64"
+> 
+>> sessionInfo()
+> R version 2.10.1 (2009-12-14)
+> x86_64-redhat-linux-gnu
+> 
+> locale:
+> [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C
+> [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8
+> [5] LC_MONETARY=C              LC_MESSAGES=en_US.UTF-8
+> [7] LC_PAPER=en_US.UTF-8       LC_NAME=C
+> [9] LC_ADDRESS=C               LC_TELEPHONE=C
+> [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C
+> 
+> attached base packages:
+> [1] stats     graphics  grDevices utils     datasets  methods   base
+> 
+> loaded via a namespace (and not attached):
+> [1] tools_2.10.1
+> 
+>> install.packages("RODBC", "~/R/x86_64-redhat-linux-gnu-library/2.10/")
+> trying URL '
+> http://cran.revolution-computing.com/src/contrib/RODBC_1.3-1.tar.gz'
+> Content type 'application/x-gzip' length 990220 bytes (967 Kb)
+> opened URL
+> ==================================================
+> downloaded 967 Kb
+> 
+> * installing *source* package ?RODBC? ...
+> checking for gcc... gcc -m64 -std=gnu99
+> checking for C compiler default output file name... a.out
+> checking whether the C compiler works... yes
+> checking whether we are cross compiling... no
+> checking for suffix of executables...
+> checking for suffix of object files... o
+> checking whether we are using the GNU C compiler... yes
+> checking whether gcc -m64 -std=gnu99 accepts -g... yes
+> checking for gcc -m64 -std=gnu99 option to accept ANSI C... none needed
+> checking how to run the C preprocessor... gcc -m64 -std=gnu99 -E
+> checking for egrep... grep -E
+> checking for ANSI C header files... yes
+> checking for sys/types.h... yes
+> checking for sys/stat.h... yes
+> checking for stdlib.h... yes
+> checking for string.h... yes
+> checking for memory.h... yes
+> checking for strings.h... yes
+> checking for inttypes.h... yes
+> checking for stdint.h... yes
+> checking for unistd.h... yes
+> checking sql.h usability... yes
+> checking sql.h presence... yes
+> checking for sql.h... yes
+> checking sqlext.h usability... yes
+> checking sqlext.h presence... yes
+> checking for sqlext.h... yes
+> checking for library containing SQLTables... -lodbc
+> checking for SQLLEN... yes
+> checking for SQLULEN... yes
+> checking for long... yes
+> checking size of long... 8
+> configure: creating ./config.status
+> config.status: creating src/Makevars
+> config.status: creating src/config.h
+> ** libs
+> gcc -m64 -std=gnu99 -I/usr/include/R -I. -I/home/rproj/unixODBC/include/
+> -I/usr/local/include    -fpic  -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2
+> -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic
+> -c RODBC.c -o RODBC.o
+> In file included from /home/rproj/unixODBC/include/sql.h:19,
+>                 from RODBC.c:41:
+> /home/rproj/unixODBC/include/sqltypes.h:400: warning: type defaults to ?int?
+> in declaration of ?SQLBIGINT?
+> /home/rproj/unixODBC/include/sqltypes.h:403: warning: type defaults to ?int?
+> in declaration of ?SQLUBIGINT?
+> gcc -m64 -std=gnu99 -shared -L/usr/local/lib64 -o RODBC.so RODBC.o -lodbc
+> -L/home/rproj/unixODBC/lib/ -L/usr/lib64/R/lib -lR
+> ** R
+> ** inst
+> ** preparing package for lazy loading
+> ** help
+> *** installing help indices
+>  converting help for package ?RODBC?
+>    finding HTML links ... done
+>    RODBC-internal                          html
+>    RODBC-package                           html
+>    odbc                                    html
+>    odbcClose                               html
+>    odbcConnect                             html
+>    odbcDataSources                         html
+>    odbcGetInfo                             html
+>    odbcSetAutoCommit                       html
+>    setSqlTypeInfo                          html
+>    sqlColumns                              html
+>    sqlCopy                                 html
+>    sqlDrop                                 html
+>    sqlFetch                                html
+>    sqlQuery                                html
+>    sqlSave                                 html
+>    sqlTables                               html
+>    sqlTypeInfo                             html
+> ** building package indices ...
+> * DONE (RODBC)
+> 
+> The downloaded packages are in
+>    ?/tmp/RtmpLzupy7/downloaded_packages?
+>> library(RODBC)
+>> hdl <- odbcConnect("ktparep")
+> 
+> *** caught segfault ***
+> address (nil), cause 'unknown'
+> 
+> Traceback:
+> 1: .Call(C_RODBCDriverConnect, as.character(connection), id,
+> as.integer(believeNRows),     as.logical(readOnlyOptimize))
+> 2: odbcDriverConnect("DSN=ktparep")
+> 3: eval(expr, envir, enclos)
+> 4: eval(expr, p)
+> 5: eval.parent(Call)
+> 6: odbcConnect("ktparep")
+> 
+> 
+> Anyone have any ideas? This sort of seg fault seems like a 64-bit/32-bit
+> issue, but as far as I can see, everything in the chain is 64-bit...
+> 
+> Also, unixODBC does not seem to be under active development or support. Are
+> there alternatives for accessing Oracle servers? ROracle seems even less
+> active than unixODBC...
+> 
+> Thank you!
+> 
+> -Harlan
+
+
+Two comments:
+
+1. The segfault is indeed typically a consequence of a mix of 32/64 bit tools. That being said, I am not seeing anything obvious to suggest that one component or another is 32 bit.  You might want to check your environment variables (eg. LD_LIBRARY_PATH, PATH or one of the Oracle variables) or that there is an entry in /etc/ld.so.conf that is pointing to a 32 bit version of either Oracle's files or unixODBC. Also, be sure that any relevant entries in odbcinst.ini and odbc.ini are also pointing to the proper Oracle ODBC drivers.
+
+2. If you manage to solve the above problem, you have another potential hurdle in front of you, which is that there have been reports of problems connecting to Oracle using 64 bit R/RODBC on 64 bit Linux. It would be helpful, if you do solve the above issue, to try to connect and to see what level of success you have. Prof. Ripley is aware of the issue and either is or will shortly be testing the 64 bit toolchain on Linux to see if he can identify the etiology of the problem and perhaps offer a fix or workaround.
+
+
+I have not used ROracle, but others have and seem to have good luck with it. I would not let the last version dates of either unixODBC or ROracle sway your opinion. If the components are pretty stable and are not influenced by updates on the R or Oracle end of things, there may very well be no reason to update them. But I would certainly defer to the respective maintainers on those points.
+
+HTH,
+
+Marc Schwartz
+
+
+
+From h@r|@n @end|ng |rom h@rr|@@n@me  Wed Mar 24 15:21:15 2010
+From: h@r|@n @end|ng |rom h@rr|@@n@me (Harlan Harris)
+Date: Wed, 24 Mar 2010 10:21:15 -0400
+Subject: [R-sig-DB] RODBC connection to Oracle on 64-bit RHEL box failing
+In-Reply-To: <C6DFDC86-7D92-4632-AA52-3D50DC4D520D@me.com>
+References: <924bb5e21003231247qf510cdaq70bb23f21d296b43@mail.gmail.com> 
+	<C6DFDC86-7D92-4632-AA52-3D50DC4D520D@me.com>
+Message-ID: <924bb5e21003240721y5e1818b2q66bba282e19a2858@mail.gmail.com>
+
+Marc, thanks very much...
+
+
+On Wed, Mar 24, 2010 at 9:44 AM, Marc Schwartz <marc_schwartz at me.com> wrote:
+
+> Is Actual making a 64 bit Oracle ODBC driver available?  I had not seen
+> anything on that and had in fact queried them some time ago specifically on
+> the availability of one. I use their 32 bit version on Snow Leopard.
+>
+
+Jonathan Monroe at Actual said on 3/5 that they would be releasing it "later
+next week", which obviously didn't happen. The beta is available
+at:*http://www.actualtechnologies.com/downloads/Actual_Oracle30_rc3_beta.dmg
+*
+
+It works well enough for the command line unixODBC tools to successfully
+pull data, anyway.
+
+
+>
+> Two comments:
+>
+> 1. The segfault is indeed typically a consequence of a mix of 32/64 bit
+> tools. That being said, I am not seeing anything obvious to suggest that one
+> component or another is 32 bit.  You might want to check your environment
+> variables (eg. LD_LIBRARY_PATH, PATH or one of the Oracle variables) or that
+> there is an entry in /etc/ld.so.conf that is pointing to a 32 bit version of
+> either Oracle's files or unixODBC. Also, be sure that any relevant entries
+> in odbcinst.ini and odbc.ini are also pointing to the proper Oracle ODBC
+> drivers.
+>
+
+OK, we'll look around for issues there, and will report back if we find
+anything.
+
+
+>
+> 2. If you manage to solve the above problem, you have another potential
+> hurdle in front of you, which is that there have been reports of problems
+> connecting to Oracle using 64 bit R/RODBC on 64 bit Linux. It would be
+> helpful, if you do solve the above issue, to try to connect and to see what
+> level of success you have. Prof. Ripley is aware of the issue and either is
+> or will shortly be testing the 64 bit toolchain on Linux to see if he can
+> identify the etiology of the problem and perhaps offer a fix or workaround.
+>
+
+Yes, I saw the earlier bug report. I'll keep the list updated.
+
+
+> I have not used ROracle, but others have and seem to have good luck with
+> it. I would not let the last version dates of either unixODBC or ROracle
+> sway your opinion. If the components are pretty stable and are not
+> influenced by updates on the R or Oracle end of things, there may very well
+> be no reason to update them. But I would certainly defer to the respective
+> maintainers on those points.
+>
+
+I tried to install ROracle, but it failed because "proc" was not installed.
+I see that it's a separate Oracle software piece, and we will try to install
+that to see if it helps.
+
+It sounds like RODBC is actively being supported, although we're concerned
+that one person with a day job is the only developer able to work on the
+Oracle components. (Prof. Ripley is superhuman, admittedly, but there's only
+one of him!) Is the maintainer of ROracle, David James, on this mailing
+list?
+
+ -Harlan
+
+
+> HTH,
+>
+> Marc Schwartz
+>
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From d@n|e|@brewer @end|ng |rom |cr@@c@uk  Wed Mar 24 15:31:12 2010
+From: d@n|e|@brewer @end|ng |rom |cr@@c@uk (Daniel Brewer)
+Date: Wed, 24 Mar 2010 14:31:12 +0000
+Subject: [R-sig-DB] Bulk editing of mySQL tables
+Message-ID: <4BAA2230.1030100@icr.ac.uk>
+
+It was suggested that this would be a better place to post this than the
+main R support list
+
+-----
+
+Hello,
+
+I have started to use RMySQL and I would like to use R to make batch
+changes to data.  What it the best way to do this?  Is it to download
+the table using dbGetQuery, manipulate the data in R and then
+dbWriteTable to delete the existing table and replace it with the local
+data.
+
+What I am concerned about this is that it might lose some mySQL table
+configuration options and it isn't a very effective way to do it.
+
+An example of the sort of thing I am doing is to try and update a column
+based on a CSV file stored locally.
+
+Thanks
+
+Dan
+
+-- 
+**************************************************************
+Daniel Brewer, Ph.D.
+
+Institute of Cancer Research
+Molecular Carcinogenesis
+Email: daniel.brewer at icr.ac.uk
+**************************************************************
+
+The Institute of Cancer Research: Royal Cancer Hospital, a charitable Company Limited by Guarantee, Registered in England under Company No. 534147 with its Registered Office at 123 Old Brompton Road, London SW7 3RP.
+
+This e-mail message is confidential and for use by the a...{{dropped:2}}
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Wed Mar 24 15:52:52 2010
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Wed, 24 Mar 2010 10:52:52 -0400
+Subject: [R-sig-DB] Bulk editing of mySQL tables
+In-Reply-To: <4BAA2230.1030100@icr.ac.uk>
+References: <4BAA2230.1030100@icr.ac.uk>
+Message-ID: <264855a01003240752y5f5b931cvc963f205bab90996@mail.gmail.com>
+
+On Wed, Mar 24, 2010 at 10:31 AM, Daniel Brewer <daniel.brewer at icr.ac.uk> wrote:
+> It was suggested that this would be a better place to post this than the
+> main R support list
+>
+> -----
+>
+> Hello,
+>
+> I have started to use RMySQL and I would like to use R to make batch
+> changes to data. ?What it the best way to do this? ?Is it to download
+> the table using dbGetQuery, manipulate the data in R and then
+> dbWriteTable to delete the existing table and replace it with the local
+> data.
+>
+> What I am concerned about this is that it might lose some mySQL table
+> configuration options and it isn't a very effective way to do it.
+>
+> An example of the sort of thing I am doing is to try and update a column
+> based on a CSV file stored locally.
+
+Hi, Dan.  Perhaps you could be a bit more specific?  I think the usual
+way to do this is with a SQL update.  Is there a reason not to do
+things this way?
+
+Sean
+
+
+
+From m@rc_@chw@rtz @end|ng |rom me@com  Wed Mar 24 15:53:02 2010
+From: m@rc_@chw@rtz @end|ng |rom me@com (Marc Schwartz)
+Date: Wed, 24 Mar 2010 09:53:02 -0500
+Subject: [R-sig-DB] RODBC connection to Oracle on 64-bit RHEL box failing
+In-Reply-To: <924bb5e21003240721y5e1818b2q66bba282e19a2858@mail.gmail.com>
+References: <924bb5e21003231247qf510cdaq70bb23f21d296b43@mail.gmail.com>
+	<C6DFDC86-7D92-4632-AA52-3D50DC4D520D@me.com>
+	<924bb5e21003240721y5e1818b2q66bba282e19a2858@mail.gmail.com>
+Message-ID: <3758523A-6CAC-48B7-9DDB-FB2051CA94D6@me.com>
+
+On Mar 24, 2010, at 9:21 AM, Harlan Harris wrote:
+
+> Marc, thanks very much...
+> 
+> 
+> On Wed, Mar 24, 2010 at 9:44 AM, Marc Schwartz <marc_schwartz at me.com> wrote:
+> Is Actual making a 64 bit Oracle ODBC driver available?  I had not seen anything on that and had in fact queried them some time ago specifically on the availability of one. I use their 32 bit version on Snow Leopard.
+> 
+> Jonathan Monroe at Actual said on 3/5 that they would be releasing it "later next week", which obviously didn't happen. The beta is available at: http://www.actualtechnologies.com/downloads/Actual_Oracle30_rc3_beta.dmg
+> 
+> It works well enough for the command line unixODBC tools to successfully pull data, anyway.
+
+
+Interesting. Monroe is the guy that I had communicated with last year on this point. Presumably either they were not yet ready to announce anything and/or it was still on their TODO list.
+
+Can the 64 bit driver co-exist with the 32 bit driver or is it a choice of one or the other? In other words, can I create 32 bit and 64 bit DSN's separately, so that I can use either 32 bit or 64 bit R as I may need interchangeably?
+
+
+> 
+> Two comments:
+> 
+> 1. The segfault is indeed typically a consequence of a mix of 32/64 bit tools. That being said, I am not seeing anything obvious to suggest that one component or another is 32 bit.  You might want to check your environment variables (eg. LD_LIBRARY_PATH, PATH or one of the Oracle variables) or that there is an entry in /etc/ld.so.conf that is pointing to a 32 bit version of either Oracle's files or unixODBC. Also, be sure that any relevant entries in odbcinst.ini and odbc.ini are also pointing to the proper Oracle ODBC drivers.
+> 
+> OK, we'll look around for issues there, and will report back if we find anything.
+
+
+Look forward to anything that you find.
+
+> 
+> 
+> 2. If you manage to solve the above problem, you have another potential hurdle in front of you, which is that there have been reports of problems connecting to Oracle using 64 bit R/RODBC on 64 bit Linux. It would be helpful, if you do solve the above issue, to try to connect and to see what level of success you have. Prof. Ripley is aware of the issue and either is or will shortly be testing the 64 bit toolchain on Linux to see if he can identify the etiology of the problem and perhaps offer a fix or workaround.
+> 
+> Yes, I saw the earlier bug report. I'll keep the list updated.
+>  
+> I have not used ROracle, but others have and seem to have good luck with it. I would not let the last version dates of either unixODBC or ROracle sway your opinion. If the components are pretty stable and are not influenced by updates on the R or Oracle end of things, there may very well be no reason to update them. But I would certainly defer to the respective maintainers on those points.
+> 
+> I tried to install ROracle, but it failed because "proc" was not installed. I see that it's a separate Oracle software piece, and we will try to install that to see if it helps. 
+> 
+> It sounds like RODBC is actively being supported, although we're concerned that one person with a day job is the only developer able to work on the Oracle components. (Prof. Ripley is superhuman, admittedly, but there's only one of him!) Is the maintainer of ROracle, David James, on this mailing list?
+
+
+I would certainly never speak for Prof. Ripley, but I can tell you that during my 8+ years of using R, whether it be via onlist postings or my periodic offlist communications with him, I have never had a reason to doubt his availability or responsiveness when it comes to anything R related, whether that be 'base R' as a member of R Core, or the other packages that he maintains. That experience includes both day and night for any given time zone...
+
+I checked the archives and at least recently, don't see a post here from David after late 2008, but I would not hesitate to send him an e-mail directly, which appears to be daj025 at gmail.com or dj at bell-labs.com.
+
+
+Marc
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From h@r|@n @end|ng |rom h@rr|@@n@me  Wed Mar 24 16:02:05 2010
+From: h@r|@n @end|ng |rom h@rr|@@n@me (Harlan Harris)
+Date: Wed, 24 Mar 2010 11:02:05 -0400
+Subject: [R-sig-DB] RODBC connection to Oracle on 64-bit RHEL box failing
+In-Reply-To: <3758523A-6CAC-48B7-9DDB-FB2051CA94D6@me.com>
+References: <924bb5e21003231247qf510cdaq70bb23f21d296b43@mail.gmail.com> 
+	<C6DFDC86-7D92-4632-AA52-3D50DC4D520D@me.com>
+	<924bb5e21003240721y5e1818b2q66bba282e19a2858@mail.gmail.com> 
+	<3758523A-6CAC-48B7-9DDB-FB2051CA94D6@me.com>
+Message-ID: <924bb5e21003240802g554958e9h61e40bb7c5f957ab@mail.gmail.com>
+
+On Wed, Mar 24, 2010 at 10:53 AM, Marc Schwartz <marc_schwartz at me.com>wrote:
+
+> Interesting. Monroe is the guy that I had communicated with last year on
+> this point. Presumably either they were not yet ready to announce anything
+> and/or it was still on their TODO list.
+>
+> Can the 64 bit driver co-exist with the 32 bit driver or is it a choice of
+> one or the other? In other words, can I create 32 bit and 64 bit DSN's
+> separately, so that I can use either 32 bit or 64 bit R as I may need
+> interchangeably?
+>
+
+I have no idea! :)
+
+
+> I would certainly never speak for Prof. Ripley, but I can tell you that
+> during my 8+ years of using R, whether it be via onlist postings or my
+> periodic offlist communications with him, I have never had a reason to doubt
+> his availability or responsiveness when it comes to anything R related,
+> whether that be 'base R' as a member of R Core, or the other packages that
+> he maintains. That experience includes both day and night for any given time
+> zone...
+>
+
+In theory I agree, but if (heaven forbid) Prof. Ripley were hit by a bus,
+this could never get fixed. That's not true for R as a whole (see that
+interesting article in a recent R Journal), but it is true for a number of
+non-core packages... And Oracle is not very high on the list of databases
+used by R's core user base!
+
+
+> I checked the archives and at least recently, don't see a post here from
+> David after late 2008, but I would not hesitate to send him an e-mail
+> directly, which appears to be daj025 at gmail.com or dj at bell-labs.com.
+>
+
+Ah, thanks, will do.
+
+ -Harlan
+
+
+>
+>
+> Marc
+>
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Wed Mar 24 16:29:04 2010
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Wed, 24 Mar 2010 11:29:04 -0400
+Subject: [R-sig-DB] Bulk editing of mySQL tables
+In-Reply-To: <4BAA2BA6.6080002@icr.ac.uk>
+References: <4BAA2230.1030100@icr.ac.uk>
+	<264855a01003240752y5f5b931cvc963f205bab90996@mail.gmail.com>
+	<4BAA2BA6.6080002@icr.ac.uk>
+Message-ID: <264855a01003240829t2716450ascc25727515eab5f6@mail.gmail.com>
+
+On Wed, Mar 24, 2010 at 11:11 AM, Daniel Brewer <daniel.brewer at icr.ac.uk> wrote:
+> On 24/03/2010 2:52 PM, Sean Davis wrote:
+>> On Wed, Mar 24, 2010 at 10:31 AM, Daniel Brewer <daniel.brewer at icr.ac.uk> wrote:
+>>> It was suggested that this would be a better place to post this than the
+>>> main R support list
+>>>
+>>> -----
+>>>
+>>> Hello,
+>>>
+>>> I have started to use RMySQL and I would like to use R to make batch
+>>> changes to data. ?What it the best way to do this? ?Is it to download
+>>> the table using dbGetQuery, manipulate the data in R and then
+>>> dbWriteTable to delete the existing table and replace it with the local
+>>> data.
+>>>
+>>> What I am concerned about this is that it might lose some mySQL table
+>>> configuration options and it isn't a very effective way to do it.
+>>>
+>>> An example of the sort of thing I am doing is to try and update a column
+>>> based on a CSV file stored locally.
+>>
+>> Hi, Dan. ?Perhaps you could be a bit more specific? ?I think the usual
+>> way to do this is with a SQL update. ?Is there a reason not to do
+>> things this way?
+>>
+>> Sean
+>
+> Hi Sean,
+
+I'm no expert here, so these are just my opinions....
+
+> Well I was thinking of a number of different use cases:
+> 1) I have got some additional information for example gender for a
+> particular subset of patients that I would like to merge in with a
+> complex ID link between the two.
+
+For this case, a temp table certainly makes sense, but this could be
+done with multiple update statements as well, I think.
+
+> 2) Performing batch operations on the data for example taking a subset
+> that meets a ?certain criteria and say, capitalising a particular field.
+
+For this, SQL vendor extensions can often be useful.  In other
+databases (not MySQL), you can create stored procedures written in R,
+python, perl, etc. to do your complex manipulations within the
+database.
+
+> For the process I am doing at the moment I am downloading the table,
+> manipulating the fields as required, then uploading those fields to a
+> temporary table and then doing an update i.e.
+
+Keep in mind that this breaks ACID compliance unless you do something
+more to lock the database against changes or if you aren't every
+worried about the data changing underneath you.
+
+> dbWriteTable(conn, "clintmp", unique(yoda[yoda$HospitalNum !=
+> 999999,c(4:5,8)]))
+> dbSendQuery(conn, "UPDATE ClinicalData cd, clintmp t SET
+> cd.Number=t.HospitalNum WHERE cd.ID=t.ID AND cd.Anonymised_ID =
+> t.Anonymised_ID")
+>
+> Maybe R is the tool for the job but I much prefer its data manipulation
+> to raw mySQL, so that is why I am exploring the area.
+
+Yep.  R is quite nice for data munging.
+
+Sean
+
+
+
+From d@n|e|@brewer @end|ng |rom |cr@@c@uk  Wed Mar 24 17:41:53 2010
+From: d@n|e|@brewer @end|ng |rom |cr@@c@uk (Daniel Brewer)
+Date: Wed, 24 Mar 2010 16:41:53 +0000
+Subject: [R-sig-DB] Bulk editing of mySQL tables
+In-Reply-To: <264855a01003240829t2716450ascc25727515eab5f6@mail.gmail.com>
+References: <4BAA2230.1030100@icr.ac.uk>	
+	<264855a01003240752y5f5b931cvc963f205bab90996@mail.gmail.com>	
+	<4BAA2BA6.6080002@icr.ac.uk>
+	<264855a01003240829t2716450ascc25727515eab5f6@mail.gmail.com>
+Message-ID: <4BAA40D1.60202@icr.ac.uk>
+
+
+
+On 24/03/2010 3:29 PM, Sean Davis wrote:
+> On Wed, Mar 24, 2010 at 11:11 AM, Daniel Brewer <daniel.brewer at icr.ac.uk> wrote:
+>> On 24/03/2010 2:52 PM, Sean Davis wrote:
+>>> On Wed, Mar 24, 2010 at 10:31 AM, Daniel Brewer <daniel.brewer at icr.ac.uk> wrote:
+>>>> It was suggested that this would be a better place to post this than the
+>>>> main R support list
+>>>>
+>>>> -----
+>>>>
+>>>> Hello,
+>>>>
+>>>> I have started to use RMySQL and I would like to use R to make batch
+>>>> changes to data.  What it the best way to do this?  Is it to download
+>>>> the table using dbGetQuery, manipulate the data in R and then
+>>>> dbWriteTable to delete the existing table and replace it with the local
+>>>> data.
+>>>>
+>>>> What I am concerned about this is that it might lose some mySQL table
+>>>> configuration options and it isn't a very effective way to do it.
+>>>>
+>>>> An example of the sort of thing I am doing is to try and update a column
+>>>> based on a CSV file stored locally.
+>>>
+>>> Hi, Dan.  Perhaps you could be a bit more specific?  I think the usual
+>>> way to do this is with a SQL update.  Is there a reason not to do
+>>> things this way?
+>>>
+>>> Sean
+>>
+>> Hi Sean,
+> 
+> I'm no expert here, so these are just my opinions....
+> 
+>> Well I was thinking of a number of different use cases:
+>> 1) I have got some additional information for example gender for a
+>> particular subset of patients that I would like to merge in with a
+>> complex ID link between the two.
+> 
+> For this case, a temp table certainly makes sense, but this could be
+> done with multiple update statements as well, I think.
+> 
+>> 2) Performing batch operations on the data for example taking a subset
+>> that meets a  certain criteria and say, capitalising a particular field.
+> 
+> For this, SQL vendor extensions can often be useful.  In other
+> databases (not MySQL), you can create stored procedures written in R,
+> python, perl, etc. to do your complex manipulations within the
+> database.
+> 
+>> For the process I am doing at the moment I am downloading the table,
+>> manipulating the fields as required, then uploading those fields to a
+>> temporary table and then doing an update i.e.
+> 
+> Keep in mind that this breaks ACID compliance unless you do something
+> more to lock the database against changes or if you aren't every
+> worried about the data changing underneath you.
+> 
+>> dbWriteTable(conn, "clintmp", unique(yoda[yoda$HospitalNum !=
+>> 999999,c(4:5,8)]))
+>> dbSendQuery(conn, "UPDATE ClinicalData cd, clintmp t SET
+>> cd.Number=t.HospitalNum WHERE cd.ID=t.ID AND cd.Anonymised_ID =
+>> t.Anonymised_ID")
+>>
+>> Maybe R is the tool for the job but I much prefer its data manipulation
+>> to raw mySQL, so that is why I am exploring the area.
+> 
+> Yep.  R is quite nice for data munging.
+> 
+> Sean
+
+Hi Sean,
+
+Well I was thinking of a number of different use cases:
+1) I have got some additional information for example gender for a
+particular subset of patients that I would like to merge in with a
+complex ID link between the two.
+2) Performing batch operations on the data for example taking a subset
+that meets a  certain criteria and say, capitalising a particular field.
+
+For the process I am doing at the moment I am downloading the table,
+manipulating the fields as required, then uploading those fields to a
+temporary table and then doing an update i.e.
+dbWriteTable(conn, "clintmp", unique(yoda[yoda$HospitalNum !=
+999999,c(4:5,8)]))
+dbSendQuery(conn, "UPDATE ClinicalData cd, clintmp t SET
+cd.Number=t.HospitalNum WHERE cd.ID=t.ID AND cd.Anonymised_ID =
+t.Anonymised_ID")
+
+Maybe R is the tool for the job but I much prefer its data manipulation
+to raw mySQL, so that is why I am exploring the area.
+
+Thanks
+
+Dan
+
+The Institute of Cancer Research: Royal Cancer Hospital, a charitable Company Limited by Guarantee, Registered in England under Company No. 534147 with its Registered Office at 123 Old Brompton Road, London SW7 3RP.
+
+This e-mail message is confidential and for use by the a...{{dropped:2}}
+
+
+
+From @tp @end|ng |rom p|@kor@k|@com  Thu Mar 25 20:28:49 2010
+From: @tp @end|ng |rom p|@kor@k|@com (Andrew Piskorski)
+Date: Thu, 25 Mar 2010 15:28:49 -0400
+Subject: [R-sig-DB] Timestamp with time zone type conversion from
+	PostgreSQL to R
+In-Reply-To: <4B960D48.6030208@oma.be>
+References: <4B960D48.6030208@oma.be>
+Message-ID: <20100325192849.GA94049@piskorski.com>
+
+On Tue, Mar 09, 2010 at 09:56:40AM +0100, Koen Stegen wrote:
+
+>     # The input: any day, midnight, in UTC
+>     query = "SELECT TIMESTAMP WITH TIME ZONE '1999-12-31 00:00:00 UTC'"
+>     result = dbGetQuery(databaseConnection, query)
+> 
+>     # The problem:
+>     strftime(result$timestamptz, usetz=TRUE)  # prints:"1999-12-31 01:00:00 UTC"
+>     as.numeric(result$timestamptz)            # prints: 946602000
+> 
+> The value of strftime is 1 am instead of midnight. The numeric value is 3600
+> seconds higher than I expect, so it is not *just* a display problem.
+
+Koen, I don't know if it's related to your problem or not, but R,
+without any use of PostgreSQL at all, seems to sometimes have trouble
+correctly formatting POSIX time values.  Note:
+
+  > as.integer(Sys.time()) 
+  [1] 1269544425 
+  > format(Sys.time() ,'%Y-%m-%d %T %z') 
+  [1] "2010-03-25 15:13:45 +0000" 
+  > format(Sys.time() ,'%Y-%m-%d %T %Z') 
+  [1] "2010-03-25 15:13:45 EDT" 
+
+That's with:
+  R 2.9.2 (Patched), 2009-09-24, svn.rev 50183, x86_64-unknown-linux-gnu
+
+I am currently in the EDT (Eastern Daylight Time) timezone, and the
+output of the "%Z" format above is correct.  However, the "%z" is
+wrong, EDT is UTC -4, not +0.
+
+-- 
+Andrew Piskorski <atp at piskorski.com>
+http://www.piskorski.com/
+
+
+
+From b@te@ @end|ng |rom @t@t@w|@c@edu  Fri Mar 26 00:05:22 2010
+From: b@te@ @end|ng |rom @t@t@w|@c@edu (Douglas Bates)
+Date: Thu, 25 Mar 2010 18:05:22 -0500
+Subject: [R-sig-DB] Extend dbWriteTable to specify a primary key
+Message-ID: <40e66e0b1003251605u48e15799g7bde4d0bfd6c5ee7@mail.gmail.com>
+
+I am going to create a view from a select over several tables that are
+created in R.  I purposely generate a value suitable as a primary key
+in these tables but I have not decided how to specify it in a
+dbWriteTable.  Instead I go through a complicated operation of
+creating the table with a few records, dumping the create table
+definition that was used, editing it to declare the primary key,
+dropping the table, creating the table from SQL with the primary key
+and then using dbWriteTable with append = TRUE.
+
+Is there a better way?  This seems somewhat baroque. If no better way
+currently exists would it be reasonable to specify a primary key in a
+dbWriteTable call.
+
+I should say that I am using RSQLite and SQLite apparently doesn't
+allow you to declare a primary key in an ALTER TABLE statement.
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Fri Mar 26 01:20:31 2010
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Thu, 25 Mar 2010 20:20:31 -0400
+Subject: [R-sig-DB] Extend dbWriteTable to specify a primary key
+In-Reply-To: <40e66e0b1003251605u48e15799g7bde4d0bfd6c5ee7@mail.gmail.com>
+References: <40e66e0b1003251605u48e15799g7bde4d0bfd6c5ee7@mail.gmail.com>
+Message-ID: <971536df1003251720k31049c1fle2ad3d44001b7734@mail.gmail.com>
+
+You don't have to define column types when you create a table in
+SQLite so this works:
+
+s <- sprintf("create table %s(%s, primary key(%s))", "DF",
+		paste(names(DF), collapse = ", "),
+		names(DF)[1])
+dbGetQuery(con, s)
+dbWriteTable(con, "DF", DF, append = TRUE, row.names = FALSE)
+
+On Thu, Mar 25, 2010 at 7:05 PM, Douglas Bates <bates at stat.wisc.edu> wrote:
+> I am going to create a view from a select over several tables that are
+> created in R. ?I purposely generate a value suitable as a primary key
+> in these tables but I have not decided how to specify it in a
+> dbWriteTable. ?Instead I go through a complicated operation of
+> creating the table with a few records, dumping the create table
+> definition that was used, editing it to declare the primary key,
+> dropping the table, creating the table from SQL with the primary key
+> and then using dbWriteTable with append = TRUE.
+>
+> Is there a better way? ?This seems somewhat baroque. If no better way
+> currently exists would it be reasonable to specify a primary key in a
+> dbWriteTable call.
+>
+> I should say that I am using RSQLite and SQLite apparently doesn't
+> allow you to declare a primary key in an ALTER TABLE statement.
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From b@te@ @end|ng |rom @t@t@w|@c@edu  Fri Mar 26 01:28:55 2010
+From: b@te@ @end|ng |rom @t@t@w|@c@edu (Douglas Bates)
+Date: Thu, 25 Mar 2010 19:28:55 -0500
+Subject: [R-sig-DB] Extend dbWriteTable to specify a primary key
+In-Reply-To: <971536df1003251720k31049c1fle2ad3d44001b7734@mail.gmail.com>
+References: <40e66e0b1003251605u48e15799g7bde4d0bfd6c5ee7@mail.gmail.com>
+	<971536df1003251720k31049c1fle2ad3d44001b7734@mail.gmail.com>
+Message-ID: <40e66e0b1003251728r2937d13fga725bd8f7225507a@mail.gmail.com>
+
+On Thu, Mar 25, 2010 at 7:20 PM, Gabor Grothendieck
+<ggrothendieck at gmail.com> wrote:
+> You don't have to define column types when you create a table in
+> SQLite so this works:
+>
+> s <- sprintf("create table %s(%s, primary key(%s))", "DF",
+> ? ? ? ? ? ? ? ?paste(names(DF), collapse = ", "),
+> ? ? ? ? ? ? ? ?names(DF)[1])
+> dbGetQuery(con, s)
+> dbWriteTable(con, "DF", DF, append = TRUE, row.names = FALSE)
+
+Thanks.
+
+> On Thu, Mar 25, 2010 at 7:05 PM, Douglas Bates <bates at stat.wisc.edu> wrote:
+>> I am going to create a view from a select over several tables that are
+>> created in R. ?I purposely generate a value suitable as a primary key
+>> in these tables but I have not decided how to specify it in a
+>> dbWriteTable. ?Instead I go through a complicated operation of
+>> creating the table with a few records, dumping the create table
+>> definition that was used, editing it to declare the primary key,
+>> dropping the table, creating the table from SQL with the primary key
+>> and then using dbWriteTable with append = TRUE.
+>>
+>> Is there a better way? ?This seems somewhat baroque. If no better way
+>> currently exists would it be reasonable to specify a primary key in a
+>> dbWriteTable call.
+>>
+>> I should say that I am using RSQLite and SQLite apparently doesn't
+>> allow you to declare a primary key in an ALTER TABLE statement.
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at stat.math.ethz.ch
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+>
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Fri Mar 26 01:39:15 2010
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Thu, 25 Mar 2010 17:39:15 -0700
+Subject: [R-sig-DB] Extend dbWriteTable to specify a primary key
+In-Reply-To: <40e66e0b1003251728r2937d13fga725bd8f7225507a@mail.gmail.com>
+References: <40e66e0b1003251605u48e15799g7bde4d0bfd6c5ee7@mail.gmail.com>	<971536df1003251720k31049c1fle2ad3d44001b7734@mail.gmail.com>
+	<40e66e0b1003251728r2937d13fga725bd8f7225507a@mail.gmail.com>
+Message-ID: <4BAC0233.9070409@userprimary.net>
+
+On 3/25/10 5:28 PM, Douglas Bates wrote:
+> On Thu, Mar 25, 2010 at 7:20 PM, Gabor Grothendieck
+> <ggrothendieck at gmail.com>  wrote:
+>> You don't have to define column types when you create a table in
+>> SQLite so this works:
+>>
+>> s<- sprintf("create table %s(%s, primary key(%s))", "DF",
+>>                 paste(names(DF), collapse = ", "),
+>>                 names(DF)[1])
+>> dbGetQuery(con, s)
+>> dbWriteTable(con, "DF", DF, append = TRUE, row.names = FALSE)
+>
+> Thanks.
+
+You might find a read through the SQLite docs on table creation helpful:
+http://sqlite.org/lang_createtable.html
+
+In current versions of SQLite, a column declared as primary key is 
+allowed to have NULL.  The table will get an additional key column 
+accessible as ROWID that is used internally.  You can specify INTEGER 
+PRIMARY KEY in which case values must not be null and this will be an 
+alias for ROWID.
+
++ seth
+
+>
+>> On Thu, Mar 25, 2010 at 7:05 PM, Douglas Bates<bates at stat.wisc.edu>  wrote:
+>>> I am going to create a view from a select over several tables that are
+>>> created in R.  I purposely generate a value suitable as a primary key
+>>> in these tables but I have not decided how to specify it in a
+>>> dbWriteTable.  Instead I go through a complicated operation of
+>>> creating the table with a few records, dumping the create table
+>>> definition that was used, editing it to declare the primary key,
+>>> dropping the table, creating the table from SQL with the primary key
+>>> and then using dbWriteTable with append = TRUE.
+>>>
+>>> Is there a better way?  This seems somewhat baroque. If no better way
+>>> currently exists would it be reasonable to specify a primary key in a
+>>> dbWriteTable call.
+>>>
+>>> I should say that I am using RSQLite and SQLite apparently doesn't
+>>> allow you to declare a primary key in an ALTER TABLE statement.
+>>>
+>>> _______________________________________________
+>>> R-sig-DB mailing list -- R Special Interest Group
+>>> R-sig-DB at stat.math.ethz.ch
+>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>>
+>>
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+-- 
+Seth Falcon | @sfalcon | http://userprimary.net/
+
+
+

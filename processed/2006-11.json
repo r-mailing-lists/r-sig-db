@@ -1,0 +1,227 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2006-11",
+  "messages": [
+    {
+      "id": "msg-bb5acad67143",
+      "message_id": "<m2lkmqg6fz.fsf_-_@ziti.local>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2006-11-04T15:04:00-08:00",
+      "subject": "[R-sig-DB] RSQLite enhancements UPDATED",
+      "subject_clean": "RSQLite enhancements UPDATED",
+      "in_reply_to": "<m2fydazt58.fsf@ziti.local> (Seth Falcon's message of \"Thu, 26 Oct 2006 14:03:47 -0700\")",
+      "references": [
+        "<2AB7346A3227A74BB97F9A0D79E3E65A065155@mailserver.kalyptorisk.com>",
+        "<m2fydazt58.fsf@ziti.local>"
+      ],
+      "body_plain": "Hi all,\n\nI have applied Ashish's enhacement patches (with some important fixes\non top).  I would love to hear feedback from anyone who can try out\nthe new package before we push it to CRAN.\n\nThe new stuff is in svn:\n\n   https://hedgehog.fhcrc.org/compbio/r-dbi/trunk/SQLite/RSQLite\n\n   user: readonly\n   pass: readonly\n\nOr you can grab 0.4-11 from here:\n\n   http://www.bioconductor.org/packages/misc\n\n\nThis update includes two significant speed improvements:\n\n1. Transactions.  By default, SQLite operates in auto-commit mode.\n   This means that each SQL statement sent to the DB is immediately\n   committed.  If you are doing many INSERTS or UPDATES, it is _much_\n   faster to start a transaction (which turns of auto-commit), do the\n   changes, and then commit.  Here's an example:\n\n   dbBeginTransaction(db)\n   ## execute many update queries here\n   dbCommit(db)\n\n   Note also that if an error occurs along the way, you can also use\n   dbRollback to undo to where you issued the begin transaction.\n\n2. Prepared queries and bound parameters.  This will also speed\n   inserts and updates.  Instead of looping on calls to dbGetQuery,\n   you can instead collect the data in a data.frame and make one call\n   to the DB.  Here's a simple example:\n\n   df <- data.frame(a=x, b=y, c=z)\n   dbBeginTransaction(db)\n   dbGetPreparedQuery(db, \n                      \"update points set xpos = :a, ypos = :b where flag = :c\",\n                      bind.data=df)\n   dbCommit(db)\n\n\nBest Wishes,\n\n+ seth",
+      "body_snippet": "Hi all,\n\nI have applied Ashish's enhacement patches (with some important fixes\non top).  I would love to hear feedback from anyone who can try out\nthe new package before we push it to CRAN.\n\nThe new s",
+      "thread_id": "thread-bb5acad67143",
+      "thread_depth": 0,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-81c06376ce99",
+      "message_id": "<49B2A836-C817-4FEE-B2E9-F269134C3061@ebi.ac.uk>",
+      "from_name": "Richard Bourgon",
+      "from_email_hash": "5f8dce006627a918184628122a81261b092c104b0bf62715ba315b44949b20c9",
+      "date": "2006-11-06T13:33:58Z",
+      "subject": "[R-sig-DB] Segmentation faults using RSQLite",
+      "subject_clean": "Segmentation faults using RSQLite",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I'm relatively new to accessing databases from within R, and have  \nbeen having trouble with segmentation faults when using RSQLite.\n\nMy application requires a single table of doubles with 225 columns  \nand about 6M rows. The following session transcript mimics this  \ntable, and consistently produces errors: sometimes an immediate seg  \nfault, and sometimes one of several odd but non-critical error  \nmessages, an example of which appears below. (In the latter case, if  \nI try to rerun the bit that generated the error, then I usually get  \nthe seg fault.)\n\nSmall numbers of retrievals always work fine (i.e., the single  \n\"get_table()\" call below, or looping only 50 or 100 times), while  \nlarge numbers lead to the errors. If I reduce the number of columns  \nin the table, I also seem to avoid the errors.\n\nSome version info is given below, but please let me know if anything  \nelse would be helpful. I didn't use the fancy options when installing  \nthe RSQLite package, so as best I can tell, it's using the compiled  \nlibrary that gets built in the sqlite/lib directory, inside the  \npackage's own directory.\n\nAny advice would be greatly appreciated.\n\n- Richard\n\n**** R session transcript\n\n > version\n                _\nplatform       x86_64-unknown-linux-gnu\narch           x86_64\nos             linux-gnu\nsystem         x86_64, linux-gnu\nstatus\nmajor          2\nminor          4.0\nyear           2006\nmonth          10\nday            03\nsvn rev        39566\nlanguage       R\nversion.string R version 2.4.0 (2006-10-03)\n > installed.packages()[installed.packages()[,\"Package\"] %in% c \n(\"RSQLite\",\"DBI\"), c(1,3,10)]\n         Package   Version  Built\nDBI     \"DBI\"     \"0.1-11\" \"2.4.0\"\nRSQLite \"RSQLite\" \"0.4-9\"  \"2.4.0\"\n > library( RSQLite )\nLoading required package: DBI\n > drv <- SQLite()\n > con <- dbConnect( drv, \"testing.db\" )\n > table.name <- \"testing\"\n > data <- as.data.frame( matrix( rnorm( 225000 ), ncol = 225 ) )\n > dbWriteTable( con, \"testing\", data, row.names = F, overwrite = T )\n[1] TRUE\n > get_data <- function( indices, con, table_name ) {\n+   query <- paste(\n+                  \"select * from\",\n+                  table_name,\n+                  \"where _ROWID_ in (\",\n+                  paste( indices, collapse = \",\" ),\n+                  \")\"\n+                  )\n+   dbGetQuery( con, query )\n+ }\n > get_data( 1:3, con, table.name )[,1:5]\n           V1          V2         V3       V4         V5\n1 -1.8803772  1.00073121 -0.3496548 1.027102 -0.7882639\n2 -0.9140920 -0.02242254 -1.4682685 0.375063 -0.6137175\n3  0.4243143 -0.15502231  1.6846590 1.210313 -0.4726484\n > # No error with just one interation\n > temp <- lapply( 1:50, function(i) get_data( 1:3, con, table.name ) )\n > # No error with 50 iterations\n > temp <- lapply( 1:2000, function(i) get_data( 1:3, con,  \ntable.name ) )\nError in sqliteResultInfo(dbObj, ...) : SET_STRING_ELT() can only be  \napplied to a 'character vector', not a 'NULL'\n > # Rerunning now typically generates a segmentation fault\n > temp <- lapply( 1:2000, function(i) get_data( 1:3, con,  \ntable.name ) )\n\n*** caught segfault ***\naddress 0x2, cause 'memory not mapped'\n\nTraceback:\n1: sqliteResultInfo(dbObj, ...)\n2: dbGetInfo(res, \"completed\")\n3: dbGetInfo(res, \"completed\")\n4: .class1(object)\n5: .class1(object)\n6: is(object, Cl)\n7: .valueClassTest(standardGeneric(\"dbHasCompleted\"), \"logical\",  \n\"dbHasCompleted\")\n8: dbHasCompleted(rs)\n9: sqliteQuickSQL(conn, statement, ...)\n10: dbGetQuery(con, query)\n11: dbGetQuery(con, query)\n12: get_data(1:3, con, table.name)\n13: FUN(c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, <truncated>, 1998, 1999,  \n2000)[[152]], ...)\n14: lapply(1:2000, function(i) get_data(1:3, con, table.name))\n\nPossible actions:\n1: abort (with core dump)\n2: normal R exit\n3: exit R without saving workspace\n4: exit R saving workspace\nSelection: 3\n\nProcess R exited abnormally with code 70 at Mon Nov  6 12:22:14 2006",
+      "body_snippet": "I'm relatively new to accessing databases from within R, and have  \nbeen having trouble with segmentation faults when using RSQLite.\n\nMy application requires a single table of doubles with 225 columns",
+      "thread_id": "thread-81c06376ce99",
+      "thread_depth": 0,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-67c428a71379",
+      "message_id": "<C7A6E9B7-A925-41B2-9CA3-4833527BF185@ebi.ac.uk>",
+      "from_name": "Richard Bourgon",
+      "from_email_hash": "5f8dce006627a918184628122a81261b092c104b0bf62715ba315b44949b20c9",
+      "date": "2006-11-06T14:05:32Z",
+      "subject": "[R-sig-DB] Segmentation faults using RSQLite",
+      "subject_clean": "Segmentation faults using RSQLite",
+      "in_reply_to": "<454F3B39.7020701@ebi.ac.uk>",
+      "references": [
+        "<2866AE9DFC6DE24B9338B6CA00DA6634A15794@dkfzex2.ad.dkfz-heidelberg.de>",
+        "<454F3B39.7020701@ebi.ac.uk>"
+      ],
+      "body_plain": "library( RSQLite )\n\n######## Open\n\ndrv <- SQLite()\ncon <- dbConnect( drv, \"testing.db\" )\ntable.name <- \"testing\"\n\n######## Create a test database\n\ndata <- as.data.frame( matrix( rnorm( 225000 ), ncol = 225 ) )\ndbWriteTable( con, \"testing\", data, row.names = F, overwrite = T )\n\n######## My retrieval function\n\nget_data <- function( indices, con, table_name ) {\n   query <- paste(\n                  \"select * from\",\n                  table_name,\n                  \"where _ROWID_ in (\",\n                  paste( indices, collapse = \",\" ),\n                  \")\"\n                  )\n   dbGetQuery( con, query )\n}\n\n######## Testing\n\nget_data( 1:3, con, table.name )[,1:5]\ntemp <- lapply( 1:50, function(i) get_data( 1:3, con, table.name ) )\ntemp <- lapply( 1:2000, function(i) get_data( 1:3, con, table.name ) )\n\n\nOn 6 Nov 2006, at 13:40, Wolfgang Huber wrote:\n\n> Great. Just a tiny little piece of comment - as an extra service, you\n> might attach the script that reproduces the problem without the \">\"  \n> and\n> \"+\" so that people can directly copy-paste it.\n>  Cheers\n>  Wolfgang\n>\n>> -------------------------------------------\n>> From: r-sig-db-bounces at stat.math.ethz.ch on behalf of Richard  \n>> Bourgon[SMTP:BOURGON at EBI.AC.UK]\n>> Sent: Monday, November 06, 2006 2:33:58 PM\n>> To: r-sig-db at stat.math.ethz.ch\n>> Subject: [R-sig-DB] Segmentation faults using RSQLite\n>> Auto forwarded by a Rule\n>>\n>> I'm relatively new to accessing databases from within R, and have\n>> been having trouble with segmentation faults when using RSQLite.\n>>\n>> My application requires a single table of doubles with 225 columns\n>> and about 6M rows. The following session transcript mimics this\n>> table, and consistently produces errors: sometimes an immediate seg\n>> fault, and sometimes one of several odd but non-critical error\n>> messages, an example of which appears below. (In the latter case, if\n>> I try to rerun the bit that generated the error, then I usually get\n>> the seg fault.)\n>>\n>> Small numbers of retrievals always work fine (i.e., the single\n>> \"get_table()\" call below, or looping only 50 or 100 times), while\n>> large numbers lead to the errors. If I reduce the number of columns\n>> in the table, I also seem to avoid the errors.\n>>\n>> Some version info is given below, but please let me know if anything\n>> else would be helpful. I didn't use the fancy options when installing\n>> the RSQLite package, so as best I can tell, it's using the compiled\n>> library that gets built in the sqlite/lib directory, inside the\n>> package's own directory.\n>>\n>> Any advice would be greatly appreciated.\n>>\n>> - Richard\n>>\n>> **** R session transcript\n>>\n>>> version\n>>                 _\n>> platform       x86_64-unknown-linux-gnu\n>> arch           x86_64\n>> os             linux-gnu\n>> system         x86_64, linux-gnu\n>> status\n>> major          2\n>> minor          4.0\n>> year           2006\n>> month          10\n>> day            03\n>> svn rev        39566\n>> language       R\n>> version.string R version 2.4.0 (2006-10-03)\n>>> installed.packages()[installed.packages()[,\"Package\"] %in% c\n>> (\"RSQLite\",\"DBI\"), c(1,3,10)]\n>>          Package   Version  Built\n>> DBI     \"DBI\"     \"0.1-11\" \"2.4.0\"\n>> RSQLite \"RSQLite\" \"0.4-9\"  \"2.4.0\"\n>>> library( RSQLite )\n>> Loading required package: DBI\n>>> drv <- SQLite()\n>>> con <- dbConnect( drv, \"testing.db\" )\n>>> table.name <- \"testing\"\n>>> data <- as.data.frame( matrix( rnorm( 225000 ), ncol = 225 ) )\n>>> dbWriteTable( con, \"testing\", data, row.names = F, overwrite = T )\n>> [1] TRUE\n>>> get_data <- function( indices, con, table_name ) {\n>> +   query <- paste(\n>> +                  \"select * from\",\n>> +                  table_name,\n>> +                  \"where _ROWID_ in (\",\n>> +                  paste( indices, collapse = \",\" ),\n>> +                  \")\"\n>> +                  )\n>> +   dbGetQuery( con, query )\n>> + }\n>>> get_data( 1:3, con, table.name )[,1:5]\n>>            V1          V2         V3       V4         V5\n>> 1 -1.8803772  1.00073121 -0.3496548 1.027102 -0.7882639\n>> 2 -0.9140920 -0.02242254 -1.4682685 0.375063 -0.6137175\n>> 3  0.4243143 -0.15502231  1.6846590 1.210313 -0.4726484\n>>> # No error with just one interation\n>>> temp <- lapply( 1:50, function(i) get_data( 1:3, con, table.name ) )\n>>> # No error with 50 iterations\n>>> temp <- lapply( 1:2000, function(i) get_data( 1:3, con,\n>> table.name ) )\n>> Error in sqliteResultInfo(dbObj, ...) : SET_STRING_ELT() can only be\n>> applied to a 'character vector', not a 'NULL'\n>>> # Rerunning now typically generates a segmentation fault\n>>> temp <- lapply( 1:2000, function(i) get_data( 1:3, con,\n>> table.name ) )\n>>\n>> *** caught segfault ***\n>> address 0x2, cause 'memory not mapped'\n>>\n>> Traceback:\n>> 1: sqliteResultInfo(dbObj, ...)\n>> 2: dbGetInfo(res, \"completed\")\n>> 3: dbGetInfo(res, \"completed\")\n>> 4: .class1(object)\n>> 5: .class1(object)\n>> 6: is(object, Cl)\n>> 7: .valueClassTest(standardGeneric(\"dbHasCompleted\"), \"logical\",\n>> \"dbHasCompleted\")\n>> 8: dbHasCompleted(rs)\n>> 9: sqliteQuickSQL(conn, statement, ...)\n>> 10: dbGetQuery(con, query)\n>> 11: dbGetQuery(con, query)\n>> 12: get_data(1:3, con, table.name)\n>> 13: FUN(c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, <truncated>, 1998, 1999,\n>> 2000)[[152]], ...)\n>> 14: lapply(1:2000, function(i) get_data(1:3, con, table.name))\n>>\n>> Possible actions:\n>> 1: abort (with core dump)\n>> 2: normal R exit\n>> 3: exit R without saving workspace\n>> 4: exit R saving workspace\n>> Selection: 3\n>>\n>> Process R exited abnormally with code 70 at Mon Nov  6 12:22:14 2006\n>>\n>> _______________________________________________\n>> R-sig-DB mailing list -- R Special Interest Group\n>> R-sig-DB at stat.math.ethz.ch\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n>\n> -- \n> ------------------------------------------------------------------\n> Wolfgang Huber  EBI/EMBL  Cambridge UK  http://www.ebi.ac.uk/huber\n>",
+      "body_snippet": "library( RSQLite )\n\n######## Open\n\ndrv <- SQLite()\ncon <- dbConnect( drv, \"testing.db\" )\ntable.name <- \"testing\"\n\n######## Create a test database\n\ndata <- as.data.frame( matrix( rnorm( 225000 ), ncol ",
+      "thread_id": "thread-67c428a71379",
+      "thread_depth": 0,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-01c5094c4c19",
+      "message_id": "<m2velsk2vs.fsf@ziti.local>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2006-11-06T07:31:51-08:00",
+      "subject": "[R-sig-DB] Segmentation faults using RSQLite",
+      "subject_clean": "Segmentation faults using RSQLite",
+      "in_reply_to": "<49B2A836-C817-4FEE-B2E9-F269134C3061@ebi.ac.uk> (Richard Bourgon's message of \"Mon, 6 Nov 2006 13:33:58 +0000\")",
+      "references": [
+        "<49B2A836-C817-4FEE-B2E9-F269134C3061@ebi.ac.uk>"
+      ],
+      "body_plain": "Hi Richard,\n\nRichard Bourgon <bourgon at ebi.ac.uk> writes:\n> My application requires a single table of doubles with 225 columns  \n> and about 6M rows. The following session transcript mimics this  \n> table, and consistently produces errors: sometimes an immediate seg  \n> fault, and sometimes one of several odd but non-critical error  \n> messages, an example of which appears below. (In the latter case, if  \n> I try to rerun the bit that generated the error, then I usually get  \n> the seg fault.)\n>\n> Small numbers of retrievals always work fine (i.e., the single  \n> \"get_table()\" call below, or looping only 50 or 100 times), while  \n> large numbers lead to the errors. If I reduce the number of columns  \n> in the table, I also seem to avoid the errors.\n>\n> Some version info is given below, but please let me know if anything  \n> else would be helpful. I didn't use the fancy options when installing  \n> the RSQLite package, so as best I can tell, it's using the compiled  \n> library that gets built in the sqlite/lib directory, inside the  \n> package's own directory.\n>\n> Any advice would be greatly appreciated.\n\nYou've identified a bug.  Thanks for the sample code.  We'll take a\ncloser look and try to have a fix available in a few days.\n\nI've also noticed that in the patched version of RSQLite (see recent message\nto this list), dbWriteTable is broken.  \n\n+ seth",
+      "body_snippet": "Hi Richard,\n\nRichard Bourgon <bourgon at ebi.ac.uk> writes:\n> My application requires a single table of doubles with 225 columns  \n> and about 6M rows. The following session transcript mimics this  \n>",
+      "thread_id": "thread-81c06376ce99",
+      "thread_depth": 1,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-0ac95c248bc4",
+      "message_id": "<m2k627enmn.fsf@ziti.local>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2006-11-06T23:12:32-08:00",
+      "subject": "[R-sig-DB] Segmentation faults using RSQLite",
+      "subject_clean": "Segmentation faults using RSQLite",
+      "in_reply_to": "<m2velsk2vs.fsf@ziti.local> (Seth Falcon's message of \"Mon, 06 Nov 2006 07:31:51 -0800\")",
+      "references": [
+        "<49B2A836-C817-4FEE-B2E9-F269134C3061@ebi.ac.uk>",
+        "<m2velsk2vs.fsf@ziti.local>"
+      ],
+      "body_plain": "> Richard Bourgon <bourgon at ebi.ac.uk> writes:\n>> My application requires a single table of doubles with 225 columns  \n>> and about 6M rows. The following session transcript mimics this  \n>> table, and consistently produces errors: sometimes an immediate seg  \n>> fault, and sometimes one of several odd but non-critical error  \n>> messages, an example of which appears below. (In the latter case, if  \n>> I try to rerun the bit that generated the error, then I usually get  \n>> the seg fault.)\n\nI believe that I've found and fixed the bug causing the segfault you\nreported.\n\nI've posted an updated version, RSQLite 0.4-13, here:\n\nhttp://www.bioconductor.org/packages/misc/\n\nCould you give it a try and confirm that it works for you?\n\nThanks again for the bug report.\n\nBest,\n\n+ seth",
+      "body_snippet": "> Richard Bourgon <bourgon at ebi.ac.uk> writes:\n>> My application requires a single table of doubles with 225 columns  \n>> and about 6M rows. The following session transcript mimics this  \n>> table, ",
+      "thread_id": "thread-81c06376ce99",
+      "thread_depth": 2,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-244fa33cf755",
+      "message_id": "<4A76F262-2879-40B4-8EB6-57129D6A255E@ebi.ac.uk>",
+      "from_name": "Richard Bourgon",
+      "from_email_hash": "5f8dce006627a918184628122a81261b092c104b0bf62715ba315b44949b20c9",
+      "date": "2006-11-07T12:32:57Z",
+      "subject": "[R-sig-DB] Segmentation faults using RSQLite",
+      "subject_clean": "Segmentation faults using RSQLite",
+      "in_reply_to": "<m2k627enmn.fsf@ziti.local>",
+      "references": [
+        "<49B2A836-C817-4FEE-B2E9-F269134C3061@ebi.ac.uk>",
+        "<m2velsk2vs.fsf@ziti.local>",
+        "<m2k627enmn.fsf@ziti.local>"
+      ],
+      "body_plain": "Seth,\n\nThe updated version runs without errors. Thanks for the quick repair!\n\n- Richard\n\nOn 7 Nov 2006, at 07:12, Seth Falcon wrote:\n\n>> Richard Bourgon <bourgon at ebi.ac.uk> writes:\n>>> My application requires a single table of doubles with 225 columns\n>>> and about 6M rows. The following session transcript mimics this\n>>> table, and consistently produces errors: sometimes an immediate seg\n>>> fault, and sometimes one of several odd but non-critical error\n>>> messages, an example of which appears below. (In the latter case, if\n>>> I try to rerun the bit that generated the error, then I usually get\n>>> the seg fault.)\n>\n> I believe that I've found and fixed the bug causing the segfault you\n> reported.\n>\n> I've posted an updated version, RSQLite 0.4-13, here:\n>\n> http://www.bioconductor.org/packages/misc/\n>\n> Could you give it a try and confirm that it works for you?\n>\n> Thanks again for the bug report.\n>\n> Best,\n>\n> + seth",
+      "body_snippet": "Seth,\n\nThe updated version runs without errors. Thanks for the quick repair!\n\n- Richard\n\nOn 7 Nov 2006, at 07:12, Seth Falcon wrote:\n\n>> Richard Bourgon <bourgon at ebi.ac.uk> writes:\n>>> My applicati",
+      "thread_id": "thread-81c06376ce99",
+      "thread_depth": 3,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-7bd70a2d5fb6",
+      "message_id": "<m2psbx4ya2.fsf@ziti.local>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2006-11-08T09:57:09-08:00",
+      "subject": "[R-sig-DB] RSQLite_0.4-13 uploaded to CRAN",
+      "subject_clean": "RSQLite_0.4-13 uploaded to CRAN",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi all,\n\nI've just uploaded RSQLite_0.4-13.tar.gz to CRAN.  Should be available\non a mirror near you within a few days.\n\nSummary:\n\n  Add sqliteQuckColumn, an experimental function to retrieve an entire\n  column from a table as quickly as possible.\n  \n  Implement support for transactions as per DBI specs (with some extensions)\n  \n  Add support for prepared statements, and use the SQLite3 API for fetching \n  \n  Fix bug on x86_64 when bind.data not specified\n  \n  Fixed bug in dbListTables, handle empty DBs properly\n  \n  Fix segfault in RS_SQLite_resultSetInfo\n\nBest,\n\n+ seth",
+      "body_snippet": "Hi all,\n\nI've just uploaded RSQLite_0.4-13.tar.gz to CRAN.  Should be available\non a mirror near you within a few days.\n\nSummary:\n\n  Add sqliteQuckColumn, an experimental function to retrieve an entir",
+      "thread_id": "thread-7bd70a2d5fb6",
+      "thread_depth": 0,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-3b87df376e96",
+      "message_id": "<20061116212956.76808.qmail@web33912.mail.mud.yahoo.com>",
+      "from_name": "Phil Smyth",
+      "from_email_hash": "69b4783b47b31ebae6761d63182bfa793ae21fcdaaef282b60ddfd8e945686c9",
+      "date": "2006-11-16T13:29:56-08:00",
+      "subject": "[R-sig-DB] Executing Stored Procedures from Microsoft SQL Server",
+      "subject_clean": "Executing Stored Procedures from Microsoft SQL Server",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I am running R 2.3.0 on Windows 2000 connecting to MSSQL 8 via RODBC. When I try to execute a stored procedure via sqlQuery it returns no data. Regular queries work fine and the same query returns the desired results when pasted into the SQL query analyzer. Is it possible to execute a stored procedure?\n\nThanks, \n\nPhil Smyth",
+      "body_snippet": "I am running R 2.3.0 on Windows 2000 connecting to MSSQL 8 via RODBC. When I try to execute a stored procedure via sqlQuery it returns no data. Regular queries work fine and the same query returns the",
+      "thread_id": "thread-3b87df376e96",
+      "thread_depth": 0,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-91a7fbf7cb95",
+      "message_id": "<8ed68eed0611170010m36cb8e8dr59572704a20a67f6@mail.gmail.com>",
+      "from_name": "Sean O'Riordain",
+      "from_email_hash": "d18631f6661da4deeaa90b92231c34f3f14fafbbc9231a0242073f8c21ec5e89",
+      "date": "2006-11-17T08:10:17Z",
+      "subject": "[R-sig-DB] Executing Stored Procedures from Microsoft SQL Server",
+      "subject_clean": "Executing Stored Procedures from Microsoft SQL Server",
+      "in_reply_to": "<20061116212956.76808.qmail@web33912.mail.mud.yahoo.com>",
+      "references": [
+        "<20061116212956.76808.qmail@web33912.mail.mud.yahoo.com>"
+      ],
+      "body_plain": "Hi Phil,\n\nThe first thing I'd check is whether the stored-procedure is actually\nreturning two things, rather than a single \"set\" - I've been caught by\nthis before!  Could you have a print statement hanging around from\ndebugging?  Are you using \"return\" or are you printing the results in\nthe stored-procedure?  I suggest that you create a small stored\nprocedure which only contains a simple \"select top 10 * from\nSimpleTable\" to verify that it works.\n\ncheers,\nSean O'Riordain\n\n\nOn 16/11/06, Phil Smyth <psmyth at yahoo.com> wrote:\n> I am running R 2.3.0 on Windows 2000 connecting to MSSQL 8 via RODBC. When I try to execute a stored procedure via sqlQuery it returns no data. Regular queries work fine and the same query returns the desired results when pasted into the SQL query analyzer. Is it possible to execute a stored procedure?\n>\n> Thanks,\n>\n> Phil Smyth\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "Hi Phil,\n\nThe first thing I'd check is whether the stored-procedure is actually\nreturning two things, rather than a single \"set\" - I've been caught by\nthis before!  Could you have a print statement ha",
+      "thread_id": "thread-3b87df376e96",
+      "thread_depth": 1,
+      "month": "2006-11"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-bb5acad67143",
+      "subject": "RSQLite enhancements UPDATED",
+      "message_count": 1,
+      "participants": [
+        "Seth Falcon"
+      ],
+      "started": "2006-11-04T15:04:00-08:00",
+      "last_reply": "2006-11-04T15:04:00-08:00",
+      "root_message_id": "msg-bb5acad67143"
+    },
+    {
+      "id": "thread-81c06376ce99",
+      "subject": "Segmentation faults using RSQLite",
+      "message_count": 4,
+      "participants": [
+        "Richard Bourgon",
+        "Seth Falcon"
+      ],
+      "started": "2006-11-06T13:33:58+00:00",
+      "last_reply": "2006-11-07T12:32:57+00:00",
+      "root_message_id": "msg-81c06376ce99"
+    },
+    {
+      "id": "thread-67c428a71379",
+      "subject": "Segmentation faults using RSQLite",
+      "message_count": 1,
+      "participants": [
+        "Richard Bourgon"
+      ],
+      "started": "2006-11-06T14:05:32+00:00",
+      "last_reply": "2006-11-06T14:05:32+00:00",
+      "root_message_id": "msg-67c428a71379"
+    },
+    {
+      "id": "thread-7bd70a2d5fb6",
+      "subject": "RSQLite_0.4-13 uploaded to CRAN",
+      "message_count": 1,
+      "participants": [
+        "Seth Falcon"
+      ],
+      "started": "2006-11-08T09:57:09-08:00",
+      "last_reply": "2006-11-08T09:57:09-08:00",
+      "root_message_id": "msg-7bd70a2d5fb6"
+    },
+    {
+      "id": "thread-3b87df376e96",
+      "subject": "Executing Stored Procedures from Microsoft SQL Server",
+      "message_count": 2,
+      "participants": [
+        "Phil Smyth",
+        "Sean O'Riordain"
+      ],
+      "started": "2006-11-16T13:29:56-08:00",
+      "last_reply": "2006-11-17T08:10:17+00:00",
+      "root_message_id": "msg-3b87df376e96"
+    }
+  ]
+}

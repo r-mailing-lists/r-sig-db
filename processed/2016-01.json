@@ -1,0 +1,178 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2016-01",
+  "messages": [
+    {
+      "id": "msg-7b59feac798a",
+      "message_id": "<5689A164.7000102@gmail.com>",
+      "from_name": "Paul Gilbert",
+      "from_email_hash": "29fea860e182a01f3e4160bbdef3ad0b7144bad40faef12022989132ed8ec2b1",
+      "date": "2016-01-03T17:32:04-05:00",
+      "subject": "[R-sig-DB] Improving DBI",
+      "subject_clean": "Improving DBI",
+      "in_reply_to": "<56848C19.2070809@ivt.baug.ethz.ch>",
+      "references": [
+        "<56848C19.2070809@ivt.baug.ethz.ch>"
+      ],
+      "body_plain": "Kirill\n\nTSdbi implements a time series specific API on top of DBI. Some of my \nTSdbi packages use DBI in what you might consider the traditional way \n(TSMySQL, TSPostgreSQL, TSSQLite). TSodbc fudges a bit so it can use \nRODBC, doing some of what would be needed in RODBCDBI. But several of my \npackages interface to non-SQL databases and use only the DBI class \ndefinitions and a couple of essential generic methods (possibly just \ndbConnect and dbDisconnect). This includes packages TSsdmx, TSmisc, \nTSjson, TSfame, TSbbg, some on CRAN and some not. These packages \ninterface to time series data from a variety of sources, many over the \nInternet. They all just wrap other packages in an attempt to standardize \nthe API.\n\nI think it would be nice if you can separate the DBI classes and the few \nessential generic methods into a different package from the more SQL \nspecific parts of DBI. (I have taken this approach with my packages \nTSdbi and TSsql.)\n\nTo get a sense of how I use this in the non-SQL context you might look \nat package TSsdmx, in which the R code has\n\n####### some kludges to make this look like DBI. ######\n#for this require(\"DBI\") ; require(\"RJSDMX\")\n\nsetClass(\"sdmxDriver\", contains=c(\"DBIDriver\"))\n\nsetClass(\"sdmxConnection\", contains=c(\"DBIConnection\", \"sdmxDriver\"),\n    slots=c(dbname=\"character\") )\n\nsetMethod(\"dbConnect\", signature(drv=\"sdmxDriver\"),\n      definition=function(drv, dbname, ...)\n          new(\"sdmxConnection\", dbname=dbname))\n\n# this does nothing but prevent errors if it is called.\nsetMethod(\"dbDisconnect\", signature(conn=\"sdmxConnection\"),\n      definition=function(conn,...) TRUE)\n\n#######     end kludges   ######\n\nBest of luck with your proposal and project.\n\nHappy New Year,\nPaul\n\n\nOn 12/30/2015 08:59 PM, Kirill M?ller wrote:\n> Hi\n>\n>\n> I have prepared a proposal for improving DBI, and three backends to\n> open-source databases: http://bit.ly/1QZNNrC (current version),\n> http://bit.ly/1Uhn1ZC (version at the time of writing). Among other\n> things, I plan to improve support for data types, parametrized queries,\n> and database schemas. Ultimately, DBI will be formally specified by a\n> test suite and a written description.\n>\n> Before submitting it to the R Consortium, I'd be glad to receive further\n> input. Are there other design issues that need to be addressed? Other\n> points I have missed? Issues you might want to see resolved as part of\n> this project? See also the GitHub issue trackers for DBI [1] (which also\n> contains the design discussion [2]), RMySQL [3], RPostgres [4] and\n> RSQLite [5].\n>\n> Please note that the deadline for submitting the proposal is already\n> January 10. Thank you for your attention.\n>\n>\n> Best regards\n>\n> Kirill\n>\n>\n> [1] https://github.com/rstats-db/DBI/issues\n> [2]\n> https://github.com/rstats-db/DBI/issues?q=is%3Aopen+is%3Aissue+label%3Aaction%3Adesign\n>\n> [3] https://github.com/rstats-db/RMySQL/issues\n> [4] https://github.com/rstats-db/RPostgres/issues\n> [5] https://github.com/rstats-db/RSQLite/issues\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "Kirill\n\nTSdbi implements a time series specific API on top of DBI. Some of my \nTSdbi packages use DBI in what you might consider the traditional way \n(TSMySQL, TSPostgreSQL, TSSQLite). TSodbc fudges a",
+      "thread_id": "thread-7b59feac798a",
+      "thread_depth": 0,
+      "month": "2016-01"
+    },
+    {
+      "id": "msg-67b32f80e665",
+      "message_id": "<7B175205-D434-49CE-B00E-3C83FFA18876@me.com>",
+      "from_name": "Imanuel Costigan",
+      "from_email_hash": "65d5205e6eb8fb0440fd3020ca9c948f9b076afc7340ac3f5fe6e9dfcde612a0",
+      "date": "2016-01-04T21:32:29+11:00",
+      "subject": "[R-sig-DB] Improving DBI",
+      "subject_clean": "Improving DBI",
+      "in_reply_to": "<mailman.7.1451559602.9919.r-sig-db@r-project.org>",
+      "references": [
+        "<mailman.7.1451559602.9919.r-sig-db@r-project.org>"
+      ],
+      "body_plain": "Hi Kirill\n\nAutomated testing of proprietary back ends (in my case SQLServer) faces the challenge of the test bed having access to an instance of the server. I did get an offer of support from MSFT/Revo who set up an instance for my (non automated) testing but connecting failed due to some firewall issue. Currently I rely on being able to use a mix of a public instance (sparingly) and an instance at work. \n\nCheers. \n\nSent from my iPad\n\nOn 31 Dec 2015, at 10:00 PM, r-sig-db-request at r-project.org wrote:\n\nSend R-sig-DB mailing list submissions to\n   r-sig-db at r-project.org\n\nTo subscribe or unsubscribe via the World Wide Web, visit\n   https://stat.ethz.ch/mailman/listinfo/r-sig-db\nor, via email, send a message with subject or body 'help' to\n   r-sig-db-request at r-project.org\n\nYou can reach the person managing the list at\n   r-sig-db-owner at r-project.org\n\nWhen replying, please edit your Subject line so it is more specific\nthan \"Re: Contents of R-sig-DB digest...\"\n\n\nToday's Topics:\n\n  1. Improving DBI (Kirill M?ller)\n\n\n----------------------------------------------------------------------\n\nMessage: 1\nDate: Thu, 31 Dec 2015 02:59:53 +0100\nFrom: Kirill M?ller <kirill.mueller at ivt.baug.ethz.ch>\nTo: <r-sig-db at r-project.org>\nSubject: [R-sig-DB] Improving DBI\nMessage-ID: <56848C19.2070809 at ivt.baug.ethz.ch>\nContent-Type: text/plain; charset=\"utf-8\"; format=flowed\n\nHi\n\n\nI have prepared a proposal for improving DBI, and three backends to \nopen-source databases: http://bit.ly/1QZNNrC (current version), \nhttp://bit.ly/1Uhn1ZC (version at the time of writing). Among other \nthings, I plan to improve support for data types, parametrized queries, \nand database schemas. Ultimately, DBI will be formally specified by a \ntest suite and a written description.\n\nBefore submitting it to the R Consortium, I'd be glad to receive further \ninput. Are there other design issues that need to be addressed? Other \npoints I have missed? Issues you might want to see resolved as part of \nthis project? See also the GitHub issue trackers for DBI [1] (which also \ncontains the design discussion [2]), RMySQL [3], RPostgres [4] and \nRSQLite [5].\n\nPlease note that the deadline for submitting the proposal is already \nJanuary 10. Thank you for your attention.\n\n\nBest regards\n\nKirill\n\n\n[1] https://github.com/rstats-db/DBI/issues\n[2] \nhttps://github.com/rstats-db/DBI/issues?q=is%3Aopen+is%3Aissue+label%3Aaction%3Adesign\n[3] https://github.com/rstats-db/RMySQL/issues\n[4] https://github.com/rstats-db/RPostgres/issues\n[5] https://github.com/rstats-db/RSQLite/issues\n\n\n\n------------------------------\n\nSubject: Digest Footer\n\n_______________________________________________\nR-sig-DB mailing list\nR-sig-DB at r-project.org\nhttps://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n------------------------------\n\nEnd of R-sig-DB Digest, Vol 127, Issue 3",
+      "body_snippet": "Hi Kirill\n\nAutomated testing of proprietary back ends (in my case SQLServer) faces the challenge of the test bed having access to an instance of the server. I did get an offer of support from MSFT/Rev",
+      "thread_id": "thread-67b32f80e665",
+      "thread_depth": 0,
+      "month": "2016-01"
+    },
+    {
+      "id": "msg-b8c882a55261",
+      "message_id": "<568A62A4.9030104@ivt.baug.ethz.ch>",
+      "from_name": "Kirill Müller",
+      "from_email_hash": "27428f4e68e783f0953f00cf0a4d40466bcc4bbb32ab5f2324bee380e4c44f0b",
+      "date": "2016-01-04T13:16:36+01:00",
+      "subject": "[R-sig-DB] Improving DBI",
+      "subject_clean": "Improving DBI",
+      "in_reply_to": "<7B175205-D434-49CE-B00E-3C83FFA18876@me.com>",
+      "references": [
+        "<mailman.7.1451559602.9919.r-sig-db@r-project.org>",
+        "<7B175205-D434-49CE-B00E-3C83FFA18876@me.com>"
+      ],
+      "body_plain": "On 04.01.2016 11:32, Imanuel Costigan wrote:\n> Automated testing of proprietary back ends (in my case SQLServer) faces the challenge of the test bed having access to an instance of the server.\nTrue, thanks for bringing it up. I'll include a request to support \npublic instances of proprietary databases for testing purposes, but this \nwill be mostly unrelated to the project.\n\n\n-Kirill",
+      "body_snippet": "On 04.01.2016 11:32, Imanuel Costigan wrote:\n> Automated testing of proprietary back ends (in my case SQLServer) faces the challenge of the test bed having access to an instance of the server.\nTrue, t",
+      "thread_id": "thread-67b32f80e665",
+      "thread_depth": 1,
+      "month": "2016-01"
+    },
+    {
+      "id": "msg-e8509e148a1a",
+      "message_id": "<568A78A3.3060101@ivt.baug.ethz.ch>",
+      "from_name": "Kirill Müller",
+      "from_email_hash": "27428f4e68e783f0953f00cf0a4d40466bcc4bbb32ab5f2324bee380e4c44f0b",
+      "date": "2016-01-04T14:50:27+01:00",
+      "subject": "[R-sig-DB] Improving DBI",
+      "subject_clean": "Improving DBI",
+      "in_reply_to": "<5689A164.7000102@gmail.com>",
+      "references": [
+        "<56848C19.2070809@ivt.baug.ethz.ch>",
+        "<5689A164.7000102@gmail.com>"
+      ],
+      "body_plain": "Paul\n\n\nThanks for your feedback. I'm not sure we want two separate packages for \nDBI, but we can surely split the DBI specification as to make the \"SQL\" \npart optional. This may mean that more legible error messages are \nreturned for virtual methods that are not implemented, or at least that \nthe meaning of the current error messages (\"unable to find an inherited \nmethod...\") is well communicated. The \"kludge\" example is in fact a \nproper implementation of the corresponding DBI subset :-)\n\nYou could then use the DBI test suite (=specification) just the same, \nsimply don't test the \"SQL\" part of DBI. Would that help?\n\n\nBest regards\n\nKirill\n\n\nOn 03.01.2016 23:32, Paul Gilbert wrote:\n> Kirill\n>\n> TSdbi implements a time series specific API on top of DBI. Some of my \n> TSdbi packages use DBI in what you might consider the traditional way \n> (TSMySQL, TSPostgreSQL, TSSQLite). TSodbc fudges a bit so it can use \n> RODBC, doing some of what would be needed in RODBCDBI. But several of \n> my packages interface to non-SQL databases and use only the DBI class \n> definitions and a couple of essential generic methods (possibly just \n> dbConnect and dbDisconnect). This includes packages TSsdmx, TSmisc, \n> TSjson, TSfame, TSbbg, some on CRAN and some not. These packages \n> interface to time series data from a variety of sources, many over the \n> Internet. They all just wrap other packages in an attempt to \n> standardize the API.\n>\n> I think it would be nice if you can separate the DBI classes and the \n> few essential generic methods into a different package from the more \n> SQL specific parts of DBI. (I have taken this approach with my \n> packages TSdbi and TSsql.)\n>\n> To get a sense of how I use this in the non-SQL context you might look \n> at package TSsdmx, in which the R code has\n>\n> ####### some kludges to make this look like DBI. ######\n> #for this require(\"DBI\") ; require(\"RJSDMX\")\n>\n> setClass(\"sdmxDriver\", contains=c(\"DBIDriver\"))\n>\n> setClass(\"sdmxConnection\", contains=c(\"DBIConnection\", \"sdmxDriver\"),\n>    slots=c(dbname=\"character\") )\n>\n> setMethod(\"dbConnect\", signature(drv=\"sdmxDriver\"),\n>      definition=function(drv, dbname, ...)\n>          new(\"sdmxConnection\", dbname=dbname))\n>\n> # this does nothing but prevent errors if it is called.\n> setMethod(\"dbDisconnect\", signature(conn=\"sdmxConnection\"),\n>      definition=function(conn,...) TRUE)\n>\n> #######     end kludges   ######\n>\n> Best of luck with your proposal and project.\n>\n> Happy New Year,\n> Paul\n>\n>\n> On 12/30/2015 08:59 PM, Kirill M?ller wrote:\n>> Hi\n>>\n>>\n>> I have prepared a proposal for improving DBI, and three backends to\n>> open-source databases: http://bit.ly/1QZNNrC (current version),\n>> http://bit.ly/1Uhn1ZC (version at the time of writing). Among other\n>> things, I plan to improve support for data types, parametrized queries,\n>> and database schemas. Ultimately, DBI will be formally specified by a\n>> test suite and a written description.\n>>\n>> Before submitting it to the R Consortium, I'd be glad to receive further\n>> input. Are there other design issues that need to be addressed? Other\n>> points I have missed? Issues you might want to see resolved as part of\n>> this project? See also the GitHub issue trackers for DBI [1] (which also\n>> contains the design discussion [2]), RMySQL [3], RPostgres [4] and\n>> RSQLite [5].\n>>\n>> Please note that the deadline for submitting the proposal is already\n>> January 10. Thank you for your attention.\n>>\n>>\n>> Best regards\n>>\n>> Kirill\n>>\n>>\n>> [1] https://github.com/rstats-db/DBI/issues\n>> [2]\n>> https://github.com/rstats-db/DBI/issues?q=is%3Aopen+is%3Aissue+label%3Aaction%3Adesign \n>>\n>>\n>> [3] https://github.com/rstats-db/RMySQL/issues\n>> [4] https://github.com/rstats-db/RPostgres/issues\n>> [5] https://github.com/rstats-db/RSQLite/issues\n>>\n>> _______________________________________________\n>> R-sig-DB mailing list -- R Special Interest Group\n>> R-sig-DB at r-project.org\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "Paul\n\n\nThanks for your feedback. I'm not sure we want two separate packages for \nDBI, but we can surely split the DBI specification as to make the \"SQL\" \npart optional. This may mean that more legible",
+      "thread_id": "thread-7b59feac798a",
+      "thread_depth": 1,
+      "month": "2016-01"
+    },
+    {
+      "id": "msg-886bd3ab14ad",
+      "message_id": "<568AD926.6080409@gmail.com>",
+      "from_name": "Paul Gilbert",
+      "from_email_hash": "29fea860e182a01f3e4160bbdef3ad0b7144bad40faef12022989132ed8ec2b1",
+      "date": "2016-01-04T15:42:14-05:00",
+      "subject": "[R-sig-DB] Improving DBI",
+      "subject_clean": "Improving DBI",
+      "in_reply_to": "<568A78A3.3060101@ivt.baug.ethz.ch>",
+      "references": [
+        "<56848C19.2070809@ivt.baug.ethz.ch>",
+        "<5689A164.7000102@gmail.com>",
+        "<568A78A3.3060101@ivt.baug.ethz.ch>"
+      ],
+      "body_plain": "On 01/04/2016 08:50 AM, Kirill M?ller wrote:\n> Paul\n>\n>\n> Thanks for your feedback. I'm not sure we want two separate packages for\n> DBI, but we can surely split the DBI specification as to make the \"SQL\"\n> part optional.\n\nFor my use it does not make much difference, I can just import what I \nneed from DBI. However, it might make a lot of sense if you ever want to \nstandardize in layers, for example, if you ever wanted NoSQL to be a \npossible replacement for SQL.\n\nThere are different reasons for wanting separate packages, but the \nimportant one in my mind may not be the one you are thinking about: The \nclasses, and the generic methods dbConnect, and dbDisconnect should all \nbe extremely stable. On the other hand, the SQL part is likely to go \nthrough some changes. For sake of discussion let me call the two \npackages DBIclasses and DBIsql. If you make a change in DBIsql my \npackages TSsdmx, TSmisc, and some others, will not be in the upstream \ndependencies, and do not need to be tested for a CRAN submission of \nDBIsql. If DBIclasses and DBIsql are in the one package, DBI, then these \npackages do need to be checked (not just by me but also by you if you \nmake an API change and intend to submit to CRAN). These packages in turn \nhave a large number of dependencies which can change from time to time \non their own. Thus things may be broken for reasons having nothing to do \nwith your changes, and are beyond your control. Then the CRAN checks \nwill fail and your submission will be rejected, or at least require \nconsiderable additional work. So, it is advisable to avoid having \ndependencies that really can be avoided.\n\n>This may mean that more legible error messages are\n> returned for virtual methods that are not implemented, or at least that\n> the meaning of the current error messages (\"unable to find an inherited\n> method...\") is well communicated. The \"kludge\" example is in fact a\n> proper implementation of the corresponding DBI subset :-)\n\nYes, I hope so. It was only a kludge in the sense that these are not in \nthe package I am wrapping, as they are in other packages I wrap like \nRMySQL that use DBI\n>\n> You could then use the DBI test suite (=specification) just the same,\n> simply don't test the \"SQL\" part of DBI. Would that help?\n\nYes, I think that might be useful.\n\nBest,\nPaul\n>\n>\n> Best regards\n>\n> Kirill\n>\n>\n> On 03.01.2016 23:32, Paul Gilbert wrote:\n>> Kirill\n>>\n>> TSdbi implements a time series specific API on top of DBI. Some of my\n>> TSdbi packages use DBI in what you might consider the traditional way\n>> (TSMySQL, TSPostgreSQL, TSSQLite). TSodbc fudges a bit so it can use\n>> RODBC, doing some of what would be needed in RODBCDBI. But several of\n>> my packages interface to non-SQL databases and use only the DBI class\n>> definitions and a couple of essential generic methods (possibly just\n>> dbConnect and dbDisconnect). This includes packages TSsdmx, TSmisc,\n>> TSjson, TSfame, TSbbg, some on CRAN and some not. These packages\n>> interface to time series data from a variety of sources, many over the\n>> Internet. They all just wrap other packages in an attempt to\n>> standardize the API.\n>>\n>> I think it would be nice if you can separate the DBI classes and the\n>> few essential generic methods into a different package from the more\n>> SQL specific parts of DBI. (I have taken this approach with my\n>> packages TSdbi and TSsql.)\n>>\n>> To get a sense of how I use this in the non-SQL context you might look\n>> at package TSsdmx, in which the R code has\n>>\n>> ####### some kludges to make this look like DBI. ######\n>> #for this require(\"DBI\") ; require(\"RJSDMX\")\n>>\n>> setClass(\"sdmxDriver\", contains=c(\"DBIDriver\"))\n>>\n>> setClass(\"sdmxConnection\", contains=c(\"DBIConnection\", \"sdmxDriver\"),\n>>    slots=c(dbname=\"character\") )\n>>\n>> setMethod(\"dbConnect\", signature(drv=\"sdmxDriver\"),\n>>      definition=function(drv, dbname, ...)\n>>          new(\"sdmxConnection\", dbname=dbname))\n>>\n>> # this does nothing but prevent errors if it is called.\n>> setMethod(\"dbDisconnect\", signature(conn=\"sdmxConnection\"),\n>>      definition=function(conn,...) TRUE)\n>>\n>> #######     end kludges   ######\n>>\n>> Best of luck with your proposal and project.\n>>\n>> Happy New Year,\n>> Paul\n>>\n>>\n>> On 12/30/2015 08:59 PM, Kirill M?ller wrote:\n>>> Hi\n>>>\n>>>\n>>> I have prepared a proposal for improving DBI, and three backends to\n>>> open-source databases: http://bit.ly/1QZNNrC (current version),\n>>> http://bit.ly/1Uhn1ZC (version at the time of writing). Among other\n>>> things, I plan to improve support for data types, parametrized queries,\n>>> and database schemas. Ultimately, DBI will be formally specified by a\n>>> test suite and a written description.\n>>>\n>>> Before submitting it to the R Consortium, I'd be glad to receive further\n>>> input. Are there other design issues that need to be addressed? Other\n>>> points I have missed? Issues you might want to see resolved as part of\n>>> this project? See also the GitHub issue trackers for DBI [1] (which also\n>>> contains the design discussion [2]), RMySQL [3], RPostgres [4] and\n>>> RSQLite [5].\n>>>\n>>> Please note that the deadline for submitting the proposal is already\n>>> January 10. Thank you for your attention.\n>>>\n>>>\n>>> Best regards\n>>>\n>>> Kirill\n>>>\n>>>\n>>> [1] https://github.com/rstats-db/DBI/issues\n>>> [2]\n>>> https://github.com/rstats-db/DBI/issues?q=is%3Aopen+is%3Aissue+label%3Aaction%3Adesign\n>>>\n>>>\n>>> [3] https://github.com/rstats-db/RMySQL/issues\n>>> [4] https://github.com/rstats-db/RPostgres/issues\n>>> [5] https://github.com/rstats-db/RSQLite/issues\n>>>\n>>> _______________________________________________\n>>> R-sig-DB mailing list -- R Special Interest Group\n>>> R-sig-DB at r-project.org\n>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "On 01/04/2016 08:50 AM, Kirill M?ller wrote:\n> Paul\n>\n>\n> Thanks for your feedback. I'm not sure we want two separate packages for\n> DBI, but we can surely split the DBI specification as to make the \"",
+      "thread_id": "thread-7b59feac798a",
+      "thread_depth": 2,
+      "month": "2016-01"
+    },
+    {
+      "id": "msg-159a4706b259",
+      "message_id": "<568ADE2F.9070608@ivt.baug.ethz.ch>",
+      "from_name": "Kirill Müller",
+      "from_email_hash": "27428f4e68e783f0953f00cf0a4d40466bcc4bbb32ab5f2324bee380e4c44f0b",
+      "date": "2016-01-04T22:03:43+01:00",
+      "subject": "[R-sig-DB] Improving DBI",
+      "subject_clean": "Improving DBI",
+      "in_reply_to": "<568AD926.6080409@gmail.com>",
+      "references": [
+        "<56848C19.2070809@ivt.baug.ethz.ch>",
+        "<5689A164.7000102@gmail.com>",
+        "<568A78A3.3060101@ivt.baug.ethz.ch>",
+        "<568AD926.6080409@gmail.com>"
+      ],
+      "body_plain": "On 04.01.2016 21:42, Paul Gilbert wrote:\n>\n>\n> On 01/04/2016 08:50 AM, Kirill M?ller wrote:\n>> Paul\n>>\n>>\n>> Thanks for your feedback. I'm not sure we want two separate packages for\n>> DBI, but we can surely split the DBI specification as to make the \"SQL\"\n>> part optional.\n>\n> For my use it does not make much difference, I can just import what I \n> need from DBI. However, it might make a lot of sense if you ever want \n> to standardize in layers, for example, if you ever wanted NoSQL to be \n> a possible replacement for SQL.\n>\n> There are different reasons for wanting separate packages, but the \n> important one in my mind may not be the one you are thinking about: \n> The classes, and the generic methods dbConnect, and dbDisconnect \n> should all be extremely stable. On the other hand, the SQL part is \n> likely to go through some changes. For sake of discussion let me call \n> the two packages DBIclasses and DBIsql. If you make a change in DBIsql \n> my packages TSsdmx, TSmisc, and some others, will not be in the \n> upstream dependencies, and do not need to be tested for a CRAN \n> submission of DBIsql. If DBIclasses and DBIsql are in the one package, \n> DBI, then these packages do need to be checked (not just by me but \n> also by you if you make an API change and intend to submit to CRAN). \n> These packages in turn have a large number of dependencies which can \n> change from time to time on their own. Thus things may be broken for \n> reasons having nothing to do with your changes, and are beyond your \n> control. Then the CRAN checks will fail and your submission will be \n> rejected, or at least require considerable additional work. So, it is \n> advisable to avoid having dependencies that really can be avoided.\n\nThanks, Paul, I think I got your point. I have opened a GitHub issue for \nfurther discussion: https://github.com/rstats-db/DBI/issues/72. E-mail \nis fine, too.\n\n\n-Kirill",
+      "body_snippet": "On 04.01.2016 21:42, Paul Gilbert wrote:\n>\n>\n> On 01/04/2016 08:50 AM, Kirill M?ller wrote:\n>> Paul\n>>\n>>\n>> Thanks for your feedback. I'm not sure we want two separate packages for\n>> DBI, but we can",
+      "thread_id": "thread-7b59feac798a",
+      "thread_depth": 3,
+      "month": "2016-01"
+    },
+    {
+      "id": "msg-c52f2f4062e0",
+      "message_id": "<CALx9ERUAaa5iO-AvGsH6Hfih_Z=UyDbTVW-eXnBYYiu9r9HyAw@mail.gmail.com>",
+      "from_name": "Matthew Van Scoyoc",
+      "from_email_hash": "0ee9b65e832870bb12fe81993daf78e219840c5c838f8b161caab53f59fd17f6",
+      "date": "2016-01-21T15:57:16-07:00",
+      "subject": "[R-sig-DB] Error appending data using RODBC, sqlSave()",
+      "subject_clean": "Error appending data using RODBC, sqlSave()",
+      "in_reply_to": "<CAJuCY5zGeq_prx=pBC4DxPB3HZgCJFv_wZvLjx2fUrGAkoUHfg@mail.gmail.com>",
+      "references": [
+        "<CALx9ERWKGfmOK5SRLphWyXDmHEoeQjX4Lzh1sp+FESyXBSj46A@mail.gmail.com>",
+        "<CAJuCY5zGeq_prx=pBC4DxPB3HZgCJFv_wZvLjx2fUrGAkoUHfg@mail.gmail.com>"
+      ],
+      "body_plain": "Hi Thierry,\n\nThanks for the suggestions. That worked. I needed to change factors and\ntimes to character, then RODBC appended the data quite smoothly.\n\nCheers,\n\nMVS\n=====\nMatthew Van Scoyoc\n=====\nThink SNOW!\n\nOn Fri, Dec 11, 2015 at 5:14 AM, Thierry Onkelinx <thierry.onkelinx at inbo.be>\nwrote:\n\n> Dear Matthew,\n>\n> Have you tried converting the factors into characters?\n>\n> Best regards,\n>\n> ir. Thierry Onkelinx\n> Instituut voor natuur- en bosonderzoek / Research Institute for Nature and\n> Forest\n> team Biometrie & Kwaliteitszorg / team Biometrics & Quality Assurance\n> Kliniekstraat 25\n> 1070 Anderlecht\n> Belgium\n>\n> To call in the statistician after the experiment is done may be no more\n> than asking him to perform a post-mortem examination: he may be able to say\n> what the experiment died of. ~ Sir Ronald Aylmer Fisher\n> The plural of anecdote is not data. ~ Roger Brinner\n> The combination of some data and an aching desire for an answer does not\n> ensure that a reasonable answer can be extracted from a given body of data.\n> ~ John Tukey\n>\n> 2015-12-09 23:16 GMT+01:00 Matthew Van Scoyoc <scoyoc at gmail.com>:\n>\n>> I need to update tables in an MS Access database, but sqlSave(..., append\n>> =\n>> TRUE) keeps returning errors. I've spent the better part of the last hour\n>> on Google, but haven't found an adequate answer. Here's my code.\n>>\n>> #+ Munge ----\n>> > # Call in resampled plots from CRC_Data.DB\n>> > resample <- sqlFetch(CRC_Data.DB, \"tblResampledPlots\")\n>> > glimpse(resample)\n>> Observations: 58\n>> Variables: 7\n>> $ PlotID           (fctr) C057, C085, C091, C128, C133, C233, C284, C311,\n>> C312, C401, C418, ...\n>> $ Re-sampleDate    (time) 2014-07-24, 2014-08-29, 2014-09-27, 2014-10-01,\n>> 2014-08-30, 2014-0...\n>> $ Notes            (str) NA, NA, Something important about the plot\n>> visit...\n>> $ SppRichStartTime (time) 13:09:00, 11:23:00, 13:54:00...\n>> $ SppRichEndTime   (time) 13:21:00, 11:38:00, 14:15:00...\n>> $ SppRichNotes     (fctr) NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,\n>> NA, NA, NA, NA, NA...\n>> $ SppRichTotalTime (time) 00:12:00, 00:15:00, 00:21:00...\n>> >\n>> > # Call in resampled plots from Summaries.DB\n>> > plots.sum = sqlFetch(Summaries.DB, \"tblPlotsResampled\")\n>> > glimpse(plots.sum)\n>> Observations: 52\n>> Variables: 3\n>> $ PlotID        (fctr) C021, C057, C085, C091, C128, C133, C233, C284,\n>> C311, C312, C401, C41...\n>> $ Re-sampleDate (time) 2014-08-29, 2014-07-24, 2014-08-29, 2014-09-27,\n>> 2014-10-01...\n>> $ Notes         (fctr) NA, NA, NA, Something important about the plot\n>> visit...\n>> >\n>> > # Select the new data\n>> > plots.write = resample %>%\n>> +   filter(!(PlotID %in% plots.sum$PlotID)) %>%\n>> +   select(PlotID:Notes)\n>> > glimpse(plots.write)\n>> Observations: 7\n>> Variables: 3\n>> $ PlotID        (fctr) D098, D104, D105, D605, D607, D608, D649\n>> $ Re-sampleDate (time) 2015-10-14, 2015-09-29, 2015-09-30, 2015-10-16,\n>> 2015-10-15...\n>> $ Notes         (fctr) NA, NA, NA, NA, NA, NA, NA\n>> >\n>> > #+ AppendData ----\n>> > sqlSave(Summaries.DB, plots.write, \"tblPlotsResampled\", append = TRUE)\n>> Error in sqlSave(Summaries.DB, plots.write, \"tblPlotsResampled\", append =\n>> TRUE) :\n>>   unable to append to table ?tblPlotsResampled?\n>>\n>> Thanks,\n>>\n>> MVS\n>> =====\n>> Matthew Van Scoyoc\n>> =====\n>> Think SNOW!\n>>\n>>         [[alternative HTML version deleted]]\n>>\n>> _______________________________________________\n>> R-sig-DB mailing list -- R Special Interest Group\n>> R-sig-DB at r-project.org\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n>\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi Thierry,\n\nThanks for the suggestions. That worked. I needed to change factors and\ntimes to character, then RODBC appended the data quite smoothly.\n\nCheers,\n\nMVS\n=====\nMatthew Van Scoyoc\n=====\nThink",
+      "thread_id": "thread-c52f2f4062e0",
+      "thread_depth": 0,
+      "month": "2016-01"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-7b59feac798a",
+      "subject": "Improving DBI",
+      "message_count": 4,
+      "participants": [
+        "Kirill Müller",
+        "Paul Gilbert"
+      ],
+      "started": "2016-01-03T17:32:04-05:00",
+      "last_reply": "2016-01-04T22:03:43+01:00",
+      "root_message_id": "msg-7b59feac798a"
+    },
+    {
+      "id": "thread-67b32f80e665",
+      "subject": "Improving DBI",
+      "message_count": 2,
+      "participants": [
+        "Imanuel Costigan",
+        "Kirill Müller"
+      ],
+      "started": "2016-01-04T21:32:29+11:00",
+      "last_reply": "2016-01-04T13:16:36+01:00",
+      "root_message_id": "msg-67b32f80e665"
+    },
+    {
+      "id": "thread-c52f2f4062e0",
+      "subject": "Error appending data using RODBC, sqlSave()",
+      "message_count": 1,
+      "participants": [
+        "Matthew Van Scoyoc"
+      ],
+      "started": "2016-01-21T15:57:16-07:00",
+      "last_reply": "2016-01-21T15:57:16-07:00",
+      "root_message_id": "msg-c52f2f4062e0"
+    }
+  ]
+}

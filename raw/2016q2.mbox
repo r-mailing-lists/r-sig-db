@@ -1,0 +1,53 @@
+From tke|tt @end|ng |rom utex@@@edu  Fri Apr 15 22:59:04 2016
+From: tke|tt @end|ng |rom utex@@@edu (Tim Keitt)
+Date: Fri, 15 Apr 2016 15:59:04 -0500
+Subject: [R-sig-DB] rpg update; please test
+Message-ID: <CANnL8gpLmy3cU4HZSxBLWp8wqt+g-j-LTw0rxRz=NNXyJpR9Sw@mail.gmail.com>
+
+I've update the build configuration of my 'rpg' package (
+https://github.com/thk686/rpg).
+
+I would be grateful if anyone interested could do a quick:
+
+devtools::install_github("thk686/rpg")
+
+and let me know if it works. I'm especially interested in Windows install
+and situations where libpq is not available locally.
+
+THK
+
+http://www.keittlab.org/
+
+	[[alternative HTML version deleted]]
+
+
+
+From @jd@m|co @end|ng |rom gm@||@com  Thu Apr 21 10:04:23 2016
+From: @jd@m|co @end|ng |rom gm@||@com (Anthony Damico)
+Date: Thu, 21 Apr 2016 04:04:23 -0400
+Subject: [R-sig-DB] could someone help me untangle this db garbage
+ collection bug for the r core team?
+Message-ID: <CAOwvMDx0ECJqUKgYBmTYVMwVp1wA1nVEMdx4VZM9e9Y=Vo860Q@mail.gmail.com>
+
+it was introduced in R version 3.2.3 and it is easy to reproduce on
+windows--
+
+# initiate R with "C:\Program Files\R\R-3.2.4\bin\x64\Rterm.exe"
+--max-mem-size=35M
+library(RSQLite)
+db <- dbConnect( SQLite() )
+for( i in 1:1000 ) { dbWriteTable( db , 'x' , mtcars , append = TRUE ) }
+# CRASH
+
+
+--but it requires RSQLite or MonetDBLite to trigger, so the r core team
+will not look at it until the example has been narrowed down to not rely on
+contributed packages [1]  slightly more discussion here [2]  thanks
+
+[1] https://bugs.r-project.org/bugzilla/show_bug.cgi?id=16734
+[2] https://github.com/rstats-db/RSQLite/issues/135
+
+	[[alternative HTML version deleted]]
+
+
+

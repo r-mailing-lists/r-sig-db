@@ -1,0 +1,55 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2008-05",
+  "messages": [
+    {
+      "id": "msg-8a1325222809",
+      "message_id": "<F0D4FE30-90DA-4647-8223-3525FB59B924@gmail.com>",
+      "from_name": "William Morris",
+      "from_email_hash": "e5b56dd35aed2e1e482a4a937517f2526543c33cc7e108984f8ae58130d758f8",
+      "date": "2008-05-12T13:15:16+10:00",
+      "subject": "[R-sig-DB] query result precision",
+      "subject_clean": "query result precision",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "In R, using RSQLite, I get a maximum of 4 digits after the decimal  \npoint for every value returned from a query, whereas the same select  \nstatement executed with 'sqlite3' (at the command line) gives each  \nvalue without rounding. How can I get R to give the same output?\n\nCheers in advance,\n\nWill.\n\nin R\n\n > m <- dbDriver(\"SQLite\")\n > con <- dbConnect(m,\"database.sqlite\")\n > rs <- dbSendQuery(con,\"select col1 from table1 limit 10\")\n > fetch(rs,n=-1)\n    col1\n1   145.0836\n2   145.0836\n3   145.0836\n4   145.0836\n5   145.0836\n6   145.0836\n7   144.0681\n8   144.0681\n9   144.0681\n10  144.0681\n\nin sqlite3\n\nsqlite> select col1 from table1 limit 10;\n145.08361\n145.08361\n145.08361\n145.08361\n145.08361\n145.08361\n144.06806\n144.06806\n144.06806\n144.06806\n\nR session info\n\nsessionInfo()\nR version 2.7.0 Patched (2008-05-10 r45665)\ni386-apple-darwin8.10.1\n\nlocale:\nen_AU.UTF-8/en_AU.UTF-8/C/C/en_AU.UTF-8/en_AU.UTF-8\n\nattached base packages:\n[1] stats     graphics  grDevices utils     datasets  methods   base\n\nother attached packages:\n[1] RSQLite_0.6-8 DBI_0.2-4\n\nloaded via a namespace (and not attached):\n[1] tools_2.7.0",
+      "body_snippet": "In R, using RSQLite, I get a maximum of 4 digits after the decimal  \npoint for every value returned from a query, whereas the same select  \nstatement executed with 'sqlite3' (at the command line) give",
+      "thread_id": "thread-8a1325222809",
+      "thread_depth": 0,
+      "month": "2008-05"
+    },
+    {
+      "id": "msg-f799beef0f90",
+      "message_id": "<AFDE43C2-19C2-4F6C-B4EE-04CA7341BB60@stat.berkeley.edu>",
+      "from_name": "Kasper Daniel Hansen",
+      "from_email_hash": "118534c5e6677cb8c10dd2e490b80160485aae15fec1957bdeecc70f24d04e5e",
+      "date": "2008-05-11T20:28:06-07:00",
+      "subject": "[R-sig-DB] query result precision",
+      "subject_clean": "query result precision",
+      "in_reply_to": "<F0D4FE30-90DA-4647-8223-3525FB59B924@gmail.com>",
+      "references": [
+        "<F0D4FE30-90DA-4647-8223-3525FB59B924@gmail.com>"
+      ],
+      "body_plain": "Are you sure that you do not get all the digits? Try\n   print(fetch(rs, n = -1), digits = 15)\n\nThe default option of \"digits\" is 7 and it might hit you here.\n\nKasper\n\nOn May 11, 2008, at 8:15 PM, William Morris wrote:\n\n> In R, using RSQLite, I get a maximum of 4 digits after the decimal  \n> point for every value returned from a query, whereas the same select  \n> statement executed with 'sqlite3' (at the command line) gives each  \n> value without rounding. How can I get R to give the same output?\n>\n> Cheers in advance,\n>\n> Will.\n>\n> in R\n>\n> > m <- dbDriver(\"SQLite\")\n> > con <- dbConnect(m,\"database.sqlite\")\n> > rs <- dbSendQuery(con,\"select col1 from table1 limit 10\")\n> > fetch(rs,n=-1)\n>   col1\n> 1   145.0836\n> 2   145.0836\n> 3   145.0836\n> 4   145.0836\n> 5   145.0836\n> 6   145.0836\n> 7   144.0681\n> 8   144.0681\n> 9   144.0681\n> 10  144.0681\n>\n> in sqlite3\n>\n> sqlite> select col1 from table1 limit 10;\n> 145.08361\n> 145.08361\n> 145.08361\n> 145.08361\n> 145.08361\n> 145.08361\n> 144.06806\n> 144.06806\n> 144.06806\n> 144.06806\n>\n> R session info\n>\n> sessionInfo()\n> R version 2.7.0 Patched (2008-05-10 r45665)\n> i386-apple-darwin8.10.1\n>\n> locale:\n> en_AU.UTF-8/en_AU.UTF-8/C/C/en_AU.UTF-8/en_AU.UTF-8\n>\n> attached base packages:\n> [1] stats     graphics  grDevices utils     datasets  methods   base\n>\n> other attached packages:\n> [1] RSQLite_0.6-8 DBI_0.2-4\n>\n> loaded via a namespace (and not attached):\n> [1] tools_2.7.0\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "Are you sure that you do not get all the digits? Try\n   print(fetch(rs, n = -1), digits = 15)\n\nThe default option of \"digits\" is 7 and it might hit you here.\n\nKasper\n\nOn May 11, 2008, at 8:15 PM, Will",
+      "thread_id": "thread-8a1325222809",
+      "thread_depth": 1,
+      "month": "2008-05"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-8a1325222809",
+      "subject": "query result precision",
+      "message_count": 2,
+      "participants": [
+        "Kasper Daniel Hansen",
+        "William Morris"
+      ],
+      "started": "2008-05-12T13:15:16+10:00",
+      "last_reply": "2008-05-11T20:28:06-07:00",
+      "root_message_id": "msg-8a1325222809"
+    }
+  ]
+}

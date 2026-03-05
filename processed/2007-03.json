@@ -1,0 +1,155 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2007-03",
+  "messages": [
+    {
+      "id": "msg-96655506dd87",
+      "message_id": "<45E7D94E.2080402@integromics.com>",
+      "from_name": "Jose Sierra",
+      "from_email_hash": "ddc9e6565b331670a089d9a4a94fafc0356dc2fe1cff9429c2ea054f77ec4ae9",
+      "date": "2007-03-02T08:59:10+01:00",
+      "subject": "[R-sig-DB] RJDBC",
+      "subject_clean": "RJDBC",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I need help.\n\nI'm trying to connect with an Oracle DBMS and MySQL DBMS, I'm using \nRJDBC package.\n\nMy code is the next:\n\nlibrary('rJava')\nlibrary('DBI')\nlibrary('RJDBC')\n\n//Mysql\ndrv <- \nJDBC(\"com.mysql.jdbc.Driver\",\"C:\\\\Temporal\\\\mysql-connector-java-3.0.9-stable-bin.jar\",\"'\")\nconn <- dbConnect(drv, \"jdbc:mysql://localhost:3306/bd\", \"user\", \"password\")\n\n//Oracle\ndrv <- \nJDBC(\"oracle.jdbc.driver.OracleDriver\",\"C:\\\\Temporal\\\\classes12.jar\",\"'\")\nconn <- dbConnect(drv, \n\"jdbc:oracle:thin:@192.168.1.70:1521:SDS22\",\"user\",\"password\")\n\nR always returns for oracle\n \"Error en .local(drv, ...) : Unable to connect JDBC to \njdbc:oracle:thin:@192.168.1.70:1521:SDS22\"\nand for mysql\n \"Error en .local(drv, ...) : Unable to connect JDBC to \njdbc:mysql://localhost:3306/bd\"\n\nAnd the function summary(drv) returns:\nJDBCDriver\nname = JDBC\ndriver.version = 0.1-1\nDBI.version = 0.1-1\nclient.version = NA\nmax.connections = NA\n\nCan you help me, please?\n\nRegards.\nJose Sierra\n\n\t\t\n______________________________________________ \nLLama Gratis a cualquier PC del Mundo. \nLlamadas a fijos y m?viles desde 1 c?ntimo por minuto. \nhttp://es.voice.yahoo.com",
+      "body_snippet": "I need help.\n\nI'm trying to connect with an Oracle DBMS and MySQL DBMS, I'm using \nRJDBC package.\n\nMy code is the next:\n\nlibrary('rJava')\nlibrary('DBI')\nlibrary('RJDBC')\n\n//Mysql\ndrv <- \nJDBC(\"com.mys",
+      "thread_id": "thread-96655506dd87",
+      "thread_depth": 0,
+      "month": "2007-03"
+    },
+    {
+      "id": "msg-4ff22f04b083",
+      "message_id": "<17900.28789.93532.767424@basebud.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2007-03-05T13:33:09-06:00",
+      "subject": "[R-sig-DB] RdbiPgSQL: Sub-second support for type conversion",
+      "subject_clean": "RdbiPgSQL: Sub-second support for type conversion",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Brian Ripley did a lot of really nice work a year ago to support milli- (and\neven micro-) second resolutions in R's POSIXt types.  \n\nTrying to read such data back from Postgresql, I was getting\n\n   > Foo <- dbReadTable(db, someTable)\n   Warning messages:\n   1: Coercing PGSQL type 1114 to character in:\n   rpgsql.cast.values.default(data.col) \n\nfor columns of type timestamp (actually: 'timestamp without time zone'). \nAs I use\n\n   options(\"digits.secs\"=7)\n\na simple Sys.time() returns strings such\n\n   > Sys.time()\n   [1] \"2007-03-05 13:28:39.260931 CST\"\n\n\nNow, I just had a really quick look at the RdbiPgSQL sources, and it turns\nout that I can solve my problem with a simple one-liner similar to what is\nalready at the end of R/types.R:\n\n   ## indented just for the mail\n   rpgsql.cast.values.1114 <- function(x) { \n      as.POSIXct(strptime(x, \"%a %b %d %H:%M:%OS %Y\")) \n   }\n\nBut i presume that the format string is locale-dependent.  Is there a clever\nway to code the format in a way that will work in other settings?\n\nDirk\n\n-- \nHell, there are no rules here - we're trying to accomplish something. \n                                                  -- Thomas A. Edison",
+      "body_snippet": "Brian Ripley did a lot of really nice work a year ago to support milli- (and\neven micro-) second resolutions in R's POSIXt types.  \n\nTrying to read such data back from Postgresql, I was getting\n\n   > ",
+      "thread_id": "thread-4ff22f04b083",
+      "thread_depth": 0,
+      "month": "2007-03"
+    },
+    {
+      "id": "msg-418ec46b6bef",
+      "message_id": "<m2d53724iu.fsf@ziti.local>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2007-03-17T09:55:53-07:00",
+      "subject": "[R-sig-DB] NAMESPACE for DBI and RSQLite",
+      "subject_clean": "NAMESPACE for DBI and RSQLite",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello all,\n\nAs has been planned for some time, I have added a NAMESPACE file to\nDBI and RSQLite.\n\nPreview version is available here:\n\n    http://www.bioconductor.org/packages/misc/\n\nI would really appreciate feedback if someone has a chance to give\nthese a try -- especially of interest would be installing the new DBI\nand testing RMySQL and ROracle.\n\nI plan on sending these updates to CRAN on Monday or Tuesday.\n\nBest Wishes,\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "Hello all,\n\nAs has been planned for some time, I have added a NAMESPACE file to\nDBI and RSQLite.\n\nPreview version is available here:\n\n    http://www.bioconductor.org/packages/misc/\n\nI would really app",
+      "thread_id": "thread-418ec46b6bef",
+      "thread_depth": 0,
+      "month": "2007-03"
+    },
+    {
+      "id": "msg-cd35f3d929bc",
+      "message_id": "<45FC9707.6060708@mail.nih.gov>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2007-03-17T21:33:59-04:00",
+      "subject": "[R-sig-DB] NAMESPACE for DBI and RSQLite",
+      "subject_clean": "NAMESPACE for DBI and RSQLite",
+      "in_reply_to": "<m2d53724iu.fsf@ziti.local>",
+      "references": [
+        "<m2d53724iu.fsf@ziti.local>"
+      ],
+      "body_plain": "Seth Falcon wrote:\n> Hello all,\n>\n> As has been planned for some time, I have added a NAMESPACE file to\n> DBI and RSQLite.\n>\n> Preview version is available here:\n>\n>     http://www.bioconductor.org/packages/misc/\n>\n> I would really appreciate feedback if someone has a chance to give\n> these a try -- especially of interest would be installing the new DBI\n> and testing RMySQL and ROracle.\n>   \nNot directly related, but is Postgresql going to be wrapped in at some \npoint?  I'm just not sure where it stands in relation to DBI.  Just \ncurious, as RdbiPgSQL currently works fine.\n\nThanks,\nSean",
+      "body_snippet": "Seth Falcon wrote:\n> Hello all,\n>\n> As has been planned for some time, I have added a NAMESPACE file to\n> DBI and RSQLite.\n>\n> Preview version is available here:\n>\n>     http://www.bioconductor.org/pa",
+      "thread_id": "thread-418ec46b6bef",
+      "thread_depth": 1,
+      "month": "2007-03"
+    },
+    {
+      "id": "msg-99b629faa3aa",
+      "message_id": "<m2ircyzbyv.fsf@ziti.local>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2007-03-18T10:40:56-07:00",
+      "subject": "[R-sig-DB] NAMESPACE for DBI and RSQLite",
+      "subject_clean": "NAMESPACE for DBI and RSQLite",
+      "in_reply_to": "<45FC9707.6060708@mail.nih.gov> (Sean Davis's message of \"Sat, 17 Mar 2007 21:33:59 -0400\")",
+      "references": [
+        "<m2d53724iu.fsf@ziti.local>",
+        "<45FC9707.6060708@mail.nih.gov>"
+      ],
+      "body_plain": "Sean Davis <sdavis2 at mail.nih.gov> writes:\n> Not directly related, but is Postgresql going to be wrapped in at some\n> point?  I'm just not sure where it stands in relation to DBI.  Just\n> curious, as RdbiPgSQL currently works fine.\n\nYes... at some point ;-)\n\nThere are a number of people who would very much like to see RdbiPgSQL\nconverted to a DBI-based package.  Having a namespace on DBI should\nmake such a project easier, IMO.\n\nIt seems not quite important enough for anyone to put at the top of\ntheir TODO list -- perhaps because RdbiPgSQL does work.\n\nInterested parties are welcome to contact me for suggestions in\ngetting started. :-)\n\nBest,\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "Sean Davis <sdavis2 at mail.nih.gov> writes:\n> Not directly related, but is Postgresql going to be wrapped in at some\n> point?  I'm just not sure where it stands in relation to DBI.  Just\n> curious, a",
+      "thread_id": "thread-418ec46b6bef",
+      "thread_depth": 2,
+      "month": "2007-03"
+    },
+    {
+      "id": "msg-7c36991eb99f",
+      "message_id": "<m2wt12qonf.fsf@ziti.fhcrc.org>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2007-03-27T15:59:00-07:00",
+      "subject": "[R-sig-DB] New versions of DBI and RSQLite uploaded to CRAN",
+      "subject_clean": "New versions of DBI and RSQLite uploaded to CRAN",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello all,\n\nDBI 0.2-1 and RSQLite 0.5-2 have been uploaded to CRAN and should hit\na mirror near you in a few days.\n\nChanges\n=======\n\nDBI\n---\n\n   Remove conditional definition of print, show, summary generics\n    \n    For now, it is probably better to just call setMethod on these\n    functions and let the generic get created where it may.  This will\n    break when another package defines their own summary generic, but\n    at least we won't be breaking other people.\n\nRSQLite\n-------\n\n   Add runnable examples to some of the man pages\n\n   Need to exportMethod format since we define a method for it\n    \n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "Hello all,\n\nDBI 0.2-1 and RSQLite 0.5-2 have been uploaded to CRAN and should hit\na mirror near you in a few days.\n\nChanges\n=======\n\nDBI\n---\n\n   Remove conditional definition of print, show, summary g",
+      "thread_id": "thread-7c36991eb99f",
+      "thread_depth": 0,
+      "month": "2007-03"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-96655506dd87",
+      "subject": "RJDBC",
+      "message_count": 1,
+      "participants": [
+        "Jose Sierra"
+      ],
+      "started": "2007-03-02T08:59:10+01:00",
+      "last_reply": "2007-03-02T08:59:10+01:00",
+      "root_message_id": "msg-96655506dd87"
+    },
+    {
+      "id": "thread-4ff22f04b083",
+      "subject": "RdbiPgSQL: Sub-second support for type conversion",
+      "message_count": 1,
+      "participants": [
+        "Dirk Eddelbuettel"
+      ],
+      "started": "2007-03-05T13:33:09-06:00",
+      "last_reply": "2007-03-05T13:33:09-06:00",
+      "root_message_id": "msg-4ff22f04b083"
+    },
+    {
+      "id": "thread-418ec46b6bef",
+      "subject": "NAMESPACE for DBI and RSQLite",
+      "message_count": 3,
+      "participants": [
+        "Sean Davis",
+        "Seth Falcon"
+      ],
+      "started": "2007-03-17T09:55:53-07:00",
+      "last_reply": "2007-03-18T10:40:56-07:00",
+      "root_message_id": "msg-418ec46b6bef"
+    },
+    {
+      "id": "thread-7c36991eb99f",
+      "subject": "New versions of DBI and RSQLite uploaded to CRAN",
+      "message_count": 1,
+      "participants": [
+        "Seth Falcon"
+      ],
+      "started": "2007-03-27T15:59:00-07:00",
+      "last_reply": "2007-03-27T15:59:00-07:00",
+      "root_message_id": "msg-7c36991eb99f"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2005-01",
+  "messages": [
+    {
+      "id": "msg-9c6f4d805528",
+      "message_id": "<41F12F6D.2060909@vanderbilt.edu>",
+      "from_name": "Jeffrey Horner",
+      "from_email_hash": "77f9f3268effd48e70e790ba24e5db9767f6401d87fbba7ec6a16ee2e060daf2",
+      "date": "2005-01-21T10:35:57-06:00",
+      "subject": "[R-sig-DB] Implementation of RMySQL",
+      "subject_clean": "Implementation of RMySQL",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I noticed that this package stores pointers to MySQL related data \nstructures i R objects as an integer vector of up to length 3:\n\n(from RMySQL/src/RS-DBI.h):\n/* In R/S a dbObject is a foreign reference consisting of a vector\n  * of 1, 2 or 3 integers.  In the C implementation we use these\n  * R/S vectors as handles (we could have use pointers).\n  */\n\nWhy were they not stored in the R object using the R External Pointer \ninterface, described here:\n\nhttp://www.stat.uiowa.edu/~luke/R/references/weakfinex.html\n\nOn a related note, the connection is not closed when assigning NULL to \nthe connection object. This could be accomplished by using the \nFinalization Interface described in the above reference... Any reason \nthis was not used?\n\nAlso, in light of a recent discussion on the R-devel mailing list(see \nS3/S4 classes performance comparison), does the S4 implemented DBI \npackage hinder performance in any way for the RMySQL package?\n\n-- \nJeffrey Horner       Computer Systems Analyst         School of Medicine\n615-322-8606         Department of Biostatistics   Vanderbilt University",
+      "body_snippet": "I noticed that this package stores pointers to MySQL related data \nstructures i R objects as an integer vector of up to length 3:\n\n(from RMySQL/src/RS-DBI.h):\n/* In R/S a dbObject is a foreign referen",
+      "thread_id": "thread-9c6f4d805528",
+      "thread_depth": 0,
+      "month": "2005-01"
+    },
+    {
+      "id": "msg-17836f6ef901",
+      "message_id": "<20050121170945.A20926@jessie.research.bell-labs.com>",
+      "from_name": "David James",
+      "from_email_hash": "50db14ff16dfd88fa0516d6b3379e8ac0537ba1ef3b84fa4345e8a2fec6698f9",
+      "date": "2005-01-21T17:09:45-05:00",
+      "subject": "[R-sig-DB] Implementation of RMySQL",
+      "subject_clean": "Implementation of RMySQL",
+      "in_reply_to": "<41F12F6D.2060909@vanderbilt.edu>; from jeff.horner@vanderbilt.edu on Fri, Jan 21, 2005 at 10:35:57AM -0600",
+      "references": [
+        "<41F12F6D.2060909@vanderbilt.edu>"
+      ],
+      "body_plain": "Jeffrey Horner wrote:\n> I noticed that this package stores pointers to MySQL related data \n> structures i R objects as an integer vector of up to length 3:\n> \n> (from RMySQL/src/RS-DBI.h):\n> /* In R/S a dbObject is a foreign reference consisting of a vector\n>   * of 1, 2 or 3 integers.  In the C implementation we use these\n>   * R/S vectors as handles (we could have use pointers).\n>   */\n> \n> Why were they not stored in the R object using the R External Pointer \n> interface, described here:\n> \n> http://www.stat.uiowa.edu/~luke/R/references/weakfinex.html\n> \n> On a related note, the connection is not closed when assigning NULL to \n> the connection object. This could be accomplished by using the \n> Finalization Interface described in the above reference... Any reason \n> this was not used?\n> \n> Also, in light of a recent discussion on the R-devel mailing list(see \n> S3/S4 classes performance comparison), does the S4 implemented DBI \n> package hinder performance in any way for the RMySQL package?\n> \n> -- \n> Jeffrey Horner       Computer Systems Analyst         School of Medicine\n> 615-322-8606         Department of Biostatistics   Vanderbilt University\n> \n\nThe original implementation predates external pointers/weak\nreferences.  Moreover, at that time I decided to make the package\n(plus ROracle and RSQLite) compatible with S-Plus both at the S\nlevel and the C underlying code (this is a decision I now regret).\nI expect to change the implementation, time permitting, in a\nfuture version.\n\nRe: S4 performance, I haven't noticed any disadvantages, perhaps\nbecause the delays due to running SQL queries on remote severs and/or\ndata transmissions tend to be much larger than S4 object creation.\nI do feel that the S4 classes and methods provide a better mechanism\nthan S3 instance-based methods for this type of packages.\n\nRegards,\n\n--\nDavid",
+      "body_snippet": "Jeffrey Horner wrote:\n> I noticed that this package stores pointers to MySQL related data \n> structures i R objects as an integer vector of up to length 3:\n> \n> (from RMySQL/src/RS-DBI.h):\n> /* In R/S",
+      "thread_id": "thread-9c6f4d805528",
+      "thread_depth": 1,
+      "month": "2005-01"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-9c6f4d805528",
+      "subject": "Implementation of RMySQL",
+      "message_count": 2,
+      "participants": [
+        "David James",
+        "Jeffrey Horner"
+      ],
+      "started": "2005-01-21T10:35:57-06:00",
+      "last_reply": "2005-01-21T17:09:45-05:00",
+      "root_message_id": "msg-9c6f4d805528"
+    }
+  ]
+}

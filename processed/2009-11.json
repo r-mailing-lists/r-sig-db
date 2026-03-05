@@ -1,0 +1,516 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2009-11",
+  "messages": [
+    {
+      "id": "msg-d16b9f9609bd",
+      "message_id": "<EEBC169715EB8C438D3C9283AF0F201C0724A7A2@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+      "from_name": "McGehee, Robert",
+      "from_email_hash": "d6e856f0aa01f89698472702235348f1cd8814da0dffd4bae380a929d6d2736c",
+      "date": "2009-11-03T16:35:09-05:00",
+      "subject": "[R-sig-DB] dbWriteTable permission problem on Mac OSX",
+      "subject_clean": "dbWriteTable permission problem on Mac OSX",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "R-Sig-DB,\nI'm getting a 'Permission denied' error when trying to use the\n'dbWriteTable' function (RPostgreSQL\\DBI package) to access PostgreSQL\non my Mac OSX. I saw that this error appears to have been documented in\nthe README file as affecting versions of Linux running SELinux. However,\nsince my OSX Server is not running SELinux, I wanted to see if anyone\nelse has had success using 'dbWriteTable' on a Mac with RPostgreSQL.\n\nI can update a database using INSERT commands, but am looking for a\nfaster solution. Also RODBC crashes my R session when executing the\n'sqlTables' function--presumably due to an ODBC driver problem--so\nswitching packages won't easily help.\n\nThanks, Robert\n\n---------------------\n> dbWriteTable(pcon, \"test\", data)\nError in postgresqlExecStatement(conn, statement, ...) : \n  RS-DBI driver: (could not Retrieve the result : ERROR:  could not open\nfile \"/tmp/RtmprNh2yy/rsdbi60b7acd9\" for reading: Permission denied\n)\nWarning in postgresqlWriteTable(conn, name, value, ...) :\n  could not load data into table\n[1] FALSE\n\n\n> R.version\n               _                           \nplatform       x86_64-apple-darwin9.5.0    \narch           x86_64                      \nos             darwin9.5.0                 \nsystem         x86_64, darwin9.5.0         \nstatus                                     \nmajor          2                           \nminor          9.0                         \nyear           2009                        \nmonth          04                          \nday            17                          \nsvn rev        48333                       \nlanguage       R",
+      "body_snippet": "R-Sig-DB,\nI'm getting a 'Permission denied' error when trying to use the\n'dbWriteTable' function (RPostgreSQL\\DBI package) to access PostgreSQL\non my Mac OSX. I saw that this error appears to have bee",
+      "thread_id": "thread-d16b9f9609bd",
+      "thread_depth": 0,
+      "month": "2009-11"
+    },
+    {
+      "id": "msg-754effa5aa64",
+      "message_id": "<8ec76080911031413x2b157ecbr5c2df4eff1a17ad8@mail.gmail.com>",
+      "from_name": "Whit Armstrong",
+      "from_email_hash": "461dbb6770715b86a360fd76345328501238bfd4dcdfb8fd08126ff3a6056c97",
+      "date": "2009-11-03T17:13:46-05:00",
+      "subject": "[R-sig-DB] dbWriteTable permission problem on Mac OSX",
+      "subject_clean": "dbWriteTable permission problem on Mac OSX",
+      "in_reply_to": "<EEBC169715EB8C438D3C9283AF0F201C0724A7A2@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+      "references": [
+        "<AcpczYM55AIvhg2/RvCIdIVwFvPm8g==>",
+        "<EEBC169715EB8C438D3C9283AF0F201C0724A7A2@MSGBOSCLM2WIN.DMN1.FMR.COM>"
+      ],
+      "body_plain": "postgresqlWriteTable serializes your entire table to disk, and then\nasks postgres to read it back.\n\nIt looks like the user name running postgres isn't able to read your file.\n\nI'm sure someone on this list will help you solve your permission\nissues.  In case they can't you can try my postgres driver (which\nwrites via binary transfer though the connection).\n\nhttp://github.com/armstrtw/unifieddbi\n\n-Whit\n\n\nOn Tue, Nov 3, 2009 at 4:35 PM, McGehee, Robert\n<Robert.McGehee at geodecapital.com> wrote:\n> R-Sig-DB,\n> I'm getting a 'Permission denied' error when trying to use the\n> 'dbWriteTable' function (RPostgreSQL\\DBI package) to access PostgreSQL\n> on my Mac OSX. I saw that this error appears to have been documented in\n> the README file as affecting versions of Linux running SELinux. However,\n> since my OSX Server is not running SELinux, I wanted to see if anyone\n> else has had success using 'dbWriteTable' on a Mac with RPostgreSQL.\n>\n> I can update a database using INSERT commands, but am looking for a\n> faster solution. Also RODBC crashes my R session when executing the\n> 'sqlTables' function--presumably due to an ODBC driver problem--so\n> switching packages won't easily help.\n>\n> Thanks, Robert\n>\n> ---------------------\n>> dbWriteTable(pcon, \"test\", data)\n> Error in postgresqlExecStatement(conn, statement, ...) :\n> ?RS-DBI driver: (could not Retrieve the result : ERROR: ?could not open\n> file \"/tmp/RtmprNh2yy/rsdbi60b7acd9\" for reading: Permission denied\n> )\n> Warning in postgresqlWriteTable(conn, name, value, ...) :\n> ?could not load data into table\n> [1] FALSE\n>\n>\n>> R.version\n> ? ? ? ? ? ? ? _\n> platform ? ? ? x86_64-apple-darwin9.5.0\n> arch ? ? ? ? ? x86_64\n> os ? ? ? ? ? ? darwin9.5.0\n> system ? ? ? ? x86_64, darwin9.5.0\n> status\n> major ? ? ? ? ?2\n> minor ? ? ? ? ?9.0\n> year ? ? ? ? ? 2009\n> month ? ? ? ? ?04\n> day ? ? ? ? ? ?17\n> svn rev ? ? ? ?48333\n> language ? ? ? R\n>\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "postgresqlWriteTable serializes your entire table to disk, and then\nasks postgres to read it back.\n\nIt looks like the user name running postgres isn't able to read your file.\n\nI'm sure someone on this",
+      "thread_id": "thread-d16b9f9609bd",
+      "thread_depth": 1,
+      "month": "2009-11"
+    },
+    {
+      "id": "msg-ec72252f0be0",
+      "message_id": "<19184.43865.926410.871364@ron.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2009-11-03T16:14:49-06:00",
+      "subject": "[R-sig-DB] dbWriteTable permission problem on Mac OSX",
+      "subject_clean": "dbWriteTable permission problem on Mac OSX",
+      "in_reply_to": "<EEBC169715EB8C438D3C9283AF0F201C0724A7A2@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+      "references": [
+        "<EEBC169715EB8C438D3C9283AF0F201C0724A7A2@MSGBOSCLM2WIN.DMN1.FMR.COM>"
+      ],
+      "body_plain": "On 3 November 2009 at 16:35, McGehee, Robert wrote:\n| I'm getting a 'Permission denied' error when trying to use the\n| 'dbWriteTable' function (RPostgreSQL\\DBI package) to access PostgreSQL\n| on my Mac OSX. I saw that this error appears to have been documented in\n| the README file as affecting versions of Linux running SELinux. However,\n\n(That was an educated guess by Sameer at the time. He had other issues too...)\n\n| since my OSX Server is not running SELinux, I wanted to see if anyone\n| else has had success using 'dbWriteTable' on a Mac with RPostgreSQL.\n| \n| I can update a database using INSERT commands, but am looking for a\n| faster solution. Also RODBC crashes my R session when executing the\n| 'sqlTables' function--presumably due to an ODBC driver problem--so\n| switching packages won't easily help.\n| \n| Thanks, Robert\n| \n| ---------------------\n| > dbWriteTable(pcon, \"test\", data)\n| Error in postgresqlExecStatement(conn, statement, ...) : \n|   RS-DBI driver: (could not Retrieve the result : ERROR:  could not open\n| file \"/tmp/RtmprNh2yy/rsdbi60b7acd9\" for reading: Permission denied\n| )\n| Warning in postgresqlWriteTable(conn, name, value, ...) :\n|   could not load data into table\n\nThat looks straightforward. Me thinks that\n\n  a) R creates its tempdir, so R owns /tmp/RtmprNh2yy/\n\n  b) we're talking to Pg so the default Pg user will need to read that\n     file -- my guess right now is that the default postgres user running\n     the db is simply prohibited from reading inside that directory.\n\nThis gives you an idea of how to fix it short term -- maybe by using another\ntempdir, maybe by using another fudge.   Alternatively, dump your data\noutside of R and use Pg's native bulk copy tools ...   That said, I don't\nquite recall by this doesn't bite us on Linux.\n\nRPostgreSQL, I should add, is in a state of graceful unmaintainedness.  I\nsort-of look after it as I once suggested for R's participation in the Google\nSummer of Code as feel attached. But as I don;t currently run much code\nagainst it, so my usage is light at best.  I have Neil helping me OS X\nspecific issue (ie he repaired/enhanced the build), Joe helps with real Pg\nnitty gritty and Jeff offers some general database / DBI smart.\n\nSo with that:  if anyone knows and loves Postgresql and wants to help, please\ndo not hold back. We'd love to have you on the team.\n\nDirk\n\n-- \nThree out of two people have difficulties with fractions.",
+      "body_snippet": "On 3 November 2009 at 16:35, McGehee, Robert wrote:\n| I'm getting a 'Permission denied' error when trying to use the\n| 'dbWriteTable' function (RPostgreSQL\\DBI package) to access PostgreSQL\n| on my Ma",
+      "thread_id": "thread-d16b9f9609bd",
+      "thread_depth": 1,
+      "month": "2009-11"
+    },
+    {
+      "id": "msg-4447c64ac177",
+      "message_id": "<de8c7cb40911041958y445d88bre0bb3e6199d93648@mail.gmail.com>",
+      "from_name": "Prasenjit Kapat",
+      "from_email_hash": "9e858ae1ef83a65a6b893dffe0d8db4d5362775729dd629dfe48603ee8933c48",
+      "date": "2009-11-04T22:58:28-05:00",
+      "subject": "[R-sig-DB] dbWriteTable permission problem on Mac OSX",
+      "subject_clean": "dbWriteTable permission problem on Mac OSX",
+      "in_reply_to": "<19184.43865.926410.871364@ron.nulle.part>",
+      "references": [
+        "<EEBC169715EB8C438D3C9283AF0F201C0724A7A2@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+        "<19184.43865.926410.871364@ron.nulle.part>"
+      ],
+      "body_plain": "Hi,\n\nOn Tue, Nov 3, 2009 at 5:14 PM, Dirk Eddelbuettel <edd at debian.org> wrote:\n> | ---------------------\n> | > dbWriteTable(pcon, \"test\", data)\n> | Error in postgresqlExecStatement(conn, statement, ...) :\n> | ? RS-DBI driver: (could not Retrieve the result : ERROR: ?could not open\n> | file \"/tmp/RtmprNh2yy/rsdbi60b7acd9\" for reading: Permission denied\n> | )\n> | Warning in postgresqlWriteTable(conn, name, value, ...) :\n> | ? could not load data into table\n>\n> That looks straightforward. Me thinks that\n>\n> ?a) R creates its tempdir, so R owns /tmp/RtmprNh2yy/\n>\n> ?b) we're talking to Pg so the default Pg user will need to read that\n> ? ? file -- my guess right now is that the default postgres user running\n> ? ? the db is simply prohibited from reading inside that directory.\n>\n> This gives you an idea of how to fix it short term -- maybe by using another\n> tempdir, maybe by using another fudge. ? Alternatively, dump your data\n> outside of R and use Pg's native bulk copy tools ... ? That said, I don't\n> quite recall by this doesn't bite us on Linux.\n\nI had a similar situation sometime back. And to this day the only\nsolution was to give global read/write permissions (on RedHat, SELinux\nwas disabled). Giving read perm is fine but not so for write. So:\n\nIf exporting directly from postgres to disk via any query then I use\n/tmp. Otherwise, read them into R's data frame and then write to\nanywhere on the disk from R.\n\n-- \nPrasenjit",
+      "body_snippet": "Hi,\n\nOn Tue, Nov 3, 2009 at 5:14 PM, Dirk Eddelbuettel <edd at debian.org> wrote:\n> | ---------------------\n> | > dbWriteTable(pcon, \"test\", data)\n> | Error in postgresqlExecStatement(conn, statement,",
+      "thread_id": "thread-d16b9f9609bd",
+      "thread_depth": 2,
+      "month": "2009-11"
+    },
+    {
+      "id": "msg-958bbaa86818",
+      "message_id": "<19186.21463.574294.446926@ron.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2009-11-04T22:25:59-06:00",
+      "subject": "[R-sig-DB] dbWriteTable permission problem on Mac OSX",
+      "subject_clean": "dbWriteTable permission problem on Mac OSX",
+      "in_reply_to": "<de8c7cb40911041958y445d88bre0bb3e6199d93648@mail.gmail.com>",
+      "references": [
+        "<EEBC169715EB8C438D3C9283AF0F201C0724A7A2@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+        "<19184.43865.926410.871364@ron.nulle.part>",
+        "<de8c7cb40911041958y445d88bre0bb3e6199d93648@mail.gmail.com>"
+      ],
+      "body_plain": "On 4 November 2009 at 22:58, Prasenjit Kapat wrote:\n| Hi,\n| \n| On Tue, Nov 3, 2009 at 5:14 PM, Dirk Eddelbuettel <edd at debian.org> wrote:\n| > | ---------------------\n| > | > dbWriteTable(pcon, \"test\", data)\n| > | Error in postgresqlExecStatement(conn, statement, ...) :\n| > | ? RS-DBI driver: (could not Retrieve the result : ERROR: ?could not open\n| > | file \"/tmp/RtmprNh2yy/rsdbi60b7acd9\" for reading: Permission denied\n| > | )\n| > | Warning in postgresqlWriteTable(conn, name, value, ...) :\n| > | ? could not load data into table\n| >\n| > That looks straightforward. Me thinks that\n| >\n| > ?a) R creates its tempdir, so R owns /tmp/RtmprNh2yy/\n| >\n| > ?b) we're talking to Pg so the default Pg user will need to read that\n| > ? ? file -- my guess right now is that the default postgres user running\n| > ? ? the db is simply prohibited from reading inside that directory.\n| >\n| > This gives you an idea of how to fix it short term -- maybe by using another\n| > tempdir, maybe by using another fudge. ? Alternatively, dump your data\n| > outside of R and use Pg's native bulk copy tools ... ? That said, I don't\n| > quite recall by this doesn't bite us on Linux.\n| \n| I had a similar situation sometime back. And to this day the only\n| solution was to give global read/write permissions (on RedHat, SELinux\n| was disabled). Giving read perm is fine but not so for write. So:\n| \n| If exporting directly from postgres to disk via any query then I use\n| /tmp. Otherwise, read them into R's data frame and then write to\n| anywhere on the disk from R.\n\nAnd just to follow-up, now that I am home where Pg runs:\n\na) dbWriteTable() works for me under Debian\n\nb) the per-R-session tempdir is clearly mode 0700:\ndrwx------  2 edd  edd     1024 2009-11-04 22:18 RtmpzGf6Ef\n\nc) I am not sure how Pg gets to the data ... but it does for me as the\nunittest tests/dbWriteTableTest.R in the sources also attests\n\nDirk\n\n-- \nThree out of two people have difficulties with fractions.",
+      "body_snippet": "On 4 November 2009 at 22:58, Prasenjit Kapat wrote:\n| Hi,\n| \n| On Tue, Nov 3, 2009 at 5:14 PM, Dirk Eddelbuettel <edd at debian.org> wrote:\n| > | ---------------------\n| > | > dbWriteTable(pcon, \"test",
+      "thread_id": "thread-d16b9f9609bd",
+      "thread_depth": 3,
+      "month": "2009-11"
+    },
+    {
+      "id": "msg-700446ad80cb",
+      "message_id": "<EEBC169715EB8C438D3C9283AF0F201C0724A94E@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+      "from_name": "McGehee, Robert",
+      "from_email_hash": "d6e856f0aa01f89698472702235348f1cd8814da0dffd4bae380a929d6d2736c",
+      "date": "2009-11-05T08:39:19-05:00",
+      "subject": "[R-sig-DB] dbWriteTable permission problem on Mac OSX",
+      "subject_clean": "dbWriteTable permission problem on Mac OSX",
+      "in_reply_to": null,
+      "references": [
+        "<EEBC169715EB8C438D3C9283AF0F201C0724A7A2@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+        "<19184.43865.926410.871364@ron.nulle.part>",
+        "<de8c7cb40911041958y445d88bre0bb3e6199d93648@mail.gmail.com>",
+        "<19186.21463.574294.446926@ron.nulle.part>"
+      ],
+      "body_plain": "So following the spirit of Dirk's advice, I resolved the problem by running the PostgreSQL database from my user account, rather than the 'postgres' user I had been using. Imports happened smoothly afterwards. Presumably 'postgres' couldn't see the temp files that my user was creating. \n\nAlso on this note, the first error I encountered with 'dbWriteTable' when running from my user account and pg from the 'postgres' account informed me that the '\\copy' command required superuser access. Granting my pg account Postgres superuser abilities fixed that, but I think it should be noted that the current implementation seems to require a wide-open set-up to use bulk copy.\n\nI'm still keen to try out Whit's solution as well as a direct binary connection may get around the permission problems and has the potential to be faster. I'll report back if I discover anything interesting for the group.\n\nThanks to all.\n\nCheers,\nRobert\n\n-----Original Message-----\nFrom: Dirk Eddelbuettel [mailto:edd at debian.org] \nSent: Wednesday, November 04, 2009 11:26 PM\nTo: Prasenjit Kapat\nCc: McGehee, Robert; r-sig-db at stat.math.ethz.ch\nSubject: Re: [R-sig-DB] dbWriteTable permission problem on Mac OSX\n\n\nOn 4 November 2009 at 22:58, Prasenjit Kapat wrote:\n| Hi,\n| \n| On Tue, Nov 3, 2009 at 5:14 PM, Dirk Eddelbuettel <edd at debian.org> wrote:\n| > | ---------------------\n| > | > dbWriteTable(pcon, \"test\", data)\n| > | Error in postgresqlExecStatement(conn, statement, ...) :\n| > | ? RS-DBI driver: (could not Retrieve the result : ERROR: ?could not open\n| > | file \"/tmp/RtmprNh2yy/rsdbi60b7acd9\" for reading: Permission denied\n| > | )\n| > | Warning in postgresqlWriteTable(conn, name, value, ...) :\n| > | ? could not load data into table\n| >\n| > That looks straightforward. Me thinks that\n| >\n| > ?a) R creates its tempdir, so R owns /tmp/RtmprNh2yy/\n| >\n| > ?b) we're talking to Pg so the default Pg user will need to read that\n| > ? ? file -- my guess right now is that the default postgres user running\n| > ? ? the db is simply prohibited from reading inside that directory.\n| >\n| > This gives you an idea of how to fix it short term -- maybe by using another\n| > tempdir, maybe by using another fudge. ? Alternatively, dump your data\n| > outside of R and use Pg's native bulk copy tools ... ? That said, I don't\n| > quite recall by this doesn't bite us on Linux.\n| \n| I had a similar situation sometime back. And to this day the only\n| solution was to give global read/write permissions (on RedHat, SELinux\n| was disabled). Giving read perm is fine but not so for write. So:\n| \n| If exporting directly from postgres to disk via any query then I use\n| /tmp. Otherwise, read them into R's data frame and then write to\n| anywhere on the disk from R.\n\nAnd just to follow-up, now that I am home where Pg runs:\n\na) dbWriteTable() works for me under Debian\n\nb) the per-R-session tempdir is clearly mode 0700:\ndrwx------  2 edd  edd     1024 2009-11-04 22:18 RtmpzGf6Ef\n\nc) I am not sure how Pg gets to the data ... but it does for me as the\nunittest tests/dbWriteTableTest.R in the sources also attests\n\nDirk\n\n-- \nThree out of two people have difficulties with fractions.",
+      "body_snippet": "So following the spirit of Dirk's advice, I resolved the problem by running the PostgreSQL database from my user account, rather than the 'postgres' user I had been using. Imports happened smoothly af",
+      "thread_id": "thread-d16b9f9609bd",
+      "thread_depth": 4,
+      "month": "2009-11"
+    },
+    {
+      "id": "msg-1f737e3677ef",
+      "message_id": "<19186.56462.294419.155727@ron.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2009-11-05T08:09:18-06:00",
+      "subject": "[R-sig-DB] dbWriteTable permission problem on Mac OSX",
+      "subject_clean": "dbWriteTable permission problem on Mac OSX",
+      "in_reply_to": "<EEBC169715EB8C438D3C9283AF0F201C0724A94E@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+      "references": [
+        "<EEBC169715EB8C438D3C9283AF0F201C0724A7A2@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+        "<19184.43865.926410.871364@ron.nulle.part>",
+        "<de8c7cb40911041958y445d88bre0bb3e6199d93648@mail.gmail.com>",
+        "<19186.21463.574294.446926@ron.nulle.part>",
+        "<EEBC169715EB8C438D3C9283AF0F201C0724A94E@MSGBOSCLM2WIN.DMN1.FMR.COM>"
+      ],
+      "body_plain": "On 5 November 2009 at 08:39, McGehee, Robert wrote:\n| So following the spirit of Dirk's advice, I resolved the problem by running\n| the PostgreSQL database from my user account, rather than the 'postgres' user\n| I had been using. Imports happened smoothly afterwards. Presumably 'postgres'\n| couldn't see the temp files that my user was creating.  \n\nHm, my postgres servers (running versions 8.2 and 8.3, 8.2 has the default\nport)  run as user postgres:\n\nedd at ron:~> pstree -u | grep postgres\n     |-postgres(postgres)---2*[postgres]\n     |-postgres(postgres)---4*[postgres]\nedd at ron:> \n\nLet's look at modes of /tmp, I have\n\nedd at ron:~/src/debian/CRAN> ls -ld /tmp\ndrwxrwxrwt 43 root root 19456 2009-11-05 08:04 /tmp\n\nSo there is a sticky bit set for 'other' (the trailing t).  What do you have?\n\n| Also on this note, the first error I encountered with 'dbWriteTable' when\n| running from my user account and pg from the 'postgres' account informed me\n| that the '\\copy' command required superuser access. Granting my pg account\n| Postgres superuser abilities fixed that, but I think it should be noted\n| that the current implementation seems to require a wide-open set-up to use\n| bulk copy. \n| \n| I'm still keen to try out Whit's solution as well as a direct binary\n| connection may get around the permission problems and has the potential to\n| be faster. I'll report back if I discover anything interesting for the\n| group. \n\nYes, it would also be nice to get that ported into RPostgreSQL.\n\nDirk\n\n-- \nThree out of two people have difficulties with fractions.",
+      "body_snippet": "On 5 November 2009 at 08:39, McGehee, Robert wrote:\n| So following the spirit of Dirk's advice, I resolved the problem by running\n| the PostgreSQL database from my user account, rather than the 'postg",
+      "thread_id": "thread-d16b9f9609bd",
+      "thread_depth": 5,
+      "month": "2009-11"
+    },
+    {
+      "id": "msg-cd1641653921",
+      "message_id": "<EEBC169715EB8C438D3C9283AF0F201C0724A9B1@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+      "from_name": "McGehee, Robert",
+      "from_email_hash": "d6e856f0aa01f89698472702235348f1cd8814da0dffd4bae380a929d6d2736c",
+      "date": "2009-11-05T10:45:52-05:00",
+      "subject": "[R-sig-DB] dbWriteTable permission problem on Mac OSX",
+      "subject_clean": "dbWriteTable permission problem on Mac OSX",
+      "in_reply_to": null,
+      "references": [
+        "<EEBC169715EB8C438D3C9283AF0F201C0724A7A2@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+        "<19184.43865.926410.871364@ron.nulle.part>",
+        "<de8c7cb40911041958y445d88bre0bb3e6199d93648@mail.gmail.com>",
+        "<19186.21463.574294.446926@ron.nulle.part>",
+        "<EEBC169715EB8C438D3C9283AF0F201C0724A94E@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+        "<19186.56462.294419.155727@ron.nulle.part>"
+      ],
+      "body_plain": "My /tmp directory also has a sticky bit. \n\nHere's my guess of the problem. This chunk of code from the\n'dbWriteTable' method 'postgresqlWriteTable' specifies different\ndirectories for Linux and non-Linux (e.g. Mac) tempfiles. \n    if(as.character(Sys.info()[\"sysname\"])==\"Linux\")\n        fn <- tempfile(\"rsdbi\",\"/tmp\")\n    else\n        fn <- tempfile(\"rsdbi\")\n\nThis difference is significant because on my Mac, the data file is saved\ninside an R tempdir with only user read permissions:\ndrwx------   2 a347549 pcap       40 Oct 30 14:05 Rtmp8fgNQf/\n\nwhile on Linux, the file is saved in /tmp, with whatever permissions\nthat has. So, presumably either patching the code as follows:\n-    if(as.character(Sys.info()[\"sysname\"])==\"Linux\")\n+    if(as.character(Sys.info()[\"sysname\"]) %in% c(\"Linux\", \"Darwin\"))\n\nor finding a way to have R create a tempdir with more generous\npermissions would solve the problem. Changing my umask settings didn't\nseem to change the permissions of the R tempdir--I'm not sure how that\nis specified. Alternatively, I suppose the directory could be an option\nto let the user specify somewhere readable by both 'postgres' and the\nuser's R session.\n\n--Robert\n\n-----Original Message-----\nFrom: Dirk Eddelbuettel [mailto:edd at debian.org] \nSent: Thursday, November 05, 2009 9:09 AM\nTo: McGehee, Robert\nCc: Prasenjit Kapat; r-sig-db at stat.math.ethz.ch\nSubject: Re: [R-sig-DB] dbWriteTable permission problem on Mac OSX\n\n\nOn 5 November 2009 at 08:39, McGehee, Robert wrote:\n| So following the spirit of Dirk's advice, I resolved the problem by\nrunning\n| the PostgreSQL database from my user account, rather than the\n'postgres' user\n| I had been using. Imports happened smoothly afterwards. Presumably\n'postgres'\n| couldn't see the temp files that my user was creating.  \n\nHm, my postgres servers (running versions 8.2 and 8.3, 8.2 has the\ndefault\nport)  run as user postgres:\n\nedd at ron:~> pstree -u | grep postgres\n     |-postgres(postgres)---2*[postgres]\n     |-postgres(postgres)---4*[postgres]\nedd at ron:> \n\nLet's look at modes of /tmp, I have\n\nedd at ron:~/src/debian/CRAN> ls -ld /tmp\ndrwxrwxrwt 43 root root 19456 2009-11-05 08:04 /tmp\n\nSo there is a sticky bit set for 'other' (the trailing t).  What do you\nhave?\n\n| Also on this note, the first error I encountered with 'dbWriteTable'\nwhen\n| running from my user account and pg from the 'postgres' account\ninformed me\n| that the '\\copy' command required superuser access. Granting my pg\naccount\n| Postgres superuser abilities fixed that, but I think it should be\nnoted\n| that the current implementation seems to require a wide-open set-up to\nuse\n| bulk copy. \n| \n| I'm still keen to try out Whit's solution as well as a direct binary\n| connection may get around the permission problems and has the\npotential to\n| be faster. I'll report back if I discover anything interesting for the\n| group. \n\nYes, it would also be nice to get that ported into RPostgreSQL.\n\nDirk\n\n-- \nThree out of two people have difficulties with fractions.",
+      "body_snippet": "My /tmp directory also has a sticky bit. \n\nHere's my guess of the problem. This chunk of code from the\n'dbWriteTable' method 'postgresqlWriteTable' specifies different\ndirectories for Linux and non-Li",
+      "thread_id": "thread-d16b9f9609bd",
+      "thread_depth": 6,
+      "month": "2009-11"
+    },
+    {
+      "id": "msg-8ea8618546ef",
+      "message_id": "<19186.62860.93463.540794@ron.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2009-11-05T09:55:56-06:00",
+      "subject": "[R-sig-DB] dbWriteTable permission problem on Mac OSX",
+      "subject_clean": "dbWriteTable permission problem on Mac OSX",
+      "in_reply_to": "<EEBC169715EB8C438D3C9283AF0F201C0724A9B1@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+      "references": [
+        "<EEBC169715EB8C438D3C9283AF0F201C0724A7A2@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+        "<19184.43865.926410.871364@ron.nulle.part>",
+        "<de8c7cb40911041958y445d88bre0bb3e6199d93648@mail.gmail.com>",
+        "<19186.21463.574294.446926@ron.nulle.part>",
+        "<EEBC169715EB8C438D3C9283AF0F201C0724A94E@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+        "<19186.56462.294419.155727@ron.nulle.part>",
+        "<EEBC169715EB8C438D3C9283AF0F201C0724A9B1@MSGBOSCLM2WIN.DMN1.FMR.COM>"
+      ],
+      "body_plain": "On 5 November 2009 at 10:45, McGehee, Robert wrote:\n| My /tmp directory also has a sticky bit. \n| \n| Here's my guess of the problem. This chunk of code from the\n| 'dbWriteTable' method 'postgresqlWriteTable' specifies different\n| directories for Linux and non-Linux (e.g. Mac) tempfiles. \n|     if(as.character(Sys.info()[\"sysname\"])==\"Linux\")\n|         fn <- tempfile(\"rsdbi\",\"/tmp\")\n|     else\n|         fn <- tempfile(\"rsdbi\")\n\nSpot on!  Sameer added this on my recommendation based on the very same /tmp\nissue problem.  Too bad I couldn't remember that this week :-/\n\n| This difference is significant because on my Mac, the data file is saved\n| inside an R tempdir with only user read permissions:\n| drwx------   2 a347549 pcap       40 Oct 30 14:05 Rtmp8fgNQf/\n| \n| while on Linux, the file is saved in /tmp, with whatever permissions\n| that has. So, presumably either patching the code as follows:\n| -    if(as.character(Sys.info()[\"sysname\"])==\"Linux\")\n| +    if(as.character(Sys.info()[\"sysname\"]) %in% c(\"Linux\", \"Darwin\"))\n\nAgreed.  Explicitly CC'ing Neil for OS X advice -- Darwin is the best test?\n\n| or finding a way to have R create a tempdir with more generous\n| permissions would solve the problem. Changing my umask settings didn't\n| seem to change the permissions of the R tempdir--I'm not sure how that\n| is specified. Alternatively, I suppose the directory could be an option\n| to let the user specify somewhere readable by both 'postgres' and the\n| user's R session.\n\nI think you can't easily which is why we created the workaround with the\ntemporary directory directly below /tmp, rather than by default in R's\ntempdir /tmp/Rtmp...../\n\nI think we got this bug!\n\nDirk\n\n\n| --Robert\n| \n| -----Original Message-----\n| From: Dirk Eddelbuettel [mailto:edd at debian.org] \n| Sent: Thursday, November 05, 2009 9:09 AM\n| To: McGehee, Robert\n| Cc: Prasenjit Kapat; r-sig-db at stat.math.ethz.ch\n| Subject: Re: [R-sig-DB] dbWriteTable permission problem on Mac OSX\n| \n| \n| On 5 November 2009 at 08:39, McGehee, Robert wrote:\n| | So following the spirit of Dirk's advice, I resolved the problem by\n| running\n| | the PostgreSQL database from my user account, rather than the\n| 'postgres' user\n| | I had been using. Imports happened smoothly afterwards. Presumably\n| 'postgres'\n| | couldn't see the temp files that my user was creating.  \n| \n| Hm, my postgres servers (running versions 8.2 and 8.3, 8.2 has the\n| default\n| port)  run as user postgres:\n| \n| edd at ron:~> pstree -u | grep postgres\n|      |-postgres(postgres)---2*[postgres]\n|      |-postgres(postgres)---4*[postgres]\n| edd at ron:> \n| \n| Let's look at modes of /tmp, I have\n| \n| edd at ron:~/src/debian/CRAN> ls -ld /tmp\n| drwxrwxrwt 43 root root 19456 2009-11-05 08:04 /tmp\n| \n| So there is a sticky bit set for 'other' (the trailing t).  What do you\n| have?\n| \n| | Also on this note, the first error I encountered with 'dbWriteTable'\n| when\n| | running from my user account and pg from the 'postgres' account\n| informed me\n| | that the '\\copy' command required superuser access. Granting my pg\n| account\n| | Postgres superuser abilities fixed that, but I think it should be\n| noted\n| | that the current implementation seems to require a wide-open set-up to\n| use\n| | bulk copy. \n| | \n| | I'm still keen to try out Whit's solution as well as a direct binary\n| | connection may get around the permission problems and has the\n| potential to\n| | be faster. I'll report back if I discover anything interesting for the\n| | group. \n| \n| Yes, it would also be nice to get that ported into RPostgreSQL.\n| \n| Dirk\n| \n| -- \n| Three out of two people have difficulties with fractions.\n| \n\n-- \nThree out of two people have difficulties with fractions.",
+      "body_snippet": "On 5 November 2009 at 10:45, McGehee, Robert wrote:\n| My /tmp directory also has a sticky bit. \n| \n| Here's my guess of the problem. This chunk of code from the\n| 'dbWriteTable' method 'postgresqlWrit",
+      "thread_id": "thread-d16b9f9609bd",
+      "thread_depth": 7,
+      "month": "2009-11"
+    },
+    {
+      "id": "msg-9f5fe00bcec7",
+      "message_id": "<69C4B208-93EE-4881-AF02-DB4C3341ACD7@neiltiffin.com>",
+      "from_name": "Neil Tiffin",
+      "from_email_hash": "02caa571c9273bbe0611b9c1c0bcdd4cd3e05d030ae04cda746228553f04aab5",
+      "date": "2009-11-05T11:43:37-06:00",
+      "subject": "[R-sig-DB] dbWriteTable permission problem on Mac OSX",
+      "subject_clean": "dbWriteTable permission problem on Mac OSX",
+      "in_reply_to": "<19186.62860.93463.540794@ron.nulle.part>",
+      "references": [
+        "<EEBC169715EB8C438D3C9283AF0F201C0724A7A2@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+        "<19184.43865.926410.871364@ron.nulle.part>",
+        "<de8c7cb40911041958y445d88bre0bb3e6199d93648@mail.gmail.com>",
+        "<19186.21463.574294.446926@ron.nulle.part>",
+        "<EEBC169715EB8C438D3C9283AF0F201C0724A94E@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+        "<19186.56462.294419.155727@ron.nulle.part>",
+        "<EEBC169715EB8C438D3C9283AF0F201C0724A9B1@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+        "<19186.62860.93463.540794@ron.nulle.part>"
+      ],
+      "body_plain": "On Nov 5, 2009, at 9:55 AM, Dirk Eddelbuettel wrote:\n\n>\n> On 5 November 2009 at 10:45, McGehee, Robert wrote:\n> | My /tmp directory also has a sticky bit.\n> |\n> | Here's my guess of the problem. This chunk of code from the\n> | 'dbWriteTable' method 'postgresqlWriteTable' specifies different\n> | directories for Linux and non-Linux (e.g. Mac) tempfiles.\n> |     if(as.character(Sys.info()[\"sysname\"])==\"Linux\")\n> |         fn <- tempfile(\"rsdbi\",\"/tmp\")\n> |     else\n> |         fn <- tempfile(\"rsdbi\")\n>\n> Spot on!  Sameer added this on my recommendation based on the very  \n> same /tmp\n> issue problem.  Too bad I couldn't remember that this week :-/\n>\n> | This difference is significant because on my Mac, the data file is  \n> saved\n> | inside an R tempdir with only user read permissions:\n> | drwx------   2 a347549 pcap       40 Oct 30 14:05 Rtmp8fgNQf/\n> |\n> | while on Linux, the file is saved in /tmp, with whatever permissions\n> | that has. So, presumably either patching the code as follows:\n> | -    if(as.character(Sys.info()[\"sysname\"])==\"Linux\")\n> | +    if(as.character(Sys.info()[\"sysname\"]) %in% c(\"Linux\",  \n> \"Darwin\"))\n>\n> Agreed.  Explicitly CC'ing Neil for OS X advice -- Darwin is the  \n> best test?\n>\nDirk,\n\n\"Darwin\" is correct for Mac OS X.\n\nThe test dbWriteTableTest.R works for me without this change.  Is the  \ntest not robust enough?\n\nNeil",
+      "body_snippet": "On Nov 5, 2009, at 9:55 AM, Dirk Eddelbuettel wrote:\n\n>\n> On 5 November 2009 at 10:45, McGehee, Robert wrote:\n> | My /tmp directory also has a sticky bit.\n> |\n> | Here's my guess of the problem. This ",
+      "thread_id": "thread-d16b9f9609bd",
+      "thread_depth": 8,
+      "month": "2009-11"
+    },
+    {
+      "id": "msg-f1a43570638a",
+      "message_id": "<19187.10947.726056.693744@ron.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2009-11-05T13:42:59-06:00",
+      "subject": "[R-sig-DB] dbWriteTable permission problem on Mac OSX",
+      "subject_clean": "dbWriteTable permission problem on Mac OSX",
+      "in_reply_to": "<69C4B208-93EE-4881-AF02-DB4C3341ACD7@neiltiffin.com>",
+      "references": [
+        "<EEBC169715EB8C438D3C9283AF0F201C0724A7A2@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+        "<19184.43865.926410.871364@ron.nulle.part>",
+        "<de8c7cb40911041958y445d88bre0bb3e6199d93648@mail.gmail.com>",
+        "<19186.21463.574294.446926@ron.nulle.part>",
+        "<EEBC169715EB8C438D3C9283AF0F201C0724A94E@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+        "<19186.56462.294419.155727@ron.nulle.part>",
+        "<EEBC169715EB8C438D3C9283AF0F201C0724A9B1@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+        "<19186.62860.93463.540794@ron.nulle.part>",
+        "<69C4B208-93EE-4881-AF02-DB4C3341ACD7@neiltiffin.com>"
+      ],
+      "body_plain": "Neil,\n\nOn 5 November 2009 at 11:43, Neil Tiffin wrote:\n| \"Darwin\" is correct for Mac OS X.\n\nCool, thanks.\n\n| The test dbWriteTableTest.R works for me without this change.  Is the  \n| test not robust enough?\n\nCan you maybe follow-up with Robert about other possible cause of this?  As I\n(as a non-Mac-user) understand it, there are numerous ways to install R (and\npresumably Pg) onto OS X and the bug may bite only in some.  His suggested\nfix strikes me as correct, though, as $TEMPDIR permissions are a general\nUnixy way of doing things.\n\nDirk\n\n-- \nThree out of two people have difficulties with fractions.",
+      "body_snippet": "Neil,\n\nOn 5 November 2009 at 11:43, Neil Tiffin wrote:\n| \"Darwin\" is correct for Mac OS X.\n\nCool, thanks.\n\n| The test dbWriteTableTest.R works for me without this change.  Is the  \n| test not robust e",
+      "thread_id": "thread-d16b9f9609bd",
+      "thread_depth": 9,
+      "month": "2009-11"
+    },
+    {
+      "id": "msg-d6fd7715fee4",
+      "message_id": "<EEBC169715EB8C438D3C9283AF0F201C0724AA33@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+      "from_name": "McGehee, Robert",
+      "from_email_hash": "d6e856f0aa01f89698472702235348f1cd8814da0dffd4bae380a929d6d2736c",
+      "date": "2009-11-05T15:12:10-05:00",
+      "subject": "[R-sig-DB] dbWriteTable permission problem on Mac OSX",
+      "subject_clean": "dbWriteTable permission problem on Mac OSX",
+      "in_reply_to": null,
+      "references": [
+        "<EEBC169715EB8C438D3C9283AF0F201C0724A7A2@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+        "<19184.43865.926410.871364@ron.nulle.part>",
+        "<de8c7cb40911041958y445d88bre0bb3e6199d93648@mail.gmail.com>",
+        "<19186.21463.574294.446926@ron.nulle.part>",
+        "<EEBC169715EB8C438D3C9283AF0F201C0724A94E@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+        "<19186.56462.294419.155727@ron.nulle.part>",
+        "<EEBC169715EB8C438D3C9283AF0F201C0724A9B1@MSGBOSCLM2WIN.DMN1.FMR.COM>",
+        "<19186.62860.93463.540794@ron.nulle.part>",
+        "<69C4B208-93EE-4881-AF02-DB4C3341ACD7@neiltiffin.com>",
+        "<19187.10947.726056.693744@ron.nulle.part>"
+      ],
+      "body_plain": "I think the running hypothesis is that, for Macs, RPostgreSQL saves its\ndata into an R temp directory that may or may not be readable by the\naccount that runs the postgres database. If it is, then the test will\nrun fine (presumably in Neil's case). If it is not, then you will get a\npermission error. I don't think there's anything wrong with the test\ncase, it just won't work for everyone's configuration. With the 'bug\nfix', I believe the test will work for more configurations--though still\nnot all if either there is a Mac system that does not use /tmp, or if\n/tmp is not readable by the Postgres user. In Neil's case, I'll guess\nthat either he runs Postgres out of his user account, or his R temp\ndirectories are group or world readable--mine are not.\n\nAnother gotcha not addressed that I think could bite either a Linux or\nMac users is that the user's umask settings can influence whether the\nbulk copy works. For instance, (I'm almost certain that) for anyone that\nruns R and postgres from different accounts, the bulk import will fail\nif their umask is set to 0077, since R temp files seem to follow umask\nsettings. \n\nAs mentioned before, a better solution, in theory, will likely involve a\ndirect binary transfer.\n--Robert\n\n-----Original Message-----\nFrom: Dirk Eddelbuettel [mailto:edd at debian.org] \nSent: Thursday, November 05, 2009 2:43 PM\nTo: Neil Tiffin\nCc: McGehee, Robert; Prasenjit Kapat; r-sig-db at stat.math.ethz.ch\nSubject: Re: [R-sig-DB] dbWriteTable permission problem on Mac OSX\n\n\nNeil,\n\nOn 5 November 2009 at 11:43, Neil Tiffin wrote:\n| \"Darwin\" is correct for Mac OS X.\n\nCool, thanks.\n\n| The test dbWriteTableTest.R works for me without this change.  Is the\n\n| test not robust enough?\n\nCan you maybe follow-up with Robert about other possible cause of this?\nAs I\n(as a non-Mac-user) understand it, there are numerous ways to install R\n(and\npresumably Pg) onto OS X and the bug may bite only in some.  His\nsuggested\nfix strikes me as correct, though, as $TEMPDIR permissions are a general\nUnixy way of doing things.\n\nDirk\n\n-- \nThree out of two people have difficulties with fractions.",
+      "body_snippet": "I think the running hypothesis is that, for Macs, RPostgreSQL saves its\ndata into an R temp directory that may or may not be readable by the\naccount that runs the postgres database. If it is, then the",
+      "thread_id": "thread-d16b9f9609bd",
+      "thread_depth": 10,
+      "month": "2009-11"
+    },
+    {
+      "id": "msg-bf4ba061ac77",
+      "message_id": "<4AF37F9B.20403@userprimary.net>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2009-11-05T17:44:59-08:00",
+      "subject": "[R-sig-DB] dbWriteTable() is renaming the 'end' column",
+      "subject_clean": "dbWriteTable() is renaming the 'end' column",
+      "in_reply_to": "<264855a00909300919v5062ee85ibb69a784d63a0dad@mail.gmail.com>",
+      "references": [
+        "<4AC2850F.8000302@fhcrc.org>",
+        "<971536df0909291533k280fecc9tca8baf5ee678a9e2@mail.gmail.com>",
+        "<4AC29468.7090800@fhcrc.org>",
+        "<alpine.LFD.2.00.0909300441370.32082@gannet.stats.ox.ac.uk>",
+        "<4AC2FD17.9050108@fhcrc.org>",
+        "<486f230c0909300902x445607ah6976a6e7e90bfda7@mail.gmail.com>",
+        "<264855a00909300919v5062ee85ibb69a784d63a0dad@mail.gmail.com>"
+      ],
+      "body_plain": "Hello all,\n\nI'm picking up this discussion from late September regarding the name \nmangling behavior of dbWriteTable as seen in RSQLite (and probably \nRMySQL too).\n\nHere's a summary of the current situation:\n\nThe DBI package provides a make.db.names generic as well as a default \nfunction, make.db.names.default.  Both RSQLite and RMySQL define a \nmethod that simply calls this default function.  Both packages use the \ngeneric inside their dbWriteTable implementations.\n\nThe default function uses base::make.names and a translation of \".\" to \n\"_\" to make SQL identifiers.  Any strings that are quoted (either single \nor double) are left as-is.  I'm not sure the quote handling is correct. \n  Single quotes are used for string literals in SQL and are not valid \nidentifiers, where as double quotes are used to create delimited \nidentifiers.\n\nWhen SQL keywords are encountered and the allow.keywords argument is \nFALSE, the result is the unfortunate name mangling.\n\nHere are some possible changes:\n\n1. Modify DBI::make.db.names.default such that if allow.keywords=FALSE \nany keywords encountered will be quoted using '\"'.\n\n2. Make a similar modification, but make it specific to the \nmake.db.names method implemented by RSQLite.\n\n3. Move away from name mangling entirely and rely more heavily on \nquoting.  To keep backwards compatibility, add a new argument, say \n'names.as.is' with default value FALSE.  When TRUE, data.frame column \nnames will be quoted instead of mangled.  This could be done in addition \nto items 1 or 2.\n\n4. Instead of a new argument to dbWriteTable, add an argument to \nSQLite() to make this configuration of the driver.\n\nComments?\n\nAlso, below, a note on Sean's suggestion for a quoting global option...\n\nOn 9/30/09 9:19 AM, Sean Davis wrote:\n> 2009/9/30 Seth Falcon<seth at userprimary.net>:\n>> The question to decide is what change should be made?  Such requests\n>> could become errors with a message telling the user how to quote\n>> problem strings.  Or the mangling could be changed to use the quoted\n>> form and a warning issued.\n>>\n>> I would be interested to hear any opinions from users of RSQLite.\n>\n> I, personally, don't like name mangling as an option.  Is there room\n> for an option() like \"RSQLite.quoteSQL\" =TRUE to quote all table names\n> and column names in generated SQL and =FALSE to generate an error when\n> a keyword is used?  (Obviously, sql queries generated by the user\n> would not be subject to the quoting).  The reason to use an option()\n> to control quoting is that quoting anywhere in SQL generally means\n> that it is best to quote everywhere, so if there is a known default\n> (that can be changed), users can choose to stick with quoting\n> everywhere or nowhere (and deal with the occasional error due to\n> trying to use a SQL keyword).\n\nI don't think there is enough SQL generated by RSQLite to make this \nparticularly useful.  dbWriteTable is the main SQL generating function I \nthink.  I'd prefer to avoid global options whenever possible and allow \ncontrol via function args.  But something along these lines could be useful.\n\nFor example, the driver constructor, e.g. SQLite(), could accept an \nargument that set the desired name behavior for dbWriteTable.\n\nIn any case, thanks for the feedback.\n\n+ seth",
+      "body_snippet": "Hello all,\n\nI'm picking up this discussion from late September regarding the name \nmangling behavior of dbWriteTable as seen in RSQLite (and probably \nRMySQL too).\n\nHere's a summary of the current sit",
+      "thread_id": "thread-bf4ba061ac77",
+      "thread_depth": 0,
+      "month": "2009-11"
+    },
+    {
+      "id": "msg-0c8f3e859d49",
+      "message_id": "<de8c7cb40911051949y3950424agee905a31a9a4a4f4@mail.gmail.com>",
+      "from_name": "Prasenjit Kapat",
+      "from_email_hash": "9e858ae1ef83a65a6b893dffe0d8db4d5362775729dd629dfe48603ee8933c48",
+      "date": "2009-11-05T22:49:10-05:00",
+      "subject": "[R-sig-DB] Some helper functions for RPostgreSQL",
+      "subject_clean": "Some helper functions for RPostgreSQL",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\nIn light of the recent thread on dbWriteTable() (RPostgreSQL):\n\nhttps://stat.ethz.ch/pipermail/r-sig-db/2009q4/000741.html\nOR\nhttp://article.gmane.org/gmane.comp.lang.r.db/297\n\nI've attached some functions that I had written for my specific use\ncase (see below). I am not sure if they are at all useful for the\nRPostgreSQL package, but if needed I can attempt to clean them up.\nEven otherwise, if anyone finds them useful, feel free to use them.\nThe functions are \"sufficiently\" commented, I am not saying they are\nwell documented!\n\nUse case (or more precisely, *restrictions*):\n1. RedHat Linux 5.3\n\n2. postgresql 8.1.18-2  (yes, an old version) - some of my issues were\nfixed in the newer versions\n\n3. I cannot access the db as 'postgres' user. Instead I'm given a\nseparate user/role/db wherein I create all my tables/schemas.\n\n4. PostgreSQL server runs on host 'pghost' (say) and my machine is\n'myhost' (say) - so transferring data between local disk and the\nremote postgres server has to be done over the network fist: between\nlocal disk and remote disk (ie using ssh/scp/rsync). Of course, the\nfunctions are generic enough to handle the situation when the pg\nserver is on the local machine, without resorting to ssh/rsync.\n\n5. Lastly, the file permissions issues are taken care of using\nsystem(....), eg: 'chmod o+rw' before transferring and changing them\nback after transferring.\n\n6. Currently R 2.8.1, so can not upgrade to RPostgreSQL 0.1-6! But\nthis may change in near future.\n\nThanks,\n-- \nPrasenjit\n\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: RPostgreSQL-helper.R\nType: application/octet-stream\nSize: 9895 bytes\nDesc: not available\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20091105/3d24566b/attachment.obj>",
+      "body_snippet": "Hi,\n\nIn light of the recent thread on dbWriteTable() (RPostgreSQL):\n\nhttps://stat.ethz.ch/pipermail/r-sig-db/2009q4/000741.html\nOR\nhttp://article.gmane.org/gmane.comp.lang.r.db/297\n\nI've attached some",
+      "thread_id": "thread-0c8f3e859d49",
+      "thread_depth": 0,
+      "month": "2009-11"
+    },
+    {
+      "id": "msg-3625a2afb6ad",
+      "message_id": "<d83668f80911181314k7d44360cr5ef9233831c503e1@mail.gmail.com>",
+      "from_name": "helpme",
+      "from_email_hash": "7ada13df2699e186fd45482416380e9ea19ee8dd84ba3b35f6da7b1b516387b1",
+      "date": "2009-11-18T16:14:20-05:00",
+      "subject": "[R-sig-DB] Fwd: [R] Error using 32-bit R and RODBC package on 64-bit Windows Server OS with R version 2.10",
+      "subject_clean": "Error using 32-bit R and RODBC package on 64-bit Windows Server OS with R version 2.10",
+      "in_reply_to": "<d83668f80911181312s19e7f88apb57df3d9cf9bf700@mail.gmail.com>",
+      "references": [
+        "<d83668f80911161239m1f25ed9dl992fe763480f79d6@mail.gmail.com>",
+        "<6AEE705D-FA1E-4715-8973-22CABDE86733@me.com>",
+        "<d83668f80911181312s19e7f88apb57df3d9cf9bf700@mail.gmail.com>"
+      ],
+      "body_plain": "---------- Forwarded message ----------\nFrom: helpme <myrquestions at gmail.com>\nDate: Wed, Nov 18, 2009 at 4:12 PM\nSubject: Re: [R] Error using 32-bit R and RODBC package on 64-bit Windows\nServer OS with R version 2.10\nTo: Marc Schwartz <marc_schwartz at me.com>\nCc: r-help at r-project.org\n\n\nNow that I know RODBC only works with 32-bit ODBC drivers this explains the\nproblem I was having.\n\nThe system has a 64 bit ODBC driver is definitely installed. I can tell\nbecause when you go to system32 folder and click on odbcad32.exe it goes to\nthe Microsoft ODBC manager where I can select the driver installed for the\n64-bit Oracle system.\n\nThe system32 folder contains the 64 bit driver for ODBC. When I go to the\nsyswow64 directory and click on the odbcad32.exe it does not take me to the\nMicrosoft ODBC manager. Instead I get this error:\n\nNavigate to C:\\Windows\\syswow64\\odbcad32.exe\n2.) Select System DSN\n3.) Add \"Microsoft ODBC for Oracle\"\nI receive this error: The Oracle(tm) client and networking components were\nnot found. These components are supplied by Oracle Corporation and are part\nof the Oracle Version 7.3 (or greater) client software installation. You\nwill be unable to use this driver until these components have been\ninstalled.\n\n\n\nI don't believe the 32-bit ODBC driver is present. What is the best way to\ntell if the 32-bit Oracle client software isn't installed and I'm wondering\nif anyone has experience to install it on a 64-bit system and call it from\nRODC?\n\n\n\nOn Mon, Nov 16, 2009 at 4:54 PM, Marc Schwartz <marc_schwartz at me.com> wrote:\n\n> On Nov 16, 2009, at 2:39 PM, helpme wrote:\n>\n>  I am receiving an error when trying to connect to the Oracle Database\n>> using\n>> RODBC on a 64-bit Windows Server OS. The version of R is 2.10.0-win32.exe\n>>\n>> Is this the wrong version. Does RODBC only work with 32-bit ODBC drivers?\n>>\n>> 've read over all the posts and documentation manuals.\n>> The system is Windows Server 2003 with R 2.81. and the latest downloadable\n>> RODBC package. The Oracle SID/DSN is mfopdw. I made sure to add it to\n>> Control Panel->Administrative Priviledges->Microsoft ODBC system/user DNS.\n>>\n>> I've also tried the following in no particular order:\n>>\n>> 1.) Turn on all oracle services in control panel->administrative\n>> priviledges.\n>> 2.) Checked tsnnames.ora for SID.\n>> 3.) Add microsoft ODBC service to Control Panel services for SID\n>> 4.) Use Sqldeveler to test connection another way besides R (It was\n>> successful)\n>> 5.) channel<-odbcDriverConnect(\n>> connection=\"Driver={Microsoft ODBC for Oracle};\n>> DSN=abc,UID=abc;PWD=abc;\"case=\"oracle\")\n>>\n>> received error drivers SQLAllocHandle on SQL_HANDLE_ENV failed one time;\n>> another time I got the error that Oracle client and networking components\n>> 7.3 or greater is not found.\n>>\n>> 6.) tnsping mfopdw\n>>\n>> lsnrctl start mfopdw\n>>\n>> tried to add oracle/bin to path\n>>\n>> Nothing is working.\n>>\n>\n> Three quick comments:\n>\n> 1. A better place to post these types of queries would be on the R-SIG-DB\n> e-mail list, which is focused in this domain. More info here:\n>\n>  https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n> 2. Prof. Ripley will be a more definitive resource, so I would wait until\n> he might respond.\n>\n> 3. If you have not yet, be sure to read the RODBC vignette, which is\n> available either via:\n>\n>  vignette(\"ROBDC\")\n>\n> or online at:\n>\n>  http://cran.r-project.org/web/packages/RODBC/vignettes/RODBC.pdf\n>\n>\n> That all being said, since you have now posted what may be the root cause\n> of your problem, which is the 64/32 bit details, I will venture a guess to\n> say that this may be the problem. Since there is not a 64 bit version of R\n> for Windows (save I believe the Revolution commercial release), if you are\n> using 64 bit Oracle client binaries and ODBC drivers (if they exist), they\n> will not be compatible with 32 bit R/RODBC.\n>\n> I know that on OSX, with 64 bit R/RODBC and 32 bit ODBC drivers for Oracle,\n> the connectivity would not work, so it seems reasonable that the reverse\n> configuration would not be compatible either.\n>\n> So, first, I would be sure that you are using 32 bit ODBC drivers for\n> Oracle on Windows and not 64 bit. If you installed any other Oracle client\n> related software, that likely also needs to be 32 bit as well.\n>\n> Then I would review the above vignette document and be sure that any\n> general installation references and those specifically pertaining to Windows\n> have been followed consistently, especially configuring $PATH and other\n> environmental configuration items required for Oracle itself, which on some\n> platforms usually include things like $ORACLE_HOME, $TNS_ADMIN and so forth.\n>  You indicate above:\n>\n>\n>  \"tried to add oracle/bin to path\"\n>\n> which does not definitively indicate that you actually did so. Did you?\n>  Also, check the capitalization, as the path is normally something like\n> c:\\Oracle\\bin.\n>\n> If you can connect to the Oracle server using Oracle's own clients such as\n> the InstantClient, that typically means that most of the system\n> configuration issues are correctly set up. If that connection is successful,\n> then it may bring us back to the 32/64 bit conflict.\n>\n> HTH,\n>\n> Marc Schwartz\n>\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "---------- Forwarded message ----------\nFrom: helpme <myrquestions at gmail.com>\nDate: Wed, Nov 18, 2009 at 4:12 PM\nSubject: Re: [R] Error using 32-bit R and RODBC package on 64-bit Windows\nServer OS ",
+      "thread_id": "thread-3625a2afb6ad",
+      "thread_depth": 0,
+      "month": "2009-11"
+    },
+    {
+      "id": "msg-bd46ad876a5f",
+      "message_id": "<340191.72695.qm@web36204.mail.mud.yahoo.com>",
+      "from_name": "Nick Baumberger",
+      "from_email_hash": "2bcd1d56b3cb272888ea04e90512f812f8aecc7d4d1ab5ce5221de6341c2f632",
+      "date": "2009-11-26T06:49:54-08:00",
+      "subject": "[R-sig-DB] Using SpatiaLite 2.3.1 from RSQLite 0.7-3",
+      "subject_clean": "Using SpatiaLite 2.3.1 from RSQLite 0.7-3",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear all,\n\nI was wondering whether I can use the spatialite extension in combination with RSQLite. \n\n1) In theory libspatialite-2.dll and the other dll's should load dynamically, but in practice I am not able to correctly setup this thing or get any reasonable error message when doing \"loadable.extensions = TRUE\"\n\n2) The other question is how SpatiaLite can work without having defined the my table called \"geometry_columns\"\n\nsetup\n*****\n\nIm am using R 2.9.1, RSQLite 0.7-3 on a Windows XP and have installed the following dll's on an accessible directory (to which I point a user defined env path variable)\n\nRSQLite.dll\nlibspatialite-2.dll\nlibgeos-3-0-0.dll \nlibgeos_c-1.dll\nlibproj-0.dll\n\n\npreparation: get the spatial dataset\n************************\n\ninstall.packages(\"SQLiteMap\")\nlibrary(RSQLite)\n\nsqli.db <- system.file(\"sqlimaps/sids.db3\", package=\"SQLiteMap\")\ndrv <- dbDriver(\"SQLite\")\ncon.1 <- dbConnect(drv, dbname = sqli.db)\n\nsql <- 'select sidsmap.* from sidsmap'\nrs <- dbSendQuery(con.1, sql)\nmy.spatial.data <- fetch(rs, n = -1)\n\n-> has  one column geom\n\ngeom : chr  \"POLYGON ((-79.2461929321289 35.8681526184082, -79.2379913330078 ......\n\n\nprepare SpatiaLite 2.3.1 evironment\n***********************************\n\nsee: http://www.gaia-gis.it/spatialite/\n\nIMPORTANT CONFIGURATION STEP ! -> setting loadable.extensions = TRUE in order to dynamically load below dll's\n\n\nm <- dbDriver(\"SQLite\", max.con = 25)\ncon <- dbConnect(m, dbname=\"sqlite.db\", loadable.extensions = TRUE)\n\nsql <- 'SELECT load_extension(\"libspatialite-2.dll\")'\nrs <- dbSendQuery(con, sql)\ndbGetException(con)\ndbClearResult(rs)\n\nsql <- 'SELECT load_extension(\"libgeos-3-0-0.dll\")'\nrs <- dbSendQuery(con, sql)\ndbGetException(con)\ndbClearResult(rs)\n\nsql <- 'SELECT load_extension(\"libgeos_c-1.dll\")'\nrs <- dbSendQuery(con, sql)\ndbGetException(con)\ndbClearResult(rs)\n\nsql <- 'SELECT load_extension(\"libproj-0.dll\")'\nrs <- dbSendQuery(con, sql)\ndbGetException(con)\ndbClearResult(rs)\n\n-> don't get any error message\n\nload my.spatial.data into sqlite database\n****************************************\n\ndbWriteTable(con, \"mygeom\", my.spatial.data)\n\noperate on table\n****************\n\ndbGetQuery(con, \"select  * from mygeom\")[1:2,]    # this works\n\n[[elided Yahoo spam]]\n-> see\n\ndbGetQuery(con, \"select  ST_Centroid(geom) from mygeom\")\n\nmsg\n\nFehler in sqliteExecStatement(con, statement, bind.data) : \n  RS-DBI driver: (error in statement: no such function: ST_Centroid)\n\n\nobviously I have a problem binding the spatial functions / loading the dlls. Is there anybody out there who can help ?\n\nbest regards\nNick",
+      "body_snippet": "Dear all,\n\nI was wondering whether I can use the spatialite extension in combination with RSQLite. \n\n1) In theory libspatialite-2.dll and the other dll's should load dynamically, but in practice I am ",
+      "thread_id": "thread-bd46ad876a5f",
+      "thread_depth": 0,
+      "month": "2009-11"
+    },
+    {
+      "id": "msg-8b5f1e8259b0",
+      "message_id": "<773cea9e0911281319y5155ff4bh386d7fb2fa01ca08@mail.gmail.com>",
+      "from_name": "Rajarshi Guha",
+      "from_email_hash": "ffa685b1d40eb3e4cb46367671cdd205e8e6e89077691260866a97afd6cb99d0",
+      "date": "2009-11-28T16:19:47-05:00",
+      "subject": "[R-sig-DB] problems with dbWriteTable in ROracle",
+      "subject_clean": "problems with dbWriteTable in ROracle",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi, I'm running ROracle (0.5-9) on R 2.9.0 (OS X 10.5.4) with Oracle 10g R2.\n\nI have a data.frame which I'd like to insert into a table. If I construct\nINSERT statements by hand, and use dbSendQuery, it works fine (but slow).\nHowever, I tried to use dbWriteTable and I get the error below:\n\nError in oraExecStatement(ps, data, ...) :\n  RS-DBI driver: (ORA-02005: implicit (-1) length not valid for this bind or\ndefine datatype\n)\n\nI have also tried using a prepared statement and then usign dbExecStatement,\nbut I get the same error. Googling around for this specific Oracle error\ndoesn't turn up anything useful. The only possible reason I can think that'd\ncause this error is the fact that the DB table has 32 columns, but the last\n24 have default values and don't need to be specified at INSERT time. Thus\nmy manual INSERT looks like\n\ninsert into follow_pivot (protocol_name, npoint, row_idx, col_idx,\nplate_series, seq, symbol, ncgcidr,\nvalue01,value02,value03,value04,value05,value06,value07,value08,value09,value10)\nvalues ('cpt-hdg-followup', 10, 1, 10, 'FCP112409-1',\n'CACAGCCAGGACATCCTGGAA' 'RPSAP58',97788,\n56.1732988189,55.9832217164,48.1326145496,28.5420717346,19.7739828032,21.8269105525,16.4192873455,14.6544541707,7.0792574342,4.6970933227)\n\nDoes the dbWriteTable method take into account that tjhe input data.frame\nmight not have all 32 columns, and do the INSERT appropriately?\n\nAny pointers would be appreciated.\n\n-- \nRajarshi Guha\nNIH Chemical Genomics Center\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi, I'm running ROracle (0.5-9) on R 2.9.0 (OS X 10.5.4) with Oracle 10g R2.\n\nI have a data.frame which I'd like to insert into a table. If I construct\nINSERT statements by hand, and use dbSendQuery, ",
+      "thread_id": "thread-8b5f1e8259b0",
+      "thread_depth": 0,
+      "month": "2009-11"
+    },
+    {
+      "id": "msg-e34dd78b9ca4",
+      "message_id": "<A38500AE28F91940BD346C4BE3A6950F01CB4D05@SE000282.ztb.icb.commerzbank.com>",
+      "from_name": "Ruecker, Sebastian",
+      "from_email_hash": "02854dc0e8f38a1a2fc1ed4c1ed9722aaa07182f17a7d5feaa065ad75fe73807",
+      "date": "2009-11-30T17:28:23+01:00",
+      "subject": "[R-sig-DB] FW: RSQLite does not read very large values correctly",
+      "subject_clean": "RSQLite does not read very large values correctly",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello,\n\nI posted this in the regular r-help list, but it may be more appropriate\nhere. Sorry about the double posting!\n\nI am trying to import data from an SQLite database to R.\nUnfortunately, I seem to get wrong data when I try to import very large\nnumbers.\n\nFor example:\nI look at the database via SQLiteStudio(v.1.1.3) and I see the following\nvalues:\n\nOrderID\tDay\t\tTimeToclose\n1\t\t2009-11-25\t29467907000\t\t\n2\t\t2009-11-25\t29467907000\t\t\n3\t\t2009-11-25\t29467907000\t\t\n\n\nNow I run this R Code:\n\n> library(\"DBI\")\n> library(\"RSQLite\")\n> \n> # DB Connection\n> con <- dbConnect(dbDriver(\"SQLite\"), \"C:/Temp/TickDB01.db\")\n> raw_Data <- dbGetQuery(con, \"SELECT OrderID, Day, TimeToClose FROM\nTr_TickData WHERE OrderID in (1,2,3)\")\n> raw_Data\n  OrderID        Day TimeToClose\n1       1 2009-11-25  -596864072 \n2       2 2009-11-25  -596864072\n3       3 2009-11-25  -596864072\n\n\nThe values are totally wrong... Is it because RSQLite has a problem with\nbig numbers? \nTimeToClose is microseconds till 17:00. \n\nWhen I make the numbers smaller, it works again:\n\n> raw_Data <- dbGetQuery(con, \"SELECT TimeToClose/1000 as TTC FROM\nTr_TickData WHERE OrderID in (1,2,3)\")\n> raw_Data\n       TTC\n1 29467907\n2 29467907\n3 29467907\n\n\nI would appreciate any help with this problem!\n\nThanks and regards,\n\nSebastian",
+      "body_snippet": "Hello,\n\nI posted this in the regular r-help list, but it may be more appropriate\nhere. Sorry about the double posting!\n\nI am trying to import data from an SQLite database to R.\nUnfortunately, I seem t",
+      "thread_id": "thread-e34dd78b9ca4",
+      "thread_depth": 0,
+      "month": "2009-11"
+    },
+    {
+      "id": "msg-94863b697add",
+      "message_id": "<971536df0911300900rd5aeef8n25323163b8f2fc3b@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2009-11-30T12:00:36-05:00",
+      "subject": "[R-sig-DB] FW: RSQLite does not read very large values correctly",
+      "subject_clean": "RSQLite does not read very large values correctly",
+      "in_reply_to": "<A38500AE28F91940BD346C4BE3A6950F01CB4D05@SE000282.ztb.icb.commerzbank.com>",
+      "references": [
+        "<A38500AE28F91940BD346C4BE3A6950F01CB4D05@SE000282.ztb.icb.commerzbank.com>"
+      ],
+      "body_plain": "I am able to create sqlite tables with large numbers and read them back,\ne.g.\n\n> Lines <- \"OrderID Day             TimeToclose\n+ 1               2009-11-25      29467907000\n+ 2               2009-11-25      29467907000\n+ 3               2009-11-25      29467907000\"\n> DF <- read.table(textConnection(Lines), header = TRUE)\n> library(sqldf)\n>\n> # sqldf creates an sqlite database with table DF\n> #   uploading DF to it and reads it back\n>\n> DF2 <- sqldf(\"select * from DF\")\n>\n> all.equal(DF, DF2, check.attributes = FALSE)\n[1] TRUE\n> DF\n  OrderID        Day TimeToclose\n1       1 2009-11-25 29467907000\n2       2 2009-11-25 29467907000\n3       3 2009-11-25 29467907000\n> DF2\n  OrderID     Day__1 TimeToclose\n1       1 2009-11-25 29467907000\n2       2 2009-11-25 29467907000\n3       3 2009-11-25 29467907000\n\n> R.version.string # Windows Vista\n[1] \"R version 2.10.0 Patched (2009-11-21 r50532)\"\n> packageDescription(\"RSQLite\")$Version\n[1] \"0.7-3\"\n> packageDescription(\"DBI\")$Version\n[1] \"0.2-4\"\n> packageDescription(\"sqldf\")$Version\n[1] \"0-1.7\"\n\n\nOn Mon, Nov 30, 2009 at 11:28 AM, Ruecker, Sebastian <\nSebastian.Ruecker at commerzbank.com> wrote:\n\n> Hello,\n>\n> I posted this in the regular r-help list, but it may be more appropriate\n> here. Sorry about the double posting!\n>\n> I am trying to import data from an SQLite database to R.\n> Unfortunately, I seem to get wrong data when I try to import very large\n> numbers.\n>\n> For example:\n> I look at the database via SQLiteStudio(v.1.1.3) and I see the following\n> values:\n>\n> OrderID Day             TimeToclose\n> 1               2009-11-25      29467907000\n> 2               2009-11-25      29467907000\n> 3               2009-11-25      29467907000\n>\n>\n> Now I run this R Code:\n>\n> > library(\"DBI\")\n> > library(\"RSQLite\")\n> >\n> > # DB Connection\n> > con <- dbConnect(dbDriver(\"SQLite\"), \"C:/Temp/TickDB01.db\")\n> > raw_Data <- dbGetQuery(con, \"SELECT OrderID, Day, TimeToClose FROM\n> Tr_TickData WHERE OrderID in (1,2,3)\")\n> > raw_Data\n>  OrderID        Day TimeToClose\n> 1       1 2009-11-25  -596864072\n> 2       2 2009-11-25  -596864072\n> 3       3 2009-11-25  -596864072\n>\n>\n> The values are totally wrong... Is it because RSQLite has a problem with\n> big numbers?\n> TimeToClose is microseconds till 17:00.\n>\n> When I make the numbers smaller, it works again:\n>\n> > raw_Data <- dbGetQuery(con, \"SELECT TimeToClose/1000 as TTC FROM\n> Tr_TickData WHERE OrderID in (1,2,3)\")\n> > raw_Data\n>       TTC\n> 1 29467907\n> 2 29467907\n> 3 29467907\n>\n>\n> I would appreciate any help with this problem!\n>\n> Thanks and regards,\n>\n> Sebastian\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "I am able to create sqlite tables with large numbers and read them back,\ne.g.\n\n> Lines <- \"OrderID Day             TimeToclose\n+ 1               2009-11-25      29467907000\n+ 2               2009-11-2",
+      "thread_id": "thread-e34dd78b9ca4",
+      "thread_depth": 1,
+      "month": "2009-11"
+    },
+    {
+      "id": "msg-050130839d1a",
+      "message_id": "<19219.64308.149142.506524@ron.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2009-11-30T11:04:52-06:00",
+      "subject": "[R-sig-DB] FW: RSQLite does not read very large values correctly",
+      "subject_clean": "RSQLite does not read very large values correctly",
+      "in_reply_to": "<A38500AE28F91940BD346C4BE3A6950F01CB4D05@SE000282.ztb.icb.commerzbank.com>",
+      "references": [
+        "<A38500AE28F91940BD346C4BE3A6950F01CB4D05@SE000282.ztb.icb.commerzbank.com>"
+      ],
+      "body_plain": "On 30 November 2009 at 17:28, Ruecker, Sebastian wrote:\n| Hello,\n| \n| I posted this in the regular r-help list, but it may be more appropriate\n| here. Sorry about the double posting!\n| \n| I am trying to import data from an SQLite database to R.\n| Unfortunately, I seem to get wrong data when I try to import very large\n| numbers.\n| \n| For example:\n| I look at the database via SQLiteStudio(v.1.1.3) and I see the following\n| values:\n| \n| OrderID\tDay\t\tTimeToclose\n| 1\t\t2009-11-25\t29467907000\t\t\n| 2\t\t2009-11-25\t29467907000\t\t\n| 3\t\t2009-11-25\t29467907000\t\t\n| \n| \n| Now I run this R Code:\n| \n| > library(\"DBI\")\n| > library(\"RSQLite\")\n| > \n| > # DB Connection\n| > con <- dbConnect(dbDriver(\"SQLite\"), \"C:/Temp/TickDB01.db\")\n| > raw_Data <- dbGetQuery(con, \"SELECT OrderID, Day, TimeToClose FROM\n| Tr_TickData WHERE OrderID in (1,2,3)\")\n| > raw_Data\n|   OrderID        Day TimeToClose\n| 1       1 2009-11-25  -596864072 \n| 2       2 2009-11-25  -596864072\n| 3       3 2009-11-25  -596864072\n| \n| \n| The values are totally wrong... Is it because RSQLite has a problem with\n| big numbers? \n| TimeToClose is microseconds till 17:00. \n| \n| When I make the numbers smaller, it works again:\n| \n| > raw_Data <- dbGetQuery(con, \"SELECT TimeToClose/1000 as TTC FROM\n| Tr_TickData WHERE OrderID in (1,2,3)\")\n| > raw_Data\n|        TTC\n| 1 29467907\n| 2 29467907\n| 3 29467907\n| \n| \n| I would appreciate any help with this problem!\n\nHm, can you cast them to floating point representation?  Or else, convert to\nproper time types before storing or maybe before retrieving (if SQLite let's\nyou).\n\nIf these are seconds from/to the epoch, then double is not a bad choice. R\nitself does the same for POSIXct values to give us fractional time up to\nmillisecond resolution. .\n\nDirk\n\n-- \nThree out of two people have difficulties with fractions.",
+      "body_snippet": "On 30 November 2009 at 17:28, Ruecker, Sebastian wrote:\n| Hello,\n| \n| I posted this in the regular r-help list, but it may be more appropriate\n| here. Sorry about the double posting!\n| \n| I am trying ",
+      "thread_id": "thread-e34dd78b9ca4",
+      "thread_depth": 1,
+      "month": "2009-11"
+    },
+    {
+      "id": "msg-3fadd65c78df",
+      "message_id": "<4B14043C.5030909@userprimary.net>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "98530200d105f36ff18cb45716f9fc7352fa323fe1f96698d0382e5fddd364b8",
+      "date": "2009-11-30T09:43:24-08:00",
+      "subject": "[R-sig-DB] FW: RSQLite does not read very large values correctly",
+      "subject_clean": "RSQLite does not read very large values correctly",
+      "in_reply_to": "<19219.64308.149142.506524@ron.nulle.part>",
+      "references": [
+        "<A38500AE28F91940BD346C4BE3A6950F01CB4D05@SE000282.ztb.icb.commerzbank.com>",
+        "<19219.64308.149142.506524@ron.nulle.part>"
+      ],
+      "body_plain": "Hi,\n\nOn 11/30/09 9:04 AM, Dirk Eddelbuettel wrote:\n>\n> On 30 November 2009 at 17:28, Ruecker, Sebastian wrote:\n> | Hello,\n> |\n> | I posted this in the regular r-help list, but it may be more appropriate\n> | here. Sorry about the double posting!\n> |\n> | I am trying to import data from an SQLite database to R.\n> | Unfortunately, I seem to get wrong data when I try to import very large\n> | numbers.\n> |\n> | For example:\n> | I look at the database via SQLiteStudio(v.1.1.3) and I see the following\n> | values:\n> |\n> | OrderID\tDay\t\tTimeToclose\n> | 1\t\t2009-11-25\t29467907000\t\t\n> | 2\t\t2009-11-25\t29467907000\t\t\n> | 3\t\t2009-11-25\t29467907000\t\t\n> |\n> |\n> | Now I run this R Code:\n> |\n> |>  library(\"DBI\")\n> |>  library(\"RSQLite\")\n> |>\n> |>  # DB Connection\n> |>  con<- dbConnect(dbDriver(\"SQLite\"), \"C:/Temp/TickDB01.db\")\n> |>  raw_Data<- dbGetQuery(con, \"SELECT OrderID, Day, TimeToClose FROM\n> | Tr_TickData WHERE OrderID in (1,2,3)\")\n> |>  raw_Data\n> |   OrderID        Day TimeToClose\n> | 1       1 2009-11-25  -596864072\n> | 2       2 2009-11-25  -596864072\n> | 3       3 2009-11-25  -596864072\n> |\n> |\n> | The values are totally wrong... Is it because RSQLite has a problem with\n> | big numbers?\n> | TimeToClose is microseconds till 17:00.\n> |\n> | When I make the numbers smaller, it works again:\n> |\n> |>  raw_Data<- dbGetQuery(con, \"SELECT TimeToClose/1000 as TTC FROM\n> | Tr_TickData WHERE OrderID in (1,2,3)\")\n> |>  raw_Data\n> |        TTC\n> | 1 29467907\n> | 2 29467907\n> | 3 29467907\n> |\n> |\n> | I would appreciate any help with this problem!\n>\n> Hm, can you cast them to floating point representation?  Or else, convert to\n> proper time types before storing or maybe before retrieving (if SQLite let's\n> you).\n>\n> If these are seconds from/to the epoch, then double is not a bad choice. R\n> itself does the same for POSIXct values to give us fractional time up to\n> millisecond resolution. .\n\nI think the issue here is that SQLite's integer type allows for much \nlarger integers than R's integer type can handle.\n\nOne quick solution is to convert to double on the way out.  In a small \ntest db this seemed to work from RSQLite.   Use a query like  \"SELECT \n1.0 * bigIntCol from someTable\"\n\n+ seth\n\n-- \nSeth Falcon | @sfalcon | http://userprimary.net/users",
+      "body_snippet": "Hi,\n\nOn 11/30/09 9:04 AM, Dirk Eddelbuettel wrote:\n>\n> On 30 November 2009 at 17:28, Ruecker, Sebastian wrote:\n> | Hello,\n> |\n> | I posted this in the regular r-help list, but it may be more appropria",
+      "thread_id": "thread-e34dd78b9ca4",
+      "thread_depth": 2,
+      "month": "2009-11"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-d16b9f9609bd",
+      "subject": "dbWriteTable permission problem on Mac OSX",
+      "message_count": 12,
+      "participants": [
+        "Dirk Eddelbuettel",
+        "McGehee, Robert",
+        "Neil Tiffin",
+        "Prasenjit Kapat",
+        "Whit Armstrong"
+      ],
+      "started": "2009-11-03T16:35:09-05:00",
+      "last_reply": "2009-11-05T15:12:10-05:00",
+      "root_message_id": "msg-d16b9f9609bd"
+    },
+    {
+      "id": "thread-bf4ba061ac77",
+      "subject": "dbWriteTable() is renaming the 'end' column",
+      "message_count": 1,
+      "participants": [
+        "Seth Falcon"
+      ],
+      "started": "2009-11-05T17:44:59-08:00",
+      "last_reply": "2009-11-05T17:44:59-08:00",
+      "root_message_id": "msg-bf4ba061ac77"
+    },
+    {
+      "id": "thread-0c8f3e859d49",
+      "subject": "Some helper functions for RPostgreSQL",
+      "message_count": 1,
+      "participants": [
+        "Prasenjit Kapat"
+      ],
+      "started": "2009-11-05T22:49:10-05:00",
+      "last_reply": "2009-11-05T22:49:10-05:00",
+      "root_message_id": "msg-0c8f3e859d49"
+    },
+    {
+      "id": "thread-3625a2afb6ad",
+      "subject": "Error using 32-bit R and RODBC package on 64-bit Windows Server OS with R version 2.10",
+      "message_count": 1,
+      "participants": [
+        "helpme"
+      ],
+      "started": "2009-11-18T16:14:20-05:00",
+      "last_reply": "2009-11-18T16:14:20-05:00",
+      "root_message_id": "msg-3625a2afb6ad"
+    },
+    {
+      "id": "thread-bd46ad876a5f",
+      "subject": "Using SpatiaLite 2.3.1 from RSQLite 0.7-3",
+      "message_count": 1,
+      "participants": [
+        "Nick Baumberger"
+      ],
+      "started": "2009-11-26T06:49:54-08:00",
+      "last_reply": "2009-11-26T06:49:54-08:00",
+      "root_message_id": "msg-bd46ad876a5f"
+    },
+    {
+      "id": "thread-8b5f1e8259b0",
+      "subject": "problems with dbWriteTable in ROracle",
+      "message_count": 1,
+      "participants": [
+        "Rajarshi Guha"
+      ],
+      "started": "2009-11-28T16:19:47-05:00",
+      "last_reply": "2009-11-28T16:19:47-05:00",
+      "root_message_id": "msg-8b5f1e8259b0"
+    },
+    {
+      "id": "thread-e34dd78b9ca4",
+      "subject": "RSQLite does not read very large values correctly",
+      "message_count": 4,
+      "participants": [
+        "Dirk Eddelbuettel",
+        "Gabor Grothendieck",
+        "Ruecker, Sebastian",
+        "Seth Falcon"
+      ],
+      "started": "2009-11-30T17:28:23+01:00",
+      "last_reply": "2009-11-30T09:43:24-08:00",
+      "root_message_id": "msg-e34dd78b9ca4"
+    }
+  ]
+}

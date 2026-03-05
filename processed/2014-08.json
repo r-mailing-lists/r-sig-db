@@ -1,0 +1,65 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2014-08",
+  "messages": [
+    {
+      "id": "msg-7b388775479d",
+      "message_id": "<CAMarmBHSESDcWTAbn5p9bg-v-nD4QZtaZNcGwyBu1Cg30TZMfg@mail.gmail.com>",
+      "from_name": "Joël Obrecht SPIRAL",
+      "from_email_hash": "19663cd018348d742058591f8e4476d6cdafe0ec96f92e0866e5c1e829dc304f",
+      "date": "2014-08-01T11:02:58+02:00",
+      "subject": "[R-sig-DB] Fwd: Path to .my.cf configuration file in dbconnect() ?",
+      "subject_clean": "Path to .my.cf configuration file in dbconnect() ?",
+      "in_reply_to": "<CAMarmBHFagsPuJ3s--0jTAz+nHX_zMOVqk_xDXRojfy9vhbapQ@mail.gmail.com>",
+      "references": [
+        "<CAMarmBHFagsPuJ3s--0jTAz+nHX_zMOVqk_xDXRojfy9vhbapQ@mail.gmail.com>"
+      ],
+      "body_plain": "Dear all,\n\nWe are currently implementing in our web application wikispiral.org the\npossibility to use direct connection to the database in scripts that are\nwritten by the users directly in the website, a wiki. In this regard we\nneed a way to specify to dbConnect() the path where the configuration file .\nmy.cf is located.\n\nContext :\n\nWe run R scripts in a plugin, R : https://doc.tiki.org/PluginR which\nenables us to run R scripts in our CMS, tikiwiki <http://info.tiki.org>. We\nbuilt a website, wikispiral.org, that stores in its database\n<https://doc.tiki.org/Trackers> data about well-being / ill-being surveys\nand use the opportunity of the wiki to give the citizens direct ouptut from\ntheir data so they can decide for community-based actions. We have in this\nregard automated R scripts that provide statistics and we would like to use\ndirect connection to database for more advanced uses.\n\nSee this page to browse our results :\nhttps://wikispiral.org/tiki-index.php?page=Territories+of+coresponsibility\n\nWe located in the home dir of the website the files needed and it works for\nscripts run in bash, but when we use the exact same scripts that work in\nbash, here in the scripts in the wiki, the connection to the database is\nnot made. I suppose this is a matter of finding o proper path and in this\nregard I would like to ask you if we can specify a path to the conf file in\nthe dbconnect() call, or if we may copy our config file in other\ndirectories so that R scripts can find it.\n\nWe do not want to disclose the password to our database as it is quite\nimportant information.\n\nPlease if you would be so kind to help us with this issue, we would like to\npublish a test site to show how users can store in tikiwiki databases data\nand use then R directly in the website to build stats directly.\n\nBest regards,\n\nJo?l Obrecht\nAdministrateur web\n*wikispiral.org <http://wikispiral.org>*\n0033 647 601 128\n0033 388 412 611\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Dear all,\n\nWe are currently implementing in our web application wikispiral.org the\npossibility to use direct connection to the database in scripts that are\nwritten by the users directly in the website",
+      "thread_id": "thread-7b388775479d",
+      "thread_depth": 0,
+      "month": "2014-08"
+    },
+    {
+      "id": "msg-65328eeac280",
+      "message_id": "<CABdHhvH2tsKjGmSGk3ETMwepL_vNrZAz63NcnveKqKBmq=hpgA@mail.gmail.com>",
+      "from_name": "Hadley Wickham",
+      "from_email_hash": "ca0ecd97ae88c22ed6e7f3889e08db1f732ad5eadb66671b2dc01d355cc20bf9",
+      "date": "2014-08-29T12:11:01-05:00",
+      "subject": "[R-sig-DB] DBI 0.3",
+      "subject_clean": "DBI 0.3",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi all,\n\nI'm planning a release of DBI in the next week or two (CRAN is\ndemanding a fix or they'll pull it). I have done my best to make avoid\nany backward incompatible changes, while brining DBI up to a modern\npackage development spec.\n\nIf your package depends on DBI, please install the development version\nof DBI (devtools::install_github(\"rstats-db/DBI\"), and run R CMD check\non your package.\n\nThe NEWS file (https://github.com/rstats-db/DBI/blob/master/NEWS) has\na full list of changes, but I'd like to draw your particular attention\nto the new generics:\n\n* `dbIsValid()` returns a logical value describing whether a connection or\n  result set (or other object) is still valid. (#12).\n\n* `dbQuoteString()` and `dbQuoteIdentifier()` to implement database specific\n  quoting mechanisms.\n\n* `dbFetch()` added as alias to `fetch()` to provide consistent name.\n  Implementers should define methods for both `fetch()` and `dbFetch()` until\n  `fetch()` is deprecated in 2015. For now, the default method for `dbFetch()`\n  calls `fetch()`.\n\n* `dbBegin()` begins a transaction (#17). If not supported, DB specific\n  methods should throw an error (as should `dbCommit()` and `dbRollback()`).\n\nPlease use these in preference to defining your own variants. You can\ncheck your adherence to the DBI API with the new dbiCheckCompliance()\nfunction.\n\nI am also planning to deprecate some some functions:\n\n* The following functions are soft-deprecated. They are going away,\n  and developers who use the DBI should begin preparing. The formal deprecation\n  process will begin in July 2015, where these function will emit warnings\n  on use.\n\n    * `fetch()` is replaced by `dbFetch()`.\n\n    * `make.db.names()`, `isSQLKeyword()` and `SQLKeywords()`: a black list\n      based approach is fundamentally flawed; instead quote strings and\n      identifiers with `dbQuoteIdentifier()` and `dbQuoteString()`.\n\n* `dbGetDBIVersion()` is deprecated since it's now just a thin wrapper\n  around `packageVersion(\"DBI\")`.\n\n* `dbSetDataMappings()` (#9) and `dbCallProc()` (#7) are deprecated as no\n  implementations were ever provided.\n\nKind regards,\n\nHadley\n\n-- \nhttp://had.co.nz/",
+      "body_snippet": "Hi all,\n\nI'm planning a release of DBI in the next week or two (CRAN is\ndemanding a fix or they'll pull it). I have done my best to make avoid\nany backward incompatible changes, while brining DBI up t",
+      "thread_id": "thread-65328eeac280",
+      "thread_depth": 0,
+      "month": "2014-08"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-7b388775479d",
+      "subject": "Path to .my.cf configuration file in dbconnect() ?",
+      "message_count": 1,
+      "participants": [
+        "Joël Obrecht SPIRAL"
+      ],
+      "started": "2014-08-01T11:02:58+02:00",
+      "last_reply": "2014-08-01T11:02:58+02:00",
+      "root_message_id": "msg-7b388775479d"
+    },
+    {
+      "id": "thread-65328eeac280",
+      "subject": "DBI 0.3",
+      "message_count": 1,
+      "participants": [
+        "Hadley Wickham"
+      ],
+      "started": "2014-08-29T12:11:01-05:00",
+      "last_reply": "2014-08-29T12:11:01-05:00",
+      "root_message_id": "msg-65328eeac280"
+    }
+  ]
+}

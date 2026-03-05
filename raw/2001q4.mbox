@@ -1,0 +1,2625 @@
+From Kurt@Horn|k @end|ng |rom c|@tuw|en@@c@@t  Mon Oct  1 09:19:34 2001
+From: Kurt@Horn|k @end|ng |rom c|@tuw|en@@c@@t (Kurt Hornik)
+Date: Mon, 1 Oct 2001 09:19:34 +0200
+Subject: [R-sig-DB] Re: Rdbi package [forwarded msg]
+In-Reply-To: <HBEHIIBBKKNOBLMPKCBBCENGDNAA.znmeb@aracnet.com>
+References: <15286.60585.577834.308709@mithrandir.hornik.net>
+	<HBEHIIBBKKNOBLMPKCBBCENGDNAA.znmeb@aracnet.com>
+Message-ID: <15288.6406.466683.265545@mithrandir.hornik.net>
+
+>>>>> M Edward Borasky writes:
+
+> Sounds good to me. At some point in the near future I may get a chance
+> to test it on a Windows box with MS Access; I've been using RODBC for
+> that.
+
+Ok.  Will wait till tomorrow morning to allow for further reactions.
+
+Best,
+-k
+
+>> -----Original Message-----
+>> From: r-sig-db-admin at stat.math.ethz.ch
+>> [mailto:r-sig-db-admin at stat.math.ethz.ch]On Behalf Of Kurt Hornik
+>> Sent: Sunday, September 30, 2001 2:58 AM
+>> To: Kurt.Hornik at ci.tuwien.ac.at
+>> Cc: David James; R-SIG-DB at stat.math.ethz.ch; Timothy H. Keitt; Saikat
+>> DebRoy; Torsten Hothorn
+>> Subject: [R-sig-DB] Re: Rdbi package [forwarded msg]
+>> I have not seen any followup on this for almost a month.
+>> 
+>> Hence, I assume that everyone is happy with the new design, and suggest
+>> to move Tim's package from contrib/Devel to contrib.
+>> 
+>> -k
+
+
+
+From dj @end|ng |rom re@e@rch@be||-|@b@@com  Mon Oct  1 22:40:50 2001
+From: dj @end|ng |rom re@e@rch@be||-|@b@@com (David James)
+Date: Mon, 1 Oct 2001 16:40:50 -0400
+Subject: [R-sig-DB] Re: Rdbi package [forwarded msg]
+In-Reply-To: <15288.6406.466683.265545@mithrandir.hornik.net>; from Kurt.Hornik@ci.tuwien.ac.at on Mon, Oct 01, 2001 at 09:19:34AM +0200
+References: <15286.60585.577834.308709@mithrandir.hornik.net> <HBEHIIBBKKNOBLMPKCBBCENGDNAA.znmeb@aracnet.com> <15288.6406.466683.265545@mithrandir.hornik.net>
+Message-ID: <20011001164050.C17642@jessie.research.bell-labs.com>
+
+Kurt Hornik wrote:
+> >>>>> M Edward Borasky writes:
+> 
+> > Sounds good to me. At some point in the near future I may get a chance
+> > to test it on a Windows box with MS Access; I've been using RODBC for
+> > that.
+> 
+> Ok.  Will wait till tomorrow morning to allow for further reactions.
+
+Not that I anticipate any major issues, but could we wait until the end
+of this week?  I'd like to check a couple of things (one that Torsten
+brought to my attention last week and has to do with data conversions,
+and portability to Splus being the other).
+
+Thanks,
+
+> 
+> Best,
+> -k
+> 
+> >> -----Original Message-----
+> >> From: r-sig-db-admin at stat.math.ethz.ch
+> >> [mailto:r-sig-db-admin at stat.math.ethz.ch]On Behalf Of Kurt Hornik
+> >> Sent: Sunday, September 30, 2001 2:58 AM
+> >> To: Kurt.Hornik at ci.tuwien.ac.at
+> >> Cc: David James; R-SIG-DB at stat.math.ethz.ch; Timothy H. Keitt; Saikat
+> >> DebRoy; Torsten Hothorn
+> >> Subject: [R-sig-DB] Re: Rdbi package [forwarded msg]
+> >> I have not seen any followup on this for almost a month.
+> >> 
+> >> Hence, I assume that everyone is happy with the new design, and suggest
+> >> to move Tim's package from contrib/Devel to contrib.
+> >> 
+> >> -k
+> 
+
+-- 
+David A. James
+Statistics Research, Room 2C-253            Phone:  (908) 582-3082       
+Bell Labs, Lucent Technologies              Fax:    (908) 582-3340
+Murray Hill, NJ 09794-0636
+
+
+From T|mothy@Ke|tt @end|ng |rom @tonybrook@edu  Mon Oct  1 23:05:48 2001
+From: T|mothy@Ke|tt @end|ng |rom @tonybrook@edu (Timothy H. Keitt)
+Date: Mon, 01 Oct 2001 17:05:48 -0400
+Subject: [R-sig-DB] Re: Rdbi package [forwarded msg]
+References: <15286.60585.577834.308709@mithrandir.hornik.net> <HBEHIIBBKKNOBLMPKCBBCENGDNAA.znmeb@aracnet.com> <15288.6406.466683.265545@mithrandir.hornik.net> <20011001164050.C17642@jessie.research.bell-labs.com>
+Message-ID: <3BB8DAAC.1080105@StonyBrook.Edu>
+
+I haven't had time to fix up the data conversion stuff. I have some old 
+routines from RPgSQL in Rdbi.PgSQL. The choice is to leave the 
+conversion behavior undefined and let each specific implementation 
+handle conversion however they see fit, or to define a set of generic 
+functions to be subclassed. The latter is preferable, but probably 
+difficult to get right given the heterogeneity among potential data 
+sources. (Or more accurately, I mean that its difficult to do cleanly; 
+if you cover all the marginal cases, it will get unwieldy.)
+
+Tim
+
+David James wrote:
+
+> Kurt Hornik wrote:
+> 
+>>>>>>>M Edward Borasky writes:
+>>>>>>>
+>>>Sounds good to me. At some point in the near future I may get a chance
+>>>to test it on a Windows box with MS Access; I've been using RODBC for
+>>>that.
+>>>
+>>Ok.  Will wait till tomorrow morning to allow for further reactions.
+>>
+> 
+> Not that I anticipate any major issues, but could we wait until the end
+> of this week?  I'd like to check a couple of things (one that Torsten
+> brought to my attention last week and has to do with data conversions,
+> and portability to Splus being the other).
+
+
+I'm not running Splus, so I haven't tried to make it compatible. It 
+would seem to be a good thing to do, although I admit, I've been pretty 
+unhappy with Mathsoft in the past because of their callous attitude 
+towards UNIX, which (as far as I know) is the environment where S 
+originated.
+
+
+> 
+> Thanks,
+> 
+> 
+>>Best,
+>>-k
+>>
+>>
+>>>>-----Original Message-----
+>>>>From: r-sig-db-admin at stat.math.ethz.ch
+>>>>[mailto:r-sig-db-admin at stat.math.ethz.ch]On Behalf Of Kurt Hornik
+>>>>Sent: Sunday, September 30, 2001 2:58 AM
+>>>>To: Kurt.Hornik at ci.tuwien.ac.at
+>>>>Cc: David James; R-SIG-DB at stat.math.ethz.ch; Timothy H. Keitt; Saikat
+>>>>DebRoy; Torsten Hothorn
+>>>>Subject: [R-sig-DB] Re: Rdbi package [forwarded msg]
+>>>>I have not seen any followup on this for almost a month.
+>>>>
+>>>>Hence, I assume that everyone is happy with the new design, and suggest
+>>>>to move Tim's package from contrib/Devel to contrib.
+>>>>
+>>>>-k
+>>>>
+> 
+
+
+-- 
+Timothy H. Keitt
+Department of Ecology and Evolution
+State University of New York at Stony Brook
+Stony Brook, New York 11794 USA
+Phone: 631-632-1101, FAX: 631-632-7626
+http://life.bio.sunysb.edu/ee/keitt/
+
+
+
+From dj @end|ng |rom re@e@rch@be||-|@b@@com  Mon Oct  1 23:45:32 2001
+From: dj @end|ng |rom re@e@rch@be||-|@b@@com (David James)
+Date: Mon, 1 Oct 2001 17:45:32 -0400
+Subject: [R-sig-DB] Re: Rdbi package [forwarded msg]
+In-Reply-To: <3BB8DAAC.1080105@StonyBrook.Edu>; from Timothy.Keitt@StonyBrook.Edu on Mon, Oct 01, 2001 at 05:05:48PM -0400
+References: <15286.60585.577834.308709@mithrandir.hornik.net> <HBEHIIBBKKNOBLMPKCBBCENGDNAA.znmeb@aracnet.com> <15288.6406.466683.265545@mithrandir.hornik.net> <20011001164050.C17642@jessie.research.bell-labs.com> <3BB8DAAC.1080105@StonyBrook.Edu>
+Message-ID: <20011001174532.A16177@jessie.research.bell-labs.com>
+
+Timothy H. Keitt wrote:
+> I haven't had time to fix up the data conversion stuff. I have some old 
+> routines from RPgSQL in Rdbi.PgSQL. The choice is to leave the 
+> conversion behavior undefined and let each specific implementation 
+> handle conversion however they see fit, or to define a set of generic 
+> functions to be subclassed. The latter is preferable, but probably 
+> difficult to get right given the heterogeneity among potential data 
+> sources. (Or more accurately, I mean that its difficult to do cleanly; 
+> if you cover all the marginal cases, it will get unwieldy.)
+
+No need to do this, for the time being.  If I'm not mistaken, we're 
+taking the Rdbi package to be a starting point for a common interface, 
+so by necessity it will have to evolve as we gain experience with it
+and its various driver implementations.  
+
+I still think that we need a document (in English, that is) to describe 
+the interface, its classes and generic functions, perhaps the various data 
+conversion mechanisms, ways to query the metadata, and so forth
+e.g., what to do with SQL keywords in R/S objects that we export to DBMS.
+Also, it is in this kind of document were we could identify core and optional
+features.  (Both the python and perl interfaces have such a 
+specification document.)
+
+> 
+> Tim
+> 
+> David James wrote:
+> 
+> > Kurt Hornik wrote:
+> > 
+> >>>>>>>M Edward Borasky writes:
+> >>>>>>>
+> >>>Sounds good to me. At some point in the near future I may get a chance
+> >>>to test it on a Windows box with MS Access; I've been using RODBC for
+> >>>that.
+> >>>
+> >>Ok.  Will wait till tomorrow morning to allow for further reactions.
+> >>
+> > 
+> > Not that I anticipate any major issues, but could we wait until the end
+> > of this week?  I'd like to check a couple of things (one that Torsten
+> > brought to my attention last week and has to do with data conversions,
+> > and portability to Splus being the other).
+> 
+> 
+> I'm not running Splus, so I haven't tried to make it compatible. It 
+> would seem to be a good thing to do, although I admit, I've been pretty 
+> unhappy with Mathsoft in the past because of their callous attitude 
+> towards UNIX, which (as far as I know) is the environment where S 
+> originated.
+
+I understand, and I wouldn't expect people to be doing both R and 
+S implementations.  All I'm suggesting is to see if we could follow 
+some simple guidelines to make it easier for other people to port 
+from one system to the other.  My guess is that it'll be users and/or
+some of us --not Insightful-- doing the porting.
+
+> 
+> 
+> > 
+> > Thanks,
+> > 
+> > 
+> >>Best,
+> >>-k
+> >>
+> >>
+> >>>>-----Original Message-----
+> >>>>From: r-sig-db-admin at stat.math.ethz.ch
+> >>>>[mailto:r-sig-db-admin at stat.math.ethz.ch]On Behalf Of Kurt Hornik
+> >>>>Sent: Sunday, September 30, 2001 2:58 AM
+> >>>>To: Kurt.Hornik at ci.tuwien.ac.at
+> >>>>Cc: David James; R-SIG-DB at stat.math.ethz.ch; Timothy H. Keitt; Saikat
+> >>>>DebRoy; Torsten Hothorn
+> >>>>Subject: [R-sig-DB] Re: Rdbi package [forwarded msg]
+> >>>>I have not seen any followup on this for almost a month.
+> >>>>
+> >>>>Hence, I assume that everyone is happy with the new design, and suggest
+> >>>>to move Tim's package from contrib/Devel to contrib.
+> >>>>
+> >>>>-k
+> >>>>
+> > 
+> 
+> 
+> -- 
+> Timothy H. Keitt
+> Department of Ecology and Evolution
+> State University of New York at Stony Brook
+> Stony Brook, New York 11794 USA
+> Phone: 631-632-1101, FAX: 631-632-7626
+> http://life.bio.sunysb.edu/ee/keitt/
+> 
+
+-- 
+David A. James
+Statistics Research, Room 2C-253            Phone:  (908) 582-3082       
+Bell Labs, Lucent Technologies              Fax:    (908) 582-3340
+Murray Hill, NJ 09794-0636
+
+
+From T|mothy@Ke|tt @end|ng |rom @tonybrook@edu  Tue Oct  2 00:44:08 2001
+From: T|mothy@Ke|tt @end|ng |rom @tonybrook@edu (Timothy H. Keitt)
+Date: Mon, 01 Oct 2001 18:44:08 -0400
+Subject: [R-sig-DB] Re: Rdbi package [forwarded msg]
+References: <15286.60585.577834.308709@mithrandir.hornik.net> <HBEHIIBBKKNOBLMPKCBBCENGDNAA.znmeb@aracnet.com> <15288.6406.466683.265545@mithrandir.hornik.net> <20011001164050.C17642@jessie.research.bell-labs.com> <3BB8DAAC.1080105@StonyBrook.Edu> <200110
+Message-ID: <3BB8F1B8.2030006@StonyBrook.Edu>
+
+David James wrote:
+
+> Timothy H. Keitt wrote:
+> 
+>>I haven't had time to fix up the data conversion stuff. I have some old 
+>>routines from RPgSQL in Rdbi.PgSQL. The choice is to leave the 
+>>conversion behavior undefined and let each specific implementation 
+>>handle conversion however they see fit, or to define a set of generic 
+>>functions to be subclassed. The latter is preferable, but probably 
+>>difficult to get right given the heterogeneity among potential data 
+>>sources. (Or more accurately, I mean that its difficult to do cleanly; 
+>>if you cover all the marginal cases, it will get unwieldy.)
+>>
+> 
+> No need to do this, for the time being.  If I'm not mistaken, we're 
+> taking the Rdbi package to be a starting point for a common interface, 
+> so by necessity it will have to evolve as we gain experience with it
+> and its various driver implementations.  
+
+
+Agreed.
+
+> 
+> I still think that we need a document (in English, that is) to describe 
+> the interface, its classes and generic functions, perhaps the various data 
+> conversion mechanisms, ways to query the metadata, and so forth
+> e.g., what to do with SQL keywords in R/S objects that we export to DBMS.
+> Also, it is in this kind of document were we could identify core and optional
+> features.  (Both the python and perl interfaces have such a 
+> specification document.)
+
+
+Agreed, also, but its not likely I will be able to do this anytime soon.
+
+T.
+
+> 
+> 
+>>Tim
+>>
+>>David James wrote:
+>>
+>>
+>>>Kurt Hornik wrote:
+>>>
+>>>
+>>>>>>>>>M Edward Borasky writes:
+>>>>>>>>>
+>>>>>>>>>
+>>>>>Sounds good to me. At some point in the near future I may get a chance
+>>>>>to test it on a Windows box with MS Access; I've been using RODBC for
+>>>>>that.
+>>>>>
+>>>>>
+>>>>Ok.  Will wait till tomorrow morning to allow for further reactions.
+>>>>
+>>>>
+>>>Not that I anticipate any major issues, but could we wait until the end
+>>>of this week?  I'd like to check a couple of things (one that Torsten
+>>>brought to my attention last week and has to do with data conversions,
+>>>and portability to Splus being the other).
+>>>
+>>
+>>I'm not running Splus, so I haven't tried to make it compatible. It 
+>>would seem to be a good thing to do, although I admit, I've been pretty 
+>>unhappy with Mathsoft in the past because of their callous attitude 
+>>towards UNIX, which (as far as I know) is the environment where S 
+>>originated.
+>>
+> 
+> I understand, and I wouldn't expect people to be doing both R and 
+> S implementations.  All I'm suggesting is to see if we could follow 
+> some simple guidelines to make it easier for other people to port 
+> from one system to the other.  My guess is that it'll be users and/or
+> some of us --not Insightful-- doing the porting.
+> 
+> 
+>>
+>>>Thanks,
+>>>
+>>>
+>>>
+>>>>Best,
+>>>>-k
+>>>>
+>>>>
+>>>>
+>>>>>>-----Original Message-----
+>>>>>>From: r-sig-db-admin at stat.math.ethz.ch
+>>>>>>[mailto:r-sig-db-admin at stat.math.ethz.ch]On Behalf Of Kurt Hornik
+>>>>>>Sent: Sunday, September 30, 2001 2:58 AM
+>>>>>>To: Kurt.Hornik at ci.tuwien.ac.at
+>>>>>>Cc: David James; R-SIG-DB at stat.math.ethz.ch; Timothy H. Keitt; Saikat
+>>>>>>DebRoy; Torsten Hothorn
+>>>>>>Subject: [R-sig-DB] Re: Rdbi package [forwarded msg]
+>>>>>>I have not seen any followup on this for almost a month.
+>>>>>>
+>>>>>>Hence, I assume that everyone is happy with the new design, and suggest
+>>>>>>to move Tim's package from contrib/Devel to contrib.
+>>>>>>
+>>>>>>-k
+>>>>>>
+>>>>>>
+>>
+>>-- 
+>>Timothy H. Keitt
+>>Department of Ecology and Evolution
+>>State University of New York at Stony Brook
+>>Stony Brook, New York 11794 USA
+>>Phone: 631-632-1101, FAX: 631-632-7626
+>>http://life.bio.sunysb.edu/ee/keitt/
+>>
+>>
+> 
+
+
+-- 
+Timothy H. Keitt
+Department of Ecology and Evolution
+State University of New York at Stony Brook
+Stony Brook, New York 11794 USA
+Phone: 631-632-1101, FAX: 631-632-7626
+http://life.bio.sunysb.edu/ee/keitt/
+
+
+
+From znmeb @end|ng |rom @r@cnet@com  Tue Oct  2 01:36:43 2001
+From: znmeb @end|ng |rom @r@cnet@com (M. Edward (Ed) Borasky)
+Date: Mon, 1 Oct 2001 16:36:43 -0700 (PDT)
+Subject: [R-sig-DB] Re: Rdbi package [forwarded msg]
+In-Reply-To: <20011001164050.C17642@jessie.research.bell-labs.com>
+Message-ID: <Pine.LNX.4.33.0110011633310.28833-100000@shell1.aracnet.com>
+
+On Mon, 1 Oct 2001, David James wrote:
+
+> Not that I anticipate any major issues, but could we wait until the end
+> of this week?  I'd like to check a couple of things (one that Torsten
+> brought to my attention last week and has to do with data conversions,
+> and portability to Splus being the other).
+
+Fine with me ... I need to do some kind of hack with RODBC and Rdbi to get to
+my Access databases; the PostGres interface is the only one available so far.
+
+--
+znmeb at aracnet.com (M. Edward Borasky) http://www.aracnet.com/~znmeb
+
+You can't make a sow's ear out of a silk purse either.
+
+
+
+From Kurt@Horn|k @end|ng |rom c|@tuw|en@@c@@t  Tue Oct  2 11:28:52 2001
+From: Kurt@Horn|k @end|ng |rom c|@tuw|en@@c@@t (Kurt Hornik)
+Date: Tue, 2 Oct 2001 11:28:52 +0200
+Subject: [R-sig-DB] Re: Rdbi package [forwarded msg]
+In-Reply-To: <20011001164050.C17642@jessie.research.bell-labs.com>
+References: <15286.60585.577834.308709@mithrandir.hornik.net>
+	<HBEHIIBBKKNOBLMPKCBBCENGDNAA.znmeb@aracnet.com>
+	<15288.6406.466683.265545@mithrandir.hornik.net>
+	<20011001164050.C17642@jessie.research.bell-labs.com>
+Message-ID: <15289.35028.842356.122064@mithrandir.hornik.net>
+
+>>>>> David James writes:
+
+> Kurt Hornik wrote:
+>> >>>>> M Edward Borasky writes:
+>> 
+>> > Sounds good to me. At some point in the near future I may get a chance
+>> > to test it on a Windows box with MS Access; I've been using RODBC for
+>> > that.
+>> 
+>> Ok.  Will wait till tomorrow morning to allow for further reactions.
+
+> Not that I anticipate any major issues, but could we wait until the
+> end of this week?  I'd like to check a couple of things (one that
+> Torsten brought to my attention last week and has to do with data
+> conversions, and portability to Splus being the other).
+
+End of this week is fine.
+
+-k
+
+
+From dj @end|ng |rom re@e@rch@be||-|@b@@com  Tue Oct  2 14:11:49 2001
+From: dj @end|ng |rom re@e@rch@be||-|@b@@com (David James)
+Date: Tue, 2 Oct 2001 08:11:49 -0400
+Subject: [R-sig-DB] Re: Rdbi package [forwarded msg]
+In-Reply-To: <3BB8F1B8.2030006@StonyBrook.Edu>; from Timothy.Keitt@StonyBrook.Edu on Mon, Oct 01, 2001 at 06:44:08PM -0400
+References: <15286.60585.577834.308709@mithrandir.hornik.net> <HBEHIIBBKKNOBLMPKCBBCENGDNAA.znmeb@aracnet.com> <15288.6406.466683.265545@mithrandir.hornik.net> <20011001164050.C17642@jessie.research.bell-labs.com> <3BB8DAAC.1080105@StonyBrook.Edu> <200110
+Message-ID: <20011002081149.A22185@jessie.research.bell-labs.com>
+
+Timothy H. Keitt wrote:
+> David James wrote:
+> 
+> > Timothy H. Keitt wrote:
+> > 
+> >>I haven't had time to fix up the data conversion stuff. I have some old 
+> >>routines from RPgSQL in Rdbi.PgSQL. The choice is to leave the 
+> >>conversion behavior undefined and let each specific implementation 
+> >>handle conversion however they see fit, or to define a set of generic 
+> >>functions to be subclassed. The latter is preferable, but probably 
+> >>difficult to get right given the heterogeneity among potential data 
+> >>sources. (Or more accurately, I mean that its difficult to do cleanly; 
+> >>if you cover all the marginal cases, it will get unwieldy.)
+> >>
+> > 
+> > No need to do this, for the time being.  If I'm not mistaken, we're 
+> > taking the Rdbi package to be a starting point for a common interface, 
+> > so by necessity it will have to evolve as we gain experience with it
+> > and its various driver implementations.  
+> 
+> 
+> Agreed.
+> 
+> > 
+> > I still think that we need a document (in English, that is) to describe 
+> > the interface, its classes and generic functions, perhaps the various data 
+> > conversion mechanisms, ways to query the metadata, and so forth
+> > e.g., what to do with SQL keywords in R/S objects that we export to DBMS.
+> > Also, it is in this kind of document were we could identify core and optional
+> > features.  (Both the python and perl interfaces have such a 
+> > specification document.)
+> 
+> 
+> Agreed, also, but its not likely I will be able to do this anytime soon.
+
+
+No problem, I'll come up with a first draft by the end of this week.
+
+> 
+> T.
+> 
+> > 
+> > 
+> >>Tim
+> >>
+> >>David James wrote:
+> >>
+> >>
+> >>>Kurt Hornik wrote:
+> >>>
+> >>>
+> >>>>>>>>>M Edward Borasky writes:
+> >>>>>>>>>
+> >>>>>>>>>
+> >>>>>Sounds good to me. At some point in the near future I may get a chance
+> >>>>>to test it on a Windows box with MS Access; I've been using RODBC for
+> >>>>>that.
+> >>>>>
+> >>>>>
+> >>>>Ok.  Will wait till tomorrow morning to allow for further reactions.
+> >>>>
+> >>>>
+> >>>Not that I anticipate any major issues, but could we wait until the end
+> >>>of this week?  I'd like to check a couple of things (one that Torsten
+> >>>brought to my attention last week and has to do with data conversions,
+> >>>and portability to Splus being the other).
+> >>>
+> >>
+> >>I'm not running Splus, so I haven't tried to make it compatible. It 
+> >>would seem to be a good thing to do, although I admit, I've been pretty 
+> >>unhappy with Mathsoft in the past because of their callous attitude 
+> >>towards UNIX, which (as far as I know) is the environment where S 
+> >>originated.
+> >>
+> > 
+> > I understand, and I wouldn't expect people to be doing both R and 
+> > S implementations.  All I'm suggesting is to see if we could follow 
+> > some simple guidelines to make it easier for other people to port 
+> > from one system to the other.  My guess is that it'll be users and/or
+> > some of us --not Insightful-- doing the porting.
+> > 
+> > 
+> >>
+> >>>Thanks,
+> >>>
+> >>>
+> >>>
+> >>>>Best,
+> >>>>-k
+> >>>>
+> >>>>
+> >>>>
+> >>>>>>-----Original Message-----
+> >>>>>>From: r-sig-db-admin at stat.math.ethz.ch
+> >>>>>>[mailto:r-sig-db-admin at stat.math.ethz.ch]On Behalf Of Kurt Hornik
+> >>>>>>Sent: Sunday, September 30, 2001 2:58 AM
+> >>>>>>To: Kurt.Hornik at ci.tuwien.ac.at
+> >>>>>>Cc: David James; R-SIG-DB at stat.math.ethz.ch; Timothy H. Keitt; Saikat
+> >>>>>>DebRoy; Torsten Hothorn
+> >>>>>>Subject: [R-sig-DB] Re: Rdbi package [forwarded msg]
+> >>>>>>I have not seen any followup on this for almost a month.
+> >>>>>>
+> >>>>>>Hence, I assume that everyone is happy with the new design, and suggest
+> >>>>>>to move Tim's package from contrib/Devel to contrib.
+> >>>>>>
+> >>>>>>-k
+> >>>>>>
+> >>>>>>
+> >>
+> >>-- 
+> >>Timothy H. Keitt
+> >>Department of Ecology and Evolution
+> >>State University of New York at Stony Brook
+> >>Stony Brook, New York 11794 USA
+> >>Phone: 631-632-1101, FAX: 631-632-7626
+> >>http://life.bio.sunysb.edu/ee/keitt/
+> >>
+> >>
+> > 
+> 
+> 
+> -- 
+> Timothy H. Keitt
+> Department of Ecology and Evolution
+> State University of New York at Stony Brook
+> Stony Brook, New York 11794 USA
+> Phone: 631-632-1101, FAX: 631-632-7626
+> http://life.bio.sunysb.edu/ee/keitt/
+> 
+
+-- 
+David A. James
+Statistics Research, Room 2C-253            Phone:  (908) 582-3082       
+Bell Labs, Lucent Technologies              Fax:    (908) 582-3340
+Murray Hill, NJ 09794-0636
+
+
+From dj @end|ng |rom re@e@rch@be||-|@b@@com  Sat Oct  6 06:04:47 2001
+From: dj @end|ng |rom re@e@rch@be||-|@b@@com (David James)
+Date: Sat, 6 Oct 2001 00:04:47 -0400
+Subject: [R-sig-DB] Rdbi package plus draft proposal (was Re: Rdbi package)
+In-Reply-To: <15289.35028.842356.122064@mithrandir.hornik.net>; from Kurt.Hornik@ci.tuwien.ac.at on Tue, Oct 02, 2001 at 11:28:52AM +0200
+References: <15286.60585.577834.308709@mithrandir.hornik.net> <HBEHIIBBKKNOBLMPKCBBCENGDNAA.znmeb@aracnet.com> <15288.6406.466683.265545@mithrandir.hornik.net> <20011001164050.C17642@jessie.research.bell-labs.com> <15289.35028.842356.122064@mithrandir.hor
+Message-ID: <20011006000447.A3785@jessie.research.bell-labs.com>
+
+Kurt Hornik wrote:
+> >>>>> David James writes:
+> 
+> > Kurt Hornik wrote:
+> >> >>>>> M Edward Borasky writes:
+> >> 
+> >> > Sounds good to me. At some point in the near future I may get a chance
+> >> > to test it on a Windows box with MS Access; I've been using RODBC for
+> >> > that.
+> >> 
+> >> Ok.  Will wait till tomorrow morning to allow for further reactions.
+> 
+> > Not that I anticipate any major issues, but could we wait until the
+> > end of this week?  I'd like to check a couple of things (one that
+> > Torsten brought to my attention last week and has to do with data
+> > conversions, and portability to Splus being the other).
+> 
+> End of this week is fine.
+> 
+> -k
+
+Hi,
+
+Well, earlier this week I committed to taking a look at the Rdbi
+package and to producing a first draft for the common database
+interface (which I'm attaching as two text files: DBI.tex and
+figure1.eps).
+
+The Rdbi package looks quite reasonable to me.  It defines most of
+the core functionality we need, and I think that it wouldn't be too
+hard to make existing packages be compatible with it.  I also have
+some suggestions and comments (in no particular order).
+
+1. R/Splus compatibility.
+
+   From an R/Splus compatibility point of view, I'd suggest
+   renaming Rdbi to something neutral.  Initially I had thought 
+   as RSdbi, but why not simply call it DBI -- and thus friendly
+   to both.
+
+2. I would add 2 more generic functions 
+
+       dbRemoveTable(con, tbl.name, ...)
+       dbExistsTable(con, tbl.name,...)  
+
+   in addition to the dbReadTable, dbWriteTable, etc. 
+
+   The reason is that with these 2 we would have all the methods
+   require to be able to attach() any DBMS to the search path (thus
+   would allow us to simply attach(conn) and treat the remote tables
+   as simple data.frames).  R does not yet provide facilities for
+   attaching arbitrary databases, but I believe that Duncan (and John?) 
+   will be doing this soon(?).
+
+3. I would add another class to group the various driver classes
+   (RODBC, RPgSQL, etc.)
+
+4. Result class.
+
+   Rdbi defines only one class Rdbi.result to represent the result
+   of a query, yet there are 2 types of queries -- those that produce
+   output and those that don't.  I can see that for simplicity having
+   only one is advantageous, but perhaps we should distinguish them
+   (the result of SELECT-like queries that produce output could
+   extend the results that don't).
+
+5. I would replace the generic functions
+
+         dbConnectionInfo(conn)
+         dbResultInfo(res)
+   
+    with a single dbGetInfo(obj), say, that dispatches on
+    connections, results (and drivers, see 3. above) to retrieve
+    meta-data for those objects.
+
+    (Probably I would leave dbColumnInfo(res) as defined in the
+    Rdbi package to explicitly extract meta-data from the individual
+    columns of the result set.)
+
+6. dbReconnect() 
+
+   From the comments in the Rdbi code, it appears that it's meant to
+   take a DBMS connection object (even from a previous session) and
+   re-instantiate the (broken) connection.  It seems to me that this
+   would require storing passwords in the regular .RData or .Data.
+   From a security point of view, I'm uncomfortable doing this.
+   Is there a way of re-connecting without saving passwords in
+   obvious places?  (I guess that this is more of an implementation
+   issue?)
+
+7. Exceptions.
+
+   We need a dbGetException(conn) generic to report if and when
+   there are errors in a DBMS connection "conn";  if there has been
+   an error, it should report the code (number) and/or message.
+
+8. Version information.
+
+   I think we want to ensure that packages that implement the DBI
+   report what version of the DBI they implements -- this could
+   easily be reported by the dbGetInfo() method of the driver. (We
+   may even require that each driver implementation reports its
+   version number.)
+
+9. Common utilities.
+
+   Most packages that will implement the DBI will need some
+   common utilities, e.g., functions to map R/S names to SQL
+   valid identifiers, to "guess" the SQL type of R/S objects, etc.
+   We should provide these common methods in the DBI (of course,
+   individual packages may choose to extend them or completely
+   override them).
+
+10. Data mappings.
+
+    As Tim has already pointed out, this needs more thought. The
+    packages RJava, RPerl, RPython (and the netscape R plugin)
+    have dealt with this issue (just like the R-Excel,R-DCOM, etc.)
+    We may want to implement the same converters ideas in some
+    of those?
+
+11. Multiple instance of connections, result sets, etc.
+
+    The Rdbi package is silent re: allowing multiple DBMS object
+    simultaneously, i.e., multiple open drivers, DBMS connections,
+    result sets (RODBC, for instance, already implement multiple
+    connections).
+ 
+    I would suggest that the DBI should be explicit about
+    the possibility for having multiple instances of any of
+    these object.  Of course, each DBMS driver should be free to
+    implement either single or multiple instances as it sees fit.
+    We then should define a couple of generic functions in the
+    spirit of getConnections (available both in R and Splus),
+    but for DBI objects, etc.
+
+      dbGetConnections(drv)     # return connections on driver drv
+      dbGetResults(conn)        # return result sets on connection conn
+      
+    these could return a container (i.e., a list) of connections and
+    result objects, respectively (possibly with only one object).
+
+12. At one point we had thought about making the DBMS interface 
+    general enough so that non-relational DBMS could be covered 
+    under the same API (HDF5 comes to mind, but also Berkeley DB).
+    Is this reasonable?  Or are they so different to relational DBMS 
+    that it's  just not feasible?  Or is it us that we have been too
+    narrowly focus?  Somebody that's using non-relational should take
+    a closer look and let us know....
+
+
+Now, let me move on to the draft paper on a common interface.
+
+Based on the Rdbi package, the above points, and previous
+discussions in various lists/forums, I've put together a rough
+draft that attempts to flush out in enough detail a framework for
+implementing the interface.  I hope that after a few iterations,
+it can be used as a guide by DBMS package developers.
+
+I found that describing the interface in terms of classes is a lot
+more natural (and easier) than in terms of (only) generic functions and
+methods.  Moreover, as I looked at other DB API's (Python, Perl, Java)
+I felt more strongly that perhaps we should be using version 4
+class-based instead of traditional version 3 object-based programming.
+With the current library(methods) in R-devel in quite a reasonable shape, 
+I think the DBI is an ideal candidate project for using more advanced
+programming tools.  
+
+So, let me throw in the idea of building the DBI using version 4
+style classes.  I believe that most of the (current) Rdbi could
+be re-used, and I'd volunteer to migrate it to the version 4 style.
+
+Regards,
+
+-- 
+David A. James
+Statistics Research, Room 2C-253            Phone:  (908) 582-3082       
+Bell Labs, Lucent Technologies              Fax:    (908) 582-3340
+Murray Hill, NJ 09794-0636
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: DBI.tex
+Type: application/x-tex
+Size: 23865 bytes
+Desc: not available
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20011006/87f9f84b/attachment.tex>
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: figure1.eps
+Type: application/postscript
+Size: 8110 bytes
+Desc: not available
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20011006/87f9f84b/attachment.eps>
+
+From Kurt@Horn|k @end|ng |rom c|@tuw|en@@c@@t  Sun Oct  7 20:17:09 2001
+From: Kurt@Horn|k @end|ng |rom c|@tuw|en@@c@@t (Kurt Hornik)
+Date: Sun, 7 Oct 2001 20:17:09 +0200
+Subject: [R-sig-DB] Re: Rdbi package plus draft proposal (was Re: Rdbi package)
+In-Reply-To: <20011006000447.A3785@jessie.research.bell-labs.com>
+References: <15286.60585.577834.308709@mithrandir.hornik.net>
+	<HBEHIIBBKKNOBLMPKCBBCENGDNAA.znmeb@aracnet.com>
+	<15288.6406.466683.265545@mithrandir.hornik.net>
+	<20011001164050.C17642@jessie.research.bell-labs.com>
+	<15289.35028.842356.122064@mithrandir.hornik.net>
+	<20011006000447.A3785@jessie.research.bell-labs.com>
+Message-ID: <15296.39973.205102.860504@mithrandir.hornik.net>
+
+>>>>> David James writes:
+
+> Kurt Hornik wrote:
+>> >>>>> David James writes:
+>> 
+>> > Kurt Hornik wrote:
+>> >> >>>>> M Edward Borasky writes:
+>> >> 
+>> >> > Sounds good to me. At some point in the near future I may get a chance
+>> >> > to test it on a Windows box with MS Access; I've been using RODBC for
+>> >> > that.
+>> >> 
+>> >> Ok.  Will wait till tomorrow morning to allow for further reactions.
+>> 
+>> > Not that I anticipate any major issues, but could we wait until the
+>> > end of this week?  I'd like to check a couple of things (one that
+>> > Torsten brought to my attention last week and has to do with data
+>> > conversions, and portability to Splus being the other).
+>> 
+>> End of this week is fine.
+>> 
+>> -k
+
+> Hi,
+
+> Well, earlier this week I committed to taking a look at the Rdbi
+> package and to producing a first draft for the common database
+> interface (which I'm attaching as two text files: DBI.tex and
+> figure1.eps).
+
+> The Rdbi package looks quite reasonable to me.  It defines most of
+> the core functionality we need, and I think that it wouldn't be too
+> hard to make existing packages be compatible with it.  I also have
+> some suggestions and comments (in no particular order).
+
+> 1. R/Splus compatibility.
+
+>    From an R/Splus compatibility point of view, I'd suggest
+>    renaming Rdbi to something neutral.  Initially I had thought 
+>    as RSdbi, but why not simply call it DBI -- and thus friendly
+>    to both.
+
+I had raised this with Tim.  One could argue for `SDBI' a la Omegahat
+but I do not think the `S' is necessary.
+
+I will wait with moving up the packages until the naming has been
+deciced.
+
+-k
+
+
+From dj @end|ng |rom re@e@rch@be||-|@b@@com  Mon Oct  8 04:25:25 2001
+From: dj @end|ng |rom re@e@rch@be||-|@b@@com (David James)
+Date: Sun, 7 Oct 2001 22:25:25 -0400
+Subject: [R-sig-DB] Re: Rdbi package plus draft proposal (missing biblio.bib)
+In-Reply-To: <20011007222416.A16175@jessie.research.bell-labs.com>; from dj@research.bell-labs.com on Sun, Oct 07, 2001 at 10:24:16PM -0400
+References: <15286.60585.577834.308709@mithrandir.hornik.net> <HBEHIIBBKKNOBLMPKCBBCENGDNAA.znmeb@aracnet.com> <15288.6406.466683.265545@mithrandir.hornik.net> <20011001164050.C17642@jessie.research.bell-labs.com> <15289.35028.842356.122064@mithrandir.hor
+Message-ID: <20011007222525.B16175@jessie.research.bell-labs.com>
+
+David James wrote:
+> Sorry, I forgot to include the file "biblio.bib" needed by
+> DBI.tex.  I'm attaching it below.
+> 
+> -- 
+> David A. James
+> Statistics Research, Room 2C-253            Phone:  (908) 582-3082       
+> Bell Labs, Lucent Technologies              Fax:    (908) 582-3340
+> Murray Hill, NJ 09794-0636
+
+-- 
+David A. James
+Statistics Research, Room 2C-253            Phone:  (908) 582-3082       
+Bell Labs, Lucent Technologies              Fax:    (908) 582-3340
+Murray Hill, NJ 09794-0636
+
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: biblio.bib
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20011007/9269caf5/attachment.ksh>
+
+From dj @end|ng |rom re@e@rch@be||-|@b@@com  Mon Oct  8 04:24:16 2001
+From: dj @end|ng |rom re@e@rch@be||-|@b@@com (David James)
+Date: Sun, 7 Oct 2001 22:24:16 -0400
+Subject: [R-sig-DB] Re: Rdbi package plus draft proposal (missing biblio.bib)
+In-Reply-To: <15296.39973.205102.860504@mithrandir.hornik.net>; from Kurt.Hornik@ci.tuwien.ac.at on Sun, Oct 07, 2001 at 08:17:09PM +0200
+References: <15286.60585.577834.308709@mithrandir.hornik.net> <HBEHIIBBKKNOBLMPKCBBCENGDNAA.znmeb@aracnet.com> <15288.6406.466683.265545@mithrandir.hornik.net> <20011001164050.C17642@jessie.research.bell-labs.com> <15289.35028.842356.122064@mithrandir.hor
+Message-ID: <20011007222416.A16175@jessie.research.bell-labs.com>
+
+Sorry, I forgot to include the file "biblio.bib" needed by
+DBI.tex.  I'm attaching it below.
+
+-- 
+David A. James
+Statistics Research, Room 2C-253            Phone:  (908) 582-3082       
+Bell Labs, Lucent Technologies              Fax:    (908) 582-3340
+Murray Hill, NJ 09794-0636
+
+
+From T|mothy@Ke|tt @end|ng |rom @tonybrook@edu  Mon Oct  8 19:51:26 2001
+From: T|mothy@Ke|tt @end|ng |rom @tonybrook@edu (Timothy H. Keitt)
+Date: Mon, 08 Oct 2001 13:51:26 -0400
+Subject: [R-sig-DB] Re: Rdbi package plus draft proposal (was Re: Rdbi package)
+References: <15286.60585.577834.308709@mithrandir.hornik.net>	<HBEHIIBBKKNOBLMPKCBBCENGDNAA.znmeb@aracnet.com>	<15288.6406.466683.265545@mithrandir.hornik.net>	<20011001164050.C17642@jessie.research.bell-labs.com>	<15289.35028.842356.122064@mithrandir.hor
+Message-ID: <3BC1E79E.6030908@StonyBrook.Edu>
+
+I think we should hold off on the packages as David's document specifies 
+a much bigger interface than is in Rdbi. We need some time to discuss 
+David's proposal. I'm fine with 'DBI' or even 'database' for the package 
+name. I hope to write some comments in the next week or so.
+
+Tim
+
+Kurt Hornik wrote:
+
+> 
+> I had raised this with Tim.  One could argue for `SDBI' a la Omegahat
+> but I do not think the `S' is necessary.
+> 
+> I will wait with moving up the packages until the naming has been
+> deciced.
+> 
+> -k
+> 
+
+
+-- 
+Timothy H. Keitt
+Department of Ecology and Evolution
+State University of New York at Stony Brook
+Stony Brook, New York 11794 USA
+Phone: 631-632-1101, FAX: 631-632-7626
+http://life.bio.sunysb.edu/ee/keitt/
+
+
+
+From tk||@t@ddr @end|ng |rom ke|tt|@b@b|o@@uny@b@edu  Mon Oct  8 21:19:53 2001
+From: tk||@t@ddr @end|ng |rom ke|tt|@b@b|o@@uny@b@edu (Timothy H. Keitt)
+Date: Mon, 08 Oct 2001 15:19:53 -0400
+Subject: [R-sig-DB] Rdbi package plus draft proposal (was Re: Rdbi package)L 
+References: <15286.60585.577834.308709@mithrandir.hornik.net> <HBEHIIBBKKNOBLMPKCBBCENGDNAA.znmeb@aracnet.com> <15288.6406.466683.265545@mithrandir.hornik.net> <20011001164050.C17642@jessie.research.bell-labs.com> <15289.35028.842356.122064@mithrandir.hor
+Message-ID: <3BC1FC59.1010200@keittlab.bio.sunysb.edu>
+
+David James wrote:
+
+>
+>Hi,
+>
+>Well, earlier this week I committed to taking a look at the Rdbi
+>package and to producing a first draft for the common database
+>interface (which I'm attaching as two text files: DBI.tex and
+>figure1.eps).
+>
+>The Rdbi package looks quite reasonable to me.  It defines most of
+>the core functionality we need, and I think that it wouldn't be too
+>hard to make existing packages be compatible with it.  I also have
+>some suggestions and comments (in no particular order).
+>
+>1. R/Splus compatibility.
+>
+>   From an R/Splus compatibility point of view, I'd suggest
+>   renaming Rdbi to something neutral.  Initially I had thought 
+>   as RSdbi, but why not simply call it DBI -- and thus friendly
+>   to both.
+>
+
+Agreed.
+
+>
+>
+>2. I would add 2 more generic functions 
+>
+>       dbRemoveTable(con, tbl.name, ...)
+>       dbExistsTable(con, tbl.name,...)  
+>
+>   in addition to the dbReadTable, dbWriteTable, etc. 
+>
+
+Yes, these are needed. I must have forgotten to move them over from RPgSQL.
+
+>
+>
+>   The reason is that with these 2 we would have all the methods
+>   require to be able to attach() any DBMS to the search path (thus
+>   would allow us to simply attach(conn) and treat the remote tables
+>   as simple data.frames).  R does not yet provide facilities for
+>   attaching arbitrary databases, but I believe that Duncan (and John?) 
+>   will be doing this soon(?).
+>
+This has been my dream all along---to be able to attach a database and 
+use the native R interface to access the data. I'd be very excited to 
+see some general hooks into the 'attach' command. Even still, this is 
+actually not at all simple to implement without write access to the 
+database. Also, as I've learned SQL, I find I want to run queries 
+directly rather than use R on proxies. Anyway, it would be a nice feature.
+
+>
+>
+>3. I would add another class to group the various driver classes
+>   (RODBC, RPgSQL, etc.)
+>
+I used class 'PgSQL' in Rdbi.PgSQL, but the names are arbitrary.
+
+>
+>
+>4. Result class
+>
+>   Rdbi defines only one class Rdbi.result to represent the result
+>   of a query, yet there are 2 types of queries -- those that produce
+>   output and those that don't.  I can see that for simplicity having
+>   only one is advantageous, but perhaps we should distinguish them
+>   (the result of SELECT-like queries that produce output could
+>   extend the results that don't).
+>
+
+Interesting. I hadn't considered this. I don't see it as immediately 
+usefull. Perhaps some mock code examples would help.
+
+>
+>
+>5. I would replace the generic functions
+>
+>         dbConnectionInfo(conn)
+>         dbResultInfo(res)
+>   
+>    with a single dbGetInfo(obj), say, that dispatches on
+>    connections, results (and drivers, see 3. above) to retrieve
+>    meta-data for those objects.
+>
+>    (Probably I would leave dbColumnInfo(res) as defined in the
+>    Rdbi package to explicitly extract meta-data from the individual
+>    columns of the result set.)
+>
+
+Agreed.
+
+>
+>
+>6. dbReconnect() 
+>
+>   From the comments in the Rdbi code, it appears that it's meant to
+>   take a DBMS connection object (even from a previous session) and
+>   re-instantiate the (broken) connection.  It seems to me that this
+>   would require storing passwords in the regular .RData or .Data.
+>   From a security point of view, I'm uncomfortable doing this.
+>   Is there a way of re-connecting without saving passwords in
+>   obvious places?  (I guess that this is more of an implementation
+>   issue?)
+>
+
+Perhaps we should just leave this out for now. I once thought it would 
+be nice if table proxies could reinitialize their connections 
+automatically, but it not essential at this time.
+
+>
+>
+>7. Exceptions.
+>
+>   We need a dbGetException(conn) generic to report if and when
+>   there are errors in a DBMS connection "conn";  if there has been
+>   an error, it should report the code (number) and/or message.
+>
+
+In Rdbi, these are available using dbConnectionInfo(conn). Do we need a 
+seperate function? (I'm not saying we don't.)
+
+>
+>
+>8. Version information.
+>
+>   I think we want to ensure that packages that implement the DBI
+>   report what version of the DBI they implements -- this could
+>   easily be reported by the dbGetInfo() method of the driver. (We
+>   may even require that each driver implementation reports its
+>   version number.)
+>
+
+Agreed.
+
+>
+>
+>9. Common utilities.
+>
+>   Most packages that will implement the DBI will need some
+>   common utilities, e.g., functions to map R/S names to SQL
+>   valid identifiers, to "guess" the SQL type of R/S objects, etc.
+>   We should provide these common methods in the DBI (of course,
+>   individual packages may choose to extend them or completely
+>   override them).
+>
+
+I put these in util.R in Rdbi.
+
+>
+>
+>10. Data mappings.
+>
+>    As Tim has already pointed out, this needs more thought. The
+>    packages RJava, RPerl, RPython (and the netscape R plugin)
+>    have dealt with this issue (just like the R-Excel,R-DCOM, etc.)
+>    We may want to implement the same converters ideas in some
+>    of those?
+>
+
+Unless we are prepared to store metadata in seperate tables (requires 
+write access to the database), we're pretty much limited to dealing with 
+unique types defined in the database. My solution (types.R in 
+Rdbi.PgSQL) was a function that returns the SQL type given an R object, 
+a function that takes an R object and creates a corresponding SQL 
+formatted string and a function that takes an SQL formatted string and 
+converts it back to the R type. These could be made into generic methods.
+
+>
+>
+>11. Multiple instance of connections, result sets, etc.
+>
+>    The Rdbi package is silent re: allowing multiple DBMS object
+>    simultaneously, i.e., multiple open drivers, DBMS connections,
+>    result sets (RODBC, for instance, already implement multiple
+>    connections).
+>
+
+This was true in RPgSQL, but not Rdbi. In Rdbi, you can have as many 
+'conn' and 'result' objects open as resources permit. I don't have the 
+concept of a driver object, because I'm not convinced its needed.
+
+>
+> 
+>    I would suggest that the DBI should be explicit about
+>    the possibility for having multiple instances of any of
+>    these object.  Of course, each DBMS driver should be free to
+>    implement either single or multiple instances as it sees fit.
+>    We then should define a couple of generic functions in the
+>    spirit of getConnections (available both in R and Splus),
+>    but for DBI objects, etc.
+>
+>      dbGetConnections(drv)     # return connections on driver drv
+>      dbGetResults(conn)        # return result sets on connection conn
+>      
+>    these could return a container (i.e., a list) of connections and
+>    result objects, respectively (possibly with only one object).
+>
+
+Its reasonable, but is it essential? Would anybody use these functions?
+
+>
+>
+>12. At one point we had thought about making the DBMS interface 
+>    general enough so that non-relational DBMS could be covered 
+>    under the same API (HDF5 comes to mind, but also Berkeley DB).
+>    Is this reasonable?  Or are they so different to relational DBMS 
+>    that it's  just not feasible?  Or is it us that we have been too
+>    narrowly focus?  Somebody that's using non-relational should take
+>    a closer look and let us know....
+>
+
+This is a good point.
+
+>
+>
+>
+>Now, let me move on to the draft paper on a common interface.
+>
+>Based on the Rdbi package, the above points, and previous
+>discussions in various lists/forums, I've put together a rough
+>draft that attempts to flush out in enough detail a framework for
+>implementing the interface.  I hope that after a few iterations,
+>it can be used as a guide by DBMS package developers.
+>
+>I found that describing the interface in terms of classes is a lot
+>more natural (and easier) than in terms of (only) generic functions and
+>methods.  Moreover, as I looked at other DB API's (Python, Perl, Java)
+>I felt more strongly that perhaps we should be using version 4
+>class-based instead of traditional version 3 object-based programming.
+>With the current library(methods) in R-devel in quite a reasonable shape, 
+>I think the DBI is an ideal candidate project for using more advanced
+>programming tools.  
+>
+>So, let me throw in the idea of building the DBI using version 4
+>style classes.  I believe that most of the (current) Rdbi could
+>be re-used, and I'd volunteer to migrate it to the version 4 style.
+>
+
+Agreed. Does R yet support v.4 style classes? Is there a good 
+reference/tutorial?
+
+>
+>Regards,
+>
+> DBI.tex
+>
+> Content-Type:
+>
+> application/x-tex
+>
+>
+> ------------------------------------------------------------------------
+> figure1.eps
+>
+> Content-Type:
+>
+> application/postscript
+>
+>
+
+-- 
+Timothy H. Keitt
+Department of Ecology and Evolution
+State University of New York at Stony Brook
+Stony Brook, New York 11794 USA
+Phone: 631-632-1101, FAX: 631-632-7626
+http://life.bio.sunysb.edu/ee/keitt/
+
+
+
+
+
+From dunc@n @end|ng |rom re@e@rch@be||-|@b@@com  Tue Oct  9 01:00:56 2001
+From: dunc@n @end|ng |rom re@e@rch@be||-|@b@@com (Duncan Temple Lang)
+Date: Mon, 8 Oct 2001 19:00:56 -0400
+Subject: [R-sig-DB] name of DBI package
+Message-ID: <20011008190056.F3071@jessie.research.bell-labs.com>
+
+> 
+> I had raised this with Tim.  One could argue for `SDBI' a la Omegahat
+> but I do not think the `S' is necessary.
+> 
+> I will wait with moving up the packages until the naming has been
+> deciced.
+
+
+
+Given the connection between R and Perl, Python & Java, it is entirely
+possible that we will implement a version of the `DBI' interface using
+Perl DBI, Python DBI or JDBC. (Saikat, David and I did this using Java
+for the RSDBI interface.)  In that case, the ambiguity of talking
+about DBI in the S and Perl worlds may warrant having an S prefixing
+the package name.  In other words, we do want to think globally and
+not assume that we are working entirely in the S world.
+
+ D.
+
+
+
+
+From dj @end|ng |rom re@e@rch@be||-|@b@@com  Tue Oct  9 04:15:13 2001
+From: dj @end|ng |rom re@e@rch@be||-|@b@@com (David James)
+Date: Mon, 8 Oct 2001 22:15:13 -0400
+Subject: [R-sig-DB] Rdbi package plus draft proposal (was Re: Rdbi package)L
+In-Reply-To: <3BC1FC59.1010200@keittlab.bio.sunysb.edu>; from tklistaddr@keittlab.bio.sunysb.edu on Mon, Oct 08, 2001 at 03:19:53PM -0400
+References: <15286.60585.577834.308709@mithrandir.hornik.net> <HBEHIIBBKKNOBLMPKCBBCENGDNAA.znmeb@aracnet.com> <15288.6406.466683.265545@mithrandir.hornik.net> <20011001164050.C17642@jessie.research.bell-labs.com> <15289.35028.842356.122064@mithrandir.hor
+Message-ID: <20011008221513.A6236@jessie.research.bell-labs.com>
+
+Timothy H. Keitt wrote:
+> David James wrote:
+> 
+> >
+> >Hi,
+> >
+> >Well, earlier this week I committed to taking a look at the Rdbi
+> >package and to producing a first draft for the common database
+> >interface (which I'm attaching as two text files: DBI.tex and
+> >figure1.eps).
+> >
+> >The Rdbi package looks quite reasonable to me.  It defines most of
+> >the core functionality we need, and I think that it wouldn't be too
+> >hard to make existing packages be compatible with it.  I also have
+> >some suggestions and comments (in no particular order).
+> >
+> >1. R/Splus compatibility.
+> >
+> >   From an R/Splus compatibility point of view, I'd suggest
+> >   renaming Rdbi to something neutral.  Initially I had thought 
+> >   as RSdbi, but why not simply call it DBI -- and thus friendly
+> >   to both.
+> >
+> 
+> Agreed.
+> 
+> >
+> >
+> >2. I would add 2 more generic functions 
+> >
+> >       dbRemoveTable(con, tbl.name, ...)
+> >       dbExistsTable(con, tbl.name,...)  
+> >
+> >   in addition to the dbReadTable, dbWriteTable, etc. 
+> >
+> 
+> Yes, these are needed. I must have forgotten to move them over from RPgSQL.
+> 
+> >
+> >
+> >   The reason is that with these 2 we would have all the methods
+> >   require to be able to attach() any DBMS to the search path (thus
+> >   would allow us to simply attach(conn) and treat the remote tables
+> >   as simple data.frames).  R does not yet provide facilities for
+> >   attaching arbitrary databases, but I believe that Duncan (and John?) 
+> >   will be doing this soon(?).
+> >
+> This has been my dream all along---to be able to attach a database and 
+> use the native R interface to access the data. I'd be very excited to 
+> see some general hooks into the 'attach' command. Even still, this is 
+> actually not at all simple to implement without write access to the 
+> database. Also, as I've learned SQL, I find I want to run queries 
+> directly rather than use R on proxies. Anyway, it would be a nice feature.
+> 
+> >
+> >
+> >3. I would add another class to group the various driver classes
+> >   (RODBC, RPgSQL, etc.)
+> >
+> I used class 'PgSQL' in Rdbi.PgSQL, but the names are arbitrary.
+
+What I meant to say was that we should add/consider a virtual driver
+class to group all actual drivers.  Conceptually all the drivers
+(RPgSQL, RODBC, etc) extend the driver virtual class.
+
+> 
+> >
+> >
+> >4. Result class
+> >
+> >   Rdbi defines only one class Rdbi.result to represent the result
+> >   of a query, yet there are 2 types of queries -- those that produce
+> >   output and those that don't.  I can see that for simplicity having
+> >   only one is advantageous, but perhaps we should distinguish them
+> >   (the result of SELECT-like queries that produce output could
+> >   extend the results that don't).
+> >
+> 
+> Interesting. I hadn't considered this. I don't see it as immediately 
+> usefull. Perhaps some mock code examples would help.
+> 
+> >
+> >
+> >5. I would replace the generic functions
+> >
+> >         dbConnectionInfo(conn)
+> >         dbResultInfo(res)
+> >   
+> >    with a single dbGetInfo(obj), say, that dispatches on
+> >    connections, results (and drivers, see 3. above) to retrieve
+> >    meta-data for those objects.
+> >
+> >    (Probably I would leave dbColumnInfo(res) as defined in the
+> >    Rdbi package to explicitly extract meta-data from the individual
+> >    columns of the result set.)
+> >
+> 
+> Agreed.
+> 
+> >
+> >
+> >6. dbReconnect() 
+> >
+> >   From the comments in the Rdbi code, it appears that it's meant to
+> >   take a DBMS connection object (even from a previous session) and
+> >   re-instantiate the (broken) connection.  It seems to me that this
+> >   would require storing passwords in the regular .RData or .Data.
+> >   From a security point of view, I'm uncomfortable doing this.
+> >   Is there a way of re-connecting without saving passwords in
+> >   obvious places?  (I guess that this is more of an implementation
+> >   issue?)
+> >
+> 
+> Perhaps we should just leave this out for now. I once thought it would 
+> be nice if table proxies could reinitialize their connections 
+> automatically, but it not essential at this time.
+> 
+> >
+> >
+> >7. Exceptions.
+> >
+> >   We need a dbGetException(conn) generic to report if and when
+> >   there are errors in a DBMS connection "conn";  if there has been
+> >   an error, it should report the code (number) and/or message.
+> >
+> 
+> In Rdbi, these are available using dbConnectionInfo(conn). Do we need a 
+> seperate function? (I'm not saying we don't.)
+
+I guess not.  The important thing is the ability to obtain the status
+of the operation, so having it as part of the dbConnectionInfo is
+indeed fine.  Perhaps the DBI should then specify the member names,
+say "error.number" and "error.message" (say)?
+
+> 
+> >
+> >
+> >8. Version information.
+> >
+> >   I think we want to ensure that packages that implement the DBI
+> >   report what version of the DBI they implements -- this could
+> >   easily be reported by the dbGetInfo() method of the driver. (We
+> >   may even require that each driver implementation reports its
+> >   version number.)
+> >
+> 
+> Agreed.
+> 
+> >
+> >
+> >9. Common utilities.
+> >
+> >   Most packages that will implement the DBI will need some
+> >   common utilities, e.g., functions to map R/S names to SQL
+> >   valid identifiers, to "guess" the SQL type of R/S objects, etc.
+> >   We should provide these common methods in the DBI (of course,
+> >   individual packages may choose to extend them or completely
+> >   override them).
+> >
+> 
+> I put these in util.R in Rdbi.
+
+Oops, obviously I missed them.  Now I see the make.db.names() in
+PgSQL that I also missed.
+
+> 
+> >
+> >
+> >10. Data mappings.
+> >
+> >    As Tim has already pointed out, this needs more thought. The
+> >    packages RJava, RPerl, RPython (and the netscape R plugin)
+> >    have dealt with this issue (just like the R-Excel,R-DCOM, etc.)
+> >    We may want to implement the same converters ideas in some
+> >    of those?
+> >
+> 
+> Unless we are prepared to store metadata in seperate tables (requires 
+> write access to the database), we're pretty much limited to dealing with 
+> unique types defined in the database. My solution (types.R in 
+> Rdbi.PgSQL) was a function that returns the SQL type given an R object, 
+> a function that takes an R object and creates a corresponding SQL 
+> formatted string and a function that takes an SQL formatted string and 
+> converts it back to the R type. These could be made into generic methods.
+> 
+> >
+> >
+> >11. Multiple instance of connections, result sets, etc.
+> >
+> >    The Rdbi package is silent re: allowing multiple DBMS object
+> >    simultaneously, i.e., multiple open drivers, DBMS connections,
+> >    result sets (RODBC, for instance, already implement multiple
+> >    connections).
+> >
+> 
+> This was true in RPgSQL, but not Rdbi. In Rdbi, you can have as many 
+> 'conn' and 'result' objects open as resources permit. I don't have the 
+> concept of a driver object, because I'm not convinced its needed.
+
+Strictly speaking, probably we could get away without it, but I
+think having a driver class extended by the various implementations
+could be useful.  For instance, one thing that driver objects can
+provide is help with conversions.  Data type mappings probably
+are best specified for drivers -- not connections nor result sets.
+For instance, suppose dbDataType is a generic that returns the
+"closest" data type for the R object x on DBMS drv
+
+     dbDataType(drv, x)
+
+then as new drivers get written, they extend dbDataType in the
+obvious way.  It would be possible to specify the driver as a
+character string instead of the driver object and use a switch
+statement inside the function, but this would be error-prone and
+would require keeping the dbDataType up-to-date.
+
+Similarly (but perhaps not as interesting) for mapping names
+(identifiers) from R and the DBMS, as in make.db.names in RPgSQL.
+
+Another use is for listing all open connections (not unlike what
+showConnections/getConnections currently do in R). See below.
+
+> 
+> >
+> > 
+> >    I would suggest that the DBI should be explicit about
+> >    the possibility for having multiple instances of any of
+> >    these object.  Of course, each DBMS driver should be free to
+> >    implement either single or multiple instances as it sees fit.
+> >    We then should define a couple of generic functions in the
+> >    spirit of getConnections (available both in R and Splus),
+> >    but for DBI objects, etc.
+> >
+> >      dbGetConnections(drv)     # return connections on driver drv
+> >      dbGetResults(conn)        # return result sets on connection conn
+> >      
+> >    these could return a container (i.e., a list) of connections and
+> >    result objects, respectively (possibly with only one object).
+> >
+> 
+> Its reasonable, but is it essential? Would anybody use these functions?
+
+They would be similar to the current  showConnections/getConnection.
+
+> 
+> >
+> >
+> >12. At one point we had thought about making the DBMS interface 
+> >    general enough so that non-relational DBMS could be covered 
+> >    under the same API (HDF5 comes to mind, but also Berkeley DB).
+> >    Is this reasonable?  Or are they so different to relational DBMS 
+> >    that it's  just not feasible?  Or is it us that we have been too
+> >    narrowly focus?  Somebody that's using non-relational should take
+> >    a closer look and let us know....
+> >
+> 
+> This is a good point.
+> 
+> >
+> >
+> >
+> >Now, let me move on to the draft paper on a common interface.
+> >
+> >Based on the Rdbi package, the above points, and previous
+> >discussions in various lists/forums, I've put together a rough
+> >draft that attempts to flush out in enough detail a framework for
+> >implementing the interface.  I hope that after a few iterations,
+> >it can be used as a guide by DBMS package developers.
+> >
+> >I found that describing the interface in terms of classes is a lot
+> >more natural (and easier) than in terms of (only) generic functions and
+> >methods.  Moreover, as I looked at other DB API's (Python, Perl, Java)
+> >I felt more strongly that perhaps we should be using version 4
+> >class-based instead of traditional version 3 object-based programming.
+> >With the current library(methods) in R-devel in quite a reasonable shape, 
+> >I think the DBI is an ideal candidate project for using more advanced
+> >programming tools.  
+> >
+> >So, let me throw in the idea of building the DBI using version 4
+> >style classes.  I believe that most of the (current) Rdbi could
+> >be re-used, and I'd volunteer to migrate it to the version 4 style.
+> >
+> 
+> Agreed. Does R yet support v.4 style classes? Is there a good 
+> reference/tutorial?
+
+R-devel does, and I understand the 1.4 will have them as a library "methods".
+
+Re: references, I know of two, John Chambers' "Programming with Data"
+(green book) and V&R's "S Programming".
+
+> 
+> >
+> >Regards,
+> >
+> > DBI.tex
+> >
+> > Content-Type:
+> >
+> > application/x-tex
+> >
+> >
+> > ------------------------------------------------------------------------
+> > figure1.eps
+> >
+> > Content-Type:
+> >
+> > application/postscript
+> >
+> >
+> 
+> -- 
+> Timothy H. Keitt
+> Department of Ecology and Evolution
+> State University of New York at Stony Brook
+> Stony Brook, New York 11794 USA
+> Phone: 631-632-1101, FAX: 631-632-7626
+> http://life.bio.sunysb.edu/ee/keitt/
+> 
+> 
+> 
+
+-- 
+David A. James
+Statistics Research, Room 2C-253            Phone:  (908) 582-3082       
+Bell Labs, Lucent Technologies              Fax:    (908) 582-3340
+Murray Hill, NJ 09794-0636
+
+
+From Kurt@Horn|k @end|ng |rom c|@tuw|en@@c@@t  Tue Oct  9 08:28:20 2001
+From: Kurt@Horn|k @end|ng |rom c|@tuw|en@@c@@t (Kurt Hornik)
+Date: Tue, 9 Oct 2001 08:28:20 +0200
+Subject: [R-sig-DB] Re: name of DBI package
+In-Reply-To: <20011008190056.F3071@jessie.research.bell-labs.com>
+References: <20011008190056.F3071@jessie.research.bell-labs.com>
+Message-ID: <15298.39172.752672.702420@mithrandir.hornik.net>
+
+>>>>> Duncan Temple Lang writes:
+
+>> 
+>> I had raised this with Tim.  One could argue for `SDBI' a la Omegahat
+>> but I do not think the `S' is necessary.
+>> 
+>> I will wait with moving up the packages until the naming has been
+>> deciced.
+
+> Given the connection between R and Perl, Python & Java, it is entirely
+> possible that we will implement a version of the `DBI' interface using
+> Perl DBI, Python DBI or JDBC. (Saikat, David and I did this using Java
+> for the RSDBI interface.)  In that case, the ambiguity of talking
+> about DBI in the S and Perl worlds may warrant having an S prefixing
+> the package name.  In other words, we do want to think globally and
+> not assume that we are working entirely in the S world.
+
+Hmm.  Good point.  My reading of David et al's DBI proposal is that of
+an abstract interface with drivers for the various RDBMs, which would
+give the `native' S DBI.  Of course, as we can access Perl and friends
+there could be more DBIs available to S users.  Hence, we should perhaps
+go for `SDBI' or `SDBC' ...
+
+-k
+
+
+From tk||@t@ddr @end|ng |rom ke|tt|@b@b|o@@uny@b@edu  Wed Oct 10 19:44:50 2001
+From: tk||@t@ddr @end|ng |rom ke|tt|@b@b|o@@uny@b@edu (Timothy H. Keitt)
+Date: Wed, 10 Oct 2001 13:44:50 -0400
+Subject: [R-sig-DB] Rdbi package plus draft proposal (was Re: Rdbi package)L
+References: <15286.60585.577834.308709@mithrandir.hornik.net> <HBEHIIBBKKNOBLMPKCBBCENGDNAA.znmeb@aracnet.com> <15288.6406.466683.265545@mithrandir.hornik.net> <20011001164050.C17642@jessie.research.bell-labs.com> <15289.35028.842356.122064@mithrandir.hor
+Message-ID: <3BC48912.9090803@keittlab.bio.sunysb.edu>
+
+David James wrote:
+
+>Timothy H. Keitt wrote:
+>
+>>David James wrote:
+>>
+>>>Hi,
+>>>
+>>>Well, earlier this week I committed to taking a look at the Rdbi
+>>>package and to producing a first draft for the common database
+>>>interface (which I'm attaching as two text files: DBI.tex and
+>>>figure1.eps).
+>>>
+>>>The Rdbi package looks quite reasonable to me.  It defines most of
+>>>the core functionality we need, and I think that it wouldn't be too
+>>>hard to make existing packages be compatible with it.  I also have
+>>>some suggestions and comments (in no particular order).
+>>>
+>>>1. R/Splus compatibility.
+>>>
+>>>  From an R/Splus compatibility point of view, I'd suggest
+>>>  renaming Rdbi to something neutral.  Initially I had thought 
+>>>  as RSdbi, but why not simply call it DBI -- and thus friendly
+>>>  to both.
+>>>
+>>Agreed.
+>>
+>>>
+>>>2. I would add 2 more generic functions 
+>>>
+>>>      dbRemoveTable(con, tbl.name, ...)
+>>>      dbExistsTable(con, tbl.name,...)  
+>>>
+>>>  in addition to the dbReadTable, dbWriteTable, etc. 
+>>>
+>>Yes, these are needed. I must have forgotten to move them over from RPgSQL.
+>>
+>>>
+>>>  The reason is that with these 2 we would have all the methods
+>>>  require to be able to attach() any DBMS to the search path (thus
+>>>  would allow us to simply attach(conn) and treat the remote tables
+>>>  as simple data.frames).  R does not yet provide facilities for
+>>>  attaching arbitrary databases, but I believe that Duncan (and John?) 
+>>>  will be doing this soon(?).
+>>>
+>>This has been my dream all along---to be able to attach a database and 
+>>use the native R interface to access the data. I'd be very excited to 
+>>see some general hooks into the 'attach' command. Even still, this is 
+>>actually not at all simple to implement without write access to the 
+>>database. Also, as I've learned SQL, I find I want to run queries 
+>>directly rather than use R on proxies. Anyway, it would be a nice feature.
+>>
+>>>
+>>>3. I would add another class to group the various driver classes
+>>>  (RODBC, RPgSQL, etc.)
+>>>
+>>I used class 'PgSQL' in Rdbi.PgSQL, but the names are arbitrary.
+>>
+>
+>What I meant to say was that we should add/consider a virtual driver
+>class to group all actual drivers.  Conceptually all the drivers
+>(RPgSQL, RODBC, etc) extend the driver virtual class.
+>
+>>>
+>>>4. Result class
+>>>
+>>>  Rdbi defines only one class Rdbi.result to represent the result
+>>>  of a query, yet there are 2 types of queries -- those that produce
+>>>  output and those that don't.  I can see that for simplicity having
+>>>  only one is advantageous, but perhaps we should distinguish them
+>>>  (the result of SELECT-like queries that produce output could
+>>>  extend the results that don't).
+>>>
+>>Interesting. I hadn't considered this. I don't see it as immediately 
+>>usefull. Perhaps some mock code examples would help.
+>>
+>>>
+>>>5. I would replace the generic functions
+>>>
+>>>        dbConnectionInfo(conn)
+>>>        dbResultInfo(res)
+>>>  
+>>>   with a single dbGetInfo(obj), say, that dispatches on
+>>>   connections, results (and drivers, see 3. above) to retrieve
+>>>   meta-data for those objects.
+>>>
+>>>   (Probably I would leave dbColumnInfo(res) as defined in the
+>>>   Rdbi package to explicitly extract meta-data from the individual
+>>>   columns of the result set.)
+>>>
+>>Agreed.
+>>
+>>>
+>>>6. dbReconnect() 
+>>>
+>>>  From the comments in the Rdbi code, it appears that it's meant to
+>>>  take a DBMS connection object (even from a previous session) and
+>>>  re-instantiate the (broken) connection.  It seems to me that this
+>>>  would require storing passwords in the regular .RData or .Data.
+>>>  From a security point of view, I'm uncomfortable doing this.
+>>>  Is there a way of re-connecting without saving passwords in
+>>>  obvious places?  (I guess that this is more of an implementation
+>>>  issue?)
+>>>
+>>Perhaps we should just leave this out for now. I once thought it would 
+>>be nice if table proxies could reinitialize their connections 
+>>automatically, but it not essential at this time.
+>>
+>>>
+>>>7. Exceptions.
+>>>
+>>>  We need a dbGetException(conn) generic to report if and when
+>>>  there are errors in a DBMS connection "conn";  if there has been
+>>>  an error, it should report the code (number) and/or message.
+>>>
+>>In Rdbi, these are available using dbConnectionInfo(conn). Do we need a 
+>>seperate function? (I'm not saying we don't.)
+>>
+>
+>I guess not.  The important thing is the ability to obtain the status
+>of the operation, so having it as part of the dbConnectionInfo is
+>indeed fine.  Perhaps the DBI should then specify the member names,
+>say "error.number" and "error.message" (say)?
+>
+>>>
+>>>8. Version information.
+>>>
+>>>  I think we want to ensure that packages that implement the DBI
+>>>  report what version of the DBI they implements -- this could
+>>>  easily be reported by the dbGetInfo() method of the driver. (We
+>>>  may even require that each driver implementation reports its
+>>>  version number.)
+>>>
+>>Agreed.
+>>
+>>>
+>>>9. Common utilities.
+>>>
+>>>  Most packages that will implement the DBI will need some
+>>>  common utilities, e.g., functions to map R/S names to SQL
+>>>  valid identifiers, to "guess" the SQL type of R/S objects, etc.
+>>>  We should provide these common methods in the DBI (of course,
+>>>  individual packages may choose to extend them or completely
+>>>  override them).
+>>>
+>>I put these in util.R in Rdbi.
+>>
+>
+>Oops, obviously I missed them.  Now I see the make.db.names() in
+>PgSQL that I also missed.
+>
+>>>
+>>>10. Data mappings.
+>>>
+>>>   As Tim has already pointed out, this needs more thought. The
+>>>   packages RJava, RPerl, RPython (and the netscape R plugin)
+>>>   have dealt with this issue (just like the R-Excel,R-DCOM, etc.)
+>>>   We may want to implement the same converters ideas in some
+>>>   of those?
+>>>
+>>Unless we are prepared to store metadata in seperate tables (requires 
+>>write access to the database), we're pretty much limited to dealing with 
+>>unique types defined in the database. My solution (types.R in 
+>>Rdbi.PgSQL) was a function that returns the SQL type given an R object, 
+>>a function that takes an R object and creates a corresponding SQL 
+>>formatted string and a function that takes an SQL formatted string and 
+>>converts it back to the R type. These could be made into generic methods.
+>>
+>>>
+>>>11. Multiple instance of connections, result sets, etc.
+>>>
+>>>   The Rdbi package is silent re: allowing multiple DBMS object
+>>>   simultaneously, i.e., multiple open drivers, DBMS connections,
+>>>   result sets (RODBC, for instance, already implement multiple
+>>>   connections).
+>>>
+>>This was true in RPgSQL, but not Rdbi. In Rdbi, you can have as many 
+>>'conn' and 'result' objects open as resources permit. I don't have the 
+>>concept of a driver object, because I'm not convinced its needed.
+>>
+>
+>Strictly speaking, probably we could get away without it, but I
+>think having a driver class extended by the various implementations
+>could be useful.  For instance, one thing that driver objects can
+>provide is help with conversions.  Data type mappings probably
+>are best specified for drivers -- not connections nor result sets.
+>For instance, suppose dbDataType is a generic that returns the
+>"closest" data type for the R object x on DBMS drv
+>
+>     dbDataType(drv, x)
+>
+>then as new drivers get written, they extend dbDataType in the
+>obvious way.  It would be possible to specify the driver as a
+>character string instead of the driver object and use a switch
+>statement inside the function, but this would be error-prone and
+>would require keeping the dbDataType up-to-date.
+>
+>Similarly (but perhaps not as interesting) for mapping names
+>(identifiers) from R and the DBMS, as in make.db.names in RPgSQL.
+>
+>Another use is for listing all open connections (not unlike what
+>showConnections/getConnections currently do in R). See below.
+>
+
+I guess I'm becoming convinced. Actually, I put a driver class into Rdbi 
+(based on your original proposal), but its only used to autoload the 
+driver package and cause dispatch to the correct connection-generator. I 
+think associating data conversion with driver objects, rather than the 
+package itself, will be necessary when accessing, for example, different 
+postgresql databases that have different sets of user-defined types. 
+That would require a per-driver set of conversion routines.
+
+My hesitancy is based on my assumption that 95% of users will access the 
+same database every R session and will not enjoy having to reconstruct 
+their environment from scratch each time. That's why I'm interested in 
+persistent connections and so on. In fact, I'd like to find a clean way 
+to have a default connection be used when no connection object is 
+supplied to the query routines. Perhaps the best way to do this is to 
+create another package that sits on top of the SDBI (or whatever we 
+decide to call it) package and provides a seperate interface that 
+internally hides the driver, connection and result objects.
+
+>
+>
+>>>
+>>>   I would suggest that the DBI should be explicit about
+>>>   the possibility for having multiple instances of any of
+>>>   these object.  Of course, each DBMS driver should be free to
+>>>   implement either single or multiple instances as it sees fit.
+>>>   We then should define a couple of generic functions in the
+>>>   spirit of getConnections (available both in R and Splus),
+>>>   but for DBI objects, etc.
+>>>
+>>>     dbGetConnections(drv)     # return connections on driver drv
+>>>     dbGetResults(conn)        # return result sets on connection conn
+>>>     
+>>>   these could return a container (i.e., a list) of connections and
+>>>   result objects, respectively (possibly with only one object).
+>>>
+>>Its reasonable, but is it essential? Would anybody use these functions?
+>>
+>
+>They would be similar to the current  showConnections/getConnection.
+>
+
+Actually, these might be useful for implementing the simplified 
+interface described above. But does this mean we will have to explicitly 
+destroy all connection and result objects? I think any objects generated 
+should be garbage collected like any other R object; otherwise you are 
+introducing a new object model. (I suppose connections could unregister 
+themselves from the driver when garbage collected.)
+
+>
+>
+>>>
+>>>12. At one point we had thought about making the DBMS interface 
+>>>   general enough so that non-relational DBMS could be covered 
+>>>   under the same API (HDF5 comes to mind, but also Berkeley DB).
+>>>   Is this reasonable?  Or are they so different to relational DBMS 
+>>>   that it's  just not feasible?  Or is it us that we have been too
+>>>   narrowly focus?  Somebody that's using non-relational should take
+>>>   a closer look and let us know....
+>>>
+>>This is a good point.
+>>
+>>>
+>>>
+>>>Now, let me move on to the draft paper on a common interface.
+>>>
+>>>Based on the Rdbi package, the above points, and previous
+>>>discussions in various lists/forums, I've put together a rough
+>>>draft that attempts to flush out in enough detail a framework for
+>>>implementing the interface.  I hope that after a few iterations,
+>>>it can be used as a guide by DBMS package developers.
+>>>
+>>>I found that describing the interface in terms of classes is a lot
+>>>more natural (and easier) than in terms of (only) generic functions and
+>>>methods.  Moreover, as I looked at other DB API's (Python, Perl, Java)
+>>>I felt more strongly that perhaps we should be using version 4
+>>>class-based instead of traditional version 3 object-based programming.
+>>>With the current library(methods) in R-devel in quite a reasonable shape, 
+>>>I think the DBI is an ideal candidate project for using more advanced
+>>>programming tools.  
+>>>
+>>>So, let me throw in the idea of building the DBI using version 4
+>>>style classes.  I believe that most of the (current) Rdbi could
+>>>be re-used, and I'd volunteer to migrate it to the version 4 style.
+>>>
+>>Agreed. Does R yet support v.4 style classes? Is there a good 
+>>reference/tutorial?
+>>
+>
+>R-devel does, and I understand the 1.4 will have them as a library "methods".
+>
+>Re: references, I know of two, John Chambers' "Programming with Data"
+>(green book) and V&R's "S Programming".
+>
+>>>Regards,
+>>>
+>>>DBI.tex
+>>>
+>>>Content-Type:
+>>>
+>>>application/x-tex
+>>>
+>>>
+>>>------------------------------------------------------------------------
+>>>figure1.eps
+>>>
+>>>Content-Type:
+>>>
+>>>application/postscript
+>>>
+>>>
+>>-- 
+>>Timothy H. Keitt
+>>Department of Ecology and Evolution
+>>State University of New York at Stony Brook
+>>Stony Brook, New York 11794 USA
+>>Phone: 631-632-1101, FAX: 631-632-7626
+>>http://life.bio.sunysb.edu/ee/keitt/
+>>
+>>
+>>
+>
+
+-- 
+Timothy H. Keitt
+Department of Ecology and Evolution
+State University of New York at Stony Brook
+Stony Brook, New York 11794 USA
+Phone: 631-632-1101, FAX: 631-632-7626
+http://life.bio.sunysb.edu/ee/keitt/
+
+
+
+
+
+From |uke @end|ng |rom nokom|@@@t@t@umn@edu  Wed Oct 10 20:02:32 2001
+From: |uke @end|ng |rom nokom|@@@t@t@umn@edu (Luke Tierney)
+Date: Wed, 10 Oct 2001 13:02:32 -0500
+Subject: [R-sig-DB] Rdbi package plus draft proposal (was Re: Rdbi package)L
+In-Reply-To: <3BC48912.9090803@keittlab.bio.sunysb.edu>; from tklistaddr@keittlab.bio.sunysb.edu on Wed, Oct 10, 2001 at 01:44:50PM -0400
+References: <15286.60585.577834.308709@mithrandir.hornik.net> <HBEHIIBBKKNOBLMPKCBBCENGDNAA.znmeb@aracnet.com> <15288.6406.466683.265545@mithrandir.hornik.net> <20011001164050.C17642@jessie.research.bell-labs.com> <15289.35028.842356.122064@mithrandir.hor
+Message-ID: <20011010130232.A20168@nokomis.stat.umn.edu>
+
+On Wed, Oct 10, 2001 at 01:44:50PM -0400, Timothy H. Keitt wrote:
+> >>
+> >
+> >They would be similar to the current  showConnections/getConnection.
+> >
+> 
+> Actually, these might be useful for implementing the simplified 
+> interface described above. But does this mean we will have to explicitly 
+> destroy all connection and result objects? I think any objects generated 
+> should be garbage collected like any other R object; otherwise you are 
+> introducing a new object model. (I suppose connections could unregister 
+> themselves from the driver when garbage collected.)
+> 
+
+Allowing DBconnections to be handled by the GC as a backup is I think
+the right thing to do.  Since they involve scarce resource, explicit
+closing should be encouraged.  The fact that the connection system
+does not do this is I think unfortunate and something I think we will
+have to revisit before too long (aside from the potential of leaving
+connections open it is too easy for one function's use of connections
+to trample anothers, especially if we go to any form of threading).
+
+It is nevertheless possible to allow a list of open connections to be
+obtained by using a weak reference mechanism. There is experimental
+support for this in the devel version, with some notes on it at
+http://www.stat.umn.edu/~luke/R/references/weakfinex.html (also off
+the developer page).
+
+luke
+
+-- 
+Luke Tierney
+University of Minnesota                      Phone:           612-625-7843
+School of Statistics                         Fax:             612-624-8868
+313 Ford Hall, 224 Church St. S.E.           email:      luke at stat.umn.edu
+Minneapolis, MN 55455 USA                    WWW:  http://www.stat.umn.edu
+
+
+From tk||@t@ddr @end|ng |rom ke|tt|@b@b|o@@uny@b@edu  Wed Oct 10 20:21:58 2001
+From: tk||@t@ddr @end|ng |rom ke|tt|@b@b|o@@uny@b@edu (Timothy H. Keitt)
+Date: Wed, 10 Oct 2001 14:21:58 -0400
+Subject: [R-sig-DB] Rdbi package plus draft proposal (was Re: Rdbi package)L
+References: <15286.60585.577834.308709@mithrandir.hornik.net> <HBEHIIBBKKNOBLMPKCBBCENGDNAA.znmeb@aracnet.com> <15288.6406.466683.265545@mithrandir.hornik.net> <20011001164050.C17642@jessie.research.bell-labs.com> <15289.35028.842356.122064@mithrandir.hor
+Message-ID: <3BC491C6.6090601@keittlab.bio.sunysb.edu>
+
+Luke Tierney wrote:
+
+>On Wed, Oct 10, 2001 at 01:44:50PM -0400, Timothy H. Keitt wrote:
+>
+>>>They would be similar to the current  showConnections/getConnection.
+>>>
+>>Actually, these might be useful for implementing the simplified 
+>>interface described above. But does this mean we will have to explicitly 
+>>destroy all connection and result objects? I think any objects generated 
+>>should be garbage collected like any other R object; otherwise you are 
+>>introducing a new object model. (I suppose connections could unregister 
+>>themselves from the driver when garbage collected.)
+>>
+>
+>Allowing DBconnections to be handled by the GC as a backup is I think
+>the right thing to do.  Since they involve scarce resource, explicit
+>closing should be encouraged.  The fact that the connection system
+>does not do this is I think unfortunate and something I think we will
+>have to revisit before too long (aside from the potential of leaving
+>connections open it is too easy for one function's use of connections
+>to trample anothers, especially if we go to any form of threading).
+>
+>It is nevertheless possible to allow a list of open connections to be
+>obtained by using a weak reference mechanism. There is experimental
+>support for this in the devel version, with some notes on it at
+>http://www.stat.umn.edu/~luke/R/references/weakfinex.html (also off
+>the developer page).
+>
+>luke
+>
+The finalizer hooks described in those notes are the ones I used in Rdbi 
+to let the garbage collector close connections associated with a 
+connection object that gets collected. I see that we could also use this 
+to list open connections as well.
+
+Tim
+
+-- 
+Timothy H. Keitt
+Department of Ecology and Evolution
+State University of New York at Stony Brook
+Stony Brook, New York 11794 USA
+Phone: 631-632-1101, FAX: 631-632-7626
+http://life.bio.sunysb.edu/ee/keitt/
+
+
+
+
+
+From Kurt@Horn|k @end|ng |rom c|@tuw|en@@c@@t  Sun Oct 14 13:03:42 2001
+From: Kurt@Horn|k @end|ng |rom c|@tuw|en@@c@@t (Kurt Hornik)
+Date: Sun, 14 Oct 2001 13:03:42 +0200
+Subject: [R-sig-DB] Re: name of DBI package
+In-Reply-To: <15298.39172.752672.702420@mithrandir.hornik.net>
+References: <20011008190056.F3071@jessie.research.bell-labs.com>
+	<15298.39172.752672.702420@mithrandir.hornik.net>
+Message-ID: <15305.28942.619065.741445@mithrandir.hornik.net>
+
+>>>>> Kurt Hornik writes:
+
+>>>>> Duncan Temple Lang writes:
+>>> 
+>>> I had raised this with Tim.  One could argue for `SDBI' a la Omegahat
+>>> but I do not think the `S' is necessary.
+>>> 
+>>> I will wait with moving up the packages until the naming has been
+>>> deciced.
+
+>> Given the connection between R and Perl, Python & Java, it is entirely
+>> possible that we will implement a version of the `DBI' interface using
+>> Perl DBI, Python DBI or JDBC. (Saikat, David and I did this using Java
+>> for the RSDBI interface.)  In that case, the ambiguity of talking
+>> about DBI in the S and Perl worlds may warrant having an S prefixing
+>> the package name.  In other words, we do want to think globally and
+>> not assume that we are working entirely in the S world.
+
+> Hmm.  Good point.  My reading of David et al's DBI proposal is that of
+> an abstract interface with drivers for the various RDBMs, which would
+> give the `native' S DBI.  Of course, as we can access Perl and friends
+> there could be more DBIs available to S users.  Hence, we should perhaps
+> go for `SDBI' or `SDBC' ...
+
+Have we agreed on a name thus far?
+
+-k
+
+
+From dj @end|ng |rom re@e@rch@be||-|@b@@com  Thu Oct 18 16:05:40 2001
+From: dj @end|ng |rom re@e@rch@be||-|@b@@com (David James)
+Date: Thu, 18 Oct 2001 10:05:40 -0400
+Subject: [R-sig-DB] Re: name of DBI package
+In-Reply-To: <15305.28942.619065.741445@mithrandir.hornik.net>; from Kurt.Hornik@ci.tuwien.ac.at on Sun, Oct 14, 2001 at 01:03:42PM +0200
+References: <20011008190056.F3071@jessie.research.bell-labs.com> <15298.39172.752672.702420@mithrandir.hornik.net> <15305.28942.619065.741445@mithrandir.hornik.net>
+Message-ID: <20011018100540.B2540@jessie.research.bell-labs.com>
+
+I think either DBI or SDBI is fine, but I'd vote for just Database
+Interface (DBI).  Personally I don't see the need of the "S"
+in front just because Perl has a Database Independent (DBI) module.
+but I'll let others break the tie.
+
+Kurt Hornik wrote:
+> >>>>> Kurt Hornik writes:
+> 
+> >>>>> Duncan Temple Lang writes:
+> >>> 
+> >>> I had raised this with Tim.  One could argue for `SDBI' a la Omegahat
+> >>> but I do not think the `S' is necessary.
+> >>> 
+> >>> I will wait with moving up the packages until the naming has been
+> >>> deciced.
+> 
+> >> Given the connection between R and Perl, Python & Java, it is entirely
+> >> possible that we will implement a version of the `DBI' interface using
+> >> Perl DBI, Python DBI or JDBC. (Saikat, David and I did this using Java
+> >> for the RSDBI interface.)  In that case, the ambiguity of talking
+> >> about DBI in the S and Perl worlds may warrant having an S prefixing
+> >> the package name.  In other words, we do want to think globally and
+> >> not assume that we are working entirely in the S world.
+> 
+> > Hmm.  Good point.  My reading of David et al's DBI proposal is that of
+> > an abstract interface with drivers for the various RDBMs, which would
+> > give the `native' S DBI.  Of course, as we can access Perl and friends
+> > there could be more DBIs available to S users.  Hence, we should perhaps
+> > go for `SDBI' or `SDBC' ...
+> 
+> Have we agreed on a name thus far?
+> 
+> -k
+
+-- 
+David A. James
+Statistics Research, Room 2C-253            Phone:  (908) 582-3082       
+Bell Labs, Lucent Technologies              Fax:    (908) 582-3340
+Murray Hill, NJ 09794-0636
+
+
+From tk||@t@ddr @end|ng |rom ke|tt|@b@b|o@@uny@b@edu  Fri Oct 19 20:58:27 2001
+From: tk||@t@ddr @end|ng |rom ke|tt|@b@b|o@@uny@b@edu (Timothy H. Keitt)
+Date: Fri, 19 Oct 2001 14:58:27 -0400
+Subject: [R-sig-DB] Re: name of DBI package
+References: <20011008190056.F3071@jessie.research.bell-labs.com> <15298.39172.752672.702420@mithrandir.hornik.net> <15305.28942.619065.741445@mithrandir.hornik.net> <20011018100540.B2540@jessie.research.bell-labs.com>
+Message-ID: <3BD077D3.1070103@keittlab.bio.sunysb.edu>
+
+DBI sounds fine to me. I don't have any objections to David's proposal. 
+I'm happy to port my postgresql driver over to DBI unless someone else 
+wants a whack at it.
+
+Tim
+
+David James wrote:
+
+>I think either DBI or SDBI is fine, but I'd vote for just Database
+>Interface (DBI).  Personally I don't see the need of the "S"
+>in front just because Perl has a Database Independent (DBI) module.
+>but I'll let others break the tie.
+>
+
+-- 
+Timothy H. Keitt
+Department of Ecology and Evolution
+State University of New York at Stony Brook
+Stony Brook, New York 11794 USA
+Phone: 631-632-1101, FAX: 631-632-7626
+http://life.bio.sunysb.edu/ee/keitt/
+
+
+
+
+
+From dj @end|ng |rom re@e@rch@be||-|@b@@com  Tue Dec 11 16:51:27 2001
+From: dj @end|ng |rom re@e@rch@be||-|@b@@com (David James)
+Date: Tue, 11 Dec 2001 10:51:27 -0500
+Subject: [R-sig-DB] RBI and front-ends to RODBC and RPgSQL
+Message-ID: <20011211105127.A4995@jessie.research.bell-labs.com>
+
+Hi,
+
+A few weeks back, I suggested that we could implement the database
+interface (DBI) that Tim initially wrote in Rdbi using the new style
+classes and methods.  Also, I thought that having a DBI front-end
+to some of the existing packages would make it easier for the R-SIG-DB
+to try the proposed DBI with real data.  Thus, Kurt has agreed to put
+the 3 packages below in the 1.4.0/Other/Devel area.
+
+1. DBI -- The API for the database interface.  This package
+   consists of virtual class definitions and their generic functions,
+   and it requires the "methods" package.  The API is fully described
+   in the file "DBI.pdf", found in the package directory (i.e., once
+   DBI is installed).   That document identifies a number of open
+   issues that we should close before we make the DBI "official",
+   and it would be very useful if you could comment on (at least)
+   those issues.
+
+2. DBI.RODBC -- this is a DBI front-end to the current RODBC (0.8-3).
+   This package requires the DBI package above, and it implements the
+   DBI on top of existing RODBC (but see the caveats below).
+
+3. DBI.RPgSQL -- similarly, this is a DBI front-end to the existing
+   RPgSQL (1.0-0), and it also requires the DBI package.
+
+(I should have implemented front-ends for Torsten's mSQL, and MySQL, 
+etc., but there's only so much time...)
+
+What the R-SIG-DB needs to do is to experiment with these packages
+and make suggestions and/or modifications to ensure we're not
+leaving out important functionality in the API.  It's probably time
+to freeze the API soon, so that we can move to implement other things
+on top of it (e.g., the attach() that Duncan has already working).
+
+Sample R Session 
+----------------
+
+##
+## attach the appropriate library
+##
+
+library(DBI.RPgSQL)   ## this attaches methods, RPgSQL (if needed)
+library(DBI.RODBC)    ## this attaches methods, RODBC (if needed)
+
+##
+## instantiate one or both driver
+##
+
+pg <- RPgSQL()   ## equivalent to pg <- dbDriver("RPgSQL")  
+od <- RODBC()    ## equivalent to od <- dbDriver("RODBC")
+
+##
+## print/show/summary methods to print a one-line object identification
+## and produce a brief description (meta-data) of an object
+##
+
+> print(pg)
+<PgSQLDriver:(27642)> 
+
+> summary(pg)
+PgSQLDriver 
+Id = (27642) 
+driver.name = RPgSQL 
+driver.version = 1.0-0 
+DBI.version = 0.1-2 
+client.version = NA 
+max.connections = 1 
+ 
+> show(od)
+<ODBCDriver:(27642)> 
+
+> summary(od)
+ODBCDriver 
+Id = (27642) 
+driver.name = RODBC 
+driver.version = 0.8-3 
+DBI.version = 0.1-2 
+client.version = NA 
+max.connections = 16 
+
+##
+## connect to a database 
+##
+
+> dbConnect(pg, "user", "password", "dbname")
+<PgSQLConnection:(27642,0)> 
+> pg
+<PgSQLDriver:(27642)> 
+
+## Oops!  I forgot to assign the connection --
+pcon <- dbListConnections(pg)     ## (RPgSQL returns one connection obj)
+
+> summary(pcon)
+PgSQLConnection 
+dbname = rsdbi 
+user = rsdbi 
+status = 0 
+open = TRUE 
+server.version = NA 
+
+> ocon <- dbConnect(od, "dsn", "uid", "pwd")
+> summary(ocon)
+ODBCConnection 
+server.version = NA 
+results = NA 
+
+##
+## convenience methods on connection objects:
+##
+## dbLisTables(), dbExistsTable(), dbReadTable(), dbWriteTable(), and
+## dbRemoveTable()
+
+> dbListTables(pcon)[10:14]
+[1] "USArrests"     "USJudgeRatings"     "USPersonalExpenditure"
+[4] "VADeaths"      "airmiles"             
+
+> dbListTables(ocon)[1:5]
+[1] "Formaldehyde"  "HairEyeColor"   "InsectSprays"  "LifeCycleSavings"
+[5] "OrchardSprays"   
+
+> dbExistsTable(ocon, "quakes")
+[1] TRUE
+
+> dbExistsTable(pcon, "quakes")
+[1] FALSE
+
+> dbWriteTable(pcon, "quakes", dbReadTable(ocon, "quakes"))
+
+> dbRemoveTable(ocon, "quakes")
+[1] TRUE
+
+##
+## Queries, result sets.
+##
+
+> prs <- dbSendQuery(pcon, "select * from quakes")  ## leave output in dbms
+> prs
+<PgSQLResult:(27642,0,0)> 
+
+> summary(prs)
+PgSQLResult 
+rows = 1000 
+cols = 5 
+field.names = long, lat, depth, mag, stations 
+hasCompleted = NA 
+
+> dbColumnInfo(prs)    ## column info of the result set
+  field.name field.type  R.type Nullable
+1       long        701 numeric       NA
+2        lat        701 numeric       NA
+3      depth         23 integer       NA
+4        mag        701 numeric       NA
+5   stations         23 integer       NA
+
+
+> x <- fetch(ors, n = 0)      ## bring entire output in
+
+## combine dbSendQuery()/fetch() in one operation
+y <- dbGetQuery(ocon, "select * from quakes")  
+
+##
+## free up resources
+##
+
+> dbClearResult(prs) 
+[1] TRUE
+
+> dbDisconnect(pcon)  
+[1] TRUE
+> dbDisconnect(ocon)
+[1] TRUE
+
+> dbUnloadDriver(pg)
+[1] TRUE
+> dbUnloadDriver(od)
+[1] TRUE
+#################################################################
+
+Caveats:
+--------
+
+  I ran into some problems with the RODBC package where I could
+  not get sqlSave() to work when invoked from within a function
+  (it may have something to do with calls to substitute()) thus
+  dbWriteTable() fails with an ODBC connection.  I'd appreciate
+  help on the correct usage of RODBC's sqlSave().  Notice that I
+  ran into similar problems with sqlDrop(), but I was able to get
+  it working by using do.call() to invoke sqlDrop().
+
+-- 
+David A. James
+Statistics Research, Room 2C-253            Phone:  (908) 582-3082       
+Bell Labs, Lucent Technologies              Fax:    (908) 582-3340
+Murray Hill, NJ 09794-0636
+
+
+From Tor@ten@Hothorn @end|ng |rom rzm@||@un|-er|@ngen@de  Tue Dec 11 17:00:38 2001
+From: Tor@ten@Hothorn @end|ng |rom rzm@||@un|-er|@ngen@de (Torsten Hothorn)
+Date: Tue, 11 Dec 2001 17:00:38 +0100 (MET)
+Subject: [R-sig-DB] RBI and front-ends to RODBC and RPgSQL
+In-Reply-To: <20011211105127.A4995@jessie.research.bell-labs.com>
+Message-ID: <Pine.LNX.4.21.0112111658170.402-100000@artemis.imbe.med.uni-erlangen.de>
+
+> 
+> (I should have implemented front-ends for Torsten's mSQL, and MySQL, 
+> etc., but there's only so much time...)
+
+please do not invest any time into RmSQL: nobody uses that (for good
+reasons)! It was a design study (nearly 3 years ago) and was good for that
+special issue. Anyway, 
+
+Torsten
+
+
+
+From T|mothy@Ke|tt @end|ng |rom @tonybrook@edu  Tue Dec 11 17:32:34 2001
+From: T|mothy@Ke|tt @end|ng |rom @tonybrook@edu (Timothy H. Keitt)
+Date: Tue, 11 Dec 2001 11:32:34 -0500
+Subject: [R-sig-DB] Re: RBI and front-ends to RODBC and RPgSQL
+References: <20011211105127.A4995@jessie.research.bell-labs.com>
+Message-ID: <3C163522.2010009@StonyBrook.Edu>
+
+Great! Send me the code for DBI.RPgSQL and I will substitute in the 
+Rdbi.PgSQL backend (much faster + support for multiple connections).
+
+Tim
+
+David James wrote:
+
+> Hi,
+> 
+> A few weeks back, I suggested that we could implement the database
+> interface (DBI) that Tim initially wrote in Rdbi using the new style
+
+-- 
+Timothy H. Keitt
+Department of Ecology and Evolution
+State University of New York at Stony Brook
+Stony Brook, New York 11794 USA
+Phone: 631-632-1101, FAX: 631-632-7626
+http://life.bio.sunysb.edu/ee/keitt/
+
+
+
+From Kurt@Horn|k @end|ng |rom c|@tuw|en@@c@@t  Wed Dec 12 10:35:26 2001
+From: Kurt@Horn|k @end|ng |rom c|@tuw|en@@c@@t (Kurt Hornik)
+Date: Wed, 12 Dec 2001 10:35:26 +0100
+Subject: [R-sig-DB] RBI and front-ends to RODBC and RPgSQL
+In-Reply-To: <Pine.LNX.4.21.0112111658170.402-100000@artemis.imbe.med.uni-erlangen.de>
+References: <20011211105127.A4995@jessie.research.bell-labs.com>
+	<Pine.LNX.4.21.0112111658170.402-100000@artemis.imbe.med.uni-erlangen.de>
+Message-ID: <15383.9438.941063.455557@mithrandir.hornik.net>
+
+>>>>> Torsten Hothorn writes:
+
+>> 
+>> (I should have implemented front-ends for Torsten's mSQL, and MySQL, 
+>> etc., but there's only so much time...)
+
+> please do not invest any time into RmSQL: nobody uses that (for good
+> reasons)! It was a design study (nearly 3 years ago) and was good for
+> that special issue.
+
+Torsten: should we remove the package along with the 1.4 release then?
+
+-k
+
+
+From Tor@ten@Hothorn @end|ng |rom rzm@||@un|-er|@ngen@de  Wed Dec 12 10:43:17 2001
+From: Tor@ten@Hothorn @end|ng |rom rzm@||@un|-er|@ngen@de (Torsten Hothorn)
+Date: Wed, 12 Dec 2001 10:43:17 +0100 (MET)
+Subject: [R-sig-DB] RBI and front-ends to RODBC and RPgSQL
+In-Reply-To: <15383.9438.941063.455557@mithrandir.hornik.net>
+Message-ID: <Pine.LNX.4.21.0112121037330.1271-100000@artemis.imbe.med.uni-erlangen.de>
+
+> 
+> > please do not invest any time into RmSQL: nobody uses that (for good
+> > reasons)! It was a design study (nearly 3 years ago) and was good for
+> > that special issue.
+> 
+> Torsten: should we remove the package along with the 1.4 release then?
+> 
+
+well, I expected this question and thought about it :-)
+
+it is, technically, out of date in some way. but it is maintained and
+passes R CMD check and supports yet another db-system. 
+
+I feel that it should stay, but I can accept if you like to remove it from
+CRAN :-)
+
+Torsten
+
+> -k
+> 
+
+
+
+From Kurt@Horn|k @end|ng |rom c|@tuw|en@@c@@t  Wed Dec 12 10:45:44 2001
+From: Kurt@Horn|k @end|ng |rom c|@tuw|en@@c@@t (Kurt Hornik)
+Date: Wed, 12 Dec 2001 10:45:44 +0100
+Subject: [R-sig-DB] RBI and front-ends to RODBC and RPgSQL
+In-Reply-To: <Pine.LNX.4.21.0112121037330.1271-100000@artemis.imbe.med.uni-erlangen.de>
+References: <15383.9438.941063.455557@mithrandir.hornik.net>
+	<Pine.LNX.4.21.0112121037330.1271-100000@artemis.imbe.med.uni-erlangen.de>
+Message-ID: <15383.10056.542126.669091@mithrandir.hornik.net>
+
+>>>>> Torsten Hothorn writes:
+
+>> 
+>> > please do not invest any time into RmSQL: nobody uses that (for good
+>> > reasons)! It was a design study (nearly 3 years ago) and was good for
+>> > that special issue.
+>> 
+>> Torsten: should we remove the package along with the 1.4 release then?
+>> 
+
+> well, I expected this question and thought about it :-)
+
+> it is, technically, out of date in some way. but it is maintained and
+> passes R CMD check and supports yet another db-system. 
+
+> I feel that it should stay, but I can accept if you like to remove it
+> from CRAN :-)
+
+Your call.
+
+-k
+
+
+From Kurt@Horn|k @end|ng |rom c|@tuw|en@@c@@t  Wed Dec 12 10:56:37 2001
+From: Kurt@Horn|k @end|ng |rom c|@tuw|en@@c@@t (Kurt Hornik)
+Date: Wed, 12 Dec 2001 10:56:37 +0100
+Subject: [R-sig-DB] Re: RBI and front-ends to RODBC and RPgSQL
+In-Reply-To: <3C163522.2010009@StonyBrook.Edu>
+References: <20011211105127.A4995@jessie.research.bell-labs.com>
+	<3C163522.2010009@StonyBrook.Edu>
+Message-ID: <15383.10709.757450.684488@mithrandir.hornik.net>
+
+>>>>> Timothy H Keitt writes:
+
+> Great! Send me the code for DBI.RPgSQL and I will substitute in the 
+> Rdbi.PgSQL backend (much faster + support for multiple connections).
+
+Tim
+
+The packages are available via
+
+	http://cran.r-project.org/src/contrib/1.4.0/Other/Devel/
+
+Pls advise what to do with the Rdbi* packages in contrib/Devel.
+
+Best
+-k
+
+
+From detiei@steuer m@iii@g oii u@ibw-h@mburg@de  Sat Dec  8 21:57:09 2001
+From: detiei@steuer m@iii@g oii u@ibw-h@mburg@de (detiei@steuer m@iii@g oii u@ibw-h@mburg@de)
+Date: Sat, 08 Dec 2001 21:57:09 +0100 (CET)
+Subject: [R-sig-DB] RBI and front-ends to RODBC and RPgSQL
+In-Reply-To: <15383.10056.542126.669091@mithrandir.hornik.net>
+Message-ID: <XFMail.20011208215709.detlef.steuer@unibw-hamburg.de>
+
+On 12-Dec-2001 Kurt Hornik wrote:
+>>>>>> Torsten Hothorn writes:
+> 
+>>> 
+>>> > please do not invest any time into RmSQL: nobody uses that (for good
+>>> > reasons)! It was a design study (nearly 3 years ago) and was good for
+>>> > that special issue.
+>>> 
+>>> Torsten: should we remove the package along with the 1.4 release then?
+>>> 
+> 
+>> well, I expected this question and thought about it :-)
+> 
+>> it is, technically, out of date in some way. but it is maintained and
+>> passes R CMD check and supports yet another db-system. 
+> 
+>> I feel that it should stay, but I can accept if you like to remove it
+>> from CRAN :-)
+> 
+> Your call.
+
+Well, 
+
+1. maintained
+2. passes R CMD check.
++
+3. mSQL not supported by RDBI for now.
+
+gives a definitve "stay in archive".
+(Is very nice for any new user to find her database usable.)
+
+detlef
+
+
+
+> 
+> -k
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> http://www.stat.math.ethz.ch/mailman/listinfo/r-sig-db
+
+Detlef Steuer --- http://fawn.unibw-hamburg.de/steuer.html
+
+***** Encrypted mail preferred *****
+
+

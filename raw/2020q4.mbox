@@ -1,0 +1,36 @@
+From ben||tonc@rv@|ho @end|ng |rom gm@||@com  Tue Nov 10 19:38:07 2020
+From: ben||tonc@rv@|ho @end|ng |rom gm@||@com (Benilton Carvalho)
+Date: Tue, 10 Nov 2020 15:38:07 -0300
+Subject: [R-sig-DB] loadable.extensions vs. RSQLite
+Message-ID: <CAO-arWPUatQXgxguhCbfmo=PZ_sp8mhuYDfEYjEqo_xO2H=R-g@mail.gmail.com>
+
+Hi everyone,
+
+I'm trying to assist a student who is unable to connect to a sqlite db with
+a simple call like:
+
+library(RSQLite)
+conn = dbConnect(SQLite(), "file.db")
+
+And gets the error: "failed to load extension: unable to find specified
+module" (sorry, I translated it myself)
+
+But things go okay with
+
+conn = dbConnect(SQLite(), "feile.db", loadable.extensions = FALSE)
+
+When looking at the log of the installation, all I could spot was a warning
+on the missing RTools... and noticed that the zip file (RSQLite 2.2.1) was
+installed (which made me think that all modules needed were already
+pre-compiled). This all happens on a Windows machine (I don't have one yet
+to try to reproduce).
+
+What are the current recommendations to have the extensions on Windows as
+well?
+
+Thank you so much for your help,
+Benilton
+
+	[[alternative HTML version deleted]]
+
+

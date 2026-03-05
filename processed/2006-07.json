@@ -1,0 +1,198 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2006-07",
+  "messages": [
+    {
+      "id": "msg-f740106d6d71",
+      "message_id": "<17581.9824.441084.518407@basebud.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2006-07-06T10:04:00-05:00",
+      "subject": "[R-sig-DB] RSQLite problems / questions",
+      "subject_clean": "RSQLite problems / questions",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I am trying to set up some simulations to store data in RSQLite, and I hit a\nfew snags I wasn't expecting. Any and all comments and suggestions welcome:\n\ni)   RSQLite does not seem to like libsqlite 3.3.5:  On a Ubuntu system where\nI locally rebuilt libsqlite3 from Debian unstable source, the current RSQLite\nbuilds fine -- but dbWriteTable() seemingly never commits its data.frame to\nthe database. I could not figure out why and how, nor could I tell RSQLite's\nconfigure to ignore the system libraries. Only by  \"hiding\" the sqlite3\nheader and libraries in a temp directory was I able to build RSQLite against\nits shipped libsqlite 3.2.( versions.  Has anybody else experienced problems\nwith sqlite 3.3.5? \n\nii)  SQLite can use autoincremt'ing columns; one can write to such tables \nby submitting a NULL in the corresponding field.  I could not figure out how\nto do that with directly with dbWriteTable() -- so I added code to read the\nmax value, add one to it and add that as a column to the data.frame submitted\nfor writes. This works, but is hardly elegant.  Does anybody have a trick for\ndoing this directly?\n\niii) After a small (20-some) number of iterations, R dies with the error\nmessage 'all connections are in use'.  Bash's ulimit tells me I can have 1024\nfile discriptors, and as the manual page suspect, I cannot raise that.  That\nsaid, I never hit this wall before when not working with RSQLite. Is it\nforgetting to close/release file handles somewhere?  Each of my runs write\ntwo updates, but I have the dbConnect()/dbDisconnect() pair 'inside' the\nupdate function. Moving the db update from the called function to the calling\nfunction does not cure it -- so even with a single dbConnect()/dbDisconnect I\nrun out of resources.  Any idea why ?\n\nThanks in advance for any insights or comments.\n\nRegards, Dirk\n\n-- \nHell, there are no rules here - we're trying to accomplish something. \n                                                  -- Thomas A. Edison",
+      "body_snippet": "I am trying to set up some simulations to store data in RSQLite, and I hit a\nfew snags I wasn't expecting. Any and all comments and suggestions welcome:\n\ni)   RSQLite does not seem to like libsqlite 3",
+      "thread_id": "thread-f740106d6d71",
+      "thread_depth": 0,
+      "month": "2006-07"
+    },
+    {
+      "id": "msg-cd94abf8a373",
+      "message_id": "<17581.53326.274026.883593@basebud.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2006-07-06T22:09:02-05:00",
+      "subject": "[R-sig-DB] RSQLite problems / questions",
+      "subject_clean": "RSQLite problems / questions",
+      "in_reply_to": "<17581.9824.441084.518407@basebud.nulle.part>",
+      "references": [
+        "<17581.9824.441084.518407@basebud.nulle.part>"
+      ],
+      "body_plain": "On 6 July 2006 at 10:04, Dirk Eddelbuettel wrote:\n| \n| I am trying to set up some simulations to store data in RSQLite, and I hit a\n| few snags I wasn't expecting. Any and all comments and suggestions welcome:\n| \n| i)   RSQLite does not seem to like libsqlite 3.3.5:  On a Ubuntu system where\n| I locally rebuilt libsqlite3 from Debian unstable source, the current RSQLite\n| builds fine -- but dbWriteTable() seemingly never commits its data.frame to\n| the database. I could not figure out why and how, nor could I tell RSQLite's\n| configure to ignore the system libraries. Only by  \"hiding\" the sqlite3\n| header and libraries in a temp directory was I able to build RSQLite against\n| its shipped libsqlite 3.2.( versions.  Has anybody else experienced problems\n| with sqlite 3.3.5? \n| \n| ii)  SQLite can use autoincremt'ing columns; one can write to such tables \n| by submitting a NULL in the corresponding field.  I could not figure out how\n| to do that with directly with dbWriteTable() -- so I added code to read the\n| max value, add one to it and add that as a column to the data.frame submitted\n| for writes. This works, but is hardly elegant.  Does anybody have a trick for\n| doing this directly?\n| \n| iii) After a small (20-some) number of iterations, R dies with the error\n| message 'all connections are in use'.  Bash's ulimit tells me I can have 1024\n| file discriptors, and as the manual page suspect, I cannot raise that.  That\n| said, I never hit this wall before when not working with RSQLite. Is it\n| forgetting to close/release file handles somewhere?  Each of my runs write\n| two updates, but I have the dbConnect()/dbDisconnect() pair 'inside' the\n| update function. Moving the db update from the called function to the calling\n| function does not cure it -- so even with a single dbConnect()/dbDisconnect I\n| run out of resources.  Any idea why ?\n\nThe same problem happens on my Debian testing machine (R 2.3.1, SQLite 3.3.5,\nDBI 0.1.10, RSQLite 0.4-1) :\n\n> \n> library(RSQLite)\nLoading required package: DBI\n> m <- dbDriver(\"SQLite\")\n> con <- dbConnect(m, \"/tmp/temp.sqlite\")\n> for (i in 1:500) dbWriteTable(con, \"dummytable\", data.frame(A=sample(LETTERS, 10), B=rnorm(10)), append=i>1, overwrite=FALSE)\nError in textConnection(readLines(f, n = 2)) : \n\tall connections are in use\n> i\n[1] 46\n> \n\nSame 46 limit of 46 connections I hit earlier.\n\nThis seems to be a bug in SQLite or DBI.\n\nRegards, Dirk\n\n-- \nHell, there are no rules here - we're trying to accomplish something. \n                                                  -- Thomas A. Edison",
+      "body_snippet": "On 6 July 2006 at 10:04, Dirk Eddelbuettel wrote:\n| \n| I am trying to set up some simulations to store data in RSQLite, and I hit a\n| few snags I wasn't expecting. Any and all comments and suggestions",
+      "thread_id": "thread-f740106d6d71",
+      "thread_depth": 1,
+      "month": "2006-07"
+    },
+    {
+      "id": "msg-1c8a8345df85",
+      "message_id": "<Pine.LNX.4.64.0607070736370.21367@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2006-07-07T07:40:14+01:00",
+      "subject": "[R-sig-DB] RSQLite problems / questions",
+      "subject_clean": "RSQLite problems / questions",
+      "in_reply_to": "<17581.53326.274026.883593@basebud.nulle.part>",
+      "references": [
+        "<17581.9824.441084.518407@basebud.nulle.part>",
+        "<17581.53326.274026.883593@basebud.nulle.part>"
+      ],
+      "body_plain": "On Thu, 6 Jul 2006, Dirk Eddelbuettel wrote:\n\n>\n> On 6 July 2006 at 10:04, Dirk Eddelbuettel wrote:\n> |\n> | I am trying to set up some simulations to store data in RSQLite, and I hit a\n> | few snags I wasn't expecting. Any and all comments and suggestions welcome:\n> |\n> | i)   RSQLite does not seem to like libsqlite 3.3.5:  On a Ubuntu system where\n> | I locally rebuilt libsqlite3 from Debian unstable source, the current RSQLite\n> | builds fine -- but dbWriteTable() seemingly never commits its data.frame to\n> | the database. I could not figure out why and how, nor could I tell RSQLite's\n> | configure to ignore the system libraries. Only by  \"hiding\" the sqlite3\n> | header and libraries in a temp directory was I able to build RSQLite against\n> | its shipped libsqlite 3.2.( versions.  Has anybody else experienced problems\n> | with sqlite 3.3.5?\n> |\n> | ii)  SQLite can use autoincremt'ing columns; one can write to such tables\n> | by submitting a NULL in the corresponding field.  I could not figure out how\n> | to do that with directly with dbWriteTable() -- so I added code to read the\n> | max value, add one to it and add that as a column to the data.frame submitted\n> | for writes. This works, but is hardly elegant.  Does anybody have a trick for\n> | doing this directly?\n> |\n> | iii) After a small (20-some) number of iterations, R dies with the error\n> | message 'all connections are in use'.  Bash's ulimit tells me I can have 1024\n> | file discriptors, and as the manual page suspect, I cannot raise that.  That\n> | said, I never hit this wall before when not working with RSQLite. Is it\n> | forgetting to close/release file handles somewhere?  Each of my runs write\n> | two updates, but I have the dbConnect()/dbDisconnect() pair 'inside' the\n> | update function. Moving the db update from the called function to the calling\n> | function does not cure it -- so even with a single dbConnect()/dbDisconnect I\n> | run out of resources.  Any idea why ?\n>\n> The same problem happens on my Debian testing machine (R 2.3.1, SQLite 3.3.5,\n> DBI 0.1.10, RSQLite 0.4-1) :\n>\n>>\n>> library(RSQLite)\n> Loading required package: DBI\n>> m <- dbDriver(\"SQLite\")\n>> con <- dbConnect(m, \"/tmp/temp.sqlite\")\n>> for (i in 1:500) dbWriteTable(con, \"dummytable\", data.frame(A=sample(LETTERS, 10), B=rnorm(10)), append=i>1, overwrite=FALSE)\n> Error in textConnection(readLines(f, n = 2)) :\n> \tall connections are in use\n>> i\n> [1] 46\n>>\n>\n> Same 46 limit of 46 connections I hit earlier.\n>\n> This seems to be a bug in SQLite or DBI.\n\nThe message is that R is hitting its limit (50, including 3 terminal \nconnections), so the problem is in DBI.\n\nYou can work around it by using showConnections(all=TRUE) and identifying \nthose left open and closing them (programmatically within the loop \neventually).\n\nBrian\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "On Thu, 6 Jul 2006, Dirk Eddelbuettel wrote:\n\n>\n> On 6 July 2006 at 10:04, Dirk Eddelbuettel wrote:\n> |\n> | I am trying to set up some simulations to store data in RSQLite, and I hit a\n> | few snags I",
+      "thread_id": "thread-f740106d6d71",
+      "thread_depth": 2,
+      "month": "2006-07"
+    },
+    {
+      "id": "msg-47794e4a34ae",
+      "message_id": "<Pine.LNX.4.64.0607070823290.23972@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2006-07-07T08:29:08+01:00",
+      "subject": "[R-sig-DB] RSQLite problems / questions",
+      "subject_clean": "RSQLite problems / questions",
+      "in_reply_to": "<Pine.LNX.4.64.0607070736370.21367@gannet.stats.ox.ac.uk>",
+      "references": [
+        "<17581.9824.441084.518407@basebud.nulle.part>",
+        "<17581.53326.274026.883593@basebud.nulle.part>",
+        "<Pine.LNX.4.64.0607070736370.21367@gannet.stats.ox.ac.uk>"
+      ],
+      "body_plain": "On Fri, 7 Jul 2006, Prof Brian Ripley wrote:\n\n> On Thu, 6 Jul 2006, Dirk Eddelbuettel wrote:\n>\n>>\n>> On 6 July 2006 at 10:04, Dirk Eddelbuettel wrote:\n>> |\n>> | I am trying to set up some simulations to store data in RSQLite, and I hit a\n>> | few snags I wasn't expecting. Any and all comments and suggestions welcome:\n>> |\n>> | i)   RSQLite does not seem to like libsqlite 3.3.5:  On a Ubuntu system where\n>> | I locally rebuilt libsqlite3 from Debian unstable source, the current RSQLite\n>> | builds fine -- but dbWriteTable() seemingly never commits its data.frame to\n>> | the database. I could not figure out why and how, nor could I tell RSQLite's\n>> | configure to ignore the system libraries. Only by  \"hiding\" the sqlite3\n>> | header and libraries in a temp directory was I able to build RSQLite against\n>> | its shipped libsqlite 3.2.( versions.  Has anybody else experienced problems\n>> | with sqlite 3.3.5?\n>> |\n>> | ii)  SQLite can use autoincremt'ing columns; one can write to such tables\n>> | by submitting a NULL in the corresponding field.  I could not figure out how\n>> | to do that with directly with dbWriteTable() -- so I added code to read the\n>> | max value, add one to it and add that as a column to the data.frame submitted\n>> | for writes. This works, but is hardly elegant.  Does anybody have a trick for\n>> | doing this directly?\n>> |\n>> | iii) After a small (20-some) number of iterations, R dies with the error\n>> | message 'all connections are in use'.  Bash's ulimit tells me I can have 1024\n>> | file discriptors, and as the manual page suspect, I cannot raise that.  That\n>> | said, I never hit this wall before when not working with RSQLite. Is it\n>> | forgetting to close/release file handles somewhere?  Each of my runs write\n>> | two updates, but I have the dbConnect()/dbDisconnect() pair 'inside' the\n>> | update function. Moving the db update from the called function to the calling\n>> | function does not cure it -- so even with a single dbConnect()/dbDisconnect I\n>> | run out of resources.  Any idea why ?\n>>\n>> The same problem happens on my Debian testing machine (R 2.3.1, SQLite 3.3.5,\n>> DBI 0.1.10, RSQLite 0.4-1) :\n>>\n>>>\n>>> library(RSQLite)\n>> Loading required package: DBI\n>>> m <- dbDriver(\"SQLite\")\n>>> con <- dbConnect(m, \"/tmp/temp.sqlite\")\n>>> for (i in 1:500) dbWriteTable(con, \"dummytable\", data.frame(A=sample(LETTERS, 10), B=rnorm(10)), append=i>1, overwrite=FALSE)\n>> Error in textConnection(readLines(f, n = 2)) :\n>> \tall connections are in use\n>>> i\n>> [1] 46\n>>>\n>>\n>> Same 46 limit of 46 connections I hit earlier.\n>>\n>> This seems to be a bug in SQLite or DBI.\n>\n> The message is that R is hitting its limit (50, including 3 terminal\n> connections), so the problem is in DBI.\n\nActually, in package RMySQL, which has in mysqlImportFile()\n\n   if(missing(header) || missing(row.names)){\n     f <- file(fn, open=\"r\")\n     if(skip>0)\n       readLines(f, n=skip)\n     flds <- count.fields(textConnection(readLines(f, n=2)), sep)\n     close(f)\n     nf <- length(unique(flds))\n   }\n\nand that never closes the connection it created.  This needs to be \nsomething like\n\n     con <- textConnection(readLines(f, n=2))\n     flds <- count.fields(con, sep)\n     close(con)\n\nor perhaps better, use an on.exit action to close the connection.\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "On Fri, 7 Jul 2006, Prof Brian Ripley wrote:\n\n> On Thu, 6 Jul 2006, Dirk Eddelbuettel wrote:\n>\n>>\n>> On 6 July 2006 at 10:04, Dirk Eddelbuettel wrote:\n>> |\n>> | I am trying to set up some simulations ",
+      "thread_id": "thread-f740106d6d71",
+      "thread_depth": 3,
+      "month": "2006-07"
+    },
+    {
+      "id": "msg-7c59f071b5c0",
+      "message_id": "<20060707134555.GA27964@eddelbuettel.com>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2006-07-07T08:45:55-05:00",
+      "subject": "[R-sig-DB] RSQLite problems / questions",
+      "subject_clean": "RSQLite problems / questions",
+      "in_reply_to": "<Pine.LNX.4.64.0607070823290.23972@gannet.stats.ox.ac.uk>",
+      "references": [
+        "<17581.9824.441084.518407@basebud.nulle.part>",
+        "<17581.53326.274026.883593@basebud.nulle.part>",
+        "<Pine.LNX.4.64.0607070736370.21367@gannet.stats.ox.ac.uk>",
+        "<Pine.LNX.4.64.0607070823290.23972@gannet.stats.ox.ac.uk>"
+      ],
+      "body_plain": "On Fri, Jul 07, 2006 at 08:29:08AM +0100, Prof Brian Ripley wrote:\n> On Fri, 7 Jul 2006, Prof Brian Ripley wrote:\n> \n> >On Thu, 6 Jul 2006, Dirk Eddelbuettel wrote:\n[..]\n> >>Same 46 limit of 46 connections I hit earlier.\n> >>\n> >>This seems to be a bug in SQLite or DBI.\n> >\n> >The message is that R is hitting its limit (50, including 3 terminal\n> >connections), so the problem is in DBI.\n> \n> Actually, in package RMySQL, which has in mysqlImportFile()\n> \n>   if(missing(header) || missing(row.names)){\n>     f <- file(fn, open=\"r\")\n>     if(skip>0)\n>       readLines(f, n=skip)\n>     flds <- count.fields(textConnection(readLines(f, n=2)), sep)\n>     close(f)\n>     nf <- length(unique(flds))\n>   }\n> \n> and that never closes the connection it created.  This needs to be \n> something like\n> \n>     con <- textConnection(readLines(f, n=2))\n>     flds <- count.fields(con, sep)\n>     close(con)\n> \n> or perhaps better, use an on.exit action to close the connection.\n\nSpot on -- thanks for finding this so quickly.  RSQLite has an identical\nsegment in the sibbling function sqliteImportfile(), and I applied the patch\n(with substitution of txtcon for con as a variable con is already in use). in\n\nSo I suppose this takes care of one of my three questions, and would\nrequire new uploads of RMySQL, RSQLite, ... to CRAN once David resurfaces.\n\nThanks, Dirk\n\n-- \nHell, there are no rules here - we're trying to accomplish something. \n                                                  -- Thomas A. Edison",
+      "body_snippet": "On Fri, Jul 07, 2006 at 08:29:08AM +0100, Prof Brian Ripley wrote:\n> On Fri, 7 Jul 2006, Prof Brian Ripley wrote:\n> \n> >On Thu, 6 Jul 2006, Dirk Eddelbuettel wrote:\n[..]\n> >>Same 46 limit of 46 connec",
+      "thread_id": "thread-f740106d6d71",
+      "thread_depth": 4,
+      "month": "2006-07"
+    },
+    {
+      "id": "msg-ca1031e88010",
+      "message_id": "<1152751976.44b5996815d9e@webmail.fhcrc.org>",
+      "from_name": "hp@ges m@iii@g oii ihcrc@org",
+      "from_email_hash": "89951d251acdca27bce55e0f01283b2c9b4365c000d0f565ee61564b185ef19d",
+      "date": "2006-07-12T17:52:56-07:00",
+      "subject": "[R-sig-DB] RSQLite 0.4-1 compilation error on Solaris 2.9",
+      "subject_clean": "RSQLite 0.4-1 compilation error on Solaris 2.9",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi list,\n\nI tried to install RSQLite_0.4-1.tar.gz on a Solaris 2.9 (sparc)\nmachine and got the following error:\n\n  hpages at churchill:~/shipping_and_receiving> R-2.3 CMD INSTALL\nRSQLite_0.4-1.tar.gz\n  * Installing *source* package 'RSQLite' ...\n  checking for gcc... gcc\n  ...\n\n  building the SQLite engine ... slowly ....\n\n  (the file /tmp/sqlite15229 stores compiler messages)\n\n\n  SQLite installation failed.\n  ...\n\n\nThen, in /tmp/sqlite15229, I found:\n\n  ...\n  ./libtool --mode=link gcc -g -O2 -DOS_UNIX=1 -DHAVE_USLEEP=1 -I. -I./src\n-DNDEBUG  -DTHREADSAFE=0 -DSQLITE_OMIT_CURSOR -DHAVE_READLINE=1\n-I/usr/local/include/readline  \\\n          -o sqlite3 ./src/shell.c libsqlite3.la -lreadline -lncurses\n  gcc -g -O2 -DOS_UNIX=1 -DHAVE_USLEEP=1 -I. -I./src -DNDEBUG -DTHREADSAFE=0\n-DSQLITE_OMIT_CURSOR -DHAVE_READLINE=1 -I/usr/local/include/readline -o sqlite3\n./src/shell.c  ./.libs/libsqlite3.a -lreadline -lncurses\n  Undefined                       first referenced\n   symbol                             in file\n  fdatasync                           ./.libs/libsqlite3.a(os_unix.o)\n  ld: fatal: Symbol referencing errors. No output written to sqlite3\n  collect2: ld returned 1 exit status\n  make: *** [sqlite3] Error 1\n\n\nBut, this problem disppears if I replace the current embedded\nsqlite source tarball (RSQLite/src/sqlite-3.2.8.tar.gz) by the\nlast available one (sqlite-3.3.6.tar.gz).\nAre there any plan to update the embedded sqlite source tarball\nprovided with RSQLite?\n\nThanks,\n\nH.\n\n------------------------\nHerv? Pag?s\nE-mail: hpages at fhcrc.org\nPhone: (206) 667-5791\nFax: (206) 667-1319",
+      "body_snippet": "Hi list,\n\nI tried to install RSQLite_0.4-1.tar.gz on a Solaris 2.9 (sparc)\nmachine and got the following error:\n\n  hpages at churchill:~/shipping_and_receiving> R-2.3 CMD INSTALL\nRSQLite_0.4-1.tar.gz\n",
+      "thread_id": "thread-ca1031e88010",
+      "thread_depth": 0,
+      "month": "2006-07"
+    },
+    {
+      "id": "msg-3687059b5618",
+      "message_id": "<030B041DE2D0A34F8C7283D96877A44FCB3717@hou0mbx01.kochind.com>",
+      "from_name": "Malhotra, Ashish",
+      "from_email_hash": "68eedc3a6d63e4d5cd7a87b70e3c2e8440f9c8be742374a3a58b1ee2fe9625d8",
+      "date": "2006-07-25T19:57:25-05:00",
+      "subject": "[R-sig-DB] Running a SQL Server Stored Procedure from R",
+      "subject_clean": "Running a SQL Server Stored Procedure from R",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I am attempting to run a stored procedure on a SQL SErver database from\nR. The sqlQuery method accepts the commend but does not do anything. My\nresearch indicates that it is not currently possible to do what I am\nattempting. I would be delighted if someone could prove me wrong and\npoint me in the right direction on this.\n \nRegards,\nAshish\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "I am attempting to run a stored procedure on a SQL SErver database from\nR. The sqlQuery method accepts the commend but does not do anything. My\nresearch indicates that it is not currently possible to ",
+      "thread_id": "thread-3687059b5618",
+      "thread_depth": 0,
+      "month": "2006-07"
+    },
+    {
+      "id": "msg-a6f039443834",
+      "message_id": "<44C8D380.1040209@vanderbilt.edu>",
+      "from_name": "Jeffrey Horner",
+      "from_email_hash": "77f9f3268effd48e70e790ba24e5db9767f6401d87fbba7ec6a16ee2e060daf2",
+      "date": "2006-07-27T09:53:52-05:00",
+      "subject": "[R-sig-DB] [R] RODBC on linux",
+      "subject_clean": "RODBC on linux",
+      "in_reply_to": "<E58BE6136618CF4C964F6EC7773AE5699FA5C0@ex4.nyc.hcmny.com>",
+      "references": [
+        "<E58BE6136618CF4C964F6EC7773AE5699FA5C0@ex4.nyc.hcmny.com>"
+      ],
+      "body_plain": "Armstrong, Whit wrote:\n> Thanks, everyone.\n> \n> I'll give freeTDS a try.\n\nOne final hitch to be aware of when using FreeTDS:\n\nMS SQL Server authenticates db connections in two different ways (well \nactually three, but it's just the combination of 1 and 2):\n\n1) Sql server authenticates the connection, meaning you must have\n    an SQL server account. FreeTDS will handle this fine.\n2) the SQL server OS authenticates the connection with an NT Domain\n    login. That's the domain\\username you use to login to your Windows\n    machine. FreeTDS will ONLY handle this over TCP/IP, not over DCE/RPC,\n    so be aware.\n\nMore info here:\n\nhttp://www.freetds.org/userguide/domains.htm\n\nand here:\n\nhttp://www.freetds.org/userguide/troubleshooting.htm\n\nJeff\n\n> \n> \n> -----Original Message-----\n> From: Prof Brian Ripley [mailto:ripley at stats.ox.ac.uk] \n> Sent: Thursday, July 27, 2006 1:17 AM\n> To: Marc Schwartz\n> Cc: Armstrong, Whit; r-help at stat.math.ethz.ch\n> Subject: Re: [R] RODBC on linux\n> \n> On Wed, 26 Jul 2006, Marc Schwartz wrote:\n> \n>> On Wed, 2006-07-26 at 17:52 -0400, Armstrong, Whit wrote:\n>>> Anyone out there using Linux RODBC and unixODBC to connect to a \n>>> Microsoft SQL server?\n>>>\n>>> If possible can someone post a sample .odbc.ini file?\n>>>\n>>> I saw a few discussions on the archives a few years ago, but no \n>>> config file details were available.\n>>>\n>>> Thanks,\n>>> Whit\n>> Whit,\n>>\n>> Do you have a Linux ODBC driver for SQL Server?  unixODBC is simply \n>> the driver manager, not the driver itself.\n>>\n>> MS does not offer (not surprisingly) an ODBC driver for Unix/Linux.\n>> There are resources available however and these might be helpful:\n>>\n>> http://www.sommarskog.se/mssql/unix.html\n>>\n>> Note that Easysoft provides (at a cost) an ODBC-ODBC bridge for \n>> Unix/Linux platforms which supports ODBC connections to SQL Server:\n>>\n>> http://www.easysoft.com/products/data_access/odbc_odbc_bridge/index.ht\n>> ml\n> \n> Several people have successfully used that, from the earliest days of\n> RODBC: I believe it was part of Michael Lapsley's motivation to write\n> RODBC.\n> \n> \n> \n> ------------------------------------------------------------------------\n> \n> ______________________________________________\n> R-help at stat.math.ethz.ch mailing list\n> https://stat.ethz.ch/mailman/listinfo/r-help\n> PLEASE do read the posting guide http://www.R-project.org/posting-guide.html\n> and provide commented, minimal, self-contained, reproducible code.",
+      "body_snippet": "Armstrong, Whit wrote:\n> Thanks, everyone.\n> \n> I'll give freeTDS a try.\n\nOne final hitch to be aware of when using FreeTDS:\n\nMS SQL Server authenticates db connections in two different ways (well \nac",
+      "thread_id": "thread-a6f039443834",
+      "thread_depth": 0,
+      "month": "2006-07"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-f740106d6d71",
+      "subject": "RSQLite problems / questions",
+      "message_count": 5,
+      "participants": [
+        "Dirk Eddelbuettel",
+        "Prof Brian Ripley"
+      ],
+      "started": "2006-07-06T10:04:00-05:00",
+      "last_reply": "2006-07-07T08:45:55-05:00",
+      "root_message_id": "msg-f740106d6d71"
+    },
+    {
+      "id": "thread-ca1031e88010",
+      "subject": "RSQLite 0.4-1 compilation error on Solaris 2.9",
+      "message_count": 1,
+      "participants": [
+        "hp@ges m@iii@g oii ihcrc@org"
+      ],
+      "started": "2006-07-12T17:52:56-07:00",
+      "last_reply": "2006-07-12T17:52:56-07:00",
+      "root_message_id": "msg-ca1031e88010"
+    },
+    {
+      "id": "thread-3687059b5618",
+      "subject": "Running a SQL Server Stored Procedure from R",
+      "message_count": 1,
+      "participants": [
+        "Malhotra, Ashish"
+      ],
+      "started": "2006-07-25T19:57:25-05:00",
+      "last_reply": "2006-07-25T19:57:25-05:00",
+      "root_message_id": "msg-3687059b5618"
+    },
+    {
+      "id": "thread-a6f039443834",
+      "subject": "RODBC on linux",
+      "message_count": 1,
+      "participants": [
+        "Jeffrey Horner"
+      ],
+      "started": "2006-07-27T09:53:52-05:00",
+      "last_reply": "2006-07-27T09:53:52-05:00",
+      "root_message_id": "msg-a6f039443834"
+    }
+  ]
+}

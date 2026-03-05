@@ -1,0 +1,2689 @@
+From don @end|ng |rom de|ph|outpo@t@com  Thu Jan  3 17:04:09 2008
+From: don @end|ng |rom de|ph|outpo@t@com (Don Allen)
+Date: Thu, 3 Jan 2008 11:04:09 -0500
+Subject: [R-sig-DB] ROracle problem?
+Message-ID: <20080103160409.GA8094@delphioutpost.com>
+
+Our configuration: R 2.6.1, DBI_0.2-4, ROracle_0.5-9, all running on a
+dual-processor 64-bit Ubuntu 6.06 system.
+
+If you run the following
+
+drv <- Oracle()
+conn <- dbConnect(drv, '<oracle user>/<password>')
+sql <- "select sysdate from dual where to_date(:1) = to_date(:1)"
+ps <- dbPrepareStatement(conn=conn,
+                             statement=sql,
+                             bind = c('character'))
+
+You get:
+
+> source('test.r')
+
+Error in oraPrepareStatement(conn, statement, bind, ...) :
+ RS-DBI driver: (number of parameters must equal ncol(data))
+
+Enter a frame number, or 0 to exit
+
+1: source(" test.r")
+2: eval.with.vis(ei, envir)
+3: eval.with.vis(expr, envir, enclos)
+4: dbPrepareStatement(conn = conn, statement = sql, bind =
+c("character"))
+5: .valueClassTest({
+6: is(object, Cl)
+7: .class1(object)
+8: .class1(object)
+9: oraPrepareStatement(conn, statement, bind, ...)
+
+Selection:
+
+Changing the example to
+
+drv <- Oracle()
+conn <- dbConnect(drv, '<oracle user>/<password>')
+sql <- "select sysdate from dual where to_date(:1) = to_date('2007-01-01')"
+ps <- dbPrepareStatement(conn=conn,
+                             statement=sql,
+                             bind = c('character'))
+
+works fine -- no error.
+
+The (nonsensical query) in the example is based on a much more
+complicated (not nonsensical) query that failed the same way. The
+common thread is that the example and the real query both make
+multiple references to the same data column. Either I'm not
+understanding something, or there's a bug. Any help would be
+appreciated.
+
+Thanks --
+Don Allen
+Delphi Capital Management
+
+
+
+From be@t@uper@@ver@com @end|ng |rom re||@b|ecomputerpro@@com  Sun Jan  6 22:05:10 2008
+From: be@t@uper@@ver@com @end|ng |rom re||@b|ecomputerpro@@com (Hunter Price)
+Date: Sun, 06 Jan 2008 21:05:10 -0000
+Subject: [R-sig-DB] FYI
+Message-ID: <000701c850a7$b666a580$0100007f@riycar>
+
+
+Type 'xhighereasy. com' in |nternet Explorer
+(please delete space and quotes)
+
+virtualdj 4.3 for mac - 39
+adobe acrobat professional 7 - 69
+apollo divx2dvd divx to dvd creator v3.3.0 - 29
+intuit quicken home and business 2008 - 39
+avid xpress pro 5.7 - 119
+ms windows 2003 enterprise server - 69
+creative suite 3 design premium for win - 269
+turbotax business 2006 (usa only) - 29
+adobe after effects 7.0 standard - 59
+microsoft money home & business 7 - 39
+microsoft vista ultimate - 89
+sony vegas 6 - 69
+
+You can save 71-90% here!
+
+
+
+From geb @end|ng |rom |one@t@rc@|e@com  Mon Jan  7 03:08:48 2008
+From: geb @end|ng |rom |one@t@rc@|e@com (Tabatha Richardson)
+Date: Tue, 7 Jan 2008 10:08:48 +0800
+Subject: [R-sig-DB] Tabatha
+Message-ID: <01c85115$4b53b800$115fe2dd@geb>
+
+Try FDA approved prescription drugs through our licensed
+pharmacy. All orders are overseen by our licensed accredited medical staff.
+
+http://3dpiwa.bay.livefilestore.com/y1p3_rL297kWQLTQu6Ab6UEQBHeugTGOyZtBkpCGwXYtkatlDdKAclnH43NjTKzXxeJ2JAw9YDlwcKZudHGocCXn1wtYvhsbGQE/fdophxpd.html
+
+are providing a variety of  environment. In other  on the floor with  liquidation and   the next time you're  Gervasio said her
+
+
+
+From huwenb @end|ng |rom gm@||@com  Tue Jan  8 14:35:32 2008
+From: huwenb @end|ng |rom gm@||@com (=?GB2312?B?zsSyqLr6?=)
+Date: Tue, 8 Jan 2008 21:35:32 +0800
+Subject: [R-sig-DB] one problem when i use package JRI
+Message-ID: <d36c26c00801080535h4a0a3f91l5c9bf5446a510fdb@mail.gmail.com>
+
+I use the JRI package in java to do some compute with R
+
+but  i haved one  problem
+
+
+              re.eval("library(lattice)");             //????????????????????????
+              y=re.idleEval("print(1:10)");
+              y=re.eval("feq <- read.delim('c:/minist.txt',header=T)");
+              y=re.eval("feq1<-as.matrix(feq)");
+              System.out.println(y=re.eval("feq1[1,]"));
+              y=re.eval("jpeg()");
+              y=re.eval("levelplot(feq1)");
+              re.eval("dev.off()");
+              re.end();
+              System.out.println("end");
+
+
+this block  can't run  , and  system warn :WARNING: org.rosuda.JRI.Mutex was
+unlocked by other thread than locked! This may soon lead to a crash...
+wwhwwhen i delete :  re.eval("library(lattice)");     this program  can
+run
+WHY?? can somebody  help me?
+
+
+-- 
+??????
+TEL:
+E-MAIL:bbbiiiooo at 163.com
+            huwenb at gmail.com
+
+	[[alternative HTML version deleted]]
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Tue Jan  8 15:17:50 2008
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Tue, 8 Jan 2008 14:17:50 +0000 (GMT)
+Subject: [R-sig-DB] one problem when i use package JRI
+In-Reply-To: <d36c26c00801080535h4a0a3f91l5c9bf5446a510fdb@mail.gmail.com>
+References: <d36c26c00801080535h4a0a3f91l5c9bf5446a510fdb@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0801081416260.7485@gannet.stats.ox.ac.uk>
+
+This list is for database interfaces: nothing to do with Java.
+Please do study the R posting guide at
+
+http://www.r-project.org/posting-guide.html
+
+On Tue, 8 Jan 2008, ?????? wrote:
+
+> I use the JRI package in java to do some compute with R
+
+but  i haved one  problem
+
+
+               re.eval("library(lattice)");             //????????????????????????
+               y=re.idleEval("print(1:10)");
+               y=re.eval("feq <- read.delim('c:/minist.txt',header=T)");
+               y=re.eval("feq1<-as.matrix(feq)");
+               System.out.println(y=re.eval("feq1[1,]"));
+               y=re.eval("jpeg()");
+               y=re.eval("levelplot(feq1)");
+               re.eval("dev.off()");
+               re.end();
+               System.out.println("end");
+
+
+this block  can't run  , and  system warn :WARNING: org.rosuda.JRI.Mutex was
+unlocked by other thread than locked! This may soon lead to a crash...
+wwhwwhen i delete :  re.eval("library(lattice)");     this program  can
+run
+WHY?? can somebody  help me?
+
+
+-- 
+??????
+TEL:
+E-MAIL:bbbiiiooo at 163.com
+             huwenb at gmail.com
+
+ 	[[alternative HTML version deleted]]
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+From gtg757| @end|ng |rom m@||@g@tech@edu  Tue Jan  8 16:00:17 2008
+From: gtg757| @end|ng |rom m@||@g@tech@edu (Tudor Bodea)
+Date: Tue, 08 Jan 2008 10:00:17 -0500
+Subject: [R-sig-DB] Oracle connectivity
+Message-ID: <1199804417.47839001cc026@webmail.mail.gatech.edu>
+
+Dear useRs,
+
+I would like to access a remote Oracle database through R but I just cannot
+find sufficient online information to do so. As a result, I am wondering if you
+can provide me with a link to a document that details the steps I need to
+undertake to successfuly complete the task (e.g., packages that I need to
+install/look into, the set up of the cnf file for remote access, etc.).
+
+My system: Windows XP, R2.6.1
+Investigated packages: DBI, RODBC
+
+Thank you so much.
+
+Tudor
+--
+Tudor Dan Bodea
+Georgia Institute of Technology
+School of Civil and Environmental Engineering
+Web: http://www.prism.gatech.edu/~gtg757i
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Tue Jan  8 16:36:36 2008
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Tue, 8 Jan 2008 15:36:36 +0000 (GMT)
+Subject: [R-sig-DB] Oracle connectivity
+In-Reply-To: <1199804417.47839001cc026@webmail.mail.gatech.edu>
+References: <1199804417.47839001cc026@webmail.mail.gatech.edu>
+Message-ID: <Pine.LNX.4.64.0801081534000.8296@gannet.stats.ox.ac.uk>
+
+On Tue, 8 Jan 2008, Tudor Bodea wrote:
+
+> Dear useRs,
+
+Please do NOT cross-post: I have removed R-help.
+
+> I would like to access a remote Oracle database through R but I just cannot
+> find sufficient online information to do so. As a result, I am wondering if you
+> can provide me with a link to a document that details the steps I need to
+> undertake to successfuly complete the task (e.g., packages that I need to
+> install/look into, the set up of the cnf file for remote access, etc.).
+>
+> My system: Windows XP, R2.6.1
+> Investigated packages: DBI, RODBC
+
+With RODBC, all you need is the Oracle ODBC drivers and a DSN set up.
+That's not an R issue and your Oracle support should be able to help you 
+do it.
+
+With DBI, you also need ROracle, and to compile it yourself for Windows.
+It has been done in the past, but not AFAIK recently.
+
+>
+> Thank you so much.
+>
+> Tudor
+> --
+> Tudor Dan Bodea
+> Georgia Institute of Technology
+> School of Civil and Environmental Engineering
+> Web: http://www.prism.gatech.edu/~gtg757i
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From gtg757| @end|ng |rom m@||@g@tech@edu  Tue Jan  8 20:46:11 2008
+From: gtg757| @end|ng |rom m@||@g@tech@edu (Tudor Bodea)
+Date: Tue, 08 Jan 2008 14:46:11 -0500
+Subject: [R-sig-DB] Oracle connectivity
+In-Reply-To: <Pine.LNX.4.64.0801081534000.8296@gannet.stats.ox.ac.uk>
+References: <1199804417.47839001cc026@webmail.mail.gatech.edu>
+	<Pine.LNX.4.64.0801081534000.8296@gannet.stats.ox.ac.uk>
+Message-ID: <1199821571.4783d303382fa@webmail.mail.gatech.edu>
+
+Dear Professor Ripley / R community:
+
+Thank you so much for your prompt reply.
+
+Happy New Year.
+
+Tudor
+
+Quoting Prof Brian Ripley <ripley at stats.ox.ac.uk>:
+
+> On Tue, 8 Jan 2008, Tudor Bodea wrote:
+>
+> > Dear useRs,
+>
+> Please do NOT cross-post: I have removed R-help.
+>
+> > I would like to access a remote Oracle database through R but I just cannot
+> > find sufficient online information to do so. As a result, I am wondering if
+> you
+> > can provide me with a link to a document that details the steps I need to
+> > undertake to successfuly complete the task (e.g., packages that I need to
+> > install/look into, the set up of the cnf file for remote access, etc.).
+> >
+> > My system: Windows XP, R2.6.1
+> > Investigated packages: DBI, RODBC
+>
+> With RODBC, all you need is the Oracle ODBC drivers and a DSN set up.
+> That's not an R issue and your Oracle support should be able to help you
+> do it.
+>
+> With DBI, you also need ROracle, and to compile it yourself for Windows.
+> It has been done in the past, but not AFAIK recently.
+>
+> >
+> > Thank you so much.
+> >
+> > Tudor
+> > --
+> > Tudor Dan Bodea
+> > Georgia Institute of Technology
+> > School of Civil and Environmental Engineering
+> > Web: http://www.prism.gatech.edu/~gtg757i
+> >
+> > _______________________________________________
+> > R-sig-DB mailing list -- R Special Interest Group
+> > R-sig-DB at stat.math.ethz.ch
+> > https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> >
+>
+> --
+> Brian D. Ripley,                  ripley at stats.ox.ac.uk
+> Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+> University of Oxford,             Tel:  +44 1865 272861 (self)
+> 1 South Parks Road,                     +44 1865 272866 (PA)
+> Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+>
+
+
+--
+Tudor Dan Bodea
+Georgia Institute of Technology
+School of Civil and Environmental Engineering
+Web: http://www.prism.gatech.edu/~gtg757i
+
+
+
+From @nom@|ympd @end|ng |rom koch|@m||yo|||ce@com  Tue Jan  8 13:34:22 2008
+From: @nom@|ympd @end|ng |rom koch|@m||yo|||ce@com (Petra Lamb)
+Date: Wed, 8 Jan 2008 17:34:22 +0500
+Subject: [R-sig-DB] Car-race
+Message-ID: <01c8521c$b482c4d0$41becd58@anomalympd>
+
+Look at our US FDA prescription drugs through our licensed
+pharmacy. All orders are overviewed by licensed accredited medication department.
+http://oepanicgue.googlepages.com
+
+
+
+From |@@t|n-482 @end|ng |rom m|cro@o|t@com  Wed Jan  9 00:17:59 2008
+From: |@@t|n-482 @end|ng |rom m|cro@o|t@com (Dick Cannon)
+Date: Thu, 9 Jan 2008 00:17:59 +0100
+Subject: [R-sig-DB] Solid
+Message-ID: <01c85255$17281620$e80d5455@fastin-482>
+
+Nail Sphere Sun Chisel
+
+	[[alternative HTML version deleted]]
+
+
+
+From hp@ge@ @end|ng |rom |hcrc@org  Fri Jan 18 01:56:38 2008
+From: hp@ge@ @end|ng |rom |hcrc@org (Herve Pages)
+Date: Thu, 17 Jan 2008 16:56:38 -0800
+Subject: [R-sig-DB] RSQLite: ATTACH statement not executed when the db
+ connection is holding a resultSet
+Message-ID: <478FF946.6020204@fhcrc.org>
+
+Hi Seth,
+
+Here is how to reproduce the problem.
+
+First create 2 databases with a single empty table in each:
+
+  library(RSQLite)
+
+  db1 <- dbConnect(SQLite(), "db1.sqlite")
+  dbGetQuery(db1, "CREATE TABLE t1 (a integer, aa text)")
+
+  db2 <- dbConnect(SQLite(), "db2.sqlite")
+  res <- dbSendQuery(db2, "CREATE TABLE t2 (b integer, bb text)")
+
+Note that dbSendQuery() is used instead of dbGetQuery() to create the
+table in db2 so now db2 is holding a resultSet:
+
+  > summary(db2)
+  <SQLiteConnection:(28981,1)>
+    User: NA
+    Host: localhost
+    Dbname: db2.sqlite
+    Connection type: direct
+    Loadable extensions: off
+      1  <SQLiteResult:(28981,1,1)>
+
+Second, try to attach db1 to db2:
+
+  > dbGetQuery(db2, "ATTACH 'db1.sqlite' AS db1")
+  NULL
+
+No errors so it looks like it got attached but:
+
+  1. This doesn't work:
+
+       dbGetQuery(db2, "SELECT * FROM db1.t1")
+
+  2. I can run this as many times I want (normally you can't attach a
+     db that's already attached):
+
+       dbGetQuery(db2, "ATTACH 'db1.sqlite' AS db1")
+       dbGetQuery(db2, "ATTACH 'db1.sqlite' AS db1")
+       ... etc ...
+
+  3. I can't detach it either:
+
+       dbGetQuery(db2, "DETACH db1")
+
+so everything tends to indicate that db1 was not attached in the
+first place.
+
+Now if I clear 'res', things work as expected:
+
+  dbClearResult(res)
+  summary(db2)
+  dbGetQuery(db2, "ATTACH 'db1.sqlite' AS db1")
+  dbGetQuery(db2, "SELECT * FROM db1.t1")
+  dbGetQuery(db2, "DETACH db1")
+
+Any idea what's going on?
+
+Thanks!
+H.
+
+
+> sessionInfo()
+R version 2.7.0 Under development (unstable) (2007-12-20 r43747)
+x86_64-unknown-linux-gnu
+
+locale:
+LC_CTYPE=en_US;LC_NUMERIC=C;LC_TIME=en_US;LC_COLLATE=en_US;LC_MONETARY=en_US;LC_MESSAGES=en_US;LC_PAPER=en_US;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=en_US;LC_IDENTIFICATION=C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] RSQLite_0.6-4 DBI_0.2-4
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Fri Jan 18 03:00:52 2008
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Thu, 17 Jan 2008 21:00:52 -0500
+Subject: [R-sig-DB] RSQLite: ATTACH statement not executed when the db
+	connection is holding a resultSet
+In-Reply-To: <478FF946.6020204@fhcrc.org>
+References: <478FF946.6020204@fhcrc.org>
+Message-ID: <971536df0801171800y7f1fcad9u8d0e4d6fa359892a@mail.gmail.com>
+
+I don't think you have established db1.sqlite as an external sqlite
+database yet -- its still only known to the db1 connection.  Try
+disconnecting from db1 before attaching it in the db2 connection to
+flush it out.
+
+You can likely re-connect to db1 again right after disconnecting db1
+even before attaching it in db2 if you wish -- that would be optional.
+
+On Jan 17, 2008 7:56 PM, Herve Pages <hpages at fhcrc.org> wrote:
+> Hi Seth,
+>
+> Here is how to reproduce the problem.
+>
+> First create 2 databases with a single empty table in each:
+>
+>  library(RSQLite)
+>
+>  db1 <- dbConnect(SQLite(), "db1.sqlite")
+>  dbGetQuery(db1, "CREATE TABLE t1 (a integer, aa text)")
+>
+>  db2 <- dbConnect(SQLite(), "db2.sqlite")
+>  res <- dbSendQuery(db2, "CREATE TABLE t2 (b integer, bb text)")
+>
+> Note that dbSendQuery() is used instead of dbGetQuery() to create the
+> table in db2 so now db2 is holding a resultSet:
+>
+>  > summary(db2)
+>  <SQLiteConnection:(28981,1)>
+>    User: NA
+>    Host: localhost
+>    Dbname: db2.sqlite
+>    Connection type: direct
+>    Loadable extensions: off
+>      1  <SQLiteResult:(28981,1,1)>
+>
+> Second, try to attach db1 to db2:
+>
+>  > dbGetQuery(db2, "ATTACH 'db1.sqlite' AS db1")
+>  NULL
+>
+> No errors so it looks like it got attached but:
+>
+>  1. This doesn't work:
+>
+>       dbGetQuery(db2, "SELECT * FROM db1.t1")
+>
+>  2. I can run this as many times I want (normally you can't attach a
+>     db that's already attached):
+>
+>       dbGetQuery(db2, "ATTACH 'db1.sqlite' AS db1")
+>       dbGetQuery(db2, "ATTACH 'db1.sqlite' AS db1")
+>       ... etc ...
+>
+>  3. I can't detach it either:
+>
+>       dbGetQuery(db2, "DETACH db1")
+>
+> so everything tends to indicate that db1 was not attached in the
+> first place.
+>
+> Now if I clear 'res', things work as expected:
+>
+>  dbClearResult(res)
+>  summary(db2)
+>  dbGetQuery(db2, "ATTACH 'db1.sqlite' AS db1")
+>  dbGetQuery(db2, "SELECT * FROM db1.t1")
+>  dbGetQuery(db2, "DETACH db1")
+>
+> Any idea what's going on?
+>
+> Thanks!
+> H.
+>
+>
+> > sessionInfo()
+> R version 2.7.0 Under development (unstable) (2007-12-20 r43747)
+> x86_64-unknown-linux-gnu
+>
+> locale:
+> LC_CTYPE=en_US;LC_NUMERIC=C;LC_TIME=en_US;LC_COLLATE=en_US;LC_MONETARY=en_US;LC_MESSAGES=en_US;LC_PAPER=en_US;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=en_US;LC_IDENTIFICATION=C
+>
+> attached base packages:
+> [1] stats     graphics  grDevices utils     datasets  methods   base
+>
+> other attached packages:
+> [1] RSQLite_0.6-4 DBI_0.2-4
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Fri Jan 18 17:27:20 2008
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Fri, 18 Jan 2008 08:27:20 -0800
+Subject: [R-sig-DB] RSQLite: ATTACH statement not executed when the db
+	connection is holding a resultSet
+In-Reply-To: <478FF946.6020204@fhcrc.org> (Herve Pages's message of "Thu\,
+	17 Jan 2008 16\:56\:38 -0800")
+References: <478FF946.6020204@fhcrc.org>
+Message-ID: <m2wsq7drpz.fsf@userprimary.net>
+
+Hi Herve,
+
+A quick response now and I will try to take a closer look later on...
+
+Herve Pages <hpages at fhcrc.org> writes:
+> Here is how to reproduce the problem.
+>
+> First create 2 databases with a single empty table in each:
+>
+>   library(RSQLite)
+>
+>   db1 <- dbConnect(SQLite(), "db1.sqlite")
+>   dbGetQuery(db1, "CREATE TABLE t1 (a integer, aa text)")
+>
+>   db2 <- dbConnect(SQLite(), "db2.sqlite")
+>   res <- dbSendQuery(db2, "CREATE TABLE t2 (b integer, bb text)")
+[snip]
+>
+> Second, try to attach db1 to db2:
+>
+>   > dbGetQuery(db2, "ATTACH 'db1.sqlite' AS db1")
+>   NULL
+>
+> No errors so it looks like it got attached but:
+
+I'm pretty sure that SQLite only allows one result set per connection.
+Hence it does not surprise me that the above does not work -- but an
+error message would be nice :-)
+
+Do you have a use-case where you really want to be able to have open
+resultSets and keep doing things (which I'm not sure is possible)?  I
+think the fix here is going to be to raise an error when this is
+attempted.
+
+For example, if you try to create two result sets that have pending
+rows, you do get an error:
+
+    > res <- dbSendQuery(db2, "select * from t2")
+    > dbListResults(db2)
+    [[1]]
+    <SQLiteResult:(7183,1,4)> 
+    
+    > res <- dbSendQuery(db2, "select * from t2")
+    Error in sqliteExecStatement(conn, statement, ...) : 
+      RS-DBI driver: (connection with pending rows, close resultSet before continuing)
+
+For result sets that don't return rows, there isn't much good that you
+can do with the result set.  Perhaps these should be invalidated on
+return so that you can open another resultSet?
+
+Other ideas?
+
++ seth
+
+-- 
+Seth Falcon | seth at userprimary.net | blog: http://userprimary.net/user/
+
+
+
+From hp@ge@ @end|ng |rom |hcrc@org  Fri Jan 18 19:38:30 2008
+From: hp@ge@ @end|ng |rom |hcrc@org (Herve Pages)
+Date: Fri, 18 Jan 2008 10:38:30 -0800
+Subject: [R-sig-DB] RSQLite: ATTACH statement not executed when the db
+ connection is holding a resultSet
+In-Reply-To: <m2wsq7drpz.fsf@userprimary.net>
+References: <478FF946.6020204@fhcrc.org> <m2wsq7drpz.fsf@userprimary.net>
+Message-ID: <4790F226.9020000@fhcrc.org>
+
+Hi Seth,
+
+Seth Falcon wrote:
+> Hi Herve,
+> 
+> A quick response now and I will try to take a closer look later on...
+> 
+> Herve Pages <hpages at fhcrc.org> writes:
+>> Here is how to reproduce the problem.
+>>
+>> First create 2 databases with a single empty table in each:
+>>
+>>   library(RSQLite)
+>>
+>>   db1 <- dbConnect(SQLite(), "db1.sqlite")
+>>   dbGetQuery(db1, "CREATE TABLE t1 (a integer, aa text)")
+>>
+>>   db2 <- dbConnect(SQLite(), "db2.sqlite")
+>>   res <- dbSendQuery(db2, "CREATE TABLE t2 (b integer, bb text)")
+> [snip]
+>> Second, try to attach db1 to db2:
+>>
+>>   > dbGetQuery(db2, "ATTACH 'db1.sqlite' AS db1")
+>>   NULL
+>>
+>> No errors so it looks like it got attached but:
+> 
+> I'm pretty sure that SQLite only allows one result set per connection.
+> Hence it does not surprise me that the above does not work -- but an
+> error message would be nice :-)
+> 
+> Do you have a use-case where you really want to be able to have open
+> resultSets and keep doing things (which I'm not sure is possible)?  I
+> think the fix here is going to be to raise an error when this is
+> attempted.
+
+No use-case. But we have no way no prevent our users to make improper
+use of dbSendQuery() (we'll try to advertise the use of much safer
+dbGetQuery() instead but that's all we can do). So, yes, raising an
+error that tells them that the ATTACH command failed (or could not be
+sent) or, more generally, that any SQL statement failed, seems like
+the right thing to have.
+
+> 
+> For example, if you try to create two result sets that have pending
+> rows, you do get an error:
+> 
+>     > res <- dbSendQuery(db2, "select * from t2")
+>     > dbListResults(db2)
+>     [[1]]
+>     <SQLiteResult:(7183,1,4)> 
+>     
+>     > res <- dbSendQuery(db2, "select * from t2")
+>     Error in sqliteExecStatement(conn, statement, ...) : 
+>       RS-DBI driver: (connection with pending rows, close resultSet before continuing)
+
+Yes I've seen this. And if the first result set does not correspond to a
+SELECT statement, then it is silently replaced by the next result set:
+
+  library(RSQLite)
+  db <- dbConnect(SQLite(), "test.sqlite")
+  dbSendQuery(db, "CREATE TABLE test (a integer, aa text)")
+  dbSendQuery(db, "SELECT * FROM test")
+
+First result has disappeared:
+
+  > dbListResults(db)
+  [[1]]
+  <SQLiteResult:(31978,0,2)>
+
+Personally I find this "automatic result set clearing" feature a little
+bit confusing and it raises some concerns about compatibility with other
+RDBMSs (see below).
+
+Back to the ATTACH problem: if I try to ATTACH with dbSendQuery() instead
+of dbGetQuery() then the "automatic result set clearing" feature enter in
+action:
+
+  library(RSQLite)
+  db1 <- dbConnect(SQLite(), "db1.sqlite")
+  dbGetQuery(db1, "CREATE TABLE t1 (a integer, aa text)")
+  db2 <- dbConnect(SQLite(), "db2.sqlite")
+  dbSendQuery(db2, "CREATE TABLE t2 (b integer, bb text)")
+  dbSendQuery(db2, "ATTACH 'db1.sqlite' AS db1")
+  dbListResults(db2) # only 1 result set
+
+but now it's hard to tell whether or not db1 is attached to db2:
+
+  1. This seems to indicate that it is NOT:
+
+       > dbGetQuery(db2, "SELECT * FROM db1.t1")
+       Error in sqliteExecStatement(new.con, statement, bind.data) :
+          RS-DBI driver: (error in statement: no such table: db1.t1)
+
+  2. This seems to indicate that it is:
+
+       > dbSendQuery(db2, "ATTACH 'db1.sqlite' AS db1")
+       Error in sqliteExecStatement(conn, statement, ...) :
+         RS-DBI driver: (RS_SQLite_exec: could not execute1: database db1 is already in use)
+
+  3. And this too seems to indicate that it is was attached:
+
+       > dbGetQuery(db2, "DETACH db1")
+       NULL
+       > dbGetQuery(db2, "DETACH db1")
+       Error in sqliteExecStatement(con, statement, bind.data) :
+         RS-DBI driver: (RS_SQLite_exec: could not execute1: no such database: db1)
+
+> 
+> For result sets that don't return rows, there isn't much good that you
+> can do with the result set.  Perhaps these should be invalidated on
+> return so that you can open another resultSet?
+
+The problem is consistency with other RDBMSs: if the users want to be able
+to write portable code, they need to have some guarantee that things behave
+consistently between RSQLite, RMySQL, ROracle, etc...
+In this regard I would say it's better to keep things as predictable as
+possible and maybe to avoid features like the "automatic result set clearing".
+Every successful call to dbSendQuery creates a new entry in the result set
+table and this entry remains here until explicitly removed by the user,
+whatever the nature of the SQL statement was. If SQLite allows only one
+result set per connection, then an error should be raised when dbSendQuery
+is called and there is already an entry in the result set table.
+
+I can see that the "automatic result set clearing" feature adds some
+convenience by discarding result sets that DO NOT correspond to a SELECT
+statement (so that they never end up in the result set table) but then
+everybody in the DBI family should do the same thing.
+
+As for treating result sets that DO correspond to a SELECT statement
+but contain 0 rows the same way as result sets that DO NOT correspond
+to a SELECT statement, I don't really like the idea. Because the 2 types
+of result sets are fundamentally different: having rows or not in the
+former depends on the data found in the DB while getting a result set
+of the latter type does not (it only depends on a programmatic decision
+i.e. on the nature of the SQL statement that was sent).
+
+Thanks!
+H.
+
+
+> 
+> Other ideas?
+> 
+> + seth
+>
+
+
+
+From hp@ge@ @end|ng |rom |hcrc@org  Fri Jan 18 20:09:23 2008
+From: hp@ge@ @end|ng |rom |hcrc@org (Herve Pages)
+Date: Fri, 18 Jan 2008 11:09:23 -0800
+Subject: [R-sig-DB] RSQLite: ATTACH statement not executed when the db
+ connection is holding a resultSet
+In-Reply-To: <971536df0801171800y7f1fcad9u8d0e4d6fa359892a@mail.gmail.com>
+References: <478FF946.6020204@fhcrc.org>
+	<971536df0801171800y7f1fcad9u8d0e4d6fa359892a@mail.gmail.com>
+Message-ID: <4790F963.8020203@fhcrc.org>
+
+Hi Gabor,
+
+Gabor Grothendieck wrote:
+> I don't think you have established db1.sqlite as an external sqlite
+> database yet -- its still only known to the db1 connection.  Try
+> disconnecting from db1 before attaching it in the db2 connection to
+> flush it out.
+
+No, disconnecting from db1 doesn't change anything. When someone in my
+group found this problem, he was working with real dbs i.e. dbs that have
+been on disk for a long time and opened/closed many times. Using a freshly
+created db1.sqlite in my example is only for the purpose of providing
+reproducible code.
+
+Anyway if ATTACH fails for the reason you suggest or for whatever reason,
+then an error should be raised.
+
+Thanks,
+H.
+
+
+> 
+> You can likely re-connect to db1 again right after disconnecting db1
+> even before attaching it in db2 if you wish -- that would be optional.
+>
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Sat Jan 19 19:32:33 2008
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Sat, 19 Jan 2008 10:32:33 -0800
+Subject: [R-sig-DB] RSQLite: ATTACH statement not executed when the db
+	connection is holding a resultSet
+In-Reply-To: <4790F226.9020000@fhcrc.org> (Herve Pages's message of "Fri\,
+	18 Jan 2008 10\:38\:30 -0800")
+References: <478FF946.6020204@fhcrc.org> <m2wsq7drpz.fsf@userprimary.net>
+	<4790F226.9020000@fhcrc.org>
+Message-ID: <m2lk6ld5tq.fsf@userprimary.net>
+
+Hi Herve,
+
+Herve Pages <hpages at fhcrc.org> writes:
+> No use-case. But we have no way no prevent our users to make improper
+> use of dbSendQuery() (we'll try to advertise the use of much safer
+> dbGetQuery() instead but that's all we can do).
+
+At present, dbGetQuery is IMO less safe, or at least more confusing
+(see more below).
+
+> Yes I've seen this. And if the first result set does not correspond to a
+> SELECT statement, then it is silently replaced by the next result
+> set:
+
+Almost.  If my reading of the code is correct, a ResultSet contains a
+flag indicating whether or not is is complete.  For a SELECT query,
+complete set to FALSE means there are more rows to fetch.  For
+non-SELECT queries it is assumed that complete is TRUE right away
+(there is a comment in the code that this might cause a problem if
+there are asynchronous queries, but I don't think this is an issue
+with SQLite).
+
+When RSQLite attempts to execute SQL, it checks for an existing
+ResultSet and _closes is automatically_ if its complete flag is TRUE.
+If the existing ResultSet is not complete, an error is thrown.
+
+> Personally I find this "automatic result set clearing" feature a little
+> bit confusing and it raises some concerns about compatibility with other
+> RDBMSs (see below).
+
+I agree that this can cause confusion and that using this "feature"
+defeats the notion of DBI (being able to swap RDBMS's without changing
+much code).
+
+But I didn't invent this feature and don't have any sense of whether
+or not people are relying on it :-\
+
+> Back to the ATTACH problem: if I try to ATTACH with dbSendQuery() instead
+> of dbGetQuery() then the "automatic result set clearing" feature enter in
+> action:
+
+Yes.  But what is confusing is what dbGetQuery does.  The semantics of
+dbGetQuery are not what they seem.  When a ResultSet already exists,
+dbGetQuery creats a new _connection_ and executes there.  SQL
+statements like ATTACH that are called essentially for their
+side-effect on the connection are lost.  In your example, the ATTACH
+works just fine, but occurs on a new (transient) connection.  If
+instead of dbGetQuery, you had used dbSendQuery, things would have
+worked.
+
+Here's my example:
+
+  library("RSQLite")
+  db1 <- dbConnect(SQLite(), "db1.sqlite")
+  data(USArrests)
+  dbWriteTable(db1, "ua", USArrests, row.names=FALSE)
+  
+  db2 <- dbConnect(SQLite(), "db2.sqlite")
+  res <- dbSendQuery(db2, "CREATE TABLE t1 (b integer, bb text)")
+  
+  ## this does the ATTACH on a transient connection :-(
+  dbGetQuery(db2, "ATTACH 'db1.sqlite' AS db1")
+  ## Hence, this fails:
+  dbGetQuery(db2, "select * from db1.ua limit 3")
+  
+  ## redo ATTACH... this works because ResultSet res is complete
+  ## and so it can be auto-closed.
+  res2 <- dbSendQuery(db2, "ATTACH 'db1.sqlite' AS db1")
+  
+  ## Note that dbGetQuery _still_ won't work because now
+  ## res2 is open (although complete) and the new transient connection
+  ## won't have the ATTACH'ed DB.
+  dbGetQuery(db2, "select * from db1.ua limit 3")
+  
+  ## But using dbSendQuery, we get the auto-close behavior
+  res3 <- dbSendQuery(db2, "select * from db1.ua limit 3")
+  fetch(res3)
+  
+  ## And if we close the ResultSet, dbGetQuery behaves as "expected".
+  dbClearResult(res3)
+  dbGetQuery(db2, "select * from db1.ua limit 3")
+
+>> For result sets that don't return rows, there isn't much good that you
+>> can do with the result set.  Perhaps these should be invalidated on
+>> return so that you can open another resultSet?
+>
+> The problem is consistency with other RDBMSs: if the users want to be able
+> to write portable code, they need to have some guarantee that things behave
+> consistently between RSQLite, RMySQL, ROracle, etc...
+> In this regard I would say it's better to keep things as predictable as
+> possible and maybe to avoid features like the "automatic result set clearing".
+> Every successful call to dbSendQuery creates a new entry in the result set
+> table and this entry remains here until explicitly removed by the user,
+> whatever the nature of the SQL statement was. If SQLite allows only one
+> result set per connection, then an error should be raised when dbSendQuery
+> is called and there is already an entry in the result set table.
+
+I agree that consistency is valuable and is in large part the point of
+DBI.  However, things will never be symmetric since SQLite doesn't
+support the same features as other RDBMS's.  Code that happily creates
+multiple ResultSets might work find in RMySQL (does it?) would raise
+errors with RSQLite.
+
+I guess I see your argument, but the auto-close feature doesn't
+prevent you from making explicit dbClearResult calls and having
+portable code.
+
+> I can see that the "automatic result set clearing" feature adds some
+> convenience by discarding result sets that DO NOT correspond to a SELECT
+> statement (so that they never end up in the result set table) but then
+> everybody in the DBI family should do the same thing.
+>
+> As for treating result sets that DO correspond to a SELECT statement
+> but contain 0 rows the same way as result sets that DO NOT correspond
+> to a SELECT statement, I don't really like the idea. Because the 2 types
+> of result sets are fundamentally different: having rows or not in the
+> former depends on the data found in the DB while getting a result set
+> of the latter type does not (it only depends on a programmatic decision
+> i.e. on the nature of the SQL statement that was sent).
+
+I think there are two ways to go here:
+
+1. Fix dbGetQuery to have the same auto-close semantics.
+
+2. Remove the auto-close feature entirely.  Should dbGetQuery change
+   too such that it fails when a ResultSet is open instead of opening
+   a new connection?  That is easier to explain, but not at all
+   backwards compatible.
+
++ seth
+
+-- 
+Seth Falcon | seth at userprimary.net | blog: http://userprimary.net/user/
+
+
+
+From pdebru|c @end|ng |rom gm@||@com  Tue Jan 22 23:11:55 2008
+From: pdebru|c @end|ng |rom gm@||@com (Paul DeBruicker)
+Date: Tue, 22 Jan 2008 17:11:55 -0500
+Subject: [R-sig-DB] R crashes while executing sqlSave from RODBC to
+	PostgreSQL dsn inside a for loop - debug help
+Message-ID: <f2e3401f0801221411p5e7721b4kf6fcaf823383407c@mail.gmail.com>
+
+Hello List
+
+I have a reproducible example at the bottom of this message, if you
+have PostgreSQL set up as a data source in Windows.  I'm just looking
+for ideas on how to debug a problem that crashes R with the following
+Windows error messages:
+
+
+first error msg:
+
+Microsoft Visual C++ Runtime Library
+
+    Runtime Error!
+    Program: C:\Program Files\R\R-2.6.1\bin\Rgui.exe
+
+    This application has requested the Runtime to terminate it in an
+unusual way.  Please contact the application's support team for more
+information.
+
+
+Click "OK" then get the second error msg:
+
+RGui: Rgui.exe - Application Error
+
+    The instruction at "0x00000001" referenced memory at "0x00000001".
+ The memory could not be "read".
+
+    Click on OK to terminate the program
+
+
+
+I'm using the latest released RODBC, R, and PostgreSQL ANSI ODBC
+driver to connect to a PostgreSQL 8.2.6 database over a LAN. Both
+computers are running Windows XP.
+
+The for loop in question uses read.csv to import 730 csv files with 55
+columns each, averaging 1500 lines per file.  On any given row the
+majority of columns are blank (~80%).  I declare the column classes
+for the imported file and varTypes for the database.
+
+Since R crashes I do not know how to use traceback() or debugger() on
+the crashed instance.  My questions are:
+
+1. How can I debug this problem?
+
+2. Should I learn/use another language to regularly import this much
+data into a Postgres DB?
+
+3. Is there another opensource database that might be more appropriate
+to use with R?
+
+4. I know that the RODBC manual mentions that PostgreSQL ODBC driver
+has generated internal memory corruption if addPK=TRUE.  Is my problem
+another symptom of that problem?
+
+5. Should I send this to another mailing list or file a bug report?
+
+I've been able to recreate the crash using the code below on 3
+machines in the office, so I don't think its specific to my computer
+or setup.
+
+Thanks for any guidance you can provide
+
+Paul DeBruicker
+
+
+
+R Code:
+
+# the "asdf" table in the database does not exist and is created by
+# the first sqlSave statement.  Generally when I check the
+# PostgreSQL  database after R crashes, the first one or two
+# files have been successfully imported, but no others.
+#
+# con is the odbcConnect return value
+# vt is the varType list and is the same as what my csv files have
+# df1 is the data.frame used in this test example in lieu of my data
+# files. It has the same number and type of columns (55) and the
+# average number of rows (1500).
+#
+
+
+library(RODBC)
+
+con<-odbcConnect("PostgresDB",uid="paul",pwd="paul")
+
+
+vt<-c("varchar(3)", "varchar(71)", "varchar(5)", "varchar(13)",
+"varchar(9)", "varchar(9)", "varchar(9)", "float8", "varchar(2)",
+"varchar(5)",
+ "varchar(13)", "float8", "float8", "float8", "varchar(2)", "float8",
+"float8", "varchar(16)", "float8", "int4", "float8", "float8",
+"varchar(13)",
+ "varchar(2)", "float8", "varchar(4)", "varchar(2)", "float8",
+"varchar(2)", "varchar(4)", "varchar(16)", "varchar(16)",
+"varchar(16)", "varchar(4)",
+ "varchar(4)", "varchar(4)", "float8", "float8", "float8",
+"varchar(4)", "varchar(9)", "varchar(2)", "float8", "float8",
+"varchar(9)", "float8",
+ "varchar(9)", "varchar(73)", "varchar(16)", "varchar(11)",
+"varchar(9)", "varchar(9)", "varchar(2)", "varchar(15)", "serial")
+names(vt)<-paste("v",1:55,sep="")
+
+
+for(i in 1:730){
+
+#create the big data frame
+	df1<-data.frame(v1=rep("a",1500),v2=rep("a",1500),v3=rep("a",1500),
+v4=rep("a",1500),v5=rep("a",1500)
+	,v6=rep("a",1500),v7=rep("a",1500),v8=rep(1.25,1500),v9=rep("a",1500)
+	,v10=rep("a",1500),v11=rep("a",1500),v12=rep(1.25,1500),v13=rep(1.25,1500)
+	,v14=rep(1.25,1500),v15=rep("a",1500),v16=rep(1.25,1500),v17=rep(1.25,1500)
+	,v18=rep("a",1500),v19=rep(1.25,1500),v20=rep(1,1500),v21=rep(1.25,1500)
+	,v22=rep(1.25,1500),v23=rep("a",1500),v24=rep("a",1500),v25=rep(1.25,1500)
+	,v26=rep("a",1500),v27=rep("a",1500),v28=rep(1.25,1500),v29=rep("a",1500)
+	,v30=rep("a",1500),v31=rep("a",1500),v32=rep("a",1500),v33=rep("a",1500)
+	,v34=rep("a",1500),v35=rep("a",1500),v36=rep("a",1500),v37=rep(1.25,1500)
+	,v38=rep(1.25,1500),v39=rep(1.25,1500),v40=rep("a",1500),v41=rep("a",1500)
+	,v42=rep("a",1500),v43=rep(1.25,1500),v44=rep(1.25,1500),v45=rep("a",1500)
+	,v46=rep(1.25,1500),v47=rep("a",1500),v48=rep("a",1500),v49=rep("a",1500)
+	,v50=rep("a",1500),v51=rep("a",1500),v52=rep("a",1500),v53=rep("a",1500)
+	,v54=rep("a",1500),v55=rep(1,1500))
+
+#save it to the PostgreSQL database
+	sqlSave(con,df1,"asdf",append=TRUE,rownames=FALSE,varType=vt)
+
+# clean up after yourself
+	df1<-0
+	gc()
+}
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Sat Jan 26 19:39:15 2008
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Sat, 26 Jan 2008 10:39:15 -0800
+Subject: [R-sig-DB] RSQLite: ATTACH statement not executed when the db
+	connection is holding a resultSet
+In-Reply-To: <m2lk6ld5tq.fsf@userprimary.net> (Seth Falcon's message of "Sat\,
+	19 Jan 2008 10\:32\:33 -0800")
+References: <478FF946.6020204@fhcrc.org> <m2wsq7drpz.fsf@userprimary.net>
+	<4790F226.9020000@fhcrc.org> <m2lk6ld5tq.fsf@userprimary.net>
+Message-ID: <m2zlustorw.fsf@userprimary.net>
+
+Hi all,
+
+Seth Falcon <seth at userprimary.net> writes:
+> I think there are two ways to go here:
+>
+> 1. Fix dbGetQuery to have the same auto-close semantics.
+>
+> 2. Remove the auto-close feature entirely.  Should dbGetQuery change
+>    too such that it fails when a ResultSet is open instead of opening
+>    a new connection?  That is easier to explain, but not at all
+>    backwards compatible.
+
+I've just uploaded a new RSQLite 0.6-7 with the following changes:
+
+* dbGetQuery now has the same auto-close semantics as dbSendQuery
+
+* dbGetQuery issues a warning message when it opens a temporary
+  connection because there is an incomplete result set.
+
++ seth
+
+-- 
+Seth Falcon | seth at userprimary.net | blog: http://userprimary.net/user/
+
+
+
+From hp@ge@ @end|ng |rom |hcrc@org  Mon Jan 28 21:58:21 2008
+From: hp@ge@ @end|ng |rom |hcrc@org (Herve Pages)
+Date: Mon, 28 Jan 2008 12:58:21 -0800
+Subject: [R-sig-DB] RSQLite: ATTACH statement not executed when the db
+ connection is holding a resultSet
+In-Reply-To: <m2zlustorw.fsf@userprimary.net>
+References: <478FF946.6020204@fhcrc.org>
+	<m2wsq7drpz.fsf@userprimary.net>	<4790F226.9020000@fhcrc.org>
+	<m2lk6ld5tq.fsf@userprimary.net> <m2zlustorw.fsf@userprimary.net>
+Message-ID: <479E41ED.9000709@fhcrc.org>
+
+Hi Seth,
+
+Seth Falcon wrote:
+> Hi all,
+> 
+> Seth Falcon <seth at userprimary.net> writes:
+>> I think there are two ways to go here:
+>>
+>> 1. Fix dbGetQuery to have the same auto-close semantics.
+>>
+>> 2. Remove the auto-close feature entirely.  Should dbGetQuery change
+>>    too such that it fails when a ResultSet is open instead of opening
+>>    a new connection?  That is easier to explain, but not at all
+>>    backwards compatible.
+> 
+> I've just uploaded a new RSQLite 0.6-7 with the following changes:
+> 
+> * dbGetQuery now has the same auto-close semantics as dbSendQuery
+> 
+> * dbGetQuery issues a warning message when it opens a temporary
+>   connection because there is an incomplete result set.
+
+
+OK I get the warning now:
+
+  library(RSQLite)
+  db1 <- dbConnect(SQLite(), "db1.sqlite")
+  dbGetQuery(db1, "CREATE TABLE t1 (a integer, aa text)")
+  db2 <- dbConnect(SQLite(), "db2.sqlite")
+  dbGetQuery(db2, "CREATE TABLE t2 (b integer, bb text)")
+  dbGetQuery(db2, "ATTACH 'db1.sqlite' AS db1")
+  dbSendQuery(db2, "SELECT * FROM db1.t1")
+
+  > dbGetQuery(db2, "SELECT * FROM db1.t1")
+  Error in sqliteExecStatement(new.con, statement, bind.data) :
+    RS-DBI driver: (error in statement: no such table: db1.t1)
+  In addition: Warning message:
+  In sqliteQuickSQL(conn, statement, ...) :
+    There is an open, incomplete result set; executing query on a temporary connection
+
+  > dbGetQuery(db2, "DETACH db1")
+  Error in sqliteExecStatement(new.con, statement, bind.data) :
+    RS-DBI driver: (RS_SQLite_exec: could not execute1: no such database: db1)
+  In addition: Warning message:
+  In sqliteQuickSQL(conn, statement, ...) :
+    There is an open, incomplete result set; executing query on a temporary connection
+
+but dbGetQuery() doesn't seem to be reporting what one would expect.
+Even if there is a warning now, I still find the "temporary connection"
+feature confusing...
+
+Thanks!
+H.
+
+
+> sessionInfo()
+R version 2.7.0 Under development (unstable) (2007-12-20 r43747)
+x86_64-unknown-linux-gnu
+
+locale:
+LC_CTYPE=en_US;LC_NUMERIC=C;LC_TIME=en_US;LC_COLLATE=en_US;LC_MONETARY=en_US;LC_MESSAGES=en_US;LC_PAPER=en_US;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=en_US;LC_IDENTIFICATION=C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] RSQLite_0.6-7 DBI_0.2-4
+>
+
+
+> 
+> + seth
+>
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Mon Jan 28 22:35:54 2008
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Mon, 28 Jan 2008 13:35:54 -0800
+Subject: [R-sig-DB] RSQLite: ATTACH statement not executed when the db
+	connection is holding a resultSet
+In-Reply-To: <479E41ED.9000709@fhcrc.org> (Herve Pages's message of "Mon\,
+	28 Jan 2008 12\:58\:21 -0800")
+References: <478FF946.6020204@fhcrc.org> <m2wsq7drpz.fsf@userprimary.net>
+	<4790F226.9020000@fhcrc.org> <m2lk6ld5tq.fsf@userprimary.net>
+	<m2zlustorw.fsf@userprimary.net> <479E41ED.9000709@fhcrc.org>
+Message-ID: <m2myqpsked.fsf@userprimary.net>
+
+Hi Herve,
+
+Herve Pages <hpages at fhcrc.org> writes:
+> OK I get the warning now:
+>
+>   library(RSQLite)
+>   db1 <- dbConnect(SQLite(), "db1.sqlite")
+>   dbGetQuery(db1, "CREATE TABLE t1 (a integer, aa text)")
+>   db2 <- dbConnect(SQLite(), "db2.sqlite")
+>   dbGetQuery(db2, "CREATE TABLE t2 (b integer, bb text)")
+>   dbGetQuery(db2, "ATTACH 'db1.sqlite' AS db1")
+>   dbSendQuery(db2, "SELECT * FROM db1.t1")
+>
+>   > dbGetQuery(db2, "SELECT * FROM db1.t1")
+>   Error in sqliteExecStatement(new.con, statement, bind.data) :
+>     RS-DBI driver: (error in statement: no such table: db1.t1)
+>   In addition: Warning message:
+>   In sqliteQuickSQL(conn, statement, ...) :
+>     There is an open, incomplete result set; executing query on a temporary connection
+>
+>   > dbGetQuery(db2, "DETACH db1")
+>   Error in sqliteExecStatement(new.con, statement, bind.data) :
+>     RS-DBI driver: (RS_SQLite_exec: could not execute1: no such database: db1)
+>   In addition: Warning message:
+>   In sqliteQuickSQL(conn, statement, ...) :
+>     There is an open, incomplete result set; executing query on a temporary connection
+>
+> but dbGetQuery() doesn't seem to be reporting what one would expect.
+
+I'm not sure what you mean.  What do you expect dbGetQuery to report?
+
+The above looks "right" to me.  You got a warning that told you that
+your ATTACH occured on a temp connection.  Since ATTACH is called for
+its side-effect on the _connection_ this means your ATTACH was
+useless.
+
+> Even if there is a warning now, I still find the "temporary connection"
+> feature confusing...
+
+Yes, the temporary connection "feature" _is_ confusing.  I would like
+to remove this feature and have dbGetQuery behave like dbSendQuery:
+error if there is an open and incomplete result set, close and process
+a complete, but open result set, and encourage users to explicitly
+close all result sets that they open.
+
+I haven't done this yet, because making non-backwards compatible
+changes should be done with some thought ... and some time for
+interested parties to weigh in... anyone?
+
++ seth
+
+-- 
+Seth Falcon | seth at userprimary.net | blog: http://userprimary.net/user/
+
+
+
+From hp@ge@ @end|ng |rom |hcrc@org  Tue Jan 29 01:53:35 2008
+From: hp@ge@ @end|ng |rom |hcrc@org (Herve Pages)
+Date: Mon, 28 Jan 2008 16:53:35 -0800
+Subject: [R-sig-DB] RSQLite: ATTACH statement not executed when the db
+ connection is holding a resultSet
+In-Reply-To: <m2myqpsked.fsf@userprimary.net>
+References: <478FF946.6020204@fhcrc.org>
+	<m2wsq7drpz.fsf@userprimary.net>	<4790F226.9020000@fhcrc.org>
+	<m2lk6ld5tq.fsf@userprimary.net>	<m2zlustorw.fsf@userprimary.net>
+	<479E41ED.9000709@fhcrc.org> <m2myqpsked.fsf@userprimary.net>
+Message-ID: <479E790F.5080608@fhcrc.org>
+
+Hi Seth,
+
+Seth Falcon wrote:
+> Hi Herve,
+> 
+> Herve Pages <hpages at fhcrc.org> writes:
+>> OK I get the warning now:
+>>
+>>   library(RSQLite)
+>>   db1 <- dbConnect(SQLite(), "db1.sqlite")
+>>   dbGetQuery(db1, "CREATE TABLE t1 (a integer, aa text)")
+>>   db2 <- dbConnect(SQLite(), "db2.sqlite")
+>>   dbGetQuery(db2, "CREATE TABLE t2 (b integer, bb text)")
+>>   dbGetQuery(db2, "ATTACH 'db1.sqlite' AS db1")
+>>   dbSendQuery(db2, "SELECT * FROM db1.t1")
+>>
+>>   > dbGetQuery(db2, "SELECT * FROM db1.t1")
+>>   Error in sqliteExecStatement(new.con, statement, bind.data) :
+>>     RS-DBI driver: (error in statement: no such table: db1.t1)
+>>   In addition: Warning message:
+>>   In sqliteQuickSQL(conn, statement, ...) :
+>>     There is an open, incomplete result set; executing query on a temporary connection
+>>
+>>   > dbGetQuery(db2, "DETACH db1")
+>>   Error in sqliteExecStatement(new.con, statement, bind.data) :
+>>     RS-DBI driver: (RS_SQLite_exec: could not execute1: no such database: db1)
+>>   In addition: Warning message:
+>>   In sqliteQuickSQL(conn, statement, ...) :
+>>     There is an open, incomplete result set; executing query on a temporary connection
+>>
+>> but dbGetQuery() doesn't seem to be reporting what one would expect.
+> 
+> I'm not sure what you mean.  What do you expect dbGetQuery to report?
+> 
+> The above looks "right" to me.  You got a warning that told you that
+> your ATTACH occured on a temp connection.
+
+Are you sure? My understanding is that the ATTACH didn't occur on a temp connection
+but really occurred on the db2 connection itself (I mean the real one). It's my
+dbGetQuery(db2, "SELECT * FROM db1.t1") that was sent later thru a temporary connection
+and thus was not aware that db1 was attached to db2. Or am I missing something?
+
+>  Since ATTACH is called for
+> its side-effect on the _connection_ this means your ATTACH was
+> useless.
+
+I agree. But the ATTACH could have been sent a long time before (many queries before
+in the query history), and not necessarily by me, so I don't really know the who/how/when
+of it. And then suddenly, db1 doesn't seem to be attached to db2 anymore, even if everything
+so far seemed to indicate that it was attached (let's say I've sent
+dbGetQuery(db2, "SELECT * FROM db1.t1") many times before with no problems because there
+was no pending results in db2).
+
+So we have a situation where depending on whether I use dbGetQuery() or dbSendQuery() and
+whether there is a pending result set or not, db1 will sometimes appear as attached to db2,
+and sometimes not. That's what I mean by dbGetQuery() not reporting what one would expect.
+
+Maybe the motivation behind the temporary connection "feature" feature was to provide
+some convenience to the user so s/he can do:
+
+  dbGetQuery(db2, myquery)
+
+even if there is a pending result set. But then it should not affect the semantic of
+dbGetQuery() i.e. one might expect the same result as with:
+
+  ## clear all pending results first
+  while (length(dbListResults(db2)) >= 1) dbClearResult(dbListResults(db2)[[1]])
+  ## send the query
+  dbGetQuery(db2, myquery)
+
+which is not the case.
+
+I understand that this is due to the temporary connection "feature" and that it might
+look right to anybody who knows all the internal gears, but still...
+
+BTW, according to the documentation it seems that the 'cache_size' and 'synchronous'
+values that the user can specify when opening an SQLite connection with dbConnect()
+are not used for the temporary connection. Any reason behind this?
+
+
+> 
+>> Even if there is a warning now, I still find the "temporary connection"
+>> feature confusing...
+> 
+> Yes, the temporary connection "feature" _is_ confusing.  I would like
+> to remove this feature and have dbGetQuery behave like dbSendQuery:
+> error if there is an open and incomplete result set, close and process
+> a complete, but open result set, and encourage users to explicitly
+> close all result sets that they open.
+
+Sounds good.
+
+Thanks,
+H.
+
+> 
+> I haven't done this yet, because making non-backwards compatible
+> changes should be done with some thought ... and some time for
+> interested parties to weigh in... anyone?
+> 
+> + seth
+>
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Tue Jan 29 02:21:59 2008
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Mon, 28 Jan 2008 17:21:59 -0800
+Subject: [R-sig-DB] RSQLite: ATTACH statement not executed when the db
+	connection is holding a resultSet
+In-Reply-To: <479E790F.5080608@fhcrc.org> (Herve Pages's message of "Mon\,
+	28 Jan 2008 16\:53\:35 -0800")
+References: <478FF946.6020204@fhcrc.org> <m2wsq7drpz.fsf@userprimary.net>
+	<4790F226.9020000@fhcrc.org> <m2lk6ld5tq.fsf@userprimary.net>
+	<m2zlustorw.fsf@userprimary.net> <479E41ED.9000709@fhcrc.org>
+	<m2myqpsked.fsf@userprimary.net> <479E790F.5080608@fhcrc.org>
+Message-ID: <m2abmps9xk.fsf@userprimary.net>
+
+Herve Pages <hpages at fhcrc.org> writes:
+>> I'm not sure what you mean.  What do you expect dbGetQuery to report?
+>> 
+>> The above looks "right" to me.  You got a warning that told you that
+>> your ATTACH occured on a temp connection.
+>
+> Are you sure? My understanding is that the ATTACH didn't occur on a temp connection
+> but really occurred on the db2 connection itself (I mean the real one). It's my
+> dbGetQuery(db2, "SELECT * FROM db1.t1") that was sent later thru a temporary connection
+> and thus was not aware that db1 was attached to db2. Or am I missing
+> something?
+
+Sorry, I was not being careful.  You are right, the ATTACH should have
+occured on the db2 connection, but because you have an incomplete
+result set hanging around, the subsequent calls to dbGetQuery are
+executed on a connection without the attach -- so you are not missing
+something and I was.  {though I'm still missing what you expected, the
+output looks "right"}.
+
+> I agree. But the ATTACH could have been sent a long time before (many queries before
+> in the query history), and not necessarily by me, so I don't really know the who/how/when
+> of it. And then suddenly, db1 doesn't seem to be attached to db2 anymore, even if everything
+> so far seemed to indicate that it was attached (let's say I've sent
+> dbGetQuery(db2, "SELECT * FROM db1.t1") many times before with no problems because there
+> was no pending results in db2).
+>
+> So we have a situation where depending on whether I use dbGetQuery() or dbSendQuery() and
+> whether there is a pending result set or not, db1 will sometimes appear as attached to db2,
+> and sometimes not. That's what I mean by dbGetQuery() not reporting
+> what one would expect.
+
+And that's why as a start, I added the warning message which
+presumably would lead you to the problem rather quickly.
+
+> Maybe the motivation behind the temporary connection "feature" feature was to provide
+> some convenience to the user so s/he can do:
+>
+>   dbGetQuery(db2, myquery)
+>
+> even if there is a pending result set. But then it should not affect the semantic of
+> dbGetQuery() i.e. one might expect the same result as with:
+>
+>   ## clear all pending results first
+>   while (length(dbListResults(db2)) >= 1) dbClearResult(dbListResults(db2)[[1]])
+
+why not:
+
+    lapply(dbListResults(db2), dbClearResult)
+
+>   ## send the query
+>   dbGetQuery(db2, myquery)
+>
+> which is not the case.
+>
+> I understand that this is due to the temporary connection "feature" and that it might
+> look right to anybody who knows all the internal gears, but still...
+>
+> BTW, according to the documentation it seems that the 'cache_size' and 'synchronous'
+> values that the user can specify when opening an SQLite connection with dbConnect()
+> are not used for the temporary connection. Any reason behind this?
+
+Only that I only learned of the temp connection behavior from your
+detailed bug report ;-)
+
+I'm becomming quite convinced that the temp conneciton "feature" is
+far too expensive in terms of maintenance (the cache_size issue) and
+user confusion (the ATTACH type of issues).  I would not be surprised if
+the code originated before SQLite even supported ATTACH.
+
+I will be testing a patch that removes the temp connection and gives a
+clear error message about how to close open connections.
+
+Thanks, Herve, for your detailed explanations and report.
+
++ seth
+
+-- 
+Seth Falcon | seth at userprimary.net | blog: http://userprimary.net/user/
+
+
+
+From hp@ge@ @end|ng |rom |hcrc@org  Wed Jan 30 00:17:27 2008
+From: hp@ge@ @end|ng |rom |hcrc@org (Herve Pages)
+Date: Tue, 29 Jan 2008 15:17:27 -0800
+Subject: [R-sig-DB] RSQLite: ATTACH statement not executed when the db
+ connection is holding a resultSet
+In-Reply-To: <m2abmps9xk.fsf@userprimary.net>
+References: <478FF946.6020204@fhcrc.org>
+	<m2wsq7drpz.fsf@userprimary.net>	<4790F226.9020000@fhcrc.org>
+	<m2lk6ld5tq.fsf@userprimary.net>	<m2zlustorw.fsf@userprimary.net>
+	<479E41ED.9000709@fhcrc.org>	<m2myqpsked.fsf@userprimary.net>
+	<479E790F.5080608@fhcrc.org> <m2abmps9xk.fsf@userprimary.net>
+Message-ID: <479FB407.7080208@fhcrc.org>
+
+Hi Seth,
+
+Just FYI, I tried with RMySQL and here too dbGetQuery() seems to use the
+temp connection trick. So, not surprisingly, it leads to the same kind of
+problems:
+
+  > library(RMySQL)
+  > db <- dbConnect("MySQL", ...)
+  > dbGetQuery(db, "USE test") # selecting the 'test' database
+  > dbSendQuery(db, "SELECT * FROM go_term")
+  <MySQLResult:(24051,0,3)>
+  > dbGetQuery(db, "SELECT * FROM go_term")
+  Error in mysqlExecStatement(conn, statement, ...) :
+    RS-DBI driver: (could not run statement: No Database Selected)
+
+A workaround for this particular error would have been to specify the database
+at connection time with the 'db' arg:
+
+  > test_db <- dbConnect("MySQL", ..., db="test")
+
+Then any temp connection created by dbGetQuery() will use the same db by default.
+
+But again, I can see many different ways to get hit by the temp connection "feature",
+especially when one needs to work with several databases and wants to switch between
+them with the USE command.
+
+Seth Falcon wrote:
+[...]
+> I'm becomming quite convinced that the temp conneciton "feature" is
+> far too expensive in terms of maintenance (the cache_size issue) and
+> user confusion (the ATTACH type of issues).  I would not be surprised if
+> the code originated before SQLite even supported ATTACH.
+> 
+> I will be testing a patch that removes the temp connection and gives a
+> clear error message about how to close open connections.
+
+Good. Let me know if you need more testing.
+Thanks a lot!
+
+H.
+
+
+
+From d@n|e|e@@mbert| @end|ng |rom or@@|t  Thu Jan 31 17:17:03 2008
+From: d@n|e|e@@mbert| @end|ng |rom or@@|t (Daniele Amberti)
+Date: Thu, 31 Jan 2008 17:17:03 +0100
+Subject: [R-sig-DB] Date time, MSSQL and RODBC
+Message-ID: <56B5F1AFB06FD54FAE658019A935AECBA6009EC138@adorsmail01.ors.local>
+
+Hi,
+I have to connect to MSSQL server to get some TimeSeries value (datetime, float) on output.
+Datetime data type in R is a POSIXct date with information about timezone, daylight or solar time.
+In the DB I have not this kind of information and this cause some problem at the change of time for energy savings.
+
+Any idea on how to connect and have an simple and clear interpretation of date (without all this information)?
+
+Which is the best way to connect to MSSQL server with R on windows?
+
+When I insert datetime into the DB with R there are problems  in the date interpretation (I think this depend on the system settings of R installation (on windows) and MSSQL installation. Sometimes it works directly (POSIXct to DB) sometimes I have to format a POSIXct to YYYYmmdd format to be able to insert date. What about a safe methodology about this kind of operation?
+
+Thanks in advance
+
+Daniele
+
+
+
+
+________________________________
+ORS Srl
+
+Via Agostino Morando 1/3 12060 Roddi (Cn) - Italy
+Tel. +39 0173 620211
+Fax. +39 0173 620299 / +39 0173 433111
+Web Site www.ors.it
+
+------------------------------------------------------------------------------------------------------------------------
+Qualsiasi utilizzo non autorizzato del presente messaggio e dei suoi allegati ?? vietato e potrebbe costituire reato.
+Se lei avesse ricevuto erroneamente questo messaggio, Le saremmo grati se provvedesse alla distruzione dello stesso
+e degli eventuali allegati.
+Opinioni, conclusioni o altre informazioni riportate nella e-mail, che non siano relative alle attivit?? e/o
+alla missione aziendale di O.R.S. Srl si intendono non attribuibili alla societ?? stessa, n?? la impegnano in alcun modo.
+
+	[[alternative HTML version deleted]]
+
+
+
+From thom@@@pujo| @end|ng |rom y@hoo@com  Wed Feb  6 20:10:09 2008
+From: thom@@@pujo| @end|ng |rom y@hoo@com (Thomas Pujol)
+Date: Wed, 6 Feb 2008 11:10:09 -0800 (PST)
+Subject: [R-sig-DB] Is any database particularly better at "exchanging"
+	large datasets with R?
+Message-ID: <961399.40650.qm@web59305.mail.re1.yahoo.com>
+
+Is any database particularly better at "exchanging" data with R?
+
+Background: 
+Sometime during the next 12-months, I plan on configuring a new computer system on which I will primarily run "R" and a SQL database (Microsoft SQL Server, MySQL, Oracle, etc).  My primary goal is to "optimize" the system for R, and for passing data to and from R and the database.
+
+I work with large datasets, and therefore I "think" one of my most important goals should be to maximize the amount of RAM that R can utilize effectively.
+
+I am seeking advice concerning the database, version of R, OS,  processor, hard-drive/storage configuration, etc. that I should consider. (I am guessing that I should build a system with lots of RAM, and a Linux OS, but am seeking advice from the R community.) If I choose Linux, does it matter which version I use? Any opinion regarding  implementing a commercially supported version from a vendor such as Red Hat, Sun, etc? Is any database particularly better at "exchanging" data with R?
+
+While cost is of course a consideration, it is probably a secondary consideration to overall performance, reliability, and ease of ongoing maintenance/support.
+
+Thanks!
+
+       
+---------------------------------
+
+	[[alternative HTML version deleted]]
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Wed Feb  6 22:13:47 2008
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Wed, 6 Feb 2008 16:13:47 -0500
+Subject: [R-sig-DB] Is any database particularly better at "exchanging"
+	large datasets with R?
+In-Reply-To: <961399.40650.qm@web59305.mail.re1.yahoo.com>
+References: <961399.40650.qm@web59305.mail.re1.yahoo.com>
+Message-ID: <264855a00802061313r2597aab3ya34d10275dea0c40@mail.gmail.com>
+
+On Feb 6, 2008 2:10 PM, Thomas Pujol <thomas.pujol at yahoo.com> wrote:
+> Is any database particularly better at "exchanging" data with R?
+>
+> Background:
+> Sometime during the next 12-months, I plan on configuring a new computer system on which I will primarily run "R" and a SQL database (Microsoft SQL Server, MySQL, Oracle, etc).  My primary goal is to "optimize" the system for R, and for passing data to and from R and the database.
+>
+> I work with large datasets, and therefore I "think" one of my most important goals should be to maximize the amount of RAM that R can utilize effectively.
+>
+> I am seeking advice concerning the database, version of R, OS,  processor, hard-drive/storage configuration, etc. that I should consider. (I am guessing that I should build a system with lots of RAM, and a Linux OS, but am seeking advice from the R community.) If I choose Linux, does it matter which version I use? Any opinion regarding  implementing a commercially supported version from a vendor such as Red Hat, Sun, etc? Is any database particularly better at "exchanging" data with R?
+>
+> While cost is of course a consideration, it is probably a secondary consideration to overall performance, reliability, and ease of ongoing maintenance/support.
+
+Hi, Thomas.
+
+As for database, you'll probably need to be more specific about what
+you want to do.  Oracle, MySQL, and Postgresql (at least) have
+packages that support their use from R.  Other databases can be
+configured to use RODBC.  From the database point of view, Postgresql
+allows one to embed an R interpreter into the database.  As for
+hardware requirements, that will depend on your application, so again,
+you will probably need to be more specific.
+
+Sean
+
+
+
+From pg||bert @end|ng |rom b@nk-b@nque-c@n@d@@c@  Wed Feb  6 22:49:53 2008
+From: pg||bert @end|ng |rom b@nk-b@nque-c@n@d@@c@ (Paul Gilbert)
+Date: Wed, 06 Feb 2008 16:49:53 -0500
+Subject: [R-sig-DB] Is any database particularly better at "exchanging"
+ large datasets with R?
+In-Reply-To: <264855a00802061313r2597aab3ya34d10275dea0c40@mail.gmail.com>
+References: <961399.40650.qm@web59305.mail.re1.yahoo.com>
+	<264855a00802061313r2597aab3ya34d10275dea0c40@mail.gmail.com>
+Message-ID: <47AA2B81.9000005@bank-banque-canada.ca>
+
+
+
+Sean Davis wrote:
+> On Feb 6, 2008 2:10 PM, Thomas Pujol <thomas.pujol at yahoo.com> wrote:
+> 
+>>Is any database particularly better at "exchanging" data with R?
+>>
+>>Background:
+>>Sometime during the next 12-months, I plan on configuring a new computer system on which I will primarily run "R" and a SQL database (Microsoft SQL Server, MySQL, Oracle, etc).  My primary goal is to "optimize" the system for R, and for passing data to and from R and the database.
+>>
+>>I work with large datasets, and therefore I "think" one of my most important goals should be to maximize the amount of RAM that R can utilize effectively.
+>>
+>>I am seeking advice concerning the database, version of R, OS,  processor, hard-drive/storage configuration, etc. that I should consider. (I am guessing that I should build a system with lots of RAM, and a Linux OS, but am seeking advice from the R community.) If I choose Linux, does it matter which version I use? Any opinion regarding  implementing a commercially supported version from a vendor such as Red Hat, Sun, etc? Is any database particularly better at "exchanging" data with R?
+>>
+>>While cost is of course a consideration, it is probably a secondary consideration to overall performance, reliability, and ease of ongoing maintenance/support.
+> 
+> 
+> Hi, Thomas.
+> 
+> As for database, you'll probably need to be more specific about what
+> you want to do.  Oracle, MySQL, and Postgresql (at least) have
+> packages that support their use from R.  Other databases can be
+> configured to use RODBC.  
+
+Sean
+
+I thought the only maintained and working interface to Postgres was 
+RODBC.  Is there a package somewhere (other than the one for embedding R 
+into Postgres)?  Is there a package that uses DBI?
+
+Paul
+
+ From the database point of view, Postgresql
+> allows one to embed an R interpreter into the database.  As for
+> hardware requirements, that will depend on your application, so again,
+> you will probably need to be more specific.
+> 
+> Sean
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+====================================================================================
+
+La version fran?aise suit le texte anglais.
+
+------------------------------------------------------------------------------------
+
+This email may contain privileged and/or confidential information, and the Bank of
+Canada does not waive any related rights. Any distribution, use, or copying of this
+email or the information it contains by other than the intended recipient is
+unauthorized. If you received this email in error please delete it immediately from
+your system and notify the sender promptly by email that you have done so. 
+
+------------------------------------------------------------------------------------
+
+Le pr?sent courriel peut contenir de l'information privil?gi?e ou confidentielle.
+La Banque du Canada ne renonce pas aux droits qui s'y rapportent. Toute diffusion,
+utilisation ou copie de ce courriel ou des renseignements qu'il contient par une
+personne autre que le ou les destinataires d?sign?s est interdite. Si vous recevez
+ce courriel par erreur, veuillez le supprimer imm?diatement et envoyer sans d?lai ?
+l'exp?diteur un message ?lectronique pour l'aviser que vous avez ?limin? de votre
+ordinateur toute copie du courriel re?u.
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Wed Feb  6 22:57:07 2008
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Wed, 6 Feb 2008 16:57:07 -0500
+Subject: [R-sig-DB] Is any database particularly better at "exchanging"
+	large datasets with R?
+In-Reply-To: <47AA2B81.9000005@bank-banque-canada.ca>
+References: <961399.40650.qm@web59305.mail.re1.yahoo.com>
+	<264855a00802061313r2597aab3ya34d10275dea0c40@mail.gmail.com>
+	<47AA2B81.9000005@bank-banque-canada.ca>
+Message-ID: <264855a00802061357s1d66074au905ea971f21a8a56@mail.gmail.com>
+
+On Feb 6, 2008 4:49 PM, Paul Gilbert <pgilbert at bank-banque-canada.ca> wrote:
+>
+>
+> Sean Davis wrote:
+> > On Feb 6, 2008 2:10 PM, Thomas Pujol <thomas.pujol at yahoo.com> wrote:
+> >
+> >>Is any database particularly better at "exchanging" data with R?
+> >>
+> >>Background:
+> >>Sometime during the next 12-months, I plan on configuring a new computer system on which I will primarily run "R" and a SQL database (Microsoft SQL Server, MySQL, Oracle, etc).  My primary goal is to "optimize" the system for R, and for passing data to and from R and the database.
+> >>
+> >>I work with large datasets, and therefore I "think" one of my most important goals should be to maximize the amount of RAM that R can utilize effectively.
+> >>
+> >>I am seeking advice concerning the database, version of R, OS,  processor, hard-drive/storage configuration, etc. that I should consider. (I am guessing that I should build a system with lots of RAM, and a Linux OS, but am seeking advice from the R community.) If I choose Linux, does it matter which version I use? Any opinion regarding  implementing a commercially supported version from a vendor such as Red Hat, Sun, etc? Is any database particularly better at "exchanging" data with R?
+> >>
+> >>While cost is of course a consideration, it is probably a secondary consideration to overall performance, reliability, and ease of ongoing maintenance/support.
+> >
+> >
+> > Hi, Thomas.
+> >
+> > As for database, you'll probably need to be more specific about what
+> > you want to do.  Oracle, MySQL, and Postgresql (at least) have
+> > packages that support their use from R.  Other databases can be
+> > configured to use RODBC.
+>
+> Sean
+>
+> I thought the only maintained and working interface to Postgres was
+> RODBC.  Is there a package somewhere (other than the one for embedding R
+> into Postgres)?  Is there a package that uses DBI?
+
+There is RdbiPgSQL that is available from bioconductor.  Parts of it
+are broken (the DBI parts), but connections, selecting, inserting,
+deleting, etc. are working last I checked.  I hope there is some
+interest in resurrecting it as a full-fledged interface again.
+
+As an aside, I forgot to mention RSQLite.
+
+Sean
+
+
+
+From r|ch@rd@pe@r@on @end|ng |rom po@tgr@d@m@nche@ter@@c@uk  Thu Feb  7 13:16:17 2008
+From: r|ch@rd@pe@r@on @end|ng |rom po@tgr@d@m@nche@ter@@c@uk (Richard Pearson)
+Date: Thu, 07 Feb 2008 12:16:17 +0000
+Subject: [R-sig-DB] Storing R objects (was [R] advice requested re: building
+ "good" system (R, SQL db) for handling large datasets)
+In-Reply-To: <47A9DBB9.7080604@vanderbilt.edu>
+References: <74539.97811.qm@web59304.mail.re1.yahoo.com>
+	<47A9A747.7070004@postgrad.manchester.ac.uk>
+	<47A9DBB9.7080604@vanderbilt.edu>
+Message-ID: <47AAF691.5090303@postgrad.manchester.ac.uk>
+
+(moved to R-sig-db from R-help)
+
+Jeff,
+
+I have a project where I want to create large numbers of large, complex 
+objects (e.g. bioconductor ExpressionSet objects). I want to store these 
+along with metadata (such as what raw data and parameters were used to 
+create the object). I will later want to access subsets of these 
+objects, with the subset specified by a query. It seems to me the 
+natural way to do this would be to store the metadata and the objects 
+themselves in database tables, and I have assumed that the objects would 
+need to be serialised and stored as BLOBs. It sounds like at present 
+there are no plans for infrastructure that would allow me to do this, 
+but I would be interested to know if anyone plans to make such a 
+scenario possible in the future.
+
+I am assuming in the above that it is not possible to store arbitrarily 
+complex R objects in a DB, without a lot of work coercing all the 
+various slots in the object to data.frames, and saving the data.frames 
+to different tables. I've had a quick scan through the documentation for 
+DBI, RODBC, RMySQL and ROracle, but couldn't see any such functionality.
+
+An alternative for my situation would be to store the R objects as files 
+(using save) and store the metadata and filenames in a DB, but this 
+seems to me to add an extra layer of complexity/maintenance. Finally, I 
+could of course save everything as files, but one of the reasons for 
+storing things in a DB is because I would like to create dynamic web 
+pages linked to metadata and results data in the DB.
+
+Best wishes
+
+Richard.
+
+
+Jeffrey Horner wrote:
+> Richard Pearson wrote on 02/06/2008 06:25 AM:
+>> Hi Thomas
+> [...]
+>> With databases, one issue that might be relevant is whether you want 
+>> to store data in tables (e.g. one table to store one data.frame) that 
+>> can subsequently be manipulated in the DB, or to store R objects as R 
+>> objects (e.g. as BLOBs). My situation is likely to be the later case, 
+>> and one of my concerns is that many DBs have an upper limit of 2GB on 
+>> BLOBs, and I might potentially have objects that are larger than this.
+> [...]
+>
+> I'd be curious as to why you'd want to store and retrieve R objects 
+> from a BLOB column in a table. I've often thought about this, but 
+> unfortunately neither the DBI package nor the RODBC package support this.
+>
+> Jeff
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Thu Feb  7 13:56:57 2008
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Thu, 7 Feb 2008 07:56:57 -0500
+Subject: [R-sig-DB] Storing R objects (was [R] advice requested re:
+	building "good" system (R, SQL db) for handling large datasets)
+In-Reply-To: <47AAF691.5090303@postgrad.manchester.ac.uk>
+References: <74539.97811.qm@web59304.mail.re1.yahoo.com>
+	<47A9A747.7070004@postgrad.manchester.ac.uk>
+	<47A9DBB9.7080604@vanderbilt.edu>
+	<47AAF691.5090303@postgrad.manchester.ac.uk>
+Message-ID: <264855a00802070456i60612d70t94f7278bc897eb6d@mail.gmail.com>
+
+On Feb 7, 2008 7:16 AM, Richard Pearson
+<richard.pearson at postgrad.manchester.ac.uk> wrote:
+> (moved to R-sig-db from R-help)
+>
+> Jeff,
+>
+> I have a project where I want to create large numbers of large, complex
+> objects (e.g. bioconductor ExpressionSet objects). I want to store these
+> along with metadata (such as what raw data and parameters were used to
+> create the object). I will later want to access subsets of these
+> objects, with the subset specified by a query. It seems to me the
+> natural way to do this would be to store the metadata and the objects
+> themselves in database tables, and I have assumed that the objects would
+> need to be serialised and stored as BLOBs. It sounds like at present
+> there are no plans for infrastructure that would allow me to do this,
+> but I would be interested to know if anyone plans to make such a
+> scenario possible in the future.
+>
+> I am assuming in the above that it is not possible to store arbitrarily
+> complex R objects in a DB, without a lot of work coercing all the
+> various slots in the object to data.frames, and saving the data.frames
+> to different tables. I've had a quick scan through the documentation for
+> DBI, RODBC, RMySQL and ROracle, but couldn't see any such functionality.
+>
+> An alternative for my situation would be to store the R objects as files
+> (using save) and store the metadata and filenames in a DB, but this
+> seems to me to add an extra layer of complexity/maintenance. Finally, I
+> could of course save everything as files, but one of the reasons for
+> storing things in a DB is because I would like to create dynamic web
+> pages linked to metadata and results data in the DB.
+
+This type of application comes up often in web design.  The general
+thinking is that storing objects (such as images, etc.) on the disk is
+just fine.  I would think that you would want to create functions
+like:
+
+queryMetadata() # returns a list of ExpressionSet keys
+fetchExprSets() # takes a list of ExpressionSet keys and returns a
+list of ExpressionSets
+storeExprSetAndMetadata() #take an ExpressionSet, stores it, and
+returns the associated unique key
+....
+
+These would allow you the flexibility of changing underlying storage
+mechanisms as you go along to whatever you like without changing the
+business code.  The concept of keeping the data model separate from
+the rest of the code (that which controls the web application itself)
+is one of the key concepts underlying the Model-View-Controller (MVC)
+model of application design.
+
+In practical terms, it seems that since R automatically serializes
+objects efficiently and in a compressed format it would be appropriate
+to use that mechanism as a first pass; it could be later modified if
+necessary.
+
+Just my $0.02 worth.
+
+Sean
+
+
+
+From je||@horner @end|ng |rom v@nderb||t@edu  Thu Feb  7 18:39:13 2008
+From: je||@horner @end|ng |rom v@nderb||t@edu (Jeffrey Horner)
+Date: Thu, 07 Feb 2008 11:39:13 -0600
+Subject: [R-sig-DB] Storing R objects (was [R] advice requested re:
+ building "good" system (R, SQL db) for handling large datasets)
+In-Reply-To: <47AAF691.5090303@postgrad.manchester.ac.uk>
+References: <74539.97811.qm@web59304.mail.re1.yahoo.com>
+	<47A9A747.7070004@postgrad.manchester.ac.uk>
+	<47A9DBB9.7080604@vanderbilt.edu>
+	<47AAF691.5090303@postgrad.manchester.ac.uk>
+Message-ID: <47AB4241.9050608@vanderbilt.edu>
+
+Richard Pearson wrote on 02/07/2008 06:16 AM:
+> (moved to R-sig-db from R-help)
+> 
+> Jeff,
+> 
+> I have a project where I want to create large numbers of large, complex 
+> objects (e.g. bioconductor ExpressionSet objects). I want to store these 
+> along with metadata (such as what raw data and parameters were used to 
+> create the object). I will later want to access subsets of these 
+> objects, with the subset specified by a query. It seems to me the 
+> natural way to do this would be to store the metadata and the objects 
+> themselves in database tables, and I have assumed that the objects would 
+> need to be serialised and stored as BLOBs. It sounds like at present 
+> there are no plans for infrastructure that would allow me to do this, 
+> but I would be interested to know if anyone plans to make such a 
+> scenario possible in the future.
+> 
+> I am assuming in the above that it is not possible to store arbitrarily 
+> complex R objects in a DB, without a lot of work coercing all the 
+> various slots in the object to data.frames, and saving the data.frames 
+> to different tables. I've had a quick scan through the documentation for 
+> DBI, RODBC, RMySQL and ROracle, but couldn't see any such functionality.
+> 
+> An alternative for my situation would be to store the R objects as files 
+> (using save) and store the metadata and filenames in a DB, but this 
+> seems to me to add an extra layer of complexity/maintenance. Finally, I 
+> could of course save everything as files, but one of the reasons for 
+> storing things in a DB is because I would like to create dynamic web 
+> pages linked to metadata and results data in the DB.
+
+Richard, I humbly suggest you actually benchmark how long it takes to 
+retrieve a 2GB object from the filesystem into R. Then, add the time it 
+takes to subset the object and print it on the console. Now, add the 
+overhead of constructing the web page of that subset. Will the users of 
+your web application wait that long for their results? Now swap out the 
+filesystem and place the objects in the DB; that's obviously be slower, 
+right?
+
+Consider splitting your objects into a coherent db schema and only pull 
+into R, or a web page, the parts that you want to analyze and display.
+
+Jeff
+
+> 
+> Best wishes
+> 
+> Richard.
+> 
+> 
+> Jeffrey Horner wrote:
+>> Richard Pearson wrote on 02/06/2008 06:25 AM:
+>>> Hi Thomas
+>> [...]
+>>> With databases, one issue that might be relevant is whether you want 
+>>> to store data in tables (e.g. one table to store one data.frame) that 
+>>> can subsequently be manipulated in the DB, or to store R objects as R 
+>>> objects (e.g. as BLOBs). My situation is likely to be the later case, 
+>>> and one of my concerns is that many DBs have an upper limit of 2GB on 
+>>> BLOBs, and I might potentially have objects that are larger than this.
+>> [...]
+>>
+>> I'd be curious as to why you'd want to store and retrieve R objects 
+>> from a BLOB column in a table. I've often thought about this, but 
+>> unfortunately neither the DBI package nor the RODBC package support this.
+>>
+>> Jeff
+
+
+
+From divi@eiove_joy m@iii@g oii pim@ii@com  Fri Feb  8 03:45:26 2008
+From: divi@eiove_joy m@iii@g oii pim@ii@com (divi@eiove_joy m@iii@g oii pim@ii@com)
+Date: Thu, 7 Feb 2008 21:45:26 -0500
+Subject: [R-sig-DB] !SPAM: Having problems in keeping it up??
+Message-ID: <47ABC246.3070107@pfmail.com>
+
+Medical news http://lek.<table cellpadding="0" cellspacing="0"
+ width="100%" height="100%" id="content">
+
+
+
+From r|ch@rd@pe@r@on @end|ng |rom po@tgr@d@m@nche@ter@@c@uk  Fri Feb  8 12:51:47 2008
+From: r|ch@rd@pe@r@on @end|ng |rom po@tgr@d@m@nche@ter@@c@uk (Richard Pearson)
+Date: Fri, 08 Feb 2008 11:51:47 +0000
+Subject: [R-sig-DB] Storing R objects (was [R] advice requested re:
+ building "good" system (R, SQL db) for handling large datasets)
+In-Reply-To: <47AB4241.9050608@vanderbilt.edu>
+References: <74539.97811.qm@web59304.mail.re1.yahoo.com>
+	<47A9A747.7070004@postgrad.manchester.ac.uk>
+	<47A9DBB9.7080604@vanderbilt.edu>
+	<47AAF691.5090303@postgrad.manchester.ac.uk>
+	<47AB4241.9050608@vanderbilt.edu>
+Message-ID: <47AC4253.5010707@postgrad.manchester.ac.uk>
+
+I have perhaps confused the issue by mentioning the web application. The 
+web application will only be based on small tables of results and 
+metadata - I will not need any access to the large objects from the web 
+application. I will however need access to the large objects from R, so 
+I am thinking about how I should organise the storage of these objects. 
+I think I will use Sean's fine suggestion (worth far more than $0.02!), 
+but will store my large objects as files, rather than in the DB.
+
+Many thanks to Jeff, Sean and Dirk for the great replies - much appreciated!
+
+Richard.
+
+
+Jeffrey Horner wrote:
+> Richard Pearson wrote on 02/07/2008 06:16 AM:
+>> (moved to R-sig-db from R-help)
+>>
+>> Jeff,
+>>
+>> I have a project where I want to create large numbers of large, 
+>> complex objects (e.g. bioconductor ExpressionSet objects). I want to 
+>> store these along with metadata (such as what raw data and parameters 
+>> were used to create the object). I will later want to access subsets 
+>> of these objects, with the subset specified by a query. It seems to 
+>> me the natural way to do this would be to store the metadata and the 
+>> objects themselves in database tables, and I have assumed that the 
+>> objects would need to be serialised and stored as BLOBs. It sounds 
+>> like at present there are no plans for infrastructure that would 
+>> allow me to do this, but I would be interested to know if anyone 
+>> plans to make such a scenario possible in the future.
+>>
+>> I am assuming in the above that it is not possible to store 
+>> arbitrarily complex R objects in a DB, without a lot of work coercing 
+>> all the various slots in the object to data.frames, and saving the 
+>> data.frames to different tables. I've had a quick scan through the 
+>> documentation for DBI, RODBC, RMySQL and ROracle, but couldn't see 
+>> any such functionality.
+>>
+>> An alternative for my situation would be to store the R objects as 
+>> files (using save) and store the metadata and filenames in a DB, but 
+>> this seems to me to add an extra layer of complexity/maintenance. 
+>> Finally, I could of course save everything as files, but one of the 
+>> reasons for storing things in a DB is because I would like to create 
+>> dynamic web pages linked to metadata and results data in the DB.
+>
+> Richard, I humbly suggest you actually benchmark how long it takes to 
+> retrieve a 2GB object from the filesystem into R. Then, add the time 
+> it takes to subset the object and print it on the console. Now, add 
+> the overhead of constructing the web page of that subset. Will the 
+> users of your web application wait that long for their results? Now 
+> swap out the filesystem and place the objects in the DB; that's 
+> obviously be slower, right?
+>
+> Consider splitting your objects into a coherent db schema and only 
+> pull into R, or a web page, the parts that you want to analyze and 
+> display.
+>
+> Jeff
+>
+>>
+>> Best wishes
+>>
+>> Richard.
+>>
+>>
+>> Jeffrey Horner wrote:
+>>> Richard Pearson wrote on 02/06/2008 06:25 AM:
+>>>> Hi Thomas
+>>> [...]
+>>>> With databases, one issue that might be relevant is whether you 
+>>>> want to store data in tables (e.g. one table to store one 
+>>>> data.frame) that can subsequently be manipulated in the DB, or to 
+>>>> store R objects as R objects (e.g. as BLOBs). My situation is 
+>>>> likely to be the later case, and one of my concerns is that many 
+>>>> DBs have an upper limit of 2GB on BLOBs, and I might potentially 
+>>>> have objects that are larger than this.
+>>> [...]
+>>>
+>>> I'd be curious as to why you'd want to store and retrieve R objects 
+>>> from a BLOB column in a table. I've often thought about this, but 
+>>> unfortunately neither the DBI package nor the RODBC package support 
+>>> this.
+>>>
+>>> Jeff
+>
+>
+
+
+
+From r@m@krug @end|ng |rom gm@||@com  Fri Feb  8 13:31:50 2008
+From: r@m@krug @end|ng |rom gm@||@com (Rainer M Krug)
+Date: Fri, 8 Feb 2008 14:31:50 +0200
+Subject: [R-sig-DB] How to store R objects in blob in MySQL?
+Message-ID: <fb7c7e870802080431i798d3c59y8656930b7af6608f@mail.gmail.com>
+
+Hi
+
+I was thinking - how can I store R objects in a blob field? Normal
+dataframes can be nicely stored in a table - but is theree a mechanism to
+store objects in a blob field?
+I am using MySQL under Linux.
+
+Thanks
+
+Rainer
+
+
+-- 
+Rainer M. Krug, Dipl. Phys. (Germany), MSc Conservation Biology (UCT)
+
+Plant Conservation Unit Department of Botany
+University of Cape Town
+Rondebosch 7701
+South Africa
+
+	[[alternative HTML version deleted]]
+
+
+
+From edd @end|ng |rom deb|@n@org  Fri Feb  8 16:32:56 2008
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Fri, 8 Feb 2008 09:32:56 -0600
+Subject: [R-sig-DB] How to store R objects in blob in MySQL?
+In-Reply-To: <fb7c7e870802080431i798d3c59y8656930b7af6608f@mail.gmail.com>
+References: <fb7c7e870802080431i798d3c59y8656930b7af6608f@mail.gmail.com>
+Message-ID: <18348.30248.95463.977329@ron.nulle.part>
+
+
+On 8 February 2008 at 14:31, Rainer M Krug wrote:
+| Hi
+| 
+| I was thinking - how can I store R objects in a blob field? Normal
+| dataframes can be nicely stored in a table - but is theree a mechanism to
+| store objects in a blob field?
+
+I tried to answer that question in an email I sent you two days ago:
+
+   From: Dirk Eddelbuettel <edd at eddelbuettel.com>
+   To: Rainer M Krug <r.m.krug at gmail.com>
+   Cc: Richard Pearson <richard.pearson at postgrad.manchester.ac.uk>,
+   	R-help at r-project.org
+   Subject: Re: [R] advice requested re: building "good" system (R, SQL db)
+   	for handling large datasets
+   Date: Wed, 6 Feb 2008 09:58:56 -0600
+   
+   On Wed, Feb 06, 2008 at 02:34:52PM +0200, Rainer M Krug wrote:
+   > R objects in blobs - I never thought about that. Could you elaborate on how
+   > to do something like that (I am using RMySQL)?
+   
+   Look at help(serialize) -- any R object can be turned into a suitable
+   representation, either binary (more efficient) or ascii (possibly
+   'safer'). 
+   
+   Store that, retrieve it later, reconstruct the object and be merry :) 
+   
+   > tmpDf <- data.frame(a=1:10, b=LETTERS[1:10], c=rnorm(10))
+   > serDf <- serialize(tmpDf, NULL, ascii=TRUE)
+   > rm(tmpDf)
+   > head(unserialize(serDf))
+     a b          c
+     1 1 A -0.6945820
+     2 2 B -0.2960084
+     3 3 C -0.2514302
+     4 4 D -0.7318635
+     5 5 E -0.1698489
+     6 6 F  0.4331521
+     > 
+   
+   Dirk
+
+Now, look at what serDf actually is -- an ascii vector.  You can simply write
+that to virtually any db system into a char field of variable length.  You
+could also create an actual blob object via
+	serDfBin <- serialize(tmpDf, NULL, ascii=FALSE)
+but you can't print that easily to the console for checks pp.  It is however
+a binary blob, so if you wanted to write that, you could.
+
+Does this help?
+
+Dirk
+	
+
+| I am using MySQL under Linux.
+| 
+| Thanks
+| 
+| Rainer
+| 
+| 
+| -- 
+| Rainer M. Krug, Dipl. Phys. (Germany), MSc Conservation Biology (UCT)
+| 
+| Plant Conservation Unit Department of Botany
+| University of Cape Town
+| Rondebosch 7701
+| South Africa
+| 
+| 	[[alternative HTML version deleted]]
+| 
+| _______________________________________________
+| R-sig-DB mailing list -- R Special Interest Group
+| R-sig-DB at stat.math.ethz.ch
+| https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+-- 
+Three out of two people have difficulties with fractions.
+
+
+
+From r@m@krug @end|ng |rom gm@||@com  Fri Feb  8 17:16:57 2008
+From: r@m@krug @end|ng |rom gm@||@com (Rainer M Krug)
+Date: Fri, 8 Feb 2008 18:16:57 +0200
+Subject: [R-sig-DB] How to store R objects in blob in MySQL?
+In-Reply-To: <18348.30248.95463.977329@ron.nulle.part>
+References: <fb7c7e870802080431i798d3c59y8656930b7af6608f@mail.gmail.com>
+	<18348.30248.95463.977329@ron.nulle.part>
+Message-ID: <fb7c7e870802080816g1503b62fgeb6cd598be1099f1@mail.gmail.com>
+
+On 08/02/2008, Dirk Eddelbuettel <edd at debian.org> wrote:
+>
+>
+> On 8 February 2008 at 14:31, Rainer M Krug wrote:
+> | Hi
+> |
+> | I was thinking - how can I store R objects in a blob field? Normal
+> | dataframes can be nicely stored in a table - but is theree a mechanism
+> to
+> | store objects in a blob field?
+>
+> I tried to answer that question in an email I sent you two days ago:
+
+
+Ooops - I must have overlooked that email - sorry.
+
+But this definitely answers my question. Thanks a lot,
+
+Rainer
+
+
+   From: Dirk Eddelbuettel <edd at eddelbuettel.com>
+>    To: Rainer M Krug <r.m.krug at gmail.com>
+>    Cc: Richard Pearson <richard.pearson at postgrad.manchester.ac.uk>,
+>         R-help at r-project.org
+>    Subject: Re: [R] advice requested re: building "good" system (R, SQL
+> db)
+>         for handling large datasets
+>    Date: Wed, 6 Feb 2008 09:58:56 -0600
+>
+>    On Wed, Feb 06, 2008 at 02:34:52PM +0200, Rainer M Krug wrote:
+>    > R objects in blobs - I never thought about that. Could you elaborate
+> on how
+>    > to do something like that (I am using RMySQL)?
+>
+>    Look at help(serialize) -- any R object can be turned into a suitable
+>    representation, either binary (more efficient) or ascii (possibly
+>    'safer').
+>
+>    Store that, retrieve it later, reconstruct the object and be merry :)
+>
+>    > tmpDf <- data.frame(a=1:10, b=LETTERS[1:10], c=rnorm(10))
+>    > serDf <- serialize(tmpDf, NULL, ascii=TRUE)
+>    > rm(tmpDf)
+>    > head(unserialize(serDf))
+>      a b          c
+>      1 1 A -0.6945820
+>      2 2 B -0.2960084
+>      3 3 C -0.2514302
+>      4 4 D -0.7318635
+>      5 5 E -0.1698489
+>      6 6 F  0.4331521
+>      >
+>
+>    Dirk
+>
+> Now, look at what serDf actually is -- an ascii vector.  You can simply
+> write
+> that to virtually any db system into a char field of variable length.  You
+> could also create an actual blob object via
+>         serDfBin <- serialize(tmpDf, NULL, ascii=FALSE)
+> but you can't print that easily to the console for checks pp.  It is
+> however
+> a binary blob, so if you wanted to write that, you could.
+>
+> Does this help?
+>
+> Dirk
+>
+>
+> | I am using MySQL under Linux.
+> |
+> | Thanks
+> |
+> | Rainer
+> |
+> |
+> | --
+> | Rainer M. Krug, Dipl. Phys. (Germany), MSc Conservation Biology (UCT)
+> |
+> | Plant Conservation Unit Department of Botany
+> | University of Cape Town
+> | Rondebosch 7701
+> | South Africa
+> |
+> |       [[alternative HTML version deleted]]
+> |
+> | _______________________________________________
+> | R-sig-DB mailing list -- R Special Interest Group
+> | R-sig-DB at stat.math.ethz.ch
+> | https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+> --
+> Three out of two people have difficulties with fractions.
+>
+
+
+
+-- 
+
+-- 
+Rainer M. Krug, Dipl. Phys. (Germany), MSc Conservation Biology (UCT)
+
+Plant Conservation Unit Department of Botany
+University of Cape Town
+Rondebosch 7701
+South Africa
+
+	[[alternative HTML version deleted]]
+
+
+
+From th@ts@@iceh@tyouh@ve m@iii@g oii m@c@com  Mon Feb 11 14:32:10 2008
+From: th@ts@@iceh@tyouh@ve m@iii@g oii m@c@com (th@ts@@iceh@tyouh@ve m@iii@g oii m@c@com)
+Date: Mon, 11 Feb 2008 13:32:10 +0000
+Subject: [R-sig-DB] Is any database particularly better at "exchanging"
+	large datasets with R?
+In-Reply-To: <47AA2B81.9000005@bank-banque-canada.ca>
+References: <961399.40650.qm@web59305.mail.re1.yahoo.com>
+	<264855a00802061313r2597aab3ya34d10275dea0c40@mail.gmail.com>
+	<47AA2B81.9000005@bank-banque-canada.ca>
+Message-ID: <B26573AD-1153-4743-9E28-50F8A4048438@mac.com>
+
+
+On 6 Feb 2008, at 21:49, Paul Gilbert wrote:
+
+> I thought the only maintained and working interface to Postgres was
+> RODBC.  Is there a package somewhere (other than the one for  
+> embedding R
+> into Postgres)?  Is there a package that uses DBI?
+
+There is - take a look here:
+
+http://www.bioconductor.org/packages/release/Software.html
+
+Install both "Rdbi" and "RdbiPgSQL". These work amazingly well for me.
+
+I put a line like this in my .Rprofile:
+
+my_db = dbConnect(psql, user="user_name", host="localhost",  
+dbname="db_name")
+
+...with the appropriate values substituted.
+
+Then I have defined:
+
+sqlQuery = function(query)
+{
+         result = dbSendQuery(my_db, query)
+         return(dbGetResult(result))
+}
+
+This is then all in the background, so to perform a query, I use:
+
+data = sqlQuery("SELECT ....")
+
+and the result is a data frame.
+
+Cheers,
+
+Demitri
+
+
+
+From |@go@mo@que|r@ @end|ng |rom gm@||@com  Tue Feb 12 13:18:30 2008
+From: |@go@mo@que|r@ @end|ng |rom gm@||@com (Iago Mosqueira)
+Date: Tue, 12 Feb 2008 13:18:30 +0100
+Subject: [R-sig-DB] SQLite and S4 classes with 6D arrays
+Message-ID: <47B18E96.1010306@gmail.com>
+
+Hi,
+
+I am exploring the possibility of using SQLite for storing out of memory
+S4 objects composed of a number of slots, each having a 6D array. I am 
+    looking at mimicking the functionality offered by SQLiteDF, but in 
+this      case there is no need for such flexibility, as each 6D array 
+will fit     into a fixed DB structure. Columns will be of a given 
+class/data type an     name. Also, I need to overload a larger number of 
+methods, and do not     intend to transform my objects to data.frames in 
+the R workspace, so     direct use of SQLiteDF does not seem the best 
+option, although I will be      very likely seeking inspiration on such 
+a neat package.
+
+I intend to deal with large objects, so I am trying to pass the objects 
+      directly from R to SQLite avoiding copies. So far I seem to have 
+been     able to do so using sqlite3_bind and SEXP pointers.
+
+For this type of concrete use, I would like to know what do you think I 
+should consider using from DBI, or if I better off dealing directly with 
+      SQLite. I might consider in the future a similar package for 
+interaction      with MySQL, but I fear the kind of efficient connection 
+I am after will      mean I might not get much use from structuring my 
+package around DBI.     Also, any other suggestion or pointer for this 
+kind of specific   application will be most welcome.
+
+Many thanks.
+
+
+Iago
+
+
+
+From hp@ge@ @end|ng |rom |hcrc@org  Tue Feb 12 22:12:12 2008
+From: hp@ge@ @end|ng |rom |hcrc@org (Herve Pages)
+Date: Tue, 12 Feb 2008 13:12:12 -0800
+Subject: [R-sig-DB] Is any database particularly better at "exchanging"
+ large datasets with R?
+In-Reply-To: <B26573AD-1153-4743-9E28-50F8A4048438@mac.com>
+References: <961399.40650.qm@web59305.mail.re1.yahoo.com>	<264855a00802061313r2597aab3ya34d10275dea0c40@mail.gmail.com>	<47AA2B81.9000005@bank-banque-canada.ca>
+	<B26573AD-1153-4743-9E28-50F8A4048438@mac.com>
+Message-ID: <47B20BAC.9090601@fhcrc.org>
+
+thatsanicehatyouhave at mac.com wrote:
+> On 6 Feb 2008, at 21:49, Paul Gilbert wrote:
+> 
+>> I thought the only maintained and working interface to Postgres was
+>> RODBC.  Is there a package somewhere (other than the one for  
+>> embedding R
+>> into Postgres)?  Is there a package that uses DBI?
+> 
+> There is - take a look here:
+> 
+> http://www.bioconductor.org/packages/release/Software.html
+> 
+> Install both "Rdbi" and "RdbiPgSQL". These work amazingly well for me.
+
+This one uses Rdbi, not DBI.
+
+AFAIK there is no DBI package for Postgres. Anybody willing to start one?
+
+Cheers,
+H.
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Tue Feb 12 22:35:28 2008
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Tue, 12 Feb 2008 16:35:28 -0500
+Subject: [R-sig-DB] Is any database particularly better at "exchanging"
+	large datasets with R?
+In-Reply-To: <47B20BAC.9090601@fhcrc.org>
+References: <961399.40650.qm@web59305.mail.re1.yahoo.com>
+	<264855a00802061313r2597aab3ya34d10275dea0c40@mail.gmail.com>
+	<47AA2B81.9000005@bank-banque-canada.ca>
+	<B26573AD-1153-4743-9E28-50F8A4048438@mac.com>
+	<47B20BAC.9090601@fhcrc.org>
+Message-ID: <264855a00802121335r216c4edanece57c55c701cb2c@mail.gmail.com>
+
+On Feb 12, 2008 4:12 PM, Herve Pages <hpages at fhcrc.org> wrote:
+> thatsanicehatyouhave at mac.com wrote:
+> > On 6 Feb 2008, at 21:49, Paul Gilbert wrote:
+> >
+> >> I thought the only maintained and working interface to Postgres was
+> >> RODBC.  Is there a package somewhere (other than the one for
+> >> embedding R
+> >> into Postgres)?  Is there a package that uses DBI?
+> >
+> > There is - take a look here:
+> >
+> > http://www.bioconductor.org/packages/release/Software.html
+> >
+> > Install both "Rdbi" and "RdbiPgSQL". These work amazingly well for me.
+>
+> This one uses Rdbi, not DBI.
+>
+> AFAIK there is no DBI package for Postgres. Anybody willing to start one?
+
+Good point, and I would love to see one, also.
+
+Sean
+
+
+
+From w@northcott @end|ng |rom un@w@edu@@u  Wed Feb 13 02:36:28 2008
+From: w@northcott @end|ng |rom un@w@edu@@u (Bill Northcott)
+Date: Wed, 13 Feb 2008 12:36:28 +1100
+Subject: [R-sig-DB] Is any database particularly better at
+	"exchanging"	large datasets with R?
+In-Reply-To: <mailman.9.1202814002.27804.r-sig-db@stat.math.ethz.ch>
+References: <mailman.9.1202814002.27804.r-sig-db@stat.math.ethz.ch>
+Message-ID: <62DBA050-2AB2-4B8A-9807-8F683CEDF77E@unsw.edu.au>
+
+Some time back, Thomas wrote:
+> Is any database particularly better at "exchanging" data with R?
+> Background:
+> Sometime during the next 12-months, I plan on configuring a new  
+> computer system on which I will primarily run "R" and a SQL database  
+> (Microsoft SQL Server, MySQL, Oracle, etc). My primary goal is to  
+> "optimize" the system for R, and for passing data to and from R and  
+> the database.
+>  I work with large datasets, and therefore I "think" one of my most  
+> important goals should be to maximize the amount of RAM that R can  
+> utilize effectively.
+Firstly, as has already been suggested nothing beats testing whatever  
+set up you have in mind.
+Secondly, assuming this data is just for your use rather than a shared  
+database which will be updated by many people, almost everything that  
+has been mentioned so far is basically unsuitable.  SQL Server, MySQL,  
+Postgres, Oracle etc. devote most of their many megabytes code to a  
+vast number of features like access control, transaction rollback,  
+stored procedures, logging etc. etc., which are almost certainly of no  
+use to you, will slow the code down and cause admin headaches.  If you  
+really want SQL look at SQLlite.  It is free.  It is just a SQL  
+storage system without any of the overhead you don't need (it is a  
+2.3MB library on my computer and that is for four architectures!) and  
+will scale to TB size datasets.
+If all you want is to store and access large amounts of data, then you  
+probably don't want SQL at all.  Someone mentioned BLOBs but that  
+might be hard work programming.  You might do well to look at HDF5 (http://hdf.ncsa.uiuc.edu/index.html 
+).  This is a storage format specifically designed for storing very  
+large amounts of scientific/engineering data.  Again it is free and  
+open source and has an R interface.
+Cheers
+Bill Northcott
+
+
+
+From d@n|e|e@@mbert| @end|ng |rom or@@|t  Mon Feb 18 11:16:08 2008
+From: d@n|e|e@@mbert| @end|ng |rom or@@|t (Daniele Amberti)
+Date: Mon, 18 Feb 2008 11:16:08 +0100
+Subject: [R-sig-DB] Need help with database library DBI and ODBC
+Message-ID: <56B5F1AFB06FD54FAE658019A935AECBA600B9A202@adorsmail01.ors.local>
+
+I need an example on how to use library DBI coupled with a ODBC driver.
+I get this error:
+Error in do.call(as.character(drvName)
+As many other trying to use PostgreSQL
+I think it is possible but I'm not able to find the way.
+
+Thanks in advance
+Daniele
+
+ORS Srl
+
+Via Agostino Morando 1/3 12060 Roddi (Cn) - Italy
+Tel. +39 0173 620211
+Fax. +39 0173 620299 / +39 0173 433111
+Web Site www.ors.it
+
+------------------------------------------------------------------------------------------------------------------------
+Qualsiasi utilizzo non autorizzato del presente messaggio e dei suoi allegati ? vietato e potrebbe costituire reato.
+Se lei avesse ricevuto erroneamente questo messaggio, Le saremmo grati se provvedesse alla distruzione dello stesso
+e degli eventuali allegati.
+Opinioni, conclusioni o altre informazioni riportate nella e-mail, che non siano relative alle attivit? e/o
+alla missione aziendale di O.R.S. Srl si intendono non  attribuibili alla societ? stessa, n? la impegnano in alcun modo.
+
+
+
+From edd @end|ng |rom deb|@n@org  Mon Feb 18 14:23:09 2008
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Mon, 18 Feb 2008 07:23:09 -0600
+Subject: [R-sig-DB] Need help with database library DBI and ODBC
+In-Reply-To: <56B5F1AFB06FD54FAE658019A935AECBA600B9A202@adorsmail01.ors.local>
+References: <56B5F1AFB06FD54FAE658019A935AECBA600B9A202@adorsmail01.ors.local>
+Message-ID: <18361.34493.515297.542096@ron.nulle.part>
+
+
+On 18 February 2008 at 11:16, Daniele Amberti wrote:
+| I need an example on how to use library DBI coupled with a ODBC driver.
+| I get this error:
+| Error in do.call(as.character(drvName)
+| As many other trying to use PostgreSQL
+| I think it is possible but I'm not able to find the way.
+
+Sorry, but you're wrong. You're mixing two incompatible ingredients.  The DBI
+system for R has no ODBC plugin, and no Postgres plugin either. 
+
+You can use RODBC for ODBC, with proper ODBC drivers and settings.  Not for
+the faint of heart, see the README in the source and consult your IT
+department if you have questions.
+
+PostgreSQL has not DBI module. There is however a working pair of packages at
+the BioConductor repositories: Rdbi and RdbiPgSQL. Note that Rdbi != DBI.  
+
+Hope this helps, Dirk
+
+-- 
+Three out of two people have difficulties with fractions.
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Wed Feb 27 05:51:38 2008
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Tue, 26 Feb 2008 20:51:38 -0800
+Subject: [R-sig-DB] ANN: RSQLite 0.6-8 uploaded to CRAN
+Message-ID: <m263wbovc5.fsf@userprimary.net>
+
+Hello all,
+
+I've uploaded a new version of RSQLite, 0.6-8, which should be
+available soon.
+
+Here's a quick summary of changes:
+
+1.  dbGetQuery now behaves like dbSendQuery
+    
+    It is now an error to call dbGetQuery when there is an open and
+    incomplete result set.
+
+2.  Increase maximum SQL statement length from 1000000 to 2000000
+    
+    When the included version of SQLite is built (this is the default), we
+    now set SQLITE_MAX_SQL_LENGTH=2000000 to accomodate longer SQL queries
+    that arise in bioinformatic applications.
+
++ seth    
+
+-- 
+Seth Falcon | seth at userprimary.net | blog: http://userprimary.net/user/
+
+
+

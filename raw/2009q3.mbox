@@ -1,0 +1,3271 @@
+From kenneth@c@ter @end|ng |rom b@nko|@mer|c@@com  Wed Jul  1 21:52:37 2009
+From: kenneth@c@ter @end|ng |rom b@nko|@mer|c@@com (Cater, Kenneth)
+Date: Wed, 01 Jul 2009 15:52:37 -0400
+Subject: [R-sig-DB] RODBC and Netezza
+Message-ID: <D0BEB4EB5702924CAFDF155D4C81C6C2323E36@ex2k.bankofamerica.com>
+
+I've been trying to discover the root cause of an issue I've observed
+using RODBC to connect to a Netezza appliance; from the system calls
+below I can see that the Netezza is responding to the query, but for
+whatever reason the connection dies before completion and R terminates
+execution with no results.  Has anyone else seen this behavior?  Since
+I'm seeing data being returned via ODBC it appears to be an issue with
+RODBC, if I'm mistaken or if there is another test I could perform to
+isolate the underlying issue, please let me know, thank you.
+
+ 
+
+recvfrom(3,
+"\0\0\0\0\0\0\0\0\0\0\320\7\0\0\v\0\0\0\306\20\3\0\7\00010900\0\5\0"...,
+16384, 0, NULL, NULL) = 8192
+
+recvfrom(3, "esa-Scottsdale, AZ\0Y\0\0\0\6\0\0\0\310\0\0\0\304"...,
+16384, 0, NULL, NULL) = 8192
+
+recvfrom(3, "\0\5\0AUT\0\7\00037620\0$\0Parkersburg-Mar"..., 16384, 0,
+NULL, NULL) = 8192
+
+recvfrom(3,
+"\0\0\0\0\0\0\0\302]\360\t\0\0\0\0\0\0\0\0\0\0\0\0\6\220\0\0\0\0\0\0\0".
+.., 16384, 0, NULL, NULL) = 9144
+
+recvfrom(3,
+"\0\305\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"...,
+16384, 0, NULL, NULL) = 2669
+
+select(4, [3], NULL, NULL, {0, 0})      = 0 (Timeout)
+
+sendto(3, "X", 1, 0, NULL, 0)           = 1
+
+close(3)                                = 0
+
+semop(32997381, 0x7fff9adb96a0, 2)      = 0
+
+semop(32997381, 0x7fff9adb96a0, 1)      = 0
+
+write(1, "> ", 2)                       = 2
+
+write(1, "\n", 1)                       = 1
+
+write(1, "> ", 2)                       = 2
+
+write(1, "summary(SampleData)\n", 20)   = 20
+
+getrusage(RUSAGE_SELF, {ru_utime={0, 625904}, ru_stime={9, 49624}, ...})
+= 0
+
+getrusage(RUSAGE_CHILDREN, {ru_utime={0, 0}, ru_stime={0, 1999}, ...}) =
+0
+
+write(1, "   Length ", 10)              = 10
+
+write(1, "    Class ", 10)              = 10
+
+write(1, "     Mode ", 10)              = 10
+
+write(1, "\n", 1)                       = 1
+
+write(1, "        0 ", 10)              = 10
+
+write(1, "character ", 10)              = 10
+
+write(1, "character ", 10)              = 10
+
+write(1, "\n", 1)                       = 1
+
+write(1, "> ", 2)                       = 2
+
+read(0, "", 4096)                       = 0
+
+write(1, "\n", 1)                       = 1
+
+rt_sigaction(SIGINT, {SIG_IGN}, {0x41c690, [INT],
+SA_RESTORER|SA_RESTART, 0x2aaaab8af0b0}, 8) = 0
+
+rt_sigaction(SIGQUIT, {SIG_IGN}, {SIG_IGN}, 8) = 0
+
+rt_sigprocmask(SIG_BLOCK, [CHLD], [], 8) = 0
+
+clone(child_stack=0, flags=CLONE_PARENT_SETTID|SIGCHLD,
+parent_tidptr=0x7fff9adbbb08) = 2275
+
+wait4(2275, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 2275
+
+rt_sigaction(SIGINT, {0x41c690, [INT], SA_RESTORER|SA_RESTART,
+0x2aaaab8af0b0}, NULL, 8) = 0
+
+rt_sigaction(SIGQUIT, {SIG_IGN}, NULL, 8) = 0
+
+rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+
+--- SIGCHLD (Child exited) @ 0 (0) ---
+
+close(0)                                = 0
+
+ 
+
+Thank you,
+
+Kenneth Cater
+
+Quantitative Risk Technology
+
+Bank of America
+
+980.683.4832
+
+ 
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From XFM @end|ng |rom xx  Mon Jul  6 07:55:21 2009
+From: XFM @end|ng |rom xx (XFM)
+Date: Mon, 6 Jul 2009 13:55:21 +0800
+Subject: [R-sig-DB] sqlSave: error 22018 Invalid character value for cast
+	specification
+Message-ID: <5c52ef1d0907052255u22d8a7c1p7e0439f242b4a7e6@mail.gmail.com>
+
+Hi,
+
+I try to use RODBC to upload dataframes to a SQL Server.
+
+here is what odbcGetInfo returns:
+
+> odbcGetInfo(channel)
+?????????? DBMS_Name ?????????? ?? "Microsoft SQL Server"
+?????????? DBMS_Ver ????????????????? "10.00.1600"
+?????????? Driver_ODBC_Ver ???????? "03.52"
+?????????? Data_Source_Name????? "databasefundamental4ecap"
+?????????? Driver_Name ?????????? ? ?? "SQLSRV32.DLL"
+?????????? Driver_Ver ?????????????????? "03.85.1132"
+?????????? ODBC_Ver ????????????????? "03.52.0000"
+?????????? Server_Name ????????? ? ? ? "name_of_my_server"
+
+
+I have dowloaded a data.frame using
+
+> PRICE = sqlQuery(channel, query).
+
+PRICE looks like that:
+
+??????? cdate??????? PRICE
+1? 2009-06-15??? 0.8242105
+2? 2009-06-12??? 0.7942105
+3? 2009-06-11??? 0.8236842
+4? 2009-06-10??? 0.8178947
+5? 2009-06-09??? 0.8531579
+6? 2009-06-08??? 0.9715790
+7? 2009-06-05??? 0.8984211
+8? 2009-06-04??? 0.8536842
+9? 2009-06-03??? 0.9510526
+10 2009-06-02??? 0.8547368
+
+
+I try now to upload it back to the database, in a new table. I have
+not changed anything in the format or in the values of the data.frame.
+I have done:
+
+> PRICE2 = PRICE
+> sqlSave(channel, PRICE2)
+
+It returns me the following error:
+
+> sqlSave(channel, PRICE2)
+Error in sqlSave(channel, PRICE2) : [RODBC] Failed exec in Update
+22018 0 [Microsoft][ODBC SQL Server Driver]Invalid character value for
+cast specification
+
+If a try it again, I have the following error:
+> sqlSave(channel, PRICE2)
+Error in sqlSave(channel, PRICE2) :? table ?PRICE2? already exists
+
+
+Can somebody help me on that?
+
+Thank you
+Xavier
+
+
+
+From XFM @end|ng |rom xx  Mon Jul  6 08:12:24 2009
+From: XFM @end|ng |rom xx (XFM)
+Date: Mon, 6 Jul 2009 14:12:24 +0800
+Subject: [R-sig-DB] sqlSave: error 22018 Invalid character value for
+	cast specification
+In-Reply-To: <5c52ef1d0907052255u22d8a7c1p7e0439f242b4a7e6@mail.gmail.com>
+References: <5c52ef1d0907052255u22d8a7c1p7e0439f242b4a7e6@mail.gmail.com>
+Message-ID: <5c52ef1d0907052312o425ab1c5yf3c24929c606c0b2@mail.gmail.com>
+
+I have found that, I dont know if it corresponds to my issue and how I
+can apply the solution in the case of RODBC
+http://support.microsoft.com/kb/269011
+
+
+On Mon, Jul 6, 2009 at 1:55 PM, XFM<XFM at xx> wrote:
+> Hi,
+>
+> I try to use RODBC to upload dataframes to a SQL Server.
+>
+> here is what odbcGetInfo returns:
+>
+>> odbcGetInfo(channel)
+> ?????????? DBMS_Name ?????????? ?? "Microsoft SQL Server"
+> ?????????? DBMS_Ver ????????????????? "10.00.1600"
+> ?????????? Driver_ODBC_Ver ???????? "03.52"
+> ?????????? Data_Source_Name????? "databasefundamental4ecap"
+> ?????????? Driver_Name ?????????? ? ?? "SQLSRV32.DLL"
+> ?????????? Driver_Ver ?????????????????? "03.85.1132"
+> ?????????? ODBC_Ver ????????????????? "03.52.0000"
+> ?????????? Server_Name ????????? ? ? ? "name_of_my_server"
+>
+>
+> I have dowloaded a data.frame using
+>
+>> PRICE = sqlQuery(channel, query).
+>
+> PRICE looks like that:
+>
+> ??????? cdate??????? PRICE
+> 1? 2009-06-15??? 0.8242105
+> 2? 2009-06-12??? 0.7942105
+> 3? 2009-06-11??? 0.8236842
+> 4? 2009-06-10??? 0.8178947
+> 5? 2009-06-09??? 0.8531579
+> 6? 2009-06-08??? 0.9715790
+> 7? 2009-06-05??? 0.8984211
+> 8? 2009-06-04??? 0.8536842
+> 9? 2009-06-03??? 0.9510526
+> 10 2009-06-02??? 0.8547368
+>
+>
+> I try now to upload it back to the database, in a new table. I have
+> not changed anything in the format or in the values of the data.frame.
+> I have done:
+>
+>> PRICE2 = PRICE
+>> sqlSave(channel, PRICE2)
+>
+> It returns me the following error:
+>
+>> sqlSave(channel, PRICE2)
+> Error in sqlSave(channel, PRICE2) : [RODBC] Failed exec in Update
+> 22018 0 [Microsoft][ODBC SQL Server Driver]Invalid character value for
+> cast specification
+>
+> If a try it again, I have the following error:
+>> sqlSave(channel, PRICE2)
+> Error in sqlSave(channel, PRICE2) :? table ?PRICE2? already exists
+>
+>
+> Can somebody help me on that?
+>
+> Thank you
+> Xavier
+>
+
+
+
+From XFM @end|ng |rom xx  Mon Jul  6 09:03:04 2009
+From: XFM @end|ng |rom xx (XFM)
+Date: Mon, 6 Jul 2009 15:03:04 +0800
+Subject: [R-sig-DB] sqlSave: error 22018 Invalid character value for
+	cast specification
+In-Reply-To: <5c52ef1d0907052312o425ab1c5yf3c24929c606c0b2@mail.gmail.com>
+References: <5c52ef1d0907052255u22d8a7c1p7e0439f242b4a7e6@mail.gmail.com>
+	<5c52ef1d0907052312o425ab1c5yf3c24929c606c0b2@mail.gmail.com>
+Message-ID: <5c52ef1d0907060003u5ebbce3s212ef5ce40756d83@mail.gmail.com>
+
+apparently the table is created but the data is not sent in the right
+format: the date list field is created as float instead of datetime.
+Any idea to help me?
+
+On Mon, Jul 6, 2009 at 2:12 PM, XFM<XFM at xx> wrote:
+> I have found that, I dont know if it corresponds to my issue and how I
+> can apply the solution in the case of RODBC
+> http://support.microsoft.com/kb/269011
+>
+>
+> On Mon, Jul 6, 2009 at 1:55 PM, XFM<XFM at xx> wrote:
+>> Hi,
+>>
+>> I try to use RODBC to upload dataframes to a SQL Server.
+>>
+>> here is what odbcGetInfo returns:
+>>
+>>> odbcGetInfo(channel)
+>> ?????????? DBMS_Name ?????????? ?? "Microsoft SQL Server"
+>> ?????????? DBMS_Ver ????????????????? "10.00.1600"
+>> ?????????? Driver_ODBC_Ver ???????? "03.52"
+>> ?????????? Data_Source_Name????? "databasefundamental4ecap"
+>> ?????????? Driver_Name ?????????? ? ?? "SQLSRV32.DLL"
+>> ?????????? Driver_Ver ?????????????????? "03.85.1132"
+>> ?????????? ODBC_Ver ????????????????? "03.52.0000"
+>> ?????????? Server_Name ????????? ? ? ? "name_of_my_server"
+>>
+>>
+>> I have dowloaded a data.frame using
+>>
+>>> PRICE = sqlQuery(channel, query).
+>>
+>> PRICE looks like that:
+>>
+>> ??????? cdate??????? PRICE
+>> 1? 2009-06-15??? 0.8242105
+>> 2? 2009-06-12??? 0.7942105
+>> 3? 2009-06-11??? 0.8236842
+>> 4? 2009-06-10??? 0.8178947
+>> 5? 2009-06-09??? 0.8531579
+>> 6? 2009-06-08??? 0.9715790
+>> 7? 2009-06-05??? 0.8984211
+>> 8? 2009-06-04??? 0.8536842
+>> 9? 2009-06-03??? 0.9510526
+>> 10 2009-06-02??? 0.8547368
+>>
+>>
+>> I try now to upload it back to the database, in a new table. I have
+>> not changed anything in the format or in the values of the data.frame.
+>> I have done:
+>>
+>>> PRICE2 = PRICE
+>>> sqlSave(channel, PRICE2)
+>>
+>> It returns me the following error:
+>>
+>>> sqlSave(channel, PRICE2)
+>> Error in sqlSave(channel, PRICE2) : [RODBC] Failed exec in Update
+>> 22018 0 [Microsoft][ODBC SQL Server Driver]Invalid character value for
+>> cast specification
+>>
+>> If a try it again, I have the following error:
+>>> sqlSave(channel, PRICE2)
+>> Error in sqlSave(channel, PRICE2) :? table ?PRICE2? already exists
+>>
+>>
+>> Can somebody help me on that?
+>>
+>> Thank you
+>> Xavier
+>>
+>
+
+
+
+From r@j@r@h|@guh@ @end|ng |rom gm@||@com  Mon Jul  6 23:25:23 2009
+From: r@j@r@h|@guh@ @end|ng |rom gm@||@com (Rajarshi Guha)
+Date: Mon, 6 Jul 2009 17:25:23 -0400
+Subject: [R-sig-DB] inserting multiple rows into a database
+Message-ID: <773cea9e0907061425o56018773u4954568885c03e84@mail.gmail.com>
+
+Hi, I'm using the ROracle package and I've been looking for a way to insert
+data into a table at one go. While I can create multiple insert statements,
+I was hoping that I could supply a data.frame (wth the appropriate columns)
+and have a single function insert them at one go. While I could write this
+function myslf, I was wondering if any body has done something like this
+befoe.
+
+Thanks,
+
+-- 
+Rajarshi Guha
+
+	[[alternative HTML version deleted]]
+
+
+
+From m@cq @end|ng |rom ||n|@gov  Fri Jul 10 22:37:40 2009
+From: m@cq @end|ng |rom ||n|@gov (Don MacQueen)
+Date: Fri, 10 Jul 2009 13:37:40 -0700
+Subject: [R-sig-DB] inserting multiple rows into a database
+In-Reply-To: <773cea9e0907061425o56018773u4954568885c03e84@mail.gmail.com>
+References: <773cea9e0907061425o56018773u4954568885c03e84@mail.gmail.com>
+Message-ID: <p06240812c67d56dd0eff@[128.115.67.9]>
+
+See the dbWriteTable function, and note the "append" argument.
+
+-Don
+
+At 5:25 PM -0400 7/6/09, Rajarshi Guha wrote:
+>Hi, I'm using the ROracle package and I've been looking for a way to insert
+>data into a table at one go. While I can create multiple insert statements,
+>I was hoping that I could supply a data.frame (wth the appropriate columns)
+>and have a single function insert them at one go. While I could write this
+>function myslf, I was wondering if any body has done something like this
+>befoe.
+>
+>Thanks,
+>
+>--
+>Rajarshi Guha
+>
+>	[[alternative HTML version deleted]]
+>
+>_______________________________________________
+>R-sig-DB mailing list -- R Special Interest Group
+>R-sig-DB at stat.math.ethz.ch
+>https://*stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+-- 
+--------------------------------------
+Don MacQueen
+Environmental Protection Department
+Lawrence Livermore National Laboratory
+Livermore, CA, USA
+925-423-1062
+
+
+
+From Ab|g@e|@Jon@t@ne|to| @end|ng |rom te|e|on|c@-c@@net  Wed Jul 15 20:15:32 2009
+From: Ab|g@e|@Jon@t@ne|to| @end|ng |rom te|e|on|c@-c@@net (Agnella-Jordan)
+Date: Thu, 16 Jul 2009 00:15:32 +0600
+Subject: [R-sig-DB] Bestellen Sie jetzt 24 Stunden Online
+Message-ID: <3CBE17F5.463FEF97@telefonica-ca.net>
+
+
+Amerika war uns schon oft in vielen Dingen voraus, und auch nun kommt ein
+ganz neuartiger Erfolg aus Amerika, der allen Menschen Hoffnung verleiht,
+die zu viele ueberfluessige Pfunde mit sich herumtragen.
+
+Ganz einfache und sichere Bestellung und mehr Erlaeuterungen im WWW unter
+http://www.schlank-schoen2.org
+
+Dieses revolutionaere Schlankheitsprodukt ist besonders gedacht fuer die
+Menschen, die nicht nur ein paar Pfunde Uebergewicht mit sich herumtragen,
+sondern tatsaechlich massiv zu dick sind und sich auch schon oft erfolglos
+mit Hungerkuren herumgeschlagen haben.
+
+Auf eine total neuartige und revolutionaere Weise unterstuetzen diese
+Schlankheitspillen Sie beim Gewicht verliren. Es geht fast wie von selbst.
+Schlucken Sie einfach zum Fruehstueck eine Pille und alles andere macht Ihr
+Koerper.
+
+Bequeme und zuverlaessige Bestellung und weitere Hinweise im Internet unter
+http://www.schlank-schoen2.org
+
+Mit freundlichen Gruessen
+Dr. Petra Becker
+
+
+
+From m@tth|eu@@t|g|er @end|ng |rom gm@||@com  Fri Jul 17 14:47:22 2009
+From: m@tth|eu@@t|g|er @end|ng |rom gm@||@com (Matthieu Stigler)
+Date: Fri, 17 Jul 2009 14:47:22 +0200
+Subject: [R-sig-DB] RODBC: probs with arg
+Message-ID: <111060c20907170547o42379e28l2ff7ca16aa4daf50@mail.gmail.com>
+
+Hi
+
+I'm trying to raed excel files with RODBC. This works well but I have a
+small problem, as my doc has:
+
+-line 1: gen infos
+-line 2: colnames
+-line 3: units
+
+So I wanted to skip the first line, use the second as colnames and skip the
+third.
+
+But by default odbcConnectExcel() takes the first line as the right one, so
+the 2 others lines are displayed as kind of NAs and I have wrong col
+names...
+
+#To see it, can replicate pseudo example with xlsReadWrite:
+library(xlsReadWrite)
+tdat <- data.frame( This= c("Price ", "USD",6399, 3699, 2499 ), Is=
+c("Amount ", "Unit",2, 3, 1 ),  How_my_file_looks_like= c("Date",
+"Day",39202, 39198, 39199 ),  row.names = c("", "Type","Pro machine", "Road
+racer", "Streetfire" ) )
+write.xls( tdat, "bikes.xls" )
+
+#get the data
+library(RODBC)
+chan<-odbcConnectExcel("bikes.xls")
+sh1 <- sqlFetch(chan, "Sheet1")
+head(sh1)
+odbcCloseAll()
+
+           F1   This      Is How_my_file_looks_like
+1        <NA> Price  Amount                    Date
+2        Type    USD    Unit                    Day
+3 Pro machine   6399       2                  39202
+4  Road racer   3699       3                  39198
+5  Streetfire   2499       1                  39199
+
+See the message on the help file:
+
+It is assumed that the first row of the table in the worksheet
+     contains column headings: the driver parameter 'FirstRowHasNames =
+     0' is supposed to turn this off (giving column names 'F1' ...) but
+     it is broken in many versions of the drivers.
+
+I don't know exactly where this arg should be added...  It doesn't work in
+odbcConnectExcel("bikes.xls",FirstRowHasNames=0)
+
+So I tried something like:
+
+channel3 <-odbcDriverConnect("DRIVER=Microsoft Excel Driver
+(*.xls);DBQ=bikes.xls; ReadOnly=False;FirstRowHasNames=0")
+
+But his doesn't do anything... Do you see how I should do it? And if I
+manage to escape the first line, can I avoid the problem of the third line?
+
+I tried alternatively usign xlsReadWrite, whihc can "skip" lines, but then
+the first lines after colnames can't be escaped and hence the columns are
+seen as factors:
+sh2<-read.xls(file="bikes.xls", sheet=1, from=2)
+sh2
+
+So do you have a n idea how I can solve my problem?
+
+Thanks a lot!
+
+	[[alternative HTML version deleted]]
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Fri Jul 17 15:13:57 2009
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Fri, 17 Jul 2009 09:13:57 -0400
+Subject: [R-sig-DB] RODBC: probs with arg
+In-Reply-To: <111060c20907170547o42379e28l2ff7ca16aa4daf50@mail.gmail.com>
+References: <111060c20907170547o42379e28l2ff7ca16aa4daf50@mail.gmail.com>
+Message-ID: <971536df0907170613h2ba74942id562e518ce07bdbe@mail.gmail.com>
+
+Try reading in the headings and data separately like this
+(shown with read.xls from gdata):
+
+library(gdata)
+DF <- read.xls("bikes.xls", skip = 3, header = FALSE,
+    col.names = names(read.xls("bikes.xls", skip = 1, nrows = 1)))
+
+
+On Fri, Jul 17, 2009 at 8:47 AM, Matthieu
+Stigler<matthieu.stigler at gmail.com> wrote:
+> Hi
+>
+> I'm trying to raed excel files with RODBC. This works well but I have a
+> small problem, as my doc has:
+>
+> -line 1: gen infos
+> -line 2: colnames
+> -line 3: units
+>
+> So I wanted to skip the first line, use the second as colnames and skip the
+> third.
+>
+> But by default odbcConnectExcel() takes the first line as the right one, so
+> the 2 others lines are displayed as kind of NAs and I have wrong col
+> names...
+>
+> #To see it, can replicate pseudo example with xlsReadWrite:
+> library(xlsReadWrite)
+> tdat <- data.frame( This= c("Price ", "USD",6399, 3699, 2499 ), Is=
+> c("Amount ", "Unit",2, 3, 1 ), ?How_my_file_looks_like= c("Date",
+> "Day",39202, 39198, 39199 ), ?row.names = c("", "Type","Pro machine", "Road
+> racer", "Streetfire" ) )
+> write.xls( tdat, "bikes.xls" )
+>
+> #get the data
+> library(RODBC)
+> chan<-odbcConnectExcel("bikes.xls")
+> sh1 <- sqlFetch(chan, "Sheet1")
+> head(sh1)
+> odbcCloseAll()
+>
+> ? ? ? ? ? F1 ? This ? ? ?Is How_my_file_looks_like
+> 1 ? ? ? ?<NA> Price ?Amount ? ? ? ? ? ? ? ? ? ?Date
+> 2 ? ? ? ?Type ? ?USD ? ?Unit ? ? ? ? ? ? ? ? ? ?Day
+> 3 Pro machine ? 6399 ? ? ? 2 ? ? ? ? ? ? ? ? ?39202
+> 4 ?Road racer ? 3699 ? ? ? 3 ? ? ? ? ? ? ? ? ?39198
+> 5 ?Streetfire ? 2499 ? ? ? 1 ? ? ? ? ? ? ? ? ?39199
+>
+> See the message on the help file:
+>
+> It is assumed that the first row of the table in the worksheet
+> ? ? contains column headings: the driver parameter 'FirstRowHasNames =
+> ? ? 0' is supposed to turn this off (giving column names 'F1' ...) but
+> ? ? it is broken in many versions of the drivers.
+>
+> I don't know exactly where this arg should be added... ?It doesn't work in
+> odbcConnectExcel("bikes.xls",FirstRowHasNames=0)
+>
+> So I tried something like:
+>
+> channel3 <-odbcDriverConnect("DRIVER=Microsoft Excel Driver
+> (*.xls);DBQ=bikes.xls; ReadOnly=False;FirstRowHasNames=0")
+>
+> But his doesn't do anything... Do you see how I should do it? And if I
+> manage to escape the first line, can I avoid the problem of the third line?
+>
+> I tried alternatively usign xlsReadWrite, whihc can "skip" lines, but then
+> the first lines after colnames can't be escaped and hence the columns are
+> seen as factors:
+> sh2<-read.xls(file="bikes.xls", sheet=1, from=2)
+> sh2
+>
+> So do you have a n idea how I can solve my problem?
+>
+> Thanks a lot!
+>
+> ? ? ? ?[[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From m@tth|eu@@t|g|er @end|ng |rom gm@||@com  Sat Jul 18 16:56:08 2009
+From: m@tth|eu@@t|g|er @end|ng |rom gm@||@com (Matthieu Stigler)
+Date: Sat, 18 Jul 2009 16:56:08 +0200
+Subject: [R-sig-DB] RODBC: probs with arg
+In-Reply-To: <971536df0907170613h2ba74942id562e518ce07bdbe@mail.gmail.com>
+References: <111060c20907170547o42379e28l2ff7ca16aa4daf50@mail.gmail.com>
+	<971536df0907170613h2ba74942id562e518ce07bdbe@mail.gmail.com>
+Message-ID: <4A61E288.2090606@gmail.com>
+
+Thanks Gabor, that's a nice workaround!
+
+But any view on how to use the parameter
+
+"FirstRowHasNames"
+
+
+in package RODBC? Thanks
+
+Matthieu Stigler
+
+Gabor Grothendieck a ?crit :
+> Try reading in the headings and data separately like this
+> (shown with read.xls from gdata):
+>
+> library(gdata)
+> DF <- read.xls("bikes.xls", skip = 3, header = FALSE,
+>     col.names = names(read.xls("bikes.xls", skip = 1, nrows = 1)))
+>
+>
+> On Fri, Jul 17, 2009 at 8:47 AM, Matthieu
+> Stigler<matthieu.stigler at gmail.com> wrote:
+>   
+>> Hi
+>>
+>> I'm trying to raed excel files with RODBC. This works well but I have a
+>> small problem, as my doc has:
+>>
+>> -line 1: gen infos
+>> -line 2: colnames
+>> -line 3: units
+>>
+>> So I wanted to skip the first line, use the second as colnames and skip the
+>> third.
+>>
+>> But by default odbcConnectExcel() takes the first line as the right one, so
+>> the 2 others lines are displayed as kind of NAs and I have wrong col
+>> names...
+>>
+>> #To see it, can replicate pseudo example with xlsReadWrite:
+>> library(xlsReadWrite)
+>> tdat <- data.frame( This= c("Price ", "USD",6399, 3699, 2499 ), Is=
+>> c("Amount ", "Unit",2, 3, 1 ),  How_my_file_looks_like= c("Date",
+>> "Day",39202, 39198, 39199 ),  row.names = c("", "Type","Pro machine", "Road
+>> racer", "Streetfire" ) )
+>> write.xls( tdat, "bikes.xls" )
+>>
+>> #get the data
+>> library(RODBC)
+>> chan<-odbcConnectExcel("bikes.xls")
+>> sh1 <- sqlFetch(chan, "Sheet1")
+>> head(sh1)
+>> odbcCloseAll()
+>>
+>>           F1   This      Is How_my_file_looks_like
+>> 1        <NA> Price  Amount                    Date
+>> 2        Type    USD    Unit                    Day
+>> 3 Pro machine   6399       2                  39202
+>> 4  Road racer   3699       3                  39198
+>> 5  Streetfire   2499       1                  39199
+>>
+>> See the message on the help file:
+>>
+>> It is assumed that the first row of the table in the worksheet
+>>     contains column headings: the driver parameter 'FirstRowHasNames =
+>>     0' is supposed to turn this off (giving column names 'F1' ...) but
+>>     it is broken in many versions of the drivers.
+>>
+>> I don't know exactly where this arg should be added...  It doesn't work in
+>> odbcConnectExcel("bikes.xls",FirstRowHasNames=0)
+>>
+>> So I tried something like:
+>>
+>> channel3 <-odbcDriverConnect("DRIVER=Microsoft Excel Driver
+>> (*.xls);DBQ=bikes.xls; ReadOnly=False;FirstRowHasNames=0")
+>>
+>> But his doesn't do anything... Do you see how I should do it? And if I
+>> manage to escape the first line, can I avoid the problem of the third line?
+>>
+>> I tried alternatively usign xlsReadWrite, whihc can "skip" lines, but then
+>> the first lines after colnames can't be escaped and hence the columns are
+>> seen as factors:
+>> sh2<-read.xls(file="bikes.xls", sheet=1, from=2)
+>> sh2
+>>
+>> So do you have a n idea how I can solve my problem?
+>>
+>> Thanks a lot!
+>>
+>>        [[alternative HTML version deleted]]
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at stat.math.ethz.ch
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+>>
+
+
+
+From kenneth@c@ter @end|ng |rom b@nko|@mer|c@@com  Thu Jul 23 22:29:14 2009
+From: kenneth@c@ter @end|ng |rom b@nko|@mer|c@@com (Cater, Kenneth)
+Date: Thu, 23 Jul 2009 16:29:14 -0400
+Subject: [R-sig-DB] Problem using RODBC to access a Netezza appliance
+Message-ID: <D0BEB4EB5702924CAFDF155D4C81C6C25163EA@ex2k.bankofamerica.com>
+
+I've previously posted an issue I was having with accessing our Netezza
+Appliance with RODBC, after performing a system call trace, it appeared
+that the SQL statement was being sent to the Netezza, and the Netezza
+was sending data back to R; but suddenly the data would stop and the
+select system call reported a timeout.  Since then, I've changed the
+QueryTimeout in odbc.ini to set it over 200 seconds; however this did
+not resolve the issue.  In order to verify that the other components
+were not at fault I used iSQL (provided by unixODBC) to send that exact
+same query to the Netezza, and that worked.  So at this point, unixODBC,
+and libnzodbc.so appear to be working as designed, but I cannot figure
+out why RODBC is terminating the query prematurely.  It should also be
+noted that I ran the same query with a limit set to five (to prevent the
+return of over 90,000 entries), and still the data was not being
+reported by RODBC.  If you having any experience with this scenario and
+you've managed to resolve the issue, please let me know how you did it,
+any insight would be appreciated.  
+
+ 
+
+ 
+
+Thank you,
+
+Kenneth Cater
+
+Quantitative Risk Technology
+
+Bank of America
+
+980.683.4832
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From br|te@ @end|ng |rom u@@pt  Tue Jul 28 18:04:06 2009
+From: br|te@ @end|ng |rom u@@pt (Nuno Miguel Brites)
+Date: Tue, 28 Jul 2009 17:04:06 +0100
+Subject: [R-sig-DB] Help on database!
+Message-ID: <web-81327475@controller2.cgpmail.ua.pt>
+
+Hi!
+
+I need to make a small linkage between R and a database 
+(for eg, MSAccess). Is it possible?
+
+Thanks.
+
+Regards,
+Brites
+
+
+
+From edd @end|ng |rom deb|@n@org  Tue Jul 28 18:13:58 2009
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Tue, 28 Jul 2009 11:13:58 -0500
+Subject: [R-sig-DB] Help on database!
+In-Reply-To: <web-81327475@controller2.cgpmail.ua.pt>
+References: <web-81327475@controller2.cgpmail.ua.pt>
+Message-ID: <19055.9158.56094.673041@ron.nulle.part>
+
+
+On 28 July 2009 at 17:04, Nuno Miguel Brites wrote:
+| I need to make a small linkage between R and a database 
+| (for eg, MSAccess). Is it possible?
+
+Yes.
+
+You want to read the manual 'R Data Import/Export that came with your
+installation of R, and is also available on each CRAN mirror, e.g. at
+http://neacm.fe.up.pt/CRAN/doc/manuals/R-data.html from the U Porto mirror
+that should be closest to you.
+
+Hth, Dirk
+
+-- 
+Three out of two people have difficulties with fractions.
+
+
+
+From W@y@e@W@Jo@es m@iii@g oii sheii@com  Wed Jul 29 09:37:02 2009
+From: W@y@e@W@Jo@es m@iii@g oii sheii@com (W@y@e@W@Jo@es m@iii@g oii sheii@com)
+Date: Wed, 29 Jul 2009 09:37:02 +0200
+Subject: [R-sig-DB] Help on database!
+In-Reply-To: <web-81327475@controller2.cgpmail.ua.pt>
+Message-ID: <8E3590214E4380489D2F8BF129B939F38B393C@amsdc1-s-03371.europe.shell.com>
+
+Hi Brites, 
+
+I suggest you look up the package RODBC. 
+
+Its very quick and easy to use. Here is a dummy example: 
+
+channel<-odbcConnectAccess("MyDb.mdb")
+sqlQuery(channel,"select * from Table1")
+
+-----Original Message-----
+From: r-sig-db-bounces at stat.math.ethz.ch
+[mailto:r-sig-db-bounces at stat.math.ethz.ch]On Behalf Of Nuno Miguel
+Brites
+Sent: 28 July 2009 17:04
+To: r-sig-db at stat.math.ethz.ch
+Subject: [R-sig-DB] Help on database!
+
+
+Hi!
+
+I need to make a small linkage between R and a database 
+(for eg, MSAccess). Is it possible?
+
+Thanks.
+
+Regards,
+Brites
+
+_______________________________________________
+R-sig-DB mailing list -- R Special Interest Group
+R-sig-DB at stat.math.ethz.ch
+https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From r@j@r@h|@guh@ @end|ng |rom gm@||@com  Tue Aug  4 03:59:45 2009
+From: r@j@r@h|@guh@ @end|ng |rom gm@||@com (Rajarshi Guha)
+Date: Mon, 3 Aug 2009 21:59:45 -0400
+Subject: [R-sig-DB] problem with ROracle calls from a package
+Message-ID: <773cea9e0908031859l40f3c496oa158fe59b3d9e130@mail.gmail.com>
+
+Hi, I have some R code that uses a OracConnection object to query a
+database. The function is something like
+
+myfunction <- function(con, .....) {
+  sql <- paste("SELECT pd.plate_info_id, pd.col_index, ",data.cols,
+               " FROM plate_data pd ",
+               " WHERE pd.plate_info_id IN ",
+               " (SELECT pi.plate_info_id ",
+               " FROM plate_info pi ",
+               " WHERE pi.protocol_name = '",protocol.name,"')",
+               " AND pd.type_index = ", type.index," and pd.layer_index =
+",layer.index,
+               " order by pd.plate_info_id ,pd.col_index", sep='',
+collapse='')
+  res <- dbSendQuery(con, statement=sql)
+....
+....
+}
+
+When I source the file containing this function and pass it a connection
+object it works fine.
+
+However, when I bundle this function into a package and install the package
+and then call the function, I get
+
+Error in oraExecStatement(ps, ora.buf.size = as(ora.buf.size, "integer")) :
+  expired or invalid prepared statement
+Error in oraExecDirect(conn, statement, ...) :
+  could not exec direct statement SELECT pd.plate_info_id, pd.col_index,
+pd.value0, pd.value1, pd.value2, pd.value3, pd.value4, pd.value5, pd.value6,
+pd.value7, pd.value8, pd.value9, pd.value10, pd.value11, pd.value12,
+pd.value13, pd.value14, pd.value15 FROM plate_data pd  WHERE
+pd.plate_info_id IN  (SELECT pi.plate_info_id  FROM plate_info pi  WHERE
+pi.protocol_name = 'cptk-3-vo') AND pd.type_index = 22 and pd.layer_index =
+0 order by pd.plate_info_id ,pd.col_index
+
+Has anybody seen this behavior before?
+-- 
+Rajarshi Guha
+
+	[[alternative HTML version deleted]]
+
+
+
+From m@cq @end|ng |rom ||n|@gov  Thu Aug  6 16:35:12 2009
+From: m@cq @end|ng |rom ||n|@gov (Don MacQueen)
+Date: Thu, 6 Aug 2009 07:35:12 -0700
+Subject: [R-sig-DB] problem with ROracle calls from a package
+In-Reply-To: <773cea9e0908031859l40f3c496oa158fe59b3d9e130@mail.gmail.com>
+References: <773cea9e0908031859l40f3c496oa158fe59b3d9e130@mail.gmail.com>
+Message-ID: <p0624082fc6a098bd6ba8@[128.115.67.9]>
+
+When I did this I defined the connection inside the function.
+
+That is,
+
+myfun <- function( dbc, ...) {
+   ## dbc is a list with username, password, etc to the database
+
+   dbm <- Oracle()
+   con <- dbConnect(dbm, user = dbc$user, dbname = dbc$db, password = dbc$pass)
+
+   ## build the query, then
+   res <- dbGetQuery(con, sql)
+  ....
+}
+
+And it works.
+
+I also found it helpful to have something like this after defining 
+dbm and before defining con
+
+     tmp <- dbListConnections(dbm)
+     if (length(tmp) > 5)
+         for (ic in tmp) dbDisconnect(ic)
+
+
+I also put this in there somewhere:
+
+     on.exit({
+         dbDisconnect(con)
+         dbUnloadDriver(dbm)
+     })
+
+-Don
+
+
+
+At 9:59 PM -0400 8/3/09, Rajarshi Guha wrote:
+>Hi, I have some R code that uses a OracConnection object to query a
+>database. The function is something like
+>
+>myfunction <- function(con, .....) {
+>   sql <- paste("SELECT pd.plate_info_id, pd.col_index, ",data.cols,
+>                " FROM plate_data pd ",
+>                " WHERE pd.plate_info_id IN ",
+>                " (SELECT pi.plate_info_id ",
+>                " FROM plate_info pi ",
+>                " WHERE pi.protocol_name = '",protocol.name,"')",
+>                " AND pd.type_index = ", type.index," and pd.layer_index =
+>",layer.index,
+>                " order by pd.plate_info_id ,pd.col_index", sep='',
+>collapse='')
+>   res <- dbSendQuery(con, statement=sql)
+>....
+>....
+>}
+>
+>When I source the file containing this function and pass it a connection
+>object it works fine.
+>
+>However, when I bundle this function into a package and install the package
+>and then call the function, I get
+>
+>Error in oraExecStatement(ps, ora.buf.size = as(ora.buf.size, "integer")) :
+>   expired or invalid prepared statement
+>Error in oraExecDirect(conn, statement, ...) :
+>   could not exec direct statement SELECT pd.plate_info_id, pd.col_index,
+>pd.value0, pd.value1, pd.value2, pd.value3, pd.value4, pd.value5, pd.value6,
+>pd.value7, pd.value8, pd.value9, pd.value10, pd.value11, pd.value12,
+>pd.value13, pd.value14, pd.value15 FROM plate_data pd  WHERE
+>pd.plate_info_id IN  (SELECT pi.plate_info_id  FROM plate_info pi  WHERE
+>pi.protocol_name = 'cptk-3-vo') AND pd.type_index = 22 and pd.layer_index =
+>0 order by pd.plate_info_id ,pd.col_index
+>
+>Has anybody seen this behavior before?
+>--
+>Rajarshi Guha
+>
+>	[[alternative HTML version deleted]]
+>
+>_______________________________________________
+>R-sig-DB mailing list -- R Special Interest Group
+>R-sig-DB at stat.math.ethz.ch
+>https://*stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+-- 
+--------------------------------------
+Don MacQueen
+Environmental Protection Department
+Lawrence Livermore National Laboratory
+Livermore, CA, USA
+925-423-1062
+
+
+
+From m@cq @end|ng |rom ||n|@gov  Thu Aug  6 16:37:28 2009
+From: m@cq @end|ng |rom ||n|@gov (Don MacQueen)
+Date: Thu, 6 Aug 2009 07:37:28 -0700
+Subject: [R-sig-DB] problem with ROracle calls from a package
+In-Reply-To: <773cea9e0908031859l40f3c496oa158fe59b3d9e130@mail.gmail.com>
+References: <773cea9e0908031859l40f3c496oa158fe59b3d9e130@mail.gmail.com>
+Message-ID: <p06240831c6a09ac9e640@[128.115.67.9]>
+
+I meant to add that when "I did this" I meant I built a function like 
+this and put it in a package, and used it from the package as 
+described by Rajarshi.
+
+-Don
+
+At 9:59 PM -0400 8/3/09, Rajarshi Guha wrote:
+>Hi, I have some R code that uses a OracConnection object to query a
+>database. The function is something like
+>
+>myfunction <- function(con, .....) {
+>   sql <- paste("SELECT pd.plate_info_id, pd.col_index, ",data.cols,
+>                " FROM plate_data pd ",
+>                " WHERE pd.plate_info_id IN ",
+>                " (SELECT pi.plate_info_id ",
+>                " FROM plate_info pi ",
+>                " WHERE pi.protocol_name = '",protocol.name,"')",
+>                " AND pd.type_index = ", type.index," and pd.layer_index =
+>",layer.index,
+>                " order by pd.plate_info_id ,pd.col_index", sep='',
+>collapse='')
+>   res <- dbSendQuery(con, statement=sql)
+>....
+>....
+>}
+>
+>When I source the file containing this function and pass it a connection
+>object it works fine.
+>
+>However, when I bundle this function into a package and install the package
+>and then call the function, I get
+>
+>Error in oraExecStatement(ps, ora.buf.size = as(ora.buf.size, "integer")) :
+>   expired or invalid prepared statement
+>Error in oraExecDirect(conn, statement, ...) :
+>   could not exec direct statement SELECT pd.plate_info_id, pd.col_index,
+>pd.value0, pd.value1, pd.value2, pd.value3, pd.value4, pd.value5, pd.value6,
+>pd.value7, pd.value8, pd.value9, pd.value10, pd.value11, pd.value12,
+>pd.value13, pd.value14, pd.value15 FROM plate_data pd  WHERE
+>pd.plate_info_id IN  (SELECT pi.plate_info_id  FROM plate_info pi  WHERE
+>pi.protocol_name = 'cptk-3-vo') AND pd.type_index = 22 and pd.layer_index =
+>0 order by pd.plate_info_id ,pd.col_index
+>
+>Has anybody seen this behavior before?
+>--
+>Rajarshi Guha
+>
+>	[[alternative HTML version deleted]]
+>
+>_______________________________________________
+>R-sig-DB mailing list -- R Special Interest Group
+>R-sig-DB at stat.math.ethz.ch
+>https://*stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+-- 
+--------------------------------------
+Don MacQueen
+Environmental Protection Department
+Lawrence Livermore National Laboratory
+Livermore, CA, USA
+925-423-1062
+
+
+
+From r@j@r@h|@guh@ @end|ng |rom gm@||@com  Thu Aug  6 16:49:51 2009
+From: r@j@r@h|@guh@ @end|ng |rom gm@||@com (Rajarshi Guha)
+Date: Thu, 6 Aug 2009 10:49:51 -0400
+Subject: [R-sig-DB] problem with ROracle calls from a package
+In-Reply-To: <p0624082fc6a098bd6ba8@128.115.67.9>
+References: <773cea9e0908031859l40f3c496oa158fe59b3d9e130@mail.gmail.com>
+	<p0624082fc6a098bd6ba8@128.115.67.9>
+Message-ID: <773cea9e0908060749j275f8e1et1e3240b5fd780472@mail.gmail.com>
+
+Thanks for the pointer. However, I have a number of functions that require a
+connection, and I wanted to avoid keeping on opening and closing
+connections.
+
+In the end it turned out that my package was loading a Bioconductor package
+after loding the ROracle package. The Bioconductor package then went and
+loaded RSQLite, whose 'isValidConnection' overwrote that from ROracle and
+hence the error!
+
+On Thu, Aug 6, 2009 at 10:35 AM, Don MacQueen <macq at llnl.gov> wrote:
+
+> When I did this I defined the connection inside the function.
+>
+> That is,
+>
+> myfun <- function( dbc, ...) {
+>  ## dbc is a list with username, password, etc to the database
+>
+>  dbm <- Oracle()
+>  con <- dbConnect(dbm, user = dbc$user, dbname = dbc$db, password =
+> dbc$pass)
+>
+>  ## build the query, then
+>  res <- dbGetQuery(con, sql)
+>  ....
+> }
+>
+> And it works.
+>
+> I also found it helpful to have something like this after defining dbm and
+> before defining con
+>
+>    tmp <- dbListConnections(dbm)
+>    if (length(tmp) > 5)
+>        for (ic in tmp) dbDisconnect(ic)
+>
+>
+> I also put this in there somewhere:
+>
+>    on.exit({
+>        dbDisconnect(con)
+>        dbUnloadDriver(dbm)
+>    })
+>
+> -Don
+>
+>
+>
+>
+> At 9:59 PM -0400 8/3/09, Rajarshi Guha wrote:
+>
+>> Hi, I have some R code that uses a OracConnection object to query a
+>> database. The function is something like
+>>
+>> myfunction <- function(con, .....) {
+>>  sql <- paste("SELECT pd.plate_info_id, pd.col_index, ",data.cols,
+>>               " FROM plate_data pd ",
+>>               " WHERE pd.plate_info_id IN ",
+>>               " (SELECT pi.plate_info_id ",
+>>               " FROM plate_info pi ",
+>>               " WHERE pi.protocol_name = '",protocol.name,"')",
+>>               " AND pd.type_index = ", type.index," and pd.layer_index =
+>> ",layer.index,
+>>               " order by pd.plate_info_id ,pd.col_index", sep='',
+>> collapse='')
+>>  res <- dbSendQuery(con, statement=sql)
+>> ....
+>> ....
+>> }
+>>
+>> When I source the file containing this function and pass it a connection
+>> object it works fine.
+>>
+>> However, when I bundle this function into a package and install the
+>> package
+>> and then call the function, I get
+>>
+>> Error in oraExecStatement(ps, ora.buf.size = as(ora.buf.size, "integer"))
+>> :
+>>  expired or invalid prepared statement
+>> Error in oraExecDirect(conn, statement, ...) :
+>>  could not exec direct statement SELECT pd.plate_info_id, pd.col_index,
+>> pd.value0, pd.value1, pd.value2, pd.value3, pd.value4, pd.value5,
+>> pd.value6,
+>> pd.value7, pd.value8, pd.value9, pd.value10, pd.value11, pd.value12,
+>> pd.value13, pd.value14, pd.value15 FROM plate_data pd  WHERE
+>> pd.plate_info_id IN  (SELECT pi.plate_info_id  FROM plate_info pi  WHERE
+>> pi.protocol_name = 'cptk-3-vo') AND pd.type_index = 22 and pd.layer_index
+>> =
+>> 0 order by pd.plate_info_id ,pd.col_index
+>>
+>> Has anybody seen this behavior before?
+>> --
+>> Rajarshi Guha
+>>
+>>        [[alternative HTML version deleted]]
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at stat.math.ethz.ch
+>> https://*stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+>
+>
+> --
+> --------------------------------------
+> Don MacQueen
+> Environmental Protection Department
+> Lawrence Livermore National Laboratory
+> Livermore, CA, USA
+> 925-423-1062
+> --------------------------------------
+>
+
+
+
+-- 
+Rajarshi Guha
+
+	[[alternative HTML version deleted]]
+
+
+
+From kh@iid@b@h@@i m@iii@g oii @gi@ir  Fri Aug  7 01:06:15 2009
+From: kh@iid@b@h@@i m@iii@g oii @gi@ir (kh@iid@b@h@@i m@iii@g oii @gi@ir)
+Date: Fri, 7 Aug 2009 03:06:15 +0400
+Subject: [R-sig-DB] If I can stop one heart from breaking
+Message-ID: <01CA172D.57F74E7D@da1.cincinnati.fasterping.com>
+
+At table with the king:
+http://assistbc.co.nz/ntaqc.html
+
+
+
+From A|ex|@-Johnvdocu @end|ng |rom e|ekt@@|t  Sun Aug  9 00:38:24 2009
+From: A|ex|@-Johnvdocu @end|ng |rom e|ekt@@|t (Aigneis-Henry)
+Date: Sat, 08 Aug 2009 13:38:24 -0900
+Subject: [R-sig-DB] Endlich erfolgreich abnehmen
+Message-ID: <B09DB010.5C684197@elekta.lt>
+
+
+Umgehend und natuerlich Pfunde verlieren, ohne sich mit strengen Diaeten und
+hartem Training quaelen zu muessen ist das ueberhaupt machbar?
+
+Ja, es ist realistisch. Ein voellig neuartiges Schlankheitsprodukt aus
+Amerika macht es jetzt jedem Menschen auch Ihnen moeglich, ohne Plackerei
+und Qualen Gewicht reduzieren zu koennen. Sie muessen nur beim Fruehstueck
+eine einzige dieser Schlankheitspillen schlucken.
+ 
+Probieren Sie es am besten sofort. Sie werden hingerissen sein. In nur
+einem Monat koennen Sie schon auf dem besten Weg zu Ihrem Wunschgewicht
+sein.
+
+http://groups.yahoo.com/group/rimgifts9m40ft
+
+Mit angenehmen Gruessen
+Dr. Prof. Michelle Grede
+
+
+
+From shopMED_goodSEXgu m@iii@g oii @etzero@com  Tue Aug 11 07:24:20 2009
+From: shopMED_goodSEXgu m@iii@g oii @etzero@com (shopMED_goodSEXgu m@iii@g oii @etzero@com)
+Date: Tue, 11 Aug 2009 09:24:20 +0400
+Subject: [R-sig-DB] Make your pipe incredible
+Message-ID: <01CA1A5D.72063ED6@web21.alojamentos21.com>
+
+vqOvdiBuQy
+New word in infections treatment with antibiotics.
+ntXcAddnHZ
+	[[alternative HTML version deleted]]
+
+
+
+From Lu|@r @end|ng |rom h@v@|o  Thu Aug 13 17:25:55 2009
+From: Lu|@r @end|ng |rom h@v@|o (Luis Ridao Cruz)
+Date: Thu, 13 Aug 2009 16:25:55 +0100
+Subject: [R-sig-DB] In odbcDriverConnect   ODBC connection failed
+Message-ID: <4A843E930200008700000D18@mail.elektron.fo>
+
+
+R-sig-DB help,
+
+I have installed an ODBC Driver for Linux.
+
+I want to connect to our database through R via:
+
+>library(RODBC)
+>con <- odbcDriverConnect("SERVER=IP_address:PORT;DRIVER=ORACLE;DATABASE=MAGNUS")
+Warning message:
+In odbcDriverConnect("SERVER=IP_address:PORT;DRIVER=ORACLE;DATABASE=MAGNUS") :
+  ODBC connection failed
+
+I don't really know whether this is the right syntax. I copy-paste files "odbc.ini" and "odbcinst.ini":
+
+## file odbc.ini
+[ORACLE]
+Driver        = ORACLE
+Database        = //IP_address:PORT/MAGNUS
+User        = my_username
+Password        = my_password
+METADATA_ID        = 0
+ENABLE_USER_CATALOG        = 1
+ENABLE_SYNONYMS        = 1
+
+## file odbcinst.ini
+[ORACLE]
+Description        = Easysoft ODBC Oracle Driver
+Driver        = /usr/local/easysoft/oracle/libesoracle.so
+Setup        = /usr/local/easysoft/oracle/libesoraclesetup.so
+DontDLClose        = 1
+FileUsage        = 1
+UsageCount        = 1
+
+
+Thanks in advance
+
+
+
+From @tephen@we||er @end|ng |rom revo|ut|on-comput|ng@com  Fri Aug 14 18:44:18 2009
+From: @tephen@we||er @end|ng |rom revo|ut|on-comput|ng@com (Stephen Weller)
+Date: Fri, 14 Aug 2009 09:44:18 -0700
+Subject: [R-sig-DB] R-sig-DB Digest, Vol 58, Issue 5
+In-Reply-To: <mailman.13.1250244004.721.r-sig-db@stat.math.ethz.ch>
+References: <mailman.13.1250244004.721.r-sig-db@stat.math.ethz.ch>
+Message-ID: <5d07dbf0908140944o19df0ca4lf26a9369ebc3e6ac@mail.gmail.com>
+
+Hello Luis,
+
+Have you tried setting the Servername explicitly in your call to
+'odbcDriverConnect()'?
+
+Can you get the following to work:    > con <-
+odbcDriverConnect("SERVER=*******";DRIVER=ORACLE;DATABASE=MAGNUS")
+
+
+Stephen Weller
+Revolution Computing
+
+
+
+On Fri, Aug 14, 2009 at 3:00 AM, <r-sig-db-request at stat.math.ethz.ch> wrote:
+
+> Send R-sig-DB mailing list submissions to
+>        r-sig-db at stat.math.ethz.ch
+>
+> To subscribe or unsubscribe via the World Wide Web, visit
+>        https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> or, via email, send a message with subject or body 'help' to
+>        r-sig-db-request at stat.math.ethz.ch
+>
+> You can reach the person managing the list at
+>        r-sig-db-owner at stat.math.ethz.ch
+>
+> When replying, please edit your Subject line so it is more specific
+> than "Re: Contents of R-sig-DB digest..."
+>
+>
+> Today's Topics:
+>
+>   1. In odbcDriverConnect   ODBC connection failed (Luis Ridao Cruz)
+>
+>
+> ----------------------------------------------------------------------
+>
+> Message: 1
+> Date: Thu, 13 Aug 2009 16:25:55 +0100
+> From: "Luis Ridao Cruz" <Luisr at hav.fo>
+> Subject: [R-sig-DB] In odbcDriverConnect   ODBC connection failed
+> To: <r-sig-db at stat.math.ethz.ch>
+> Message-ID: <4A843E930200008700000D18 at mail.elektron.fo>
+> Content-Type: text/plain;       charset="US-ASCII"
+>
+>
+> R-sig-DB help,
+>
+> I have installed an ODBC Driver for Linux.
+>
+> I want to connect to our database through R via:
+>
+> >library(RODBC)
+> >con <-
+> odbcDriverConnect("SERVER=IP_address:PORT;DRIVER=ORACLE;DATABASE=MAGNUS")
+> Warning message:
+> In
+> odbcDriverConnect("SERVER=IP_address:PORT;DRIVER=ORACLE;DATABASE=MAGNUS") :
+>  ODBC connection failed
+>
+> I don't really know whether this is the right syntax. I copy-paste files
+> "odbc.ini" and "odbcinst.ini":
+>
+> ## file odbc.ini
+> [ORACLE]
+> Driver        = ORACLE
+> Database        = //IP_address:PORT/MAGNUS
+> User        = my_username
+> Password        = my_password
+> METADATA_ID        = 0
+> ENABLE_USER_CATALOG        = 1
+> ENABLE_SYNONYMS        = 1
+>
+> ## file odbcinst.ini
+> [ORACLE]
+> Description        = Easysoft ODBC Oracle Driver
+> Driver        = /usr/local/easysoft/oracle/libesoracle.so
+> Setup        = /usr/local/easysoft/oracle/libesoraclesetup.so
+> DontDLClose        = 1
+> FileUsage        = 1
+> UsageCount        = 1
+>
+>
+> Thanks in advance
+>
+>
+>
+> ------------------------------
+>
+> _______________________________________________
+> R-sig-DB mailing list
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+>
+> End of R-sig-DB Digest, Vol 58, Issue 5
+> ***************************************
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From m@ii2europrizece@ter1 m@iii@g oii y@hoo@co@uk  Fri Aug 21 16:17:22 2009
+From: m@ii2europrizece@ter1 m@iii@g oii y@hoo@co@uk (m@ii2europrizece@ter1 m@iii@g oii y@hoo@co@uk)
+Date: Fri, 21 Aug 2009 18:17:22 +0400
+Subject: [R-sig-DB] Sale on supplements! -50%!
+Message-ID: <01CA227A.45067C0B@wh-www22.xs4all.nl>
+
+difbmh
+With Perfect day every day becomes perfect one.
+lorOIS
+	[[alternative HTML version deleted]]
+
+
+
+From corne| @end|ng |rom up|o@d-ro@ro  Wed Aug 26 22:12:16 2009
+From: corne| @end|ng |rom up|o@d-ro@ro (cornel)
+Date: Wed, 26 Aug 2009 23:12:16 +0300
+Subject: [R-sig-DB] cursuri online GRATUITE
+Message-ID: <20090826.XHHHNSILCOCACSLT@upload-ro.ro>
+
+An HTML attachment was scrubbed...
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20090826/c1893f89/attachment.html>
+
+From |hok @end|ng |rom hotm@||@com  Thu Aug 27 04:56:04 2009
+From: |hok @end|ng |rom hotm@||@com (Jack Tanner)
+Date: Wed, 26 Aug 2009 22:56:04 -0400
+Subject: [R-sig-DB] RMySQL doesn't auto-reconnect
+Message-ID: <BLU0-SMTP64E8191AB243A85908717FCAF60@phx.gbl>
+
+After I do library(RMySQL), dbConnect(), and run a few queries, I 
+sometimes get this:
+
+Error in mysqlExecStatement(conn, statement, ...) :
+  RS-DBI driver: (could not run statement: MySQL server has gone away)
+
+If I issue a dbConnect() again, I can run queries again ... for a little 
+while, and then I get another "server has gone away".
+
+The MySQL server is on a separate machine from the client. It's entirely 
+possible that there's one or more firewalls in between, which could be 
+causing the problem. The
+
+I understand that MySQL has auto-reconnect functionality:
+
+http://blog.taragana.com/index.php/archive/how-to-enable-disable-auto-reconnect-in-mysql/
+
+Does RMySQL allow me to turn on auto-reconnect? If so, how?
+
+ > version
+               _                          
+platform       i386-redhat-linux-gnu      
+arch           i386                       
+os             linux-gnu                  
+system         i386, linux-gnu            
+status                                    
+major          2                          
+minor          9.1                        
+year           2009                       
+month          06                         
+day            26                         
+svn rev        48839                      
+language       R                          
+version.string R version 2.9.1 (2009-06-26)
+ > mysqlClientLibraryVersions()
+5.0.45 5.0.45
+ 50045  50045
+
+
+
+From @teve|ew @end|ng |rom gm@||@com  Thu Aug 27 18:30:37 2009
+From: @teve|ew @end|ng |rom gm@||@com (S. Few)
+Date: Thu, 27 Aug 2009 12:30:37 -0400
+Subject: [R-sig-DB] testing
+Message-ID: <6181d6960908270930u6d9e08b6ha53712c597b79647@mail.gmail.com>
+
+...
+
+steve
+
+
+
+From je||@horner @end|ng |rom v@nderb||t@edu  Fri Aug 28 17:21:59 2009
+From: je||@horner @end|ng |rom v@nderb||t@edu (Jeffrey Horner)
+Date: Fri, 28 Aug 2009 10:21:59 -0500
+Subject: [R-sig-DB] RMySQL doesn't auto-reconnect
+In-Reply-To: <BLU0-SMTP64E8191AB243A85908717FCAF60@phx.gbl>
+References: <BLU0-SMTP64E8191AB243A85908717FCAF60@phx.gbl>
+Message-ID: <4A97F617.70607@vanderbilt.edu>
+
+Jack Tanner wrote:
+> After I do library(RMySQL), dbConnect(), and run a few queries, I 
+> sometimes get this:
+>
+> Error in mysqlExecStatement(conn, statement, ...) :
+>  RS-DBI driver: (could not run statement: MySQL server has gone away)
+>
+> If I issue a dbConnect() again, I can run queries again ... for a 
+> little while, and then I get another "server has gone away".
+>
+> The MySQL server is on a separate machine from the client. It's 
+> entirely possible that there's one or more firewalls in between, which 
+> could be causing the problem. The
+>
+> I understand that MySQL has auto-reconnect functionality:
+>
+> http://blog.taragana.com/index.php/archive/how-to-enable-disable-auto-reconnect-in-mysql/ 
+>
+>
+> Does RMySQL allow me to turn on auto-reconnect? If so, how?
+
+Unfortunately it doesn't right now, but that would be a great addition. 
+I've often had to test for the connection going away for unknown reasons 
+as well.
+
+ I'll pencil it in for the next release as it's easy to add.
+
+Jeff
+
+>
+> > version
+>               _                          platform       
+> i386-redhat-linux-gnu      arch           i386                       
+> os             linux-gnu                  system         i386, 
+> linux-gnu            status                                    
+> major          2                          minor          
+> 9.1                        year           2009                       
+> month          06                         day            
+> 26                         svn rev        48839                      
+> language       R                          version.string R version 
+> 2.9.1 (2009-06-26)
+> > mysqlClientLibraryVersions()
+> 5.0.45 5.0.45
+> 50045  50045
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From pg||bert @end|ng |rom b@nk-b@nque-c@n@d@@c@  Fri Aug 28 18:34:09 2009
+From: pg||bert @end|ng |rom b@nk-b@nque-c@n@d@@c@ (Paul Gilbert)
+Date: Fri, 28 Aug 2009 12:34:09 -0400
+Subject: [R-sig-DB] RMySQL doesn't auto-reconnect
+In-Reply-To: <4A97F617.70607@vanderbilt.edu>
+References: <BLU0-SMTP64E8191AB243A85908717FCAF60@phx.gbl>
+	<4A97F617.70607@vanderbilt.edu>
+Message-ID: <4A980701.20903@bank-banque-canada.ca>
+
+Jack
+
+It is possible this is a firewall, but I think there is also a 
+connection timeout parameter on the server, which can be adjusted. I'm 
+not sure what the default is, but I don't usually have trouble unless I 
+leave a connection sitting idle overnight. Probably the firewall has 
+some sort of connection timeout too. I think both these timeouts should 
+depend on idle time, so are not consistent with the problem you report.
+
+Auto-reconnect would fix your problem, but I don't think you should be 
+getting dropped in the first place, unless you are really leaving the 
+connection idle for a long time.  If you are doing that, I would not 
+recommend auto-reconnect  (for security reasons).
+
+Paul
+
+Jeffrey Horner wrote:
+> Jack Tanner wrote:
+> 
+>> After I do library(RMySQL), dbConnect(), and run a few queries, I 
+>> sometimes get this:
+>>
+>> Error in mysqlExecStatement(conn, statement, ...) :
+>>  RS-DBI driver: (could not run statement: MySQL server has gone away)
+>>
+>> If I issue a dbConnect() again, I can run queries again ... for a 
+>> little while, and then I get another "server has gone away".
+>>
+>> The MySQL server is on a separate machine from the client. It's 
+>> entirely possible that there's one or more firewalls in between, which 
+>> could be causing the problem. The
+>>
+>> I understand that MySQL has auto-reconnect functionality:
+>>
+>> http://blog.taragana.com/index.php/archive/how-to-enable-disable-auto-reconnect-in-mysql/ 
+>>
+>>
+>> Does RMySQL allow me to turn on auto-reconnect? If so, how?
+> 
+> 
+> Unfortunately it doesn't right now, but that would be a great addition. 
+> I've often had to test for the connection going away for unknown reasons 
+> as well.
+> 
+> I'll pencil it in for the next release as it's easy to add.
+> 
+> Jeff
+> 
+>>
+>> > version
+>>               _                          platform       
+>> i386-redhat-linux-gnu      arch           i386                       
+>> os             linux-gnu                  system         i386, 
+>> linux-gnu            status                                    
+>> major          2                          minor          
+>> 9.1                        year           2009                       
+>> month          06                         day            
+>> 26                         svn rev        48839                      
+>> language       R                          version.string R version 
+>> 2.9.1 (2009-06-26)
+>> > mysqlClientLibraryVersions()
+>> 5.0.45 5.0.45
+>> 50045  50045
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at stat.math.ethz.ch
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+> 
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+====================================================================================
+
+La version fran?aise suit le texte anglais.
+
+------------------------------------------------------------------------------------
+
+This email may contain privileged and/or confidential information, and the Bank of
+Canada does not waive any related rights. Any distribution, use, or copying of this
+email or the information it contains by other than the intended recipient is
+unauthorized. If you received this email in error please delete it immediately from
+your system and notify the sender promptly by email that you have done so. 
+
+------------------------------------------------------------------------------------
+
+Le pr?sent courriel peut contenir de l'information privil?gi?e ou confidentielle.
+La Banque du Canada ne renonce pas aux droits qui s'y rapportent. Toute diffusion,
+utilisation ou copie de ce courriel ou des renseignements qu'il contient par une
+personne autre que le ou les destinataires d?sign?s est interdite. Si vous recevez
+ce courriel par erreur, veuillez le supprimer imm?diatement et envoyer sans d?lai ?
+l'exp?diteur un message ?lectronique pour l'aviser que vous avez ?limin? de votre
+ordinateur toute copie du courriel re?u.
+
+From |hok @end|ng |rom hotm@||@com  Fri Aug 28 19:07:30 2009
+From: |hok @end|ng |rom hotm@||@com (Jack Tanner)
+Date: Fri, 28 Aug 2009 13:07:30 -0400
+Subject: [R-sig-DB] RMySQL doesn't auto-reconnect
+In-Reply-To: <4A980701.20903@bank-banque-canada.ca>
+References: <BLU0-SMTP64E8191AB243A85908717FCAF60@phx.gbl>
+	<4A97F617.70607@vanderbilt.edu>
+	<4A980701.20903@bank-banque-canada.ca>
+Message-ID: <BLU0-SMTP5965E4E394BAB3CF3369D7CAF50@phx.gbl>
+
+Unfortunately, the server in question is on a web host, so I almost 
+certainly have no control of time-out parameters, even just to play with 
+to test the hypothesis. The loss of connection usually happens within 
+seconds, not even tens of seconds. Connecting from a different client 
+machine still results in "server has gone away."
+
+I agree that auto-reconnect is a kludge, but I don't really know how to 
+diagnose the failure of the connection. Ideas welcome. :)
+
+Could you clarify why auto-reconnect is dangerous security-wise?
+
+Paul Gilbert wrote:
+> Jack
+>
+> It is possible this is a firewall, but I think there is also a 
+> connection timeout parameter on the server, which can be adjusted. I'm 
+> not sure what the default is, but I don't usually have trouble unless 
+> I leave a connection sitting idle overnight. Probably the firewall has 
+> some sort of connection timeout too. I think both these timeouts 
+> should depend on idle time, so are not consistent with the problem you 
+> report.
+>
+> Auto-reconnect would fix your problem, but I don't think you should be 
+> getting dropped in the first place, unless you are really leaving the 
+> connection idle for a long time.  If you are doing that, I would not 
+> recommend auto-reconnect  (for security reasons).
+>
+> Paul
+>
+> Jeffrey Horner wrote:
+>> Jack Tanner wrote:
+>>
+>>> After I do library(RMySQL), dbConnect(), and run a few queries, I 
+>>> sometimes get this:
+>>>
+>>> Error in mysqlExecStatement(conn, statement, ...) :
+>>>  RS-DBI driver: (could not run statement: MySQL server has gone away)
+>>>
+>>> If I issue a dbConnect() again, I can run queries again ... for a 
+>>> little while, and then I get another "server has gone away".
+>>>
+>>> The MySQL server is on a separate machine from the client. It's 
+>>> entirely possible that there's one or more firewalls in between, 
+>>> which could be causing the problem. The
+>>>
+>>> I understand that MySQL has auto-reconnect functionality:
+>>>
+>>> http://blog.taragana.com/index.php/archive/how-to-enable-disable-auto-reconnect-in-mysql/ 
+>>>
+>>>
+>>> Does RMySQL allow me to turn on auto-reconnect? If so, how?
+>>
+>>
+>> Unfortunately it doesn't right now, but that would be a great 
+>> addition. I've often had to test for the connection going away for 
+>> unknown reasons as well.
+>>
+>> I'll pencil it in for the next release as it's easy to add.
+>>
+>> Jeff
+>>
+>>>
+>>> > version
+>>>               _                          platform       
+>>> i386-redhat-linux-gnu      arch           i386                       
+>>> os             linux-gnu                  system         i386, 
+>>> linux-gnu            status                                    
+>>> major          2                          minor          
+>>> 9.1                        year           2009                       
+>>> month          06                         day            
+>>> 26                         svn rev        48839                      
+>>> language       R                          version.string R version 
+>>> 2.9.1 (2009-06-26)
+>>> > mysqlClientLibraryVersions()
+>>> 5.0.45 5.0.45
+>>> 50045  50045
+
+
+
+From pg||bert @end|ng |rom b@nk-b@nque-c@n@d@@c@  Fri Aug 28 19:39:36 2009
+From: pg||bert @end|ng |rom b@nk-b@nque-c@n@d@@c@ (Paul Gilbert)
+Date: Fri, 28 Aug 2009 13:39:36 -0400
+Subject: [R-sig-DB] RMySQL doesn't auto-reconnect
+In-Reply-To: <BLU0-SMTP5965E4E394BAB3CF3369D7CAF50@phx.gbl>
+References: <BLU0-SMTP64E8191AB243A85908717FCAF60@phx.gbl>	<4A97F617.70607@vanderbilt.edu>	<4A980701.20903@bank-banque-canada.ca>
+	<BLU0-SMTP5965E4E394BAB3CF3369D7CAF50@phx.gbl>
+Message-ID: <4A981658.6090105@bank-banque-canada.ca>
+
+
+
+Jack Tanner wrote:
+> Unfortunately, the server in question is on a web host, so I almost 
+> certainly have no control of time-out parameters, even just to play with 
+> to test the hypothesis. The loss of connection usually happens within 
+> seconds, not even tens of seconds. Connecting from a different client 
+> machine still results in "server has gone away."
+
+My guess is that this is not a time-out problem.  If you can arrage to 
+temporarly connect without the firewall in the middle then at least you 
+could determine if the problem is the server or the firewall.
+
+> 
+> I agree that auto-reconnect is a kludge, but I don't really know how to 
+> diagnose the failure of the connection. Ideas welcome. :)
+> 
+> Could you clarify why auto-reconnect is dangerous security-wise?
+
+I was assuming a situation that may not apply: if you use a 
+userid/password to connect then you should probably worry about how easy 
+it is to reconnect to a session that has been disconnected because it 
+has been idle for awhile. (But I was thinking hours not seconds.)
+
+Paul
+> 
+> Paul Gilbert wrote:
+> 
+>> Jack
+>>
+>> It is possible this is a firewall, but I think there is also a 
+>> connection timeout parameter on the server, which can be adjusted. I'm 
+>> not sure what the default is, but I don't usually have trouble unless 
+>> I leave a connection sitting idle overnight. Probably the firewall has 
+>> some sort of connection timeout too. I think both these timeouts 
+>> should depend on idle time, so are not consistent with the problem you 
+>> report.
+>>
+>> Auto-reconnect would fix your problem, but I don't think you should be 
+>> getting dropped in the first place, unless you are really leaving the 
+>> connection idle for a long time.  If you are doing that, I would not 
+>> recommend auto-reconnect  (for security reasons).
+>>
+>> Paul
+>>
+>> Jeffrey Horner wrote:
+>>
+>>> Jack Tanner wrote:
+>>>
+>>>> After I do library(RMySQL), dbConnect(), and run a few queries, I 
+>>>> sometimes get this:
+>>>>
+>>>> Error in mysqlExecStatement(conn, statement, ...) :
+>>>>  RS-DBI driver: (could not run statement: MySQL server has gone away)
+>>>>
+>>>> If I issue a dbConnect() again, I can run queries again ... for a 
+>>>> little while, and then I get another "server has gone away".
+>>>>
+>>>> The MySQL server is on a separate machine from the client. It's 
+>>>> entirely possible that there's one or more firewalls in between, 
+>>>> which could be causing the problem. The
+>>>>
+>>>> I understand that MySQL has auto-reconnect functionality:
+>>>>
+>>>> http://blog.taragana.com/index.php/archive/how-to-enable-disable-auto-reconnect-in-mysql/ 
+>>>>
+>>>>
+>>>> Does RMySQL allow me to turn on auto-reconnect? If so, how?
+>>>
+>>>
+>>>
+>>> Unfortunately it doesn't right now, but that would be a great 
+>>> addition. I've often had to test for the connection going away for 
+>>> unknown reasons as well.
+>>>
+>>> I'll pencil it in for the next release as it's easy to add.
+>>>
+>>> Jeff
+>>>
+>>>>
+>>>> > version
+>>>>               _                          platform       
+>>>> i386-redhat-linux-gnu      arch           i386                       
+>>>> os             linux-gnu                  system         i386, 
+>>>> linux-gnu            status                                    
+>>>> major          2                          minor          
+>>>> 9.1                        year           2009                       
+>>>> month          06                         day            
+>>>> 26                         svn rev        48839                      
+>>>> language       R                          version.string R version 
+>>>> 2.9.1 (2009-06-26)
+>>>> > mysqlClientLibraryVersions()
+>>>> 5.0.45 5.0.45
+>>>> 50045  50045
+> 
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+====================================================================================
+
+La version fran?aise suit le texte anglais.
+
+------------------------------------------------------------------------------------
+
+This email may contain privileged and/or confidential information, and the Bank of
+Canada does not waive any related rights. Any distribution, use, or copying of this
+email or the information it contains by other than the intended recipient is
+unauthorized. If you received this email in error please delete it immediately from
+your system and notify the sender promptly by email that you have done so. 
+
+------------------------------------------------------------------------------------
+
+Le pr?sent courriel peut contenir de l'information privil?gi?e ou confidentielle.
+La Banque du Canada ne renonce pas aux droits qui s'y rapportent. Toute diffusion,
+utilisation ou copie de ce courriel ou des renseignements qu'il contient par une
+personne autre que le ou les destinataires d?sign?s est interdite. Si vous recevez
+ce courriel par erreur, veuillez le supprimer imm?diatement et envoyer sans d?lai ?
+l'exp?diteur un message ?lectronique pour l'aviser que vous avez ?limin? de votre
+ordinateur toute copie du courriel re?u.
+
+From Add|e@Andrewjoo@@ @end|ng |rom m|cg|@com  Sun Aug 30 16:28:08 2009
+From: Add|e@Andrewjoo@@ @end|ng |rom m|cg|@com (Agnetat_Schatzi)
+Date: Sun, 30 Aug 2009 10:28:08 -0400
+Subject: [R-sig-DB] Gesund abnehmen
+Message-ID: <063ADC77.E8679E2F@micgi.com>
+
+
+Amerika war uns schon regelmaessig in Vielem ueberlegen, und auch nun kommt
+ein ganz revolutionaerer Erfolg aus Amerika, der allen Menschen Zuversicht
+macht, die zu dick sind.
+
+Ganz bequeme und sichere Bestellung und weitere Erklaerungen im Web
+
+http://groups.yahoo.com/group/creakhexhuy8b
+
+Dieses neue Mittel richtet sich besonders an die Menschen, die nicht nur
+ein paar Kilo Uebergewicht haben, sondern tatsaechlich erheblich zu dick
+sind und sich auch schon oft ohne Erfolg mit Hungerkuren gequaelt haben.
+
+Auf eine vollkommen neue und revolutionaere Weise unterstuetzen diese
+Schlankheitspillen Sie beim Abnehmen. Es geht nahezu wie von selbst. Nehmen
+Sie einfach zum Fruehstueck eine Pille und den Rest erledigt Ihr
+Stoffwechsel.
+
+Ganz einfache und sichere Bestellung sowie mehr Hinweise im WorldWideWeb
+
+http://groups.yahoo.com/group/thusdeedmwp0zc
+
+Mit netten Gruessen
+Dr. Sabrina Schmitz
+
+
+
+From e@m@n| @end|ng |rom gm@||@com  Wed Sep  9 17:39:59 2009
+From: e@m@n| @end|ng |rom gm@||@com (Arun Eamani)
+Date: Wed, 9 Sep 2009 10:39:59 -0500
+Subject: [R-sig-DB] ROracle ubuntu64 issue
+In-Reply-To: <af1d291c0909081755r71cce616oc46a51baf8329540@mail.gmail.com>
+References: <af1d291c0909081755r71cce616oc46a51baf8329540@mail.gmail.com>
+Message-ID: <af1d291c0909090839v26f68705tdc30720bb405aa70@mail.gmail.com>
+
+>
+> Hi,
+> i have R on ubuntu64
+>
+> i got ROracle database connection issues as seen below
+>
+> at a loss do to what next
+>
+> > library(ROracle)
+> Loading required package: DBI
+> > m <- dbDriver("Oracle")
+> > con <- dbConnect(m, username="myname", password="mwpwd",
+> dbname="10.1.16.40")
+> Error in oraNewConnection(drv, ...) :
+>   unused argument(s) (address = "10.1.16.40")
+> > con <- dbConnect(m, username="myname", password="mwpwd",
+> dbname="10.1.16.40")
+>
+>
+>  *** caught segfault ***
+> address (nil), cause 'memory not mapped'
+>
+> Traceback:
+>  1: .Call("RS_Ora_newConnection", drvId, con.params, max.results,
+> PACKAGE = .OraPkgName)
+>  2: oraNewConnection(drv, ...)
+>  3: is(object, Cl)
+>  4: is(object, Cl)
+>  5: .valueClassTest(standardGeneric("dbConnect"), "DBIConnection",
+> "dbConnect")
+>  6: dbConnect(m,......
+>
+>
+>
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From cberry @end|ng |rom t@jo@uc@d@edu  Tue Sep 22 00:09:01 2009
+From: cberry @end|ng |rom t@jo@uc@d@edu (Charles C. Berry)
+Date: Mon, 21 Sep 2009 15:09:01 -0700
+Subject: [R-sig-DB] RMySQL dbConnect( default.file="mysql.config" ) fails
+Message-ID: <Pine.LNX.4.64.0909211444580.31606@tajo.ucsd.edu>
+
+
+
+I can connect to a database using
+
+ 	dbConnect(m, dbname="intSites",user="3y996DKX7i",password="pass")
+
+but when I try using
+
+ 	dbConnect(m, default.file="mysql.config")
+
+and similar calls I get an error: RS-DBI driver: (Failed to connect to 
+database ...
+
+Details follow. Please forgive a few line wraps. Help appreciated.
+
+Chuck
+
+---
+> # here is 'mysql.config' in getwd()
+> readLines("mysql.config")
+  [1] "# config for intsite queries" ""
+  [3] "[client]"                     "user = 3y996DKX7i"
+  [5] "password = pass "             "host = localhost"
+  [7] ""                             "[rs-dbi]"
+  [9] "database = intSites"          ""
+>
+
+> library( RMySQL )
+Loading required package: DBI
+> m <- MySQL()
+> summary(m)
+<MySQLDriver:(82181)>
+   Driver name:  MySQL
+   Max  connections: 16
+   Conn. processed: 0
+   Default records per fetch: 500
+   Open connections: 0
+>
+> # connecting with dbname,user,password WORKS OK
+> con <- dbConnect(m, dbname="intSites",user="3y996DKX7i",password="pass")
+> summary(con)
+<MySQLConnection:(82181,0)>
+   User: 3y996DKX7i
+   Host: localhost
+   Dbname: intSites
+   Connection type: Localhost via UNIX socket
+   No resultSet available
+>
+> # but using default.file seems to fail
+> con2 <- dbConnect(m, default.file="mysql.config")
+Error in mysqlNewConnection(drv, ...) :
+   RS-DBI driver: (Failed to connect to database: Error: Can't connect to 
+local MySQL server through socket '/tm\
+p/mysql.sock' (2)
+)
+> # try again, but specify group
+> con2 <- dbConnect(m, group="client", default.file="mysql.config")
+Error in mysqlNewConnection(drv, ...) :
+   RS-DBI driver: (Failed to connect to database: Error: Can't connect to 
+local MySQL server through socket '/tm\
+p/mysql.sock' (2)
+)
+> con2 <- dbConnect(m, group="rs-dbi", default.file="mysql.config")
+Error in mysqlNewConnection(drv, ...) :
+   RS-DBI driver: (Failed to connect to database: Error: Can't connect to 
+local MySQL server through socket '/tm\
+p/mysql.sock' (2)
+)
+> sessionInfo()
+R version 2.9.0 (2009-04-17)
+i386-apple-darwin8.11.1
+
+locale:
+C
+
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] RMySQL_0.7-4 DBI_0.2-4
+>
+
+
+Charles C. Berry                            (858) 534-2098
+                                             Dept of Family/Preventive Medicine
+E mailto:cberry at tajo.ucsd.edu	            UC San Diego
+http://famprevmed.ucsd.edu/faculty/cberry/  La Jolla, San Diego 92093-0901
+
+
+
+From cberry @end|ng |rom t@jo@uc@d@edu  Tue Sep 22 05:54:16 2009
+From: cberry @end|ng |rom t@jo@uc@d@edu (Charles C. Berry)
+Date: Mon, 21 Sep 2009 20:54:16 -0700
+Subject: [R-sig-DB] RMySQL dbConnect( default.file="mysql.config" ) fails
+In-Reply-To: <Pine.LNX.4.64.0909211444580.31606@tajo.ucsd.edu>
+References: <Pine.LNX.4.64.0909211444580.31606@tajo.ucsd.edu>
+Message-ID: <Pine.LNX.4.64.0909212035470.32277@tajo.ucsd.edu>
+
+
+
+It seems that the config file needs to specify the location of the socket 
+else an incorrect location is given. Also the config file needs to be 
+named according to its full path designation.
+
+Perhaps, these requirements are bugs in dbConnect().
+
+===
+
+Putting
+
+socket = /private/var/mysql/mysql.sock
+
+in the [client] section works with
+
+con3 <- dbConnect(m,  default.file="/<full-path>/mysql.config")
+
+(note that the full path given in the line above is required)
+
+Chuck
+
+On Mon, 21 Sep 2009, Charles C. Berry wrote:
+
+>
+>
+> I can connect to a database using
+>
+> 	dbConnect(m, dbname="intSites",user="3y996DKX7i",password="pass")
+>
+> but when I try using
+>
+> 	dbConnect(m, default.file="mysql.config")
+>
+> and similar calls I get an error: RS-DBI driver: (Failed to connect to 
+> database ...
+>
+> Details follow. Please forgive a few line wraps. Help appreciated.
+>
+> Chuck
+>
+> ---
+>>  # here is 'mysql.config' in getwd()
+>>  readLines("mysql.config")
+>  [1] "# config for intsite queries" ""
+>  [3] "[client]"                     "user = 3y996DKX7i"
+>  [5] "password = pass "             "host = localhost"
+>  [7] ""                             "[rs-dbi]"
+>  [9] "database = intSites"          ""
+>> 
+>
+>>  library( RMySQL )
+> Loading required package: DBI
+>>  m <- MySQL()
+>>  summary(m)
+> <MySQLDriver:(82181)>
+>   Driver name:  MySQL
+>   Max  connections: 16
+>   Conn. processed: 0
+>   Default records per fetch: 500
+>   Open connections: 0
+>>
+>>  # connecting with dbname,user,password WORKS OK
+>>  con <- dbConnect(m, dbname="intSites",user="3y996DKX7i",password="pass")
+>>  summary(con)
+> <MySQLConnection:(82181,0)>
+>   User: 3y996DKX7i
+>   Host: localhost
+>   Dbname: intSites
+>   Connection type: Localhost via UNIX socket
+>   No resultSet available
+>>
+>>  # but using default.file seems to fail
+>>  con2 <- dbConnect(m, default.file="mysql.config")
+> Error in mysqlNewConnection(drv, ...) :
+>  RS-DBI driver: (Failed to connect to database: Error: Can't connect to 
+> local MySQL server through socket '/tm\
+> p/mysql.sock' (2)
+> )
+>>  # try again, but specify group
+>>  con2 <- dbConnect(m, group="client", default.file="mysql.config")
+> Error in mysqlNewConnection(drv, ...) :
+>  RS-DBI driver: (Failed to connect to database: Error: Can't connect to 
+> local MySQL server through socket '/tm\
+> p/mysql.sock' (2)
+> )
+>>  con2 <- dbConnect(m, group="rs-dbi", default.file="mysql.config")
+> Error in mysqlNewConnection(drv, ...) :
+>  RS-DBI driver: (Failed to connect to database: Error: Can't connect to 
+> local MySQL server through socket '/tm\
+> p/mysql.sock' (2)
+> )
+>>  sessionInfo()
+> R version 2.9.0 (2009-04-17)
+> i386-apple-darwin8.11.1
+>
+> locale:
+> C
+>
+>
+> attached base packages:
+> [1] stats     graphics  grDevices utils     datasets  methods   base
+>
+> other attached packages:
+> [1] RMySQL_0.7-4 DBI_0.2-4
+>> 
+>
+>
+> Charles C. Berry                            (858) 534-2098
+>                                            Dept of Family/Preventive 
+> Medicine
+> E mailto:cberry at tajo.ucsd.edu	            UC San Diego
+> http://famprevmed.ucsd.edu/faculty/cberry/  La Jolla, San Diego 92093-0901
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+Charles C. Berry                            (858) 534-2098
+                                             Dept of Family/Preventive Medicine
+E mailto:cberry at tajo.ucsd.edu	            UC San Diego
+http://famprevmed.ucsd.edu/faculty/cberry/  La Jolla, San Diego 92093-0901
+
+
+
+From thom@@@||eb|g @end|ng |rom |@|@@|r@unho|er@de  Tue Sep 29 13:54:46 2009
+From: thom@@@||eb|g @end|ng |rom |@|@@|r@unho|er@de (Thomas Liebig)
+Date: Tue, 29 Sep 2009 13:54:46 +0200
+Subject: [R-sig-DB] In odbcDriverConnect   ODBC connection failed
+In-Reply-To: <4A843E930200008700000D18@mail.elektron.fo>
+References: <4A843E930200008700000D18@mail.elektron.fo>
+Message-ID: <h9ssj5$eej$1@ger.gmane.org>
+
+Hi Luis,
+
+I also use RODBC to connect an ORACLE DB.
+This is implemented using the following statements
+
+require(RODBC)
+con<-odbcConnect(DB$name,DB$user,DB$pass,case="tolower",believeNRows=FALSE)
+res<-sqlQuery(con,"select 'test' from dual")
+odbcClose(con)
+
+To test your unixodbc installation you should ask google, there are some 
+linux tools to test your configuration.
+
+regards,
+Thomas
+
+
+Luis Ridao Cruz schrieb:
+> R-sig-DB help,
+> 
+> I have installed an ODBC Driver for Linux.
+> 
+> I want to connect to our database through R via:
+> 
+>> library(RODBC)
+>> con <- odbcDriverConnect("SERVER=IP_address:PORT;DRIVER=ORACLE;DATABASE=MAGNUS")
+> Warning message:
+> In odbcDriverConnect("SERVER=IP_address:PORT;DRIVER=ORACLE;DATABASE=MAGNUS") :
+>   ODBC connection failed
+> 
+> I don't really know whether this is the right syntax. I copy-paste files "odbc.ini" and "odbcinst.ini":
+> 
+> ## file odbc.ini
+> [ORACLE]
+> Driver        = ORACLE
+> Database        = //IP_address:PORT/MAGNUS
+> User        = my_username
+> Password        = my_password
+> METADATA_ID        = 0
+> ENABLE_USER_CATALOG        = 1
+> ENABLE_SYNONYMS        = 1
+> 
+> ## file odbcinst.ini
+> [ORACLE]
+> Description        = Easysoft ODBC Oracle Driver
+> Driver        = /usr/local/easysoft/oracle/libesoracle.so
+> Setup        = /usr/local/easysoft/oracle/libesoraclesetup.so
+> DontDLClose        = 1
+> FileUsage        = 1
+> UsageCount        = 1
+> 
+> 
+> Thanks in advance
+
+-- 
+Thomas Liebig
+Fraunhofer-Institut f?r Intelligente Analyse- und
+Informationssysteme (IAIS)
+
+Schloss Birlinghoven, D-53754 Sankt Augustin, Germany
+Email:  thomas.liebig at iais.fraunhofer.de
+Phone:  +49 2241 142050
+Fax:    +49 2241 142072
+
+
+
+From hp@ge@ @end|ng |rom |hcrc@org  Wed Sep 30 00:07:11 2009
+From: hp@ge@ @end|ng |rom |hcrc@org (=?ISO-8859-1?Q?Herv=E9_Pag=E8s?=)
+Date: Tue, 29 Sep 2009 15:07:11 -0700
+Subject: [R-sig-DB] dbWriteTable() is renaming the 'end' column
+Message-ID: <4AC2850F.8000302@fhcrc.org>
+
+Hi,
+
+Consider the following data:
+
+   mydata <- data.frame(start=1:5, end=11:15)
+
+Then storing and retrieving the data shows that the 'end'
+column was renamed:
+
+   drv <- dbDriver("SQLite")
+   con <- dbConnect(drv, dbname=":memory:")
+
+   > dbWriteTable(con, "mydata", mydata)
+   [1] TRUE
+   > dbReadTable(con, "mydata")
+     start end__1
+   1     1     11
+   2     2     12
+   3     3     13
+   4     4     14
+   5     5     15
+
+The culprit doesn't seem to be dbReadTable():
+
+   > dbGetQuery(con, "SELECT * FROM mydata")
+     row_names start end__1
+   1         1     1     11
+   2         2     2     12
+   3         3     3     13
+   4         4     4     14
+   5         5     5     15
+
+and using the sqlite3 client from outside R confirms this.
+
+Looks like a bug in dbWriteTable().
+
+Cheers,
+H.
+
+-- 
+Herv? Pag?s
+
+Program in Computational Biology
+Division of Public Health Sciences
+Fred Hutchinson Cancer Research Center
+1100 Fairview Ave. N, M2-B876
+P.O. Box 19024
+Seattle, WA 98109-1024
+
+E-mail: hpages at fhcrc.org
+Phone:  (206) 667-5791
+Fax:    (206) 667-1319
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Wed Sep 30 00:33:20 2009
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Tue, 29 Sep 2009 18:33:20 -0400
+Subject: [R-sig-DB] dbWriteTable() is renaming the 'end' column
+In-Reply-To: <4AC2850F.8000302@fhcrc.org>
+References: <4AC2850F.8000302@fhcrc.org>
+Message-ID: <971536df0909291533k280fecc9tca8baf5ee678a9e2@mail.gmail.com>
+
+end is a reserved SQL keyword.
+
+2009/9/29 Herv? Pag?s <hpages at fhcrc.org>:
+> Hi,
+>
+> Consider the following data:
+>
+> ?mydata <- data.frame(start=1:5, end=11:15)
+>
+> Then storing and retrieving the data shows that the 'end'
+> column was renamed:
+>
+> ?drv <- dbDriver("SQLite")
+> ?con <- dbConnect(drv, dbname=":memory:")
+>
+> ?> dbWriteTable(con, "mydata", mydata)
+> ?[1] TRUE
+> ?> dbReadTable(con, "mydata")
+> ? ?start end__1
+> ?1 ? ? 1 ? ? 11
+> ?2 ? ? 2 ? ? 12
+> ?3 ? ? 3 ? ? 13
+> ?4 ? ? 4 ? ? 14
+> ?5 ? ? 5 ? ? 15
+>
+> The culprit doesn't seem to be dbReadTable():
+>
+> ?> dbGetQuery(con, "SELECT * FROM mydata")
+> ? ?row_names start end__1
+> ?1 ? ? ? ? 1 ? ? 1 ? ? 11
+> ?2 ? ? ? ? 2 ? ? 2 ? ? 12
+> ?3 ? ? ? ? 3 ? ? 3 ? ? 13
+> ?4 ? ? ? ? 4 ? ? 4 ? ? 14
+> ?5 ? ? ? ? 5 ? ? 5 ? ? 15
+>
+> and using the sqlite3 client from outside R confirms this.
+>
+> Looks like a bug in dbWriteTable().
+>
+> Cheers,
+> H.
+>
+> --
+> Herv? Pag?s
+>
+> Program in Computational Biology
+> Division of Public Health Sciences
+> Fred Hutchinson Cancer Research Center
+> 1100 Fairview Ave. N, M2-B876
+> P.O. Box 19024
+> Seattle, WA 98109-1024
+>
+> E-mail: hpages at fhcrc.org
+> Phone: ?(206) 667-5791
+> Fax: ? ?(206) 667-1319
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From hp@ge@ @end|ng |rom |hcrc@org  Wed Sep 30 01:12:40 2009
+From: hp@ge@ @end|ng |rom |hcrc@org (=?ISO-8859-1?Q?Herv=E9_Pag=E8s?=)
+Date: Tue, 29 Sep 2009 16:12:40 -0700
+Subject: [R-sig-DB] dbWriteTable() is renaming the 'end' column
+In-Reply-To: <971536df0909291533k280fecc9tca8baf5ee678a9e2@mail.gmail.com>
+References: <4AC2850F.8000302@fhcrc.org>
+	<971536df0909291533k280fecc9tca8baf5ee678a9e2@mail.gmail.com>
+Message-ID: <4AC29468.7090800@fhcrc.org>
+
+Gabor Grothendieck wrote:
+> end is a reserved SQL keyword.
+
+Ok, maybe so what?
+
+This works:
+
+   dbSendQuery(con, "CREATE TABLE mydata (start INTEGER, end INTEGER)")
+
+and if it didn't, I should get an error (or at least a warning).
+Then I could try again with:
+
+   dbSendQuery(con, "CREATE TABLE mydata (`start` INTEGER, `end` INTEGER)")
+
+Using backquotes allows me to use whatever name I want for my columns, 
+even SQL keywords. This is ANSI SQL.
+
+IMO, it would be much better if dbWriteTable() was:
+   - not trying to be too smart and just send the CREATE statement,
+     leaving the DB backend decide whether it's valid or not, and
+     eventually return an error,
+   - if dbWriteTable() really wants to be smart, then it could try
+     a little bit harder to create the table I want with the column
+     names I want by using backquotes.
+
+Just my 2 c.
+
+Cheers,
+H.
+
+> 
+> 2009/9/29 Herv? Pag?s <hpages at fhcrc.org>:
+>> Hi,
+>>
+>> Consider the following data:
+>>
+>>  mydata <- data.frame(start=1:5, end=11:15)
+>>
+>> Then storing and retrieving the data shows that the 'end'
+>> column was renamed:
+>>
+>>  drv <- dbDriver("SQLite")
+>>  con <- dbConnect(drv, dbname=":memory:")
+>>
+>>  > dbWriteTable(con, "mydata", mydata)
+>>  [1] TRUE
+>>  > dbReadTable(con, "mydata")
+>>    start end__1
+>>  1     1     11
+>>  2     2     12
+>>  3     3     13
+>>  4     4     14
+>>  5     5     15
+>>
+>> The culprit doesn't seem to be dbReadTable():
+>>
+>>  > dbGetQuery(con, "SELECT * FROM mydata")
+>>    row_names start end__1
+>>  1         1     1     11
+>>  2         2     2     12
+>>  3         3     3     13
+>>  4         4     4     14
+>>  5         5     5     15
+>>
+>> and using the sqlite3 client from outside R confirms this.
+>>
+>> Looks like a bug in dbWriteTable().
+>>
+>> Cheers,
+>> H.
+>>
+>> --
+>> Herv? Pag?s
+>>
+>> Program in Computational Biology
+>> Division of Public Health Sciences
+>> Fred Hutchinson Cancer Research Center
+>> 1100 Fairview Ave. N, M2-B876
+>> P.O. Box 19024
+>> Seattle, WA 98109-1024
+>>
+>> E-mail: hpages at fhcrc.org
+>> Phone:  (206) 667-5791
+>> Fax:    (206) 667-1319
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at stat.math.ethz.ch
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+
+-- 
+Herv? Pag?s
+
+Program in Computational Biology
+Division of Public Health Sciences
+Fred Hutchinson Cancer Research Center
+1100 Fairview Ave. N, M2-B876
+P.O. Box 19024
+Seattle, WA 98109-1024
+
+E-mail: hpages at fhcrc.org
+Phone:  (206) 667-5791
+Fax:    (206) 667-1319
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Wed Sep 30 07:06:31 2009
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Wed, 30 Sep 2009 06:06:31 +0100 (BST)
+Subject: [R-sig-DB] dbWriteTable() is renaming the 'end' column
+In-Reply-To: <4AC29468.7090800@fhcrc.org>
+References: <4AC2850F.8000302@fhcrc.org>
+	<971536df0909291533k280fecc9tca8baf5ee678a9e2@mail.gmail.com>
+	<4AC29468.7090800@fhcrc.org>
+Message-ID: <alpine.LFD.2.00.0909300441370.32082@gannet.stats.ox.ac.uk>
+
+I presume this is about dbWriteTable in package DBI, and also RSQLite, 
+but neither are mentioned and the 'example' fails to run as written.
+
+On Tue, 29 Sep 2009, Herv? Pag?s wrote:
+
+> Gabor Grothendieck wrote:
+>> end is a reserved SQL keyword.
+>
+> Ok, maybe so what?
+>
+> This works:
+>
+>  dbSendQuery(con, "CREATE TABLE mydata (start INTEGER, end INTEGER)")
+>
+> and if it didn't, I should get an error (or at least a warning).
+> Then I could try again with:
+>
+>  dbSendQuery(con, "CREATE TABLE mydata (`start` INTEGER, `end` INTEGER)")
+>
+> Using backquotes allows me to use whatever name I want for my columns, even 
+> SQL keywords. This is ANSI SQL.
+
+Without telling us *which* ANSI SQL standard this is unclear, but I 
+believe that it is a false claim.  It seems so do the authors of 
+MySQL, who have an ANSI_QUOTE mode using " to quote identifiers.  As I 
+know from RODBC, this is one of those areas of differences between 
+actual SQL engines, and one which ODBC does not attempt to paper over.
+
+See also 
+http://www.mail-archive.com/sqlite-users at sqlite.org/msg09583.html
+-- so it looks like backquotes were added to SQLite in 2005, long 
+after the design of DBI/RSQLite, and as a non-ANSI extension.
+
+RODBC successfully uses double quotes for identifiers with SQLite, and 
+the RODBC version of your example works as you expected.
+
+> IMO, it would be much better if dbWriteTable() was:
+>  - not trying to be too smart and just send the CREATE statement,
+>    leaving the DB backend decide whether it's valid or not, and
+>    eventually return an error,
+>  - if dbWriteTable() really wants to be smart, then it could try
+>    a little bit harder to create the table I want with the column
+>    names I want by using backquotes.
+
+But DBI::dbWriteTable() does neither of these: it calls the method 
+in the backend, which in the case of RSQLite is sqliteWriteTable(). 
+That calls RSQLite::dbBuildTableDefinition() to make the CREATE TABLE 
+query, and that calls DBI::make.db.names(), which is a generic with a 
+method in RSQLite.
+
+So the correct subject of your scorn would seem to be 
+RSQLite::dbBuildTableDefinition() and its lack of documentation. As I 
+have argued earlier, I think that the solution has to be specific to 
+the backend.
+
+> Just my 2 c.
+
+
+> Cheers,
+> H.
+>
+>> 
+>> 2009/9/29 Herv? Pag?s <hpages at fhcrc.org>:
+>>> Hi,
+>>> 
+>>> Consider the following data:
+>>>
+>>>  mydata <- data.frame(start=1:5, end=11:15)
+>>> 
+>>> Then storing and retrieving the data shows that the 'end'
+>>> column was renamed:
+>>>
+>>>  drv <- dbDriver("SQLite")
+>>>  con <- dbConnect(drv, dbname=":memory:")
+>>>
+>>>  > dbWriteTable(con, "mydata", mydata)
+>>>  [1] TRUE
+>>>  > dbReadTable(con, "mydata")
+>>>    start end__1
+>>>  1     1     11
+>>>  2     2     12
+>>>  3     3     13
+>>>  4     4     14
+>>>  5     5     15
+>>> 
+>>> The culprit doesn't seem to be dbReadTable():
+>>>
+>>>  > dbGetQuery(con, "SELECT * FROM mydata")
+>>>    row_names start end__1
+>>>  1         1     1     11
+>>>  2         2     2     12
+>>>  3         3     3     13
+>>>  4         4     4     14
+>>>  5         5     5     15
+>>> 
+>>> and using the sqlite3 client from outside R confirms this.
+>>> 
+>>> Looks like a bug in dbWriteTable().
+>>> 
+>>> Cheers,
+>>> H.
+>>> 
+>>> --
+>>> Herv? Pag?s
+>>> 
+>>> Program in Computational Biology
+>>> Division of Public Health Sciences
+>>> Fred Hutchinson Cancer Research Center
+>>> 1100 Fairview Ave. N, M2-B876
+>>> P.O. Box 19024
+>>> Seattle, WA 98109-1024
+>>> 
+>>> E-mail: hpages at fhcrc.org
+>>> Phone:  (206) 667-5791
+>>> Fax:    (206) 667-1319
+>>> 
+>>> _______________________________________________
+>>> R-sig-DB mailing list -- R Special Interest Group
+>>> R-sig-DB at stat.math.ethz.ch
+>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>> 
+>
+> -- 
+> Herv? Pag?s
+>
+> Program in Computational Biology
+> Division of Public Health Sciences
+> Fred Hutchinson Cancer Research Center
+> 1100 Fairview Ave. N, M2-B876
+> P.O. Box 19024
+> Seattle, WA 98109-1024
+>
+> E-mail: hpages at fhcrc.org
+> Phone:  (206) 667-5791
+> Fax:    (206) 667-1319
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+From hp@ge@ @end|ng |rom |hcrc@org  Wed Sep 30 08:39:19 2009
+From: hp@ge@ @end|ng |rom |hcrc@org (=?ISO-8859-15?Q?Herv=E9_Pag=E8s?=)
+Date: Tue, 29 Sep 2009 23:39:19 -0700
+Subject: [R-sig-DB] dbWriteTable() is renaming the 'end' column
+In-Reply-To: <alpine.LFD.2.00.0909300441370.32082@gannet.stats.ox.ac.uk>
+References: <4AC2850F.8000302@fhcrc.org>
+	<971536df0909291533k280fecc9tca8baf5ee678a9e2@mail.gmail.com>
+	<4AC29468.7090800@fhcrc.org>
+	<alpine.LFD.2.00.0909300441370.32082@gannet.stats.ox.ac.uk>
+Message-ID: <4AC2FD17.9050108@fhcrc.org>
+
+Prof Brian Ripley wrote:
+> I presume this is about dbWriteTable in package DBI, and also RSQLite, 
+> but neither are mentioned and the 'example' fails to run as written.
+> 
+> On Tue, 29 Sep 2009, Herv? Pag?s wrote:
+> 
+>> Gabor Grothendieck wrote:
+>>> end is a reserved SQL keyword.
+>>
+>> Ok, maybe so what?
+>>
+>> This works:
+>>
+>>  dbSendQuery(con, "CREATE TABLE mydata (start INTEGER, end INTEGER)")
+>>
+>> and if it didn't, I should get an error (or at least a warning).
+>> Then I could try again with:
+>>
+>>  dbSendQuery(con, "CREATE TABLE mydata (`start` INTEGER, `end` INTEGER)")
+>>
+>> Using backquotes allows me to use whatever name I want for my columns, 
+>> even SQL keywords. This is ANSI SQL.
+> 
+> Without telling us *which* ANSI SQL standard this is unclear, but I 
+> believe that it is a false claim.  It seems so do the authors of MySQL, 
+> who have an ANSI_QUOTE mode using " to quote identifiers.  As I know 
+> from RODBC, this is one of those areas of differences between actual SQL 
+> engines, and one which ODBC does not attempt to paper over.
+
+You are right that in the ANSI SQL standard, an SQL delimited identifier
+is delimited by double quotes, not backquotes, sorry.
+Anyway my point is that, among other possibilities, dbWriteTable() could
+send a CREATE statement with delimited identifiers, so SQL keywords are
+not an issue anymore. This is only one possibility. There are others,
+like just returning an error if the column name is a keyword, or
+allowing the user disable the mangling, etc. Anything
+sounds better than silently mangling the column names.
+
+> 
+> See also http://www.mail-archive.com/sqlite-users at sqlite.org/msg09583.html
+> -- so it looks like backquotes were added to SQLite in 2005, long after 
+> the design of DBI/RSQLite, and as a non-ANSI extension.
+
+According to
+
+   SQLKeywords(dbDriver("SQLite"))
+
+"end" doesn't seem to be an SQLite keyword. Besides, sending the
+CREATE statement
+
+   CREATE TABLE mydata (start INTEGER, end INTEGER)
+
+with dbSendQuery() just works. And finally:
+
+   dbWriteTable(con, "end", mydata)
+
+doesn't bother to mangle the name of the "end" *table*.
+So it's really hard to understand why it bothers to mangle the
+name of the "end" *column*.
+
+> 
+> RODBC successfully uses double quotes for identifiers with SQLite, and 
+> the RODBC version of your example works as you expected.
+
+Always good to know, thanks!
+
+> 
+>> IMO, it would be much better if dbWriteTable() was:
+>>  - not trying to be too smart and just send the CREATE statement,
+>>    leaving the DB backend decide whether it's valid or not, and
+>>    eventually return an error,
+>>  - if dbWriteTable() really wants to be smart, then it could try
+>>    a little bit harder to create the table I want with the column
+>>    names I want by using backquotes.
+> 
+> But DBI::dbWriteTable() does neither of these: it calls the method in 
+> the backend, which in the case of RSQLite is sqliteWriteTable(). That 
+> calls RSQLite::dbBuildTableDefinition() to make the CREATE TABLE query, 
+> and that calls DBI::make.db.names(), which is a generic with a method in 
+> RSQLite.
+> 
+> So the correct subject of your scorn would seem to be 
+> RSQLite::dbBuildTableDefinition() and its lack of documentation. As I 
+> have argued earlier, I think that the solution has to be specific to the 
+> backend.
+
+Thanks for all the details. Knowing the details of the call stack is
+interesting... but does it really matter here? The end user
+calls dbWriteTable() in order to write a table to the DB, not
+sqliteWriteTable(), or RSQLite::dbBuildTableDefinition(), or
+DBI::make.db.names().
+
+Cheers,
+H.
+
+ > sessionInfo()
+R version 2.10.0 Under development (unstable) (2009-09-24 r49817)
+x86_64-unknown-linux-gnu
+
+locale:
+  [1] LC_CTYPE=en_CA.UTF-8       LC_NUMERIC=C
+  [3] LC_TIME=en_CA.UTF-8        LC_COLLATE=en_CA.UTF-8
+  [5] LC_MONETARY=C              LC_MESSAGES=en_CA.UTF-8
+  [7] LC_PAPER=en_CA.UTF-8       LC_NAME=C
+  [9] LC_ADDRESS=C               LC_TELEPHONE=C
+[11] LC_MEASUREMENT=en_CA.UTF-8 LC_IDENTIFICATION=C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] RSQLite_0.7-2 DBI_0.2-4
+
+loaded via a namespace (and not attached):
+[1] tools_2.10.0
+
+> 
+>> Just my 2 c.
+> 
+> 
+>> Cheers,
+>> H.
+>>
+>>>
+>>> 2009/9/29 Herv? Pag?s <hpages at fhcrc.org>:
+>>>> Hi,
+>>>>
+>>>> Consider the following data:
+>>>>
+>>>>  mydata <- data.frame(start=1:5, end=11:15)
+>>>>
+>>>> Then storing and retrieving the data shows that the 'end'
+>>>> column was renamed:
+>>>>
+>>>>  drv <- dbDriver("SQLite")
+>>>>  con <- dbConnect(drv, dbname=":memory:")
+>>>>
+>>>>  > dbWriteTable(con, "mydata", mydata)
+>>>>  [1] TRUE
+>>>>  > dbReadTable(con, "mydata")
+>>>>    start end__1
+>>>>  1     1     11
+>>>>  2     2     12
+>>>>  3     3     13
+>>>>  4     4     14
+>>>>  5     5     15
+>>>>
+>>>> The culprit doesn't seem to be dbReadTable():
+>>>>
+>>>>  > dbGetQuery(con, "SELECT * FROM mydata")
+>>>>    row_names start end__1
+>>>>  1         1     1     11
+>>>>  2         2     2     12
+>>>>  3         3     3     13
+>>>>  4         4     4     14
+>>>>  5         5     5     15
+>>>>
+>>>> and using the sqlite3 client from outside R confirms this.
+>>>>
+>>>> Looks like a bug in dbWriteTable().
+>>>>
+>>>> Cheers,
+>>>> H.
+>>>>
+>>>> -- 
+>>>> Herv? Pag?s
+>>>>
+>>>> Program in Computational Biology
+>>>> Division of Public Health Sciences
+>>>> Fred Hutchinson Cancer Research Center
+>>>> 1100 Fairview Ave. N, M2-B876
+>>>> P.O. Box 19024
+>>>> Seattle, WA 98109-1024
+>>>>
+>>>> E-mail: hpages at fhcrc.org
+>>>> Phone:  (206) 667-5791
+>>>> Fax:    (206) 667-1319
+>>>>
+>>>> _______________________________________________
+>>>> R-sig-DB mailing list -- R Special Interest Group
+>>>> R-sig-DB at stat.math.ethz.ch
+>>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>>>
+>>
+>> -- 
+>> Herv? Pag?s
+>>
+>> Program in Computational Biology
+>> Division of Public Health Sciences
+>> Fred Hutchinson Cancer Research Center
+>> 1100 Fairview Ave. N, M2-B876
+>> P.O. Box 19024
+>> Seattle, WA 98109-1024
+>>
+>> E-mail: hpages at fhcrc.org
+>> Phone:  (206) 667-5791
+>> Fax:    (206) 667-1319
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at stat.math.ethz.ch
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+> 
+
+-- 
+Herv? Pag?s
+
+Program in Computational Biology
+Division of Public Health Sciences
+Fred Hutchinson Cancer Research Center
+1100 Fairview Ave. N, M2-B876
+P.O. Box 19024
+Seattle, WA 98109-1024
+
+E-mail: hpages at fhcrc.org
+Phone:  (206) 667-5791
+Fax:    (206) 667-1319
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Wed Sep 30 14:51:13 2009
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Wed, 30 Sep 2009 08:51:13 -0400
+Subject: [R-sig-DB] dbWriteTable() is renaming the 'end' column
+In-Reply-To: <4AC2FD17.9050108@fhcrc.org>
+References: <4AC2850F.8000302@fhcrc.org>
+	<971536df0909291533k280fecc9tca8baf5ee678a9e2@mail.gmail.com> 
+	<4AC29468.7090800@fhcrc.org>
+	<alpine.LFD.2.00.0909300441370.32082@gannet.stats.ox.ac.uk> 
+	<4AC2FD17.9050108@fhcrc.org>
+Message-ID: <971536df0909300551g7a32ff65qcf444880b87d98b4@mail.gmail.com>
+
+2009/9/30 Herv? Pag?s <hpages at fhcrc.org>:
+>
+> According to
+>
+> ?SQLKeywords(dbDriver("SQLite"))
+
+
+Try
+
+> library(RSQLite)
+> grep("^END$", .SQL92Keywords, value = TRUE)
+[1] "END"
+
+
+
+From hp@ge@ @end|ng |rom |hcrc@org  Wed Sep 30 16:44:25 2009
+From: hp@ge@ @end|ng |rom |hcrc@org (=?ISO-8859-1?Q?Herv=E9_Pag=E8s?=)
+Date: Wed, 30 Sep 2009 07:44:25 -0700
+Subject: [R-sig-DB] dbWriteTable() is renaming the 'end' column
+In-Reply-To: <971536df0909300551g7a32ff65qcf444880b87d98b4@mail.gmail.com>
+References: <4AC2850F.8000302@fhcrc.org>
+	<971536df0909291533k280fecc9tca8baf5ee678a9e2@mail.gmail.com>
+	<4AC29468.7090800@fhcrc.org>
+	<alpine.LFD.2.00.0909300441370.32082@gannet.stats.ox.ac.uk>
+	<4AC2FD17.9050108@fhcrc.org>
+	<971536df0909300551g7a32ff65qcf444880b87d98b4@mail.gmail.com>
+Message-ID: <4AC36EC9.3000509@fhcrc.org>
+
+Gabor Grothendieck wrote:
+> 2009/9/30 Herv? Pag?s <hpages at fhcrc.org>:
+>> According to
+>>
+>>  SQLKeywords(dbDriver("SQLite"))
+> 
+> 
+> Try
+> 
+>> library(RSQLite)
+>> grep("^END$", .SQL92Keywords, value = TRUE)
+> [1] "END"
+
+Indeed. Sorry for the confusion.
+
+H.
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Wed Sep 30 18:02:11 2009
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Wed, 30 Sep 2009 09:02:11 -0700
+Subject: [R-sig-DB] dbWriteTable() is renaming the 'end' column
+In-Reply-To: <4AC2FD17.9050108@fhcrc.org>
+References: <4AC2850F.8000302@fhcrc.org>
+	<971536df0909291533k280fecc9tca8baf5ee678a9e2@mail.gmail.com>
+	<4AC29468.7090800@fhcrc.org>
+	<alpine.LFD.2.00.0909300441370.32082@gannet.stats.ox.ac.uk>
+	<4AC2FD17.9050108@fhcrc.org>
+Message-ID: <486f230c0909300902x445607ah6976a6e7e90bfda7@mail.gmail.com>
+
+Hi Herv?,
+
+2009/9/29 Herv? Pag?s <hpages at fhcrc.org>:
+> You are right that in the ANSI SQL standard, an SQL delimited identifier
+> is delimited by double quotes, not backquotes, sorry.
+> Anyway my point is that, among other possibilities, dbWriteTable() could
+> send a CREATE statement with delimited identifiers, so SQL keywords are
+> not an issue anymore. This is only one possibility. There are others,
+> like just returning an error if the column name is a keyword, or
+> allowing the user disable the mangling, etc. Anything
+> sounds better than silently mangling the column names.
+
+I agree that the silent name mangling is not so helpful, nor is the
+inconsistency in behavior when SQL keywords are used in different
+RSQLite functions.
+
+The question to decide is what change should be made?  Such requests
+could become errors with a message telling the user how to quote
+problem strings.  Or the mangling could be changed to use the quoted
+form and a warning issued.
+
+I would be interested to hear any opinions from users of RSQLite.
+
++ seth
+
+
+-- 
+Seth Falcon | @sfalcon | http://userprimary.net/user
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Wed Sep 30 18:19:33 2009
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Wed, 30 Sep 2009 12:19:33 -0400
+Subject: [R-sig-DB] dbWriteTable() is renaming the 'end' column
+In-Reply-To: <486f230c0909300902x445607ah6976a6e7e90bfda7@mail.gmail.com>
+References: <4AC2850F.8000302@fhcrc.org>
+	<971536df0909291533k280fecc9tca8baf5ee678a9e2@mail.gmail.com>
+	<4AC29468.7090800@fhcrc.org>
+	<alpine.LFD.2.00.0909300441370.32082@gannet.stats.ox.ac.uk>
+	<4AC2FD17.9050108@fhcrc.org>
+	<486f230c0909300902x445607ah6976a6e7e90bfda7@mail.gmail.com>
+Message-ID: <264855a00909300919v5062ee85ibb69a784d63a0dad@mail.gmail.com>
+
+2009/9/30 Seth Falcon <seth at userprimary.net>:
+> Hi Herv?,
+>
+> 2009/9/29 Herv? Pag?s <hpages at fhcrc.org>:
+>> You are right that in the ANSI SQL standard, an SQL delimited identifier
+>> is delimited by double quotes, not backquotes, sorry.
+>> Anyway my point is that, among other possibilities, dbWriteTable() could
+>> send a CREATE statement with delimited identifiers, so SQL keywords are
+>> not an issue anymore. This is only one possibility. There are others,
+>> like just returning an error if the column name is a keyword, or
+>> allowing the user disable the mangling, etc. Anything
+>> sounds better than silently mangling the column names.
+>
+> I agree that the silent name mangling is not so helpful, nor is the
+> inconsistency in behavior when SQL keywords are used in different
+> RSQLite functions.
+>
+> The question to decide is what change should be made? ?Such requests
+> could become errors with a message telling the user how to quote
+> problem strings. ?Or the mangling could be changed to use the quoted
+> form and a warning issued.
+>
+> I would be interested to hear any opinions from users of RSQLite.
+
+I, personally, don't like name mangling as an option.  Is there room
+for an option() like "RSQLite.quoteSQL" =TRUE to quote all table names
+and column names in generated SQL and =FALSE to generate an error when
+a keyword is used?  (Obviously, sql queries generated by the user
+would not be subject to the quoting).  The reason to use an option()
+to control quoting is that quoting anywhere in SQL generally means
+that it is best to quote everywhere, so if there is a known default
+(that can be changed), users can choose to stick with quoting
+everywhere or nowhere (and deal with the occasional error due to
+trying to use a SQL keyword).
+
+Sean
+
+
+
+From ggrothend|eck @end|ng |rom gm@||@com  Wed Sep 30 18:36:43 2009
+From: ggrothend|eck @end|ng |rom gm@||@com (Gabor Grothendieck)
+Date: Wed, 30 Sep 2009 12:36:43 -0400
+Subject: [R-sig-DB] dbWriteTable() is renaming the 'end' column
+In-Reply-To: <264855a00909300919v5062ee85ibb69a784d63a0dad@mail.gmail.com>
+References: <4AC2850F.8000302@fhcrc.org>
+	<971536df0909291533k280fecc9tca8baf5ee678a9e2@mail.gmail.com> 
+	<4AC29468.7090800@fhcrc.org>
+	<alpine.LFD.2.00.0909300441370.32082@gannet.stats.ox.ac.uk> 
+	<4AC2FD17.9050108@fhcrc.org>
+	<486f230c0909300902x445607ah6976a6e7e90bfda7@mail.gmail.com> 
+	<264855a00909300919v5062ee85ibb69a784d63a0dad@mail.gmail.com>
+Message-ID: <971536df0909300936t7f728735v8496b11a7a204d35@mail.gmail.com>
+
+On Wed, Sep 30, 2009 at 12:19 PM, Sean Davis <sdavis2 at mail.nih.gov> wrote:
+> 2009/9/30 Seth Falcon <seth at userprimary.net>:
+>> Hi Herv?,
+>>
+>> 2009/9/29 Herv? Pag?s <hpages at fhcrc.org>:
+>>> You are right that in the ANSI SQL standard, an SQL delimited identifier
+>>> is delimited by double quotes, not backquotes, sorry.
+>>> Anyway my point is that, among other possibilities, dbWriteTable() could
+>>> send a CREATE statement with delimited identifiers, so SQL keywords are
+>>> not an issue anymore. This is only one possibility. There are others,
+>>> like just returning an error if the column name is a keyword, or
+>>> allowing the user disable the mangling, etc. Anything
+>>> sounds better than silently mangling the column names.
+>>
+>> I agree that the silent name mangling is not so helpful, nor is the
+>> inconsistency in behavior when SQL keywords are used in different
+>> RSQLite functions.
+>>
+>> The question to decide is what change should be made? ?Such requests
+>> could become errors with a message telling the user how to quote
+>> problem strings. ?Or the mangling could be changed to use the quoted
+>> form and a warning issued.
+>>
+>> I would be interested to hear any opinions from users of RSQLite.
+>
+> I, personally, don't like name mangling as an option. ?Is there room
+> for an option() like "RSQLite.quoteSQL" =TRUE to quote all table names
+> and column names in generated SQL and =FALSE to generate an error when
+> a keyword is used? ?(Obviously, sql queries generated by the user
+> would not be subject to the quoting). ?The reason to use an option()
+> to control quoting is that quoting anywhere in SQL generally means
+> that it is best to quote everywhere, so if there is a known default
+> (that can be changed), users can choose to stick with quoting
+> everywhere or nowhere (and deal with the occasional error due to
+> trying to use a SQL keyword).
+
+What would be nice would be
+
+- a raw option which sends the sql string to the database unchanged and
+- for any preprocessing options an ability to get the final string
+that will be sent to the database prior to sending it
+
+
+
+From pg||bert @end|ng |rom b@nk-b@nque-c@n@d@@c@  Wed Sep 30 19:35:11 2009
+From: pg||bert @end|ng |rom b@nk-b@nque-c@n@d@@c@ (Paul Gilbert)
+Date: Wed, 30 Sep 2009 13:35:11 -0400
+Subject: [R-sig-DB] dbWriteTable() is renaming the 'end' column
+In-Reply-To: <486f230c0909300902x445607ah6976a6e7e90bfda7@mail.gmail.com>
+References: <4AC2850F.8000302@fhcrc.org><971536df0909291533k280fecc9tca8baf5ee678a9e2@mail.gmail.com><4AC29468.7090800@fhcrc.org><alpine.LFD.2.00.0909300441370.32082@gannet.stats.ox.ac.uk><4AC2FD17.9050108@fhcrc.org>
+	<486f230c0909300902x445607ah6976a6e7e90bfda7@mail.gmail.com>
+Message-ID: <D611103AA7EE3B4DAE7F7D49C72B291A01D6B876@EXMAIL2.bocad.bank-banque-canada.ca>
+
+
+
+> -----Original Message-----
+> From: r-sig-db-bounces at stat.math.ethz.ch [mailto:r-sig-db-
+> bounces at stat.math.ethz.ch] On Behalf Of Seth Falcon
+> Sent: September 30, 2009 12:02 PM
+> To: Herv? Pag?s
+> Cc: r-sig-db at stat.math.ethz.ch
+> Subject: Re: [R-sig-DB] dbWriteTable() is renaming the 'end' column
+> 
+> Hi Herv?,
+> 
+> 2009/9/29 Herv? Pag?s <hpages at fhcrc.org>:
+> > You are right that in the ANSI SQL standard, an SQL delimited
+> identifier
+> > is delimited by double quotes, not backquotes, sorry.
+> > Anyway my point is that, among other possibilities, dbWriteTable()
+> could
+> > send a CREATE statement with delimited identifiers, so SQL keywords
+> are
+> > not an issue anymore. This is only one possibility. There are others,
+> > like just returning an error if the column name is a keyword, or
+> > allowing the user disable the mangling, etc. Anything
+> > sounds better than silently mangling the column names.
+> 
+> I agree that the silent name mangling is not so helpful, nor is the
+> inconsistency in behavior when SQL keywords are used in different
+> RSQLite functions.
+> 
+> The question to decide is what change should be made?  Such requests
+> could become errors with a message telling the user how to quote
+> problem strings.  Or the mangling could be changed to use the quoted
+> form and a warning issued.
+> 
+> I would be interested to hear any opinions from users of RSQLite.
+
+I think the quoting problem is an SQL standard, so it might be nice to push it up to DBI rather than each of the implementations below trying to deal with it. (I have not thought through this, there may be problems.)
+
+Paul
+> 
+> + seth
+> 
+> 
+> --
+> Seth Falcon | @sfalcon | http://userprimary.net/user
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+====================================================================================
+
+La version fran?aise suit le texte anglais.
+
+------------------------------------------------------------------------------------
+
+This email may contain privileged and/or confidential information, and the Bank of
+Canada does not waive any related rights. Any distribution, use, or copying of this
+email or the information it contains by other than the intended recipient is
+unauthorized. If you received this email in error please delete it immediately from
+your system and notify the sender promptly by email that you have done so. 
+
+------------------------------------------------------------------------------------
+
+Le pr?sent courriel peut contenir de l'information privil?gi?e ou confidentielle.
+La Banque du Canada ne renonce pas aux droits qui s'y rapportent. Toute diffusion,
+utilisation ou copie de ce courriel ou des renseignements qu'il contient par une
+personne autre que le ou les destinataires d?sign?s est interdite. Si vous recevez
+ce courriel par erreur, veuillez le supprimer imm?diatement et envoyer sans d?lai ?
+l'exp?diteur un message ?lectronique pour l'aviser que vous avez ?limin? de votre
+ordinateur toute copie du courriel re?u.
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Wed Sep 30 19:46:49 2009
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Wed, 30 Sep 2009 18:46:49 +0100 (BST)
+Subject: [R-sig-DB] dbWriteTable() is renaming the 'end' column
+In-Reply-To: <486f230c0909300902x445607ah6976a6e7e90bfda7@mail.gmail.com>
+References: <4AC2850F.8000302@fhcrc.org>
+	<971536df0909291533k280fecc9tca8baf5ee678a9e2@mail.gmail.com>
+	<4AC29468.7090800@fhcrc.org>
+	<alpine.LFD.2.00.0909300441370.32082@gannet.stats.ox.ac.uk>
+	<4AC2FD17.9050108@fhcrc.org>
+	<486f230c0909300902x445607ah6976a6e7e90bfda7@mail.gmail.com>
+Message-ID: <alpine.LFD.2.00.0909301844430.6605@gannet.stats.ox.ac.uk>
+
+Why not simply use quoting?: RODBC manages to make it work cross-DBMS, 
+so it cannot be too hard for just one.  (As I wrote, it would be 
+harder to do in DBI without the support ODBC gives.)
+
+On Wed, 30 Sep 2009, Seth Falcon wrote:
+
+> Hi Herv?,
+>
+> 2009/9/29 Herv? Pag?s <hpages at fhcrc.org>:
+>> You are right that in the ANSI SQL standard, an SQL delimited identifier
+>> is delimited by double quotes, not backquotes, sorry.
+>> Anyway my point is that, among other possibilities, dbWriteTable() could
+>> send a CREATE statement with delimited identifiers, so SQL keywords are
+>> not an issue anymore. This is only one possibility. There are others,
+>> like just returning an error if the column name is a keyword, or
+>> allowing the user disable the mangling, etc. Anything
+>> sounds better than silently mangling the column names.
+>
+> I agree that the silent name mangling is not so helpful, nor is the
+> inconsistency in behavior when SQL keywords are used in different
+> RSQLite functions.
+>
+> The question to decide is what change should be made?  Such requests
+> could become errors with a message telling the user how to quote
+> problem strings.  Or the mangling could be changed to use the quoted
+> form and a warning issued.
+>
+> I would be interested to hear any opinions from users of RSQLite.
+>
+> + seth
+>
+>
+> -- 
+> Seth Falcon | @sfalcon | http://userprimary.net/user
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+

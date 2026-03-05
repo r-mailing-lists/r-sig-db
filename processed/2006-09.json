@@ -1,0 +1,244 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2006-09",
+  "messages": [
+    {
+      "id": "msg-eadc6cd066e7",
+      "message_id": "<200609111244.51741.dusa.adrian@gmail.com>",
+      "from_name": "Adrian Dusa",
+      "from_email_hash": "08f405507ac687741364700c3283681d6a9bc9b1d96b171d3bdccbc9cc7be1a2",
+      "date": "2006-09-11T12:44:51+03:00",
+      "subject": "[R-sig-DB] function for updating variables in a MySQL database",
+      "subject_clean": "function for updating variables in a MySQL database",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear all,\n\nI recently started to use RMySQL and I noticed there are no functions for \nupdating variables (say, when one creates a new variable and decides later to \nchange the formula).\n\nI hope I didn't reinvent the wheel, you can find my attempt below \n(undocumented but I guess pretty straighforward):\n\n\n## START\n\"dbUpdateVar\" <-\nfunction(conn, dbtable, dataframe=NULL, primary, vars) {\n    if (is.null(dataframe)) {\n        stop(\"The source dataframe is missing, with no default\\n\\n\", call. = \nFALSE)\n        }\n    if (!dbExistsTable(conn, dbtable)) {\n        stop(\"The target table doesn't exist\\n\\n\", call. = FALSE)\n        }\n    if (!(primary %in% names(dataframe))) {\n        stop(\"The primary key variable doesn't exist in the source \ndataframe\\n\\n\", call. = FALSE)\n        }\n    if (!all(vars %in% names(dataframe))) {\n        stop(\"One or more variables don't exist in the source dataframe\\n\\n\", \ncall. = FALSE)\n        }\n    if (!(primary %in% dbListFields(con, dbtable))) {\n        stop(\"The primary key variable doesn't exist in the target table\\n\\n\", \ncall. = FALSE)\n        }\n    if (!all(vars %in% dbListFields(con, dbtable))) {\n        stop(\"One or more variables don't exist in the target table\\n\\n\", \ncall. = FALSE)\n        }\n\n    varlist <- paste(dbtable, \"(\", paste(c(primary, vars), \ncollapse=\", \"), \")\", sep=\"\")\n    dbstring <- paste(\"(\", paste(apply(dataframe[, c(primary, vars)], 1, \npaste, collapse=\", \"), collapse=\"), (\"), \")\", sep=\"\")\n    toupdate <- paste(paste(vars, \"=VALUES(\", vars, \")\", sep=\"\"), \ncollapse=\", \")\n    sqlstring <- paste(\"INSERT INTO\", varlist, \"VALUES\", dbstring, \"ON \nDUPLICATE KEY UPDATE\", toupdate)\n    dbSendQuery(conn, sqlstring)\n    }\n## END\n\nIf there is a more direct way of doing this, I would very much like to learn \nabout it.\n\nRegards,\nAdrian\n\n-- \nAdrian Dusa\nRomanian Social Data Archive\n1, Schitu Magureanu Bd\n050025 Bucharest sector 5\nRomania\nTel./Fax: +40 21 3126618 \\\n          +40 21 3120210 / int.101",
+      "body_snippet": "Dear all,\n\nI recently started to use RMySQL and I noticed there are no functions for \nupdating variables (say, when one creates a new variable and decides later to \nchange the formula).\n\nI hope I didn",
+      "thread_id": "thread-eadc6cd066e7",
+      "thread_depth": 0,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-ef4fae051684",
+      "message_id": "<E58BE6136618CF4C964F6EC7773AE569B4FEAF@ex4.nyc.hcmny.com>",
+      "from_name": "Armstrong, Whit",
+      "from_email_hash": "bb28bf63fe2573ac22ea00bbeb4133a52151fecc4f026e711fbdf5803380f8a8",
+      "date": "2006-09-22T17:43:27-04:00",
+      "subject": "[R-sig-DB] possible bug in ROracle",
+      "subject_clean": "possible bug in ROracle",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "the code which no one else will be able to execute is at the bottom of\nthe email  The query I'm sending is this:\n\n\"select IDENT,FIELDDATE,to_number(FIELDVALUE) from TS_DATALOOKUP_VIEW\nwhere FIELDNAME='PRICE' and IDENT in\n('USSWAP10','BPSW10','JYSW10','CDSW10','DMSW10','GJGB10','GCAN10YR','GDB\nR10')\"\n\nwhich should just grap the IDENTS that I asked for.\n\nHowever, when I inspect the result (stored in qry.data).  I see that the\ncolnmes to not mach the IDENTS that I asked for.  Some of these IDENTS\ndo not even exist in the database.\n\ncnms <- unique(qry.data[,\"IDENT\"])\nBrowse[1]> cnms\n [1] \"GCAN10YR\" \"GDBR10YR\" \"GJGB10YR\" \"USSWAP10\" \"BPSW1010\" \"JYSW1010\"\n\"CDSW1010\" \"DMSW1010\" \"GJGB1010\" \"GDBR1010\"\n\nand the IDENTS I asked for:\nBrowse[1]> tickers\n[1] \"USSWAP10\" \"BPSW10\"   \"JYSW10\"   \"CDSW10\"   \"DMSW10\"   \"GJGB10\"\n\"GCAN10YR\" \"GDBR10\"  \n\nthe culprits:\nBrowse[1]> cnms[!cnms%in%tickers]\n[1] \"GDBR10YR\" \"GJGB10YR\" \"BPSW1010\" \"JYSW1010\" \"CDSW1010\" \"DMSW1010\"\n\"GJGB1010\" \"GDBR1010\"\n\nOnly 2 of the resulting IDENTS match the ones passed into the query:\nBrowse[1]> cnms[cnms%in%tickers]\n[1] \"GCAN10YR\" \"USSWAP10\"\n\nWe are using Oracle 9.2.0.\n\nIs there something seriously wrong w/ my query or is there a bug\nsomewhere?\n\nThanks,\nWhit\n\n\n\nactual code:\ngrab.data <- function(tickers) {\n\n    drv <- Oracle()\n    con <- dbConnect(drv,user=\"fi\",password=\"fi\",dbname=\"FINP1\")\n\n    tickers.string <-\npaste(paste(\"\\'\",tickers,\"\\'\",sep=\"\"),collapse=\",\")\n    ticker.qry <- paste(\"select IDENT,FIELDDATE,to_number(FIELDVALUE)\nfrom TS_DATALOOKUP_VIEW where FIELDNAME='PRICE' and IDENT in\n(\",tickers.string,\")\",sep=\"\")\n    res <- dbSendQuery(con,ticker.qry )\n    qry.data <- fetch(res,n=-1)\n    dbClearResult(res)\n    dbDisconnect(con)\n    cnms <- unique(qry.data[,\"IDENT\"])\n\n    if(length(cnms)!=length(tickers)) {\n        browser()\n    }\n}\n\n\nSystem details:\n\nPackage:       ROracle\nVersion:       0.5-7\nDate:          2006-02-13\nTitle:         Oracle database interface for R\nAuthor:        David A. James <dj at bell-labs.com> Jake Luciani\n<jakeluciani at yahoo.com>\nMaintainer:    David A. James <dj at bell-labs.com>\nDescription:   Oracle database interface (DBI) driver for R. This is a\nDBI-compliant Oracle driver based on the ProC/C++ embedded SQL.  It\nimplements the DBI version\n               0.1-8 plus one extension.\nSaveImage:     yes\nDepends:       R (>= 2.0.0), methods, DBI (>= 0.1-8)\nLicense:       LGPL version 2 or newer\nURL:           http://stat.bell-labs.com/RS-DBI http://www.omegahat.org\nPackaged:      Mon Feb 13 16:16:30 2006; dj\nBuilt:         R 2.3.1; i686-pc-linux-gnu; 2006-08-14 15:29:35; unix\n\n\n\nDescription:\n\nPackage:       DBI\nVersion:       0.1-10\nDate:          2006-01-28\nTitle:         R Database Interface\nAuthor:        R Special Interest Group on Databases (R-SIG-DB)\nMaintainer:    David A. James <dj at bell-labs.com>\nDepends:       R (>= 1.8.0), methods\nDescription:   A database interface (DBI) definition for communication\nbetween R and relational database management systems.  All classes in\nthis package are virtual and\n               need to be extended by the various R/DBMS\nimplementations.\nLicense:       GPL (version 2 or later)\nURL:           http://stat.bell-labs.com/RS-DBI\nhttp://developer.r-project.org/db\nPackaged:      Sat Jan 28 14:42:20 2006; dj\nBuilt:         R 2.3.1; ; 2006-08-14 15:29:07; unix\n\n\n> R.Version()\n$platform\n[1] \"i686-pc-linux-gnu\"\n\n$arch\n[1] \"i686\"\n\n$os\n[1] \"linux-gnu\"\n\n$system\n[1] \"i686, linux-gnu\"\n\n$status\n[1] \"\"\n\n$major\n[1] \"2\"\n\n$minor\n[1] \"3.1\"\n\n$year\n[1] \"2006\"\n\n$month\n[1] \"06\"\n\n$day\n[1] \"01\"\n\n$`svn rev`\n[1] \"38247\"\n\n$language\n[1] \"R\"\n\n$version.string\n[1] \"Version 2.3.1 (2006-06-01)\"\n\n> \n\n\n\n\nThis e-mail message is intended only for the named recipient(s) above. It may contain confidential information. If you are not the intended recipient you are hereby notified that any dissemination, distribution or copying of this e-mail and any attachment(s) is strictly prohibited. If you have received this e-mail in error, please immediately notify the sender by replying to this e-mail and delete the message and any attachment(s) from your system. Thank you.",
+      "body_snippet": "the code which no one else will be able to execute is at the bottom of\nthe email  The query I'm sending is this:\n\n\"select IDENT,FIELDDATE,to_number(FIELDVALUE) from TS_DATALOOKUP_VIEW\nwhere FIELDNAME=",
+      "thread_id": "thread-ef4fae051684",
+      "thread_depth": 0,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-4e1ebf33f019",
+      "message_id": "<m2slifvem8.fsf@ziti.local>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2006-09-25T14:08:15-07:00",
+      "subject": "[R-sig-DB] Help testing updates to RSQLite and RMySQL",
+      "subject_clean": "Help testing updates to RSQLite and RMySQL",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi all,\n\nOur group here in Seattle is now hosting the svn repository\nfor DBI and related packages and we are helping David James to\nmaintain these packages.\n\nI have updates for DBI, RSQLite, and RMySQL and would like some help\ntesting them before pushing the updates to CRAN.\n\nYou can download the provisional source packages here:\n\n    http://www.bioconductor.org/packages/misc/\n\nA brief summary of changes follows:\n\nDBI, RSQLite, RMySQL:\n\n - Use the Collate field and individual R/*.R files instead of a\n   single generated All.R file.  Should make user contributed patches\n   easier to integrate.  Otherwise, should have no impact on package\n   behavior.\n\nRMySQL and RSQLite:\n\n - Make sure all textConnections get closed.  Fixes a bug reported by\n   Dirk E.\n\nRSQLite:\n\n - Update Sqlite to 3.3.7\n\n - Default when installing from source is now to compile the included\n   Sqlite and link to it statically.  This avoids version mismatch\n   issues.  It is still possible to link against system-wide Sqlite\n   using configure args.\n\nQuestions?  Comments?  Send 'em my way (well, the list's way).\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "Hi all,\n\nOur group here in Seattle is now hosting the svn repository\nfor DBI and related packages and we are helping David James to\nmaintain these packages.\n\nI have updates for DBI, RSQLite, and RMySQ",
+      "thread_id": "thread-4e1ebf33f019",
+      "thread_depth": 0,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-ce38d464d0c6",
+      "message_id": "<p06230905c13e123713c7@[128.115.153.6]>",
+      "from_name": "Don MacQueen",
+      "from_email_hash": "e13bfb89115e8e835b0ed57c9de9e35a69bd33cf720ea654a4529b9050b00e0b",
+      "date": "2006-09-25T16:44:56-07:00",
+      "subject": "[R-sig-DB] possible bug in ROracle",
+      "subject_clean": "possible bug in ROracle",
+      "in_reply_to": "<E58BE6136618CF4C964F6EC7773AE569B4FEAF@ex4.nyc.hcmny.com>",
+      "references": [
+        "<E58BE6136618CF4C964F6EC7773AE569B4FEAF@ex4.nyc.hcmny.com>"
+      ],
+      "body_plain": "I don't have a solution, but here's what I would try.\n\nI have found it very useful, when debugging my queries, to take them \noutside of R and run them in some other sort of query tool.\nI have never found a case where a correct query outside of R returned \nincorrect results using ROracle.\n\nIs there some reason you're not using dbGetQuery()\n    (instead of dbSendQuery, fetch, and dbClearResult)?\nTry dbGetQuery(), and see if it's better.\n\n-Don\n\nAt 5:43 PM -0400 9/22/06, Armstrong, Whit wrote:\n>Content-class: urn:content-classes:message\n>Content-Type: text/plain;\n>\tcharset=\"us-ascii\"\n>Content-Disposition: inline\n>\n>the code which no one else will be able to execute is at the bottom of\n>the email  The query I'm sending is this:\n>\n>\"select IDENT,FIELDDATE,to_number(FIELDVALUE) from TS_DATALOOKUP_VIEW\n>where FIELDNAME='PRICE' and IDENT in\n>('USSWAP10','BPSW10','JYSW10','CDSW10','DMSW10','GJGB10','GCAN10YR','GDB\n>R10')\"\n>\n>which should just grap the IDENTS that I asked for.\n>\n>However, when I inspect the result (stored in qry.data).  I see that the\n>colnmes to not mach the IDENTS that I asked for.  Some of these IDENTS\n>do not even exist in the database.\n>\n>cnms <- unique(qry.data[,\"IDENT\"])\n>Browse[1]> cnms\n>  [1] \"GCAN10YR\" \"GDBR10YR\" \"GJGB10YR\" \"USSWAP10\" \"BPSW1010\" \"JYSW1010\"\n>\"CDSW1010\" \"DMSW1010\" \"GJGB1010\" \"GDBR1010\"\n>\n>and the IDENTS I asked for:\n>Browse[1]> tickers\n>[1] \"USSWAP10\" \"BPSW10\"   \"JYSW10\"   \"CDSW10\"   \"DMSW10\"   \"GJGB10\"\n>\"GCAN10YR\" \"GDBR10\" \n>\n>the culprits:\n>Browse[1]> cnms[!cnms%in%tickers]\n>[1] \"GDBR10YR\" \"GJGB10YR\" \"BPSW1010\" \"JYSW1010\" \"CDSW1010\" \"DMSW1010\"\n>\"GJGB1010\" \"GDBR1010\"\n>\n>Only 2 of the resulting IDENTS match the ones passed into the query:\n>Browse[1]> cnms[cnms%in%tickers]\n>[1] \"GCAN10YR\" \"USSWAP10\"\n>\n>We are using Oracle 9.2.0.\n>\n>Is there something seriously wrong w/ my query or is there a bug\n>somewhere?\n>\n>Thanks,\n>Whit\n>\n>\n>\n>actual code:\n>grab.data <- function(tickers) {\n>\n>     drv <- Oracle()\n>     con <- dbConnect(drv,user=\"fi\",password=\"fi\",dbname=\"FINP1\")\n>\n>     tickers.string <-\n>paste(paste(\"\\'\",tickers,\"\\'\",sep=\"\"),collapse=\",\")\n>     ticker.qry <- paste(\"select IDENT,FIELDDATE,to_number(FIELDVALUE)\n>from TS_DATALOOKUP_VIEW where FIELDNAME='PRICE' and IDENT in\n>(\",tickers.string,\")\",sep=\"\")\n>     res <- dbSendQuery(con,ticker.qry )\n>     qry.data <- fetch(res,n=-1)\n>     dbClearResult(res)\n>     dbDisconnect(con)\n>     cnms <- unique(qry.data[,\"IDENT\"])\n>\n>     if(length(cnms)!=length(tickers)) {\n>         browser()\n>     }\n>}\n>\n>\n>System details:\n>\n>Package:       ROracle\n>Version:       0.5-7\n>Date:          2006-02-13\n>Title:         Oracle database interface for R\n>Author:        David A. James <dj at bell-labs.com> Jake Luciani\n><jakeluciani at yahoo.com>\n>Maintainer:    David A. James <dj at bell-labs.com>\n>Description:   Oracle database interface (DBI) driver for R. This is a\n>DBI-compliant Oracle driver based on the ProC/C++ embedded SQL.  It\n>implements the DBI version\n>                0.1-8 plus one extension.\n>SaveImage:     yes\n>Depends:       R (>= 2.0.0), methods, DBI (>= 0.1-8)\n>License:       LGPL version 2 or newer\n>URL:           http://stat.bell-labs.com/RS-DBI http://www.omegahat.org\n>Packaged:      Mon Feb 13 16:16:30 2006; dj\n>Built:         R 2.3.1; i686-pc-linux-gnu; 2006-08-14 15:29:35; unix\n>\n>\n>\n>Description:\n>\n>Package:       DBI\n>Version:       0.1-10\n>Date:          2006-01-28\n>Title:         R Database Interface\n>Author:        R Special Interest Group on Databases (R-SIG-DB)\n>Maintainer:    David A. James <dj at bell-labs.com>\n>Depends:       R (>= 1.8.0), methods\n>Description:   A database interface (DBI) definition for communication\n>between R and relational database management systems.  All classes in\n>this package are virtual and\n>                need to be extended by the various R/DBMS\n>implementations.\n>License:       GPL (version 2 or later)\n>URL:           http://stat.bell-labs.com/RS-DBI\n>http://developer.r-project.org/db\n>Packaged:      Sat Jan 28 14:42:20 2006; dj\n>Built:         R 2.3.1; ; 2006-08-14 15:29:07; unix\n>\n>\n>>  R.Version()\n>$platform\n>[1] \"i686-pc-linux-gnu\"\n>\n>$arch\n>[1] \"i686\"\n>\n>$os\n>[1] \"linux-gnu\"\n>\n>$system\n>[1] \"i686, linux-gnu\"\n>\n>$status\n>[1] \"\"\n>\n>$major\n>[1] \"2\"\n>\n>$minor\n>[1] \"3.1\"\n>\n>$year\n>[1] \"2006\"\n>\n>$month\n>[1] \"06\"\n>\n>$day\n>[1] \"01\"\n>\n>$`svn rev`\n>[1] \"38247\"\n>\n>$language\n>[1] \"R\"\n>\n>$version.string\n>[1] \"Version 2.3.1 (2006-06-01)\"\n>\n>>\n>\n>\n>\n>\n>This e-mail message is intended only for the named recipient(s) \n>above. It may contain confidential information. If you are not the \n>intended recipient you are hereby notified that any dissemination, \n>distribution or copying of this e-mail and any attachment(s) is \n>strictly prohibited. If you have received this e-mail in error, \n>please immediately notify the sender by replying to this e-mail and \n>delete the message and any attachment(s) from your system. Thank you.\n>\n>\n>_______________________________________________\n>R-sig-DB mailing list -- R Special Interest Group\n>R-sig-DB at stat.math.ethz.ch\n>https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n\n-- \n--------------------------------------\nDon MacQueen\nEnvironmental Protection Department\nLawrence Livermore National Laboratory\nLivermore, CA, USA",
+      "body_snippet": "I don't have a solution, but here's what I would try.\n\nI have found it very useful, when debugging my queries, to take them \noutside of R and run them in some other sort of query tool.\nI have never fo",
+      "thread_id": "thread-ef4fae051684",
+      "thread_depth": 1,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-096ae8d0163b",
+      "message_id": "<E58BE6136618CF4C964F6EC7773AE569B4FF3C@ex4.nyc.hcmny.com>",
+      "from_name": "Armstrong, Whit",
+      "from_email_hash": "bb28bf63fe2573ac22ea00bbeb4133a52151fecc4f026e711fbdf5803380f8a8",
+      "date": "2006-09-26T11:36:17-04:00",
+      "subject": "[R-sig-DB] possible bug in ROracle",
+      "subject_clean": "possible bug in ROracle",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Thanks for your suggestion, Don.\n\nI tried  dbGetQuery, but the problem still exists.\n\nWhen I execute this query in other sql clients, it runs fine.  The one\nwe are most is TOAD (http://www.quest.com/toad_for_oracle/)\n\nIn this case, I ran the query with the full list of IDENTS (126 distinct\ntickers).\n\nAnd the resulting data has 1480 unique IDENTS.\n\nI'll try to debug this a bit further on my end, but if anyone who is\nfamiliar with the codebase has any suggestions as to where to start I'd\nlove to hear them.\n\nThanks,\nWhit\n\n\nHere is a small sample of the output (sorry for the long post):\n\nthese are the ones I asked for:\n\nBrowse[1]> tickers\n  [1] \"US0003M\"  \"BP0006M\"  \"JY0006M\"  \"CDOR03\"   \"EU0006M\"  \"STIB3M\"\n\"NIBOR6M\"  \"BBSW6M\"   \"NFIX3MID\" \"RPGT01M\"  \"UKBRBASE\" \"JYMUON\"\n\"CAONREPO\" \"ECBALTMR\" \"SWRP1M\"   \"NOBRDEP\" \n [17] \"RBACTR\"   \"NZOCRS\"   \"USSWAP2\"  \"BPSW2\"    \"JYSW2\"    \"CDSW2\"\n\"DMSW2\"    \"USSWAP10\" \"BPSW10\"   \"JYSW10\"   \"CDSW10\"   \"DMSW10\"\n\"USGG2YR\"  \"GUKG2\"    \"GJGB2\"    \"GCAN2YR\" \n [33] \"GDBR2\"    \"USGG10YR\" \"GUKG10\"   \"GJGB10\"   \"GCAN10YR\" \"GDBR10\"\n\"USSS2\"    \"USSS3\"    \"USSS4\"    \"USSS5\"    \"USSS6\"    \"USSS7\"\n\"USSS8\"    \"USSS9\"    \"USSS10\"   \"USSS15\"  \n [49] \"USSS20\"   \"USSS30\"   \"BPSS1\"    \"BPSS2\"    \"BPSS3\"    \"BPSS4\"\n\"BPSS5\"    \"BPSS7\"    \"BPSS8\"    \"BPSS9\"    \"BPSS10\"   \"BPSS15\"\n\"BPSS20\"   \"BPSS30\"   \"JYSS1\"    \"JYSS2\"   \n [65] \"JYSS3\"    \"JYSS4\"    \"JYSS5\"    \"JYSS6\"    \"JYSS7\"    \"JYSS8\"\n\"JYSS9\"    \"JYSS10\"   \"JYSS15\"   \"JYSS20\"   \"CDSS2\"    \"CDSS3\"\n\"CDSS4\"    \"CDSS5\"    \"CDSS6\"    \"CDSS7\"   \n [81] \"CDSS8\"    \"CDSS9\"    \"CDSS10\"   \"CDSS15\"   \"CDSS20\"   \"CDSS30\"\n\"DMSS1\"    \"DMSS2\"    \"DMSS3\"    \"DMSS4\"    \"DMSS5\"    \"DMSS6\"\n\"DMSS7\"    \"DMSS8\"    \"DMSS9\"    \"DMSS10\"  \n [97] \"DMSS30\"   \"SKSS1\"    \"SKSS2\"    \"SKSS3\"    \"SKSS5\"    \"SKSS10\"\n\"NKSS1\"    \"NKSS2\"    \"NKSS3\"    \"NKSS4\"    \"NKSS5\"    \"NKSS6\"\n\"NKSS7\"    \"NKSS8\"    \"NKSS9\"    \"NKSS10\"  \n[113] \"ADSF2Q\"   \"ADSF3Q\"   \"ADSF4\"    \"ADSF5\"    \"ADSF6\"    \"ADSF7\"\n\"ADSF10\"   \"ADSF15\"   \"NDSS022\"  \"NDSS033\"  \"NDSS044\"  \"NDSS055\"\n\"NDSS077\"  \"NDSS1010\"\nBrowse[1]> \n\nHere is a small sample of the result:\n[1345] \"BPSS2030\" \"CDSS1530\" \"BPSS5330\" \"SKSS3330\" \"USSS6330\" \"JYSS2030\"\n\"NKSS7330\" \"JYSS2330\" \"BPSS1030\" \"BPSS7330\" \"USSS1530\" \"BPSS3330\"\n\"CDSW1030\" \"JYSS9550\" \"ADSF6550\" \"JYSS8550\"\n[1361] \"CDSS9550\" \"JYSS1050\" \"USSS2050\" \"NKSS5550\" \"DMSS1550\" \"DMSS2550\"\n\"DMSS6550\" \"DMSS1050\" \"GJGB2550\" \"DMSS4550\" \"DMSS3550\" \"STIB3M50\"\n\"BBSW6M50\" \"DMSS5550\" \"GDBR2550\" \"DMSS3050\"\n[1377] \"DMSS9550\" \"GUKG2550\" \"NZOCRS50\" \"DMSS7550\" \"DMSW2550\" \"DMSS8550\"\n\"CDOR0350\" \"RBACTR50\" \"DMSW1050\" \"GDBR1050\" \"GJGB1050\" \"GUKG1050\"\n\"GJGB1070\" \"GJGB1040\" \"GJGB1020\" \"GJGB10M0\"\n[1393] \"GJGB10ID\" \"GJGB10PO\" \"GJGB10P0\" \"GJGB10R0\" \"GJGB10SE\" \"BPSS4070\"\n\"BPSS1070\" \"CDSS5070\" \"JYSS7070\" \"JYSS6070\" \"JYSS4070\" \"SKSS2070\"\n\"JYSW1070\" \"CDSS7070\" \"JYSS5070\" \"CDSS4070\"\n[1409] \"BPSS1570\" \"BPSS3070\" \"JYSS1070\" \"CDSS2070\" \"NKSS1070\" \"USSS1070\"\n\"USSS7070\" \"BPSW2070\" \"ADSF2Q70\" \"ADSF1070\" \"SKSS1070\" \"BPSS2070\"\n\"CDSS1570\" \"BPSS5070\" \"SKSS3070\" \"USSS6070\"\n[1425] \"JYSS2070\" \"NKSS7070\" \"BPSS7070\" \"USSS1570\" \"CDSW1070\" \"USSS4070\"\n\"JYMUON70\" \"BPSW1070\" \"CDSS6070\" \"USSS3070\" \"ADSF4070\" \"ADSF1570\"\n\"CDSS3070\" \"NKSS3070\" \"SKSS5070\" \"USSS8070\"\n[1441] \"CDSS1070\" \"JYSS3070\" \"CDSS8070\" \"BPSS8070\" \"ADSF5070\" \"USSS9070\"\n\"CDSW2070\" \"USSS2070\" \"ADSF3Q70\" \"USSS5070\" \"BPSS9070\" \"JYSS1570\"\n\"JYSW2070\" \"ADSF7070\" \"JYSS9070\" \"ADSF6070\"\n[1457] \"JYSS8070\" \"CDSS9070\" \"NKSS5070\" \"DMSS1070\" \"DMSS2070\" \"DMSS6070\"\n\"GJGB2070\" \"DMSS4070\" \"DMSS3070\" \"STIB3M70\" \"BBSW6M70\" \"DMSS5070\"\n\"GDBR2070\" \"DMSS9070\" \"GUKG2070\" \"NZOCRS70\"\n[1473] \"DMSS7070\" \"DMSW2070\" \"DMSS8070\" \"CDOR0370\" \"RBACTR70\" \"DMSW1070\"\n\"GDBR1070\" \"GUKG1070\"\n\nand finally the query I'm running:\n\nBrowse[1]> ticker.qry\n[1] \"select IDENT,FIELDDATE,to_number(FIELDVALUE) from\nTS_DATALOOKUP_VIEW where FIELDNAME='PRICE' and IDENT in\n('US0003M','BP0006M','JY0006M','CDOR03','EU0006M','STIB3M','NIBOR6M','BB\nSW6M','NFIX3MID','RPGT01M','UKBRBASE','JYMUON','CAONREPO','ECBALTMR','SW\nRP1M','NOBRDEP','RBACTR','NZOCRS','USSWAP2','BPSW2','JYSW2','CDSW2','DMS\nW2','USSWAP10','BPSW10','JYSW10','CDSW10','DMSW10','USGG2YR','GUKG2','GJ\nGB2','GCAN2YR','GDBR2','USGG10YR','GUKG10','GJGB10','GCAN10YR','GDBR10',\n'USSS2','USSS3','USSS4','USSS5','USSS6','USSS7','USSS8','USSS9','USSS10'\n,'USSS15','USSS20','USSS30','BPSS1','BPSS2','BPSS3','BPSS4','BPSS5','BPS\nS7','BPSS8','BPSS9','BPSS10','BPSS15','BPSS20','BPSS30','JYSS1','JYSS2',\n'JYSS3','JYSS4','JYSS5','JYSS6','JYSS7','JYSS8','JYSS9','JYSS10','JYSS15\n','JYSS20','CDSS2','CDSS3','CDSS4','CDSS5','CDSS6','CDSS7','CDSS8','CDSS\n9','CDSS10','CDSS15','CDSS20','CDSS30','DMSS1','DMSS2','DMSS3','DMSS4','\nDMSS5','DMSS6','DMSS7','DMSS8','DMSS9','DMSS10','DMSS30','SKSS1','SKSS2'\n,'SKSS3','SKSS5','SKSS10','NKSS1','NKSS2','NKSS3','NKSS4','NKSS5','NKSS6\n','NKSS7','NKSS8','NKSS9','NKSS10','ADSF2Q','ADSF3Q','ADSF4','ADSF5','AD\nSF6','ADSF7','ADSF10','ADSF15','NDSS022','NDSS033','NDSS044','NDSS055','\nNDSS077','NDSS1010')\"\nBrowse[1]> \n\n\nReading in the query result that was eported from TOAD:\n> xx <- read.csv(\"big.qry.csv\",header=F)\n> nrow(xx)\n[1] 342553\n> \n> unique(xx[,1])\n  [1] \"US0003M\"  \"BP0006M\"  \"JY0006M\"  \"GCAN10YR\" \"GDBR10\"   \"GJGB10\"\n\"GUKG10\"   \"USGG10YR\" \"EU0006M\"  \"CDOR03\"   \"NIBOR6M\"  \"BBSW6M\"\n\"STIB3M\"   \"RPGT01M\"  \"NFIX3MID\" \"UKBRBASE\"\n [17] \"CAONREPO\" \"JYMUON\"   \"NOBRDEP\"  \"SWRP1M\"   \"GUKG2\"    \"BPSS2\"\n\"ADSF7\"    \"ECBALTMR\" \"NZOCRS\"   \"RBACTR\"   \"USSWAP2\"  \"JYSW2\"\n\"BPSW2\"    \"CDSW2\"    \"DMSW2\"    \"BPSW10\"  \n [33] \"USSWAP10\" \"JYSW10\"   \"CDSW10\"   \"DMSW10\"   \"USGG2YR\"  \"GJGB2\"\n\"GCAN2YR\"  \"GDBR2\"    \"USSS2\"    \"USSS5\"    \"USSS4\"    \"CDSS10\"\n\"CDSS15\"   \"CDSS20\"   \"CDSS30\"   \"DMSS1\"   \n [49] \"DMSS2\"    \"DMSS3\"    \"DMSS4\"    \"DMSS5\"    \"DMSS6\"    \"DMSS7\"\n\"DMSS8\"    \"DMSS9\"    \"DMSS10\"   \"DMSS30\"   \"SKSS2\"    \"SKSS3\"\n\"SKSS5\"    \"SKSS10\"   \"NKSS3\"    \"NKSS5\"   \n [65] \"NKSS7\"    \"NKSS10\"   \"ADSF2Q\"   \"ADSF3Q\"   \"ADSF4\"    \"ADSF5\"\n\"ADSF6\"    \"ADSF10\"   \"ADSF15\"   \"NDSS022\"  \"NDSS033\"  \"NDSS044\"\n\"NDSS055\"  \"NDSS077\"  \"NDSS1010\" \"USSS3\"   \n [81] \"USSS6\"    \"USSS7\"    \"USSS8\"    \"USSS9\"    \"USSS10\"   \"USSS15\"\n\"USSS20\"   \"USSS30\"   \"BPSS1\"    \"BPSS3\"    \"BPSS4\"    \"BPSS5\"\n\"BPSS7\"    \"BPSS8\"    \"BPSS9\"    \"BPSS10\"  \n [97] \"BPSS15\"   \"BPSS20\"   \"BPSS30\"   \"JYSS1\"    \"JYSS2\"    \"JYSS3\"\n\"JYSS4\"    \"JYSS5\"    \"JYSS6\"    \"JYSS7\"    \"JYSS8\"    \"JYSS9\"\n\"JYSS10\"   \"JYSS15\"   \"JYSS20\"   \"CDSS2\"   \n[113] \"CDSS3\"    \"CDSS4\"    \"CDSS5\"    \"CDSS6\"    \"CDSS7\"    \"CDSS8\"\n\"CDSS9\"   \n> \n\n\n> -----Original Message-----\n> From: Don MacQueen [mailto:macq at llnl.gov] \n> Sent: Monday, September 25, 2006 7:45 PM\n> To: Armstrong, Whit; r-sig-db at stat.math.ethz.ch\n> Subject: Re: [R-sig-DB] possible bug in ROracle\n> \n> I don't have a solution, but here's what I would try.\n> \n> I have found it very useful, when debugging my queries, to \n> take them outside of R and run them in some other sort of query tool.\n> I have never found a case where a correct query outside of R \n> returned incorrect results using ROracle.\n> \n> Is there some reason you're not using dbGetQuery()\n>     (instead of dbSendQuery, fetch, and dbClearResult)?\n> Try dbGetQuery(), and see if it's better.\n> \n> -Don\n> \n> At 5:43 PM -0400 9/22/06, Armstrong, Whit wrote:\n> >Content-class: urn:content-classes:message\n> >Content-Type: text/plain;\n> >\tcharset=\"us-ascii\"\n> >Content-Disposition: inline\n> >\n> >the code which no one else will be able to execute is at the \n> bottom of \n> >the email  The query I'm sending is this:\n> >\n> >\"select IDENT,FIELDDATE,to_number(FIELDVALUE) from \n> TS_DATALOOKUP_VIEW \n> >where FIELDNAME='PRICE' and IDENT in \n> >('USSWAP10','BPSW10','JYSW10','CDSW10','DMSW10','GJGB10','GCA\n> N10YR','GD\n> >B\n> >R10')\"\n> >\n> >which should just grap the IDENTS that I asked for.\n> >\n> >However, when I inspect the result (stored in qry.data).  I see that \n> >the colnmes to not mach the IDENTS that I asked for.  Some of these \n> >IDENTS do not even exist in the database.\n> >\n> >cnms <- unique(qry.data[,\"IDENT\"])\n> >Browse[1]> cnms\n> >  [1] \"GCAN10YR\" \"GDBR10YR\" \"GJGB10YR\" \"USSWAP10\" \"BPSW1010\" \n> \"JYSW1010\"\n> >\"CDSW1010\" \"DMSW1010\" \"GJGB1010\" \"GDBR1010\"\n> >\n> >and the IDENTS I asked for:\n> >Browse[1]> tickers\n> >[1] \"USSWAP10\" \"BPSW10\"   \"JYSW10\"   \"CDSW10\"   \"DMSW10\"   \"GJGB10\"\n> >\"GCAN10YR\" \"GDBR10\" \n> >\n> >the culprits:\n> >Browse[1]> cnms[!cnms%in%tickers]\n> >[1] \"GDBR10YR\" \"GJGB10YR\" \"BPSW1010\" \"JYSW1010\" \"CDSW1010\" \"DMSW1010\"\n> >\"GJGB1010\" \"GDBR1010\"\n> >\n> >Only 2 of the resulting IDENTS match the ones passed into the query:\n> >Browse[1]> cnms[cnms%in%tickers]\n> >[1] \"GCAN10YR\" \"USSWAP10\"\n> >\n> >We are using Oracle 9.2.0.\n> >\n> >Is there something seriously wrong w/ my query or is there a bug \n> >somewhere?\n> >\n> >Thanks,\n> >Whit\n> >\n> >\n> >\n> >actual code:\n> >grab.data <- function(tickers) {\n> >\n> >     drv <- Oracle()\n> >     con <- dbConnect(drv,user=\"fi\",password=\"fi\",dbname=\"FINP1\")\n> >\n> >     tickers.string <-\n> >paste(paste(\"\\'\",tickers,\"\\'\",sep=\"\"),collapse=\",\")\n> >     ticker.qry <- paste(\"select \n> IDENT,FIELDDATE,to_number(FIELDVALUE)\n> >from TS_DATALOOKUP_VIEW where FIELDNAME='PRICE' and IDENT in\n> >(\",tickers.string,\")\",sep=\"\")\n> >     res <- dbSendQuery(con,ticker.qry )\n> >     qry.data <- fetch(res,n=-1)\n> >     dbClearResult(res)\n> >     dbDisconnect(con)\n> >     cnms <- unique(qry.data[,\"IDENT\"])\n> >\n> >     if(length(cnms)!=length(tickers)) {\n> >         browser()\n> >     }\n> >}\n> >\n> >\n> >System details:\n> >\n> >Package:       ROracle\n> >Version:       0.5-7\n> >Date:          2006-02-13\n> >Title:         Oracle database interface for R\n> >Author:        David A. James <dj at bell-labs.com> Jake Luciani\n> ><jakeluciani at yahoo.com>\n> >Maintainer:    David A. James <dj at bell-labs.com>\n> >Description:   Oracle database interface (DBI) driver for R. \n> This is a\n> >DBI-compliant Oracle driver based on the ProC/C++ embedded SQL.  It \n> >implements the DBI version\n> >                0.1-8 plus one extension.\n> >SaveImage:     yes\n> >Depends:       R (>= 2.0.0), methods, DBI (>= 0.1-8)\n> >License:       LGPL version 2 or newer\n> >URL:           http://stat.bell-labs.com/RS-DBI \n> http://www.omegahat.org\n> >Packaged:      Mon Feb 13 16:16:30 2006; dj\n> >Built:         R 2.3.1; i686-pc-linux-gnu; 2006-08-14 15:29:35; unix\n> >\n> >\n> >\n> >Description:\n> >\n> >Package:       DBI\n> >Version:       0.1-10\n> >Date:          2006-01-28\n> >Title:         R Database Interface\n> >Author:        R Special Interest Group on Databases (R-SIG-DB)\n> >Maintainer:    David A. James <dj at bell-labs.com>\n> >Depends:       R (>= 1.8.0), methods\n> >Description:   A database interface (DBI) definition for \n> communication\n> >between R and relational database management systems.  All \n> classes in \n> >this package are virtual and\n> >                need to be extended by the various R/DBMS \n> >implementations.\n> >License:       GPL (version 2 or later)\n> >URL:           http://stat.bell-labs.com/RS-DBI\n> >http://developer.r-project.org/db\n> >Packaged:      Sat Jan 28 14:42:20 2006; dj\n> >Built:         R 2.3.1; ; 2006-08-14 15:29:07; unix\n> >\n> >\n> >>  R.Version()\n> >$platform\n> >[1] \"i686-pc-linux-gnu\"\n> >\n> >$arch\n> >[1] \"i686\"\n> >\n> >$os\n> >[1] \"linux-gnu\"\n> >\n> >$system\n> >[1] \"i686, linux-gnu\"\n> >\n> >$status\n> >[1] \"\"\n> >\n> >$major\n> >[1] \"2\"\n> >\n> >$minor\n> >[1] \"3.1\"\n> >\n> >$year\n> >[1] \"2006\"\n> >\n> >$month\n> >[1] \"06\"\n> >\n> >$day\n> >[1] \"01\"\n> >\n> >$`svn rev`\n> >[1] \"38247\"\n> >\n> >$language\n> >[1] \"R\"\n> >\n> >$version.string\n> >[1] \"Version 2.3.1 (2006-06-01)\"\n> >\n> >>\n> >\n> >\n> >\n> >\n> >This e-mail message is intended only for the named \n> recipient(s) above. \n> >It may contain confidential information. If you are not the intended \n> >recipient you are hereby notified that any dissemination, \n> distribution \n> >or copying of this e-mail and any attachment(s) is strictly \n> prohibited. \n> >If you have received this e-mail in error, please immediately notify \n> >the sender by replying to this e-mail and delete the message and any \n> >attachment(s) from your system. Thank you.\n> >\n> >\n> >_______________________________________________\n> >R-sig-DB mailing list -- R Special Interest Group \n> >R-sig-DB at stat.math.ethz.ch \n> >https://stat.ethz.ch/mailman/listinfo/r-sig-db\n> \n> \n> --\n> --------------------------------------\n> Don MacQueen\n> Environmental Protection Department\n> Lawrence Livermore National Laboratory\n> Livermore, CA, USA\n> --------------------------------------\n> \n\n\n\n\nThis e-mail message is intended only for the named recipient(s) above. It may contain confidential information. If you are not the intended recipient you are hereby notified that any dissemination, distribution or copying of this e-mail and any attachment(s) is strictly prohibited. If you have received this e-mail in error, please immediately notify the sender by replying to this e-mail and delete the message and any attachment(s) from your system. Thank you.",
+      "body_snippet": "Thanks for your suggestion, Don.\n\nI tried  dbGetQuery, but the problem still exists.\n\nWhen I execute this query in other sql clients, it runs fine.  The one\nwe are most is TOAD (http://www.quest.com/t",
+      "thread_id": "thread-096ae8d0163b",
+      "thread_depth": 0,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-c56d2ddf129d",
+      "message_id": "<2AB7346A3227A74BB97F9A0D79E3E65A03F26D@mailserver.kalyptorisk.com>",
+      "from_name": "Ashish Kulkarni",
+      "from_email_hash": "8dcdca1ca2742e40a1b7516dc78a7d1c8c26f842205807c5921f62ca22c6209c",
+      "date": "2006-09-29T19:58:10+05:30",
+      "subject": "[R-sig-DB] RSQLite and SQLite 3.3.x",
+      "subject_clean": "RSQLite and SQLite 3.3.x",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello,\n\nI found the reason why RSQLite does not work with SQLite 3.3.x -- one of the SQLite APIs was being used incorrectly. The patch is simple:\n\ndiff -ur ./src/RS-SQLite.c ../RSQLite/src/RS-SQLite.c\n--- ./src/RS-SQLite.c\t2006-09-01 04:34:11.000000000 +0530\n+++ ../RSQLite/src/RS-SQLite.c\t2006-09-29 19:44:05.851964900 +0530\n@@ -1029,7 +1029,7 @@\n     zSql = sqlite3_mprintf(\"SELECT * FROM '%q'\", zTable);\n     if( zSql==0 ) return 0;\n     nByte = strlen(zSql);\n-    rc = sqlite3_prepare(db, zSql, 0, &pStmt, 0);\n+    rc = sqlite3_prepare(db, zSql, -1, &pStmt, 0);\n     sqlite3_free(zSql);\n     if( rc ){\n       char errMsg[512];\n@@ -1051,7 +1051,7 @@\n     }\n     zSql[j++] = ')';\n     zSql[j] = 0;\n-    rc = sqlite3_prepare(db, zSql, 0, &pStmt, 0);\n+    rc = sqlite3_prepare(db, zSql, -1, &pStmt, 0);\n     free(zSql);\n     if( rc ){\n       char errMsg[512];\n\nAccording to http://sqlite.org/capi3ref.html#sqlite3_prepare\n\"If the next argument, \"nBytes\", is less than zero, then zSql \nis read up to the first nul terminator. If \"nBytes\" is not \nless than zero, then it is the length of the string zSql in \nBytes.\"\n\nIn this case, nBytes was zero -- effectively a zero-length \nquery. Also, the error handling did not work -- a zero was\nreturned from the function RS_sqlite_import() but the coercion \nto a logical always returned TRUE -- that really confused me :-)\n\nHope this is integrated in the official CRAN uploads.\n\nRegards,\nashish",
+      "body_snippet": "Hello,\n\nI found the reason why RSQLite does not work with SQLite 3.3.x -- one of the SQLite APIs was being used incorrectly. The patch is simple:\n\ndiff -ur ./src/RS-SQLite.c ../RSQLite/src/RS-SQLite.c",
+      "thread_id": "thread-c56d2ddf129d",
+      "thread_depth": 0,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-77be54ff3787",
+      "message_id": "<m2irj6ob9n.fsf@ziti.local>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2006-09-29T10:03:48-07:00",
+      "subject": "[R-sig-DB] RSQLite and SQLite 3.3.x",
+      "subject_clean": "RSQLite and SQLite 3.3.x",
+      "in_reply_to": "<2AB7346A3227A74BB97F9A0D79E3E65A03F26D@mailserver.kalyptorisk.com> (Ashish Kulkarni's message of \"Fri, 29 Sep 2006 19:58:10 +0530\")",
+      "references": [
+        "<2AB7346A3227A74BB97F9A0D79E3E65A03F26D@mailserver.kalyptorisk.com>"
+      ],
+      "body_plain": "Hi Ashish,\n\nThanks for sending along the patch.  I've incorportated it into\nRSQLite 0.4-4 which included SQLite 3.3.7. \n\nYou and others can get the preview here:\nhttp://bioconductor.org/packages/misc/\n\nI would really like to hear back from a few folks that these packages\nwork before pushing the updates to CRAN.\n\nAnyone?\n\nBest,\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "Hi Ashish,\n\nThanks for sending along the patch.  I've incorportated it into\nRSQLite 0.4-4 which included SQLite 3.3.7. \n\nYou and others can get the preview here:\nhttp://bioconductor.org/packages/misc/",
+      "thread_id": "thread-c56d2ddf129d",
+      "thread_depth": 1,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-991e8db290eb",
+      "message_id": "<451D5B8E.4060905@vanderbilt.edu>",
+      "from_name": "Jeffrey Horner",
+      "from_email_hash": "77f9f3268effd48e70e790ba24e5db9767f6401d87fbba7ec6a16ee2e060daf2",
+      "date": "2006-09-29T12:44:46-05:00",
+      "subject": "[R-sig-DB] RSQLite and SQLite 3.3.x",
+      "subject_clean": "RSQLite and SQLite 3.3.x",
+      "in_reply_to": "<m2irj6ob9n.fsf@ziti.local>",
+      "references": [
+        "<2AB7346A3227A74BB97F9A0D79E3E65A03F26D@mailserver.kalyptorisk.com>",
+        "<m2irj6ob9n.fsf@ziti.local>"
+      ],
+      "body_plain": "Seth Falcon wrote:\n> Hi Ashish,\n> \n> Thanks for sending along the patch.  I've incorportated it into\n> RSQLite 0.4-4 which included SQLite 3.3.7. \n> \n> You and others can get the preview here:\n> http://bioconductor.org/packages/misc/\n> \n> I would really like to hear back from a few folks that these packages\n> work before pushing the updates to CRAN.\n> \n> Anyone?\n\nWell, I can confirm that yuor DBI/RMySQL work for me so far, but I've \nonly used it simply, e.g., calling dbConnect() and dbGetQuery().\n\nBut I do get the following message when calling dbGetQuery() when a \ntable contains the timestamp type:\n\n1: RS-DBI driver warning: (unrecognized MySQL field type 7 in column 2 \nimported as character)\n2: RS-DBI driver warning: (unrecognized MySQL field type 7 in column 2 \nimported as character)\n\nI do plan on a more thorough vetting of the situation, but too busy \nright now.\n\nJeff\n-- \nhttp://biostat.mc.vanderbilt.edu/JeffreyHorner",
+      "body_snippet": "Seth Falcon wrote:\n> Hi Ashish,\n> \n> Thanks for sending along the patch.  I've incorportated it into\n> RSQLite 0.4-4 which included SQLite 3.3.7. \n> \n> You and others can get the preview here:\n> http:",
+      "thread_id": "thread-c56d2ddf129d",
+      "thread_depth": 2,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-c261bc930497",
+      "message_id": "<17693.24353.270960.698419@basebud.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2006-09-29T13:00:01-05:00",
+      "subject": "[R-sig-DB]  timestamp support (Was: RSQLite and SQLite 3.3.x)",
+      "subject_clean": "timestamp support (Was: RSQLite and SQLite 3.3.x)",
+      "in_reply_to": "<451D5B8E.4060905@vanderbilt.edu>",
+      "references": [
+        "<2AB7346A3227A74BB97F9A0D79E3E65A03F26D@mailserver.kalyptorisk.com>",
+        "<m2irj6ob9n.fsf@ziti.local>",
+        "<451D5B8E.4060905@vanderbilt.edu>"
+      ],
+      "body_plain": "On 29 September 2006 at 12:44, Jeffrey Horner wrote:\n| But I do get the following message when calling dbGetQuery() when a \n| table contains the timestamp type:\n| \n| 1: RS-DBI driver warning: (unrecognized MySQL field type 7 in column 2 \n| imported as character)\n| 2: RS-DBI driver warning: (unrecognized MySQL field type 7 in column 2 \n| imported as character)\n\nTurns out that I use timestamp quite heavily right now, and to the best of\nlimited knowledge timestamps are\n\n-- not supported by DBI and RMySQL/ RSQlite\n-- not supported by Rdbi and RdbiPgSQL\n\nbut are \n\n-- supported natively by RODBC\n\nso I am back to using RODBC even though I dislike having to twiddle with\nodbc.ini and friends.\n\nDirk \n\n-- \nHell, there are no rules here - we're trying to accomplish something. \n                                                  -- Thomas A. Edison",
+      "body_snippet": "On 29 September 2006 at 12:44, Jeffrey Horner wrote:\n| But I do get the following message when calling dbGetQuery() when a \n| table contains the timestamp type:\n| \n| 1: RS-DBI driver warning: (unrecog",
+      "thread_id": "thread-c56d2ddf129d",
+      "thread_depth": 3,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-0103a61ef725",
+      "message_id": "<m2slialez1.fsf@ziti.local>",
+      "from_name": "Seth Falcon",
+      "from_email_hash": "e1e736382567c684a3dd98078dbcdeb48a07e492408d8119c4b80b86128c6d3a",
+      "date": "2006-09-29T11:12:02-07:00",
+      "subject": "[R-sig-DB] timestamp support",
+      "subject_clean": "timestamp support",
+      "in_reply_to": "<17693.24353.270960.698419@basebud.nulle.part> (Dirk Eddelbuettel's message of \"Fri, 29 Sep 2006 13:00:01 -0500\")",
+      "references": [
+        "<2AB7346A3227A74BB97F9A0D79E3E65A03F26D@mailserver.kalyptorisk.com>",
+        "<m2irj6ob9n.fsf@ziti.local>",
+        "<451D5B8E.4060905@vanderbilt.edu>",
+        "<17693.24353.270960.698419@basebud.nulle.part>"
+      ],
+      "body_plain": "Dirk Eddelbuettel <edd at debian.org> writes:\n\n> On 29 September 2006 at 12:44, Jeffrey Horner wrote:\n> | But I do get the following message when calling dbGetQuery() when a \n> | table contains the timestamp type:\n> | \n> | 1: RS-DBI driver warning: (unrecognized MySQL field type 7 in column 2 \n> | imported as character)\n> | 2: RS-DBI driver warning: (unrecognized MySQL field type 7 in column 2 \n> | imported as character)\n>\n> Turns out that I use timestamp quite heavily right now, and to the best of\n> limited knowledge timestamps are\n>\n> -- not supported by DBI and RMySQL/ RSQlite\n> -- not supported by Rdbi and RdbiPgSQL\n>\n> but are \n>\n> -- supported natively by RODBC\n>\n> so I am back to using RODBC even though I dislike having to twiddle with\n> odbc.ini and friends.\n\nI will put this on the TODO list.  Patches, of course, are welcome :-)\n\n+ seth\n\n-- \nSeth Falcon | Computational Biology | Fred Hutchinson Cancer Research Center\nhttp://bioconductor.org",
+      "body_snippet": "Dirk Eddelbuettel <edd at debian.org> writes:\n\n> On 29 September 2006 at 12:44, Jeffrey Horner wrote:\n> | But I do get the following message when calling dbGetQuery() when a \n> | table contains the ti",
+      "thread_id": "thread-c56d2ddf129d",
+      "thread_depth": 4,
+      "month": "2006-09"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-eadc6cd066e7",
+      "subject": "function for updating variables in a MySQL database",
+      "message_count": 1,
+      "participants": [
+        "Adrian Dusa"
+      ],
+      "started": "2006-09-11T12:44:51+03:00",
+      "last_reply": "2006-09-11T12:44:51+03:00",
+      "root_message_id": "msg-eadc6cd066e7"
+    },
+    {
+      "id": "thread-ef4fae051684",
+      "subject": "possible bug in ROracle",
+      "message_count": 2,
+      "participants": [
+        "Armstrong, Whit",
+        "Don MacQueen"
+      ],
+      "started": "2006-09-22T17:43:27-04:00",
+      "last_reply": "2006-09-25T16:44:56-07:00",
+      "root_message_id": "msg-ef4fae051684"
+    },
+    {
+      "id": "thread-4e1ebf33f019",
+      "subject": "Help testing updates to RSQLite and RMySQL",
+      "message_count": 1,
+      "participants": [
+        "Seth Falcon"
+      ],
+      "started": "2006-09-25T14:08:15-07:00",
+      "last_reply": "2006-09-25T14:08:15-07:00",
+      "root_message_id": "msg-4e1ebf33f019"
+    },
+    {
+      "id": "thread-096ae8d0163b",
+      "subject": "possible bug in ROracle",
+      "message_count": 1,
+      "participants": [
+        "Armstrong, Whit"
+      ],
+      "started": "2006-09-26T11:36:17-04:00",
+      "last_reply": "2006-09-26T11:36:17-04:00",
+      "root_message_id": "msg-096ae8d0163b"
+    },
+    {
+      "id": "thread-c56d2ddf129d",
+      "subject": "RSQLite and SQLite 3.3.x",
+      "message_count": 5,
+      "participants": [
+        "Ashish Kulkarni",
+        "Dirk Eddelbuettel",
+        "Jeffrey Horner",
+        "Seth Falcon"
+      ],
+      "started": "2006-09-29T19:58:10+05:30",
+      "last_reply": "2006-09-29T11:12:02-07:00",
+      "root_message_id": "msg-c56d2ddf129d"
+    }
+  ]
+}

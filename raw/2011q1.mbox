@@ -1,0 +1,4805 @@
+From m@cqueen1 @end|ng |rom ||n|@gov  Fri Jan  7 21:20:53 2011
+From: m@cqueen1 @end|ng |rom ||n|@gov (MacQueen, Don)
+Date: Fri, 7 Jan 2011 12:20:53 -0800
+Subject: [R-sig-DB] RJDBC and dbWriteTable, append and overwrite options fail
+Message-ID: <C94CB5A5.6998A%macqueen1@llnl.gov>
+
+Using RJDBC I've created a functioning connection to an Oracle database
+(some details omitted):
+
+dbm <- JDBC('oracle.jdbc.OracleDriver', ?path.to.jar?, identifier.quote="`")
+con <- dbConnect(dbm,  )
+
+When I try to use dbWriteTable() with either append=TRUE or overwrite=TRUE,
+I get an error. I've been able to use those options with Roracle.
+See example below.
+
+Is this a limitation in RJDBC, or am I missing something?
+
+Thanks
+-Don
+
+
+> tsttbl <- data.frame(x=1:7, a=c('AA','BB',letters[1:5]))
+> 
+> dbWriteTable(con,'junk',tsttbl,row.names=FALSE)
+[1] TRUE
+> 
+> dbGetQuery(con,'select * from junk')
+  X  A
+1 1 AA
+2 2 BB
+3 3  a
+4 4  b
+5 5  c
+6 6  d
+7 7  e
+> 
+> dbWriteTable(con,'junk',tsttbl,row.names=FALSE, append=TRUE)
+Error in .local(conn, statement, ...) :
+  execute JDBC update query failed in dbSendUpdate (ORA-00955: name is
+already used by an existing object
+)
+
+---- yes, I need to upgrade to 2.12.1, and will, but the relevant packages
+are current
+
+> sessionInfo()
+R version 2.12.0 (2010-10-15)
+Platform: x86_64-unknown-linux-gnu (64-bit)
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8
+ [5] LC_MONETARY=C              LC_MESSAGES=en_US.UTF-8
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] RJDBC_0.1-5 rJava_0.8-8 DBI_0.2-5
+
+
+-- 
+Don MacQueen
+Environmental Protection Department
+Lawrence Livermore National Laboratory
+925 423-1062
+
+
+
+From k|ttudg @end|ng |rom gm@||@com  Mon Jan 10 19:39:17 2011
+From: k|ttudg @end|ng |rom gm@||@com (sayan dasgupta)
+Date: Tue, 11 Jan 2011 00:09:17 +0530
+Subject: [R-sig-DB] R MYSQL INSTALLATION
+In-Reply-To: <AANLkTin58ycSfvukJx2rsve0erDbjWmE4iJcAHznZU-K@mail.gmail.com>
+References: <AANLkTin58ycSfvukJx2rsve0erDbjWmE4iJcAHznZU-K@mail.gmail.com>
+Message-ID: <AANLkTikesZxcL_5OvE85zWHdKzyeJ0mRXOXK3S5h4Ljk@mail.gmail.com>
+
+Hi useRs,
+
+So I am trying to install RMySQL on my windows vista machine from source as
+mentioned in http://biostat.mc.vanderbilt.edu/wiki/Main/RMySQL.
+I am running R version 2.12.1 (2010-12-16) and a MySQL installation Server
+version: 5.5.8 MySQL Community Version (A complete installation).
+I also have latest version of Rtools installed and its is added to PATH
+variable
+
+I have copied the total log file. Towards the end it says
+gcc.exe: C:/Program Files/MySQL/MySQL Server 5.5/lib/opt/libmysql.lib: No
+such file or directory
+ERROR: compilation failed for package 'RMySQL'
+
+While checking manually I find that libmysql.lib is in directory C:\Program
+Files\MySQL\MySQL Server 5.5\lib and not in C:/Program Files/MySQL/MySQL
+Server 5.5/lib/opt/
+Please help,
+
+
+Thanks and Regards
+Sayan Dasgupta
+
+
+
+
+
+
+> install.packages('RMySQL',type='source')
+Installing package(s) into ?C:\Users\sayan\Documents/R/win-library/2.9?
+(as ?lib? is unspecified)
+--- Please select a CRAN mirror for use in this session ---
+trying URL 'http://cran.cnr.Berkeley.edu/src/contrib/RMySQL_0.7-5.tar.gz'
+Content type 'application/x-gzip' length 160769 bytes (157 Kb)
+opened URL
+downloaded 157 Kb
+
+* installing *source* package 'RMySQL' ...
+checking for $MYSQL_HOME... C:/Program Files/MySQL/MySQL Server 5.5
+cygwin warning:
+  MS-DOS style path detected: C:/Program
+  Preferred POSIX equivalent is: /cygdrive/c/Program
+  CYGWIN environment variable option "nodosfilewarning" turns off this
+warning.
+  Consult the user's guide for more details about POSIX paths:
+    http://cygwin.com/cygwin-ug-net/using.html#using-pathnames
+test: Files/MySQL/MySQL: unknown operand
+** libs
+Warning: this package has a non-empty 'configure.win' file,
+so building only the main architecture
+
+cygwin warning:
+  MS-DOS style path detected: C:/PROGRA~1/R/R-212~1.1/etc/i386/Makeconf
+  Preferred POSIX equivalent is:
+/cygdrive/c/PROGRA~1/R/R-212~1.1/etc/i386/Makeconf
+  CYGWIN environment variable option "nodosfilewarning" turns off this
+warning.
+  Consult the user's guide for more details about POSIX paths:
+    http://cygwin.com/cygwin-ug-net/using.html#using-pathnames
+gcc -I"C:/PROGRA~1/R/R-212~1.1/include" -I"C:/Program Files/MySQL/MySQL
+Server 5.5"/include        -O3 -Wall  -std=gnu99 -c RS-DBI.c -o RS-DBI.o
+gcc -I"C:/PROGRA~1/R/R-212~1.1/include" -I"C:/Program Files/MySQL/MySQL
+Server 5.5"/include        -O3 -Wall  -std=gnu99 -c RS-MySQL.c -o RS-MySQL.o
+gcc -shared -s -static-libgcc -o RMySQL.dll tmp.def RS-DBI.o RS-MySQL.o
+C:/Program Files/MySQL/MySQL Server 5.5/lib/opt/libmysql.lib
+-LC:/PROGRA~1/R/R-212~1.1/bin/i386 -lR
+gcc.exe: C:/Program Files/MySQL/MySQL Server 5.5/lib/opt/libmysql.lib: No
+such file or directory
+ERROR: compilation failed for package 'RMySQL'
+* removing 'C:/Users/sayan/Documents/R/win-library/2.9/RMySQL'
+
+The downloaded packages are in
+        ?C:\Users\sayan\AppData\Local\Temp\RtmpUaOXvZ\downloaded_packages?
+Warning messages:
+1: running command 'C:\PROGRA~1\R\R-212~1.1/bin/i386/R CMD INSTALL -l
+"C:\Users\sayan\Documents/R/win-library/2.9"
+C:\Users\sayan\AppData\Local\Temp\RtmpUaOXvZ/downloaded_packages/RMySQL_0.7-5.tar.gz'
+had status 1
+2: In install.packages("RMySQL", type = "source") :
+  installation of package 'RMySQL' had non-zero exit status
+
+	[[alternative HTML version deleted]]
+
+
+
+From edd @end|ng |rom deb|@n@org  Sat Feb  5 18:33:46 2011
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Sat, 5 Feb 2011 11:33:46 -0600
+Subject: [R-sig-DB] dbWriteTable of RPostgreSQL can't insert data into
+	PostgreSQL Server.
+In-Reply-To: <AANLkTinP28ZdVd5VBPbcO_TYOUc3gRBkaTk5d12TaGeF@mail.gmail.com>
+References: <AANLkTinP28ZdVd5VBPbcO_TYOUc3gRBkaTk5d12TaGeF@mail.gmail.com>
+Message-ID: <19789.35322.424496.338527@max.nulle.part>
+
+
+On 5 February 2011 at 23:53, Xiaobo Gu wrote:
+| Hi,
+| 
+| This problem was reported discussed on May 2010, but it seems it was
+| not resolved at least in version 0.1.7 of RPostgreSQL.
+| I have seen the similar problem as reported
+| by:http://r.789695.n4.nabble.com/Package-RPostgreSQL-Problem-with-dbWriteTable-td2195653.html#a2221189
+| 
+| > sessionInfo()
+| R version 2.12.1 (2010-12-16)
+| Platform: x86_64-pc-mingw32/x64 (64-bit)
+| 
+| locale:
+| [1] LC_COLLATE=Chinese (Simplified)_People's Republic of China.936
+| LC_CTYPE=Chinese (Simplified)_People's Republic of China.936
+| [3] LC_MONETARY=Chinese (Simplified)_People's Republic of China.936
+| LC_NUMERIC=C
+| [5] LC_TIME=Chinese (Simplified)_People's Republic of China.936
+| 
+| attached base packages:
+| [1] stats     graphics  grDevices utils     datasets  methods   base
+| 
+| other attached packages:
+| [1] RPostgreSQL_0.1-7 DBI_0.2-5
+| > traceback()
+| No traceback available
+| 
+| And I have some more information:
+| 
+| 1. If there are text data with Chinese character, then data will not
+| be inserted into database server even there is only one column of the
+| dataframe.
+| 2. I can send you the sample data which can't be inserted.
+
+There is nothing reproducible here so please do not expect us to do anything
+meaningful with this report.
+
+Moreover, for questions pertaining to RPostgreSQL you should use the
+project's mailing list:
+
+     https://groups.google.com/forum/?pli=1#!forum/rpostgresql-dev
+
+Allow me to reiterate that we run a number of regression tests for the
+package, including table creation and insertion. Just saying "can't insert
+data" is not helpful.
+
+Dirk
+ 
+| Regards,
+| 
+| Xiaobo Gu
+| xuntyped binary data, ddwe.RData     [Click mouse-2 to save to a file]
+
+-- 
+Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+
+
+From tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp  Sun Feb  6 02:41:48 2011
+From: tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp (Tomoaki NISHIYAMA)
+Date: Sun, 6 Feb 2011 10:41:48 +0900
+Subject: [R-sig-DB] dbWriteTable of RPostgreSQL can't insert data into
+ PostgreSQL Server.
+In-Reply-To: <19789.35322.424496.338527@max.nulle.part>
+References: <AANLkTinP28ZdVd5VBPbcO_TYOUc3gRBkaTk5d12TaGeF@mail.gmail.com>
+	<19789.35322.424496.338527@max.nulle.part>
+Message-ID: <4D4DFC5C.3060908@kenroku.kanazawa-u.ac.jp>
+
+Hi,
+
+Xiaobo Gu wrote:
+
+| 1. If there are text data with Chinese character, then data will not
+| be inserted into database server even there is only one column of the
+| dataframe.
+| 2. I can send you the sample data which can't be inserted.
+
+This could perhaps happen if the character encoding is not appropriately 
+set.
+Refer to http://www.postgresql.org/docs/8.4/interactive/multibyte.html
+for the Postgresql side.
+
+For proper operation, the client encoding should match the encoding of 
+the file produced by write.table.
+As this write.table encoding cannot be changed right now,
+you check the write.table encoding and set client encoding.
+
+According to
+http://cran.r-project.org/doc/manuals/R-data.pdf
+"as from R 2.13.0 write.table has a fileEncoding argument"
+So, after that, we may be able to set the encoding properly relatively 
+easily (automatically),
+but not with 2.12.X.
+
+No special care is taken for the encoding in RPostgreSQL and
+we currently don't have tests for non-ascii text.
+We might be able to make some test for UTF-8, but supporting every
+possible encoding does not seem doable.
+-- 
+Tomoaki
+
+
+
+From tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp  Sun Feb  6 06:41:04 2011
+From: tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp (Tomoaki NISHIYAMA)
+Date: Sun, 6 Feb 2011 14:41:04 +0900
+Subject: [R-sig-DB] dbWriteTable of RPostgreSQL can't insert data into
+	PostgreSQL Server.
+In-Reply-To: <AANLkTimroa0qcYGPSo53tOhc=wqhzNiO47tyTnVsesf1@mail.gmail.com>
+References: <AANLkTinP28ZdVd5VBPbcO_TYOUc3gRBkaTk5d12TaGeF@mail.gmail.com>
+	<19789.35322.424496.338527@max.nulle.part>
+	<4D4DFC5C.3060908@kenroku.kanazawa-u.ac.jp>
+	<AANLkTimroa0qcYGPSo53tOhc=wqhzNiO47tyTnVsesf1@mail.gmail.com>
+Message-ID: <B0CF2319-6098-4835-8368-B4650EE5231A@kenroku.kanazawa-u.ac.jp>
+
+Hi,
+
+> On 2011/02/06, at 13:19, Xiaobo Gu wrote:
+>>> | 1. If there are text data with Chinese character, then data  
+>>> will not
+>>> | be inserted into database server even there is only one column  
+>>> of the
+>>> | dataframe.
+>>> | 2. I can send you the sample data which can't be inserted.
+>> It seems there are other problems than encoding, the columns with
+>> Chinese character have been removed from the sample data I sent, but
+>> the remaining columns still can't get inserted into database server.
+
+
+If so, you can track down to a single record that prevents
+insertion, and present an R transaction showing how it fails.
+Including, what you typed into R console, response by R including the
+error message and how you know that it is not inserted.
+
+Without real example, there is no way to help as Dirk suggested in  
+the previous mail.
+
+At least,
+http://r.789695.n4.nabble.com/Package-RPostgreSQL-Problem-with- 
+dbWriteTable-td2195653.html#a2221189
+is apparently unrelated, as it is clearly the problem of pathname  
+transmission, which is not
+in current code.
+http://code.google.com/p/rpostgresql/issues/detail?id=10&can=1
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi,
+Kanazawa, 920-0934, Japan
+
+
+
+From gux|@obo1982 @end|ng |rom gm@||@com  Sat Feb  5 16:53:13 2011
+From: gux|@obo1982 @end|ng |rom gm@||@com (Xiaobo Gu)
+Date: Sat, 5 Feb 2011 23:53:13 +0800
+Subject: [R-sig-DB] dbWriteTable of RPostgreSQL can't insert data into
+	PostgreSQL Server.
+Message-ID: <AANLkTinP28ZdVd5VBPbcO_TYOUc3gRBkaTk5d12TaGeF@mail.gmail.com>
+
+Hi,
+
+This problem was reported discussed on May 2010, but it seems it was
+not resolved at least in version 0.1.7 of RPostgreSQL.
+I have seen the similar problem as reported
+by:http://r.789695.n4.nabble.com/Package-RPostgreSQL-Problem-with-dbWriteTable-td2195653.html#a2221189
+
+> sessionInfo()
+R version 2.12.1 (2010-12-16)
+Platform: x86_64-pc-mingw32/x64 (64-bit)
+
+locale:
+[1] LC_COLLATE=Chinese (Simplified)_People's Republic of China.936
+LC_CTYPE=Chinese (Simplified)_People's Republic of China.936
+[3] LC_MONETARY=Chinese (Simplified)_People's Republic of China.936
+LC_NUMERIC=C
+[5] LC_TIME=Chinese (Simplified)_People's Republic of China.936
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] RPostgreSQL_0.1-7 DBI_0.2-5
+> traceback()
+No traceback available
+
+And I have some more information:
+
+1. If there are text data with Chinese character, then data will not
+be inserted into database server even there is only one column of the
+dataframe.
+2. I can send you the sample data which can't be inserted.
+
+Regards,
+
+Xiaobo Gu
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: ddwe.RData
+Type: application/octet-stream
+Size: 11082 bytes
+Desc: ddwe.RData
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20110205/c292c261/attachment.obj>
+
+From gux|@obo1982 @end|ng |rom gm@||@com  Sun Feb  6 05:16:13 2011
+From: gux|@obo1982 @end|ng |rom gm@||@com (Xiaobo Gu)
+Date: Sun, 6 Feb 2011 12:16:13 +0800
+Subject: [R-sig-DB] dbWriteTable of RPostgreSQL can't insert data into
+	PostgreSQL Server.
+In-Reply-To: <19789.35322.424496.338527@max.nulle.part>
+References: <AANLkTinP28ZdVd5VBPbcO_TYOUc3gRBkaTk5d12TaGeF@mail.gmail.com>
+	<19789.35322.424496.338527@max.nulle.part>
+Message-ID: <AANLkTine_S8E7yJLRO5bfHoVk21-C2i9Xw0VsQoM_Z=T@mail.gmail.com>
+
+On Sun, Feb 6, 2011 at 1:33 AM, Dirk Eddelbuettel <edd at debian.org> wrote:
+>
+> On 5 February 2011 at 23:53, Xiaobo Gu wrote:
+> | Hi,
+> |
+> | This problem was reported discussed on May 2010, but it seems it was
+> | not resolved at least in version 0.1.7 of RPostgreSQL.
+> | I have seen the similar problem as reported
+> | by:http://r.789695.n4.nabble.com/Package-RPostgreSQL-Problem-with-dbWriteTable-td2195653.html#a2221189
+> |
+> | > sessionInfo()
+> | R version 2.12.1 (2010-12-16)
+> | Platform: x86_64-pc-mingw32/x64 (64-bit)
+> |
+> | locale:
+> | [1] LC_COLLATE=Chinese (Simplified)_People's Republic of China.936
+> | LC_CTYPE=Chinese (Simplified)_People's Republic of China.936
+> | [3] LC_MONETARY=Chinese (Simplified)_People's Republic of China.936
+> | LC_NUMERIC=C
+> | [5] LC_TIME=Chinese (Simplified)_People's Republic of China.936
+> |
+> | attached base packages:
+> | [1] stats ? ? graphics ?grDevices utils ? ? datasets ?methods ? base
+> |
+> | other attached packages:
+> | [1] RPostgreSQL_0.1-7 DBI_0.2-5
+> | > traceback()
+> | No traceback available
+> |
+> | And I have some more information:
+> |
+> | 1. If there are text data with Chinese character, then data will not
+> | be inserted into database server even there is only one column of the
+> | dataframe.
+> | 2. I can send you the sample data which can't be inserted.
+>
+> There is nothing reproducible here so please do not expect us to do anything
+> meaningful with this report.
+>
+> Moreover, for questions pertaining to RPostgreSQL you should use the
+> project's mailing list:
+>
+> ? ? https://groups.google.com/forum/?pli=1#!forum/rpostgresql-dev
+
+But we can't access google groups in China because of government policies.
+
+> Allow me to reiterate that we run a number of regression tests for the
+> package, including table creation and insertion. Just saying "can't insert
+> data" is not helpful.
+
+In my case the table can be created, but data can't be inserted
+
+> Dirk
+>
+> | Regards,
+> |
+> | Xiaobo Gu
+> | xuntyped binary data, ddwe.RData ? ? [Click mouse-2 to save to a file]
+>
+> --
+> Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+>
+
+
+
+From gux|@obo1982 @end|ng |rom gm@||@com  Sun Feb  6 05:19:33 2011
+From: gux|@obo1982 @end|ng |rom gm@||@com (Xiaobo Gu)
+Date: Sun, 6 Feb 2011 12:19:33 +0800
+Subject: [R-sig-DB] dbWriteTable of RPostgreSQL can't insert data into
+ PostgreSQL Server.
+In-Reply-To: <4D4DFC5C.3060908@kenroku.kanazawa-u.ac.jp>
+References: <AANLkTinP28ZdVd5VBPbcO_TYOUc3gRBkaTk5d12TaGeF@mail.gmail.com>
+	<19789.35322.424496.338527@max.nulle.part>
+	<4D4DFC5C.3060908@kenroku.kanazawa-u.ac.jp>
+Message-ID: <AANLkTimroa0qcYGPSo53tOhc=wqhzNiO47tyTnVsesf1@mail.gmail.com>
+
+On Sun, Feb 6, 2011 at 9:41 AM, Tomoaki NISHIYAMA
+<tomoakin at kenroku.kanazawa-u.ac.jp> wrote:
+> Hi,
+>
+> Xiaobo Gu wrote:
+>
+> | 1. If there are text data with Chinese character, then data will not
+> | be inserted into database server even there is only one column of the
+> | dataframe.
+> | 2. I can send you the sample data which can't be inserted.
+It seems there are other problems than encoding, the columns with
+Chinese character have been removed from the sample data I sent, but
+the remaining columns still can't get inserted into database server.
+
+> This could perhaps happen if the character encoding is not appropriately
+> set.
+> Refer to http://www.postgresql.org/docs/8.4/interactive/multibyte.html
+> for the Postgresql side.
+>
+> For proper operation, the client encoding should match the encoding of the
+> file produced by write.table.
+> As this write.table encoding cannot be changed right now,
+> you check the write.table encoding and set client encoding.
+>
+> According to
+> http://cran.r-project.org/doc/manuals/R-data.pdf
+> "as from R 2.13.0 write.table has a fileEncoding argument"
+> So, after that, we may be able to set the encoding properly relatively
+> easily (automatically),
+> but not with 2.12.X.
+>
+> No special care is taken for the encoding in RPostgreSQL and
+> we currently don't have tests for non-ascii text.
+> We might be able to make some test for UTF-8, but supporting every
+> possible encoding does not seem doable.
+> --
+> Tomoaki
+>
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Sun Feb  6 08:18:14 2011
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Sun, 6 Feb 2011 07:18:14 +0000
+Subject: [R-sig-DB] dbWriteTable of RPostgreSQL can't insert data into
+ PostgreSQL Server.
+In-Reply-To: <4D4DFC5C.3060908@kenroku.kanazawa-u.ac.jp>
+References: <AANLkTinP28ZdVd5VBPbcO_TYOUc3gRBkaTk5d12TaGeF@mail.gmail.com>
+	<19789.35322.424496.338527@max.nulle.part>
+	<4D4DFC5C.3060908@kenroku.kanazawa-u.ac.jp>
+Message-ID: <alpine.LFD.2.02.1102060715360.30830@gannet.stats.ox.ac.uk>
+
+On Sun, 6 Feb 2011, Tomoaki NISHIYAMA wrote:
+
+> Hi,
+>
+> Xiaobo Gu wrote:
+>
+> | 1. If there are text data with Chinese character, then data will not
+> | be inserted into database server even there is only one column of the
+> | dataframe.
+> | 2. I can send you the sample data which can't be inserted.
+>
+> This could perhaps happen if the character encoding is not appropriately set.
+> Refer to http://www.postgresql.org/docs/8.4/interactive/multibyte.html
+> for the Postgresql side.
+>
+> For proper operation, the client encoding should match the encoding of the 
+> file produced by write.table.
+> As this write.table encoding cannot be changed right now,
+> you check the write.table encoding and set client encoding.
+>
+> According to
+> http://cran.r-project.org/doc/manuals/R-data.pdf
+> "as from R 2.13.0 write.table has a fileEncoding argument"
+> So, after that, we may be able to set the encoding properly relatively easily 
+> (automatically),
+> but not with 2.12.X.
+
+That is simply wrong.  fileEncoding is a convenience for those too 
+intellectually challenged to be able to use a file() connection, 
+something which was always supported.
+
+>
+> No special care is taken for the encoding in RPostgreSQL and
+> we currently don't have tests for non-ascii text.
+> We might be able to make some test for UTF-8, but supporting every
+> possible encoding does not seem doable.
+> -- 
+> Tomoaki
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp  Sun Feb  6 09:56:28 2011
+From: tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp (Tomoaki NISHIYAMA)
+Date: Sun, 6 Feb 2011 17:56:28 +0900
+Subject: [R-sig-DB] dbWriteTable of RPostgreSQL can't insert data into
+	PostgreSQL Server.
+In-Reply-To: <alpine.LFD.2.02.1102060715360.30830@gannet.stats.ox.ac.uk>
+References: <AANLkTinP28ZdVd5VBPbcO_TYOUc3gRBkaTk5d12TaGeF@mail.gmail.com>
+	<19789.35322.424496.338527@max.nulle.part>
+	<4D4DFC5C.3060908@kenroku.kanazawa-u.ac.jp>
+	<alpine.LFD.2.02.1102060715360.30830@gannet.stats.ox.ac.uk>
+Message-ID: <C12C9036-BD49-4BF9-B4DD-54F5D5B558D0@kenroku.kanazawa-u.ac.jp>
+
+Thanks Brian,
+
+> That is simply wrong.  fileEncoding is a convenience for those too
+> intellectually challenged to be able to use a file() connection,
+> something which was always supported.
+
+
+While I have not found the right document yet,
+do you mean that by 2.12 one more line was required for setting  
+encoding,
+and as of 2.13, it becomes just one more argument?
+
+in old style:
+fc <- file('filename', encoding='UTF-8')
+write.table(data.frame, file=fc,...)
+
+new style:
+write.table(data.frame, file='filename', fileEncoding='UTF-8',...)
+
+I actually noticed "All of these functions can write to a connection  
+which
+allows an encoding to be specified for the file,"
+but unfortunately it was not linked to any place, and finding the
+way to do it required more searches.
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi,
+Kanazawa, 920-0934, Japan
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Sun Feb  6 10:15:51 2011
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Sun, 6 Feb 2011 09:15:51 +0000
+Subject: [R-sig-DB] dbWriteTable of RPostgreSQL can't insert data into
+ PostgreSQL Server.
+In-Reply-To: <C12C9036-BD49-4BF9-B4DD-54F5D5B558D0@kenroku.kanazawa-u.ac.jp>
+References: <AANLkTinP28ZdVd5VBPbcO_TYOUc3gRBkaTk5d12TaGeF@mail.gmail.com>
+	<19789.35322.424496.338527@max.nulle.part>
+	<4D4DFC5C.3060908@kenroku.kanazawa-u.ac.jp>
+	<alpine.LFD.2.02.1102060715360.30830@gannet.stats.ox.ac.uk>
+	<C12C9036-BD49-4BF9-B4DD-54F5D5B558D0@kenroku.kanazawa-u.ac.jp>
+Message-ID: <alpine.LFD.2.02.1102060911440.4279@gannet.stats.ox.ac.uk>
+
+On Sun, 6 Feb 2011, Tomoaki NISHIYAMA wrote:
+
+> Thanks Brian,
+>
+>> That is simply wrong.  fileEncoding is a convenience for those too
+>> intellectually challenged to be able to use a file() connection,
+>> something which was always supported.
+>
+>
+> While I have not found the right document yet,
+> do you mean that by 2.12 one more line was required for setting encoding,
+> and as of 2.13, it becomes just one more argument?
+
+You forgot to close the connection.
+
+> in old style:
+> fc <- file('filename', encoding='UTF-8')
+> write.table(data.frame, file=fc,...)
+>
+> new style:
+> write.table(data.frame, file='filename', fileEncoding='UTF-8',...)
+>
+> I actually noticed "All of these functions can write to a connection which
+> allows an encoding to be specified for the file,"
+> but unfortunately it was not linked to any place, and finding the
+> way to do it required more searches.
+
+Connections are a basic part of R (e.g. in the R Data Import/Export 
+manual).  Why do you expect there to be links to basic concepts?
+
+> -- 
+> Tomoaki NISHIYAMA
+>
+> Advanced Science Research Center,
+> Kanazawa University,
+> 13-1 Takara-machi,
+> Kanazawa, 920-0934, Japan
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp  Sun Feb  6 11:35:31 2011
+From: tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp (Tomoaki NISHIYAMA)
+Date: Sun, 6 Feb 2011 19:35:31 +0900
+Subject: [R-sig-DB] dbWriteTable of RPostgreSQL can't insert data into
+	PostgreSQL Server.
+In-Reply-To: <alpine.LFD.2.02.1102060911440.4279@gannet.stats.ox.ac.uk>
+References: <AANLkTinP28ZdVd5VBPbcO_TYOUc3gRBkaTk5d12TaGeF@mail.gmail.com>
+	<19789.35322.424496.338527@max.nulle.part>
+	<4D4DFC5C.3060908@kenroku.kanazawa-u.ac.jp>
+	<alpine.LFD.2.02.1102060715360.30830@gannet.stats.ox.ac.uk>
+	<C12C9036-BD49-4BF9-B4DD-54F5D5B558D0@kenroku.kanazawa-u.ac.jp>
+	<alpine.LFD.2.02.1102060911440.4279@gannet.stats.ox.ac.uk>
+Message-ID: <02FC5356-6E79-40F5-BD56-53771800E8F6@kenroku.kanazawa-u.ac.jp>
+
+Hi,
+
+> You forgot to close the connection.
+Thanks again.
+
+> Connections are a basic part of R (e.g. in the R Data Import/Export  
+> manual).
+> Why do you expect there to be links to basic concepts?
+
+
+In that manual the encoding argument is not explained.
+So, I didn't understand how to set/change the encoding.
+Argument name was found from
+http://svn.r-project.org/R/trunk/src/library/base/R/connections.R
+
+Google search with connection encoding site:r-project.org
+selects this source as the top.
+The other interesting one is
+http://cran.r-project.org/bin/windows/base/old/2.1.0/NEWS.rw2010
+
+Surely its best explained in The R Reference Index.
+What is unfortunate is that it is only in a single large PDF file,
+thus google does not tell the best place to look into.
+
+help(file)
+and
+help(connections)
+is also nice. Perhaps the best way was to do this first.
+Admittedly, this ought to be a basic way than ask google...
+Unfortunately help(encoding) gets "No documentation for 'encoding'",  
+though.
+
+I really think these documents are great compilation.
+But its even better if the same contents are published as HTML,
+so that more free (not knowing the exact key) search with
+google is possible.
+Its perhaps best if there is a HTML page for each entry of the help,  
+like
+PostgreSQL....
+
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi,
+Kanazawa, 920-0934, Japan
+
+
+
+From tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp  Sun Feb  6 11:43:25 2011
+From: tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp (Tomoaki NISHIYAMA)
+Date: Sun, 6 Feb 2011 19:43:25 +0900
+Subject: [R-sig-DB] dbWriteTable of RPostgreSQL can't insert data into
+	PostgreSQL Server.
+In-Reply-To: <AANLkTimroa0qcYGPSo53tOhc=wqhzNiO47tyTnVsesf1@mail.gmail.com>
+References: <AANLkTinP28ZdVd5VBPbcO_TYOUc3gRBkaTk5d12TaGeF@mail.gmail.com>
+	<19789.35322.424496.338527@max.nulle.part>
+	<4D4DFC5C.3060908@kenroku.kanazawa-u.ac.jp>
+	<AANLkTimroa0qcYGPSo53tOhc=wqhzNiO47tyTnVsesf1@mail.gmail.com>
+Message-ID: <42936430-87B4-485E-B4EE-77F638C07A83@kenroku.kanazawa-u.ac.jp>
+
+Hi,
+
+> It seems there are other problems than encoding, the columns with
+> Chinese character have been removed from the sample data I sent, but
+> the remaining columns still can't get inserted into database server.
+
+
+Now, I got your first message, which somehow arrived much later.
+In my environment, transfer of your data.frame as GBK does not cause  
+error
+while transfer as UTF8 does.
+
+ > library('RPostgreSQL')
+Loading required package: DBI
+ > load('ddwe.RData')
+ > drv <- dbDriver("PostgreSQL")
+ > con <- dbConnect(drv,
++                      user=Sys.getenv("POSTGRES_USER"),
++                      password=Sys.getenv("POSTGRES_PASSWD"),
++                      host=Sys.getenv("POSTGRES_HOST"),
++                      dbname=Sys.getenv("POSTGRES_DATABASE"),
++                      port=ifelse((p<-Sys.getenv("POSTGRES_PORT"))! 
+="", p, 5432))
+ > dbGetQuery(con, "SHOW client_encoding;")
+   client_encoding
+1            UTF8
+ > dbWriteTable(con, "test1", samle1)
+[1] FALSE
+Warning message:
+In postgresqlWriteTable(conn, name, value, ...) :
+   table test1 exists in database: aborting assignTable
+ > dbGetQuery(con, "drop table test1")
+NULL
+ > dbWriteTable(con, "test1", samle1)
+Error in postgresqlgetResult(new.con) :
+   RS-DBI driver: (could not Retrieve the result : ERROR:  invalid  
+byte sequence for encoding "UTF8": 0xa3
+HINT:  This error can also happen if the byte sequence does not match  
+the encoding expected by the server, which is controlled by  
+"client_encoding".
+CONTEXT:  COPY test1, line 80
+)
+ > dbGetQuery(con, "SET CLIENT_ENCODING TO 'GBK'")
+NULL
+ > dbGetQuery(con, "SHOW client_encoding;")
+   client_encoding
+1             GBK
+ > dbWriteTable(con, "test2", samle1)
+[1] TRUE
+ > dbGetQuery(con, "SELECT count(*) from test2")
+   count
+1   101
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi,
+Kanazawa, 920-0934, Japan
+
+
+
+From edd @end|ng |rom deb|@n@org  Sun Feb  6 18:58:26 2011
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Sun, 6 Feb 2011 11:58:26 -0600
+Subject: [R-sig-DB] dbWriteTable of RPostgreSQL can't insert data into
+	PostgreSQL Server.
+In-Reply-To: <AANLkTine_S8E7yJLRO5bfHoVk21-C2i9Xw0VsQoM_Z=T@mail.gmail.com>
+References: <AANLkTinP28ZdVd5VBPbcO_TYOUc3gRBkaTk5d12TaGeF@mail.gmail.com>
+	<19789.35322.424496.338527@max.nulle.part>
+	<AANLkTine_S8E7yJLRO5bfHoVk21-C2i9Xw0VsQoM_Z=T@mail.gmail.com>
+Message-ID: <19790.57666.692075.299942@max.nulle.part>
+
+
+On 6 February 2011 at 12:16, Xiaobo Gu wrote:
+| On Sun, Feb 6, 2011 at 1:33 AM, Dirk Eddelbuettel <edd at debian.org> wrote:
+| >
+| > On 5 February 2011 at 23:53, Xiaobo Gu wrote:
+| > | Hi,
+| > |
+| > | This problem was reported discussed on May 2010, but it seems it was
+| > | not resolved at least in version 0.1.7 of RPostgreSQL.
+| > | I have seen the similar problem as reported
+| > | by:http://r.789695.n4.nabble.com/Package-RPostgreSQL-Problem-with-dbWriteTable-td2195653.html#a2221189
+| > |
+| > | > sessionInfo()
+| > | R version 2.12.1 (2010-12-16)
+| > | Platform: x86_64-pc-mingw32/x64 (64-bit)
+| > |
+| > | locale:
+| > | [1] LC_COLLATE=Chinese (Simplified)_People's Republic of China.936
+| > | LC_CTYPE=Chinese (Simplified)_People's Republic of China.936
+| > | [3] LC_MONETARY=Chinese (Simplified)_People's Republic of China.936
+| > | LC_NUMERIC=C
+| > | [5] LC_TIME=Chinese (Simplified)_People's Republic of China.936
+| > |
+| > | attached base packages:
+| > | [1] stats ? ? graphics ?grDevices utils ? ? datasets ?methods ? base
+| > |
+| > | other attached packages:
+| > | [1] RPostgreSQL_0.1-7 DBI_0.2-5
+| > | > traceback()
+| > | No traceback available
+| > |
+| > | And I have some more information:
+| > |
+| > | 1. If there are text data with Chinese character, then data will not
+| > | be inserted into database server even there is only one column of the
+| > | dataframe.
+| > | 2. I can send you the sample data which can't be inserted.
+| >
+| > There is nothing reproducible here so please do not expect us to do anything
+| > meaningful with this report.
+| >
+| > Moreover, for questions pertaining to RPostgreSQL you should use the
+| > project's mailing list:
+| >
+| > ? ? https://groups.google.com/forum/?pli=1#!forum/rpostgresql-dev
+| 
+| But we can't access google groups in China because of government policies.
+
+Ouch. Sorry about that.  We should consider moving it to an rforge-list.
+ 
+| > Allow me to reiterate that we run a number of regression tests for the
+| > package, including table creation and insertion. Just saying "can't insert
+| > data" is not helpful.
+| 
+| In my case the table can be created, but data can't be inserted
+
+We'd still need a little more information to be make this operational and
+testable. Only saying "it doesn't work" helps noone.
+
+Dirk
+ 
+| > Dirk
+| >
+| > | Regards,
+| > |
+| > | Xiaobo Gu
+| > | xuntyped binary data, ddwe.RData ? ? [Click mouse-2 to save to a file]
+| >
+| > --
+| > Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+| >
+
+-- 
+Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+
+
+From gux|@obo1982 @end|ng |rom gm@||@com  Mon Feb  7 04:23:45 2011
+From: gux|@obo1982 @end|ng |rom gm@||@com (Xiaobo Gu)
+Date: Mon, 7 Feb 2011 11:23:45 +0800
+Subject: [R-sig-DB] dbWriteTable of RPostgreSQL can't insert data into
+ PostgreSQL Server.
+In-Reply-To: <42936430-87B4-485E-B4EE-77F638C07A83@kenroku.kanazawa-u.ac.jp>
+References: <AANLkTinP28ZdVd5VBPbcO_TYOUc3gRBkaTk5d12TaGeF@mail.gmail.com>
+	<19789.35322.424496.338527@max.nulle.part>
+	<4D4DFC5C.3060908@kenroku.kanazawa-u.ac.jp>
+	<AANLkTimroa0qcYGPSo53tOhc=wqhzNiO47tyTnVsesf1@mail.gmail.com>
+	<42936430-87B4-485E-B4EE-77F638C07A83@kenroku.kanazawa-u.ac.jp>
+Message-ID: <AANLkTin9BOvYrHkCf_yvnRy5OGP_YAhimxaLXL5nKzMs@mail.gmail.com>
+
+On Sun, Feb 6, 2011 at 6:43 PM, Tomoaki NISHIYAMA
+<tomoakin at kenroku.kanazawa-u.ac.jp> wrote:
+> Hi,
+>
+>> It seems there are other problems than encoding, the columns with
+>> Chinese character have been removed from the sample data I sent, but
+>> the remaining columns still can't get inserted into database server.
+>
+>
+> Now, I got your first message, which somehow arrived much later.
+> In my environment, transfer of your data.frame as GBK does not cause error
+> while transfer as UTF8 does.
+>
+>> library('RPostgreSQL')
+> Loading required package: DBI
+>> load('ddwe.RData')
+>> drv <- dbDriver("PostgreSQL")
+>> con <- dbConnect(drv,
+> + ? ? ? ? ? ? ? ? ? ? ?user=Sys.getenv("POSTGRES_USER"),
+> + ? ? ? ? ? ? ? ? ? ? ?password=Sys.getenv("POSTGRES_PASSWD"),
+> + ? ? ? ? ? ? ? ? ? ? ?host=Sys.getenv("POSTGRES_HOST"),
+> + ? ? ? ? ? ? ? ? ? ? ?dbname=Sys.getenv("POSTGRES_DATABASE"),
+> + ? ? ? ? ? ? ? ? ? ? ?port=ifelse((p<-Sys.getenv("POSTGRES_PORT"))!="", p,
+> 5432))
+>> dbGetQuery(con, "SHOW client_encoding;")
+> ?client_encoding
+> 1 ? ? ? ? ? ?UTF8
+>> dbWriteTable(con, "test1", samle1)
+> [1] FALSE
+> Warning message:
+> In postgresqlWriteTable(conn, name, value, ...) :
+> ?table test1 exists in database: aborting assignTable
+>> dbGetQuery(con, "drop table test1")
+> NULL
+>> dbWriteTable(con, "test1", samle1)
+> Error in postgresqlgetResult(new.con) :
+> ?RS-DBI driver: (could not Retrieve the result : ERROR: ?invalid byte
+> sequence for encoding "UTF8": 0xa3
+> HINT: ?This error can also happen if the byte sequence does not match the
+> encoding expected by the server, which is controlled by "client_encoding".
+> CONTEXT: ?COPY test1, line 80
+> )
+>> dbGetQuery(con, "SET CLIENT_ENCODING TO 'GBK'")
+> NULL
+>> dbGetQuery(con, "SHOW client_encoding;")
+> ?client_encoding
+> 1 ? ? ? ? ? ? GBK
+With client encoding set to GBK, the whole data frame can be inserted
+into PostgreSQL 9.0.2 and Greenplum 4.0.4.0, thank you Tomoaki, Dirk
+and Professor Brian.
+
+There is another question, does dbWriteTable write the content of
+data.frames into a csv file, and then copy it to the database server.
+If so, where will the temp csv file created, can I set it to a
+directory resides on fast disks.
+
+>> dbWriteTable(con, "test2", samle1)
+> [1] TRUE
+>> dbGetQuery(con, "SELECT count(*) from test2")
+> ?count
+> 1 ? 101
+> --
+> Tomoaki NISHIYAMA
+>
+> Advanced Science Research Center,
+> Kanazawa University,
+> 13-1 Takara-machi,
+> Kanazawa, 920-0934, Japan
+>
+>
+>
+
+
+
+From edd @end|ng |rom deb|@n@org  Tue Feb  8 20:15:14 2011
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Tue, 8 Feb 2011 13:15:14 -0600
+Subject: [R-sig-DB] dbWriteTable of RPostgreSQL can't insert data into
+	PostgreSQL Server.
+In-Reply-To: <AANLkTine_S8E7yJLRO5bfHoVk21-C2i9Xw0VsQoM_Z=T@mail.gmail.com>
+References: <AANLkTinP28ZdVd5VBPbcO_TYOUc3gRBkaTk5d12TaGeF@mail.gmail.com>
+	<19789.35322.424496.338527@max.nulle.part>
+	<AANLkTine_S8E7yJLRO5bfHoVk21-C2i9Xw0VsQoM_Z=T@mail.gmail.com>
+Message-ID: <19793.38466.265679.525043@max.nulle.part>
+
+
+On 6 February 2011 at 12:16, Xiaobo Gu wrote:
+| > ? ? https://groups.google.com/forum/?pli=1#!forum/rpostgresql-dev
+| 
+| But we can't access google groups in China because of government policies.
+
+This particularly list is now shadowed at Gmane at 
+
+    http://news.gmane.org/gmane.comp.lang.r.rpostgresql
+
+One can also post from Gmane (after passing an email handshake to validate
+the claimed 'From:' address).  
+
+I hope this helps you and other with access to the RPostgreSQL-dev list.
+
+Cheers, Dirk
+
+-- 
+Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+
+
+From gux|@obo1982 @end|ng |rom gm@||@com  Wed Feb  9 03:29:27 2011
+From: gux|@obo1982 @end|ng |rom gm@||@com (Xiaobo Gu)
+Date: Wed, 9 Feb 2011 10:29:27 +0800
+Subject: [R-sig-DB] dbWriteTable of RPostgreSQL can't insert data into
+	PostgreSQL Server.
+In-Reply-To: <19793.38466.265679.525043@max.nulle.part>
+References: <AANLkTinP28ZdVd5VBPbcO_TYOUc3gRBkaTk5d12TaGeF@mail.gmail.com>
+	<19789.35322.424496.338527@max.nulle.part>
+	<AANLkTine_S8E7yJLRO5bfHoVk21-C2i9Xw0VsQoM_Z=T@mail.gmail.com>
+	<19793.38466.265679.525043@max.nulle.part>
+Message-ID: <AANLkTimADz1TokhTpnLf7TbEiauoCdafj_hiSbphwsNU@mail.gmail.com>
+
+On Wed, Feb 9, 2011 at 3:15 AM, Dirk Eddelbuettel <edd at debian.org> wrote:
+>
+> On 6 February 2011 at 12:16, Xiaobo Gu wrote:
+> | > ? ? https://groups.google.com/forum/?pli=1#!forum/rpostgresql-dev
+> |
+> | But we can't access google groups in China because of government policies.
+>
+> This particularly list is now shadowed at Gmane at
+>
+> ? ?http://news.gmane.org/gmane.comp.lang.r.rpostgresql
+>
+> One can also post from Gmane (after passing an email handshake to validate
+> the claimed 'From:' address).
+
+I can read the list now, but only a few threads, and it's not very
+convinent to post messages.
+
+>
+> I hope this helps you and other with access to the RPostgreSQL-dev list.
+>
+> Cheers, Dirk
+>
+> --
+> Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+>
+
+
+
+From edd @end|ng |rom deb|@n@org  Wed Feb  9 04:24:47 2011
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Tue, 8 Feb 2011 21:24:47 -0600
+Subject: [R-sig-DB] dbWriteTable of RPostgreSQL can't insert data into
+	PostgreSQL Server.
+In-Reply-To: <AANLkTimADz1TokhTpnLf7TbEiauoCdafj_hiSbphwsNU@mail.gmail.com>
+References: <AANLkTinP28ZdVd5VBPbcO_TYOUc3gRBkaTk5d12TaGeF@mail.gmail.com>
+	<19789.35322.424496.338527@max.nulle.part>
+	<AANLkTine_S8E7yJLRO5bfHoVk21-C2i9Xw0VsQoM_Z=T@mail.gmail.com>
+	<19793.38466.265679.525043@max.nulle.part>
+	<AANLkTimADz1TokhTpnLf7TbEiauoCdafj_hiSbphwsNU@mail.gmail.com>
+Message-ID: <19794.2303.846016.872533@max.nulle.part>
+
+
+On 9 February 2011 at 10:29, Xiaobo Gu wrote:
+| On Wed, Feb 9, 2011 at 3:15 AM, Dirk Eddelbuettel <edd at debian.org> wrote:
+| >
+| > On 6 February 2011 at 12:16, Xiaobo Gu wrote:
+| > | > ? ? https://groups.google.com/forum/?pli=1#!forum/rpostgresql-dev
+| > |
+| > | But we can't access google groups in China because of government policies.
+| >
+| > This particularly list is now shadowed at Gmane at
+| >
+| > ? ?http://news.gmane.org/gmane.comp.lang.r.rpostgresql
+| >
+| > One can also post from Gmane (after passing an email handshake to validate
+| > the claimed 'From:' address).
+| 
+| I can read the list now, but only a few threads, and it's not very
+| convinent to post messages.
+
+You can try to get in contact with the Gmane admins (CC'ed as
+admin at gmane.org) to inquire about back-filling.
+
+As for posting via the web interface: I have found it to be rather convenient
+for being to able to post to a few lists I sort-of follow, may have been
+subscribed to in the past etc pp when the alternative would be a full
+subscription. 
+
+Dirk
+
+| > I hope this helps you and other with access to the RPostgreSQL-dev list.
+| >
+| > Cheers, Dirk
+| >
+| > --
+| > Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+| >
+
+-- 
+Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+
+
+From hu@280 @end|ng |rom buckeyem@||@o@u@edu  Wed Feb  9 04:55:32 2011
+From: hu@280 @end|ng |rom buckeyem@||@o@u@edu (Rex Hu)
+Date: Tue, 8 Feb 2011 22:55:32 -0500
+Subject: [R-sig-DB] Error in postgresqlExecStatement...RS-DBI driver: (could
+	not Retrieve the result...)
+Message-ID: <BBE4B969-3D36-47C7-A867-ACBE72E9C123@buckeyemail.osu.edu>
+
+Hi all!
+
+I am a total newb in database programming, but unfortunately, I am  
+working on a project that requires database programming using R. I  
+hope that some one could help me about this. Thank you all in advance!
+
+I ran into this error when I was trying to run an R program written by  
+someone else. It occurs when executing this 'big loop' (the R code of  
+this loop is in the attachment). I have absolutely no clue what is  
+going on.
+
+The environment where I ran the program is Red Hat Enterprise Linux 6,  
+and PostgreSQL 8.4.7. R version is  2.12.1.
+
+The following are error messages.
+
+64490 :class(mydata):  data.frame
+    cleaning.out.cols: geofencename, geofencereason
+    prod(u.gfn == ""): 0
+    prod(u.gfr == ""): 0
+    dim(mydata): 185 7
+    Creating hourflag, odoflag, stateflag...done.
+    Appending them to the data.frame...done.
+    Sum:: hourflag: 10 , odoflag: 10 , stateflag: 12 , hrOdoflag: 10
+    Starting hrodoflag.index loop...
+    hrodoflag.index loop finished.
+Error in postgresqlExecStatement(conn, statement, ...) :
+  RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+"public.tmptable" already exists
+)
+In addition: Warning messages:
+1: In dir.create(datadumpdir, showWarnings = TRUE, recursive = TRUE,  :
+  '/scratch/kan/datadump' already exists
+2: In dir.create(misclwritedir, showWarnings = TRUE, recursive =  
+TRUE,  :
+  '/scratch/kan/work/bordercrossing/miscl/AU08_100301' already exists
+3: In dir.create(datawritedir, showWarnings = TRUE, recursive = TRUE,  :
+  '/scratch/kan/work/bordercrossing/data/cevaAU08_100301' already exists
+Error in postgresqlExecStatement(conn, statement, ...) :
+  RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+"public.tmptable" does not exist
+)
+In addition: Warning message:
+In postgresqlQuickSQL(conn, statement, ...) :
+  Could not create executeCREATE TABLE "public.tmptable"
+( "id_tb100301trp" bigint,
+    "bridge_new" text,
+    "tripscore" float8,
+    "stflag" float8,
+    "hrflag" float8,
+    "odflag" float8
+)
+Error in postgresqlExecStatement(conn, statement, ...) :
+  RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+"public.tmptable" does not exist
+)
+In addition: Warning message:
+In postgresqlQuickSQL(conn, statement, ...) :
+  Could not create executeCOPY public.tmptable FROM '/tmp/ 
+rpsql.G19577' WITH CSV HEADER QUOTE AS '"'
+Error in postgresqlExecStatement(conn, statement, ...) :
+  RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+"public.tmptable" does not exist
+)
+In addition: Warning message:
+In postgresqlQuickSQL(conn, statement, ...) :
+  Could not create executeUPDATE  au08_100301.tb100301trp  SET   
+bridge_new  =  public.tmptable.bridge_new FROM  public.tmptable
+WHERE  au08_100301.tb100301trp.id_tb100301trp  =   
+public.tmptable.id_tb100301trp ;
+Error in postgresqlExecStatement(conn, statement, ...) :
+  RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+"public.tmptable" does not exist
+)
+In addition: Warning message:
+In postgresqlQuickSQL(conn, statement, ...) :
+  Could not create executeUPDATE  au08_100301.tb100301trp  SET   
+tripscore  =  public.tmptable.tripscore FROM public.tmptable
+WHERE  au08_100301.tb100301trp.id_tb100301trp  =   
+public.tmptable.id_tb100301trp ;
+Error in postgresqlExecStatement(conn, statement, ...) :
+  RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+"public.tmptable" does not exist
+)
+In addition: Warning message:
+In postgresqlQuickSQL(conn, statement, ...) :
+  Could not create executeUPDATE  au08_100301.tb100301trp  SET   
+stflag  =  public.tmptable.stflag FROM public.tmptable
+WHERE  au08_100301.tb100301trp.id_tb100301trp  =   
+public.tmptable.id_tb100301trp ;
+Error in postgresqlExecStatement(conn, statement, ...) :
+  RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+"public.tmptable" does not exist
+)
+In addition: Warning message:
+In postgresqlQuickSQL(conn, statement, ...) :
+  Could not create executeUPDATE  au08_100301.tb100301trp  SET   
+hrflag  =  public.tmptable.hrflag FROM public.tmptable
+WHERE  au08_100301.tb100301trp.id_tb100301trp  =   
+public.tmptable.id_tb100301trp ;
+
+
+
+***********************************************
+Hu, Zhengyu (Rex)
+Department of Statistics
+The Ohio State University
+Columbus, OH 43210
+
+
+
+From hu@280 @end|ng |rom buckeyem@||@o@u@edu  Wed Feb  9 04:55:32 2011
+From: hu@280 @end|ng |rom buckeyem@||@o@u@edu (Rex Hu)
+Date: Tue, 8 Feb 2011 22:55:32 -0500
+Subject: [R-sig-DB] Error in postgresqlExecStatement...RS-DBI driver: (could
+	not Retrieve the result...)
+Message-ID: <BBE4B969-3D36-47C7-A867-ACBE72E9C123@buckeyemail.osu.edu>
+
+Hi all!
+
+I am a total newb in database programming, but unfortunately, I am  
+working on a project that requires database programming using R. I  
+hope that some one could help me about this. Thank you all in advance!
+
+I ran into this error when I was trying to run an R program written by  
+someone else. It occurs when executing this 'big loop' (the R code of  
+this loop is in the attachment). I have absolutely no clue what is  
+going on.
+
+The environment where I ran the program is Red Hat Enterprise Linux 6,  
+and PostgreSQL 8.4.7. R version is  2.12.1.
+
+The following are error messages.
+
+64490 :class(mydata):  data.frame
+    cleaning.out.cols: geofencename, geofencereason
+    prod(u.gfn == ""): 0
+    prod(u.gfr == ""): 0
+    dim(mydata): 185 7
+    Creating hourflag, odoflag, stateflag...done.
+    Appending them to the data.frame...done.
+    Sum:: hourflag: 10 , odoflag: 10 , stateflag: 12 , hrOdoflag: 10
+    Starting hrodoflag.index loop...
+    hrodoflag.index loop finished.
+Error in postgresqlExecStatement(conn, statement, ...) :
+  RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+"public.tmptable" already exists
+)
+In addition: Warning messages:
+1: In dir.create(datadumpdir, showWarnings = TRUE, recursive = TRUE,  :
+  '/scratch/kan/datadump' already exists
+2: In dir.create(misclwritedir, showWarnings = TRUE, recursive =  
+TRUE,  :
+  '/scratch/kan/work/bordercrossing/miscl/AU08_100301' already exists
+3: In dir.create(datawritedir, showWarnings = TRUE, recursive = TRUE,  :
+  '/scratch/kan/work/bordercrossing/data/cevaAU08_100301' already exists
+Error in postgresqlExecStatement(conn, statement, ...) :
+  RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+"public.tmptable" does not exist
+)
+In addition: Warning message:
+In postgresqlQuickSQL(conn, statement, ...) :
+  Could not create executeCREATE TABLE "public.tmptable"
+( "id_tb100301trp" bigint,
+    "bridge_new" text,
+    "tripscore" float8,
+    "stflag" float8,
+    "hrflag" float8,
+    "odflag" float8
+)
+Error in postgresqlExecStatement(conn, statement, ...) :
+  RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+"public.tmptable" does not exist
+)
+In addition: Warning message:
+In postgresqlQuickSQL(conn, statement, ...) :
+  Could not create executeCOPY public.tmptable FROM '/tmp/ 
+rpsql.G19577' WITH CSV HEADER QUOTE AS '"'
+Error in postgresqlExecStatement(conn, statement, ...) :
+  RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+"public.tmptable" does not exist
+)
+In addition: Warning message:
+In postgresqlQuickSQL(conn, statement, ...) :
+  Could not create executeUPDATE  au08_100301.tb100301trp  SET   
+bridge_new  =  public.tmptable.bridge_new FROM  public.tmptable
+WHERE  au08_100301.tb100301trp.id_tb100301trp  =   
+public.tmptable.id_tb100301trp ;
+Error in postgresqlExecStatement(conn, statement, ...) :
+  RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+"public.tmptable" does not exist
+)
+In addition: Warning message:
+In postgresqlQuickSQL(conn, statement, ...) :
+  Could not create executeUPDATE  au08_100301.tb100301trp  SET   
+tripscore  =  public.tmptable.tripscore FROM public.tmptable
+WHERE  au08_100301.tb100301trp.id_tb100301trp  =   
+public.tmptable.id_tb100301trp ;
+Error in postgresqlExecStatement(conn, statement, ...) :
+  RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+"public.tmptable" does not exist
+)
+In addition: Warning message:
+In postgresqlQuickSQL(conn, statement, ...) :
+  Could not create executeUPDATE  au08_100301.tb100301trp  SET   
+stflag  =  public.tmptable.stflag FROM public.tmptable
+WHERE  au08_100301.tb100301trp.id_tb100301trp  =   
+public.tmptable.id_tb100301trp ;
+Error in postgresqlExecStatement(conn, statement, ...) :
+  RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+"public.tmptable" does not exist
+)
+In addition: Warning message:
+In postgresqlQuickSQL(conn, statement, ...) :
+  Could not create executeUPDATE  au08_100301.tb100301trp  SET   
+hrflag  =  public.tmptable.hrflag FROM public.tmptable
+WHERE  au08_100301.tb100301trp.id_tb100301trp  =   
+public.tmptable.id_tb100301trp ;
+
+
+
+***********************************************
+Hu, Zhengyu (Rex)
+Department of Statistics
+The Ohio State University
+Columbus, OH 43210
+
+
+
+From hu@280 @end|ng |rom buckeyem@||@o@u@edu  Wed Feb  9 05:00:04 2011
+From: hu@280 @end|ng |rom buckeyem@||@o@u@edu (Rex Hu)
+Date: Tue, 8 Feb 2011 23:00:04 -0500
+Subject: [R-sig-DB] Error in postgresqlExecStatement...RS-DBI driver:
+	(could not Retrieve the result...)
+In-Reply-To: <BBE4B969-3D36-47C7-A867-ACBE72E9C123@buckeyemail.osu.edu>
+References: <BBE4B969-3D36-47C7-A867-ACBE72E9C123@buckeyemail.osu.edu>
+Message-ID: <3D6FF051-767C-48D4-8B71-C08A82B6E336@buckeyemail.osu.edu>
+
+Sorry, my bad. Forgot the attachment...
+
+--Rex
+
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: loop.R
+Type: application/octet-stream
+Size: 10075 bytes
+Desc: not available
+URL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20110208/fe8d7c13/attachment.obj>
+
+-------------- next part --------------
+
+
+
+
+On Feb 8, 2011, at 10:55 PM, Rex Hu wrote:
+
+> Hi all!
+>
+> I am a total newb in database programming, but unfortunately, I am  
+> working on a project that requires database programming using R. I  
+> hope that some one could help me about this. Thank you all in advance!
+>
+> I ran into this error when I was trying to run an R program written  
+> by someone else. It occurs when executing this 'big loop' (the R  
+> code of this loop is in the attachment). I have absolutely no clue  
+> what is going on.
+>
+> The environment where I ran the program is Red Hat Enterprise Linux  
+> 6, and PostgreSQL 8.4.7. R version is  2.12.1.
+>
+> The following are error messages.
+>
+> 64490 :class(mydata):  data.frame
+>   cleaning.out.cols: geofencename, geofencereason
+>   prod(u.gfn == ""): 0
+>   prod(u.gfr == ""): 0
+>   dim(mydata): 185 7
+>   Creating hourflag, odoflag, stateflag...done.
+>   Appending them to the data.frame...done.
+>   Sum:: hourflag: 10 , odoflag: 10 , stateflag: 12 , hrOdoflag: 10
+>   Starting hrodoflag.index loop...
+>   hrodoflag.index loop finished.
+> Error in postgresqlExecStatement(conn, statement, ...) :
+> RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+> "public.tmptable" already exists
+> )
+> In addition: Warning messages:
+> 1: In dir.create(datadumpdir, showWarnings = TRUE, recursive =  
+> TRUE,  :
+> '/scratch/kan/datadump' already exists
+> 2: In dir.create(misclwritedir, showWarnings = TRUE, recursive =  
+> TRUE,  :
+> '/scratch/kan/work/bordercrossing/miscl/AU08_100301' already exists
+> 3: In dir.create(datawritedir, showWarnings = TRUE, recursive =  
+> TRUE,  :
+> '/scratch/kan/work/bordercrossing/data/cevaAU08_100301' already exists
+> Error in postgresqlExecStatement(conn, statement, ...) :
+> RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+> "public.tmptable" does not exist
+> )
+> In addition: Warning message:
+> In postgresqlQuickSQL(conn, statement, ...) :
+> Could not create executeCREATE TABLE "public.tmptable"
+> ( "id_tb100301trp" bigint,
+>   "bridge_new" text,
+>   "tripscore" float8,
+>   "stflag" float8,
+>   "hrflag" float8,
+>   "odflag" float8
+> )
+> Error in postgresqlExecStatement(conn, statement, ...) :
+> RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+> "public.tmptable" does not exist
+> )
+> In addition: Warning message:
+> In postgresqlQuickSQL(conn, statement, ...) :
+> Could not create executeCOPY public.tmptable FROM '/tmp/ 
+> rpsql.G19577' WITH CSV HEADER QUOTE AS '"'
+> Error in postgresqlExecStatement(conn, statement, ...) :
+> RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+> "public.tmptable" does not exist
+> )
+> In addition: Warning message:
+> In postgresqlQuickSQL(conn, statement, ...) :
+> Could not create executeUPDATE  au08_100301.tb100301trp  SET   
+> bridge_new  =  public.tmptable.bridge_new FROM  public.tmptable
+> WHERE  au08_100301.tb100301trp.id_tb100301trp  =   
+> public.tmptable.id_tb100301trp ;
+> Error in postgresqlExecStatement(conn, statement, ...) :
+> RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+> "public.tmptable" does not exist
+> )
+> In addition: Warning message:
+> In postgresqlQuickSQL(conn, statement, ...) :
+> Could not create executeUPDATE  au08_100301.tb100301trp  SET   
+> tripscore  =  public.tmptable.tripscore FROM public.tmptable
+> WHERE  au08_100301.tb100301trp.id_tb100301trp  =   
+> public.tmptable.id_tb100301trp ;
+> Error in postgresqlExecStatement(conn, statement, ...) :
+> RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+> "public.tmptable" does not exist
+> )
+> In addition: Warning message:
+> In postgresqlQuickSQL(conn, statement, ...) :
+> Could not create executeUPDATE  au08_100301.tb100301trp  SET   
+> stflag  =  public.tmptable.stflag FROM public.tmptable
+> WHERE  au08_100301.tb100301trp.id_tb100301trp  =   
+> public.tmptable.id_tb100301trp ;
+> Error in postgresqlExecStatement(conn, statement, ...) :
+> RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+> "public.tmptable" does not exist
+> )
+> In addition: Warning message:
+> In postgresqlQuickSQL(conn, statement, ...) :
+> Could not create executeUPDATE  au08_100301.tb100301trp  SET   
+> hrflag  =  public.tmptable.hrflag FROM public.tmptable
+> WHERE  au08_100301.tb100301trp.id_tb100301trp  =   
+> public.tmptable.id_tb100301trp ;
+>
+>
+>
+> ***********************************************
+> Hu, Zhengyu (Rex)
+> Department of Statistics
+> The Ohio State University
+> Columbus, OH 43210
+>
+
+
+From @@jo @end|ng |rom ko|d|ront@dk  Wed Feb  9 10:30:58 2011
+From: @@jo @end|ng |rom ko|d|ront@dk (Adam =?utf-8?Q?Sj=C3=B8gren?=)
+Date: Wed, 9 Feb 2011 10:30:58 +0100
+Subject: [R-sig-DB] dbWriteTable of RPostgreSQL can't insert data into
+	PostgreSQL Server.
+In-Reply-To: <19794.2303.846016.872533@max.nulle.part> (Dirk Eddelbuettel's
+	message of "Tue, 8 Feb 2011 21:24:47 -0600")
+References: <AANLkTinP28ZdVd5VBPbcO_TYOUc3gRBkaTk5d12TaGeF@mail.gmail.com>
+	<19789.35322.424496.338527@max.nulle.part>
+	<AANLkTine_S8E7yJLRO5bfHoVk21-C2i9Xw0VsQoM_Z=T@mail.gmail.com>
+	<19793.38466.265679.525043@max.nulle.part>
+	<AANLkTimADz1TokhTpnLf7TbEiauoCdafj_hiSbphwsNU@mail.gmail.com>
+	<19794.2303.846016.872533@max.nulle.part>
+Message-ID: <874o8dtuzx.fsf@topper.koldfront.dk>
+
+On Tue, 8 Feb 2011 21:24:47 -0600, Dirk wrote:
+
+> You can try to get in contact with the Gmane admins (CC'ed as
+> admin at gmane.org) to inquire about back-filling.
+
+See http://gmane.org/import.php for more information.
+
+
+  Best regards,
+
+    Adam
+
+-- 
+ "I went for the fireengines                                  Adam Sj?gren
+  But they were all upside down"                         asjo at koldfront.dk
+
+
+
+From je||@h@m@nn @end|ng |rom |ore@t|n|orm@t|c@@com  Wed Feb  9 20:18:54 2011
+From: je||@h@m@nn @end|ng |rom |ore@t|n|orm@t|c@@com (Jeff Hamann)
+Date: Wed, 9 Feb 2011 11:18:54 -0800
+Subject: [R-sig-DB] table create from data.frame?
+Message-ID: <1B976F52-8114-4B23-88F9-25219A62FEDD@forestinformatics.com>
+
+Is there some function in any of the db tools for R to generate an SQL table create statement (with optional insert statements) from a data.frame object?
+
+Respectfully,
+Jeff.
+
+
+Jeff Hamann, PhD
+PO Box 1421
+Corvallis, Oregon 97339-1421
+541-754-2457
+jeff.hamann[at]forestinformatics[dot]com
+http://www.forestinformatics.com
+http://forufus.blogspot.com/
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From edd @end|ng |rom deb|@n@org  Wed Feb  9 20:31:19 2011
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Wed, 9 Feb 2011 13:31:19 -0600
+Subject: [R-sig-DB] table create from data.frame?
+In-Reply-To: <1B976F52-8114-4B23-88F9-25219A62FEDD@forestinformatics.com>
+References: <1B976F52-8114-4B23-88F9-25219A62FEDD@forestinformatics.com>
+Message-ID: <19794.60295.916709.317662@max.nulle.part>
+
+
+On 9 February 2011 at 11:18, Jeff Hamann wrote:
+| Is there some function in any of the db tools for R to generate an SQL table create statement (with optional insert statements) from a data.frame object?
+
+Yes, DBI has had dbWriteTable() for that for a long time.  Here is a complete
+example (from the regression tests in RPostgreSQL) writing rock from the
+datasets package:
+
+    ## try to load our module and abort if this fails
+    stopifnot(require(RPostgreSQL))
+    stopifnot(require(datasets))
+
+    ## load the PostgresSQL driver
+    drv <- dbDriver("PostgreSQL")
+
+    ## connect to the default db
+    con <- dbConnect(drv,
+                     user=Sys.getenv("POSTGRES_USER"),
+                     password=Sys.getenv("POSTGRES_PASSWD"),
+                     host=Sys.getenv("POSTGRES_HOST"),
+                     dbname=Sys.getenv("POSTGRES_DATABASE"),
+                     port=ifelse((p<-Sys.getenv("POSTGRES_PORT"))!="", p, 5432))
+
+
+    if (dbExistsTable(con, "rockdata")) {
+        print("Removing rockdata\n")
+        dbRemoveTable(con, "rockdata")
+    }
+
+    dbWriteTable(con, "rockdata", rock)
+
+    ## run a simple query and show the query result
+    res <- dbGetQuery(con, "select * from rockdata limit 10")
+    print(res)
+
+
+    ## cleanup
+    if (dbExistsTable(con, "rockdata")) {
+        print("Removing rockdata\n")
+        dbRemoveTable(con, "rockdata")
+    }
+
+    ## and disconnect
+    dbDisconnect(con)
+
+(The dbConnect is overly verbose / complicated because we want this scripted
+without writing down users and passwords, that way we can automate tests in
+different places.)
+
+Dirk
+
+-- 
+Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+
+
+From je||@h@m@nn @end|ng |rom |ore@t|n|orm@t|c@@com  Wed Feb  9 20:36:29 2011
+From: je||@h@m@nn @end|ng |rom |ore@t|n|orm@t|c@@com (Jeff Hamann)
+Date: Wed, 9 Feb 2011 11:36:29 -0800
+Subject: [R-sig-DB] table create from data.frame?
+In-Reply-To: <19794.60295.916709.317662@max.nulle.part>
+References: <1B976F52-8114-4B23-88F9-25219A62FEDD@forestinformatics.com>
+	<19794.60295.916709.317662@max.nulle.part>
+Message-ID: <9898CC5A-ECBA-4C96-B22D-12D75DC7E382@forestinformatics.com>
+
+Wow. That's awesome! Thanks so much.
+
+Respectfully,
+Jeff.
+
+
+Jeff Hamann, PhD
+PO Box 1421
+Corvallis, Oregon 97339-1421
+541-754-2457
+jeff.hamann[at]forestinformatics[dot]com
+http://www.forestinformatics.com
+http://forufus.blogspot.com/
+
+On Feb 9, 2011, at 11:31 AM, Dirk Eddelbuettel wrote:
+
+> 
+> On 9 February 2011 at 11:18, Jeff Hamann wrote:
+> | Is there some function in any of the db tools for R to generate an SQL table create statement (with optional insert statements) from a data.frame object?
+> 
+> Yes, DBI has had dbWriteTable() for that for a long time.  Here is a complete
+> example (from the regression tests in RPostgreSQL) writing rock from the
+> datasets package:
+> 
+>    ## try to load our module and abort if this fails
+>    stopifnot(require(RPostgreSQL))
+>    stopifnot(require(datasets))
+> 
+>    ## load the PostgresSQL driver
+>    drv <- dbDriver("PostgreSQL")
+> 
+>    ## connect to the default db
+>    con <- dbConnect(drv,
+>                     user=Sys.getenv("POSTGRES_USER"),
+>                     password=Sys.getenv("POSTGRES_PASSWD"),
+>                     host=Sys.getenv("POSTGRES_HOST"),
+>                     dbname=Sys.getenv("POSTGRES_DATABASE"),
+>                     port=ifelse((p<-Sys.getenv("POSTGRES_PORT"))!="", p, 5432))
+> 
+> 
+>    if (dbExistsTable(con, "rockdata")) {
+>        print("Removing rockdata\n")
+>        dbRemoveTable(con, "rockdata")
+>    }
+> 
+>    dbWriteTable(con, "rockdata", rock)
+> 
+>    ## run a simple query and show the query result
+>    res <- dbGetQuery(con, "select * from rockdata limit 10")
+>    print(res)
+> 
+> 
+>    ## cleanup
+>    if (dbExistsTable(con, "rockdata")) {
+>        print("Removing rockdata\n")
+>        dbRemoveTable(con, "rockdata")
+>    }
+> 
+>    ## and disconnect
+>    dbDisconnect(con)
+> 
+> (The dbConnect is overly verbose / complicated because we want this scripted
+> without writing down users and passwords, that way we can automate tests in
+> different places.)
+> 
+> Dirk
+> 
+> -- 
+> Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From ne||t @end|ng |rom ne||t||||n@com  Wed Feb  9 21:51:57 2011
+From: ne||t @end|ng |rom ne||t||||n@com (Neil Tiffin)
+Date: Wed, 9 Feb 2011 14:51:57 -0600
+Subject: [R-sig-DB] Error in postgresqlExecStatement...RS-DBI driver:
+	(could not Retrieve the result...)
+In-Reply-To: <BBE4B969-3D36-47C7-A867-ACBE72E9C123@buckeyemail.osu.edu>
+References: <BBE4B969-3D36-47C7-A867-ACBE72E9C123@buckeyemail.osu.edu>
+Message-ID: <BDC315AF-C041-4158-955B-A446FE712DC2@neiltiffin.com>
+
+
+On Feb 8, 2011, at 9:55 PM, Rex Hu wrote:
+
+> Hi all!
+> 
+> I am a total newb in database programming, but unfortunately, I am working on a project that requires database programming using R. I hope that some one could help me about this. Thank you all in advance!
+> 
+> I ran into this error when I was trying to run an R program written by someone else. It occurs when executing this 'big loop' (the R code of this loop is in the attachment). I have absolutely no clue what is going on.
+> 
+> The environment where I ran the program is Red Hat Enterprise Linux 6, and PostgreSQL 8.4.7. R version is  2.12.1.
+> 
+> The following are error messages.
+> 
+> 64490 :class(mydata):  data.frame
+>   cleaning.out.cols: geofencename, geofencereason
+>   prod(u.gfn == ""): 0
+>   prod(u.gfr == ""): 0
+>   dim(mydata): 185 7
+>   Creating hourflag, odoflag, stateflag...done.
+>   Appending them to the data.frame...done.
+>   Sum:: hourflag: 10 , odoflag: 10 , stateflag: 12 , hrOdoflag: 10
+>   Starting hrodoflag.index loop...
+>   hrodoflag.index loop finished.
+
+This looks like the program made it to this point as this is the only line of code that contains "loop finished":
+
+  if (debugindex > 1) cat("\throdoflag.index loop finished.\n")
+
+  ######################################################
+  ######################################################
+  ######################################################
+
+  message("Delete 'public.tmptable'")
+
+However, there is no reason why the message "Delete 'public.tmptable'" is not in your output.  There is no code to execute between these two points.  Are you sure this is the code that is causing the problem?
+
+> Error in postgresqlExecStatement(conn, statement, ...) :
+> RS-DBI driver: (could not Retrieve the result : ERROR:  relation "public.tmptable" already exists
+
+At first glance it appears that "public.tmptable" already exists.  Remove this table from your database and try again.
+
+> )
+> In addition: Warning messages:
+> 1: In dir.create(datadumpdir, showWarnings = TRUE, recursive = TRUE,  :
+> '/scratch/kan/datadump' already exists
+> 2: In dir.create(misclwritedir, showWarnings = TRUE, recursive = TRUE,  :
+> '/scratch/kan/work/bordercrossing/miscl/AU08_100301' already exists
+> 3: In dir.create(datawritedir, showWarnings = TRUE, recursive = TRUE,  :
+> '/scratch/kan/work/bordercrossing/data/cevaAU08_100301' already exists
+> Error in postgresqlExecStatement(conn, statement, ...) :
+> RS-DBI driver: (could not Retrieve the result : ERROR:  relation "public.tmptable" does not exist
+> )
+> In addition: Warning message:
+> In postgresqlQuickSQL(conn, statement, ...) :
+> Could not create executeCREATE TABLE "public.tmptable"
+> ( "id_tb100301trp" bigint,
+>   "bridge_new" text,
+>   "tripscore" float8,
+>   "stflag" float8,
+>   "hrflag" float8,
+>   "odflag" float8
+> )
+> Error in postgresqlExecStatement(conn, statement, ...) :
+> RS-DBI driver: (could not Retrieve the result : ERROR:  relation "public.tmptable" does not exist
+> )
+> In addition: Warning message:
+> In postgresqlQuickSQL(conn, statement, ...) :
+> Could not create executeCOPY public.tmptable FROM '/tmp/rpsql.G19577' WITH CSV HEADER QUOTE AS '"'
+> Error in postgresqlExecStatement(conn, statement, ...) :
+> RS-DBI driver: (could not Retrieve the result : ERROR:  relation "public.tmptable" does not exist
+> )
+> In addition: Warning message:
+> In postgresqlQuickSQL(conn, statement, ...) :
+> Could not create executeUPDATE  au08_100301.tb100301trp  SET  bridge_new  =  public.tmptable.bridge_new FROM  public.tmptable
+> WHERE  au08_100301.tb100301trp.id_tb100301trp  =  public.tmptable.id_tb100301trp ;
+> Error in postgresqlExecStatement(conn, statement, ...) :
+> RS-DBI driver: (could not Retrieve the result : ERROR:  relation "public.tmptable" does not exist
+> )
+> In addition: Warning message:
+> In postgresqlQuickSQL(conn, statement, ...) :
+> Could not create executeUPDATE  au08_100301.tb100301trp  SET  tripscore  =  public.tmptable.tripscore FROM public.tmptable
+> WHERE  au08_100301.tb100301trp.id_tb100301trp  =  public.tmptable.id_tb100301trp ;
+> Error in postgresqlExecStatement(conn, statement, ...) :
+> RS-DBI driver: (could not Retrieve the result : ERROR:  relation "public.tmptable" does not exist
+> )
+> In addition: Warning message:
+> In postgresqlQuickSQL(conn, statement, ...) :
+> Could not create executeUPDATE  au08_100301.tb100301trp  SET  stflag  =  public.tmptable.stflag FROM public.tmptable
+> WHERE  au08_100301.tb100301trp.id_tb100301trp  =  public.tmptable.id_tb100301trp ;
+> Error in postgresqlExecStatement(conn, statement, ...) :
+> RS-DBI driver: (could not Retrieve the result : ERROR:  relation "public.tmptable" does not exist
+> )
+> In addition: Warning message:
+> In postgresqlQuickSQL(conn, statement, ...) :
+> Could not create executeUPDATE  au08_100301.tb100301trp  SET  hrflag  =  public.tmptable.hrflag FROM public.tmptable
+> WHERE  au08_100301.tb100301trp.id_tb100301trp  =  public.tmptable.id_tb100301trp ;
+> 
+> 
+> 
+> ***********************************************
+> Hu, Zhengyu (Rex)
+> Department of Statistics
+> The Ohio State University
+> Columbus, OH 43210
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From edd @end|ng |rom deb|@n@org  Wed Feb  9 22:29:22 2011
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Wed, 9 Feb 2011 15:29:22 -0600
+Subject: [R-sig-DB] table create from data.frame?
+In-Reply-To: <9898CC5A-ECBA-4C96-B22D-12D75DC7E382@forestinformatics.com>
+References: <1B976F52-8114-4B23-88F9-25219A62FEDD@forestinformatics.com>
+	<19794.60295.916709.317662@max.nulle.part>
+	<9898CC5A-ECBA-4C96-B22D-12D75DC7E382@forestinformatics.com>
+Message-ID: <19795.1842.478015.415687@max.nulle.part>
+
+
+On 9 February 2011 at 11:36, Jeff Hamann wrote:
+| Wow. That's awesome! Thanks so much.
+
+Yes, it is quite nice -- especially as you can switch between DBI-compliant
+database backends giving you PostgreSQL, MySQL, SQLite, and (I think) Oracle.
+
+Dirk
+
+-- 
+Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+
+
+From tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp  Fri Feb 11 08:27:46 2011
+From: tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp (Tomoaki NISHIYAMA)
+Date: Fri, 11 Feb 2011 16:27:46 +0900
+Subject: [R-sig-DB] Error in postgresqlExecStatement...RS-DBI driver:
+	(could not Retrieve the result...)
+In-Reply-To: <3D6FF051-767C-48D4-8B71-C08A82B6E336@buckeyemail.osu.edu>
+References: <BBE4B969-3D36-47C7-A867-ACBE72E9C123@buckeyemail.osu.edu>
+	<3D6FF051-767C-48D4-8B71-C08A82B6E336@buckeyemail.osu.edu>
+Message-ID: <900F3FF5-346F-4FFE-80B8-AB89994AF5CA@kenroku.kanazawa-u.ac.jp>
+
+Hi,
+
+Some part of this error seems to be made by
+the confusion of "public.tmptable" and public.tmptable.
+
+The meaning of the tablename handled by dbWriteTable, dbRemoveTable,  
+etc.
+changed relatively recently,
+Now "public.tmptable" means literaly "public.tmptable" in the current  
+schema,
+while public.tmptable in the sql means tmptable in public schema.
+This may relate to possible cause of not being to be able to create  
+table, if
+the current schema is changed in some other place.  Also, what access  
+privilege
+the connecting postgresql user have on each database/schema  
+combination should be checked.
+
+>> The environment where I ran the program is Red Hat Enterprise  
+>> Linux 6, and PostgreSQL 8.4.7. R version is  2.12.1.
+
+and what version for RPostgreSQL?
+
+>> I ran into this error when I was trying to run an R program  
+>> written by someone else.
+
+
+Do you have any estimate when it was written?
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi,
+Kanazawa, 920-0934, Japan
+
+
+On 2011/02/09, at 13:00, Rex Hu wrote:
+
+> Sorry, my bad. Forgot the attachment...
+>
+> --Rex
+>
+> <loop.R>
+>
+>
+>
+> On Feb 8, 2011, at 10:55 PM, Rex Hu wrote:
+>
+>> Hi all!
+>>
+>> I am a total newb in database programming, but unfortunately, I am  
+>> working on a project that requires database programming using R. I  
+>> hope that some one could help me about this. Thank you all in  
+>> advance!
+>>
+>> I ran into this error when I was trying to run an R program  
+>> written by someone else. It occurs when executing this 'big  
+>> loop' (the R code of this loop is in the attachment). I have  
+>> absolutely no clue what is going on.
+>>
+>> The environment where I ran the program is Red Hat Enterprise  
+>> Linux 6, and PostgreSQL 8.4.7. R version is  2.12.1.
+>>
+>> The following are error messages.
+>>
+>> 64490 :class(mydata):  data.frame
+>>   cleaning.out.cols: geofencename, geofencereason
+>>   prod(u.gfn == ""): 0
+>>   prod(u.gfr == ""): 0
+>>   dim(mydata): 185 7
+>>   Creating hourflag, odoflag, stateflag...done.
+>>   Appending them to the data.frame...done.
+>>   Sum:: hourflag: 10 , odoflag: 10 , stateflag: 12 , hrOdoflag: 10
+>>   Starting hrodoflag.index loop...
+>>   hrodoflag.index loop finished.
+>> Error in postgresqlExecStatement(conn, statement, ...) :
+>> RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+>> "public.tmptable" already exists
+>> )
+>> In addition: Warning messages:
+>> 1: In dir.create(datadumpdir, showWarnings = TRUE, recursive =  
+>> TRUE,  :
+>> '/scratch/kan/datadump' already exists
+>> 2: In dir.create(misclwritedir, showWarnings = TRUE, recursive =  
+>> TRUE,  :
+>> '/scratch/kan/work/bordercrossing/miscl/AU08_100301' already exists
+>> 3: In dir.create(datawritedir, showWarnings = TRUE, recursive =  
+>> TRUE,  :
+>> '/scratch/kan/work/bordercrossing/data/cevaAU08_100301' already  
+>> exists
+>> Error in postgresqlExecStatement(conn, statement, ...) :
+>> RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+>> "public.tmptable" does not exist
+>> )
+>> In addition: Warning message:
+>> In postgresqlQuickSQL(conn, statement, ...) :
+>> Could not create executeCREATE TABLE "public.tmptable"
+>> ( "id_tb100301trp" bigint,
+>>   "bridge_new" text,
+>>   "tripscore" float8,
+>>   "stflag" float8,
+>>   "hrflag" float8,
+>>   "odflag" float8
+>> )
+>> Error in postgresqlExecStatement(conn, statement, ...) :
+>> RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+>> "public.tmptable" does not exist
+>> )
+>> In addition: Warning message:
+>> In postgresqlQuickSQL(conn, statement, ...) :
+>> Could not create executeCOPY public.tmptable FROM '/tmp/ 
+>> rpsql.G19577' WITH CSV HEADER QUOTE AS '"'
+>> Error in postgresqlExecStatement(conn, statement, ...) :
+>> RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+>> "public.tmptable" does not exist
+>> )
+>> In addition: Warning message:
+>> In postgresqlQuickSQL(conn, statement, ...) :
+>> Could not create executeUPDATE  au08_100301.tb100301trp  SET   
+>> bridge_new  =  public.tmptable.bridge_new FROM  public.tmptable
+>> WHERE  au08_100301.tb100301trp.id_tb100301trp  =   
+>> public.tmptable.id_tb100301trp ;
+>> Error in postgresqlExecStatement(conn, statement, ...) :
+>> RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+>> "public.tmptable" does not exist
+>> )
+>> In addition: Warning message:
+>> In postgresqlQuickSQL(conn, statement, ...) :
+>> Could not create executeUPDATE  au08_100301.tb100301trp  SET   
+>> tripscore  =  public.tmptable.tripscore FROM public.tmptable
+>> WHERE  au08_100301.tb100301trp.id_tb100301trp  =   
+>> public.tmptable.id_tb100301trp ;
+>> Error in postgresqlExecStatement(conn, statement, ...) :
+>> RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+>> "public.tmptable" does not exist
+>> )
+>> In addition: Warning message:
+>> In postgresqlQuickSQL(conn, statement, ...) :
+>> Could not create executeUPDATE  au08_100301.tb100301trp  SET   
+>> stflag  =  public.tmptable.stflag FROM public.tmptable
+>> WHERE  au08_100301.tb100301trp.id_tb100301trp  =   
+>> public.tmptable.id_tb100301trp ;
+>> Error in postgresqlExecStatement(conn, statement, ...) :
+>> RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+>> "public.tmptable" does not exist
+>> )
+>> In addition: Warning message:
+>> In postgresqlQuickSQL(conn, statement, ...) :
+>> Could not create executeUPDATE  au08_100301.tb100301trp  SET   
+>> hrflag  =  public.tmptable.hrflag FROM public.tmptable
+>> WHERE  au08_100301.tb100301trp.id_tb100301trp  =   
+>> public.tmptable.id_tb100301trp ;
+>>
+>>
+>>
+>> ***********************************************
+>> Hu, Zhengyu (Rex)
+>> Department of Statistics
+>> The Ohio State University
+>> Columbus, OH 43210
+>>
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From hu@280 @end|ng |rom buckeyem@||@o@u@edu  Sun Feb 13 20:39:05 2011
+From: hu@280 @end|ng |rom buckeyem@||@o@u@edu (Rex Hu)
+Date: Sun, 13 Feb 2011 14:39:05 -0500
+Subject: [R-sig-DB] Error in postgresqlExecStatement...RS-DBI driver:
+	(could not Retrieve the result...)
+In-Reply-To: <900F3FF5-346F-4FFE-80B8-AB89994AF5CA@kenroku.kanazawa-u.ac.jp>
+References: <BBE4B969-3D36-47C7-A867-ACBE72E9C123@buckeyemail.osu.edu>
+	<3D6FF051-767C-48D4-8B71-C08A82B6E336@buckeyemail.osu.edu>
+	<900F3FF5-346F-4FFE-80B8-AB89994AF5CA@kenroku.kanazawa-u.ac.jp>
+Message-ID: <09695D01-AD43-410A-A242-BCA49D0F5CA7@buckeyemail.osu.edu>
+
+You're totally right!!! It is working now!!! Thank you so much!!!
+
+--Rex
+
+
+On Feb 11, 2011, at 2:27 AM, Tomoaki NISHIYAMA wrote:
+
+> Hi,
+>
+> Some part of this error seems to be made by
+> the confusion of "public.tmptable" and public.tmptable.
+>
+> The meaning of the tablename handled by dbWriteTable, dbRemoveTable,  
+> etc.
+> changed relatively recently,
+> Now "public.tmptable" means literaly "public.tmptable" in the  
+> current schema,
+> while public.tmptable in the sql means tmptable in public schema.
+> This may relate to possible cause of not being to be able to create  
+> table, if
+> the current schema is changed in some other place.  Also, what  
+> access privilege
+> the connecting postgresql user have on each database/schema  
+> combination should be checked.
+>
+>>> The environment where I ran the program is Red Hat Enterprise  
+>>> Linux 6, and PostgreSQL 8.4.7. R version is  2.12.1.
+>
+> and what version for RPostgreSQL?
+>
+>>> I ran into this error when I was trying to run an R program  
+>>> written by someone else.
+>
+>
+> Do you have any estimate when it was written?
+> -- 
+> Tomoaki NISHIYAMA
+>
+> Advanced Science Research Center,
+> Kanazawa University,
+> 13-1 Takara-machi,
+> Kanazawa, 920-0934, Japan
+>
+>
+> On 2011/02/09, at 13:00, Rex Hu wrote:
+>
+>> Sorry, my bad. Forgot the attachment...
+>>
+>> --Rex
+>>
+>> <loop.R>
+>>
+>>
+>>
+>> On Feb 8, 2011, at 10:55 PM, Rex Hu wrote:
+>>
+>>> Hi all!
+>>>
+>>> I am a total newb in database programming, but unfortunately, I am  
+>>> working on a project that requires database programming using R. I  
+>>> hope that some one could help me about this. Thank you all in  
+>>> advance!
+>>>
+>>> I ran into this error when I was trying to run an R program  
+>>> written by someone else. It occurs when executing this 'big  
+>>> loop' (the R code of this loop is in the attachment). I have  
+>>> absolutely no clue what is going on.
+>>>
+>>> The environment where I ran the program is Red Hat Enterprise  
+>>> Linux 6, and PostgreSQL 8.4.7. R version is  2.12.1.
+>>>
+>>> The following are error messages.
+>>>
+>>> 64490 :class(mydata):  data.frame
+>>>  cleaning.out.cols: geofencename, geofencereason
+>>>  prod(u.gfn == ""): 0
+>>>  prod(u.gfr == ""): 0
+>>>  dim(mydata): 185 7
+>>>  Creating hourflag, odoflag, stateflag...done.
+>>>  Appending them to the data.frame...done.
+>>>  Sum:: hourflag: 10 , odoflag: 10 , stateflag: 12 , hrOdoflag: 10
+>>>  Starting hrodoflag.index loop...
+>>>  hrodoflag.index loop finished.
+>>> Error in postgresqlExecStatement(conn, statement, ...) :
+>>> RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+>>> "public.tmptable" already exists
+>>> )
+>>> In addition: Warning messages:
+>>> 1: In dir.create(datadumpdir, showWarnings = TRUE, recursive =  
+>>> TRUE,  :
+>>> '/scratch/kan/datadump' already exists
+>>> 2: In dir.create(misclwritedir, showWarnings = TRUE, recursive =  
+>>> TRUE,  :
+>>> '/scratch/kan/work/bordercrossing/miscl/AU08_100301' already exists
+>>> 3: In dir.create(datawritedir, showWarnings = TRUE, recursive =  
+>>> TRUE,  :
+>>> '/scratch/kan/work/bordercrossing/data/cevaAU08_100301' already  
+>>> exists
+>>> Error in postgresqlExecStatement(conn, statement, ...) :
+>>> RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+>>> "public.tmptable" does not exist
+>>> )
+>>> In addition: Warning message:
+>>> In postgresqlQuickSQL(conn, statement, ...) :
+>>> Could not create executeCREATE TABLE "public.tmptable"
+>>> ( "id_tb100301trp" bigint,
+>>>  "bridge_new" text,
+>>>  "tripscore" float8,
+>>>  "stflag" float8,
+>>>  "hrflag" float8,
+>>>  "odflag" float8
+>>> )
+>>> Error in postgresqlExecStatement(conn, statement, ...) :
+>>> RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+>>> "public.tmptable" does not exist
+>>> )
+>>> In addition: Warning message:
+>>> In postgresqlQuickSQL(conn, statement, ...) :
+>>> Could not create executeCOPY public.tmptable FROM '/tmp/ 
+>>> rpsql.G19577' WITH CSV HEADER QUOTE AS '"'
+>>> Error in postgresqlExecStatement(conn, statement, ...) :
+>>> RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+>>> "public.tmptable" does not exist
+>>> )
+>>> In addition: Warning message:
+>>> In postgresqlQuickSQL(conn, statement, ...) :
+>>> Could not create executeUPDATE  au08_100301.tb100301trp  SET   
+>>> bridge_new  =  public.tmptable.bridge_new FROM  public.tmptable
+>>> WHERE  au08_100301.tb100301trp.id_tb100301trp  =   
+>>> public.tmptable.id_tb100301trp ;
+>>> Error in postgresqlExecStatement(conn, statement, ...) :
+>>> RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+>>> "public.tmptable" does not exist
+>>> )
+>>> In addition: Warning message:
+>>> In postgresqlQuickSQL(conn, statement, ...) :
+>>> Could not create executeUPDATE  au08_100301.tb100301trp  SET   
+>>> tripscore  =  public.tmptable.tripscore FROM public.tmptable
+>>> WHERE  au08_100301.tb100301trp.id_tb100301trp  =   
+>>> public.tmptable.id_tb100301trp ;
+>>> Error in postgresqlExecStatement(conn, statement, ...) :
+>>> RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+>>> "public.tmptable" does not exist
+>>> )
+>>> In addition: Warning message:
+>>> In postgresqlQuickSQL(conn, statement, ...) :
+>>> Could not create executeUPDATE  au08_100301.tb100301trp  SET   
+>>> stflag  =  public.tmptable.stflag FROM public.tmptable
+>>> WHERE  au08_100301.tb100301trp.id_tb100301trp  =   
+>>> public.tmptable.id_tb100301trp ;
+>>> Error in postgresqlExecStatement(conn, statement, ...) :
+>>> RS-DBI driver: (could not Retrieve the result : ERROR:  relation  
+>>> "public.tmptable" does not exist
+>>> )
+>>> In addition: Warning message:
+>>> In postgresqlQuickSQL(conn, statement, ...) :
+>>> Could not create executeUPDATE  au08_100301.tb100301trp  SET   
+>>> hrflag  =  public.tmptable.hrflag FROM public.tmptable
+>>> WHERE  au08_100301.tb100301trp.id_tb100301trp  =   
+>>> public.tmptable.id_tb100301trp ;
+>>>
+>>>
+>>>
+>>> ***********************************************
+>>> Hu, Zhengyu (Rex)
+>>> Department of Statistics
+>>> The Ohio State University
+>>> Columbus, OH 43210
+>>>
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at r-project.org
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From mu|bne@or2000 @end|ng |rom y@hoo@com  Fri Feb 18 16:15:15 2011
+From: mu|bne@or2000 @end|ng |rom y@hoo@com (Jeremy)
+Date: Fri, 18 Feb 2011 15:15:15 +0000
+Subject: [R-sig-DB] R MYSQL INSTALLATION
+References: <AANLkTin58ycSfvukJx2rsve0erDbjWmE4iJcAHznZU-K@mail.gmail.com>
+	<AANLkTikesZxcL_5OvE85zWHdKzyeJ0mRXOXK3S5h4Ljk@mail.gmail.com>
+Message-ID: <loom.20110218T161350-619@post.gmane.org>
+
+I have run into the same problem on my Windows XP machine.  Have you been able
+to resolve the issue.  If so, how?
+
+Thanks
+Jeremy
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Fri Feb 18 19:11:48 2011
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Fri, 18 Feb 2011 18:11:48 +0000
+Subject: [R-sig-DB] R MYSQL INSTALLATION
+In-Reply-To: <loom.20110218T161350-619@post.gmane.org>
+References: <AANLkTin58ycSfvukJx2rsve0erDbjWmE4iJcAHznZU-K@mail.gmail.com>
+	<AANLkTikesZxcL_5OvE85zWHdKzyeJ0mRXOXK3S5h4Ljk@mail.gmail.com>
+	<loom.20110218T161350-619@post.gmane.org>
+Message-ID: <alpine.LFD.2.02.1102181810090.29170@gannet.stats.ox.ac.uk>
+
+The same problem as what?
+
+First, this is a subscriber-only list, so please subscribe to post.
+Second, there is a posting guide at
+
+http://www.r-project.org/posting-guide.html
+
+which you are required to follow.
+
+The list moderator.
+
+On Fri, 18 Feb 2011, Jeremy wrote:
+
+> I have run into the same problem on my Windows XP machine.  Have you been able
+> to resolve the issue.  If so, how?
+>
+> Thanks
+> Jeremy
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From @mo@|o|@r|n @end|ng |rom gm@||@com  Tue Feb 22 18:13:59 2011
+From: @mo@|o|@r|n @end|ng |rom gm@||@com (Amos Folarin)
+Date: Tue, 22 Feb 2011 17:13:59 +0000
+Subject: [R-sig-DB] R MYSQL INSTALLATION
+References: <AANLkTin58ycSfvukJx2rsve0erDbjWmE4iJcAHznZU-K@mail.gmail.com>
+	<AANLkTikesZxcL_5OvE85zWHdKzyeJ0mRXOXK3S5h4Ljk@mail.gmail.com>
+Message-ID: <loom.20110222T181126-543@post.gmane.org>
+
+Hi Sayan, 
+
+
+
+I recently found a solution to the RMySQL compiling problem. 
+
+You however there is one additional requirement at present 
+(with the MySQL server 
+version 5.5 & R2.12.1) 
+follow the http://biostat.mc.vanderbilt.edu/wiki/Main/RMySQL 
+instructions at present as the locations of the 
+libmySQL.dll differs to what is 
+expected in the package. 
+
+i.e. for the 64bit compiling. 
+it expects the libmySQL.dll to be in
+ "${MYSQL_HOME}"/bin/libmySQL.dll 
+so simply copy the dll over to the 
+/bin dir and it will now compile.
+
+
+
+From m@cqueen1 @end|ng |rom ||n|@gov  Sat Feb 26 02:02:34 2011
+From: m@cqueen1 @end|ng |rom ||n|@gov (MacQueen, Don)
+Date: Fri, 25 Feb 2011 17:02:34 -0800
+Subject: [R-sig-DB] RJDBC dbWriteTable()  overwrite=TRUE not working?
+Message-ID: <C98D912A.5E34%macqueen1@llnl.gov>
+
+I have the following experience with package RJDBC, working with an Oracle database.
+
+Jdbm <- JDBC(  ?correctly defined, I believe?)
+Jcon <- dbConnect(jdbm,  ?correctly defined, I believe?)
+
+> tstj <- data.frame(x=1:7, a=c('AA','BB',letters[1:5]))
+> tstj
+  x  a
+1 1 AA
+2 2 BB
+3 3  a
+4 4  b
+5 5  c
+6 6  d
+7 7  e
+> dbWriteTable(jcon,'tstj',tstj,row.names=FALSE)
+[1] TRUE
+> tstout <- dbGetQuery(jcon,"select * from tstj")
+> tstout
+  X  A
+1 1 AA
+2 2 BB
+3 3  a
+4 4  b
+5 5  c
+6 6  d
+7 7  e
+> dbWriteTable(jcon,'tstj',tstj,row.names=FALSE, overwrite=TRUE)
+Error in .local(conn, statement, ...) :
+  execute JDBC update query failed in dbSendUpdate (ORA-00955: name is already used by an existing object
+
+I get the same error with append=TRUE.
+
+Am I doing something wrong?
+
+I know that I can use dbRemoveTable() first, but I had expected dbWriteTable with overwrite=TRUE to succeed.
+
+Thanks
+-Don
+
+> sessionInfo()
+R version 2.12.2 (2011-02-25)
+Platform: x86_64-unknown-linux-gnu (64-bit)
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8
+ [5] LC_MONETARY=C              LC_MESSAGES=en_US.UTF-8
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] RJDBC_0.1-5 rJava_0.8-8 DBI_0.2-5
+
+
+The Oracle is 11.2.0
+For what it's worth, I get the same problem with an older system:
+   R (2.10.1);  Oracle 10g;  Mac OS 10.5.8.
+
+--
+Don MacQueen
+Lawrence Livermore National Laboratory
+7000 East Ave., L-627
+Livermore, CA 94550
+925-423-1062
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From Lee@H@ch@door|@n+L @end|ng |rom gm@||@com  Mon Feb 28 17:14:35 2011
+From: Lee@H@ch@door|@n+L @end|ng |rom gm@||@com (Lee Hachadoorian)
+Date: Mon, 28 Feb 2011 11:14:35 -0500
+Subject: [R-sig-DB] dbWriteTable on virtual linux box
+Message-ID: <pan.2011.02.28.16.14.34.819000@gmail.com>
+
+Apologies if this is beyond the purview of the list, but I'm mixing
+technologies and it's not clear to me how to troubleshoot this.
+
+I would like to use RPostgreSQL to facilitate data import from text files.
+Basic operation is:
+
+library(RPostgreSQL)
+conn = dbConnect(dbDriver("PostgreSQL"), dbname="****",
+user="****", password="****",
+host="****",port=5432)
+
+df1 = data.frame(1) #This would really be read.csv()
+dbWriteTable(conn, "<schema_name>.<table_anme", df1, row.names = FALSE)
+
+I have run this successfully on a "real" Ubuntu Linux installation,
+writing data to this particular Postgres server. However, at a different
+location, I only have access to a Windows computer, so I am running R on
+Ubuntu on VirtualBox. On this setup, when I try the above code, I get:
+
+Error in postgresqlExecStatement(conn, statement, ...) : 
+  RS-DBI driver: (could not Retrieve the result : ERROR:  could not open
+  file "/tmp/rsdbi********" for reading: No such file or directory
+)
+[1] FALSE
+Warning message:
+In postgresqlWriteTable(conn, name, value, ...) :
+  could not load data into table
+
+where the asterisks are a random apparently hexadecimal number.
+
+Ideas about what is happening or how to trouble shoot this will be greatly
+appreciated. Sys.info() below the sig.
+
+Regards,
+Lee Hachadoorian
+PhD Student, Geography
+Program in Earth & Environmental Sciences
+CUNY Graduate Center
+
+Sys.info()
+
+                                      sysname 
+                                      "Linux" 
+                                      release 
+                          "2.6.32-28-generic" 
+                                      version 
+"#55-Ubuntu SMP Mon Jan 10 23:42:43 UTC 2011" 
+                                     nodename 
+                                  "ubuntu-vm" 
+                                      machine 
+                                     "x86_64" 
+                                        login 
+                                    "unknown" 
+                                         user 
+                                        "lee"
+
+
+
+From er|k @end|ng |rom er|kburrow@@com  Mon Feb 28 20:39:48 2011
+From: er|k @end|ng |rom er|kburrow@@com (Erik G. Burrows)
+Date: Mon, 28 Feb 2011 11:39:48 -0800 (PST)
+Subject: [R-sig-DB] RRD database adapter
+Message-ID: <f727ce1fed7b31c05c0c4cc37f3aaed5.squirrel@www.erikburrows.com>
+
+
+Hello all,
+Does R have a library/package to access RRD (round-robin database) files?
+
+http://www.mrtg.org/rrdtool/
+
+I've looked in CRAN, and googled, but came up with nothing.
+
+RRD files are used extensively in system administration and system
+monitoring environments. I would love to be able to do statistical
+analysis on this data without having to dump/translate the data into a
+format readable by read.table().
+
+Thanks!
+
+-Erik Burrows
+
+-- 
+If you are flammable and have legs, you're never blocking a fire exit.
+-Mitch Hedberg
+
+
+
+From tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp  Tue Mar  1 01:20:35 2011
+From: tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp (Tomoaki NISHIYAMA)
+Date: Tue, 1 Mar 2011 09:20:35 +0900
+Subject: [R-sig-DB] dbWriteTable on virtual linux box
+In-Reply-To: <pan.2011.02.28.16.14.34.819000@gmail.com>
+References: <pan.2011.02.28.16.14.34.819000@gmail.com>
+Message-ID: <7085FAA3-B4C5-4A9A-A33E-8039DD8F5297@kenroku.kanazawa-u.ac.jp>
+
+Hi,
+
+> However, at a different
+> location, I only have access to a Windows computer, so I am running  
+> R on
+> Ubuntu on VirtualBox. On this setup, when I try the above code, I get:
+
+
+What version of RPostgreSQL are you using?
+
+Is the PostgreSQL server working on the same virtualbox or are
+you to communicate the PostgreSQL server running on the host
+environment?
+
+If you are using an old version of RPostgreSQL, it cannot
+dbWriteTable to other hosts, but the most
+recent release version (0.1-7) should work.
+
+Another comment on your code:
+> dbWriteTable(conn, "<schema_name>.<table_anme", df1, row.names =  
+> FALSE)
+
+
+the table argument will only treated as the table name even if the  
+string
+contains one or more periods in current implementation.
+If you want to write in non-default schema you need to change the
+default schema beforehand.
+
+For future implementation, I am thinking of allowing
+something like c("schemaname", "tablename"),
+but not sure on how many people agree, and is not implemented anyway.
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi,
+Kanazawa, 920-0934, Japan
+
+
+
+From tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp  Tue Mar  1 05:02:22 2011
+From: tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp (Tomoaki NISHIYAMA)
+Date: Tue, 1 Mar 2011 13:02:22 +0900
+Subject: [R-sig-DB] dbWriteTable on virtual linux box
+In-Reply-To: <4D6C60D8.3000800@gmail.com>
+References: <pan.2011.02.28.16.14.34.819000@gmail.com>
+	<7085FAA3-B4C5-4A9A-A33E-8039DD8F5297@kenroku.kanazawa-u.ac.jp>
+	<4D6C60D8.3000800@gmail.com>
+Message-ID: <F4359191-B7FB-44F4-AE1A-98049B069476@kenroku.kanazawa-u.ac.jp>
+
+Hi,
+
+> dbSendQuery(conn, "SET search_path = myschema;")
+> dbGetQuery(conn, "SHOW search_path")
+
+
+> because the search_path only applies to the current session, and the
+> session ends when dbSendQuery returns a result.
+
+
+This is something different from my understanding.
+dbSendQuery just sends query and does not end the session.
+On the contrary, it leaves the connection open and in an unfinished  
+state,
+and the second dbGetQuery will open a new connection, so that you get
+
+>      search_path
+> 1 "$user",public
+
+
+So, please instead try
+dbGetQuery(conn, "SET search_path = myschema")
+dbGetQuery(conn, "SHOW search_path")
+
+> So is there a way to
+> write to anything other than the public schema in version 0.1-7?
+
+To my understanding,
+dbGetQuery(conn, "SET search_path = myschema")
+dbWriteTable(conn, "table_name", ...)
+will write the dataframe to myschema.table_name
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi,
+Kanazawa, 920-0934, Japan
+
+
+
+From Lee@H@ch@door|@n+L @end|ng |rom gm@||@com  Tue Mar  1 03:58:32 2011
+From: Lee@H@ch@door|@n+L @end|ng |rom gm@||@com (Lee Hachadoorian)
+Date: Mon, 28 Feb 2011 21:58:32 -0500
+Subject: [R-sig-DB] dbWriteTable on virtual linux box
+In-Reply-To: <7085FAA3-B4C5-4A9A-A33E-8039DD8F5297@kenroku.kanazawa-u.ac.jp>
+References: <pan.2011.02.28.16.14.34.819000@gmail.com>
+	<7085FAA3-B4C5-4A9A-A33E-8039DD8F5297@kenroku.kanazawa-u.ac.jp>
+Message-ID: <4D6C60D8.3000800@gmail.com>
+
+On 02/28/2011 07:20 PM, Tomoaki NISHIYAMA wrote:
+> Hi,
+>
+>> However, at a different
+>> location, I only have access to a Windows computer, so I am running R on
+>> Ubuntu on VirtualBox. On this setup, when I try the above code, I get:
+>
+>
+> What version of RPostgreSQL are you using?
+>
+> Is the PostgreSQL server working on the same virtualbox or are
+> you to communicate the PostgreSQL server running on the host
+> environment?
+>
+> If you are using an old version of RPostgreSQL, it cannot
+> dbWriteTable to other hosts, but the most
+> recent release version (0.1-7) should work.
+>
+> Another comment on your code:
+>> dbWriteTable(conn, "<schema_name>.<table_anme", df1, row.names = FALSE)
+>
+>
+> the table argument will only treated as the table name even if the string
+> contains one or more periods in current implementation.
+> If you want to write in non-default schema you need to change the
+> default schema beforehand.
+>
+> For future implementation, I am thinking of allowing
+> something like c("schemaname", "tablename"),
+> but not sure on how many people agree, and is not implemented anyway.
+Tomoaki,
+
+You were right, I was using version 0.1-6. I upgraded to 0.1-7, and now
+it, but with the additional complication, as you describe, that table
+names are quoted. I can't figure out how to write to the desired schema.
+In SQL I would use
+
+SET search_path = myschema;
+
+But when I
+
+dbSendQuery(conn, "SET search_path = myschema;")
+dbGetQuery(conn, "SHOW search_path")
+
+     search_path
+1 "$user",public
+
+because the search_path only applies to the current session, and the
+session ends when dbSendQuery returns a result.
+
+On the other hand
+
+dbGetQuery(connLocalhost, "SET search_path = myschema; SHOW search_path;")
+
+  search_path
+1        myschema
+
+but since dbWriteTable takes a table name (which it quotes) rather than
+a SQL statement, this approach can't be followed. So is there a way to
+write to anything other than the public schema in version 0.1-7?
+
+Thanks,
+--Lee
+
+-- 
+Lee Hachadoorian
+PhD Student, Geography
+Program in Earth & Environmental Sciences
+CUNY Graduate Center
+
+
+
+From g@||zur @end|ng |rom gm@||@com  Tue Mar  1 12:40:05 2011
+From: g@||zur @end|ng |rom gm@||@com (Chris Long)
+Date: Tue, 1 Mar 2011 03:40:05 -0800
+Subject: [R-sig-DB] RPostgreSQL - dbWriteTable
+Message-ID: <AANLkTi=F7mB5VGb1MgXHtQ9UEHr_h_EaMhLDm5r4kY5P@mail.gmail.com>
+
+What's the best way to coax RPostgreSQL into writing a table to a
+schema other than "public"? I've tried dbWriteTable("schema.foo",data),
+setting search_path to "schema" etc. Nothing's worked; it's either
+create "foo" in public, or the table "schema.foo" in public (!).
+It will also refuse to write the table if it exists in any schema (!).
+
+Using Ubuntu 10.10 64-bit,
+'http://cran.stat.ucla.edu/src/contrib/RPostgreSQL_0.1-7.tar.gz'
+R version 2.12.2 (2011-02-25)
+-- 
+Chris Long, San Diego Padres, 100 Park Boulevard, San Diego CA
+
+WARNING - HIGH SPIN SPEEDS - DO NOT put any person in this washer.
+
+	[[alternative HTML version deleted]]
+
+
+
+From @d@v|@2 @end|ng |rom m@||@n|h@gov  Tue Mar  1 12:55:13 2011
+From: @d@v|@2 @end|ng |rom m@||@n|h@gov (Sean Davis)
+Date: Tue, 1 Mar 2011 06:55:13 -0500
+Subject: [R-sig-DB] RPostgreSQL - dbWriteTable
+In-Reply-To: <AANLkTi=F7mB5VGb1MgXHtQ9UEHr_h_EaMhLDm5r4kY5P@mail.gmail.com>
+References: <AANLkTi=F7mB5VGb1MgXHtQ9UEHr_h_EaMhLDm5r4kY5P@mail.gmail.com>
+Message-ID: <AANLkTim82T_csUs7unqjcPSTAfWcwtRECYRtyudd4czU@mail.gmail.com>
+
+On Tue, Mar 1, 2011 at 6:40 AM, Chris Long <galizur at gmail.com> wrote:
+
+> What's the best way to coax RPostgreSQL into writing a table to a
+> schema other than "public"? I've tried dbWriteTable("schema.foo",data),
+> setting search_path to "schema" etc. Nothing's worked; it's either
+> create "foo" in public, or the table "schema.foo" in public (!).
+> It will also refuse to write the table if it exists in any schema (!).
+>
+>
+Hi, Chris.  I think one needs to set the search_path prior to running the
+dbWriteTable command.  See the Postgresql docs:
+
+http://www.postgresql.org/docs/current/static/ddl-schemas.html
+
+You'll want to do something like:
+
+set search_path to 'barschema'
+
+Then everything you do will go into barschema rather than public.
+
+Sean
+
+	[[alternative HTML version deleted]]
+
+
+
+From edd @end|ng |rom deb|@n@org  Tue Mar  1 14:27:27 2011
+From: edd @end|ng |rom deb|@n@org (Dirk Eddelbuettel)
+Date: Tue, 1 Mar 2011 07:27:27 -0600
+Subject: [R-sig-DB] dbWriteTable on virtual linux box
+In-Reply-To: <4D6C60D8.3000800@gmail.com>
+References: <pan.2011.02.28.16.14.34.819000@gmail.com>
+	<7085FAA3-B4C5-4A9A-A33E-8039DD8F5297@kenroku.kanazawa-u.ac.jp>
+	<4D6C60D8.3000800@gmail.com>
+Message-ID: <19820.62527.439885.162777@max.nulle.part>
+
+
+On 28 February 2011 at 21:58, Lee Hachadoorian wrote:
+| On 02/28/2011 07:20 PM, Tomoaki NISHIYAMA wrote:
+| > Hi,
+| >
+| >> However, at a different
+| >> location, I only have access to a Windows computer, so I am running R on
+| >> Ubuntu on VirtualBox. On this setup, when I try the above code, I get:
+| >
+| >
+| > What version of RPostgreSQL are you using?
+| >
+| > Is the PostgreSQL server working on the same virtualbox or are
+| > you to communicate the PostgreSQL server running on the host
+| > environment?
+| >
+| > If you are using an old version of RPostgreSQL, it cannot
+| > dbWriteTable to other hosts, but the most
+| > recent release version (0.1-7) should work.
+| >
+| > Another comment on your code:
+| >> dbWriteTable(conn, "<schema_name>.<table_anme", df1, row.names = FALSE)
+| >
+| >
+| > the table argument will only treated as the table name even if the string
+| > contains one or more periods in current implementation.
+| > If you want to write in non-default schema you need to change the
+| > default schema beforehand.
+| >
+| > For future implementation, I am thinking of allowing
+| > something like c("schemaname", "tablename"),
+| > but not sure on how many people agree, and is not implemented anyway.
+| Tomoaki,
+| 
+| You were right, I was using version 0.1-6. I upgraded to 0.1-7, and now
+| it, but with the additional complication, as you describe, that table
+| names are quoted. I can't figure out how to write to the desired schema.
+| In SQL I would use
+| 
+| SET search_path = myschema;
+| 
+| But when I
+| 
+| dbSendQuery(conn, "SET search_path = myschema;")
+| dbGetQuery(conn, "SHOW search_path")
+| 
+|      search_path
+| 1 "$user",public
+| 
+| because the search_path only applies to the current session, and the
+| session ends when dbSendQuery returns a result.
+| 
+| On the other hand
+| 
+| dbGetQuery(connLocalhost, "SET search_path = myschema; SHOW search_path;")
+| 
+|   search_path
+| 1        myschema
+| 
+| but since dbWriteTable takes a table name (which it quotes) rather than
+| a SQL statement, this approach can't be followed. So is there a way to
+| write to anything other than the public schema in version 0.1-7?
+
+Tomoaki detailed this in several examples here or on the rpostgresql-dev list
+at https://groups.google.com/forum/?pli=1#!forum/rpostgresql-dev --- sorry
+but I don't have the exact same thread handy.  
+
+In short, behaviour is fairly consistent now given the dual constraint of
+following the DBI interface for R as well as PostgreSQL pattern where
+quoted/non-quoted tables make a difference.
+
+Dirk
+
+| Thanks,
+| --Lee
+| 
+| -- 
+| Lee Hachadoorian
+| PhD Student, Geography
+| Program in Earth & Environmental Sciences
+| CUNY Graduate Center
+| 
+| _______________________________________________
+| R-sig-DB mailing list -- R Special Interest Group
+| R-sig-DB at r-project.org
+| https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+-- 
+Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com
+
+
+
+From gux|@obo1982 @end|ng |rom gm@||@com  Sat Mar  5 13:32:31 2011
+From: gux|@obo1982 @end|ng |rom gm@||@com (Xiaobo Gu)
+Date: Sat, 5 Mar 2011 20:32:31 +0800
+Subject: [R-sig-DB] How to write to database schema other than public using
+	RPostgreSQL
+Message-ID: <AANLkTinbAr91u-sjfM2CMFsAxpxcwihoXVL5d=jAoZ3Y@mail.gmail.com>
+
+Hi,
+It seems there is not a shcema parameter for method dbWriteTable, and
+I have tried
+"[schema].[testtable]", "\"schema\".\"testtable\", "schema.testtable"
+for the tablename parameter of dbWriteTable, none of them works.
+
+Do you have workarounds about this.
+
+Thanks,
+
+Xiaobo Gu
+
+
+
+From gux|@obo1982 @end|ng |rom gm@||@com  Sat Mar  5 13:57:32 2011
+From: gux|@obo1982 @end|ng |rom gm@||@com (Xiaobo Gu)
+Date: Sat, 5 Mar 2011 20:57:32 +0800
+Subject: [R-sig-DB] How to write to database schema other than public
+	using RPostgreSQL
+In-Reply-To: <AANLkTinbAr91u-sjfM2CMFsAxpxcwihoXVL5d=jAoZ3Y@mail.gmail.com>
+References: <AANLkTinbAr91u-sjfM2CMFsAxpxcwihoXVL5d=jAoZ3Y@mail.gmail.com>
+Message-ID: <AANLkTin8MXZuHM1vp1ZpH95gbEMc4cxmhxEzfeBatCaV@mail.gmail.com>
+
+It seems dbWriteTable always create table in the public schema even if
+I put the target schema as the header of search_path,
+I'll check the source code.
+
+On Sat, Mar 5, 2011 at 8:32 PM, Xiaobo Gu <guxiaobo1982 at gmail.com> wrote:
+> Hi,
+> It seems there is not a shcema parameter for method dbWriteTable, and
+> I have tried
+> "[schema].[testtable]", "\"schema\".\"testtable\", "schema.testtable"
+> for the tablename parameter of dbWriteTable, none of them works.
+>
+> Do you have workarounds about this.
+>
+> Thanks,
+>
+> Xiaobo Gu
+>
+
+
+
+From gux|@obo1982 @end|ng |rom gm@||@com  Sat Mar  5 14:56:41 2011
+From: gux|@obo1982 @end|ng |rom gm@||@com (Xiaobo Gu)
+Date: Sat, 5 Mar 2011 21:56:41 +0800
+Subject: [R-sig-DB] How to write to database schema other than public
+ using RPostgreSQL
+In-Reply-To: <4D72379E.6010003@kenroku.kanazawa-u.ac.jp>
+References: <AANLkTinbAr91u-sjfM2CMFsAxpxcwihoXVL5d=jAoZ3Y@mail.gmail.com>
+	<AANLkTin8MXZuHM1vp1ZpH95gbEMc4cxmhxEzfeBatCaV@mail.gmail.com>
+	<4D72379E.6010003@kenroku.kanazawa-u.ac.jp>
+Message-ID: <AANLkTimrEcMujn_M06ovSzCxSDPzr9U1jhY-YuTETsjC@mail.gmail.com>
+
+On Sat, Mar 5, 2011 at 9:16 PM, Tomoaki NISHIYAMA
+<tomoakin at kenroku.kanazawa-u.ac.jp> wrote:
+> Hi,
+>
+> Did you use dbSendQeury() to change the search path or dbGetQeury() ?
+I have tried both, both failed, the last error is because there is
+already table named rtest.
+
+> dbGetQuery(con, "set search_path to amber,public;")
+NULL
+> dbGetQuery(con, "show search_path;")
+    search_path
+1 amber, public
+> dbWriteTable(con, "rtest", df, row.names=FALSE)
+[1] FALSE
+Warning message:
+In postgresqlWriteTable(conn, name, value, ...) :
+  table rtest exists in database: aborting assignTable
+
+
+> As explained in the mail on 1 March on [R-sig-DB], dbSendQuery just sends
+> the query but does not finish the query
+> and other connection is created for later queries, which results as if the
+> effect is not taken place.
+>
+> https://stat.ethz.ch/pipermail/r-sig-db/2011q1/001032.html
+>
+>
+
+
+
+From gux|@obo1982 @end|ng |rom gm@||@com  Sun Mar  6 05:18:53 2011
+From: gux|@obo1982 @end|ng |rom gm@||@com (Xiaobo Gu)
+Date: Sun, 6 Mar 2011 12:18:53 +0800
+Subject: [R-sig-DB] How to write to database schema other than public
+ using RPostgreSQL
+In-Reply-To: <4D72DD7E.9090805@kenroku.kanazawa-u.ac.jp>
+References: <AANLkTinbAr91u-sjfM2CMFsAxpxcwihoXVL5d=jAoZ3Y@mail.gmail.com>
+	<AANLkTin8MXZuHM1vp1ZpH95gbEMc4cxmhxEzfeBatCaV@mail.gmail.com>
+	<4D72379E.6010003@kenroku.kanazawa-u.ac.jp>
+	<AANLkTimrEcMujn_M06ovSzCxSDPzr9U1jhY-YuTETsjC@mail.gmail.com>
+	<4D72DD7E.9090805@kenroku.kanazawa-u.ac.jp>
+Message-ID: <AANLkTikhNpG1K=-ZeJM5pQwHhfDq62wWw__ATTOHdZPm@mail.gmail.com>
+
+On Sun, Mar 6, 2011 at 9:03 AM, Tomoaki NISHIYAMA
+<tomoakin at kenroku.kanazawa-u.ac.jp> wrote:
+> Hi,
+>
+> Why don't you try
+>
+> dbGetQuery(con, "set search_path to amber")
+>
+> dbWriteTable(con, "rtest", df, row.names=FALSE)
+>
+> ?
+It does not work, dbExistsTable returns TRUE if tablename exists in
+any of the schemas and if tablename is not with the format
+schema.tablename;
+
+> dbExistsTable(con, "rtest")
+[1] TRUE
+> dbExistsTable(con, "public.rtest")
+[1] TRUE
+> dbExistsTable(con, "amber.rtest")
+[1] FALSE
+>
+So the idea is to let dbWriteTable work as dbExistsTable, if tablename
+is the with format schema.talename then the table will be created in
+the target schema, else it will be created in the default search path
+schema.
+
+
+
+
+
+
+
+
+
+>
+> If table rtest exists in public you have to exclude public from
+> the search path. Isn't it?
+>
+>
+>
+> (2011/03/05 22:56), Xiaobo Gu wrote:
+>>
+>> On Sat, Mar 5, 2011 at 9:16 PM, Tomoaki NISHIYAMA
+>> <tomoakin at kenroku.kanazawa-u.ac.jp> ?wrote:
+>>>
+>>> Hi,
+>>>
+>>> Did you use dbSendQeury() to change the search path or dbGetQeury() ?
+>>
+>> I have tried both, both failed, the last error is because there is
+>> already table named rtest.
+>>
+>>> dbGetQuery(con, "set search_path to amber,public;")
+>>
+>> NULL
+>>>
+>>> dbGetQuery(con, "show search_path;")
+>>
+>> ? ? search_path
+>> 1 amber, public
+>>>
+>>> dbWriteTable(con, "rtest", df, row.names=FALSE)
+>>
+>> [1] FALSE
+>> Warning message:
+>> In postgresqlWriteTable(conn, name, value, ...) :
+>> ? table rtest exists in database: aborting assignTable
+>>
+>>
+>>> As explained in the mail on 1 March on [R-sig-DB], dbSendQuery just sends
+>>> the query but does not finish the query
+>>> and other connection is created for later queries, which results as if
+>>> the
+>>> effect is not taken place.
+>>>
+>>> https://stat.ethz.ch/pipermail/r-sig-db/2011q1/001032.html
+>>>
+>>>
+>>
+>
+>
+
+
+
+From gux|@obo1982 @end|ng |rom gm@||@com  Sun Mar  6 05:39:04 2011
+From: gux|@obo1982 @end|ng |rom gm@||@com (Xiaobo Gu)
+Date: Sun, 6 Mar 2011 12:39:04 +0800
+Subject: [R-sig-DB] How to write to database schema other than public
+ using RPostgreSQL
+In-Reply-To: <AANLkTikhNpG1K=-ZeJM5pQwHhfDq62wWw__ATTOHdZPm@mail.gmail.com>
+References: <AANLkTinbAr91u-sjfM2CMFsAxpxcwihoXVL5d=jAoZ3Y@mail.gmail.com>
+	<AANLkTin8MXZuHM1vp1ZpH95gbEMc4cxmhxEzfeBatCaV@mail.gmail.com>
+	<4D72379E.6010003@kenroku.kanazawa-u.ac.jp>
+	<AANLkTimrEcMujn_M06ovSzCxSDPzr9U1jhY-YuTETsjC@mail.gmail.com>
+	<4D72DD7E.9090805@kenroku.kanazawa-u.ac.jp>
+	<AANLkTikhNpG1K=-ZeJM5pQwHhfDq62wWw__ATTOHdZPm@mail.gmail.com>
+Message-ID: <AANLkTin3qnUHAfMej-bbk02stzBADuRW++URdFGx4vSa@mail.gmail.com>
+
+My idea is to add a postgresTableQuoteName function as
+
+postgresqlTableQuoteName <- function(identifier){
+	names <- strsplit(identifier, ".", fixed=TRUE)[[1]]
+	if (length(names) == 2){
+		res <- paste(postgresqlQuoteId(names[1]),".",
+postgresqlQuoteId(names[2]),sep="");
+	}else{
+		res <- postgresqlQuoteId(identifier);
+	}
+	return res;
+}
+
+then change the following lines of code in the postgresqlWriteTable as
+1.
+	change
+        sql1 <- paste("create table ", postgresqlQuoteId(name),
+"\n(\n\t", sep="")
+        to
+        sql1 <- paste("create table ", postgresqlTableQuoteName(name),
+"\n(\n\t", sep="")
+2.
+
+change
+	sql4 <- paste("COPY", postgresqlQuoteId(name), "FROM STDIN")
+ to
+
+	sql4 <- paste("COPY", postgresqlTableQuoteName(name), "FROM STDIN")
+
+On Sun, Mar 6, 2011 at 12:18 PM, Xiaobo Gu <guxiaobo1982 at gmail.com> wrote:
+> On Sun, Mar 6, 2011 at 9:03 AM, Tomoaki NISHIYAMA
+> <tomoakin at kenroku.kanazawa-u.ac.jp> wrote:
+>> Hi,
+>>
+>> Why don't you try
+>>
+>> dbGetQuery(con, "set search_path to amber")
+>>
+>> dbWriteTable(con, "rtest", df, row.names=FALSE)
+>>
+>> ?
+> It does not work, dbExistsTable returns TRUE if tablename exists in
+> any of the schemas and if tablename is not with the format
+> schema.tablename;
+>
+>> dbExistsTable(con, "rtest")
+> [1] TRUE
+>> dbExistsTable(con, "public.rtest")
+> [1] TRUE
+>> dbExistsTable(con, "amber.rtest")
+> [1] FALSE
+>>
+> So the idea is to let dbWriteTable work as dbExistsTable, if tablename
+> is the with format schema.talename then the table will be created in
+> the target schema, else it will be created in the default search path
+> schema.
+My idea is to add a postgresTableQuoteName function as
+
+postgresqlTableQuoteName <- function(identifier){
+	names <- strsplit(identifier, ".", fixed=TRUE)[[1]]
+	if (length(names) == 2){
+		res <- paste(postgresqlQuoteId(names[1]),".",
+postgresqlQuoteId(names[2]),sep="");
+	}else{
+		res <- postgresqlQuoteId(identifier);
+	}
+	return res;
+}
+
+then change the following lines of code in the postgresqlWriteTable as
+1.
+	change
+        sql1 <- paste("create table ", postgresqlQuoteId(name),
+"\n(\n\t", sep="")
+        to
+        sql1 <- paste("create table ", postgresqlTableQuoteName(name),
+"\n(\n\t", sep="")
+2.
+
+change
+	sql4 <- paste("COPY", postgresqlQuoteId(name), "FROM STDIN")
+ to
+
+	sql4 <- paste("COPY", postgresqlTableQuoteName(name), "FROM STDIN")
+
+
+
+
+
+>
+>
+>
+>
+>
+>
+>
+>>
+>> If table rtest exists in public you have to exclude public from
+>> the search path. Isn't it?
+>>
+>>
+>>
+>> (2011/03/05 22:56), Xiaobo Gu wrote:
+>>>
+>>> On Sat, Mar 5, 2011 at 9:16 PM, Tomoaki NISHIYAMA
+>>> <tomoakin at kenroku.kanazawa-u.ac.jp> ?wrote:
+>>>>
+>>>> Hi,
+>>>>
+>>>> Did you use dbSendQeury() to change the search path or dbGetQeury() ?
+>>>
+>>> I have tried both, both failed, the last error is because there is
+>>> already table named rtest.
+>>>
+>>>> dbGetQuery(con, "set search_path to amber,public;")
+>>>
+>>> NULL
+>>>>
+>>>> dbGetQuery(con, "show search_path;")
+>>>
+>>> ? ? search_path
+>>> 1 amber, public
+>>>>
+>>>> dbWriteTable(con, "rtest", df, row.names=FALSE)
+>>>
+>>> [1] FALSE
+>>> Warning message:
+>>> In postgresqlWriteTable(conn, name, value, ...) :
+>>> ? table rtest exists in database: aborting assignTable
+>>>
+>>>
+>>>> As explained in the mail on 1 March on [R-sig-DB], dbSendQuery just sends
+>>>> the query but does not finish the query
+>>>> and other connection is created for later queries, which results as if
+>>>> the
+>>>> effect is not taken place.
+>>>>
+>>>> https://stat.ethz.ch/pipermail/r-sig-db/2011q1/001032.html
+>>>>
+>>>>
+>>>
+>>
+>>
+>
+
+
+
+From tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp  Sun Mar  6 06:09:19 2011
+From: tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp (Tomoaki NISHIYAMA)
+Date: Sun, 6 Mar 2011 14:09:19 +0900
+Subject: [R-sig-DB] How to write to database schema other than public
+	using RPostgreSQL
+In-Reply-To: <AANLkTikhNpG1K=-ZeJM5pQwHhfDq62wWw__ATTOHdZPm@mail.gmail.com>
+References: <AANLkTinbAr91u-sjfM2CMFsAxpxcwihoXVL5d=jAoZ3Y@mail.gmail.com>
+	<AANLkTin8MXZuHM1vp1ZpH95gbEMc4cxmhxEzfeBatCaV@mail.gmail.com>
+	<4D72379E.6010003@kenroku.kanazawa-u.ac.jp>
+	<AANLkTimrEcMujn_M06ovSzCxSDPzr9U1jhY-YuTETsjC@mail.gmail.com>
+	<4D72DD7E.9090805@kenroku.kanazawa-u.ac.jp>
+	<AANLkTikhNpG1K=-ZeJM5pQwHhfDq62wWw__ATTOHdZPm@mail.gmail.com>
+Message-ID: <250F68B8-CC86-48BC-BF1E-F72723706EB2@kenroku.kanazawa-u.ac.jp>
+
+Hi,
+
+> It does not work, dbExistsTable returns TRUE if tablename exists in
+> any of the schemas and if tablename is not with the format
+> schema.tablename;
+
+You don't show what table exists in reality.
+The code for dbExistsTable checks only for current schema and  
+tablename is just the
+table name whethere or not tablename includes any number of periods.
+
+What do you get with the following and do you compare the results  
+with dbExistsTable?
+dbGetQuery(con, 'select * from "rtest" LIMIT 0' )
+dbGetQuery(con, 'select * from "public.rtest" LIMIT 0' )
+dbGetQuery(con, 'select * from "amber.rtest" LIMIT 0' )
+dbGetQuery(con, 'select * from public.rtest LIMIT 0' )
+dbGetQuery(con, 'select * from amber.rtest LIMIT 0' )
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi,
+Kanazawa, 920-0934, Japan
+
+
+On 2011/03/06, at 13:18, Xiaobo Gu wrote:
+
+> On Sun, Mar 6, 2011 at 9:03 AM, Tomoaki NISHIYAMA
+> <tomoakin at kenroku.kanazawa-u.ac.jp> wrote:
+>> Hi,
+>>
+>> Why don't you try
+>>
+>> dbGetQuery(con, "set search_path to amber")
+>>
+>> dbWriteTable(con, "rtest", df, row.names=FALSE)
+>>
+>> ?
+> It does not work, dbExistsTable returns TRUE if tablename exists in
+> any of the schemas and if tablename is not with the format
+> schema.tablename;
+>
+>> dbExistsTable(con, "rtest")
+> [1] TRUE
+>> dbExistsTable(con, "public.rtest")
+> [1] TRUE
+>> dbExistsTable(con, "amber.rtest")
+> [1] FALSE
+>>
+> So the idea is to let dbWriteTable work as dbExistsTable, if tablename
+> is the with format schema.talename then the table will be created in
+> the target schema, else it will be created in the default search path
+> schema.
+>
+>
+>
+>
+>
+>
+>
+>
+>
+>>
+>> If table rtest exists in public you have to exclude public from
+>> the search path. Isn't it?
+>>
+>>
+>>
+>> (2011/03/05 22:56), Xiaobo Gu wrote:
+>>>
+>>> On Sat, Mar 5, 2011 at 9:16 PM, Tomoaki NISHIYAMA
+>>> <tomoakin at kenroku.kanazawa-u.ac.jp>  wrote:
+>>>>
+>>>> Hi,
+>>>>
+>>>> Did you use dbSendQeury() to change the search path or dbGetQeury 
+>>>> () ?
+>>>
+>>> I have tried both, both failed, the last error is because there is
+>>> already table named rtest.
+>>>
+>>>> dbGetQuery(con, "set search_path to amber,public;")
+>>>
+>>> NULL
+>>>>
+>>>> dbGetQuery(con, "show search_path;")
+>>>
+>>>     search_path
+>>> 1 amber, public
+>>>>
+>>>> dbWriteTable(con, "rtest", df, row.names=FALSE)
+>>>
+>>> [1] FALSE
+>>> Warning message:
+>>> In postgresqlWriteTable(conn, name, value, ...) :
+>>>   table rtest exists in database: aborting assignTable
+>>>
+>>>
+>>>> As explained in the mail on 1 March on [R-sig-DB], dbSendQuery  
+>>>> just sends
+>>>> the query but does not finish the query
+>>>> and other connection is created for later queries, which results  
+>>>> as if
+>>>> the
+>>>> effect is not taken place.
+>>>>
+>>>> https://stat.ethz.ch/pipermail/r-sig-db/2011q1/001032.html
+>>>>
+>>>>
+>>>
+>>
+>>
+>
+
+
+
+From tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp  Sun Mar  6 07:39:47 2011
+From: tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp (Tomoaki NISHIYAMA)
+Date: Sun, 6 Mar 2011 15:39:47 +0900
+Subject: [R-sig-DB] How to write to database schema other than public
+	using RPostgreSQL
+In-Reply-To: <AANLkTinbAr91u-sjfM2CMFsAxpxcwihoXVL5d=jAoZ3Y@mail.gmail.com>
+References: <AANLkTinbAr91u-sjfM2CMFsAxpxcwihoXVL5d=jAoZ3Y@mail.gmail.com>
+Message-ID: <BD1D92C7-2A12-4D3C-8C2F-1AD5B0325507@kenroku.kanazawa-u.ac.jp>
+
+Hi,
+
+Since so many inquiry on schema access have been received,
+I have made a trial implementation and committed to the svn repository
+as r176.
+
+Pleasy try to use c("schema", "table") to the place where you want to  
+refer "schema"."table".
+
+The modification of the code is kept very minimal just add an option  
+of collapse="." to paste
+in comparison to the postgresqlQuoteId.  However since this function  
+was used to quote vector
+and return the quoted vector for the table definition construction,  
+the new function was made
+under a different name, as "postgresqlTableRef".  This name might not  
+be optimal as this can
+be also used for "table"."column" structure construction.  If any  
+better name is proposed,
+I will change.
+
+Although some brief tests have been done, I personally do not depend  
+on schema now and
+there might be shortcomings.  So, don't hesitate to tell me if  
+something is wrong.
+
+Sincerely,
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi,
+Kanazawa, 920-0934, Japan
+
+
+On 2011/03/05, at 21:32, Xiaobo Gu wrote:
+
+> Hi,
+> It seems there is not a shcema parameter for method dbWriteTable, and
+> I have tried
+> "[schema].[testtable]", "\"schema\".\"testtable\", "schema.testtable"
+> for the tablename parameter of dbWriteTable, none of them works.
+>
+> Do you have workarounds about this.
+>
+> Thanks,
+>
+> Xiaobo Gu
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From gux|@obo1982 @end|ng |rom gm@||@com  Sun Mar  6 16:05:37 2011
+From: gux|@obo1982 @end|ng |rom gm@||@com (Xiaobo Gu)
+Date: Sun, 6 Mar 2011 23:05:37 +0800
+Subject: [R-sig-DB] dbWriteTable in RPostgreSQL can't handle date and
+	timestamp data types.
+Message-ID: <AANLkTi=-OQcaLUujUGnu_Wwd8=HBL1py-Fv8CrcARqHK@mail.gmail.com>
+
+Hi,
+
+I have  data fram with columns of type date and timestamps, but
+dbWriteTable create text data type columns for them both, is it a bug?
+
+Thanks.
+
+Xiaobo Gu
+
+
+
+From tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp  Sun Mar  6 17:07:24 2011
+From: tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp (Tomoaki NISHIYAMA)
+Date: Mon, 7 Mar 2011 01:07:24 +0900
+Subject: [R-sig-DB] dbWriteTable in RPostgreSQL can't handle date and
+	timestamp data types.
+In-Reply-To: <AANLkTi=-OQcaLUujUGnu_Wwd8=HBL1py-Fv8CrcARqHK@mail.gmail.com>
+References: <AANLkTi=-OQcaLUujUGnu_Wwd8=HBL1py-Fv8CrcARqHK@mail.gmail.com>
+Message-ID: <3156D035-1A24-44C8-8F33-5AB6F05C6D51@kenroku.kanazawa-u.ac.jp>
+
+Hi,
+
+> I have  data fram with columns of type date and timestamps, but
+> dbWriteTable create text data type columns for them both, is it a bug?
+
+
+It is just not implemented.
+The relevant code is in PostgreSQLSupport.R:
+
+## find a suitable SQL data type for the R/S object obj
+## TODO: Lots and lots!! (this is a very rough first draft)
+## need to register converters, abstract out PostgreSQL and generalize
+## to Oracle, Informix, etc.  Perhaps this should be table-driven.
+## NOTE: PostgreSQL data types differ from the SQL92 (e.g., varchar  
+truncate
+## trailing spaces).
+postgresqlDataType <- function(obj, ...) {
+     rs.class <- data.class(obj)    ## this differs in R 1.4 from  
+older vers
+     rs.mode <- storage.mode(obj)
+     if(rs.class=="numeric" || rs.class == "integer"){
+         sql.type <- if(rs.mode=="integer") "bigint" else  "float8"
+     }
+     else {
+         sql.type <- switch(rs.class,
+                            character = "text",
+                            logical = "bool",
+                            factor = "text",
+                            ordered = "text",
+                            "text")
+     }
+     sql.type
+}
+
+
+This is all the default conversion.
+For any other type, you need to do write respective codes.
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi,
+Kanazawa, 920-0934, Japan
+
+
+
+From gux|@obo1982 @end|ng |rom gm@||@com  Mon Mar  7 06:27:11 2011
+From: gux|@obo1982 @end|ng |rom gm@||@com (Xiaobo Gu)
+Date: Mon, 7 Mar 2011 13:27:11 +0800
+Subject: [R-sig-DB] dbWriteTable in RPostgreSQL can't handle date and
+	timestamp data types.
+In-Reply-To: <3156D035-1A24-44C8-8F33-5AB6F05C6D51@kenroku.kanazawa-u.ac.jp>
+References: <AANLkTi=-OQcaLUujUGnu_Wwd8=HBL1py-Fv8CrcARqHK@mail.gmail.com>
+	<3156D035-1A24-44C8-8F33-5AB6F05C6D51@kenroku.kanazawa-u.ac.jp>
+Message-ID: <AANLkTimX6Bf4GjEyW=XqBV9foUmbYysYZ1yabn9HLF=6@mail.gmail.com>
+
+Can you implement Date and Timestamp first please?
+
+Xiaobo Gu
+
+On Mon, Mar 7, 2011 at 12:07 AM, Tomoaki NISHIYAMA
+<tomoakin at kenroku.kanazawa-u.ac.jp> wrote:
+> Hi,
+>
+>> I have ?data fram with columns of type date and timestamps, but
+>> dbWriteTable create text data type columns for them both, is it a bug?
+>
+>
+> It is just not implemented.
+> The relevant code is in PostgreSQLSupport.R:
+>
+> ## find a suitable SQL data type for the R/S object obj
+> ## TODO: Lots and lots!! (this is a very rough first draft)
+> ## need to register converters, abstract out PostgreSQL and generalize
+> ## to Oracle, Informix, etc. ?Perhaps this should be table-driven.
+> ## NOTE: PostgreSQL data types differ from the SQL92 (e.g., varchar truncate
+> ## trailing spaces).
+> postgresqlDataType <- function(obj, ...) {
+> ? ?rs.class <- data.class(obj) ? ?## this differs in R 1.4 from older vers
+> ? ?rs.mode <- storage.mode(obj)
+> ? ?if(rs.class=="numeric" || rs.class == "integer"){
+> ? ? ? ?sql.type <- if(rs.mode=="integer") "bigint" else ?"float8"
+> ? ?}
+> ? ?else {
+> ? ? ? ?sql.type <- switch(rs.class,
+> ? ? ? ? ? ? ? ? ? ? ? ? ? character = "text",
+> ? ? ? ? ? ? ? ? ? ? ? ? ? logical = "bool",
+> ? ? ? ? ? ? ? ? ? ? ? ? ? factor = "text",
+> ? ? ? ? ? ? ? ? ? ? ? ? ? ordered = "text",
+> ? ? ? ? ? ? ? ? ? ? ? ? ? "text")
+> ? ?}
+> ? ?sql.type
+> }
+>
+>
+> This is all the default conversion.
+> For any other type, you need to do write respective codes.
+> --
+> Tomoaki NISHIYAMA
+>
+> Advanced Science Research Center,
+> Kanazawa University,
+> 13-1 Takara-machi,
+> Kanazawa, 920-0934, Japan
+>
+>
+
+
+
+From tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp  Mon Mar  7 07:07:43 2011
+From: tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp (Tomoaki NISHIYAMA)
+Date: Mon, 7 Mar 2011 15:07:43 +0900
+Subject: [R-sig-DB] dbWriteTable in RPostgreSQL can't handle date and
+	timestamp data types.
+In-Reply-To: <AANLkTimX6Bf4GjEyW=XqBV9foUmbYysYZ1yabn9HLF=6@mail.gmail.com>
+References: <AANLkTi=-OQcaLUujUGnu_Wwd8=HBL1py-Fv8CrcARqHK@mail.gmail.com>
+	<3156D035-1A24-44C8-8F33-5AB6F05C6D51@kenroku.kanazawa-u.ac.jp>
+	<AANLkTimX6Bf4GjEyW=XqBV9foUmbYysYZ1yabn9HLF=6@mail.gmail.com>
+Message-ID: <051CA216-D458-4EB7-83AA-FAD2E3D31B19@kenroku.kanazawa-u.ac.jp>
+
+Hi,
+
+> Can you implement Date and Timestamp first please?
+
+
+If you write a reasonable code with proper test cases, I can commit it.
+I personally do not have that motivation.
+
+Neither RMySQL nor ROracle, do have implemented that feature.
+Anyway, if the text is in a proper format, it is not very difficult
+to convert them to date or timestamp datatype within postgresql
+by issuing an appropriate SQL.
+
+By the way, I really do not understand
+>>> data fram with columns of type date and timestamps
+
+
+data frame implies it is R data, but what class in fact?
+
+If you get that data from postgresql, it is already just a
+string and putting a string as a text is the right job for
+dbWriteTable().
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi,
+Kanazawa, 920-0934, Japan
+
+
+
+From gux|@obo1982 @end|ng |rom gm@||@com  Mon Mar  7 09:28:06 2011
+From: gux|@obo1982 @end|ng |rom gm@||@com (Xiaobo Gu)
+Date: Mon, 7 Mar 2011 16:28:06 +0800
+Subject: [R-sig-DB] dbWriteTable in RPostgreSQL can't handle date and
+	timestamp data types.
+In-Reply-To: <051CA216-D458-4EB7-83AA-FAD2E3D31B19@kenroku.kanazawa-u.ac.jp>
+References: <AANLkTi=-OQcaLUujUGnu_Wwd8=HBL1py-Fv8CrcARqHK@mail.gmail.com>
+	<3156D035-1A24-44C8-8F33-5AB6F05C6D51@kenroku.kanazawa-u.ac.jp>
+	<AANLkTimX6Bf4GjEyW=XqBV9foUmbYysYZ1yabn9HLF=6@mail.gmail.com>
+	<051CA216-D458-4EB7-83AA-FAD2E3D31B19@kenroku.kanazawa-u.ac.jp>
+Message-ID: <AANLkTik-1U1WAMAreyU+hOpU6LNVbkvJcekRQkFR9My1@mail.gmail.com>
+
+On Mon, Mar 7, 2011 at 2:07 PM, Tomoaki NISHIYAMA
+<tomoakin at kenroku.kanazawa-u.ac.jp> wrote:
+> Hi,
+>
+>> Can you implement Date and Timestamp first please?
+>
+>
+> If you write a reasonable code with proper test cases, I can commit it.
+> I personally do not have that motivation.
+>
+> Neither RMySQL nor ROracle, do have implemented that feature.
+> Anyway, if the text is in a proper format, it is not very difficult
+> to convert them to date or timestamp datatype within postgresql
+> by issuing an appropriate SQL.
+>
+> By the way, I really do not understand
+>>>>
+>>>> data fram with columns of type date and timestamps
+>
+
+> df <- dbReadTable(con, "rtest")
+> df
+  a     b          c                   d
+1 1 amber 2011-03-07 2011-03-07 16:30:39
+2 2 linda 2011-03-07 2011-03-07 16:30:39
+> class(df[["c"]])
+[1] "Date"
+> class(df[["d"]])
+[1] "POSIXct" "POSIXt"
+
+>
+> data frame implies it is R data, but what class in fact?
+>
+> If you get that data from postgresql, it is already just a
+> string and putting a string as a text is the right job for
+> dbWriteTable().
+
+> --
+> Tomoaki NISHIYAMA
+>
+> Advanced Science Research Center,
+> Kanazawa University,
+> 13-1 Takara-machi,
+> Kanazawa, 920-0934, Japan
+>
+>
+
+
+
+From tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp  Mon Mar  7 11:37:48 2011
+From: tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp (Tomoaki NISHIYAMA)
+Date: Mon, 7 Mar 2011 19:37:48 +0900
+Subject: [R-sig-DB] dbWriteTable in RPostgreSQL can't handle date and
+	timestamp data types.
+In-Reply-To: <AANLkTik-1U1WAMAreyU+hOpU6LNVbkvJcekRQkFR9My1@mail.gmail.com>
+References: <AANLkTi=-OQcaLUujUGnu_Wwd8=HBL1py-Fv8CrcARqHK@mail.gmail.com>
+	<3156D035-1A24-44C8-8F33-5AB6F05C6D51@kenroku.kanazawa-u.ac.jp>
+	<AANLkTimX6Bf4GjEyW=XqBV9foUmbYysYZ1yabn9HLF=6@mail.gmail.com>
+	<051CA216-D458-4EB7-83AA-FAD2E3D31B19@kenroku.kanazawa-u.ac.jp>
+	<AANLkTik-1U1WAMAreyU+hOpU6LNVbkvJcekRQkFR9My1@mail.gmail.com>
+Message-ID: <C2281AC1-2DAB-4A6C-84C4-72C9DDB1B493@kenroku.kanazawa-u.ac.jp>
+
+Hi,
+
+>> class(df[["c"]])
+> [1] "Date"
+>> class(df[["d"]])
+> [1] "POSIXct" "POSIXt"
+
+
+Ok, if you know the class name, the change is simple as r179.
+(r178, r180 are cleanups of other part)
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi,
+Kanazawa, 920-0934, Japan
+
+
+
+From gux|@obo1982 @end|ng |rom gm@||@com  Mon Mar  7 13:32:42 2011
+From: gux|@obo1982 @end|ng |rom gm@||@com (Xiaobo Gu)
+Date: Mon, 7 Mar 2011 20:32:42 +0800
+Subject: [R-sig-DB] dbWriteTable in RPostgreSQL can't handle date and
+	timestamp data types.
+In-Reply-To: <C2281AC1-2DAB-4A6C-84C4-72C9DDB1B493@kenroku.kanazawa-u.ac.jp>
+References: <AANLkTi=-OQcaLUujUGnu_Wwd8=HBL1py-Fv8CrcARqHK@mail.gmail.com>
+	<3156D035-1A24-44C8-8F33-5AB6F05C6D51@kenroku.kanazawa-u.ac.jp>
+	<AANLkTimX6Bf4GjEyW=XqBV9foUmbYysYZ1yabn9HLF=6@mail.gmail.com>
+	<051CA216-D458-4EB7-83AA-FAD2E3D31B19@kenroku.kanazawa-u.ac.jp>
+	<AANLkTik-1U1WAMAreyU+hOpU6LNVbkvJcekRQkFR9My1@mail.gmail.com>
+	<C2281AC1-2DAB-4A6C-84C4-72C9DDB1B493@kenroku.kanazawa-u.ac.jp>
+Message-ID: <AANLkTimUW3FwyAWr6KcEH7h1mg3_xQbLHLhrQ7pZdtXD@mail.gmail.com>
+
+Can we specify data types for columns of the table created by
+dbWriteTable, most times we want timestamp without timezone.
+Another case is numeric numbers, in current implement all numeric data
+are converted as float, but for some applications want it to be
+decimal with scales,
+
+Xiaobo Gu
+
+
+On Mon, Mar 7, 2011 at 6:37 PM, Tomoaki NISHIYAMA
+<tomoakin at kenroku.kanazawa-u.ac.jp> wrote:
+> Hi,
+>
+>>> class(df[["c"]])
+>>
+>> [1] "Date"
+>>>
+>>> class(df[["d"]])
+>>
+>> [1] "POSIXct" "POSIXt"
+>
+>
+> Ok, if you know the class name, the change is simple as r179.
+> (r178, r180 are cleanups of other part)
+> --
+> Tomoaki NISHIYAMA
+>
+> Advanced Science Research Center,
+> Kanazawa University,
+> 13-1 Takara-machi,
+> Kanazawa, 920-0934, Japan
+>
+>
+
+
+
+From tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp  Mon Mar  7 15:00:55 2011
+From: tomo@k|n @end|ng |rom kenroku@k@n@z@w@-u@@c@jp (Tomoaki NISHIYAMA)
+Date: Mon, 7 Mar 2011 23:00:55 +0900
+Subject: [R-sig-DB] dbWriteTable in RPostgreSQL can't handle date and
+	timestamp data types.
+In-Reply-To: <AANLkTimUW3FwyAWr6KcEH7h1mg3_xQbLHLhrQ7pZdtXD@mail.gmail.com>
+References: <AANLkTi=-OQcaLUujUGnu_Wwd8=HBL1py-Fv8CrcARqHK@mail.gmail.com>
+	<3156D035-1A24-44C8-8F33-5AB6F05C6D51@kenroku.kanazawa-u.ac.jp>
+	<AANLkTimX6Bf4GjEyW=XqBV9foUmbYysYZ1yabn9HLF=6@mail.gmail.com>
+	<051CA216-D458-4EB7-83AA-FAD2E3D31B19@kenroku.kanazawa-u.ac.jp>
+	<AANLkTik-1U1WAMAreyU+hOpU6LNVbkvJcekRQkFR9My1@mail.gmail.com>
+	<C2281AC1-2DAB-4A6C-84C4-72C9DDB1B493@kenroku.kanazawa-u.ac.jp>
+	<AANLkTimUW3FwyAWr6KcEH7h1mg3_xQbLHLhrQ7pZdtXD@mail.gmail.com>
+Message-ID: <D61A4518-D6CA-4972-ADCB-349D5FF68DC0@kenroku.kanazawa-u.ac.jp>
+
+Hi,
+
+> Can we specify data types for columns of the table created by
+> dbWriteTable,
+
+You can do anything by issuing an SQL.
+
+> most times we want timestamp without timezone
+
+The reason/benefit is not explained.
+
+> want it to be decimal with scales,
+
+
+What do you mean with "decimal with scales"?
+What is the difference with float?
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi,
+Kanazawa, 920-0934, Japan
+
+
+On 2011/03/07, at 21:32, Xiaobo Gu wrote:
+
+> Can we specify data types for columns of the table created by
+> dbWriteTable, most times we want timestamp without timezone.
+> Another case is numeric numbers, in current implement all numeric data
+> are converted as float, but for some applications want it to be
+> decimal with scales,
+>
+> Xiaobo Gu
+>
+>
+> On Mon, Mar 7, 2011 at 6:37 PM, Tomoaki NISHIYAMA
+> <tomoakin at kenroku.kanazawa-u.ac.jp> wrote:
+>> Hi,
+>>
+>>>> class(df[["c"]])
+>>>
+>>> [1] "Date"
+>>>>
+>>>> class(df[["d"]])
+>>>
+>>> [1] "POSIXct" "POSIXt"
+>>
+>>
+>> Ok, if you know the class name, the change is simple as r179.
+>> (r178, r180 are cleanups of other part)
+>> --
+>> Tomoaki NISHIYAMA
+>>
+>> Advanced Science Research Center,
+>> Kanazawa University,
+>> 13-1 Takara-machi,
+>> Kanazawa, 920-0934, Japan
+>>
+>>
+>
+
+
+
+From gux|@obo1982 @end|ng |rom gm@||@com  Mon Mar  7 15:04:50 2011
+From: gux|@obo1982 @end|ng |rom gm@||@com (Xiaobo Gu)
+Date: Mon, 7 Mar 2011 22:04:50 +0800
+Subject: [R-sig-DB] dbWriteTable in RPostgreSQL can't handle date and
+	timestamp data types.
+In-Reply-To: <D61A4518-D6CA-4972-ADCB-349D5FF68DC0@kenroku.kanazawa-u.ac.jp>
+References: <AANLkTi=-OQcaLUujUGnu_Wwd8=HBL1py-Fv8CrcARqHK@mail.gmail.com>
+	<3156D035-1A24-44C8-8F33-5AB6F05C6D51@kenroku.kanazawa-u.ac.jp>
+	<AANLkTimX6Bf4GjEyW=XqBV9foUmbYysYZ1yabn9HLF=6@mail.gmail.com>
+	<051CA216-D458-4EB7-83AA-FAD2E3D31B19@kenroku.kanazawa-u.ac.jp>
+	<AANLkTik-1U1WAMAreyU+hOpU6LNVbkvJcekRQkFR9My1@mail.gmail.com>
+	<C2281AC1-2DAB-4A6C-84C4-72C9DDB1B493@kenroku.kanazawa-u.ac.jp>
+	<AANLkTimUW3FwyAWr6KcEH7h1mg3_xQbLHLhrQ7pZdtXD@mail.gmail.com>
+	<D61A4518-D6CA-4972-ADCB-349D5FF68DC0@kenroku.kanazawa-u.ac.jp>
+Message-ID: <AANLkTinhddPvZpxrhXjxu1eerged=xQa=0+EsA0TS5uV@mail.gmail.com>
+
+On Mon, Mar 7, 2011 at 10:00 PM, Tomoaki NISHIYAMA
+<tomoakin at kenroku.kanazawa-u.ac.jp> wrote:
+> Hi,
+>
+>> Can we specify data types for columns of the table created by
+>> dbWriteTable,
+>
+> You can do anything by issuing an SQL.
+Manually issue SQL is not so convenient
+
+>> most times we want timestamp without timezone
+>
+> The reason/benefit is not explained.
+>
+>> want it to be decimal with scales,
+>
+>
+> What do you mean with "decimal with scales"?
+
+> What is the difference with float?
+
+Please seee http://www.postgresql.org/docs/9.0/interactive/datatype-numeric.html#DATATYPE-FLOAT.
+
+> --
+> Tomoaki NISHIYAMA
+>
+> Advanced Science Research Center,
+> Kanazawa University,
+> 13-1 Takara-machi,
+> Kanazawa, 920-0934, Japan
+>
+>
+> On 2011/03/07, at 21:32, Xiaobo Gu wrote:
+>
+>> Can we specify data types for columns of the table created by
+>> dbWriteTable, most times we want timestamp without timezone.
+>> Another case is numeric numbers, in current implement all numeric data
+>> are converted as float, but for some applications want it to be
+>> decimal with scales,
+>>
+>> Xiaobo Gu
+>>
+>>
+>> On Mon, Mar 7, 2011 at 6:37 PM, Tomoaki NISHIYAMA
+>> <tomoakin at kenroku.kanazawa-u.ac.jp> wrote:
+>>>
+>>> Hi,
+>>>
+>>>>> class(df[["c"]])
+>>>>
+>>>> [1] "Date"
+>>>>>
+>>>>> class(df[["d"]])
+>>>>
+>>>> [1] "POSIXct" "POSIXt"
+>>>
+>>>
+>>> Ok, if you know the class name, the change is simple as r179.
+>>> (r178, r180 are cleanups of other part)
+>>> --
+>>> Tomoaki NISHIYAMA
+>>>
+>>> Advanced Science Research Center,
+>>> Kanazawa University,
+>>> 13-1 Takara-machi,
+>>> Kanazawa, 920-0934, Japan
+>>>
+>>>
+>>
+>
+>
+
+
+
+From j@nu@||@n @end|ng |rom 126@com  Tue Mar  8 04:27:48 2011
+From: j@nu@||@n @end|ng |rom 126@com (Peng Lian)
+Date: Tue, 8 Mar 2011 11:27:48 +0800
+Subject: [R-sig-DB] dbWriteTable in RPostgreSQL can't handle date and
+ timestamp data types.
+In-Reply-To: <AANLkTimUW3FwyAWr6KcEH7h1mg3_xQbLHLhrQ7pZdtXD@mail.gmail.com>
+References: <AANLkTimUW3FwyAWr6KcEH7h1mg3_xQbLHLhrQ7pZdtXD@mail.gmail.com>
+	<AANLkTi=-OQcaLUujUGnu_Wwd8=HBL1py-Fv8CrcARqHK@mail.gmail.com>
+	<3156D035-1A24-44C8-8F33-5AB6F05C6D51@kenroku.kanazawa-u.ac.jp>
+	<AANLkTimX6Bf4GjEyW=XqBV9foUmbYysYZ1yabn9HLF=6@mail.gmail.com>
+	<051CA216-D458-4EB7-83AA-FAD2E3D31B19@kenroku.kanazawa-u.ac.jp>
+	<AANLkTik-1U1WAMAreyU+hOpU6LNVbkvJcekRQkFR9My1@mail.gmail.com>
+	<C2281AC1-2DAB-4A6C-84C4-72C9DDB1B493@kenroku.kanazawa-u.ac.jp>
+Message-ID: <3f814a80.116e9.12e93819c98.Coremail.januslian@126.com>
+
+At 2011-03-07 20:32:42??"Xiaobo Gu" <guxiaobo1982 at gmail.com> wrote: >Can we specify data types for columns of the table created by >dbWriteTable, most times we want timestamp without timezone. >Another case is numeric numbers, in current implement all numeric data
+
+I think you can specify data types. Checking out the source file of RPostgreSQL
+package, the function of dbWriteTable use argument *filed.types* to specify
+data types, so through modifying default value of *filed.types*, which is
+represent by data type in PostgreSQL, may specify data types.
+
+
+>are converted as float, but for some applications want it to be >decimal with scales, > >Xiaobo Gu > > >On Mon, Mar 7, 2011 at 6:37 PM, Tomoaki NISHIYAMA ><tomoakin at kenroku.kanazawa-u.ac.jp> wrote: >> Hi, >> >>>> class(df[["c"]]) >>> >>> [1] "Date" >>>> >>>> class(df[["d"]]) >>> >>> [1] "POSIXct" "POSIXt" >> >> >> Ok, if you know the class name, the change is simple as r179. >> (r178, r180 are cleanups of other part) >> -- >> Tomoaki NISHIYAMA >> >> Advanced Science Research Center, >> Kanazawa University, >> 13-1 Takara-machi, >> Kanazawa, 920-0934, Japan >> >> > >_______________________________________________ >R-sig-DB mailing list -- R Special Interest Group >R-sig-DB at r-project.org >https://stat.ethz.ch/mailman/listinfo/r-sig-db
+	[[alternative HTML version deleted]]
+
+
+From gux|@obo1982 @end|ng |rom gm@||@com  Tue Mar  8 13:32:06 2011
+From: gux|@obo1982 @end|ng |rom gm@||@com (Xiaobo Gu)
+Date: Tue, 8 Mar 2011 20:32:06 +0800
+Subject: [R-sig-DB] dbWriteTable in RPostgreSQL can't handle date and
+ timestamp data types.
+In-Reply-To: <3f814a80.116e9.12e93819c98.Coremail.januslian@126.com>
+References: <AANLkTi=-OQcaLUujUGnu_Wwd8=HBL1py-Fv8CrcARqHK@mail.gmail.com>
+	<3156D035-1A24-44C8-8F33-5AB6F05C6D51@kenroku.kanazawa-u.ac.jp>
+	<AANLkTimX6Bf4GjEyW=XqBV9foUmbYysYZ1yabn9HLF=6@mail.gmail.com>
+	<051CA216-D458-4EB7-83AA-FAD2E3D31B19@kenroku.kanazawa-u.ac.jp>
+	<AANLkTik-1U1WAMAreyU+hOpU6LNVbkvJcekRQkFR9My1@mail.gmail.com>
+	<C2281AC1-2DAB-4A6C-84C4-72C9DDB1B493@kenroku.kanazawa-u.ac.jp>
+	<AANLkTimUW3FwyAWr6KcEH7h1mg3_xQbLHLhrQ7pZdtXD@mail.gmail.com>
+	<3f814a80.116e9.12e93819c98.Coremail.januslian@126.com>
+Message-ID: <AANLkTikv6XKvJmsMsZnngYH+HbAOSvRD_OvKtRCwcnU0@mail.gmail.com>
+
+2011/3/8 Peng Lian <januslian at 126.com>:
+> At?2011-03-07?20:32:42?"Xiaobo?Gu"?<guxiaobo1982 at gmail.com>?wrote:
+>>Can?we?specify?data?types?for?columns?of?the?table?created?by
+>>dbWriteTable,?most?times?we?want?timestamp?without?timezone.
+>>Another?case?is?numeric?numbers,?in?current?implement?all?numeric?data
+>
+> I think you can specify?data?types. Checking out the source file of
+> RPostgreSQL
+> package, the function of dbWriteTable use argument *filed.types* to specify
+> data?types, so through modifying default value of *filed.types*, which is
+> represent by data type in PostgreSQL, may specify?data?types.
+
+Since I can't find any documentation about this, can you show me some
+sample code about specifying data types.
+
+ Another feature we want is that we only want to specify the data type
+for columns that we think the automatically mapping  implemented by
+RPostgreSQL is not suitable to us.
+For example, supporse we have a data frame with about 100 columns,
+only a few of which are numeric numbers,such as col1/col2/col3, we
+want the column types to be decimal(18,2), but not float8, users only
+need to pass col1/col2/col3 to the function, and let RPostgreSQL
+choose the data types for the rest of the columns.
+
+>>are?converted?as?float,?but?for?some?applications?want?it?to?be
+>> >decimal?with?scales, > >Xiaobo?Gu > >
+>> >On?Mon,?Mar?7,?2011?at?6:37?PM,?Tomoaki?NISHIYAMA
+>> ><tomoakin at kenroku.kanazawa-u.ac.jp>?wrote: >>?Hi, >> >>>>?class(df[["c"]])
+>> >>> >>>?[1]?"Date" >>>> >>>>?class(df[["d"]]) >>> >>>?[1]?"POSIXct"?"POSIXt"
+>> >> >> >>?Ok,?if?you?know?the?class?name,?the?change?is?simple?as?r179.
+>> >>?(r178,?r180?are?cleanups?of?other?part) >>?-- >>?Tomoaki?NISHIYAMA >>
+>> >>?Advanced?Science?Research?Center, >>?Kanazawa?University,
+>> >>?13-1?Takara-machi, >>?Kanazawa,?920-0934,?Japan >> >> >
+>> >_______________________________________________
+>> >R-sig-DB?mailing?list?--?R?Special?Interest?Group >R-sig-DB at r-project.org
+>> >https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+>
+
+
+
+From h@r|@n @end|ng |rom h@rr|@@n@me  Tue Mar 22 18:31:43 2011
+From: h@r|@n @end|ng |rom h@rr|@@n@me (Harlan Harris)
+Date: Tue, 22 Mar 2011 13:31:43 -0400
+Subject: [R-sig-DB] NULL data not mapped to NA with RODBC on 64-bit Mac OS X
+Message-ID: <AANLkTimc8nxK4AZW8QeG1Jz-QU1fy9bi=ztXrv3H5ES_@mail.gmail.com>
+
+Hello,
+
+I seem to have hit a bug in RODBC on 64-bit versions of R on Mac OS X. I'm
+running R 2.12.1, and using R to talk to Oracle and other databases using
+RODBC 1.3-2. In 32-bit mode (R32), everything works. (The ODBC drivers are
+the ones from Actual.) In 64-bit mode (R), it seems as if NULL data is not
+being treated as missing. For example, a NULL value in an integer column is
+being returned as a 0 instead, which is wrong/bad.
+
+Diving into the code and Google a bit, it seems like an issue that's been
+seen before in other contexts. Here's the relevant C code, from
+RODBCFetchRows:
+
+        for(row = thisHandle->rowsUsed;
+        row < thisHandle->rowsFetched && j <= maximum;
+        j++, row++)
+        {
+        thisHandle->rowsUsed++;
+        if(j > blksize) {
+            blksize *= 2;
+            for (i = 0; i < nc; i++)
+            SET_VECTOR_ELT(data, i,
+                       lengthgets(VECTOR_ELT(data, i), blksize));
+        }
+        for (i = 0; i < nc; i++) {
+            SQLLEN len = thisHandle->ColData[i].IndPtr[row];
+            switch(thisHandle->ColData[i].DataType) {
+            case SQL_DOUBLE:
+            REAL(VECTOR_ELT(data, i))[j-1] =
+                len == SQL_NULL_DATA ? NA_REAL :
+                thisHandle->ColData[i].RData[row];
+            break;
+
+etc...
+
+Googling for SQL_NULL_DATA and related terms finds this page, about the same
+issue in a Python driver:
+
+http://code.google.com/p/pyodbc/issues/detail?id=51
+
+It appears as if SQLLEN might be unsigned in 64-bit builds, while
+SQL_NULL_DATA is -1. Casting len to be an int rather than an unsigned int
+seems to solve the problem for them.
+
+On my machine, /usr/include/sqltypes.h starts like this:
+
+/*
+ *  sqltypes.h
+ *
+ *  $Id: sqltypes.h,v 1.23 2007/10/07 13:27:13 source Exp $
+ *
+ *  ODBC typedefs
+ *
+ *  The iODBC driver manager.
+
+and defines SQLLEN as follows:
+
+#ifdef _WIN64
+typedef INT64                   SQLLEN;
+typedef UINT64                  SQLULEN;
+typedef UINT64                  SQLSETPOSIROW;
+#elif defined(STRICT_ODBC_TYPES)
+typedef long                    SQLLEN;
+typedef unsigned long           SQLULEN;
+typedef unsigned short          SQLSETPOSIROW;
+#else
+#define SQLLEN                  long
+#define SQLULEN                 unsigned long
+#define SQLSETPOSIROW           unsigned short
+#endif
+
+Seems to me like SQLLEN should be signed, but apparently not?
+
+Can anyone help? Thank you!
+
+ -Harlan
+
+	[[alternative HTML version deleted]]
+
+
+
+From h@r|@n @end|ng |rom h@rr|@@n@me  Wed Mar 23 20:29:24 2011
+From: h@r|@n @end|ng |rom h@rr|@@n@me (Harlan Harris)
+Date: Wed, 23 Mar 2011 15:29:24 -0400
+Subject: [R-sig-DB] NULL data not mapped to NA with RODBC on 64-bit Mac
+	OS X
+In-Reply-To: <AANLkTimc8nxK4AZW8QeG1Jz-QU1fy9bi=ztXrv3H5ES_@mail.gmail.com>
+References: <AANLkTimc8nxK4AZW8QeG1Jz-QU1fy9bi=ztXrv3H5ES_@mail.gmail.com>
+Message-ID: <AANLkTi=i9SHhc-jVAXSPvzOF_FQkGZc-7wXhyav-1AJx@mail.gmail.com>
+
+Any thoughts? Is there someone else or somewhere else I might ask?
+
+ -Harlan
+
+On Tue, Mar 22, 2011 at 1:31 PM, Harlan Harris <harlan at harris.name> wrote:
+
+> Hello,
+>
+> I seem to have hit a bug in RODBC on 64-bit versions of R on Mac OS X. I'm
+> running R 2.12.1, and using R to talk to Oracle and other databases using
+> RODBC 1.3-2. In 32-bit mode (R32), everything works. (The ODBC drivers are
+> the ones from Actual.) In 64-bit mode (R), it seems as if NULL data is not
+> being treated as missing. For example, a NULL value in an integer column is
+> being returned as a 0 instead, which is wrong/bad.
+>
+> Diving into the code and Google a bit, it seems like an issue that's been
+> seen before in other contexts. Here's the relevant C code, from
+> RODBCFetchRows:
+>
+>         for(row = thisHandle->rowsUsed;
+>         row < thisHandle->rowsFetched && j <= maximum;
+>         j++, row++)
+>         {
+>         thisHandle->rowsUsed++;
+>         if(j > blksize) {
+>             blksize *= 2;
+>             for (i = 0; i < nc; i++)
+>             SET_VECTOR_ELT(data, i,
+>                        lengthgets(VECTOR_ELT(data, i), blksize));
+>         }
+>         for (i = 0; i < nc; i++) {
+>             SQLLEN len = thisHandle->ColData[i].IndPtr[row];
+>             switch(thisHandle->ColData[i].DataType) {
+>             case SQL_DOUBLE:
+>             REAL(VECTOR_ELT(data, i))[j-1] =
+>                 len == SQL_NULL_DATA ? NA_REAL :
+>                 thisHandle->ColData[i].RData[row];
+>             break;
+>
+> etc...
+>
+> Googling for SQL_NULL_DATA and related terms finds this page, about the
+> same issue in a Python driver:
+>
+> http://code.google.com/p/pyodbc/issues/detail?id=51
+>
+> It appears as if SQLLEN might be unsigned in 64-bit builds, while
+> SQL_NULL_DATA is -1. Casting len to be an int rather than an unsigned int
+> seems to solve the problem for them.
+>
+> On my machine, /usr/include/sqltypes.h starts like this:
+>
+> /*
+>  *  sqltypes.h
+>  *
+>  *  $Id: sqltypes.h,v 1.23 2007/10/07 13:27:13 source Exp $
+>  *
+>  *  ODBC typedefs
+>  *
+>  *  The iODBC driver manager.
+>
+> and defines SQLLEN as follows:
+>
+> #ifdef _WIN64
+> typedef INT64                   SQLLEN;
+> typedef UINT64                  SQLULEN;
+> typedef UINT64                  SQLSETPOSIROW;
+> #elif defined(STRICT_ODBC_TYPES)
+> typedef long                    SQLLEN;
+> typedef unsigned long           SQLULEN;
+> typedef unsigned short          SQLSETPOSIROW;
+> #else
+> #define SQLLEN                  long
+> #define SQLULEN                 unsigned long
+> #define SQLSETPOSIROW           unsigned short
+> #endif
+>
+> Seems to me like SQLLEN should be signed, but apparently not?
+>
+> Can anyone help? Thank you!
+>
+>  -Harlan
+>
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From hp@ge@ @end|ng |rom |hcrc@org  Wed Mar 23 22:27:26 2011
+From: hp@ge@ @end|ng |rom |hcrc@org (=?ISO-8859-1?Q?Herv=E9_Pag=E8s?=)
+Date: Wed, 23 Mar 2011 14:27:26 -0700
+Subject: [R-sig-DB] Deprecating Rdbi/RdbiPgSQL in upcoming Bioconductor
+ release (BioC 2.8)
+Message-ID: <4D8A65BE.4000903@fhcrc.org>
+
+Hi,
+
+This is to announce that the Bioconductor core team has decided to deprecate
+Rdbi/RdbiPgSQL (hosted in the Bioconductor repos) in favor of 
+DBI/RPostgreSQL
+(hosted on CRAN).
+Note that Rdbi/RdbiPgSQL will still be available in the upcoming 
+Bioconductor release
+(BioC 2.8, scheduled for April 14) but they will issue a deprecation 
+warning at load
+time and point the user to DBI/RPostgreSQL. Then later, during the BioC 
+2.9 devel
+cycle, we will remove those 2 packages from the BioC 2.9 repositories.
+
+Cheers,
+H.
+
+-- 
+Herv? Pag?s
+
+Program in Computational Biology
+Division of Public Health Sciences
+Fred Hutchinson Cancer Research Center
+1100 Fairview Ave. N, M2-B876
+P.O. Box 19024
+Seattle, WA 98109-1024
+
+E-mail: hpages at fhcrc.org
+Phone:  (206) 667-5791
+Fax:    (206) 667-1319
+
+
+
+From m@rc_@chw@rtz @end|ng |rom me@com  Thu Mar 24 14:09:14 2011
+From: m@rc_@chw@rtz @end|ng |rom me@com (Marc Schwartz)
+Date: Thu, 24 Mar 2011 08:09:14 -0500
+Subject: [R-sig-DB] NULL data not mapped to NA with RODBC on 64-bit
+	Mac	OS X
+In-Reply-To: <AANLkTi=i9SHhc-jVAXSPvzOF_FQkGZc-7wXhyav-1AJx@mail.gmail.com>
+References: <AANLkTimc8nxK4AZW8QeG1Jz-QU1fy9bi=ztXrv3H5ES_@mail.gmail.com>
+	<AANLkTi=i9SHhc-jVAXSPvzOF_FQkGZc-7wXhyav-1AJx@mail.gmail.com>
+Message-ID: <11469CB8-DC47-4943-9187-4C764BBE5127@me.com>
+
+Hi Harlan,
+
+I suspect that we will need to wait for Prof. Ripley to be able to look into this further. There may be subtle issues at play here and I would defer to his more intimate knowledge of the ODBC tool chain.
+
+I do know that the Actual driver is both 32 and 64 bit in a single installation. However, I run R in 32 bit mode (don't need the extra address space, even though I now have 8Gb on my MacBook Pro), so have not encountered the 64 bit issues that you report here.
+
+I have the same header file. Note that SQLLEN is a signed declaration below. It is defined as a 'long' generally and as a INT64 for 64 bit Windows. It would be 'unsigned long' or UINT64, respectively for an unsigned value.
+
+One question for you however, which is do you know if you are booting the 32 bit or 64 bit OSX kernel on your Mac? Macs prior to mid-2010 (like mine) running Snow Leopard typically default to the 32 bit kernel, though can be 64 bit 'capable'. It depends upon various factors including the presence of a 64 bit EFI. Newer Macs now boot into the 64 bit kernel by default. I have seen some problems reported on older Macs where the default kernel was changed from 32 bit to 64 bit, resulting in subtle and not so subtle problems with some drivers. Booting to the 32 bit kernel still allows you to run 64 bit apps under Snow Leopard, just that the kernel and extensions are 32 bit.
+
+Regards,
+
+Marc
+
+
+On Mar 23, 2011, at 2:29 PM, Harlan Harris wrote:
+
+> Any thoughts? Is there someone else or somewhere else I might ask?
+> 
+> -Harlan
+> 
+> On Tue, Mar 22, 2011 at 1:31 PM, Harlan Harris <harlan at harris.name> wrote:
+> 
+>> Hello,
+>> 
+>> I seem to have hit a bug in RODBC on 64-bit versions of R on Mac OS X. I'm
+>> running R 2.12.1, and using R to talk to Oracle and other databases using
+>> RODBC 1.3-2. In 32-bit mode (R32), everything works. (The ODBC drivers are
+>> the ones from Actual.) In 64-bit mode (R), it seems as if NULL data is not
+>> being treated as missing. For example, a NULL value in an integer column is
+>> being returned as a 0 instead, which is wrong/bad.
+>> 
+>> Diving into the code and Google a bit, it seems like an issue that's been
+>> seen before in other contexts. Here's the relevant C code, from
+>> RODBCFetchRows:
+>> 
+>>        for(row = thisHandle->rowsUsed;
+>>        row < thisHandle->rowsFetched && j <= maximum;
+>>        j++, row++)
+>>        {
+>>        thisHandle->rowsUsed++;
+>>        if(j > blksize) {
+>>            blksize *= 2;
+>>            for (i = 0; i < nc; i++)
+>>            SET_VECTOR_ELT(data, i,
+>>                       lengthgets(VECTOR_ELT(data, i), blksize));
+>>        }
+>>        for (i = 0; i < nc; i++) {
+>>            SQLLEN len = thisHandle->ColData[i].IndPtr[row];
+>>            switch(thisHandle->ColData[i].DataType) {
+>>            case SQL_DOUBLE:
+>>            REAL(VECTOR_ELT(data, i))[j-1] =
+>>                len == SQL_NULL_DATA ? NA_REAL :
+>>                thisHandle->ColData[i].RData[row];
+>>            break;
+>> 
+>> etc...
+>> 
+>> Googling for SQL_NULL_DATA and related terms finds this page, about the
+>> same issue in a Python driver:
+>> 
+>> http://code.google.com/p/pyodbc/issues/detail?id=51
+>> 
+>> It appears as if SQLLEN might be unsigned in 64-bit builds, while
+>> SQL_NULL_DATA is -1. Casting len to be an int rather than an unsigned int
+>> seems to solve the problem for them.
+>> 
+>> On my machine, /usr/include/sqltypes.h starts like this:
+>> 
+>> /*
+>> *  sqltypes.h
+>> *
+>> *  $Id: sqltypes.h,v 1.23 2007/10/07 13:27:13 source Exp $
+>> *
+>> *  ODBC typedefs
+>> *
+>> *  The iODBC driver manager.
+>> 
+>> and defines SQLLEN as follows:
+>> 
+>> #ifdef _WIN64
+>> typedef INT64                   SQLLEN;
+>> typedef UINT64                  SQLULEN;
+>> typedef UINT64                  SQLSETPOSIROW;
+>> #elif defined(STRICT_ODBC_TYPES)
+>> typedef long                    SQLLEN;
+>> typedef unsigned long           SQLULEN;
+>> typedef unsigned short          SQLSETPOSIROW;
+>> #else
+>> #define SQLLEN                  long
+>> #define SQLULEN                 unsigned long
+>> #define SQLSETPOSIROW           unsigned short
+>> #endif
+>> 
+>> Seems to me like SQLLEN should be signed, but apparently not?
+>> 
+>> Can anyone help? Thank you!
+>> 
+>> -Harlan
+
+
+
+From h@r|@n @end|ng |rom h@rr|@@n@me  Thu Mar 24 14:54:02 2011
+From: h@r|@n @end|ng |rom h@rr|@@n@me (Harlan Harris)
+Date: Thu, 24 Mar 2011 09:54:02 -0400
+Subject: [R-sig-DB] NULL data not mapped to NA with RODBC on 64-bit Mac
+	OS X
+In-Reply-To: <11469CB8-DC47-4943-9187-4C764BBE5127@me.com>
+References: <AANLkTimc8nxK4AZW8QeG1Jz-QU1fy9bi=ztXrv3H5ES_@mail.gmail.com>
+	<AANLkTi=i9SHhc-jVAXSPvzOF_FQkGZc-7wXhyav-1AJx@mail.gmail.com>
+	<11469CB8-DC47-4943-9187-4C764BBE5127@me.com>
+Message-ID: <AANLkTinaBgjAf+-tq8ChaM2P6zgyhqRYB=RY4-Zwp=i=@mail.gmail.com>
+
+Thanks for the reply, Marc!
+
+Ah, it does appear I'm booting in 32-bit mode. From the terminal:
+
+> uname -a
+Darwin Harlan-Harris-MacBook-Pro.local 10.6.0 Darwin Kernel Version 10.6.0:
+Wed Nov 10 18:13:17 PST 2010; root:xnu-1504.9.26~3/RELEASE_I386 i386
+
+I can usually run stuff in 32-bit mode, but sometimes I would like the
+ability to use the extra RAM. Also, certain interfaces to R (such as the new
+RStudio) will run R in 64-bit mode, so for now, I can't use RStudio when I'm
+pulling data via ODBC that might have NULLs. I think Rscript also wants to
+run in 64-bit mode.
+
+ -Harlan
+
+On Thu, Mar 24, 2011 at 9:09 AM, Marc Schwartz <marc_schwartz at me.com> wrote:
+
+> Hi Harlan,
+>
+> I suspect that we will need to wait for Prof. Ripley to be able to look
+> into this further. There may be subtle issues at play here and I would defer
+> to his more intimate knowledge of the ODBC tool chain.
+>
+> I do know that the Actual driver is both 32 and 64 bit in a single
+> installation. However, I run R in 32 bit mode (don't need the extra address
+> space, even though I now have 8Gb on my MacBook Pro), so have not
+> encountered the 64 bit issues that you report here.
+>
+> I have the same header file. Note that SQLLEN is a signed declaration
+> below. It is defined as a 'long' generally and as a INT64 for 64 bit
+> Windows. It would be 'unsigned long' or UINT64, respectively for an unsigned
+> value.
+>
+> One question for you however, which is do you know if you are booting the
+> 32 bit or 64 bit OSX kernel on your Mac? Macs prior to mid-2010 (like mine)
+> running Snow Leopard typically default to the 32 bit kernel, though can be
+> 64 bit 'capable'. It depends upon various factors including the presence of
+> a 64 bit EFI. Newer Macs now boot into the 64 bit kernel by default. I have
+> seen some problems reported on older Macs where the default kernel was
+> changed from 32 bit to 64 bit, resulting in subtle and not so subtle
+> problems with some drivers. Booting to the 32 bit kernel still allows you to
+> run 64 bit apps under Snow Leopard, just that the kernel and extensions are
+> 32 bit.
+>
+> Regards,
+>
+> Marc
+>
+>
+> On Mar 23, 2011, at 2:29 PM, Harlan Harris wrote:
+>
+> > Any thoughts? Is there someone else or somewhere else I might ask?
+> >
+> > -Harlan
+> >
+> > On Tue, Mar 22, 2011 at 1:31 PM, Harlan Harris <harlan at harris.name>
+> wrote:
+> >
+> >> Hello,
+> >>
+> >> I seem to have hit a bug in RODBC on 64-bit versions of R on Mac OS X.
+> I'm
+> >> running R 2.12.1, and using R to talk to Oracle and other databases
+> using
+> >> RODBC 1.3-2. In 32-bit mode (R32), everything works. (The ODBC drivers
+> are
+> >> the ones from Actual.) In 64-bit mode (R), it seems as if NULL data is
+> not
+> >> being treated as missing. For example, a NULL value in an integer column
+> is
+> >> being returned as a 0 instead, which is wrong/bad.
+> >>
+> >> Diving into the code and Google a bit, it seems like an issue that's
+> been
+> >> seen before in other contexts. Here's the relevant C code, from
+> >> RODBCFetchRows:
+> >>
+> >>        for(row = thisHandle->rowsUsed;
+> >>        row < thisHandle->rowsFetched && j <= maximum;
+> >>        j++, row++)
+> >>        {
+> >>        thisHandle->rowsUsed++;
+> >>        if(j > blksize) {
+> >>            blksize *= 2;
+> >>            for (i = 0; i < nc; i++)
+> >>            SET_VECTOR_ELT(data, i,
+> >>                       lengthgets(VECTOR_ELT(data, i), blksize));
+> >>        }
+> >>        for (i = 0; i < nc; i++) {
+> >>            SQLLEN len = thisHandle->ColData[i].IndPtr[row];
+> >>            switch(thisHandle->ColData[i].DataType) {
+> >>            case SQL_DOUBLE:
+> >>            REAL(VECTOR_ELT(data, i))[j-1] =
+> >>                len == SQL_NULL_DATA ? NA_REAL :
+> >>                thisHandle->ColData[i].RData[row];
+> >>            break;
+> >>
+> >> etc...
+> >>
+> >> Googling for SQL_NULL_DATA and related terms finds this page, about the
+> >> same issue in a Python driver:
+> >>
+> >> http://code.google.com/p/pyodbc/issues/detail?id=51
+> >>
+> >> It appears as if SQLLEN might be unsigned in 64-bit builds, while
+> >> SQL_NULL_DATA is -1. Casting len to be an int rather than an unsigned
+> int
+> >> seems to solve the problem for them.
+> >>
+> >> On my machine, /usr/include/sqltypes.h starts like this:
+> >>
+> >> /*
+> >> *  sqltypes.h
+> >> *
+> >> *  $Id: sqltypes.h,v 1.23 2007/10/07 13:27:13 source Exp $
+> >> *
+> >> *  ODBC typedefs
+> >> *
+> >> *  The iODBC driver manager.
+> >>
+> >> and defines SQLLEN as follows:
+> >>
+> >> #ifdef _WIN64
+> >> typedef INT64                   SQLLEN;
+> >> typedef UINT64                  SQLULEN;
+> >> typedef UINT64                  SQLSETPOSIROW;
+> >> #elif defined(STRICT_ODBC_TYPES)
+> >> typedef long                    SQLLEN;
+> >> typedef unsigned long           SQLULEN;
+> >> typedef unsigned short          SQLSETPOSIROW;
+> >> #else
+> >> #define SQLLEN                  long
+> >> #define SQLULEN                 unsigned long
+> >> #define SQLSETPOSIROW           unsigned short
+> >> #endif
+> >>
+> >> Seems to me like SQLLEN should be signed, but apparently not?
+> >>
+> >> Can anyone help? Thank you!
+> >>
+> >> -Harlan
+>
+>
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From h@r|@n @end|ng |rom h@rr|@@n@me  Tue Mar 29 15:43:31 2011
+From: h@r|@n @end|ng |rom h@rr|@@n@me (Harlan Harris)
+Date: Tue, 29 Mar 2011 09:43:31 -0400
+Subject: [R-sig-DB] NULL data not mapped to NA with RODBC on 64-bit Mac
+	OS X
+In-Reply-To: <AANLkTinaBgjAf+-tq8ChaM2P6zgyhqRYB=RY4-Zwp=i=@mail.gmail.com>
+References: <AANLkTimc8nxK4AZW8QeG1Jz-QU1fy9bi=ztXrv3H5ES_@mail.gmail.com>
+	<AANLkTi=i9SHhc-jVAXSPvzOF_FQkGZc-7wXhyav-1AJx@mail.gmail.com>
+	<11469CB8-DC47-4943-9187-4C764BBE5127@me.com>
+	<AANLkTinaBgjAf+-tq8ChaM2P6zgyhqRYB=RY4-Zwp=i=@mail.gmail.com>
+Message-ID: <AANLkTimaQcqx7csgVo=6KZJrFnWmqnRuPEMEMAWOxpt5@mail.gmail.com>
+
+Following up on this... Prof. Ripley? Is this something you can address?
+
+ -Harlan
+
+On Thu, Mar 24, 2011 at 9:54 AM, Harlan Harris <harlan at harris.name> wrote:
+
+> Thanks for the reply, Marc!
+>
+> Ah, it does appear I'm booting in 32-bit mode. From the terminal:
+>
+> > uname -a
+> Darwin Harlan-Harris-MacBook-Pro.local 10.6.0 Darwin Kernel Version 10.6.0:
+> Wed Nov 10 18:13:17 PST 2010; root:xnu-1504.9.26~3/RELEASE_I386 i386
+>
+> I can usually run stuff in 32-bit mode, but sometimes I would like the
+> ability to use the extra RAM. Also, certain interfaces to R (such as the new
+> RStudio) will run R in 64-bit mode, so for now, I can't use RStudio when I'm
+> pulling data via ODBC that might have NULLs. I think Rscript also wants to
+> run in 64-bit mode.
+>
+>  -Harlan
+>
+>
+> On Thu, Mar 24, 2011 at 9:09 AM, Marc Schwartz <marc_schwartz at me.com>wrote:
+>
+>> Hi Harlan,
+>>
+>> I suspect that we will need to wait for Prof. Ripley to be able to look
+>> into this further. There may be subtle issues at play here and I would defer
+>> to his more intimate knowledge of the ODBC tool chain.
+>>
+>> I do know that the Actual driver is both 32 and 64 bit in a single
+>> installation. However, I run R in 32 bit mode (don't need the extra address
+>> space, even though I now have 8Gb on my MacBook Pro), so have not
+>> encountered the 64 bit issues that you report here.
+>>
+>> I have the same header file. Note that SQLLEN is a signed declaration
+>> below. It is defined as a 'long' generally and as a INT64 for 64 bit
+>> Windows. It would be 'unsigned long' or UINT64, respectively for an unsigned
+>> value.
+>>
+>> One question for you however, which is do you know if you are booting the
+>> 32 bit or 64 bit OSX kernel on your Mac? Macs prior to mid-2010 (like mine)
+>> running Snow Leopard typically default to the 32 bit kernel, though can be
+>> 64 bit 'capable'. It depends upon various factors including the presence of
+>> a 64 bit EFI. Newer Macs now boot into the 64 bit kernel by default. I have
+>> seen some problems reported on older Macs where the default kernel was
+>> changed from 32 bit to 64 bit, resulting in subtle and not so subtle
+>> problems with some drivers. Booting to the 32 bit kernel still allows you to
+>> run 64 bit apps under Snow Leopard, just that the kernel and extensions are
+>> 32 bit.
+>>
+>> Regards,
+>>
+>> Marc
+>>
+>>
+>> On Mar 23, 2011, at 2:29 PM, Harlan Harris wrote:
+>>
+>> > Any thoughts? Is there someone else or somewhere else I might ask?
+>> >
+>> > -Harlan
+>> >
+>> > On Tue, Mar 22, 2011 at 1:31 PM, Harlan Harris <harlan at harris.name>
+>> wrote:
+>> >
+>> >> Hello,
+>> >>
+>> >> I seem to have hit a bug in RODBC on 64-bit versions of R on Mac OS X.
+>> I'm
+>> >> running R 2.12.1, and using R to talk to Oracle and other databases
+>> using
+>> >> RODBC 1.3-2. In 32-bit mode (R32), everything works. (The ODBC drivers
+>> are
+>> >> the ones from Actual.) In 64-bit mode (R), it seems as if NULL data is
+>> not
+>> >> being treated as missing. For example, a NULL value in an integer
+>> column is
+>> >> being returned as a 0 instead, which is wrong/bad.
+>> >>
+>> >> Diving into the code and Google a bit, it seems like an issue that's
+>> been
+>> >> seen before in other contexts. Here's the relevant C code, from
+>> >> RODBCFetchRows:
+>> >>
+>> >>        for(row = thisHandle->rowsUsed;
+>> >>        row < thisHandle->rowsFetched && j <= maximum;
+>> >>        j++, row++)
+>> >>        {
+>> >>        thisHandle->rowsUsed++;
+>> >>        if(j > blksize) {
+>> >>            blksize *= 2;
+>> >>            for (i = 0; i < nc; i++)
+>> >>            SET_VECTOR_ELT(data, i,
+>> >>                       lengthgets(VECTOR_ELT(data, i), blksize));
+>> >>        }
+>> >>        for (i = 0; i < nc; i++) {
+>> >>            SQLLEN len = thisHandle->ColData[i].IndPtr[row];
+>> >>            switch(thisHandle->ColData[i].DataType) {
+>> >>            case SQL_DOUBLE:
+>> >>            REAL(VECTOR_ELT(data, i))[j-1] =
+>> >>                len == SQL_NULL_DATA ? NA_REAL :
+>> >>                thisHandle->ColData[i].RData[row];
+>> >>            break;
+>> >>
+>> >> etc...
+>> >>
+>> >> Googling for SQL_NULL_DATA and related terms finds this page, about the
+>> >> same issue in a Python driver:
+>> >>
+>> >> http://code.google.com/p/pyodbc/issues/detail?id=51
+>> >>
+>> >> It appears as if SQLLEN might be unsigned in 64-bit builds, while
+>> >> SQL_NULL_DATA is -1. Casting len to be an int rather than an unsigned
+>> int
+>> >> seems to solve the problem for them.
+>> >>
+>> >> On my machine, /usr/include/sqltypes.h starts like this:
+>> >>
+>> >> /*
+>> >> *  sqltypes.h
+>> >> *
+>> >> *  $Id: sqltypes.h,v 1.23 2007/10/07 13:27:13 source Exp $
+>> >> *
+>> >> *  ODBC typedefs
+>> >> *
+>> >> *  The iODBC driver manager.
+>> >>
+>> >> and defines SQLLEN as follows:
+>> >>
+>> >> #ifdef _WIN64
+>> >> typedef INT64                   SQLLEN;
+>> >> typedef UINT64                  SQLULEN;
+>> >> typedef UINT64                  SQLSETPOSIROW;
+>> >> #elif defined(STRICT_ODBC_TYPES)
+>> >> typedef long                    SQLLEN;
+>> >> typedef unsigned long           SQLULEN;
+>> >> typedef unsigned short          SQLSETPOSIROW;
+>> >> #else
+>> >> #define SQLLEN                  long
+>> >> #define SQLULEN                 unsigned long
+>> >> #define SQLSETPOSIROW           unsigned short
+>> >> #endif
+>> >>
+>> >> Seems to me like SQLLEN should be signed, but apparently not?
+>> >>
+>> >> Can anyone help? Thank you!
+>> >>
+>> >> -Harlan
+>>
+>>
+>>
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From h@r|@n @end|ng |rom h@rr|@@n@me  Thu Mar 31 15:35:40 2011
+From: h@r|@n @end|ng |rom h@rr|@@n@me (Harlan Harris)
+Date: Thu, 31 Mar 2011 09:35:40 -0400
+Subject: [R-sig-DB] NULL data not mapped to NA with RODBC on 64-bit Mac
+	OS X
+In-Reply-To: <AANLkTimaQcqx7csgVo=6KZJrFnWmqnRuPEMEMAWOxpt5@mail.gmail.com>
+References: <AANLkTimc8nxK4AZW8QeG1Jz-QU1fy9bi=ztXrv3H5ES_@mail.gmail.com>
+	<AANLkTi=i9SHhc-jVAXSPvzOF_FQkGZc-7wXhyav-1AJx@mail.gmail.com>
+	<11469CB8-DC47-4943-9187-4C764BBE5127@me.com>
+	<AANLkTinaBgjAf+-tq8ChaM2P6zgyhqRYB=RY4-Zwp=i=@mail.gmail.com>
+	<AANLkTimaQcqx7csgVo=6KZJrFnWmqnRuPEMEMAWOxpt5@mail.gmail.com>
+Message-ID: <AANLkTi=2WtXaVY0TBdBtcbKpEgtuayL7kyeZrF1-mS3D@mail.gmail.com>
+
+Prof. Ripley? Anyone? Should I cross-post this to R-Help? If someone would
+be willing to fix this for pay, please email me a proposal and I'll see if
+my employer would be willing to sponsor a fix.
+
+ -Harlan
+
+On Tue, Mar 29, 2011 at 9:43 AM, Harlan Harris <harlan at harris.name> wrote:
+
+> Following up on this... Prof. Ripley? Is this something you can address?
+>
+>  -Harlan
+>
+>
+> On Thu, Mar 24, 2011 at 9:54 AM, Harlan Harris <harlan at harris.name> wrote:
+>
+>> Thanks for the reply, Marc!
+>>
+>> Ah, it does appear I'm booting in 32-bit mode. From the terminal:
+>>
+>> > uname -a
+>> Darwin Harlan-Harris-MacBook-Pro.local 10.6.0 Darwin Kernel Version
+>> 10.6.0: Wed Nov 10 18:13:17 PST 2010; root:xnu-1504.9.26~3/RELEASE_I386 i386
+>>
+>> I can usually run stuff in 32-bit mode, but sometimes I would like the
+>> ability to use the extra RAM. Also, certain interfaces to R (such as the new
+>> RStudio) will run R in 64-bit mode, so for now, I can't use RStudio when I'm
+>> pulling data via ODBC that might have NULLs. I think Rscript also wants to
+>> run in 64-bit mode.
+>>
+>>  -Harlan
+>>
+>>
+>> On Thu, Mar 24, 2011 at 9:09 AM, Marc Schwartz <marc_schwartz at me.com>wrote:
+>>
+>>> Hi Harlan,
+>>>
+>>> I suspect that we will need to wait for Prof. Ripley to be able to look
+>>> into this further. There may be subtle issues at play here and I would defer
+>>> to his more intimate knowledge of the ODBC tool chain.
+>>>
+>>> I do know that the Actual driver is both 32 and 64 bit in a single
+>>> installation. However, I run R in 32 bit mode (don't need the extra address
+>>> space, even though I now have 8Gb on my MacBook Pro), so have not
+>>> encountered the 64 bit issues that you report here.
+>>>
+>>> I have the same header file. Note that SQLLEN is a signed declaration
+>>> below. It is defined as a 'long' generally and as a INT64 for 64 bit
+>>> Windows. It would be 'unsigned long' or UINT64, respectively for an unsigned
+>>> value.
+>>>
+>>> One question for you however, which is do you know if you are booting the
+>>> 32 bit or 64 bit OSX kernel on your Mac? Macs prior to mid-2010 (like mine)
+>>> running Snow Leopard typically default to the 32 bit kernel, though can be
+>>> 64 bit 'capable'. It depends upon various factors including the presence of
+>>> a 64 bit EFI. Newer Macs now boot into the 64 bit kernel by default. I have
+>>> seen some problems reported on older Macs where the default kernel was
+>>> changed from 32 bit to 64 bit, resulting in subtle and not so subtle
+>>> problems with some drivers. Booting to the 32 bit kernel still allows you to
+>>> run 64 bit apps under Snow Leopard, just that the kernel and extensions are
+>>> 32 bit.
+>>>
+>>> Regards,
+>>>
+>>> Marc
+>>>
+>>>
+>>> On Mar 23, 2011, at 2:29 PM, Harlan Harris wrote:
+>>>
+>>> > Any thoughts? Is there someone else or somewhere else I might ask?
+>>> >
+>>> > -Harlan
+>>> >
+>>> > On Tue, Mar 22, 2011 at 1:31 PM, Harlan Harris <harlan at harris.name>
+>>> wrote:
+>>> >
+>>> >> Hello,
+>>> >>
+>>> >> I seem to have hit a bug in RODBC on 64-bit versions of R on Mac OS X.
+>>> I'm
+>>> >> running R 2.12.1, and using R to talk to Oracle and other databases
+>>> using
+>>> >> RODBC 1.3-2. In 32-bit mode (R32), everything works. (The ODBC drivers
+>>> are
+>>> >> the ones from Actual.) In 64-bit mode (R), it seems as if NULL data is
+>>> not
+>>> >> being treated as missing. For example, a NULL value in an integer
+>>> column is
+>>> >> being returned as a 0 instead, which is wrong/bad.
+>>> >>
+>>> >> Diving into the code and Google a bit, it seems like an issue that's
+>>> been
+>>> >> seen before in other contexts. Here's the relevant C code, from
+>>> >> RODBCFetchRows:
+>>> >>
+>>> >>        for(row = thisHandle->rowsUsed;
+>>> >>        row < thisHandle->rowsFetched && j <= maximum;
+>>> >>        j++, row++)
+>>> >>        {
+>>> >>        thisHandle->rowsUsed++;
+>>> >>        if(j > blksize) {
+>>> >>            blksize *= 2;
+>>> >>            for (i = 0; i < nc; i++)
+>>> >>            SET_VECTOR_ELT(data, i,
+>>> >>                       lengthgets(VECTOR_ELT(data, i), blksize));
+>>> >>        }
+>>> >>        for (i = 0; i < nc; i++) {
+>>> >>            SQLLEN len = thisHandle->ColData[i].IndPtr[row];
+>>> >>            switch(thisHandle->ColData[i].DataType) {
+>>> >>            case SQL_DOUBLE:
+>>> >>            REAL(VECTOR_ELT(data, i))[j-1] =
+>>> >>                len == SQL_NULL_DATA ? NA_REAL :
+>>> >>                thisHandle->ColData[i].RData[row];
+>>> >>            break;
+>>> >>
+>>> >> etc...
+>>> >>
+>>> >> Googling for SQL_NULL_DATA and related terms finds this page, about
+>>> the
+>>> >> same issue in a Python driver:
+>>> >>
+>>> >> http://code.google.com/p/pyodbc/issues/detail?id=51
+>>> >>
+>>> >> It appears as if SQLLEN might be unsigned in 64-bit builds, while
+>>> >> SQL_NULL_DATA is -1. Casting len to be an int rather than an unsigned
+>>> int
+>>> >> seems to solve the problem for them.
+>>> >>
+>>> >> On my machine, /usr/include/sqltypes.h starts like this:
+>>> >>
+>>> >> /*
+>>> >> *  sqltypes.h
+>>> >> *
+>>> >> *  $Id: sqltypes.h,v 1.23 2007/10/07 13:27:13 source Exp $
+>>> >> *
+>>> >> *  ODBC typedefs
+>>> >> *
+>>> >> *  The iODBC driver manager.
+>>> >>
+>>> >> and defines SQLLEN as follows:
+>>> >>
+>>> >> #ifdef _WIN64
+>>> >> typedef INT64                   SQLLEN;
+>>> >> typedef UINT64                  SQLULEN;
+>>> >> typedef UINT64                  SQLSETPOSIROW;
+>>> >> #elif defined(STRICT_ODBC_TYPES)
+>>> >> typedef long                    SQLLEN;
+>>> >> typedef unsigned long           SQLULEN;
+>>> >> typedef unsigned short          SQLSETPOSIROW;
+>>> >> #else
+>>> >> #define SQLLEN                  long
+>>> >> #define SQLULEN                 unsigned long
+>>> >> #define SQLSETPOSIROW           unsigned short
+>>> >> #endif
+>>> >>
+>>> >> Seems to me like SQLLEN should be signed, but apparently not?
+>>> >>
+>>> >> Can anyone help? Thank you!
+>>> >>
+>>> >> -Harlan
+>>>
+>>>
+>>>
+>>
+>
+
+	[[alternative HTML version deleted]]
+
+
+

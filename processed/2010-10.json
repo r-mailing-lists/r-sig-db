@@ -1,0 +1,1063 @@
+{
+  "list": "r-sig-db",
+  "description": "",
+  "month": "2010-10",
+  "messages": [
+    {
+      "id": "msg-81ae8c191102",
+      "message_id": "<C8CBC37C.5CFD9%macqueen1@llnl.gov>",
+      "from_name": "MacQueen, Don",
+      "from_email_hash": "57bebc14c9dfd76714b31750b84b62773dc73c911ab434c31e5a16c8c34dda91",
+      "date": "2010-10-01T16:57:32-07:00",
+      "subject": "[R-sig-DB] Problem installing Roracle in RHEL5",
+      "subject_clean": "Problem installing Roracle in RHEL5",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I?m having trouble installing Roracle_0.5-9 in R version 2.11.1 on a RHEL5 machine.\n\nHere is the error message (full transcript at the end of this email):\n\nproc CODE=ANSI_C MODE=ORACLE INCLUDE=/usr/lib64/R/include \\\n                PARSE=NONE LINES=false PREFETCH=1 RS-Oracle.pc\nproc: error while loading shared libraries: libclntsh.so.11.1: cannot open shared object file: No such file or directory\n\nHowever, the file libclntsh.so.11.1 is present in $ORACLE_HOME/lib, and is not empty.\n\n[157]% ls -l $ORACLE_HOME/lib/libclntsh.*\nlrwxrwxrwx 1 root   root           17 Aug 19 14:09 /u01/app/oracle/product/11.2.0/db_1/lib/libclntsh.so -> libclntsh.so.11.1*\nlrwxrwxrwx 1 root   root           17 Aug 19 14:10 /u01/app/oracle/product/11.2.0/db_1/lib/libclntsh.so.10.1 -> libclntsh.so.11.1*\n-rwxr-xr-x 1 oracle oinstall 48724689 Sep 15  2009 /u01/app/oracle/product/11.2.0/db_1/lib/libclntsh.so.11.1*\n\nI had previously succeeded in installing Roracle on this machine; in fact, it?s still there, but:\n> require(ROracle)\nLoading required package: ROracle\nError: package 'ROracle' was built before R 2.10.0: please re-install it\n\nAnd I recall running $ORACLE_HOME/bin/genclntsh, which is why the required lib file has non-zero size.\n\nGiven the error message, perhaps the ROracle installer is not looking in the right place, but if so I haven?t succeeded in ensuring it does. I have set LD_LIBRARY_PATH to include $ORACLE_HOME/lib.\n\nSuggestions would be much appreciated. I feel like I?m forgetting something that I?ve done before to install ROracle, but can?t think what it was.\n\n-Don\n\n\n\nFurther informaton:\n\n> sessionInfo()\nR version 2.11.1 (2010-05-31)\nx86_64-redhat-linux-gnu\n\nlocale:\n [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C\n [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8\n [5] LC_MONETARY=C              LC_MESSAGES=en_US.UTF-8\n [7] LC_PAPER=en_US.UTF-8       LC_NAME=C\n [9] LC_ADDRESS=C               LC_TELEPHONE=C\n[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C\n\nattached base packages:\n[1] stats     graphics  grDevices utils     datasets  methods   base\n\n\n\n> install.packages('ROracle')\nWarning in install.packages(\"ROracle\") :\n  argument 'lib' is missing: using '/usr/lib64/R/library'\ntrying URL 'http://cran.cnr.Berkeley.edu/src/contrib/ROracle_0.5-9.tar.gz'\nContent type 'application/x-gzip' length 155808 bytes (152 Kb)\nopened URL\n==================================================\ndownloaded 152 Kb\n\nLoading required package: rmacq\n* installing *source* package ? ...\nchecking for gcc... gcc\nchecking for C compiler default output... a.out\nchecking whether the C compiler works... yes\nchecking whether we are cross compiling... no\nchecking for suffix of executables...\nchecking for suffix of object files... o\nchecking whether we are using the GNU C compiler... yes\nchecking whether gcc accepts -g... yes\nchecking for gcc option to accept ANSI C... none needed\nchecking how to run the C preprocessor... gcc -E\nconfigure: creating ./config.status\nconfig.status: creating src/Makevars\nconfig.status: creating src/Makefile\n** libs\n** arch -\nR CMD COMPILE RS-DBI.c\nmake[1]: Entering directory `/tmp/RtmpHDWrkX/R.INSTALL327b23c6/ROracle/src'\ngcc -m64 -std=gnu99 -I/usr/include/R -DRS_ORA_SQLGLS_WORKAROUND -I/usr/local/include    -fpic  -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -c RS-DBI.c -o RS-DBI.o\nRS-DBI.c: In function ?:\nRS-DBI.c:1175: warning: assignment discards qualifiers from pointer target type\nRS-DBI.c:1188: warning: implicit declaration of function ?\nRS-DBI.c: In function ?:\nRS-DBI.c:1226: warning: assignment discards qualifiers from pointer target type\nmake[1]: Leaving directory `/tmp/RtmpHDWrkX/R.INSTALL327b23c6/ROracle/src'\nproc CODE=ANSI_C MODE=ORACLE INCLUDE=/usr/lib64/R/include \\\n                PARSE=NONE LINES=false PREFETCH=1 RS-Oracle.pc\nproc: error while loading shared libraries: libclntsh.so.11.1: cannot open shared object file: No such file or directory\nmake: *** [RS-Oracle.c] Error 127\nERROR: compilation failed for package ?\n\n--\nDon MacQueen\nEnvironmental Protection Department\nLawrence Livermore National Laboratory\n925 423-1062\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "I?m having trouble installing Roracle_0.5-9 in R version 2.11.1 on a RHEL5 machine.\n\nHere is the error message (full transcript at the end of this email):\n\nproc CODE=ANSI_C MODE=ORACLE INCLUDE=/usr/li",
+      "thread_id": "thread-81ae8c191102",
+      "thread_depth": 0,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-142969c37174",
+      "message_id": "<DC20D4DF-E4BF-4BCC-9BBE-5306D28AC395@me.com>",
+      "from_name": "Marc Schwartz",
+      "from_email_hash": "040b2d09159b27cfd2853bc2dbb476bd637811586f307d9583c9ef7f806f3692",
+      "date": "2010-10-02T08:18:08-05:00",
+      "subject": "[R-sig-DB] Problem installing Roracle in RHEL5",
+      "subject_clean": "Problem installing Roracle in RHEL5",
+      "in_reply_to": "<C8CBC37C.5CFD9%macqueen1@llnl.gov>",
+      "references": [
+        "<C8CBC37C.5CFD9%macqueen1@llnl.gov>"
+      ],
+      "body_plain": "On Oct 1, 2010, at 6:57 PM, MacQueen, Don wrote:\n\n> I?m having trouble installing Roracle_0.5-9 in R version 2.11.1 on a RHEL5 machine.\n> \n> Here is the error message (full transcript at the end of this email):\n> \n> proc CODE=ANSI_C MODE=ORACLE INCLUDE=/usr/lib64/R/include \\\n>                PARSE=NONE LINES=false PREFETCH=1 RS-Oracle.pc\n> proc: error while loading shared libraries: libclntsh.so.11.1: cannot open shared object file: No such file or directory\n> \n> However, the file libclntsh.so.11.1 is present in $ORACLE_HOME/lib, and is not empty.\n> \n> [157]% ls -l $ORACLE_HOME/lib/libclntsh.*\n> lrwxrwxrwx 1 root   root           17 Aug 19 14:09 /u01/app/oracle/product/11.2.0/db_1/lib/libclntsh.so -> libclntsh.so.11.1*\n> lrwxrwxrwx 1 root   root           17 Aug 19 14:10 /u01/app/oracle/product/11.2.0/db_1/lib/libclntsh.so.10.1 -> libclntsh.so.11.1*\n> -rwxr-xr-x 1 oracle oinstall 48724689 Sep 15  2009 /u01/app/oracle/product/11.2.0/db_1/lib/libclntsh.so.11.1*\n> \n> I had previously succeeded in installing Roracle on this machine; in fact, it?s still there, but:\n>> require(ROracle)\n> Loading required package: ROracle\n> Error: package 'ROracle' was built before R 2.10.0: please re-install it\n> \n> And I recall running $ORACLE_HOME/bin/genclntsh, which is why the required lib file has non-zero size.\n> \n> Given the error message, perhaps the ROracle installer is not looking in the right place, but if so I haven?t succeeded in ensuring it does. I have set LD_LIBRARY_PATH to include $ORACLE_HOME/lib.\n> \n> Suggestions would be much appreciated. I feel like I?m forgetting something that I?ve done before to install ROracle, but can?t think what it was.\n> \n> -Don\n\n\nDon,\n\nI have never used ROracle so may not be able to offer detailed assistance. From what I can tell, the package has not been updated since late 2007, so presumably the package itself is fairly stable and any installation issues are external to the package itself. That being said, there are Warnings present on CRAN for the package, largely related to the help files, which is not a surprise given the increased depth of checking now present. The change in static to dynamic help files is the primary reason for the error you are getting above related to the package being built prior to R 2.10.0.\n\nIf you have not yet, you may wish to review:\n\n  http://cran.r-project.org/web/packages/ROracle/INSTALL\n\nto see if there are any hints there.  \n\nOne other thing comes to mind, which is the setting of LD_LIBRARY_PATH. Be sure to set that in /etc/ld.so.conf and then run (as root) ldconfig to update the configuration. If you just set LD_LIBRARY_PATH in the shell environment (eg. in the bash profile), it may not get picked up by R. I found that to be an issue using RODBC with Oracle when I was on Fedora.\n\nOtherwise, you may wish to contact David James directly to solicit assistance.\n\nHTH,\n\nMarc Schwartz",
+      "body_snippet": "On Oct 1, 2010, at 6:57 PM, MacQueen, Don wrote:\n\n> I?m having trouble installing Roracle_0.5-9 in R version 2.11.1 on a RHEL5 machine.\n> \n> Here is the error message (full transcript at the end of th",
+      "thread_id": "thread-81ae8c191102",
+      "thread_depth": 1,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-95525741de8f",
+      "message_id": "<AANLkTikjxFeiJw_iHxyR4k1_XxXL6FEy6pWcnt0LVj7T@mail.gmail.com>",
+      "from_name": "Mike Williamson",
+      "from_email_hash": "bc0424f13a6c58a5116a2398711013f85183cd19343bfb4fd4821c73d044a767",
+      "date": "2010-10-04T15:15:15-07:00",
+      "subject": "[R-sig-DB] [R] trouble with RODBC -- chopping off part of column names",
+      "subject_clean": "trouble with RODBC -- chopping off part of column names",
+      "in_reply_to": "<26B2CA6B-1335-41F4-B04E-60AB789691C9@me.com>",
+      "references": [
+        "<AANLkTinvSiYyFh99375mzpz-YZcB7mnykPphp5n0u5bk@mail.gmail.com>",
+        "<26B2CA6B-1335-41F4-B04E-60AB789691C9@me.com>"
+      ],
+      "body_plain": "Marc, et. al,\n\n    Below are all of the pertinent version info.  However, I think versions,\netc., are somewhat irrelevant.  Instead, somewhere there must be an\nenvironment variable or something that 'R' is talking to that is forcing the\ncolumn name to fit within a set column width, and I need to either blow away\nthat variable or make it much larger.\n    Again, to recap:  if I make SQL queries outside of 'R', I am able to\ngrab column names properly.  If I make SQL queries *within 'R' and through a\nWindows server*, I grab all column names properly.  However, if I make SQL\nqueries *within 'R' and through the linux/unix server described below*, the\ncolumn names are cut off at a fixed length of 30 characters.\n    Any advice as to where to look for this environment variable or whatever\nsetting would help greatly!\n\n                                 Thanks!\n                                    Mike\n\n*OS information:\n*Linux\n2.6.18-8.1.15.el5\n#1 SMP Mon Oct 22 08:32:28 EDT 2007\nx86_64\nx86_64\nx86_64\nGNU/Linux\n\n\n*DB info:\n*Microsoft SQL Server Management Studio                        10.0.2531.0\nMicrosoft Data Access Components (MDAC)\n6.1.7600.16385\nMicrosoft MSXML                        3.0 4.0 5.0 6.0\nMicrosoft Internet Explorer                        8.0.7600.16385\nMicrosoft .NET Framework                        2.0.50727.4952\nOperating System                        6.1.7600\n\n\n*'R' info:\n*> R.Version()\n$platform\n[1] \"x86_64-redhat-linux-gnu\"\n\n$arch\n[1] \"x86_64\"\n\n$os\n[1] \"linux-gnu\"\n\n$system\n[1] \"x86_64, linux-gnu\"\n\n$status\n[1] \"\"\n\n$major\n[1] \"2\"\n\n$minor\n[1] \"10.0\"\n\n$year\n[1] \"2009\"\n\n$month\n[1] \"10\"\n\n$day\n[1] \"26\"\n\n$`svn rev`\n[1] \"50208\"\n\n$language\n[1] \"R\"\n\n$version.string\n[1] \"R version 2.10.0 (2009-10-26)\"\n\n\n\n\n\n\"Telescopes and bathyscaphes and sonar probes of Scottish lakes,\nTacoma Narrows bridge collapse explained with abstract phase-space maps,\nSome x-ray slides, a music score, Minard's Napoleanic war:\nThe most exciting frontier is charting what's already here.\"\n  -- xkcd\n\n--\nHelp protect Wikipedia. Donate now:\nhttp://wikimediafoundation.org/wiki/Support_Wikipedia/en\n\n\nOn Sat, Oct 2, 2010 at 6:31 AM, Marc Schwartz <marc_schwartz at me.com> wrote:\n\n> On Oct 1, 2010, at 6:26 PM, Mike Williamson wrote:\n>\n> > Hello all,\n> >\n> >    I have a strange / interesting problem that might be 'R' settings\n> > themselves, or it might be something with the OS.\n> >\n> >    I am using the RODBC library.  I have a script that goes out and,\n> before\n> > making a query for a big data set, will first query for the column names\n> of\n> > the data set.  The column names could sometimes be quite long (e.g.,\n> \"Time\n> > Background Estimation (seconds)\" ).  If I make this query for the column\n> > names from my Windows laptop or from a Windows server, using\n> odbcConnect() &\n> > sqlQuery(), I get the column names properly.  However, if I run this via\n> > unix, it will chop off part of the column name.  (E.g., with \"Time\n> > Background Estimation (seconds)\", it becomes \"Time Background Estimation\n> > (se\", which is 30 characters long.)\n> >\n> >    Does anyone have a clue what might be causing this (settings in 'R',\n> > something within unix, etc.)?  I am not even sure how to debug, and I\n> can't\n> > really get around this because I cannot simply query all of the columns,\n> the\n> > data set would become too large.\n> >\n> >                                                  Thanks!\n> >                                                          Mike\n>\n>\n> Mike,\n>\n> You indicated 'unix' above. Is that Solaris or are you being generic in a\n> reference to a Linux platform?\n>\n> We need the details of your OS, the version of R you are running and\n> whether it is 32 or 64 bit, as well as the database that you are connecting\n> to (eg. Oracle).\n>\n> You can use:\n>\n>  vignette(\"RODBC\")\n>\n> from the R command line to bring up a PDF carefully written by Prof.\n> Ripley, that contains additional details the use of RODBC and some OS/DB\n> specific documentation for the package.\n>\n> For further details on how we can better help you, see the R Posting Guide:\n>\n>  http://www.R-project.org/posting-guide.html\n>\n> Lastly, for future reference, there is an R-SIG-DB list:\n>\n>  https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n> Marc Schwartz\n>\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Marc, et. al,\n\n    Below are all of the pertinent version info.  However, I think versions,\netc., are somewhat irrelevant.  Instead, somewhere there must be an\nenvironment variable or something that '",
+      "thread_id": "thread-95525741de8f",
+      "thread_depth": 0,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-80bf708e5712",
+      "message_id": "<2D21F3E3-71CF-4AA6-B3A0-1C01FC20D3E6@gmail.com>",
+      "from_name": "Albert Vernon Smith",
+      "from_email_hash": "65ac29508a2fa825393e5d68a9eeecc5f05b27a771186b7fda6a35b636465174",
+      "date": "2010-10-04T23:09:13Z",
+      "subject": "[R-sig-DB] Null values from DBI connection",
+      "subject_clean": "Null values from DBI connection",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I am connecting to an Oracle database with RJDBC, and creating a data frame with dbGetQuery.  When I get values return, values which are NULL in the database are being returned as 0 from my query.  How can I have them returned as <NA>?\n\nI am querying as follows.\n\n--\nrequire(RJDBC)\n\ndrv <- JDBC(\"oracle.jdbc.driver.OracleDriver\",\"/usr/local/ojdbc/ojdbc14.jar\",\"'\")\nconn <- dbConnect(drv, \"dbc:oracle:thin:@ADDRESS\",\"user\",\"pass\")\nresults <- dbGetQuery(\"select rownum, col1 from table where col1 is null\")\n--\n\n> results\n\n  ROWNUM COL1\n1       1    0\n2       2    0\n3       3    0\n4       4    0\n5       5    0\n\nI'd rather see:\n\n> results\n\n  ROWNUM COL1\n1       1    NA\n2       2    NA\n3       3    NA\n4       4    NA\n5       5    NA\n\n--\n\n-albert",
+      "body_snippet": "I am connecting to an Oracle database with RJDBC, and creating a data frame with dbGetQuery.  When I get values return, values which are NULL in the database are being returned as 0 from my query.  Ho",
+      "thread_id": "thread-80bf708e5712",
+      "thread_depth": 0,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-fd1cce499a2b",
+      "message_id": "<6CC4C1EA-D9B5-4150-AD32-16DE17842DC3@me.com>",
+      "from_name": "Marc Schwartz",
+      "from_email_hash": "040b2d09159b27cfd2853bc2dbb476bd637811586f307d9583c9ef7f806f3692",
+      "date": "2010-10-05T08:25:14-05:00",
+      "subject": "[R-sig-DB] [R] trouble with RODBC -- chopping off part of\tcolumn names",
+      "subject_clean": "trouble with RODBC -- chopping off part of\tcolumn names",
+      "in_reply_to": "<AANLkTikjxFeiJw_iHxyR4k1_XxXL6FEy6pWcnt0LVj7T@mail.gmail.com>",
+      "references": [
+        "<AANLkTinvSiYyFh99375mzpz-YZcB7mnykPphp5n0u5bk@mail.gmail.com>",
+        "<26B2CA6B-1335-41F4-B04E-60AB789691C9@me.com>",
+        "<AANLkTikjxFeiJw_iHxyR4k1_XxXL6FEy6pWcnt0LVj7T@mail.gmail.com>"
+      ],
+      "body_plain": "On Oct 4, 2010, at 5:15 PM, Mike Williamson wrote:\n\n> Marc, et. al,\n> \n>    Below are all of the pertinent version info.  However, I think versions,\n> etc., are somewhat irrelevant.  Instead, somewhere there must be an\n> environment variable or something that 'R' is talking to that is forcing the\n> column name to fit within a set column width, and I need to either blow away\n> that variable or make it much larger.\n>    Again, to recap:  if I make SQL queries outside of 'R', I am able to\n> grab column names properly.  If I make SQL queries *within 'R' and through a\n> Windows server*, I grab all column names properly.  However, if I make SQL\n> queries *within 'R' and through the linux/unix server described below*, the\n> column names are cut off at a fixed length of 30 characters.\n>    Any advice as to where to look for this environment variable or whatever\n> setting would help greatly!\n> \n>                                 Thanks!\n>                                    Mike\n\n[Moving to R-SIG-DB alone]\n\nMike,\n\nI don't have hands on experience with MS SQL Server, so my comments here are based upon my experience with Oracle and RODBC on both Fedora Linux and OSX.\n\nWith Oracle, the setting of 'rows_at_time = 1' in the calls to both odbcConnect() and sqlQuery() are required to preclude the corruption of data returned from a query. See ?odbcConnect and ?sqlQuery for more information. This is also covered in the RODBC vignette.\n\nThere are also some references in the archives to setting 'believeNRows = FALSE' in odbcConnect() and sqlQuery(). This value defaults to TRUE. I do not need this with Oracle, but you may with SQL Server.\n\nSo you may wish to set all four arguments in your code and then re-run your connection and queries from a clean R session, to see if they have any impact on the returned results. If that helps, then backout each of the settings to see if you can isolate which one seems to be of value.\n\nYou may also wish to use sqlColumns() to query the table in question to see what it returns for the column names, if different than the results from the above queries. \n\nI am not aware of any environment (shell) settings that affect this. At least with Oracle, such settings are solely to define the $PATH for the relevant libraries and config files.\n\nHTH,\n\nMarc",
+      "body_snippet": "On Oct 4, 2010, at 5:15 PM, Mike Williamson wrote:\n\n> Marc, et. al,\n> \n>    Below are all of the pertinent version info.  However, I think versions,\n> etc., are somewhat irrelevant.  Instead, somewher",
+      "thread_id": "thread-95525741de8f",
+      "thread_depth": 1,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-d5e3f2742afe",
+      "message_id": "<636877.34610.qm@web110611.mail.gq1.yahoo.com>",
+      "from_name": "Paula Fergnani Salvia",
+      "from_email_hash": "0b8e5bd6c316019d2c1b62d054e172abaf5354ad5a18395d1a9712c16d1fffb3",
+      "date": "2010-10-05T08:12:44-07:00",
+      "subject": "[R-sig-DB] Question about assigning values in a matrix, conditional on column first row; how to do the loop.",
+      "subject_clean": "Question about assigning values in a matrix, conditional on column first row; how to do the loop.",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello, I?m new at programming and I will greatly appreciate if you can help me with this. \n\n\nI have a very large matrix (hundreds of rows and columns), with the first raw filled with different numbers (between 0 and 1). The rest of the matrix is filled with values 0, 1, 2. What I need is to replace the values in the matrix (except the first row will has to remain intact). More specifically:  in each column I have to replace value 2 for the value of the first row. Also, I want to replace the values 0 and 1 by -999. I was able to write the loop for a vector but I do not know how to expand the loop to the matrix. \n\nPlease see these examples\n\nFor a vector I did this and it works\n\n> V = c(0.1,1,0,2)\n> V\n[1] 0.1 1.0 0.0 2.0\n\n> for (i in 2:length(V)){if(V[i]==2)V[i]=V[1]\n+                                 else (V[i]=-999)}\n\n> V\n[1]    0.1 -999.0 -999.0    0.1\n\nFor a matrix I could not perform the task. Here it is an example of a small matrix and the expected result, but the original has more rows and columns.\n\n> matr <- matrix(c(0.1,1,0,2,0.5,1,2,2), nrow=4, ncol=2)\n> matr\n     [,1] [,2]\n[1,]  0.1  0.5\n[2,]  1.0  1.0\n[3,]  0.0  2.0\n[4,]  2.0  2.0\n\n> matr.expectedresult= matrix(c(0.1,-999,-999,0.1,0.5,-999,0.5,0.5), nrow=4, ncol=2)\n> matr.expectedresult\n       [,1]   [,2]\n[1,]    0.1    0.5\n[2,] -999.0 -999.0\n[3,] -999.0    0.5\n[4,]    0.1    0.5\n\nThank you very much!\n\nPaula",
+      "body_snippet": "Hello, I?m new at programming and I will greatly appreciate if you can help me with this. \n\n\nI have a very large matrix (hundreds of rows and columns), with the first raw filled with different numbers",
+      "thread_id": "thread-d5e3f2742afe",
+      "thread_depth": 0,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-ca41064349f4",
+      "message_id": "<55FF8B948E3E4D49BD177B4EF1668A3E03A8495D@EPRI17P32001B.csfb.cs-group.com>",
+      "from_name": "Li, Jing Yi",
+      "from_email_hash": "76e3375fafcf53d15f0816254f0dba6e0a7fcc7417093b9f6d0b9ed65c884a2a",
+      "date": "2010-10-08T18:19:47-04:00",
+      "subject": "[R-sig-DB] append rows to Sybase datatable using RJDBC function dbWriteTable",
+      "subject_clean": "append rows to Sybase datatable using RJDBC function dbWriteTable",
+      "in_reply_to": "<55FF8B948E3E4D49BD177B4EF1668A3E03A8495C@EPRI17P32001B.csfb.cs-group.com>",
+      "references": [
+        "<55FF8B948E3E4D49BD177B4EF1668A3E03A8495C@EPRI17P32001B.csfb.cs-group.com>"
+      ],
+      "body_plain": "> Hi,\n> \n> Does anyone have experience using RJDBC library to write to Sybase\n> datatable? The jdbc driver I am using is jConnect 6.0. I can\n> successfully write into a new datatable, but have problem appending\n> rows to existing one. It either complains \"Table *** already exists\"\n> or simply overwrite the existing one. Here is the example.\n> \n> I am trying to append \"data\" to the existing datatable \"tmp\"\n> \n> > data\n>   \tSecurityID \tTicker\n> 1     \t12345  \t\tAAPL \n> \n> > dbWriteTable(conn, \"tmp\", data, append = T, overwrite = F)\n> Error in .local(conn, name, value, ...) : \n>   Table `tmp' already exists\n> \n> > dbWriteTable(conn, \"tmp\", data, append = T)\n> [1] TRUE \n> \n> The first dbWriteTable failed as it's complaining \"tmp\" already\n> exists, it looks strange to me as append is set to TRUE. The second\n> dbWriteTable succeeded but it actually overwrite exisiting rows with\n> \"data\" which is not expected as append is set to TRUE and overwrite is\n> default to FALSE. \n> \n> Can anyone shed me some lights here? Thanks a lot for your help! \n> \n> Jingyi\n> \n> \n> \n> \n\n=============================================================================== \nPlease access the attached hyperlink for an important el...{{dropped:8}}",
+      "body_snippet": "> Hi,\n> \n> Does anyone have experience using RJDBC library to write to Sybase\n> datatable? The jdbc driver I am using is jConnect 6.0. I can\n> successfully write into a new datatable, but have problem",
+      "thread_id": "thread-ca41064349f4",
+      "thread_depth": 0,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-da9497cdb147",
+      "message_id": "<4CAFE8CD.3050205@structuremonitoring.com>",
+      "from_name": "Spencer Graves",
+      "from_email_hash": "74d65542d39045b8f519f051690253c45d7423bc83fbcf361d3e6c7f58751916",
+      "date": "2010-10-08T21:00:13-07:00",
+      "subject": "[R-sig-DB] adding to a MySQL database from within R?",
+      "subject_clean": "adding to a MySQL database from within R?",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello, All:\n\n\n       How can I add rows to a MySQL database?\n\n\n       I can do it manually within MySQL server 5.1.50-community.  I can \nconnect to it using the RMySQL package.  When I tried \"dbReadTable \n{DBI}\", I got a warning that \"table headers exists:\n\n\n > MySQL. <- MySQL()\n > MySQLcon <- dbConnect(MySQL., user=User, password=pw, dbname=myDB)\n > dbWriteTable(MySQLcon, 'headers', a.data.frame)\nWarning message:\nIn mysqlWriteTable(conn, name, value, ...) :\n   table headers exists in database: aborting mysqlWriteTable\n\n\n       I know that table \"headers\" exists:  I want to add to it, not \ncreate the entire table from scratch at once.\n\n\n       Thanks,\n       Spencer\nsessionInfo()\nR version 2.11.1 (2010-05-31)\ni386-pc-mingw32\n\nlocale:\n[1] LC_COLLATE=English_United States.1252\n[2] LC_CTYPE=English_United States.1252\n[3] LC_MONETARY=English_United States.1252\n[4] LC_NUMERIC=C\n[5] LC_TIME=English_United States.1252\n\nattached base packages:\n[1] stats     graphics  grDevices utils     datasets  methods   base\n\nother attached packages:\n  [1] SIM_1.1-5            RCurl_1.4-3          bitops_1.0-4.1\n  [4] R2HTML_2.1           oce_0.1-80           TSMySQL_2010.5-1\n  [7] RMySQL_0.7-5         DBI_0.2-5            TSdbi_2010.5-1\n[10] tframePlus_2009.10-2 tframe_2009.10-1\n\nloaded via a namespace (and not attached):\n[1] tools_2.11.1\n >\n\n-- \nSpencer Graves, PE, PhD\nPresident and Chief Operating Officer\nStructure Inspection and Monitoring, Inc.\n751 Emerson Ct.\nSan Jos?, CA 95126\nph:  408-655-4567",
+      "body_snippet": "Hello, All:\n\n\n       How can I add rows to a MySQL database?\n\n\n       I can do it manually within MySQL server 5.1.50-community.  I can \nconnect to it using the RMySQL package.  When I tried \"dbReadTa",
+      "thread_id": "thread-da9497cdb147",
+      "thread_depth": 0,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-640400a963ff",
+      "message_id": "<BLU0-SMTP152F590D84040CBE57C59A0CA510@phx.gbl>",
+      "from_name": "Jack Tanner",
+      "from_email_hash": "05d5de428494aa3777b56653254dfe0c2761fe8cf0ec64831c3ec99770ff599d",
+      "date": "2010-10-09T00:23:12-04:00",
+      "subject": "[R-sig-DB] adding to a MySQL database from within R?",
+      "subject_clean": "adding to a MySQL database from within R?",
+      "in_reply_to": "<4CAFE8CD.3050205@structuremonitoring.com>",
+      "references": [
+        "<4CAFE8CD.3050205@structuremonitoring.com>"
+      ],
+      "body_plain": "I think you're looking for an INSERT query, no?\n\nOn 10/9/2010 12:00 AM, Spencer Graves wrote:\n> Hello, All:\n>\n>\n> How can I add rows to a MySQL database?\n>\n>\n> I can do it manually within MySQL server 5.1.50-community. I can connect\n> to it using the RMySQL package. When I tried \"dbReadTable {DBI}\", I got\n> a warning that \"table headers exists:\n>\n>\n>  > MySQL. <- MySQL()\n>  > MySQLcon <- dbConnect(MySQL., user=User, password=pw, dbname=myDB)\n>  > dbWriteTable(MySQLcon, 'headers', a.data.frame)\n> Warning message:\n> In mysqlWriteTable(conn, name, value, ...) :\n> table headers exists in database: aborting mysqlWriteTable\n>\n>\n> I know that table \"headers\" exists: I want to add to it, not create the\n> entire table from scratch at once.\n>\n>\n> Thanks,\n> Spencer\n> sessionInfo()\n> R version 2.11.1 (2010-05-31)\n> i386-pc-mingw32\n>\n> locale:\n> [1] LC_COLLATE=English_United States.1252\n> [2] LC_CTYPE=English_United States.1252\n> [3] LC_MONETARY=English_United States.1252\n> [4] LC_NUMERIC=C\n> [5] LC_TIME=English_United States.1252\n>\n> attached base packages:\n> [1] stats graphics grDevices utils datasets methods base\n>\n> other attached packages:\n> [1] SIM_1.1-5 RCurl_1.4-3 bitops_1.0-4.1\n> [4] R2HTML_2.1 oce_0.1-80 TSMySQL_2010.5-1\n> [7] RMySQL_0.7-5 DBI_0.2-5 TSdbi_2010.5-1\n> [10] tframePlus_2009.10-2 tframe_2009.10-1\n>\n> loaded via a namespace (and not attached):\n> [1] tools_2.11.1\n>  >\n>",
+      "body_snippet": "I think you're looking for an INSERT query, no?\n\nOn 10/9/2010 12:00 AM, Spencer Graves wrote:\n> Hello, All:\n>\n>\n> How can I add rows to a MySQL database?\n>\n>\n> I can do it manually within MySQL server",
+      "thread_id": "thread-da9497cdb147",
+      "thread_depth": 1,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-a1eb7ef63967",
+      "message_id": "<AANLkTimXMpc0UZfTZKPX=qMUrSB_0kvJ16Ck_4pc6C=K@mail.gmail.com>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2010-10-09T08:47:23-04:00",
+      "subject": "[R-sig-DB] adding to a MySQL database from within R?",
+      "subject_clean": "adding to a MySQL database from within R?",
+      "in_reply_to": "<4CAFE8CD.3050205@structuremonitoring.com>",
+      "references": [
+        "<4CAFE8CD.3050205@structuremonitoring.com>"
+      ],
+      "body_plain": "On Sat, Oct 9, 2010 at 12:00 AM, Spencer Graves <\nspencer.graves at structuremonitoring.com> wrote:\n\n>  Hello, All:\n>\n>\n>       How can I add rows to a MySQL database?\n>\n>\n>       I can do it manually within MySQL server 5.1.50-community.  I can\n> connect to it using the RMySQL package.  When I tried \"dbReadTable\n> {DBI}\", I got a warning that \"table headers exists:\n>\n>\n>  > MySQL. <- MySQL()\n>  > MySQLcon <- dbConnect(MySQL., user=User, password=pw, dbname=myDB)\n>  > dbWriteTable(MySQLcon, 'headers', a.data.frame)\n> Warning message:\n> In mysqlWriteTable(conn, name, value, ...) :\n>   table headers exists in database: aborting mysqlWriteTable\n>\n>\n>       I know that table \"headers\" exists:  I want to add to it, not\n> create the entire table from scratch at once.\n>\n>\nSee the help for dbWriteTable().  In particular, check out the append\nparameter.\n\nSean\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "On Sat, Oct 9, 2010 at 12:00 AM, Spencer Graves <\nspencer.graves at structuremonitoring.com> wrote:\n\n>  Hello, All:\n>\n>\n>       How can I add rows to a MySQL database?\n>\n>\n>       I can do it manually",
+      "thread_id": "thread-da9497cdb147",
+      "thread_depth": 1,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-bc22d203535b",
+      "message_id": "<4CB071B0.7080202@structuremonitoring.com>",
+      "from_name": "Spencer Graves",
+      "from_email_hash": "74d65542d39045b8f519f051690253c45d7423bc83fbcf361d3e6c7f58751916",
+      "date": "2010-10-09T06:44:16-07:00",
+      "subject": "[R-sig-DB] adding to a MySQL database from within R?",
+      "subject_clean": "adding to a MySQL database from within R?",
+      "in_reply_to": "<AANLkTimXMpc0UZfTZKPX=qMUrSB_0kvJ16Ck_4pc6C=K@mail.gmail.com>",
+      "references": [
+        "<4CAFE8CD.3050205@structuremonitoring.com>",
+        "<AANLkTimXMpc0UZfTZKPX=qMUrSB_0kvJ16Ck_4pc6C=K@mail.gmail.com>"
+      ],
+      "body_plain": "Hi, Sean and Jack Tanner:\n\n\n\n       It's hard to RTFM when I don't know which FMTR.  Thanks to you \nboth for helping me overcome this problem.\n\n\n             1.  Before I submitted this question, I read the help page \nfor \"dbWriteTable\".  Unfortunately, I missed the \"append\" argument.  In \nthis case, I RTFM without seeing what was there!\n\n\n             2.  Jack's suggestion led me to try \"RSiteSearch('MySQL \nINSERT')\".  This led me to a vignette written by Brian Ripley for the \nRODBC package.  I tried other searches without getting an answer.  Also, \nI had previously seen a post where Ripley recommended the RODBC \npackage.  However, my previous searched did not help me figure out how \nto get started with it.\n\n\n       Best Wishes,\n       Spencer\n\n\nOn 10/9/2010 5:47 AM, Sean Davis wrote:\n> On Sat, Oct 9, 2010 at 12:00 AM, Spencer Graves<\n> spencer.graves at structuremonitoring.com>  wrote:\n>\n>>   Hello, All:\n>>\n>>\n>>        How can I add rows to a MySQL database?\n>>\n>>\n>>        I can do it manually within MySQL server 5.1.50-community.  I can\n>> connect to it using the RMySQL package.  When I tried \"dbReadTable\n>> {DBI}\", I got a warning that \"table headers exists:\n>>\n>>\n>>   >  MySQL.<- MySQL()\n>>   >  MySQLcon<- dbConnect(MySQL., user=User, password=pw, dbname=myDB)\n>>   >  dbWriteTable(MySQLcon, 'headers', a.data.frame)\n>> Warning message:\n>> In mysqlWriteTable(conn, name, value, ...) :\n>>    table headers exists in database: aborting mysqlWriteTable\n>>\n>>\n>>        I know that table \"headers\" exists:  I want to add to it, not\n>> create the entire table from scratch at once.\n>>\n>>\n> See the help for dbWriteTable().  In particular, check out the append\n> parameter.\n>\n> Sean\n>\n\n\n-- \nSpencer Graves, PE, PhD\nPresident and Chief Operating Officer\nStructure Inspection and Monitoring, Inc.\n751 Emerson Ct.\nSan Jos?, CA 95126\nph:  408-655-4567",
+      "body_snippet": "Hi, Sean and Jack Tanner:\n\n\n\n       It's hard to RTFM when I don't know which FMTR.  Thanks to you \nboth for helping me overcome this problem.\n\n\n             1.  Before I submitted this question, I re",
+      "thread_id": "thread-da9497cdb147",
+      "thread_depth": 2,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-78fb5c4d1306",
+      "message_id": "<20101011141936.49700@gmx.net>",
+      "from_name": "spocht m@iii@g oii gmx@@t",
+      "from_email_hash": "c90a080f9362ae5a0785f7c38d0bcd28f13ed542f47abdc038d71686580b3970",
+      "date": "2010-10-11T16:19:36+02:00",
+      "subject": "[R-sig-DB] issues compiling RMysql source",
+      "subject_clean": "issues compiling RMysql source",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello,\n\npreviously I was using Mysql 5.0 and the pre-compiled RMysql library. After updating MySQL to 5.1 I had to compile RMysql from source since I could not find any compiled RMysql libraries.\n\nI followed the intallation procedures given on:\n<http://biostat.mc.vanderbilt.edu/wiki/Main/RMySQL>\n\nbut was not successful. The R output is just:\n\n* installing *source* package 'RMySQL' ...\nERROR: configuration failed for package 'RMySQL'\n\nI double checked already the value for the MYSQL_HOME environment variable since during installation a editor app is opened giving me the error message:\n\n\"The syntax for the file name, the directory name or the hard drive is wrong\" (translated by myselfe)\n\nI thought that the error message might refere to the installation path of Mysql given in the MYSQL_HOME environment variable. But a Sys.getenv('MYSQL_HOME') shows me:\n\n\"C:/PROGRA~1/MySQL/MYSQLS~1.1/\"\n\nSo I'm lost especially I could not even find a log file to see what the problem might be.\n\nThanks for your help.\n\n-- \nMatthias Wirtz  -  Karlsruhe, DE\n\nSicherer, schneller und einfacher. Die aktuellen Internet-Browser -\njetzt kostenlos herunterladen! http://portal.gmx.net/de/go/atbrowser",
+      "body_snippet": "Hello,\n\npreviously I was using Mysql 5.0 and the pre-compiled RMysql library. After updating MySQL to 5.1 I had to compile RMysql from source since I could not find any compiled RMysql libraries.\n\nI f",
+      "thread_id": "thread-78fb5c4d1306",
+      "thread_depth": 0,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-c8e87497c25f",
+      "message_id": "<4CB3CF31.7010805@structuremonitoring.com>",
+      "from_name": "Spencer Graves",
+      "from_email_hash": "74d65542d39045b8f519f051690253c45d7423bc83fbcf361d3e6c7f58751916",
+      "date": "2010-10-11T20:00:01-07:00",
+      "subject": "[R-sig-DB] adding to a MySQL database from within R?",
+      "subject_clean": "adding to a MySQL database from within R?",
+      "in_reply_to": "<AANLkTimXMpc0UZfTZKPX=qMUrSB_0kvJ16Ck_4pc6C=K@mail.gmail.com>",
+      "references": [
+        "<4CAFE8CD.3050205@structuremonitoring.com>",
+        "<AANLkTimXMpc0UZfTZKPX=qMUrSB_0kvJ16Ck_4pc6C=K@mail.gmail.com>"
+      ],
+      "body_plain": "Hello:\n\n\n\t  How can I connect to a MySQL database with RODBC under Vista?  I \ntried the following, inspired by Ripley's RODBC vignette:\n\n\n > MySQLcon <- odbcConnect('fillmoredb', uid='sbg', pwd='********')\nWarning messages:\n1: In odbcDriverConnect(\"DSN=fillmoredb;UID=sbg;PWD=********) :\n   [RODBC] ERROR: state IM002, code 0, message [Microsoft][ODBC Driver \nManager] Data source name not found and no default driver specified\n2: In odbcDriverConnect(\"DSN=fillmoredb;UID=sbg;PWD=********\") :\n   ODBC connection failed\n > MySQL. <- odbcConnect('MySQL')\nWarning messages:\n1: In odbcDriverConnect(\"DSN=MySQL\") :\n   [RODBC] ERROR: state IM002, code 0, message [Microsoft][ODBC Driver \nManager] Data source name not found and no default driver specified\n2: In odbcDriverConnect(\"DSN=MySQL\") : ODBC connection failed\n\n\n\t  Thanks,\n\t  Spencer Graves\n\n\n > sessionInfo()\nR version 2.11.1 (2010-05-31)\ni386-pc-mingw32\n\nlocale:\n[1] LC_COLLATE=English_United States.1252  LC_CTYPE=English_United \nStates.1252    LC_MONETARY=English_United States.1252\n[4] LC_NUMERIC=C                           LC_TIME=English_United \nStates.1252\n\nattached base packages:\n[1] splines   stats     graphics  grDevices utils     datasets  methods \n   base\n\nother attached packages:\n[1] RODBC_1.3-2     multcomp_1.2-3  survival_2.35-8 mvtnorm_0.9-92\n\nloaded via a namespace (and not attached):\n[1] tools_2.11.1\n\n####\nEnter password: ********\nWelcome to the MySQL monitor.  Commands end with ; or \\g.\nYour MySQL connection id is 7\nServer version: 5.1.50-community MySQL Community Server (GPL)\n\nCopyright (c) 2000, 2010, Oracle and/or its affiliates. All rights reserved.\nThis software comes with ABSOLUTELY NO WARRANTY. This is free software,\nand you are welcome to modify and redistribute it under the GPL v2 license\n\nType 'help;' or '\\h' for help. Type '\\c' to clear the current input \nstatement.\n\nmysql>\n\n########################\n  Hi, Sean and Jack Tanner:\n\n\n\n       It's hard to RTFM when I don't know which FMTR.  Thanks to you \nboth for helping me overcome this problem.\n\n\n             1.  Before I submitted this question, I read the help page \nfor \"dbWriteTable\".  Unfortunately, I missed the \"append\" argument.  In \nthis case, I RTFM without seeing what was there!\n\n\n             2.  Jack's suggestion led me to try \"RSiteSearch('MySQL \nINSERT')\".  This led me to a vignette written by Brian Ripley for the \nRODBC package.  I tried other searches without getting an answer.  Also, \nI had previously seen a post where Ripley recommended the RODBC package. \n  However, my previous searched did not help me figure out how to get \nstarted with it.\n\n\n       Best Wishes,\n       Spencer\n\n\nOn 10/9/2010 5:47 AM, Sean Davis wrote:\n> On Sat, Oct 9, 2010 at 12:00 AM, Spencer Graves<\n> spencer.graves at structuremonitoring.com>  wrote:\n>\n>>   Hello, All:\n>>\n>>\n>>        How can I add rows to a MySQL database?\n>>\n>>\n>>        I can do it manually within MySQL server 5.1.50-community.  I can\n>> connect to it using the RMySQL package.  When I tried \"dbReadTable\n>> {DBI}\", I got a warning that \"table headers exists:\n>>\n>>\n>>   >  MySQL.<- MySQL()\n>>   >  MySQLcon<- dbConnect(MySQL., user=User, password=pw, dbname=myDB)\n>>   >  dbWriteTable(MySQLcon, 'headers', a.data.frame)\n>> Warning message:\n>> In mysqlWriteTable(conn, name, value, ...) :\n>>    table headers exists in database: aborting mysqlWriteTable\n>>\n>>\n>>        I know that table \"headers\" exists:  I want to add to it, not\n>> create the entire table from scratch at once.\n>>\n>>\n> See the help for dbWriteTable().  In particular, check out the append\n> parameter.\n>\n> Sean\n>\n\n\n-- \nSpencer Graves, PE, PhD\nPresident and Chief Operating Officer\nStructure Inspection and Monitoring, Inc.\n751 Emerson Ct.\nSan Jos?, CA 95126\nph:  408-655-4567",
+      "body_snippet": "Hello:\n\n\n\t  How can I connect to a MySQL database with RODBC under Vista?  I \ntried the following, inspired by Ripley's RODBC vignette:\n\n\n > MySQLcon <- odbcConnect('fillmoredb', uid='sbg', pwd='*****",
+      "thread_id": "thread-da9497cdb147",
+      "thread_depth": 2,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-bb5d1997b221",
+      "message_id": "<19635.53925.557551.307196@max.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2010-10-11T22:14:45-05:00",
+      "subject": "[R-sig-DB] adding to a MySQL database from within R?",
+      "subject_clean": "adding to a MySQL database from within R?",
+      "in_reply_to": "<4CB3CF31.7010805@structuremonitoring.com>",
+      "references": [
+        "<4CAFE8CD.3050205@structuremonitoring.com>",
+        "<AANLkTimXMpc0UZfTZKPX=qMUrSB_0kvJ16Ck_4pc6C=K@mail.gmail.com>",
+        "<4CB3CF31.7010805@structuremonitoring.com>"
+      ],
+      "body_plain": "On 11 October 2010 at 20:00, Spencer Graves wrote:\n| \n| \t  How can I connect to a MySQL database with RODBC under Vista?  I \n| tried the following, inspired by Ripley's RODBC vignette:\n| \n| \n|  > MySQLcon <- odbcConnect('fillmoredb', uid='sbg', pwd='********')\n| Warning messages:\n| 1: In odbcDriverConnect(\"DSN=fillmoredb;UID=sbg;PWD=********) :\n|    [RODBC] ERROR: state IM002, code 0, message [Microsoft][ODBC Driver \n| Manager] Data source name not found and no default driver specified\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\nYou need to define a DSN named 'fillmoredb'.  Windows being Windows, there\nare countless tutorials on the net about how to do this using the admin tools.\n\nThe nice thing is that process is just about the same for every 'source'\nproviding ODBC connectivity, so once you grok this you can re-use the same\ntrick for non-MySQL-stored data.\n\nThe not-so-nice thing, in my book, is that you still need to install the odbc\ndrivers and beed to set up the dsn on each machine trying to use it. \n\nDirk\n\n| 2: In odbcDriverConnect(\"DSN=fillmoredb;UID=sbg;PWD=********\") :\n|    ODBC connection failed\n|  > MySQL. <- odbcConnect('MySQL')\n| Warning messages:\n| 1: In odbcDriverConnect(\"DSN=MySQL\") :\n|    [RODBC] ERROR: state IM002, code 0, message [Microsoft][ODBC Driver \n| Manager] Data source name not found and no default driver specified\n| 2: In odbcDriverConnect(\"DSN=MySQL\") : ODBC connection failed\n| \n| \n| \t  Thanks,\n| \t  Spencer Graves\n| \n| \n|  > sessionInfo()\n| R version 2.11.1 (2010-05-31)\n| i386-pc-mingw32\n| \n| locale:\n| [1] LC_COLLATE=English_United States.1252  LC_CTYPE=English_United \n| States.1252    LC_MONETARY=English_United States.1252\n| [4] LC_NUMERIC=C                           LC_TIME=English_United \n| States.1252\n| \n| attached base packages:\n| [1] splines   stats     graphics  grDevices utils     datasets  methods \n|    base\n| \n| other attached packages:\n| [1] RODBC_1.3-2     multcomp_1.2-3  survival_2.35-8 mvtnorm_0.9-92\n| \n| loaded via a namespace (and not attached):\n| [1] tools_2.11.1\n| \n| ####\n| Enter password: ********\n| Welcome to the MySQL monitor.  Commands end with ; or \\g.\n| Your MySQL connection id is 7\n| Server version: 5.1.50-community MySQL Community Server (GPL)\n| \n| Copyright (c) 2000, 2010, Oracle and/or its affiliates. All rights reserved.\n| This software comes with ABSOLUTELY NO WARRANTY. This is free software,\n| and you are welcome to modify and redistribute it under the GPL v2 license\n| \n| Type 'help;' or '\\h' for help. Type '\\c' to clear the current input \n| statement.\n| \n| mysql>\n| \n| ########################\n|   Hi, Sean and Jack Tanner:\n| \n| \n| \n|        It's hard to RTFM when I don't know which FMTR.  Thanks to you \n| both for helping me overcome this problem.\n| \n| \n|              1.  Before I submitted this question, I read the help page \n| for \"dbWriteTable\".  Unfortunately, I missed the \"append\" argument.  In \n| this case, I RTFM without seeing what was there!\n| \n| \n|              2.  Jack's suggestion led me to try \"RSiteSearch('MySQL \n| INSERT')\".  This led me to a vignette written by Brian Ripley for the \n| RODBC package.  I tried other searches without getting an answer.  Also, \n| I had previously seen a post where Ripley recommended the RODBC package. \n|   However, my previous searched did not help me figure out how to get \n| started with it.\n| \n| \n|        Best Wishes,\n|        Spencer\n| \n| \n| On 10/9/2010 5:47 AM, Sean Davis wrote:\n| > On Sat, Oct 9, 2010 at 12:00 AM, Spencer Graves<\n| > spencer.graves at structuremonitoring.com>  wrote:\n| >\n| >>   Hello, All:\n| >>\n| >>\n| >>        How can I add rows to a MySQL database?\n| >>\n| >>\n| >>        I can do it manually within MySQL server 5.1.50-community.  I can\n| >> connect to it using the RMySQL package.  When I tried \"dbReadTable\n| >> {DBI}\", I got a warning that \"table headers exists:\n| >>\n| >>\n| >>   >  MySQL.<- MySQL()\n| >>   >  MySQLcon<- dbConnect(MySQL., user=User, password=pw, dbname=myDB)\n| >>   >  dbWriteTable(MySQLcon, 'headers', a.data.frame)\n| >> Warning message:\n| >> In mysqlWriteTable(conn, name, value, ...) :\n| >>    table headers exists in database: aborting mysqlWriteTable\n| >>\n| >>\n| >>        I know that table \"headers\" exists:  I want to add to it, not\n| >> create the entire table from scratch at once.\n| >>\n| >>\n| > See the help for dbWriteTable().  In particular, check out the append\n| > parameter.\n| >\n| > Sean\n| >\n| \n| \n| -- \n| Spencer Graves, PE, PhD\n| President and Chief Operating Officer\n| Structure Inspection and Monitoring, Inc.\n| 751 Emerson Ct.\n| San Jos?, CA 95126\n| ph:  408-655-4567\n| \n| _______________________________________________\n| R-sig-DB mailing list -- R Special Interest Group\n| R-sig-DB at stat.math.ethz.ch\n| https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n-- \nDirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com",
+      "body_snippet": "On 11 October 2010 at 20:00, Spencer Graves wrote:\n| \n| \t  How can I connect to a MySQL database with RODBC under Vista?  I \n| tried the following, inspired by Ripley's RODBC vignette:\n| \n| \n|  > MySQ",
+      "thread_id": "thread-da9497cdb147",
+      "thread_depth": 3,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-1f8abc59c4b7",
+      "message_id": "<4CB3D75A.2070309@structuremonitoring.com>",
+      "from_name": "Spencer Graves",
+      "from_email_hash": "74d65542d39045b8f519f051690253c45d7423bc83fbcf361d3e6c7f58751916",
+      "date": "2010-10-11T20:34:50-07:00",
+      "subject": "[R-sig-DB] adding to a MySQL database from within R?",
+      "subject_clean": "adding to a MySQL database from within R?",
+      "in_reply_to": "<19635.53925.557551.307196@max.nulle.part>",
+      "references": [
+        "<4CAFE8CD.3050205@structuremonitoring.com>",
+        "<AANLkTimXMpc0UZfTZKPX=qMUrSB_0kvJ16Ck_4pc6C=K@mail.gmail.com>",
+        "<4CB3CF31.7010805@structuremonitoring.com>",
+        "<19635.53925.557551.307196@max.nulle.part>"
+      ],
+      "body_plain": "Hi, Dirk, et al.:\n\n\n       Thanks for the quick reply.\n\n\n       What are the strengths and weaknesses of using RODBC vs. RMySQL?\n\n\n       I don't have either doing what I want yet, but I think I'm closer \nwith RMySQL than RODBC.  On the other hand, I had the impression that \nRODBC was better developed than RMySQL and therefore RODBC might be \nfaster and ultimately easier.\n\n\n       Thanks again.\n       Spencer Graves\n\n\nOn 10/11/2010 8:14 PM, Dirk Eddelbuettel wrote:\n> On 11 October 2010 at 20:00, Spencer Graves wrote:\n> |\n> | \t  How can I connect to a MySQL database with RODBC under Vista?  I\n> | tried the following, inspired by Ripley's RODBC vignette:\n> |\n> |\n> |>  MySQLcon<- odbcConnect('fillmoredb', uid='sbg', pwd='********')\n> | Warning messages:\n> | 1: In odbcDriverConnect(\"DSN=fillmoredb;UID=sbg;PWD=********) :\n> |    [RODBC] ERROR: state IM002, code 0, message [Microsoft][ODBC Driver\n> | Manager] Data source name not found and no default driver specified\n>             ^^^^^^^^^^^^^^^^^^^^^^^^^^\n>\n> You need to define a DSN named 'fillmoredb'.  Windows being Windows, there\n> are countless tutorials on the net about how to do this using the admin tools.\n>\n> The nice thing is that process is just about the same for every 'source'\n> providing ODBC connectivity, so once you grok this you can re-use the same\n> trick for non-MySQL-stored data.\n>\n> The not-so-nice thing, in my book, is that you still need to install the odbc\n> drivers and beed to set up the dsn on each machine trying to use it.\n>\n> Dirk\n>\n> | 2: In odbcDriverConnect(\"DSN=fillmoredb;UID=sbg;PWD=********\") :\n> |    ODBC connection failed\n> |>  MySQL.<- odbcConnect('MySQL')\n> | Warning messages:\n> | 1: In odbcDriverConnect(\"DSN=MySQL\") :\n> |    [RODBC] ERROR: state IM002, code 0, message [Microsoft][ODBC Driver\n> | Manager] Data source name not found and no default driver specified\n> | 2: In odbcDriverConnect(\"DSN=MySQL\") : ODBC connection failed\n> |\n> |\n> | \t  Thanks,\n> | \t  Spencer Graves\n> |\n> |\n> |>  sessionInfo()\n> | R version 2.11.1 (2010-05-31)\n> | i386-pc-mingw32\n> |\n> | locale:\n> | [1] LC_COLLATE=English_United States.1252  LC_CTYPE=English_United\n> | States.1252    LC_MONETARY=English_United States.1252\n> | [4] LC_NUMERIC=C                           LC_TIME=English_United\n> | States.1252\n> |\n> | attached base packages:\n> | [1] splines   stats     graphics  grDevices utils     datasets  methods\n> |    base\n> |\n> | other attached packages:\n> | [1] RODBC_1.3-2     multcomp_1.2-3  survival_2.35-8 mvtnorm_0.9-92\n> |\n> | loaded via a namespace (and not attached):\n> | [1] tools_2.11.1\n> |\n> | ####\n> | Enter password: ********\n> | Welcome to the MySQL monitor.  Commands end with ; or \\g.\n> | Your MySQL connection id is 7\n> | Server version: 5.1.50-community MySQL Community Server (GPL)\n> |\n> | Copyright (c) 2000, 2010, Oracle and/or its affiliates. All rights reserved.\n> | This software comes with ABSOLUTELY NO WARRANTY. This is free software,\n> | and you are welcome to modify and redistribute it under the GPL v2 license\n> |\n> | Type 'help;' or '\\h' for help. Type '\\c' to clear the current input\n> | statement.\n> |\n> | mysql>\n> |\n> | ########################\n> |   Hi, Sean and Jack Tanner:\n> |\n> |\n> |\n> |        It's hard to RTFM when I don't know which FMTR.  Thanks to you\n> | both for helping me overcome this problem.\n> |\n> |\n> |              1.  Before I submitted this question, I read the help page\n> | for \"dbWriteTable\".  Unfortunately, I missed the \"append\" argument.  In\n> | this case, I RTFM without seeing what was there!\n> |\n> |\n> |              2.  Jack's suggestion led me to try \"RSiteSearch('MySQL\n> | INSERT')\".  This led me to a vignette written by Brian Ripley for the\n> | RODBC package.  I tried other searches without getting an answer.  Also,\n> | I had previously seen a post where Ripley recommended the RODBC package.\n> |   However, my previous searched did not help me figure out how to get\n> | started with it.\n> |\n> |\n> |        Best Wishes,\n> |        Spencer\n> |\n> |\n> | On 10/9/2010 5:47 AM, Sean Davis wrote:\n> |>  On Sat, Oct 9, 2010 at 12:00 AM, Spencer Graves<\n> |>  spencer.graves at structuremonitoring.com>   wrote:\n> |>\n> |>>    Hello, All:\n> |>>\n> |>>\n> |>>         How can I add rows to a MySQL database?\n> |>>\n> |>>\n> |>>         I can do it manually within MySQL server 5.1.50-community.  I can\n> |>>  connect to it using the RMySQL package.  When I tried \"dbReadTable\n> |>>  {DBI}\", I got a warning that \"table headers exists:\n> |>>\n> |>>\n> |>>    >   MySQL.<- MySQL()\n> |>>    >   MySQLcon<- dbConnect(MySQL., user=User, password=pw, dbname=myDB)\n> |>>    >   dbWriteTable(MySQLcon, 'headers', a.data.frame)\n> |>>  Warning message:\n> |>>  In mysqlWriteTable(conn, name, value, ...) :\n> |>>     table headers exists in database: aborting mysqlWriteTable\n> |>>\n> |>>\n> |>>         I know that table \"headers\" exists:  I want to add to it, not\n> |>>  create the entire table from scratch at once.\n> |>>\n> |>>\n> |>  See the help for dbWriteTable().  In particular, check out the append\n> |>  parameter.\n> |>\n> |>  Sean\n> |>\n> |\n> |\n> | --\n> | Spencer Graves, PE, PhD\n> | President and Chief Operating Officer\n> | Structure Inspection and Monitoring, Inc.\n> | 751 Emerson Ct.\n> | San Jos?, CA 95126\n> | ph:  408-655-4567\n> |\n> | _______________________________________________\n> | R-sig-DB mailing list -- R Special Interest Group\n> | R-sig-DB at stat.math.ethz.ch\n> | https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "Hi, Dirk, et al.:\n\n\n       Thanks for the quick reply.\n\n\n       What are the strengths and weaknesses of using RODBC vs. RMySQL?\n\n\n       I don't have either doing what I want yet, but I think I'm clo",
+      "thread_id": "thread-da9497cdb147",
+      "thread_depth": 4,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-14a4c48d5cf4",
+      "message_id": "<19636.17762.446930.940557@max.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2010-10-12T06:24:18-05:00",
+      "subject": "[R-sig-DB] adding to a MySQL database from within R?",
+      "subject_clean": "adding to a MySQL database from within R?",
+      "in_reply_to": "<4CB3D75A.2070309@structuremonitoring.com>",
+      "references": [
+        "<4CAFE8CD.3050205@structuremonitoring.com>",
+        "<AANLkTimXMpc0UZfTZKPX=qMUrSB_0kvJ16Ck_4pc6C=K@mail.gmail.com>",
+        "<4CB3CF31.7010805@structuremonitoring.com>",
+        "<19635.53925.557551.307196@max.nulle.part>",
+        "<4CB3D75A.2070309@structuremonitoring.com>"
+      ],
+      "body_plain": "On 11 October 2010 at 20:34, Spencer Graves wrote:\n|   Hi, Dirk, et al.:\n| \n| \n|        Thanks for the quick reply.\n| \n| \n|        What are the strengths and weaknesses of using RODBC vs. RMySQL?\n\nThat is also a question which have been debated to death before on the\nIntertubes or this list.  Do some searches.\n\nIn short, and as I see it, \n\n  - ODBC is more generic so what you do here may work similarly with other\n    software providing ODBC interfaces.  \n\n  - Specific binary interface can be faster, sometimes by a lot.  \n\n  - For R in particular, RMySQL supports the DBI interface so here the\n    situation is the inverse of the general solution: you may use what you \n    did with RMySQL again with RSQLite or RPostgreSQL or ...\n \n|        I don't have either doing what I want yet, but I think I'm closer \n| with RMySQL than RODBC.  On the other hand, I had the impression that \n| RODBC was better developed than RMySQL and therefore RODBC might be \n| faster and ultimately easier.\n\nUnsure. They are both exceedingly mature packages that have been around well\nover half a decade.  From what I understand RMySQL has its headaches with\ndifferent MySQL versions as well as Windows builds -- but I never had an\nissue.\n\nDirk\n \n| \n|        Thanks again.\n|        Spencer Graves\n| \n| \n| On 10/11/2010 8:14 PM, Dirk Eddelbuettel wrote:\n| > On 11 October 2010 at 20:00, Spencer Graves wrote:\n| > |\n| > | \t  How can I connect to a MySQL database with RODBC under Vista?  I\n| > | tried the following, inspired by Ripley's RODBC vignette:\n| > |\n| > |\n| > |>  MySQLcon<- odbcConnect('fillmoredb', uid='sbg', pwd='********')\n| > | Warning messages:\n| > | 1: In odbcDriverConnect(\"DSN=fillmoredb;UID=sbg;PWD=********) :\n| > |    [RODBC] ERROR: state IM002, code 0, message [Microsoft][ODBC Driver\n| > | Manager] Data source name not found and no default driver specified\n| >             ^^^^^^^^^^^^^^^^^^^^^^^^^^\n| >\n| > You need to define a DSN named 'fillmoredb'.  Windows being Windows, there\n| > are countless tutorials on the net about how to do this using the admin tools.\n| >\n| > The nice thing is that process is just about the same for every 'source'\n| > providing ODBC connectivity, so once you grok this you can re-use the same\n| > trick for non-MySQL-stored data.\n| >\n| > The not-so-nice thing, in my book, is that you still need to install the odbc\n| > drivers and beed to set up the dsn on each machine trying to use it.\n| >\n| > Dirk\n| >\n| > | 2: In odbcDriverConnect(\"DSN=fillmoredb;UID=sbg;PWD=********\") :\n| > |    ODBC connection failed\n| > |>  MySQL.<- odbcConnect('MySQL')\n| > | Warning messages:\n| > | 1: In odbcDriverConnect(\"DSN=MySQL\") :\n| > |    [RODBC] ERROR: state IM002, code 0, message [Microsoft][ODBC Driver\n| > | Manager] Data source name not found and no default driver specified\n| > | 2: In odbcDriverConnect(\"DSN=MySQL\") : ODBC connection failed\n| > |\n| > |\n| > | \t  Thanks,\n| > | \t  Spencer Graves\n| > |\n| > |\n| > |>  sessionInfo()\n| > | R version 2.11.1 (2010-05-31)\n| > | i386-pc-mingw32\n| > |\n| > | locale:\n| > | [1] LC_COLLATE=English_United States.1252  LC_CTYPE=English_United\n| > | States.1252    LC_MONETARY=English_United States.1252\n| > | [4] LC_NUMERIC=C                           LC_TIME=English_United\n| > | States.1252\n| > |\n| > | attached base packages:\n| > | [1] splines   stats     graphics  grDevices utils     datasets  methods\n| > |    base\n| > |\n| > | other attached packages:\n| > | [1] RODBC_1.3-2     multcomp_1.2-3  survival_2.35-8 mvtnorm_0.9-92\n| > |\n| > | loaded via a namespace (and not attached):\n| > | [1] tools_2.11.1\n| > |\n| > | ####\n| > | Enter password: ********\n| > | Welcome to the MySQL monitor.  Commands end with ; or \\g.\n| > | Your MySQL connection id is 7\n| > | Server version: 5.1.50-community MySQL Community Server (GPL)\n| > |\n| > | Copyright (c) 2000, 2010, Oracle and/or its affiliates. All rights reserved.\n| > | This software comes with ABSOLUTELY NO WARRANTY. This is free software,\n| > | and you are welcome to modify and redistribute it under the GPL v2 license\n| > |\n| > | Type 'help;' or '\\h' for help. Type '\\c' to clear the current input\n| > | statement.\n| > |\n| > | mysql>\n| > |\n| > | ########################\n| > |   Hi, Sean and Jack Tanner:\n| > |\n| > |\n| > |\n| > |        It's hard to RTFM when I don't know which FMTR.  Thanks to you\n| > | both for helping me overcome this problem.\n| > |\n| > |\n| > |              1.  Before I submitted this question, I read the help page\n| > | for \"dbWriteTable\".  Unfortunately, I missed the \"append\" argument.  In\n| > | this case, I RTFM without seeing what was there!\n| > |\n| > |\n| > |              2.  Jack's suggestion led me to try \"RSiteSearch('MySQL\n| > | INSERT')\".  This led me to a vignette written by Brian Ripley for the\n| > | RODBC package.  I tried other searches without getting an answer.  Also,\n| > | I had previously seen a post where Ripley recommended the RODBC package.\n| > |   However, my previous searched did not help me figure out how to get\n| > | started with it.\n| > |\n| > |\n| > |        Best Wishes,\n| > |        Spencer\n| > |\n| > |\n| > | On 10/9/2010 5:47 AM, Sean Davis wrote:\n| > |>  On Sat, Oct 9, 2010 at 12:00 AM, Spencer Graves<\n| > |>  spencer.graves at structuremonitoring.com>   wrote:\n| > |>\n| > |>>    Hello, All:\n| > |>>\n| > |>>\n| > |>>         How can I add rows to a MySQL database?\n| > |>>\n| > |>>\n| > |>>         I can do it manually within MySQL server 5.1.50-community.  I can\n| > |>>  connect to it using the RMySQL package.  When I tried \"dbReadTable\n| > |>>  {DBI}\", I got a warning that \"table headers exists:\n| > |>>\n| > |>>\n| > |>>    >   MySQL.<- MySQL()\n| > |>>    >   MySQLcon<- dbConnect(MySQL., user=User, password=pw, dbname=myDB)\n| > |>>    >   dbWriteTable(MySQLcon, 'headers', a.data.frame)\n| > |>>  Warning message:\n| > |>>  In mysqlWriteTable(conn, name, value, ...) :\n| > |>>     table headers exists in database: aborting mysqlWriteTable\n| > |>>\n| > |>>\n| > |>>         I know that table \"headers\" exists:  I want to add to it, not\n| > |>>  create the entire table from scratch at once.\n| > |>>\n| > |>>\n| > |>  See the help for dbWriteTable().  In particular, check out the append\n| > |>  parameter.\n| > |>\n| > |>  Sean\n| > |>\n| > |\n| > |\n| > | --\n| > | Spencer Graves, PE, PhD\n| > | President and Chief Operating Officer\n| > | Structure Inspection and Monitoring, Inc.\n| > | 751 Emerson Ct.\n| > | San Jos?, CA 95126\n| > | ph:  408-655-4567\n| > |\n| > | _______________________________________________\n| > | R-sig-DB mailing list -- R Special Interest Group\n| > | R-sig-DB at stat.math.ethz.ch\n| > | https://stat.ethz.ch/mailman/listinfo/r-sig-db\n| >\n\n-- \nDirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com",
+      "body_snippet": "On 11 October 2010 at 20:34, Spencer Graves wrote:\n|   Hi, Dirk, et al.:\n| \n| \n|        Thanks for the quick reply.\n| \n| \n|        What are the strengths and weaknesses of using RODBC vs. RMySQL?\n\nTha",
+      "thread_id": "thread-da9497cdb147",
+      "thread_depth": 5,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-3645545fcab7",
+      "message_id": "<4CB4718A.9060602@structuremonitoring.com>",
+      "from_name": "Spencer Graves",
+      "from_email_hash": "74d65542d39045b8f519f051690253c45d7423bc83fbcf361d3e6c7f58751916",
+      "date": "2010-10-12T07:32:42-07:00",
+      "subject": "[R-sig-DB] adding to a MySQL database from within R?",
+      "subject_clean": "adding to a MySQL database from within R?",
+      "in_reply_to": "<19636.17762.446930.940557@max.nulle.part>",
+      "references": [
+        "<4CAFE8CD.3050205@structuremonitoring.com>",
+        "<AANLkTimXMpc0UZfTZKPX=qMUrSB_0kvJ16Ck_4pc6C=K@mail.gmail.com>",
+        "<4CB3CF31.7010805@structuremonitoring.com>",
+        "<19635.53925.557551.307196@max.nulle.part>",
+        "<4CB3D75A.2070309@structuremonitoring.com>",
+        "<19636.17762.446930.940557@max.nulle.part>"
+      ],
+      "body_plain": "Hi, Dirk:\n\n\n       Thanks for the reply.  That gives me search terms for how to look \nfor more information and encourages me to try first with the MySQL / DBI \nsolution that I think I almost have working.\n\n\n       Best Wishes,\n       Spencer\n\n\nOn 10/12/2010 4:24 AM, Dirk Eddelbuettel wrote:\n> On 11 October 2010 at 20:34, Spencer Graves wrote:\n> |   Hi, Dirk, et al.:\n> |\n> |\n> |        Thanks for the quick reply.\n> |\n> |\n> |        What are the strengths and weaknesses of using RODBC vs. RMySQL?\n>\n> That is also a question which have been debated to death before on the\n> Intertubes or this list.  Do some searches.\n>\n> In short, and as I see it,\n>\n>    - ODBC is more generic so what you do here may work similarly with other\n>      software providing ODBC interfaces.\n>\n>    - Specific binary interface can be faster, sometimes by a lot.\n>\n>    - For R in particular, RMySQL supports the DBI interface so here the\n>      situation is the inverse of the general solution: you may use what you\n>      did with RMySQL again with RSQLite or RPostgreSQL or ...\n>\n> |        I don't have either doing what I want yet, but I think I'm closer\n> | with RMySQL than RODBC.  On the other hand, I had the impression that\n> | RODBC was better developed than RMySQL and therefore RODBC might be\n> | faster and ultimately easier.\n>\n> Unsure. They are both exceedingly mature packages that have been around well\n> over half a decade.  From what I understand RMySQL has its headaches with\n> different MySQL versions as well as Windows builds -- but I never had an\n> issue.\n>\n> Dirk\n>\n> |\n> |        Thanks again.\n> |        Spencer Graves\n> |\n> |\n> | On 10/11/2010 8:14 PM, Dirk Eddelbuettel wrote:\n> |>  On 11 October 2010 at 20:00, Spencer Graves wrote:\n> |>  |\n> |>  | \t  How can I connect to a MySQL database with RODBC under Vista?  I\n> |>  | tried the following, inspired by Ripley's RODBC vignette:\n> |>  |\n> |>  |\n> |>  |>   MySQLcon<- odbcConnect('fillmoredb', uid='sbg', pwd='********')\n> |>  | Warning messages:\n> |>  | 1: In odbcDriverConnect(\"DSN=fillmoredb;UID=sbg;PWD=********) :\n> |>  |    [RODBC] ERROR: state IM002, code 0, message [Microsoft][ODBC Driver\n> |>  | Manager] Data source name not found and no default driver specified\n> |>              ^^^^^^^^^^^^^^^^^^^^^^^^^^\n> |>\n> |>  You need to define a DSN named 'fillmoredb'.  Windows being Windows, there\n> |>  are countless tutorials on the net about how to do this using the admin tools.\n> |>\n> |>  The nice thing is that process is just about the same for every 'source'\n> |>  providing ODBC connectivity, so once you grok this you can re-use the same\n> |>  trick for non-MySQL-stored data.\n> |>\n> |>  The not-so-nice thing, in my book, is that you still need to install the odbc\n> |>  drivers and beed to set up the dsn on each machine trying to use it.\n> |>\n> |>  Dirk\n> |>\n> |>  | 2: In odbcDriverConnect(\"DSN=fillmoredb;UID=sbg;PWD=********\") :\n> |>  |    ODBC connection failed\n> |>  |>   MySQL.<- odbcConnect('MySQL')\n> |>  | Warning messages:\n> |>  | 1: In odbcDriverConnect(\"DSN=MySQL\") :\n> |>  |    [RODBC] ERROR: state IM002, code 0, message [Microsoft][ODBC Driver\n> |>  | Manager] Data source name not found and no default driver specified\n> |>  | 2: In odbcDriverConnect(\"DSN=MySQL\") : ODBC connection failed\n> |>  |\n> |>  |\n> |>  | \t  Thanks,\n> |>  | \t  Spencer Graves\n> |>  |\n> |>  |\n> |>  |>   sessionInfo()\n> |>  | R version 2.11.1 (2010-05-31)\n> |>  | i386-pc-mingw32\n> |>  |\n> |>  | locale:\n> |>  | [1] LC_COLLATE=English_United States.1252  LC_CTYPE=English_United\n> |>  | States.1252    LC_MONETARY=English_United States.1252\n> |>  | [4] LC_NUMERIC=C                           LC_TIME=English_United\n> |>  | States.1252\n> |>  |\n> |>  | attached base packages:\n> |>  | [1] splines   stats     graphics  grDevices utils     datasets  methods\n> |>  |    base\n> |>  |\n> |>  | other attached packages:\n> |>  | [1] RODBC_1.3-2     multcomp_1.2-3  survival_2.35-8 mvtnorm_0.9-92\n> |>  |\n> |>  | loaded via a namespace (and not attached):\n> |>  | [1] tools_2.11.1\n> |>  |\n> |>  | ####\n> |>  | Enter password: ********\n> |>  | Welcome to the MySQL monitor.  Commands end with ; or \\g.\n> |>  | Your MySQL connection id is 7\n> |>  | Server version: 5.1.50-community MySQL Community Server (GPL)\n> |>  |\n> |>  | Copyright (c) 2000, 2010, Oracle and/or its affiliates. All rights reserved.\n> |>  | This software comes with ABSOLUTELY NO WARRANTY. This is free software,\n> |>  | and you are welcome to modify and redistribute it under the GPL v2 license\n> |>  |\n> |>  | Type 'help;' or '\\h' for help. Type '\\c' to clear the current input\n> |>  | statement.\n> |>  |\n> |>  | mysql>\n> |>  |\n> |>  | ########################\n> |>  |   Hi, Sean and Jack Tanner:\n> |>  |\n> |>  |\n> |>  |\n> |>  |        It's hard to RTFM when I don't know which FMTR.  Thanks to you\n> |>  | both for helping me overcome this problem.\n> |>  |\n> |>  |\n> |>  |              1.  Before I submitted this question, I read the help page\n> |>  | for \"dbWriteTable\".  Unfortunately, I missed the \"append\" argument.  In\n> |>  | this case, I RTFM without seeing what was there!\n> |>  |\n> |>  |\n> |>  |              2.  Jack's suggestion led me to try \"RSiteSearch('MySQL\n> |>  | INSERT')\".  This led me to a vignette written by Brian Ripley for the\n> |>  | RODBC package.  I tried other searches without getting an answer.  Also,\n> |>  | I had previously seen a post where Ripley recommended the RODBC package.\n> |>  |   However, my previous searched did not help me figure out how to get\n> |>  | started with it.\n> |>  |\n> |>  |\n> |>  |        Best Wishes,\n> |>  |        Spencer\n> |>  |\n> |>  |\n> |>  | On 10/9/2010 5:47 AM, Sean Davis wrote:\n> |>  |>   On Sat, Oct 9, 2010 at 12:00 AM, Spencer Graves<\n> |>  |>   spencer.graves at structuremonitoring.com>    wrote:\n> |>  |>\n> |>  |>>     Hello, All:\n> |>  |>>\n> |>  |>>\n> |>  |>>          How can I add rows to a MySQL database?\n> |>  |>>\n> |>  |>>\n> |>  |>>          I can do it manually within MySQL server 5.1.50-community.  I can\n> |>  |>>   connect to it using the RMySQL package.  When I tried \"dbReadTable\n> |>  |>>   {DBI}\", I got a warning that \"table headers exists:\n> |>  |>>\n> |>  |>>\n> |>  |>>     >    MySQL.<- MySQL()\n> |>  |>>     >    MySQLcon<- dbConnect(MySQL., user=User, password=pw, dbname=myDB)\n> |>  |>>     >    dbWriteTable(MySQLcon, 'headers', a.data.frame)\n> |>  |>>   Warning message:\n> |>  |>>   In mysqlWriteTable(conn, name, value, ...) :\n> |>  |>>      table headers exists in database: aborting mysqlWriteTable\n> |>  |>>\n> |>  |>>\n> |>  |>>          I know that table \"headers\" exists:  I want to add to it, not\n> |>  |>>   create the entire table from scratch at once.\n> |>  |>>\n> |>  |>>\n> |>  |>   See the help for dbWriteTable().  In particular, check out the append\n> |>  |>   parameter.\n> |>  |>\n> |>  |>   Sean\n> |>  |>\n> |>  |\n> |>  |\n> |>  | --\n> |>  | Spencer Graves, PE, PhD\n> |>  | President and Chief Operating Officer\n> |>  | Structure Inspection and Monitoring, Inc.\n> |>  | 751 Emerson Ct.\n> |>  | San Jos?, CA 95126\n> |>  | ph:  408-655-4567\n> |>  |\n> |>  | _______________________________________________\n> |>  | R-sig-DB mailing list -- R Special Interest Group\n> |>  | R-sig-DB at stat.math.ethz.ch\n> |>  | https://stat.ethz.ch/mailman/listinfo/r-sig-db\n> |>\n>\n\n\n-- \nSpencer Graves, PE, PhD\nPresident and Chief Operating Officer\nStructure Inspection and Monitoring, Inc.\n751 Emerson Ct.\nSan Jos?, CA 95126\nph:  408-655-4567",
+      "body_snippet": "Hi, Dirk:\n\n\n       Thanks for the reply.  That gives me search terms for how to look \nfor more information and encourages me to try first with the MySQL / DBI \nsolution that I think I almost have work",
+      "thread_id": "thread-da9497cdb147",
+      "thread_depth": 6,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-2851e8079db3",
+      "message_id": "<AANLkTin0Vt84HoJMrmYaMOdU3D0Y-6e6+dAnfHu6sHki@mail.gmail.com>",
+      "from_name": "Nilza BARROS",
+      "from_email_hash": "30d3c3a70854317e1774795dd909f4d61c014c2a0c5d202ff579bc802cb3c6d9",
+      "date": "2010-10-15T23:39:40-03:00",
+      "subject": "[R-sig-DB]  [R] Rmysql - dbWritetable",
+      "subject_clean": "Rmysql - dbWritetable",
+      "in_reply_to": "<AANLkTi=6N4MBJy4GjRtXK+Nw-Lha7KoQuFQh=xTyidAA@mail.gmail.com>",
+      "references": [
+        "<AANLkTi=6N4MBJy4GjRtXK+Nw-Lha7KoQuFQh=xTyidAA@mail.gmail.com>"
+      ],
+      "body_plain": "Dear Rusers,\n\nI am trying to feed my database with data from a file.\n\nBut since my file (2010101000.txt) there`s no headers I am facing problem\nbecause the\nresult data.frame is not separated my columns.\n\nHow could I set variables names for each columns in *dbWriteTable*? I have\ntried the command below but I don`t know how to fill the *field.type*option.\n\n\ndbWriteTable(con, \"b20101010\", \"./2010101000.txt\", overwrite = T, sep =\n\"\\t\",row.names=c(\"V01\", \"V02\", \"V03\", \"V04\", \"V05\", \"V06\",\" V07\",\"V08\",\n\"V09\", \"V10\", \"V11\", \"V12\", \"V13\", \"V14\"),field.type=????)\n\n===Below what I have been used. I need to know how to set the column names\nto xx (my dataframe).\n\n> drv=dbDriver(\"MySQL\")\n> con <- dbConnect(drv,dbname='buoy',user=\"xx\",password=\"xxx\")\n> dbWriteTable(con, \"b20101010\", \"./2010101000.txt\", overwrite = T, sep =\n\"\\t\", head = F)\n[1] TRUE\n>\n> *xx*<- dbGetQuery(con, \"SELECT * FROM b20101010  \")\n> xx\n\n*  V1\n*1 00859 2010 10 10 00 50  -41.51   6.83  -9999   1016  -9999 -9999.0\n-9999.0 -9999.0\n2 00859 2010 10 09 22 50  -41.51   6.81  -9999   1015  -9999 -9999.0 -9999.0\n-9999.0\n3 00707 2010 10 09 23 00  -34.04 -37.63  -9999   1025  -9999 -9999.0 -9999.0\n-9999.0\n4 00005 2010 10 09 23 00  -34.69 -18.89  -9999   1017    207     7.2   297.1\n-9999.0\n5 00859 2010 10 09 23 50  -41.51   6.81  -9999   1015  -9999 -9999.0 -9999.0\n-9999.0\n6 00005 2010 10 09 23 00  -34.69 -18.89  -9999   1017    207     7.2   297.1\n-9999.0\n7 00617 2010 10 09 23 20  -18.43 -23.09  -9999   1023  -9999 -9999.0 -9999.0\n-9999.0\n8 00707 2010 10 10 00 00  -34.03 -37.62  -9999   1025  -9999 -9999.0 -9999.0\n-9999.0\n9 00707 2010 10 10 01 00  -34.03 -37.62  -9999   1025  -9999 -9999.0 -9999.0\n-9999.0\n*> length(xx)\n[1] 1\n*\n-- \nAbra?o,\nNilza Barros\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Dear Rusers,\n\nI am trying to feed my database with data from a file.\n\nBut since my file (2010101000.txt) there`s no headers I am facing problem\nbecause the\nresult data.frame is not separated my column",
+      "thread_id": "thread-2851e8079db3",
+      "thread_depth": 0,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-88b0ae43c79e",
+      "message_id": "<4CB9191F.2060100@structuremonitoring.com>",
+      "from_name": "Spencer Graves",
+      "from_email_hash": "74d65542d39045b8f519f051690253c45d7423bc83fbcf361d3e6c7f58751916",
+      "date": "2010-10-15T20:16:47-07:00",
+      "subject": "[R-sig-DB] [R] Rmysql - dbWritetable",
+      "subject_clean": "Rmysql - dbWritetable",
+      "in_reply_to": "<AANLkTin0Vt84HoJMrmYaMOdU3D0Y-6e6+dAnfHu6sHki@mail.gmail.com>",
+      "references": [
+        "<AANLkTi=6N4MBJy4GjRtXK+Nw-Lha7KoQuFQh=xTyidAA@mail.gmail.com>",
+        "<AANLkTin0Vt84HoJMrmYaMOdU3D0Y-6e6+dAnfHu6sHki@mail.gmail.com>"
+      ],
+      "body_plain": "Hi, Nilza:\n\n\n       Did you receive my reply to your earlier post to R-Help, which \nlooks to me identical to this \n(https://stat.ethz.ch/pipermail/r-help/2010-October/256012.html)?  I'd \nlike to know if you tried what I suggested there.  If you did, what were \nthe results?  If not, why not?\n\n\n       PLEASE do read the posting guide \n\"www.R-project.org/posting-guide.html\" and provide commented, minimal, \nself-contained, reproducible code.  Your example is not completely self \ncontained.  It might help if you include \"sessionInfo()\".  In my \nprevious reply, there are help pages documenting \"dbWriteTable\" in 10 \ndifferent packages.  I've not used \"dbWriteTable\" very much, but it \nmight help to know which of these 10 packages you are using.\n\n\n\n       I've found that following the posting guide often helps me find a \nsolution to my problem.  If I still can't solve the problem, this often \nhelps me pose the question in a way more likely to generate an answer \nthat actually helps me solve the problem.\n\n\n       I'm sorry if this is not any more helpful than my previous reply.\n       Spencer Graves\n\n\nOn 10/15/2010 7:39 PM, Nilza BARROS wrote:\n>   Dear Rusers,\n>\n> I am trying to feed my database with data from a file.\n>\n> But since my file (2010101000.txt) there`s no headers I am facing problem\n> because the\n> result data.frame is not separated my columns.\n>\n> How could I set variables names for each columns in *dbWriteTable*? I have\n> tried the command below but I don`t know how to fill the *field.type*option.\n>\n>\n> dbWriteTable(con, \"b20101010\", \"./2010101000.txt\", overwrite = T, sep =\n> \"\\t\",row.names=c(\"V01\", \"V02\", \"V03\", \"V04\", \"V05\", \"V06\",\" V07\",\"V08\",\n> \"V09\", \"V10\", \"V11\", \"V12\", \"V13\", \"V14\"),field.type=????)\n>\n> ===Below what I have been used. I need to know how to set the column names\n> to xx (my dataframe).\n>\n>> drv=dbDriver(\"MySQL\")\n>> con<- dbConnect(drv,dbname='buoy',user=\"xx\",password=\"xxx\")\n>> dbWriteTable(con, \"b20101010\", \"./2010101000.txt\", overwrite = T, sep =\n> \"\\t\", head = F)\n> [1] TRUE\n>> *xx*<- dbGetQuery(con, \"SELECT * FROM b20101010  \")\n>> xx\n> *  V1\n> *1 00859 2010 10 10 00 50  -41.51   6.83  -9999   1016  -9999 -9999.0\n> -9999.0 -9999.0\n> 2 00859 2010 10 09 22 50  -41.51   6.81  -9999   1015  -9999 -9999.0 -9999.0\n> -9999.0\n> 3 00707 2010 10 09 23 00  -34.04 -37.63  -9999   1025  -9999 -9999.0 -9999.0\n> -9999.0\n> 4 00005 2010 10 09 23 00  -34.69 -18.89  -9999   1017    207     7.2   297.1\n> -9999.0\n> 5 00859 2010 10 09 23 50  -41.51   6.81  -9999   1015  -9999 -9999.0 -9999.0\n> -9999.0\n> 6 00005 2010 10 09 23 00  -34.69 -18.89  -9999   1017    207     7.2   297.1\n> -9999.0\n> 7 00617 2010 10 09 23 20  -18.43 -23.09  -9999   1023  -9999 -9999.0 -9999.0\n> -9999.0\n> 8 00707 2010 10 10 00 00  -34.03 -37.62  -9999   1025  -9999 -9999.0 -9999.0\n> -9999.0\n> 9 00707 2010 10 10 01 00  -34.03 -37.62  -9999   1025  -9999 -9999.0 -9999.0\n> -9999.0\n> *>  length(xx)\n> [1] 1\n> *\n>\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi, Nilza:\n\n\n       Did you receive my reply to your earlier post to R-Help, which \nlooks to me identical to this \n(https://stat.ethz.ch/pipermail/r-help/2010-October/256012.html)?  I'd \nlike to know ",
+      "thread_id": "thread-2851e8079db3",
+      "thread_depth": 1,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-492808c4ed6b",
+      "message_id": "<AANLkTikBTeEVBi-M1Q_it-CGD_SU75TBC=HjXLngqFBq@mail.gmail.com>",
+      "from_name": "Nilza BARROS",
+      "from_email_hash": "30d3c3a70854317e1774795dd909f4d61c014c2a0c5d202ff579bc802cb3c6d9",
+      "date": "2010-10-16T20:31:49-03:00",
+      "subject": "[R-sig-DB] [R] Rmysql - dbWritetable",
+      "subject_clean": "Rmysql - dbWritetable",
+      "in_reply_to": "<4CB9191F.2060100@structuremonitoring.com>",
+      "references": [
+        "<AANLkTi=6N4MBJy4GjRtXK+Nw-Lha7KoQuFQh=xTyidAA@mail.gmail.com>",
+        "<AANLkTin0Vt84HoJMrmYaMOdU3D0Y-6e6+dAnfHu6sHki@mail.gmail.com>",
+        "<4CB9191F.2060100@structuremonitoring.com>"
+      ],
+      "body_plain": "Dear Spencer,\n\nThank you for your help. I read your email  and that`s the reason why I sent\nan email to r-sig-db as you suggested.\n But I have just realized that you suggested the command below too. I`ve\ntried it and that`s fine. I was waiting to solve my problem to reply the\nemail to r-help group. That`s what I am doing now! Thank you!!\n\nx2010 <- read.table('2010101000.txt')\ndbWriteTable(con, \"b20101010\", x2010, overwrite = T)\nxx<- dbGetQuery(con, \"SELECT * FROM b20101010  \")\n*> dim(xx)\n[1] 338  17\n*\n  row_names    V1   V2 V3 V4 V5 V6     V7     V8   V9   V10  V11  V12 V13\nV14\n1         1 82824 2010 10 10  0  0 -63.91  -8.76  102 -9999 1002 1012  50\n10.3\n2         2  5125 2010 10 10  0  0 -46.90 -19.60 1000 -9999  903 1015 117\n1.8\n3         3  9223 2010 10 10  0  0 -54.60 -16.40  284 -9999  980 1012 224\n2.3\n4         4     8 2010 10 10  0  0 -48.10 -15.90 1000 -9999  890  999 290\n2.6\n5         5  5133 2010 10 10  0  0 -43.80 -20.60 1000 -9999  902 1016 120\n3.8\n6         6  5147 2010 10 10  0  0 -41.50 -17.90  475 -9999  965 1020  65\n4.8\n    V15   V16\n1 297.1 295.4\n2 293.4 282.1\n3 300.9 280.8\n4 295.8 288.9\n5 288.1 283.6\n6 294.4 289.2\n\n\nOn Sat, Oct 16, 2010 at 12:16 AM, Spencer Graves <\nspencer.graves at structuremonitoring.com> wrote:\n\n> Hi, Nilza:\n>\n>\n>       Did you receive my reply to your earlier post to R-Help, which looks\n> to me identical to this (\n> https://stat.ethz.ch/pipermail/r-help/2010-October/256012.html)?  I'd like\n> to know if you tried what I suggested there.  If you did, what were the\n> results?  If not, why not?\n>\n>\n>       PLEASE do read the posting guide \"\n> www.R-project.org/posting-guide.html<http://www.r-project.org/posting-guide.html>\"\n> and provide commented, minimal, self-contained, reproducible code.  Your\n> example is not completely self contained.  It might help if you include\n> \"sessionInfo()\".  In my previous reply, there are help pages documenting\n> \"dbWriteTable\" in 10 different packages.  I've not used \"dbWriteTable\" very\n> much, but it might help to know which of these 10 packages you are using.\n>\n>\n>\n>       I've found that following the posting guide often helps me find a\n> solution to my problem.  If I still can't solve the problem, this often\n> helps me pose the question in a way more likely to generate an answer that\n> actually helps me solve the problem.\n>\n>\n>       I'm sorry if this is not any more helpful than my previous reply.\n>       Spencer Graves\n>\n>\n> On 10/15/2010 7:39 PM, Nilza BARROS wrote:\n>\n>   Dear Rusers,\n>\n> I am trying to feed my database with data from a file.\n>\n> But since my file (2010101000.txt) there`s no headers I am facing problem\n> because the\n> result data.frame is not separated my columns.\n>\n> How could I set variables names for each columns in *dbWriteTable*? I have\n> tried the command below but I don`t know how to fill the *field.type*option.\n>\n>\n> dbWriteTable(con, \"b20101010\", \"./2010101000.txt\", overwrite = T, sep =\n> \"\\t\",row.names=c(\"V01\", \"V02\", \"V03\", \"V04\", \"V05\", \"V06\",\" V07\",\"V08\",\n> \"V09\", \"V10\", \"V11\", \"V12\", \"V13\", \"V14\"),field.type=????)\n>\n> ===Below what I have been used. I need to know how to set the column names\n> to xx (my dataframe).\n>\n>\n> drv=dbDriver(\"MySQL\")\n> con <- dbConnect(drv,dbname='buoy',user=\"xx\",password=\"xxx\")\n> dbWriteTable(con, \"b20101010\", \"./2010101000.txt\", overwrite = T, sep =\n>\n> \"\\t\", head = F)\n> [1] TRUE\n>\n> *xx*<- dbGetQuery(con, \"SELECT * FROM b20101010  \")\n> xx\n>\n> *  V1\n> *1 00859 2010 10 10 00 50  -41.51   6.83  -9999   1016  -9999 -9999.0\n> -9999.0 -9999.0\n> 2 00859 2010 10 09 22 50  -41.51   6.81  -9999   1015  -9999 -9999.0 -9999.0\n> -9999.0\n> 3 00707 2010 10 09 23 00  -34.04 -37.63  -9999   1025  -9999 -9999.0 -9999.0\n> -9999.0\n> 4 00005 2010 10 09 23 00  -34.69 -18.89  -9999   1017    207     7.2   297.1\n> -9999.0\n> 5 00859 2010 10 09 23 50  -41.51   6.81  -9999   1015  -9999 -9999.0 -9999.0\n> -9999.0\n> 6 00005 2010 10 09 23 00  -34.69 -18.89  -9999   1017    207     7.2   297.1\n> -9999.0\n> 7 00617 2010 10 09 23 20  -18.43 -23.09  -9999   1023  -9999 -9999.0 -9999.0\n> -9999.0\n> 8 00707 2010 10 10 00 00  -34.03 -37.62  -9999   1025  -9999 -9999.0 -9999.0\n> -9999.0\n> 9 00707 2010 10 10 01 00  -34.03 -37.62  -9999   1025  -9999 -9999.0 -9999.0\n> -9999.0\n> *> length(xx)\n> [1] 1\n> *\n>\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest GroupR-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n>\n>\n\n\n-- \nAbra?o,\nNilza Barros\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Dear Spencer,\n\nThank you for your help. I read your email  and that`s the reason why I sent\nan email to r-sig-db as you suggested.\n But I have just realized that you suggested the command below too. I",
+      "thread_id": "thread-2851e8079db3",
+      "thread_depth": 2,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-289e34ebc09b",
+      "message_id": "<BAY123-W22F8425148C40BBC36282A85A0@phx.gbl>",
+      "from_name": "Maciej Ombach",
+      "from_email_hash": "6573ae5213aedfcece1ae28cf5daf1c53ae43edb92bea766644e53bc2e5a7a7b",
+      "date": "2010-10-17T21:35:27-04:00",
+      "subject": "[R-sig-DB] RODBC: how to view multiple objects returned by a stored procedure?",
+      "subject_clean": "RODBC: how to view multiple objects returned by a stored procedure?",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I am trying to use a stored procedure (MS SQL Server 2005) that requires an xml input (R 2.11.0, RODBC 1.3-2).  This stored procedure returns a header/metadata and a data table (which I verified in DBArtisan).\n \nMy R code looks like this:\n \nlibrary(RODBC)\nquery <- \"\nexec sp_GetIndexData @ApplicationName='XXXXX', @UserName='XXXXX',\n@XMLInput=N'<getdata>\n<header fromdate=\\\"12/31/2009\\\" todate=\\\"8/23/2010\\\" frequency=\\\"1\\\" download=\\\"0\\\" viewcurveorspread=\\\"1\\\"/>\n<serieslist>\n<series cusip=\\\"H0A0\\\" item=\\\"62\\\"/>\n</serieslist>\n</getdata>'\n\"\nquery1 <- gsub(\"\\n\", \"\", query)\ndbSource <- odbcConnect(\"XXX\", uid = \"xxx\", pwd = \"xxx\")\nout <- sqlQuery(dbSource, query1)\nodbcClose(dbSource)\n \nThis and other slightly modified calls return an empty character string (out).  I am able to run simple select queries against this database, so the connection is working.  The stored proc also works in Excel VBA, where it returns two recordsets: the first one is empty (header?), the second one has the data I need (in VBA, rs.NextRecordset allows to loop through recordsets).\n \nAt this point, my best guess is that something similar is happening in R.  I am getting back an empty header and need to figure out how to view the actual data table.  Any suggestions would be much appreciated.\n \nMaciek\n \n \n \t\t \t   \t\t  \n\t[[alternative HTML version deleted]]",
+      "body_snippet": "I am trying to use a stored procedure (MS SQL Server 2005) that requires an xml input (R 2.11.0, RODBC 1.3-2).  This stored procedure returns a header/metadata and a data table (which I verified in DB",
+      "thread_id": "thread-289e34ebc09b",
+      "thread_depth": 0,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-7d18e00b8fa1",
+      "message_id": "<alpine.LFD.2.00.1010180720140.6193@gannet.stats.ox.ac.uk>",
+      "from_name": "Prof Brian Ripley",
+      "from_email_hash": "818dae4fdf4016331d08ab8b5065ff3f981ce989ce3ae70303f20f145d5949e1",
+      "date": "2010-10-18T07:20:30+01:00",
+      "subject": "[R-sig-DB] RODBC: how to view multiple objects returned by a stored procedure?",
+      "subject_clean": "RODBC: how to view multiple objects returned by a stored procedure?",
+      "in_reply_to": "<BAY123-W22F8425148C40BBC36282A85A0@phx.gbl>",
+      "references": [
+        "<BAY123-W22F8425148C40BBC36282A85A0@phx.gbl>"
+      ],
+      "body_plain": "Sorry, this is a question about ODBC, not R.\n\n\nOn Sun, 17 Oct 2010, Maciej Ombach wrote:\n\n>\n>\n> I am trying to use a stored procedure (MS SQL Server 2005) that requires an xml input (R 2.11.0, RODBC 1.3-2).  This stored procedure returns a header/metadata and a data table (which I verified in DBArtisan).\n>\n> My R code looks like this:\n>\n> library(RODBC)\n> query <- \"\n> exec sp_GetIndexData @ApplicationName='XXXXX', @UserName='XXXXX',\n> @XMLInput=N'<getdata>\n> <header fromdate=\\\"12/31/2009\\\" todate=\\\"8/23/2010\\\" frequency=\\\"1\\\" download=\\\"0\\\" viewcurveorspread=\\\"1\\\"/>\n> <serieslist>\n> <series cusip=\\\"H0A0\\\" item=\\\"62\\\"/>\n> </serieslist>\n> </getdata>'\n> \"\n> query1 <- gsub(\"\\n\", \"\", query)\n> dbSource <- odbcConnect(\"XXX\", uid = \"xxx\", pwd = \"xxx\")\n> out <- sqlQuery(dbSource, query1)\n> odbcClose(dbSource)\n>\n> This and other slightly modified calls return an empty character string (out).  I am able to run simple select queries against this database, so the connection is working.  The stored proc also works in Excel VBA, where it returns two recordsets: the first one is empty (header?), the second one has the data I need (in VBA, rs.NextRecordset allows to loop through recordsets).\n>\n> At this point, my best guess is that something similar is happening in R.  I am getting back an empty header and need to figure out how to view the actual data table.  Any suggestions would be much appreciated.\n>\n> Maciek\n>\n>\n>\n> \t[[alternative HTML version deleted]]\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_snippet": "Sorry, this is a question about ODBC, not R.\n\n\nOn Sun, 17 Oct 2010, Maciej Ombach wrote:\n\n>\n>\n> I am trying to use a stored procedure (MS SQL Server 2005) that requires an xml input (R 2.11.0, RODBC 1",
+      "thread_id": "thread-289e34ebc09b",
+      "thread_depth": 1,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-8c39cfe98790",
+      "message_id": "<AANLkTikVE5xWgkckHLrWVQd8NQd_AimsDO0raw4koetU@mail.gmail.com>",
+      "from_name": "Ajay Ohri",
+      "from_email_hash": "ea49ef5a61aa2f1d3b5b05c3b360b197fa8f7ac228dc7834aeafe60091e48ae0",
+      "date": "2010-10-24T23:40:06+05:30",
+      "subject": "[R-sig-DB] [RPostgreSQL] Unable to find",
+      "subject_clean": "[RPostgreSQL] Unable to find",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi\n\nI am unable to find R PostgreSQL ( I am on WIndows, R 2.12.0 ) via CRAN.\n\nIs the package still  available and working?\n\nAlso what are the differences between RODBC ,RPostgreSQL and RpgSQL- and\nwhich one is recommended for PostgresSQL databases. ( I couldnt find rdbi as\nwell)\n\nI am using PostgreSql 9.0\n\n\n\nRegards\n\nAjay\n\n\n\n\nI get the error message-\n\nWebsites-\nhttp://decisionstats.com\nhttp://dudeofdata.com\n\n\nLinkedin- www.linkedin.com/in/ajayohri\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi\n\nI am unable to find R PostgreSQL ( I am on WIndows, R 2.12.0 ) via CRAN.\n\nIs the package still  available and working?\n\nAlso what are the differences between RODBC ,RPostgreSQL and RpgSQL- and\nwhi",
+      "thread_id": "thread-8c39cfe98790",
+      "thread_depth": 0,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-917a2e4f986e",
+      "message_id": "<DC1C64B3-59D0-4939-8AA0-80F636D137F9@neiltiffin.com>",
+      "from_name": "Neil Tiffin",
+      "from_email_hash": "02caa571c9273bbe0611b9c1c0bcdd4cd3e05d030ae04cda746228553f04aab5",
+      "date": "2010-10-24T13:20:57-05:00",
+      "subject": "[R-sig-DB] [RPostgreSQL] Unable to find",
+      "subject_clean": "[RPostgreSQL] Unable to find",
+      "in_reply_to": "<AANLkTikVE5xWgkckHLrWVQd8NQd_AimsDO0raw4koetU@mail.gmail.com>",
+      "references": [
+        "<AANLkTikVE5xWgkckHLrWVQd8NQd_AimsDO0raw4koetU@mail.gmail.com>"
+      ],
+      "body_plain": "http://cran.r-project.org/web/packages/RPostgreSQL/index.html\n\nIt is source only and a new version was released 17 Oct 2010.  You will need to compile from the source.\n\nNeil\n\nOn Oct 24, 2010, at 1:10 PM, Ajay Ohri wrote:\n\n> Hi\n> \n> I am unable to find R PostgreSQL ( I am on WIndows, R 2.12.0 ) via CRAN.\n> \n> Is the package still  available and working?\n> \n> Also what are the differences between RODBC ,RPostgreSQL and RpgSQL- and\n> which one is recommended for PostgresSQL databases. ( I couldnt find rdbi as\n> well)\n> \n> I am using PostgreSql 9.0\n> \n> \n> \n> Regards\n> \n> Ajay\n> \n> \n> \n> \n> I get the error message-\n> \n> Websites-\n> http://decisionstats.com\n> http://dudeofdata.com\n> \n> \n> Linkedin- www.linkedin.com/in/ajayohri\n> \n> \t[[alternative HTML version deleted]]\n> \n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "http://cran.r-project.org/web/packages/RPostgreSQL/index.html\n\nIt is source only and a new version was released 17 Oct 2010.  You will need to compile from the source.\n\nNeil\n\nOn Oct 24, 2010, at 1:10 ",
+      "thread_id": "thread-8c39cfe98790",
+      "thread_depth": 1,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-65a9b7da0051",
+      "message_id": "<AANLkTi=ZJWL-jD6-X7Q9wrSb1L5n8PYXGEQgJKNzKDcV@mail.gmail.com>",
+      "from_name": "Ajay Ohri",
+      "from_email_hash": "ea49ef5a61aa2f1d3b5b05c3b360b197fa8f7ac228dc7834aeafe60091e48ae0",
+      "date": "2010-10-25T00:10:50+05:30",
+      "subject": "[R-sig-DB] [RPostgreSQL] Unable to find",
+      "subject_clean": "[RPostgreSQL] Unable to find",
+      "in_reply_to": "<DC1C64B3-59D0-4939-8AA0-80F636D137F9@neiltiffin.com>",
+      "references": [
+        "<AANLkTikVE5xWgkckHLrWVQd8NQd_AimsDO0raw4koetU@mail.gmail.com>",
+        "<DC1C64B3-59D0-4939-8AA0-80F636D137F9@neiltiffin.com>"
+      ],
+      "body_plain": "how do I do that in windows please.\n\najay\n\nWebsites-\nhttp://decisionstats.com\nhttp://dudeofdata.com\n\n\nLinkedin- www.linkedin.com/in/ajayohri\n\n\n\n\nOn Sun, Oct 24, 2010 at 11:50 PM, Neil Tiffin <neilt at neiltiffin.com> wrote:\n\n> http://cran.r-project.org/web/packages/RPostgreSQL/index.html\n>\n> It is source only and a new version was released 17 Oct 2010.  You will\n> need to compile from the source.\n>\n> Neil\n>\n> On Oct 24, 2010, at 1:10 PM, Ajay Ohri wrote:\n>\n> > Hi\n> >\n> > I am unable to find R PostgreSQL ( I am on WIndows, R 2.12.0 ) via CRAN.\n> >\n> > Is the package still  available and working?\n> >\n> > Also what are the differences between RODBC ,RPostgreSQL and RpgSQL- and\n> > which one is recommended for PostgresSQL databases. ( I couldnt find rdbi\n> as\n> > well)\n> >\n> > I am using PostgreSql 9.0\n> >\n> >\n> >\n> > Regards\n> >\n> > Ajay\n> >\n> >\n> >\n> >\n> > I get the error message-\n> >\n> > Websites-\n> > http://decisionstats.com\n> > http://dudeofdata.com\n> >\n> >\n> > Linkedin- www.linkedin.com/in/ajayohri\n> >\n> >       [[alternative HTML version deleted]]\n> >\n> > _______________________________________________\n> > R-sig-DB mailing list -- R Special Interest Group\n> > R-sig-DB at stat.math.ethz.ch\n> > https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "how do I do that in windows please.\n\najay\n\nWebsites-\nhttp://decisionstats.com\nhttp://dudeofdata.com\n\n\nLinkedin- www.linkedin.com/in/ajayohri\n\n\n\n\nOn Sun, Oct 24, 2010 at 11:50 PM, Neil Tiffin <neilt at",
+      "thread_id": "thread-8c39cfe98790",
+      "thread_depth": 2,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-de59b072fe8f",
+      "message_id": "<19652.32378.188855.570702@max.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2010-10-24T13:44:10-05:00",
+      "subject": "[R-sig-DB] [RPostgreSQL] Unable to find",
+      "subject_clean": "[RPostgreSQL] Unable to find",
+      "in_reply_to": "<DC1C64B3-59D0-4939-8AA0-80F636D137F9@neiltiffin.com>",
+      "references": [
+        "<AANLkTikVE5xWgkckHLrWVQd8NQd_AimsDO0raw4koetU@mail.gmail.com>",
+        "<DC1C64B3-59D0-4939-8AA0-80F636D137F9@neiltiffin.com>"
+      ],
+      "body_plain": "On 24 October 2010 at 13:20, Neil Tiffin wrote:\n| It is source only and a new version was released 17 Oct 2010.  You will need to compile from the source.\n\nCorrect. The windows build systems for CRAN do not currently have a\nPostgresql _library_ against which the RPostgreSQL package can be built.\n\nVolunteer help in getting current 32 and 64 bit Postgresql libraries onto the\nCRAN build systems would be appreciated. Contact us off-list if you can help.\n\nDirk\n \n| Neil\n| \n| On Oct 24, 2010, at 1:10 PM, Ajay Ohri wrote:\n| \n| > Hi\n| > \n| > I am unable to find R PostgreSQL ( I am on WIndows, R 2.12.0 ) via CRAN.\n| > \n| > Is the package still  available and working?\n| > \n| > Also what are the differences between RODBC ,RPostgreSQL and RpgSQL- and\n| > which one is recommended for PostgresSQL databases. ( I couldnt find rdbi as\n| > well)\n| > \n| > I am using PostgreSql 9.0\n| > \n| > \n| > \n| > Regards\n| > \n| > Ajay\n| > \n| > \n| > \n| > \n| > I get the error message-\n| > \n| > Websites-\n| > http://decisionstats.com\n| > http://dudeofdata.com\n| > \n| > \n| > Linkedin- www.linkedin.com/in/ajayohri\n| > \n| > \t[[alternative HTML version deleted]]\n| > \n| > _______________________________________________\n| > R-sig-DB mailing list -- R Special Interest Group\n| > R-sig-DB at stat.math.ethz.ch\n| > https://stat.ethz.ch/mailman/listinfo/r-sig-db\n| \n| _______________________________________________\n| R-sig-DB mailing list -- R Special Interest Group\n| R-sig-DB at stat.math.ethz.ch\n| https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n-- \nDirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com",
+      "body_snippet": "On 24 October 2010 at 13:20, Neil Tiffin wrote:\n| It is source only and a new version was released 17 Oct 2010.  You will need to compile from the source.\n\nCorrect. The windows build systems for CRAN ",
+      "thread_id": "thread-8c39cfe98790",
+      "thread_depth": 2,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-9c87dc35a4aa",
+      "message_id": "<19652.32849.209509.925251@max.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2010-10-24T13:52:01-05:00",
+      "subject": "[R-sig-DB] [RPostgreSQL] Unable to find",
+      "subject_clean": "[RPostgreSQL] Unable to find",
+      "in_reply_to": "<AANLkTi=ZJWL-jD6-X7Q9wrSb1L5n8PYXGEQgJKNzKDcV@mail.gmail.com>",
+      "references": [
+        "<AANLkTikVE5xWgkckHLrWVQd8NQd_AimsDO0raw4koetU@mail.gmail.com>",
+        "<DC1C64B3-59D0-4939-8AA0-80F636D137F9@neiltiffin.com>",
+        "<AANLkTi=ZJWL-jD6-X7Q9wrSb1L5n8PYXGEQgJKNzKDcV@mail.gmail.com>"
+      ],
+      "body_plain": "On 25 October 2010 at 00:10, Ajay Ohri wrote:\n| how do I do that in windows please.\n\nIf everything else fails, you could consider reading the R manuals\n'Installation and Administration' and 'Writing R Extensions' that came with\nyour R installation.\n\nDirk\n \n| ajay\n| \n| Websites-\n| http://decisionstats.com\n| http://dudeofdata.com\n| \n| \n| Linkedin- www.linkedin.com/in/ajayohri\n| \n| \n| \n| \n| On Sun, Oct 24, 2010 at 11:50 PM, Neil Tiffin <neilt at neiltiffin.com> wrote:\n| \n| > http://cran.r-project.org/web/packages/RPostgreSQL/index.html\n| >\n| > It is source only and a new version was released 17 Oct 2010.  You will\n| > need to compile from the source.\n| >\n| > Neil\n| >\n| > On Oct 24, 2010, at 1:10 PM, Ajay Ohri wrote:\n| >\n| > > Hi\n| > >\n| > > I am unable to find R PostgreSQL ( I am on WIndows, R 2.12.0 ) via CRAN.\n| > >\n| > > Is the package still  available and working?\n| > >\n| > > Also what are the differences between RODBC ,RPostgreSQL and RpgSQL- and\n| > > which one is recommended for PostgresSQL databases. ( I couldnt find rdbi\n| > as\n| > > well)\n| > >\n| > > I am using PostgreSql 9.0\n| > >\n| > >\n| > >\n| > > Regards\n| > >\n| > > Ajay\n| > >\n| > >\n| > >\n| > >\n| > > I get the error message-\n| > >\n| > > Websites-\n| > > http://decisionstats.com\n| > > http://dudeofdata.com\n| > >\n| > >\n| > > Linkedin- www.linkedin.com/in/ajayohri\n| > >\n| > >       [[alternative HTML version deleted]]\n| > >\n| > > _______________________________________________\n| > > R-sig-DB mailing list -- R Special Interest Group\n| > > R-sig-DB at stat.math.ethz.ch\n| > > https://stat.ethz.ch/mailman/listinfo/r-sig-db\n| >\n| >\n| \n| \t[[alternative HTML version deleted]]\n| \n| _______________________________________________\n| R-sig-DB mailing list -- R Special Interest Group\n| R-sig-DB at stat.math.ethz.ch\n| https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n-- \nDirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com",
+      "body_snippet": "On 25 October 2010 at 00:10, Ajay Ohri wrote:\n| how do I do that in windows please.\n\nIf everything else fails, you could consider reading the R manuals\n'Installation and Administration' and 'Writing R",
+      "thread_id": "thread-8c39cfe98790",
+      "thread_depth": 3,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-6f2872e9ecd4",
+      "message_id": "<AANLkTim6r6_4pArp_5Udqp-cLLe_vRAP64UGuOKWCBif@mail.gmail.com>",
+      "from_name": "Ajay Ohri",
+      "from_email_hash": "ea49ef5a61aa2f1d3b5b05c3b360b197fa8f7ac228dc7834aeafe60091e48ae0",
+      "date": "2010-10-25T00:44:24+05:30",
+      "subject": "[R-sig-DB] [RPostgreSQL] Unable to find",
+      "subject_clean": "[RPostgreSQL] Unable to find",
+      "in_reply_to": "<19652.32849.209509.925251@max.nulle.part>",
+      "references": [
+        "<AANLkTikVE5xWgkckHLrWVQd8NQd_AimsDO0raw4koetU@mail.gmail.com>",
+        "<DC1C64B3-59D0-4939-8AA0-80F636D137F9@neiltiffin.com>",
+        "<AANLkTi=ZJWL-jD6-X7Q9wrSb1L5n8PYXGEQgJKNzKDcV@mail.gmail.com>",
+        "<19652.32849.209509.925251@max.nulle.part>"
+      ],
+      "body_plain": "If you have only a source package that is known to work with current R and\njust want a binary (32- or 64-bit) Windows build of it, you could make use\nof the building service offered athttp://win-builder.r-project.org/.\n\nwill that work?\n\n\n\nWebsites-\nhttp://decisionstats.com\nhttp://dudeofdata.com\n\n\nLinkedin- www.linkedin.com/in/ajayohri\n\n\n\n\nOn Mon, Oct 25, 2010 at 12:22 AM, Dirk Eddelbuettel <edd at debian.org> wrote:\n\n>\n> On 25 October 2010 at 00:10, Ajay Ohri wrote:\n> | how do I do that in windows please.\n>\n> If everything else fails, you could consider reading the R manuals\n> 'Installation and Administration' and 'Writing R Extensions' that came with\n> your R installation.\n>\n> Dirk\n>\n> | ajay\n> |\n> | Websites-\n> | http://decisionstats.com\n> | http://dudeofdata.com\n> |\n> |\n> | Linkedin- www.linkedin.com/in/ajayohri\n> |\n> |\n> |\n> |\n> | On Sun, Oct 24, 2010 at 11:50 PM, Neil Tiffin <neilt at neiltiffin.com>\n> wrote:\n> |\n> | > http://cran.r-project.org/web/packages/RPostgreSQL/index.html\n> | >\n> | > It is source only and a new version was released 17 Oct 2010.  You will\n> | > need to compile from the source.\n> | >\n> | > Neil\n> | >\n> | > On Oct 24, 2010, at 1:10 PM, Ajay Ohri wrote:\n> | >\n> | > > Hi\n> | > >\n> | > > I am unable to find R PostgreSQL ( I am on WIndows, R 2.12.0 ) via\n> CRAN.\n> | > >\n> | > > Is the package still  available and working?\n> | > >\n> | > > Also what are the differences between RODBC ,RPostgreSQL and RpgSQL-\n> and\n> | > > which one is recommended for PostgresSQL databases. ( I couldnt find\n> rdbi\n> | > as\n> | > > well)\n> | > >\n> | > > I am using PostgreSql 9.0\n> | > >\n> | > >\n> | > >\n> | > > Regards\n> | > >\n> | > > Ajay\n> | > >\n> | > >\n> | > >\n> | > >\n> | > > I get the error message-\n> | > >\n> | > > Websites-\n> | > > http://decisionstats.com\n> | > > http://dudeofdata.com\n> | > >\n> | > >\n> | > > Linkedin- www.linkedin.com/in/ajayohri\n> | > >\n> | > >       [[alternative HTML version deleted]]\n> | > >\n> | > > _______________________________________________\n> | > > R-sig-DB mailing list -- R Special Interest Group\n> | > > R-sig-DB at stat.math.ethz.ch\n> | > > https://stat.ethz.ch/mailman/listinfo/r-sig-db\n> | >\n> | >\n> |\n> |       [[alternative HTML version deleted]]\n> |\n> | _______________________________________________\n> | R-sig-DB mailing list -- R Special Interest Group\n> | R-sig-DB at stat.math.ethz.ch\n> | https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n> --\n> Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "If you have only a source package that is known to work with current R and\njust want a binary (32- or 64-bit) Windows build of it, you could make use\nof the building service offered athttp://win-build",
+      "thread_id": "thread-8c39cfe98790",
+      "thread_depth": 4,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-1d121d05c411",
+      "message_id": "<19653.7823.667748.375073@max.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2010-10-25T01:07:11-05:00",
+      "subject": "[R-sig-DB] [RPostgreSQL] Unable to find",
+      "subject_clean": "[RPostgreSQL] Unable to find",
+      "in_reply_to": "<AANLkTim6r6_4pArp_5Udqp-cLLe_vRAP64UGuOKWCBif@mail.gmail.com>",
+      "references": [
+        "<AANLkTikVE5xWgkckHLrWVQd8NQd_AimsDO0raw4koetU@mail.gmail.com>",
+        "<DC1C64B3-59D0-4939-8AA0-80F636D137F9@neiltiffin.com>",
+        "<AANLkTi=ZJWL-jD6-X7Q9wrSb1L5n8PYXGEQgJKNzKDcV@mail.gmail.com>",
+        "<19652.32849.209509.925251@max.nulle.part>",
+        "<AANLkTim6r6_4pArp_5Udqp-cLLe_vRAP64UGuOKWCBif@mail.gmail.com>"
+      ],
+      "body_plain": "On 25 October 2010 at 00:44, Ajay Ohri wrote:\n| If you have only a source package that is known to work with current R and\n| just want a binary (32- or 64-bit) Windows build of it, you could make use\n| of the building service offered athttp://win-builder.r-project.org/.\n| \n| will that work?\n\nNo.  I wrote earlier:\n\n   Correct. The windows build systems for CRAN do not currently have a\n   Postgresql _library_ against which the RPostgreSQL package can be built.\n\nAnd win-builder needs a Postgresql library. \n\nDirk\n\n\n| \n| \n| Websites-\n| http://decisionstats.com\n| http://dudeofdata.com\n| \n| \n| Linkedin- www.linkedin.com/in/ajayohri\n| \n| \n| \n| \n| On Mon, Oct 25, 2010 at 12:22 AM, Dirk Eddelbuettel <edd at debian.org> wrote:\n| \n| >\n| > On 25 October 2010 at 00:10, Ajay Ohri wrote:\n| > | how do I do that in windows please.\n| >\n| > If everything else fails, you could consider reading the R manuals\n| > 'Installation and Administration' and 'Writing R Extensions' that came with\n| > your R installation.\n| >\n| > Dirk\n| >\n| > | ajay\n| > |\n| > | Websites-\n| > | http://decisionstats.com\n| > | http://dudeofdata.com\n| > |\n| > |\n| > | Linkedin- www.linkedin.com/in/ajayohri\n| > |\n| > |\n| > |\n| > |\n| > | On Sun, Oct 24, 2010 at 11:50 PM, Neil Tiffin <neilt at neiltiffin.com>\n| > wrote:\n| > |\n| > | > http://cran.r-project.org/web/packages/RPostgreSQL/index.html\n| > | >\n| > | > It is source only and a new version was released 17 Oct 2010.  You will\n| > | > need to compile from the source.\n| > | >\n| > | > Neil\n| > | >\n| > | > On Oct 24, 2010, at 1:10 PM, Ajay Ohri wrote:\n| > | >\n| > | > > Hi\n| > | > >\n| > | > > I am unable to find R PostgreSQL ( I am on WIndows, R 2.12.0 ) via\n| > CRAN.\n| > | > >\n| > | > > Is the package still  available and working?\n| > | > >\n| > | > > Also what are the differences between RODBC ,RPostgreSQL and RpgSQL-\n| > and\n| > | > > which one is recommended for PostgresSQL databases. ( I couldnt find\n| > rdbi\n| > | > as\n| > | > > well)\n| > | > >\n| > | > > I am using PostgreSql 9.0\n| > | > >\n| > | > >\n| > | > >\n| > | > > Regards\n| > | > >\n| > | > > Ajay\n| > | > >\n| > | > >\n| > | > >\n| > | > >\n| > | > > I get the error message-\n| > | > >\n| > | > > Websites-\n| > | > > http://decisionstats.com\n| > | > > http://dudeofdata.com\n| > | > >\n| > | > >\n| > | > > Linkedin- www.linkedin.com/in/ajayohri\n| > | > >\n| > | > >       [[alternative HTML version deleted]]\n| > | > >\n| > | > > _______________________________________________\n| > | > > R-sig-DB mailing list -- R Special Interest Group\n| > | > > R-sig-DB at stat.math.ethz.ch\n| > | > > https://stat.ethz.ch/mailman/listinfo/r-sig-db\n| > | >\n| > | >\n| > |\n| > |       [[alternative HTML version deleted]]\n| > |\n| > | _______________________________________________\n| > | R-sig-DB mailing list -- R Special Interest Group\n| > | R-sig-DB at stat.math.ethz.ch\n| > | https://stat.ethz.ch/mailman/listinfo/r-sig-db\n| >\n| > --\n| > Dirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com\n| >\n\n-- \nDirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com",
+      "body_snippet": "On 25 October 2010 at 00:44, Ajay Ohri wrote:\n| If you have only a source package that is known to work with current R and\n| just want a binary (32- or 64-bit) Windows build of it, you could make use\n",
+      "thread_id": "thread-8c39cfe98790",
+      "thread_depth": 5,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-70897cde5935",
+      "message_id": "<AANLkTimngJY0Hr_rs=m4jzu9ZGwooGt_W4CZxeru9Pmi@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2010-10-25T10:56:59-04:00",
+      "subject": "[R-sig-DB] [RPostgreSQL] Unable to find",
+      "subject_clean": "[RPostgreSQL] Unable to find",
+      "in_reply_to": "<AANLkTikVE5xWgkckHLrWVQd8NQd_AimsDO0raw4koetU@mail.gmail.com>",
+      "references": [
+        "<AANLkTikVE5xWgkckHLrWVQd8NQd_AimsDO0raw4koetU@mail.gmail.com>"
+      ],
+      "body_plain": "On Sun, Oct 24, 2010 at 2:10 PM, Ajay Ohri <ohri2007 at gmail.com> wrote:\n> Hi\n>\n> I am unable to find R PostgreSQL ( I am on WIndows, R 2.12.0 ) via CRAN.\n>\n> Is the package still ?available and working?\n>\n> Also what are the differences between RODBC ,RPostgreSQL and RpgSQL- and\n> which one is recommended for PostgresSQL databases. ( I couldnt find rdbi as\n> well)\n>\n> I am using PostgreSql 9.0\n>\n\n\nRpgSQL was developed so that PostgreSQL could be used as an optional\nbackend to sqldf of the sqldf package.  It was developed because the\nexisting driver packages do not currently have all the features sqldf\nneeded.  RpgSQL uses JDBC and so requires java.  It can also be used\nwithout sqldf and supports a DBI interface so its usage should be\nreasonably straight forward.\n\nThere is some discussion in thel link referenced here:\nhttp://code.google.com/p/sqldf/#12._How_does_one_use_sqldf_with_PostgreSQL?\n\nand there are examples of using it directly, i.e. without sqldf, in\nthe examples section of the ?pgSQL help page:\nlibrary(pgSQL)\n?pgSQL\n\n\n-- \nStatistics & Software Consulting\nGKX Group, GKX Associates Inc.\ntel: 1-877-GKX-GROUP\nemail: ggrothendieck at gmail.com",
+      "body_snippet": "On Sun, Oct 24, 2010 at 2:10 PM, Ajay Ohri <ohri2007 at gmail.com> wrote:\n> Hi\n>\n> I am unable to find R PostgreSQL ( I am on WIndows, R 2.12.0 ) via CRAN.\n>\n> Is the package still ?available and work",
+      "thread_id": "thread-8c39cfe98790",
+      "thread_depth": 1,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-55a3c8e06fd5",
+      "message_id": "<AANLkTinUA0acV53AeeZMV-vkmJ=Oxv_RvF2VNUOQFb7G@mail.gmail.com>",
+      "from_name": "Ajay Ohri",
+      "from_email_hash": "ea49ef5a61aa2f1d3b5b05c3b360b197fa8f7ac228dc7834aeafe60091e48ae0",
+      "date": "2010-10-26T16:41:49+05:30",
+      "subject": "[R-sig-DB] R-sig-DB Digest, Vol 72, Issue 13",
+      "subject_clean": "R-sig-DB Digest, Vol 72, Issue 13",
+      "in_reply_to": "<mailman.21.1288087205.9788.r-sig-db@stat.math.ethz.ch>",
+      "references": [
+        "<mailman.21.1288087205.9788.r-sig-db@stat.math.ethz.ch>"
+      ],
+      "body_plain": "Thank you  Gabor\n\nRpgSQL did the job nicely\n\nRegards\n\nAjay\n\nWebsites-\nhttp://decisionstats.com\nhttp://dudeofdata.com\n\n\nLinkedin- www.linkedin.com/in/ajayohri\n\n\n\n\nOn Tue, Oct 26, 2010 at 3:30 PM, <r-sig-db-request at stat.math.ethz.ch> wrote:\n\n> Send R-sig-DB mailing list submissions to\n>        r-sig-db at stat.math.ethz.ch\n>\n> To subscribe or unsubscribe via the World Wide Web, visit\n>        https://stat.ethz.ch/mailman/listinfo/r-sig-db\n> or, via email, send a message with subject or body 'help' to\n>        r-sig-db-request at stat.math.ethz.ch\n>\n> You can reach the person managing the list at\n>        r-sig-db-owner at stat.math.ethz.ch\n>\n> When replying, please edit your Subject line so it is more specific\n> than \"Re: Contents of R-sig-DB digest...\"\n>\n>\n> Today's Topics:\n>\n>   1. Re: [RPostgreSQL] Unable to find (Gabor Grothendieck)\n>\n>\n> ----------------------------------------------------------------------\n>\n> Message: 1\n> Date: Mon, 25 Oct 2010 10:56:59 -0400\n> From: Gabor Grothendieck <ggrothendieck at gmail.com>\n> To: Ajay Ohri <ohri2007 at gmail.com>\n> Cc: r-sig-db at stat.math.ethz.ch\n> Subject: Re: [R-sig-DB] [RPostgreSQL] Unable to find\n> Message-ID:\n>        <AANLkTimngJY0Hr_rs=m4jzu9ZGwooGt_W4CZxeru9Pmi at mail.gmail.com>\n> Content-Type: text/plain; charset=ISO-8859-1\n>\n> On Sun, Oct 24, 2010 at 2:10 PM, Ajay Ohri <ohri2007 at gmail.com> wrote:\n> > Hi\n> >\n> > I am unable to find R PostgreSQL ( I am on WIndows, R 2.12.0 ) via CRAN.\n> >\n> > Is the package still ?available and working?\n> >\n> > Also what are the differences between RODBC ,RPostgreSQL and RpgSQL- and\n> > which one is recommended for PostgresSQL databases. ( I couldnt find rdbi\n> as\n> > well)\n> >\n> > I am using PostgreSql 9.0\n> >\n>\n>\n> RpgSQL was developed so that PostgreSQL could be used as an optional\n> backend to sqldf of the sqldf package.  It was developed because the\n> existing driver packages do not currently have all the features sqldf\n> needed.  RpgSQL uses JDBC and so requires java.  It can also be used\n> without sqldf and supports a DBI interface so its usage should be\n> reasonably straight forward.\n>\n> There is some discussion in thel link referenced here:\n> http://code.google.com/p/sqldf/#12._How_does_one_use_sqldf_with_PostgreSQL\n> ?\n>\n> and there are examples of using it directly, i.e. without sqldf, in\n> the examples section of the ?pgSQL help page:\n> library(pgSQL)\n> ?pgSQL\n>\n>\n> --\n> Statistics & Software Consulting\n> GKX Group, GKX Associates Inc.\n> tel: 1-877-GKX-GROUP\n> email: ggrothendieck at gmail.com\n>\n>\n>\n> ------------------------------\n>\n> _______________________________________________\n> R-sig-DB mailing list\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n>\n> End of R-sig-DB Digest, Vol 72, Issue 13\n> ****************************************\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Thank you  Gabor\n\nRpgSQL did the job nicely\n\nRegards\n\nAjay\n\nWebsites-\nhttp://decisionstats.com\nhttp://dudeofdata.com\n\n\nLinkedin- www.linkedin.com/in/ajayohri\n\n\n\n\nOn Tue, Oct 26, 2010 at 3:30 PM, <r-si",
+      "thread_id": "thread-55a3c8e06fd5",
+      "thread_depth": 0,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-fb9c82deabe4",
+      "message_id": "<AANLkTikzzi66kP78qkzyqHnTZf1vE9LB7ym=rd2Gz0=k@mail.gmail.com>",
+      "from_name": "Nilza BARROS",
+      "from_email_hash": "30d3c3a70854317e1774795dd909f4d61c014c2a0c5d202ff579bc802cb3c6d9",
+      "date": "2010-10-26T19:23:51Z",
+      "subject": "[R-sig-DB] [R] Argument to database",
+      "subject_clean": "Argument to database",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear Rusers,\n\nI am using Rscript and I'd like to use arguments as an input.\nI need it because I will use these arguments to consult Mysql  Databse using\n(SELECT) .\nI need different select to each Model Type and date.\n\n./GrafDens.R [ModelType trim date ]\n\nThe script I am using it is working but I'd like to know if there is\nsomething more efficient.\n\n\nBelow here what  I am using:\n==================\n#! /usr/bin/Rscript --vanilla\nargs <- commandArgs(TRUE)\n\nif (length(args)!=4 )\n{\nprint(\"********************************************\")\nprint(\"Enter the arguments   Model (20,21,...) - Trim(01,02,03,04) - Year\n(AAAA)\")\nprint(\"********************************************\")\nstop(\"Incorrect arguments length\")\n}\nnpt.freq <- args[1]\nnpt.trim <-args[2]\nnpt.ano <- args[3]\n\n\nMES1.00 <- paste(npt.ano,npt.mes,\"__\",\"00\",sep=\"\")\nMES2.00 <- paste(npt.ano,npt.mes,\"__\",\"00\",sep=\"\")\nMES3.00 <- paste(npt.ano,npt.mes,\"__\",\"00\",sep=\"\")\n\n\n===How I use the strings above to SELECT my data:\n\ndrv=dbDriver(\"MySQL\")\ncon=dbConnect(drv,dbname='xxx',user='xx',password='xx')\ndados <- dbGetQuery(con,paste(\"SELECT\nOBS_StationNo as station_no,\nOBS_date as obsdate,\nFCT_fdate as fdate,\nFCT_mtype as fct_mtype,\nFCT_mrun as  fct_mrun,\nFROM VWFct_Obs\nWHERE\nFCT_mtype=\",npt.mtype,\n\" AND OBS_StationNo <> 'NULL'\nAND (FCT_fdate LIKE  \",  paste(\"'\",MES1.00,\"'\",sep=\"\"),\n\" OR FCT_fdate LIKE  \", paste(\"'\",MES1.12,\"'\",sep=\"\"),\n\" OR  FCT_fdate LIKE \", paste(\"'\",MES2.00,\"'\",sep=\"\"),\n\" OR  FCT_fdate LIKE \", paste(\"'\",MES2.12,\"'\",sep=\"\"),\n\" OR  FCT_fdate LIKE \", paste(\"'\",MES3.00,\"'\",sep=\"\"),\n\"OR  FCT_fdate LIKE  \" ,paste(\"'\",MES3.12,\"'\",sep=\"\"),\" )\" ,sep=\"\"))\n#\n====================\n-- \nAbra?o,\nNilza Barros\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Dear Rusers,\n\nI am using Rscript and I'd like to use arguments as an input.\nI need it because I will use these arguments to consult Mysql  Databse using\n(SELECT) .\nI need different select to each Mode",
+      "thread_id": "thread-fb9c82deabe4",
+      "thread_depth": 0,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-21350abe407c",
+      "message_id": "<AANLkTinY3xUwm4323Ex2x==gX_sSUv=QG6YAqkVZ_ZMp@mail.gmail.com>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2010-10-26T16:11:03-04:00",
+      "subject": "[R-sig-DB] [R] Argument to database",
+      "subject_clean": "Argument to database",
+      "in_reply_to": "<AANLkTikzzi66kP78qkzyqHnTZf1vE9LB7ym=rd2Gz0=k@mail.gmail.com>",
+      "references": [
+        "<AANLkTikzzi66kP78qkzyqHnTZf1vE9LB7ym=rd2Gz0=k@mail.gmail.com>"
+      ],
+      "body_plain": "On Tue, Oct 26, 2010 at 3:23 PM, Nilza BARROS <nilzabarros at gmail.com> wrote:\n\n> Dear Rusers,\n>\n> I am using Rscript and I'd like to use arguments as an input.\n> I need it because I will use these arguments to consult Mysql  Databse\n> using\n> (SELECT) .\n> I need different select to each Model Type and date.\n>\n> ./GrafDens.R [ModelType trim date ]\n>\n> The script I am using it is working but I'd like to know if there is\n> something more efficient.\n>\n>\n> Below here what  I am using:\n> ==================\n> #! /usr/bin/Rscript --vanilla\n> args <- commandArgs(TRUE)\n>\n> if (length(args)!=4 )\n> {\n> print(\"********************************************\")\n> print(\"Enter the arguments   Model (20,21,...) - Trim(01,02,03,04) - Year\n> (AAAA)\")\n> print(\"********************************************\")\n> stop(\"Incorrect arguments length\")\n> }\n> npt.freq <- args[1]\n> npt.trim <-args[2]\n> npt.ano <- args[3]\n>\n>\n> MES1.00 <- paste(npt.ano,npt.mes,\"__\",\"00\",sep=\"\")\n> MES2.00 <- paste(npt.ano,npt.mes,\"__\",\"00\",sep=\"\")\n> MES3.00 <- paste(npt.ano,npt.mes,\"__\",\"00\",sep=\"\")\n>\n>\n> ===How I use the strings above to SELECT my data:\n>\n>\nYou could consider using sprintf() to generate your SQL string, as well.\n\n\n> drv=dbDriver(\"MySQL\")\n> con=dbConnect(drv,dbname='xxx',user='xx',password='xx')\n> dados <- dbGetQuery(con,paste(\"SELECT\n> OBS_StationNo as station_no,\n> OBS_date as obsdate,\n> FCT_fdate as fdate,\n> FCT_mtype as fct_mtype,\n> FCT_mrun as  fct_mrun,\n> FROM VWFct_Obs\n> WHERE\n> FCT_mtype=\",npt.mtype,\n> \" AND OBS_StationNo <> 'NULL'\n> AND (FCT_fdate LIKE  \",  paste(\"'\",MES1.00,\"'\",sep=\"\"),\n> \" OR FCT_fdate LIKE  \", paste(\"'\",MES1.12,\"'\",sep=\"\"),\n> \" OR  FCT_fdate LIKE \", paste(\"'\",MES2.00,\"'\",sep=\"\"),\n> \" OR  FCT_fdate LIKE \", paste(\"'\",MES2.12,\"'\",sep=\"\"),\n> \" OR  FCT_fdate LIKE \", paste(\"'\",MES3.00,\"'\",sep=\"\"),\n> \"OR  FCT_fdate LIKE  \" ,paste(\"'\",MES3.12,\"'\",sep=\"\"),\" )\" ,sep=\"\"))\n> #\n> ====================\n> --\n> Abra??o,\n> Nilza Barros\n>\n>        [[alternative HTML version deleted]]\n>\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "On Tue, Oct 26, 2010 at 3:23 PM, Nilza BARROS <nilzabarros at gmail.com> wrote:\n\n> Dear Rusers,\n>\n> I am using Rscript and I'd like to use arguments as an input.\n> I need it because I will use these a",
+      "thread_id": "thread-fb9c82deabe4",
+      "thread_depth": 1,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-d38084be14ff",
+      "message_id": "<4CC783FE.5080004@structuremonitoring.com>",
+      "from_name": "Spencer Graves",
+      "from_email_hash": "74d65542d39045b8f519f051690253c45d7423bc83fbcf361d3e6c7f58751916",
+      "date": "2010-10-26T18:44:30-07:00",
+      "subject": "[R-sig-DB] Installing RMySQL under CentOS 5.5 version of Linux?",
+      "subject_clean": "Installing RMySQL under CentOS 5.5 version of Linux?",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello:\n\n\n       I'm not very unixed, and I'm trying to install RMySQL under \nCentOS 5.5 version of Linux.  I'm having trouble parsing the \ninstallation instructions, e.g., at \n\"http://cran.fhcrc.org/web/packages/RMySQL/INSTALL\".  Any suggestions?\n\n\n       Thanks,\n       Spencer\n\n-- \nSpencer Graves, PE, PhD\nPresident and Chief Operating Officer\nStructure Inspection and Monitoring, Inc.\n751 Emerson Ct.\nSan Jos?, CA 95126\nph:  408-655-4567",
+      "body_snippet": "Hello:\n\n\n       I'm not very unixed, and I'm trying to install RMySQL under \nCentOS 5.5 version of Linux.  I'm having trouble parsing the \ninstallation instructions, e.g., at \n\"http://cran.fhcrc.org/w",
+      "thread_id": "thread-d38084be14ff",
+      "thread_depth": 0,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-e379741e9646",
+      "message_id": "<152CB81C-1198-451E-BDAF-347A86DBCAA1@kenroku.kanazawa-u.ac.jp>",
+      "from_name": "Tomoaki NISHIYAMA",
+      "from_email_hash": "32104f251c35465c7b064ecaf7558a62b44d8fb01218b8a85e1f2cd3278271b5",
+      "date": "2010-10-27T11:13:46+09:00",
+      "subject": "[R-sig-DB] Installing RMySQL under CentOS 5.5 version of Linux?",
+      "subject_clean": "Installing RMySQL under CentOS 5.5 version of Linux?",
+      "in_reply_to": "<4CC783FE.5080004@structuremonitoring.com>",
+      "references": [
+        "<4CC783FE.5080004@structuremonitoring.com>"
+      ],
+      "body_plain": "Hi,\n\nDid you install mysql-devel package?\nOn CentOS\n# yum install mysql-devel\nas root. That should install the library and headers required for\nMySQL client development.\n\nProvided R is well installed as user application\njust\n$ R CMD INSTALL RMySQL_0.7-5.tar.gz\nafter downloading works.\nIf it is common application, perhaps you need to\ndo it as root again.\n--  \nTomoaki NISHIYAMA\n\nAdvanced Science Research Center,\nKanazawa University,\n13-1 Takara-machi,\nKanazawa, 920-0934, Japan\n\n\nOn 2010/10/27, at 10:44, Spencer Graves wrote:\n\n> Hello:\n>\n>\n>       I'm not very unixed, and I'm trying to install RMySQL under  \n> CentOS 5.5 version of Linux.  I'm having trouble parsing the  \n> installation instructions, e.g., at \"http://cran.fhcrc.org/web/ \n> packages/RMySQL/INSTALL\".  Any suggestions?\n>\n>\n>       Thanks,\n>       Spencer\n>\n> -- \n> Spencer Graves, PE, PhD\n> President and Chief Operating Officer\n> Structure Inspection and Monitoring, Inc.\n> 751 Emerson Ct.\n> San Jos?, CA 95126\n> ph:  408-655-4567\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>",
+      "body_snippet": "Hi,\n\nDid you install mysql-devel package?\nOn CentOS\n# yum install mysql-devel\nas root. That should install the library and headers required for\nMySQL client development.\n\nProvided R is well installed ",
+      "thread_id": "thread-d38084be14ff",
+      "thread_depth": 1,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-c1375d5e17cc",
+      "message_id": "<4CC78CF3.4030900@structuremonitoring.com>",
+      "from_name": "Spencer Graves",
+      "from_email_hash": "74d65542d39045b8f519f051690253c45d7423bc83fbcf361d3e6c7f58751916",
+      "date": "2010-10-26T19:22:43-07:00",
+      "subject": "[R-sig-DB] Installing RMySQL under CentOS 5.5 version of Linux?",
+      "subject_clean": "Installing RMySQL under CentOS 5.5 version of Linux?",
+      "in_reply_to": "<152CB81C-1198-451E-BDAF-347A86DBCAA1@kenroku.kanazawa-u.ac.jp>",
+      "references": [
+        "<4CC783FE.5080004@structuremonitoring.com>",
+        "<152CB81C-1198-451E-BDAF-347A86DBCAA1@kenroku.kanazawa-u.ac.jp>"
+      ],
+      "body_plain": "Hi, Tomjoaki:  It worked.  Thanks very much.  Best Wishes, Spencer\n\n\nOn 10/26/2010 7:13 PM, Tomoaki NISHIYAMA wrote:\n> Hi,\n>\n> Did you install mysql-devel package?\n> On CentOS\n> # yum install mysql-devel\n> as root. That should install the library and headers required for\n> MySQL client development.\n>\n> Provided R is well installed as user application\n> just\n> $ R CMD INSTALL RMySQL_0.7-5.tar.gz\n> after downloading works.\n> If it is common application, perhaps you need to\n> do it as root again.\n> -- Tomoaki NISHIYAMA\n>\n> Advanced Science Research Center,\n> Kanazawa University,\n> 13-1 Takara-machi,\n> Kanazawa, 920-0934, Japan\n>\n>\n> On 2010/10/27, at 10:44, Spencer Graves wrote:\n>\n>> Hello:\n>>\n>>\n>>       I'm not very unixed, and I'm trying to install RMySQL under \n>> CentOS 5.5 version of Linux.  I'm having trouble parsing the \n>> installation instructions, e.g., at \n>> \"http://cran.fhcrc.org/web/packages/RMySQL/INSTALL\".  Any suggestions?\n>>\n>>\n>>       Thanks,\n>>       Spencer\n>>\n>> -- \n>> Spencer Graves, PE, PhD\n>> President and Chief Operating Officer\n>> Structure Inspection and Monitoring, Inc.\n>> 751 Emerson Ct.\n>> San Jos?, CA 95126\n>> ph:  408-655-4567\n>>\n>> _______________________________________________\n>> R-sig-DB mailing list -- R Special Interest Group\n>> R-sig-DB at stat.math.ethz.ch\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>>",
+      "body_snippet": "Hi, Tomjoaki:  It worked.  Thanks very much.  Best Wishes, Spencer\n\n\nOn 10/26/2010 7:13 PM, Tomoaki NISHIYAMA wrote:\n> Hi,\n>\n> Did you install mysql-devel package?\n> On CentOS\n> # yum install mysql-de",
+      "thread_id": "thread-d38084be14ff",
+      "thread_depth": 2,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-3fa263d45dcc",
+      "message_id": "<AANLkTikk-6OxE2fnZO4inOHiPrZoHVu7=G9ASCKGaKNa@mail.gmail.com>",
+      "from_name": "Nilza BARROS",
+      "from_email_hash": "30d3c3a70854317e1774795dd909f4d61c014c2a0c5d202ff579bc802cb3c6d9",
+      "date": "2010-10-28T13:06:56Z",
+      "subject": "[R-sig-DB] [R] Argument to database",
+      "subject_clean": "Argument to database",
+      "in_reply_to": "<AANLkTinY3xUwm4323Ex2x==gX_sSUv=QG6YAqkVZ_ZMp@mail.gmail.com>",
+      "references": [
+        "<AANLkTikzzi66kP78qkzyqHnTZf1vE9LB7ym=rd2Gz0=k@mail.gmail.com>",
+        "<AANLkTinY3xUwm4323Ex2x==gX_sSUv=QG6YAqkVZ_ZMp@mail.gmail.com>"
+      ],
+      "body_plain": "Dear R users,\n\nThanks Sean for your idea. But since  I am getting used to using R in my\nall  tasks I 'd like to know if the Rusers can show me a better way to use\narguments in Rscript or if the way I had applied (below here and  in my\nprevious email)  the arguments is correct.\n What I used it the same way I am used to writing in my shell scripts.\n\nI really hope someone can help me.\nThanks in advance\n\n*Below here the way I check the number of arguments. I am used to doing that\nin my shell scripts.*\n==================\n#! /usr/bin/Rscript --vanilla\nargs <- commandArgs(TRUE)\n\nif (length(args)!=4 )\n{\nprint(\"********************************************\")\nprint(\"Enter the arguments   Model (20,21,...) - Trim(01,02,03,04) - Year\n(AAAA)\")\nprint(\"********************************************\")\nstop(\"Incorrect arguments length\")\n}\nnpt.freq <- args[1]\nnpt.trim <-args[2]\nnpt.ano <- args[3]\n\n\n\nNilza Barros\n\nOn Tue, Oct 26, 2010 at 8:11 PM, Sean Davis <sdavis2 at mail.nih.gov> wrote:\n\n>\n>\n> On Tue, Oct 26, 2010 at 3:23 PM, Nilza BARROS <nilzabarros at gmail.com>wrote:\n>\n>> Dear Rusers,\n>>\n>> I am using Rscript and I'd like to use arguments as an input.\n>> I need it because I will use these arguments to consult Mysql  Databse\n>> using\n>> (SELECT) .\n>> I need different select to each Model Type and date.\n>>\n>> ./GrafDens.R [ModelType trim date ]\n>>\n>> The script I am using it is working but I'd like to know if there is\n>> something more efficient.\n>>\n>>\n>> Below here what  I am using:\n>> ==================\n>> #! /usr/bin/Rscript --vanilla\n>> args <- commandArgs(TRUE)\n>>\n>> if (length(args)!=4 )\n>> {\n>> print(\"********************************************\")\n>> print(\"Enter the arguments   Model (20,21,...) - Trim(01,02,03,04) - Year\n>> (AAAA)\")\n>> print(\"********************************************\")\n>> stop(\"Incorrect arguments length\")\n>> }\n>> npt.freq <- args[1]\n>> npt.trim <-args[2]\n>> npt.ano <- args[3]\n>>\n>>\n>> MES1.00 <- paste(npt.ano,npt.mes,\"__\",\"00\",sep=\"\")\n>> MES2.00 <- paste(npt.ano,npt.mes,\"__\",\"00\",sep=\"\")\n>> MES3.00 <- paste(npt.ano,npt.mes,\"__\",\"00\",sep=\"\")\n>>\n>>\n>> ===How I use the strings above to SELECT my data:\n>>\n>>\n> You could consider using sprintf() to generate your SQL string, as well.\n>\n>\n>> drv=dbDriver(\"MySQL\")\n>> con=dbConnect(drv,dbname='xxx',user='xx',password='xx')\n>> dados <- dbGetQuery(con,paste(\"SELECT\n>> OBS_StationNo as station_no,\n>> OBS_date as obsdate,\n>> FCT_fdate as fdate,\n>> FCT_mtype as fct_mtype,\n>> FCT_mrun as  fct_mrun,\n>> FROM VWFct_Obs\n>> WHERE\n>> FCT_mtype=\",npt.mtype,\n>> \" AND OBS_StationNo <> 'NULL'\n>> AND (FCT_fdate LIKE  \",  paste(\"'\",MES1.00,\"'\",sep=\"\"),\n>> \" OR FCT_fdate LIKE  \", paste(\"'\",MES1.12,\"'\",sep=\"\"),\n>> \" OR  FCT_fdate LIKE \", paste(\"'\",MES2.00,\"'\",sep=\"\"),\n>> \" OR  FCT_fdate LIKE \", paste(\"'\",MES2.12,\"'\",sep=\"\"),\n>> \" OR  FCT_fdate LIKE \", paste(\"'\",MES3.00,\"'\",sep=\"\"),\n>> \"OR  FCT_fdate LIKE  \" ,paste(\"'\",MES3.12,\"'\",sep=\"\"),\" )\" ,sep=\"\"))\n>> #\n>> ====================\n>> --\n>> Abra?o,\n>> Nilza Barros\n>>\n>>        [[alternative HTML version deleted]]\n>>\n>>\n>\n\n\n-- \nAbra?o,\nNilza Barros\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Dear R users,\n\nThanks Sean for your idea. But since  I am getting used to using R in my\nall  tasks I 'd like to know if the Rusers can show me a better way to use\narguments in Rscript or if the way I ",
+      "thread_id": "thread-fb9c82deabe4",
+      "thread_depth": 2,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-ce8d2765c205",
+      "message_id": "<AANLkTimzfcGhZLED=Wd2S=Fe6BuGBQEQ_rEbMLVc2XCV@mail.gmail.com>",
+      "from_name": "Sean Davis",
+      "from_email_hash": "7c73624d9512220e60e15328aabc937c48ad56085bae077d4186366c287b658f",
+      "date": "2010-10-28T09:13:21-04:00",
+      "subject": "[R-sig-DB] [R] Argument to database",
+      "subject_clean": "Argument to database",
+      "in_reply_to": "<AANLkTikk-6OxE2fnZO4inOHiPrZoHVu7=G9ASCKGaKNa@mail.gmail.com>",
+      "references": [
+        "<AANLkTikzzi66kP78qkzyqHnTZf1vE9LB7ym=rd2Gz0=k@mail.gmail.com>",
+        "<AANLkTinY3xUwm4323Ex2x==gX_sSUv=QG6YAqkVZ_ZMp@mail.gmail.com>",
+        "<AANLkTikk-6OxE2fnZO4inOHiPrZoHVu7=G9ASCKGaKNa@mail.gmail.com>"
+      ],
+      "body_plain": "On Thu, Oct 28, 2010 at 9:06 AM, Nilza BARROS <nilzabarros at gmail.com> wrote:\n\n> Dear R users,\n>\n> Thanks Sean for your idea. But since  I am getting used to using R in my\n> all  tasks I 'd like to know if the Rusers can show me a better way to use\n> arguments in Rscript or if the way I had applied (below here and  in my\n> previous email)  the arguments is correct.\n>  What I used it the same way I am used to writing in my shell scripts.\n>\n>\nAh.  This would better have been written to R-help, as it has nothing to do\nwith databases.  However, it is a pretty simple answer.  Look at the\noptparse and getopt packages on CRAN.\n\nSean\n\n\n> I really hope someone can help me.\n> Thanks in advance\n>\n> *Below here the way I check the number of arguments. I am used to doing\n> that in my shell scripts.*\n>\n> ==================\n> #! /usr/bin/Rscript --vanilla\n> args <- commandArgs(TRUE)\n>\n> if (length(args)!=4 )\n> {\n> print(\"********************************************\")\n> print(\"Enter the arguments   Model (20,21,...) - Trim(01,02,03,04) - Year\n> (AAAA)\")\n> print(\"********************************************\")\n> stop(\"Incorrect arguments length\")\n> }\n> npt.freq <- args[1]\n> npt.trim <-args[2]\n> npt.ano <- args[3]\n>\n>\n>\n> Nilza Barros\n>\n> On Tue, Oct 26, 2010 at 8:11 PM, Sean Davis <sdavis2 at mail.nih.gov> wrote:\n>\n>>\n>>\n>> On Tue, Oct 26, 2010 at 3:23 PM, Nilza BARROS <nilzabarros at gmail.com>wrote:\n>>\n>>> Dear Rusers,\n>>>\n>>> I am using Rscript and I'd like to use arguments as an input.\n>>> I need it because I will use these arguments to consult Mysql  Databse\n>>> using\n>>> (SELECT) .\n>>> I need different select to each Model Type and date.\n>>>\n>>> ./GrafDens.R [ModelType trim date ]\n>>>\n>>> The script I am using it is working but I'd like to know if there is\n>>> something more efficient.\n>>>\n>>>\n>>> Below here what  I am using:\n>>> ==================\n>>> #! /usr/bin/Rscript --vanilla\n>>> args <- commandArgs(TRUE)\n>>>\n>>> if (length(args)!=4 )\n>>> {\n>>> print(\"********************************************\")\n>>> print(\"Enter the arguments   Model (20,21,...) - Trim(01,02,03,04) - Year\n>>> (AAAA)\")\n>>> print(\"********************************************\")\n>>> stop(\"Incorrect arguments length\")\n>>> }\n>>> npt.freq <- args[1]\n>>> npt.trim <-args[2]\n>>> npt.ano <- args[3]\n>>>\n>>>\n>>> MES1.00 <- paste(npt.ano,npt.mes,\"__\",\"00\",sep=\"\")\n>>> MES2.00 <- paste(npt.ano,npt.mes,\"__\",\"00\",sep=\"\")\n>>> MES3.00 <- paste(npt.ano,npt.mes,\"__\",\"00\",sep=\"\")\n>>>\n>>>\n>>> ===How I use the strings above to SELECT my data:\n>>>\n>>>\n>> You could consider using sprintf() to generate your SQL string, as well.\n>>\n>>\n>>>  drv=dbDriver(\"MySQL\")\n>>> con=dbConnect(drv,dbname='xxx',user='xx',password='xx')\n>>> dados <- dbGetQuery(con,paste(\"SELECT\n>>> OBS_StationNo as station_no,\n>>> OBS_date as obsdate,\n>>> FCT_fdate as fdate,\n>>> FCT_mtype as fct_mtype,\n>>> FCT_mrun as  fct_mrun,\n>>> FROM VWFct_Obs\n>>> WHERE\n>>> FCT_mtype=\",npt.mtype,\n>>> \" AND OBS_StationNo <> 'NULL'\n>>> AND (FCT_fdate LIKE  \",  paste(\"'\",MES1.00,\"'\",sep=\"\"),\n>>> \" OR FCT_fdate LIKE  \", paste(\"'\",MES1.12,\"'\",sep=\"\"),\n>>> \" OR  FCT_fdate LIKE \", paste(\"'\",MES2.00,\"'\",sep=\"\"),\n>>> \" OR  FCT_fdate LIKE \", paste(\"'\",MES2.12,\"'\",sep=\"\"),\n>>> \" OR  FCT_fdate LIKE \", paste(\"'\",MES3.00,\"'\",sep=\"\"),\n>>> \"OR  FCT_fdate LIKE  \" ,paste(\"'\",MES3.12,\"'\",sep=\"\"),\" )\" ,sep=\"\"))\n>>> #\n>>> ====================\n>>> --\n>>> Abra??o,\n>>> Nilza Barros\n>>>\n>>>        [[alternative HTML version deleted]]\n>>>\n>>>\n>>\n>\n>\n> --\n> Abra??o,\n> Nilza Barros\n>\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "On Thu, Oct 28, 2010 at 9:06 AM, Nilza BARROS <nilzabarros at gmail.com> wrote:\n\n> Dear R users,\n>\n> Thanks Sean for your idea. But since  I am getting used to using R in my\n> all  tasks I 'd like to ",
+      "thread_id": "thread-fb9c82deabe4",
+      "thread_depth": 3,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-0393d4d33e89",
+      "message_id": "<AANLkTinM4XzaXBNORujW2aANfp3ZW_WjpCDt=Bd0ZeL2@mail.gmail.com>",
+      "from_name": "Nilza BARROS",
+      "from_email_hash": "30d3c3a70854317e1774795dd909f4d61c014c2a0c5d202ff579bc802cb3c6d9",
+      "date": "2010-10-28T13:27:50Z",
+      "subject": "[R-sig-DB] [R] Argument to database",
+      "subject_clean": "Argument to database",
+      "in_reply_to": "<AANLkTimzfcGhZLED=Wd2S=Fe6BuGBQEQ_rEbMLVc2XCV@mail.gmail.com>",
+      "references": [
+        "<AANLkTikzzi66kP78qkzyqHnTZf1vE9LB7ym=rd2Gz0=k@mail.gmail.com>",
+        "<AANLkTinY3xUwm4323Ex2x==gX_sSUv=QG6YAqkVZ_ZMp@mail.gmail.com>",
+        "<AANLkTikk-6OxE2fnZO4inOHiPrZoHVu7=G9ASCKGaKNa@mail.gmail.com>",
+        "<AANLkTimzfcGhZLED=Wd2S=Fe6BuGBQEQ_rEbMLVc2XCV@mail.gmail.com>"
+      ],
+      "body_plain": "OK, Thank you! You're  rigth. It is better to sent my question to r-help.\nBut I will check optparse and getopt.\n\nBye and Best Regards,\nNilza\n\nOn Thu, Oct 28, 2010 at 1:13 PM, Sean Davis <sdavis2 at mail.nih.gov> wrote:\n\n>\n>\n> On Thu, Oct 28, 2010 at 9:06 AM, Nilza BARROS <nilzabarros at gmail.com>wrote:\n>\n>> Dear R users,\n>>\n>> Thanks Sean for your idea. But since  I am getting used to using R in my\n>> all  tasks I 'd like to know if the Rusers can show me a better way to use\n>> arguments in Rscript or if the way I had applied (below here and  in my\n>> previous email)  the arguments is correct.\n>>  What I used it the same way I am used to writing in my shell scripts.\n>>\n>>\n> Ah.  This would better have been written to R-help, as it has nothing to do\n> with databases.  However, it is a pretty simple answer.  Look at the\n> optparse and getopt packages on CRAN.\n>\n> Sean\n>\n>\n>> I really hope someone can help me.\n>> Thanks in advance\n>>\n>> *Below here the way I check the number of arguments. I am used to doing\n>> that in my shell scripts.*\n>>\n>> ==================\n>> #! /usr/bin/Rscript --vanilla\n>> args <- commandArgs(TRUE)\n>>\n>> if (length(args)!=4 )\n>> {\n>> print(\"********************************************\")\n>> print(\"Enter the arguments   Model (20,21,...) - Trim(01,02,03,04) - Year\n>> (AAAA)\")\n>> print(\"********************************************\")\n>> stop(\"Incorrect arguments length\")\n>> }\n>> npt.freq <- args[1]\n>> npt.trim <-args[2]\n>> npt.ano <- args[3]\n>>\n>>\n>>\n>> Nilza Barros\n>>\n>> On Tue, Oct 26, 2010 at 8:11 PM, Sean Davis <sdavis2 at mail.nih.gov> wrote:\n>>\n>>>\n>>>\n>>> On Tue, Oct 26, 2010 at 3:23 PM, Nilza BARROS <nilzabarros at gmail.com>wrote:\n>>>\n>>>> Dear Rusers,\n>>>>\n>>>> I am using Rscript and I'd like to use arguments as an input.\n>>>> I need it because I will use these arguments to consult Mysql  Databse\n>>>> using\n>>>> (SELECT) .\n>>>> I need different select to each Model Type and date.\n>>>>\n>>>> ./GrafDens.R [ModelType trim date ]\n>>>>\n>>>> The script I am using it is working but I'd like to know if there is\n>>>> something more efficient.\n>>>>\n>>>>\n>>>> Below here what  I am using:\n>>>> ==================\n>>>> #! /usr/bin/Rscript --vanilla\n>>>> args <- commandArgs(TRUE)\n>>>>\n>>>> if (length(args)!=4 )\n>>>> {\n>>>> print(\"********************************************\")\n>>>> print(\"Enter the arguments   Model (20,21,...) - Trim(01,02,03,04) -\n>>>> Year\n>>>> (AAAA)\")\n>>>> print(\"********************************************\")\n>>>> stop(\"Incorrect arguments length\")\n>>>> }\n>>>> npt.freq <- args[1]\n>>>> npt.trim <-args[2]\n>>>> npt.ano <- args[3]\n>>>>\n>>>>\n>>>> MES1.00 <- paste(npt.ano,npt.mes,\"__\",\"00\",sep=\"\")\n>>>> MES2.00 <- paste(npt.ano,npt.mes,\"__\",\"00\",sep=\"\")\n>>>> MES3.00 <- paste(npt.ano,npt.mes,\"__\",\"00\",sep=\"\")\n>>>>\n>>>>\n>>>> ===How I use the strings above to SELECT my data:\n>>>>\n>>>>\n>>> You could consider using sprintf() to generate your SQL string, as well.\n>>>\n>>>\n>>>>  drv=dbDriver(\"MySQL\")\n>>>> con=dbConnect(drv,dbname='xxx',user='xx',password='xx')\n>>>> dados <- dbGetQuery(con,paste(\"SELECT\n>>>> OBS_StationNo as station_no,\n>>>> OBS_date as obsdate,\n>>>> FCT_fdate as fdate,\n>>>> FCT_mtype as fct_mtype,\n>>>> FCT_mrun as  fct_mrun,\n>>>> FROM VWFct_Obs\n>>>> WHERE\n>>>> FCT_mtype=\",npt.mtype,\n>>>> \" AND OBS_StationNo <> 'NULL'\n>>>> AND (FCT_fdate LIKE  \",  paste(\"'\",MES1.00,\"'\",sep=\"\"),\n>>>> \" OR FCT_fdate LIKE  \", paste(\"'\",MES1.12,\"'\",sep=\"\"),\n>>>> \" OR  FCT_fdate LIKE \", paste(\"'\",MES2.00,\"'\",sep=\"\"),\n>>>> \" OR  FCT_fdate LIKE \", paste(\"'\",MES2.12,\"'\",sep=\"\"),\n>>>> \" OR  FCT_fdate LIKE \", paste(\"'\",MES3.00,\"'\",sep=\"\"),\n>>>> \"OR  FCT_fdate LIKE  \" ,paste(\"'\",MES3.12,\"'\",sep=\"\"),\" )\" ,sep=\"\"))\n>>>> #\n>>>> ====================\n>>>> --\n>>>> Abra?o,\n>>>> Nilza Barros\n>>>>\n>>>>        [[alternative HTML version deleted]]\n>>>>\n>>>>\n>>>\n>>\n>>\n>> --\n>> Abra?o,\n>> Nilza Barros\n>>\n>\n>\n\n\n-- \nAbra?o,\nNilza Barros\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "OK, Thank you! You're  rigth. It is better to sent my question to r-help.\nBut I will check optparse and getopt.\n\nBye and Best Regards,\nNilza\n\nOn Thu, Oct 28, 2010 at 1:13 PM, Sean Davis <sdavis2 at ma",
+      "thread_id": "thread-fb9c82deabe4",
+      "thread_depth": 4,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-d0a4d8b657ed",
+      "message_id": "<AANLkTi=6mXUmydtJghvBC_4VY4dAWPQybEnBHz-7tmQs@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2010-10-28T09:41:57-04:00",
+      "subject": "[R-sig-DB] [R] Argument to database",
+      "subject_clean": "Argument to database",
+      "in_reply_to": "<AANLkTikzzi66kP78qkzyqHnTZf1vE9LB7ym=rd2Gz0=k@mail.gmail.com>",
+      "references": [
+        "<AANLkTikzzi66kP78qkzyqHnTZf1vE9LB7ym=rd2Gz0=k@mail.gmail.com>"
+      ],
+      "body_plain": "On Tue, Oct 26, 2010 at 3:23 PM, Nilza BARROS <nilzabarros at gmail.com> wrote:\n> Dear Rusers,\n>\n> I am using Rscript and I'd like to use arguments as an input.\n> I need it because I will use these arguments to consult Mysql ?Databse using\n> (SELECT) .\n> I need different select to each Model Type and date.\n>\n> ./GrafDens.R [ModelType trim date ]\n>\n> The script I am using it is working but I'd like to know if there is\n> something more efficient.\n>\n>\n> Below here what ?I am using:\n> ==================\n> #! /usr/bin/Rscript --vanilla\n> args <- commandArgs(TRUE)\n>\n> if (length(args)!=4 )\n> {\n> print(\"********************************************\")\n> print(\"Enter the arguments ? Model (20,21,...) - Trim(01,02,03,04) - Year\n> (AAAA)\")\n> print(\"********************************************\")\n> stop(\"Incorrect arguments length\")\n> }\n> npt.freq <- args[1]\n> npt.trim <-args[2]\n> npt.ano <- args[3]\n>\n>\n> MES1.00 <- paste(npt.ano,npt.mes,\"__\",\"00\",sep=\"\")\n> MES2.00 <- paste(npt.ano,npt.mes,\"__\",\"00\",sep=\"\")\n> MES3.00 <- paste(npt.ano,npt.mes,\"__\",\"00\",sep=\"\")\n>\n>\n> ===How I use the strings above to SELECT my data:\n>\n> drv=dbDriver(\"MySQL\")\n> con=dbConnect(drv,dbname='xxx',user='xx',password='xx')\n> dados <- dbGetQuery(con,paste(\"SELECT\n> OBS_StationNo as station_no,\n> OBS_date as obsdate,\n> FCT_fdate as fdate,\n> FCT_mtype as fct_mtype,\n> FCT_mrun as ?fct_mrun,\n> FROM VWFct_Obs\n> WHERE\n> FCT_mtype=\",npt.mtype,\n> \" AND OBS_StationNo <> 'NULL'\n> AND (FCT_fdate LIKE ?\", ?paste(\"'\",MES1.00,\"'\",sep=\"\"),\n> \" OR FCT_fdate LIKE ?\", paste(\"'\",MES1.12,\"'\",sep=\"\"),\n> \" OR ?FCT_fdate LIKE \", paste(\"'\",MES2.00,\"'\",sep=\"\"),\n> \" OR ?FCT_fdate LIKE \", paste(\"'\",MES2.12,\"'\",sep=\"\"),\n> \" OR ?FCT_fdate LIKE \", paste(\"'\",MES3.00,\"'\",sep=\"\"),\n> \"OR ?FCT_fdate LIKE ?\" ,paste(\"'\",MES3.12,\"'\",sep=\"\"),\" )\" ,sep=\"\"))\n> #\n\nYou may wish to use sprintf to construct your strings\n\n  s <- sprintf(\"select * from mytable where mycolumn = '%s' \", myvalue)\n  out <- dbGetQuery(con, s)\n\nor else the perl-like string interpolation facilities of the gsubfn\npackage. Just preface any function call with fn$ and you get string\ninterpolation in the arguments (subject to certain rules):\n\n  library(gsubfn)\n  out <- fn$dbGetQuery(con, \"select * from mytable where mycolumn =\n'$myvalue' \")\n\n\n-- \nStatistics & Software Consulting\nGKX Group, GKX Associates Inc.\ntel: 1-877-GKX-GROUP\nemail: ggrothendieck at gmail.com",
+      "body_snippet": "On Tue, Oct 26, 2010 at 3:23 PM, Nilza BARROS <nilzabarros at gmail.com> wrote:\n> Dear Rusers,\n>\n> I am using Rscript and I'd like to use arguments as an input.\n> I need it because I will use these ar",
+      "thread_id": "thread-fb9c82deabe4",
+      "thread_depth": 1,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-309ca0e6b5c6",
+      "message_id": "<AANLkTik8nwN1qJFByPTspUtLj-bD9D-jqZ7xteuOTGHV@mail.gmail.com>",
+      "from_name": "Xiaobo Gu",
+      "from_email_hash": "176108762e20fc40c0ea5782a4cf2388d4cba8cdadb1f5a5481fccf34141e262",
+      "date": "2010-10-31T17:39:09+08:00",
+      "subject": "[R-sig-DB] Data type error with RpgSQL on Windows XP SP3 32bit",
+      "subject_clean": "Data type error with RpgSQL on Windows XP SP3 32bit",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\nCan you help with this\n\n> driver<-pgSQL(classPath=\"D:\\\\rtemp\\\\postgresql-9.0-801.jdbc4.zip\")\n> con <- dbConnect(driver, user=\"postgres\", password=\"postgres\",\ndbname=\"demo\")\n> con\nAn object of class \"pgSQLConnection\"\nSlot \"jc\":\n[1] \"Java-Object{org.postgresql.jdbc4.Jdbc4Connection at 1ce2dd 4}\"\n\nSlot \"identifier.quote\":\n[1] \"\\\"\"\n\n> data <- dbGetQuery(con, \"select * from optest.colana\")\nError as.Date.default(.jcall(res at jr, \"S\", \"getString\", i)) :\ndo not know how to convert '.jcall(res at jr, \"S\", \"getString\", i)' to class\n\"Date\"\n>\nthe DDL is :\nCREATE TABLE optest.colana\n(\na integer,\nb character varying(12),\nc date,\nd numeric\n)\n\n\t[[alternative HTML version deleted]]",
+      "body_snippet": "Hi,\nCan you help with this\n\n> driver<-pgSQL(classPath=\"D:\\\\rtemp\\\\postgresql-9.0-801.jdbc4.zip\")\n> con <- dbConnect(driver, user=\"postgres\", password=\"postgres\",\ndbname=\"demo\")\n> con\nAn object of clas",
+      "thread_id": "thread-309ca0e6b5c6",
+      "thread_depth": 0,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-a9ff9891c03e",
+      "message_id": "<19661.28312.520318.108726@max.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2010-10-31T08:26:48-05:00",
+      "subject": "[R-sig-DB] Data type error with RpgSQL on Windows XP SP3 32bit",
+      "subject_clean": "Data type error with RpgSQL on Windows XP SP3 32bit",
+      "in_reply_to": "<AANLkTik8nwN1qJFByPTspUtLj-bD9D-jqZ7xteuOTGHV@mail.gmail.com>",
+      "references": [
+        "<AANLkTik8nwN1qJFByPTspUtLj-bD9D-jqZ7xteuOTGHV@mail.gmail.com>"
+      ],
+      "body_plain": "On 31 October 2010 at 17:39, Xiaobo Gu wrote:\n| Hi,\n| Can you help with this\n| \n| > driver<-pgSQL(classPath=\"D:\\\\rtemp\\\\postgresql-9.0-801.jdbc4.zip\")\n| > con <- dbConnect(driver, user=\"postgres\", password=\"postgres\",\n| dbname=\"demo\")\n| > con\n| An object of class \"pgSQLConnection\"\n| Slot \"jc\":\n| [1] \"Java-Object{org.postgresql.jdbc4.Jdbc4Connection at 1ce2dd 4}\"\n| \n| Slot \"identifier.quote\":\n| [1] \"\\\"\"\n| \n| > data <- dbGetQuery(con, \"select * from optest.colana\")\n| Error as.Date.default(.jcall(res at jr, \"S\", \"getString\", i)) :\n| do not know how to convert '.jcall(res at jr, \"S\", \"getString\", i)' to class\n| \"Date\"\n| >\n| the DDL is :\n| CREATE TABLE optest.colana\n| (\n| a integer,\n| b character varying(12),\n| c date,\n| d numeric\n| )\n\nTry casting the (SQL) date to (SQL) character, you can probably load the\ncharacter into R and parse again as an (R) Date.\n\nRPostgreSQL could do that in one step, but we'd still need a volunteer to\nhelp build a libpq.a library for Windows/MinGW before a binary package can be\nprovided.\n\nDirk\n\n-- \nDirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com",
+      "body_snippet": "On 31 October 2010 at 17:39, Xiaobo Gu wrote:\n| Hi,\n| Can you help with this\n| \n| > driver<-pgSQL(classPath=\"D:\\\\rtemp\\\\postgresql-9.0-801.jdbc4.zip\")\n| > con <- dbConnect(driver, user=\"postgres\", pas",
+      "thread_id": "thread-309ca0e6b5c6",
+      "thread_depth": 1,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-3f71f428e1ae",
+      "message_id": "<AANLkTi=v2QWoeRhb2kv2iaNv9-mEjQMOukEGqS8SEXnW@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2010-10-31T13:01:21-04:00",
+      "subject": "[R-sig-DB] Data type error with RpgSQL on Windows XP SP3 32bit",
+      "subject_clean": "Data type error with RpgSQL on Windows XP SP3 32bit",
+      "in_reply_to": "<AANLkTik8nwN1qJFByPTspUtLj-bD9D-jqZ7xteuOTGHV@mail.gmail.com>",
+      "references": [
+        "<AANLkTik8nwN1qJFByPTspUtLj-bD9D-jqZ7xteuOTGHV@mail.gmail.com>"
+      ],
+      "body_plain": "On Sun, Oct 31, 2010 at 5:39 AM, Xiaobo Gu <guxiaobo1982 at gmail.com> wrote:\n> Hi,\n> Can you help with this\n>\n>> driver<-pgSQL(classPath=\"D:\\\\rtemp\\\\postgresql-9.0-801.jdbc4.zip\")\n>> con <- dbConnect(driver, user=\"postgres\", password=\"postgres\",\n> dbname=\"demo\")\n>> con\n> An object of class \"pgSQLConnection\"\n> Slot \"jc\":\n> [1] \"Java-Object{org.postgresql.jdbc4.Jdbc4Connection at 1ce2dd 4}\"\n>\n> Slot \"identifier.quote\":\n> [1] \"\\\"\"\n>\n>> data <- dbGetQuery(con, \"select * from optest.colana\")\n> Error as.Date.default(.jcall(res at jr, \"S\", \"getString\", i)) :\n> do not know how to convert '.jcall(res at jr, \"S\", \"getString\", i)' to class\n> \"Date\"\n>>\n> the DDL is :\n> CREATE TABLE optest.colana\n> (\n> a integer,\n> b character varying(12),\n> c date,\n> d numeric\n> )\n>\n\nCould you write up a reproducible example?  I created a reproducible\nexample below but it works for me.  Here we create a table with a Date\nfield and then insert some data and then read it back.  Note that the\nnew table that results from the dbGetQuery at the end has a Date field\nas required.\n\n> options(RpgSQL.password = \"postgres\", RpgSQL.dbname = \"mydb\")\n> library(RpgSQL)\n>\n> con <- dbConnect(pgSQL())\n>\n> ct <- 'CREATE TABLE DF (\"a\" INTEGER, \"b\" VARCHAR(255), \"c\" DATE,\"d\" DOUBLE PRECISION)'\n> dbSendUpdate(con, ct)\n>\n> DF <- data.frame(a = 1L, b = \"Hello\", c = Sys.Date(), d = 32)\n> dbSendUpdate(con, \"insert into DF values(1, 'Hello', to_date('2000-01-01', 'YYYY-MM-DD'), 32)\")\n>\n> res <- dbGetUpdate(con, \"select * from DF\")\nError: could not find function \"dbGetUpdate\"\n> str(res)\n'data.frame':   1 obs. of  4 variables:\n $ a: num 1\n $ b: Factor w/ 1 level \"Hello\": 1\n $ c:Class 'Date'  num 10957\n $ d: num 32\n>\n> dbSendUpdate(con, \"drop table DF\")\n> dbDisconnect(con)\n[1] TRUE\n> R.version.string\n[1] \"R version 2.11.1 Patched (2010-05-31 r52167)\"\n> win.version()\n[1] \"Windows Vista (build 6002) Service Pack 2\"\n\n-- \nStatistics & Software Consulting\nGKX Group, GKX Associates Inc.\ntel: 1-877-GKX-GROUP\nemail: ggrothendieck at gmail.com",
+      "body_snippet": "On Sun, Oct 31, 2010 at 5:39 AM, Xiaobo Gu <guxiaobo1982 at gmail.com> wrote:\n> Hi,\n> Can you help with this\n>\n>> driver<-pgSQL(classPath=\"D:\\\\rtemp\\\\postgresql-9.0-801.jdbc4.zip\")\n>> con <- dbConnect",
+      "thread_id": "thread-309ca0e6b5c6",
+      "thread_depth": 1,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-0bf15f42300d",
+      "message_id": "<AANLkTikvdrTknS4Gju7kwH__o-tK8fEWQBF+AWGm0PWS@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2010-10-31T13:03:09-04:00",
+      "subject": "[R-sig-DB] Data type error with RpgSQL on Windows XP SP3 32bit",
+      "subject_clean": "Data type error with RpgSQL on Windows XP SP3 32bit",
+      "in_reply_to": "<19661.28312.520318.108726@max.nulle.part>",
+      "references": [
+        "<AANLkTik8nwN1qJFByPTspUtLj-bD9D-jqZ7xteuOTGHV@mail.gmail.com>",
+        "<19661.28312.520318.108726@max.nulle.part>"
+      ],
+      "body_plain": "On Sun, Oct 31, 2010 at 9:26 AM, Dirk Eddelbuettel <edd at debian.org> wrote:\n>\n> On 31 October 2010 at 17:39, Xiaobo Gu wrote:\n> | Hi,\n> | Can you help with this\n> |\n> | > driver<-pgSQL(classPath=\"D:\\\\rtemp\\\\postgresql-9.0-801.jdbc4.zip\")\n> | > con <- dbConnect(driver, user=\"postgres\", password=\"postgres\",\n> | dbname=\"demo\")\n> | > con\n> | An object of class \"pgSQLConnection\"\n> | Slot \"jc\":\n> | [1] \"Java-Object{org.postgresql.jdbc4.Jdbc4Connection at 1ce2dd 4}\"\n> |\n> | Slot \"identifier.quote\":\n> | [1] \"\\\"\"\n> |\n> | > data <- dbGetQuery(con, \"select * from optest.colana\")\n> | Error as.Date.default(.jcall(res at jr, \"S\", \"getString\", i)) :\n> | do not know how to convert '.jcall(res at jr, \"S\", \"getString\", i)' to class\n> | \"Date\"\n> | >\n> | the DDL is :\n> | CREATE TABLE optest.colana\n> | (\n> | a integer,\n> | b character varying(12),\n> | c date,\n> | d numeric\n> | )\n>\n> Try casting the (SQL) date to (SQL) character, you can probably load the\n> character into R and parse again as an (R) Date.\n>\n\nRpgSQL directly supports Date type.  It should not be necessary to\nconvert it to a character.\n\n-- \nStatistics & Software Consulting\nGKX Group, GKX Associates Inc.\ntel: 1-877-GKX-GROUP\nemail: ggrothendieck at gmail.com",
+      "body_snippet": "On Sun, Oct 31, 2010 at 9:26 AM, Dirk Eddelbuettel <edd at debian.org> wrote:\n>\n> On 31 October 2010 at 17:39, Xiaobo Gu wrote:\n> | Hi,\n> | Can you help with this\n> |\n> | > driver<-pgSQL(classPath=\"D:",
+      "thread_id": "thread-309ca0e6b5c6",
+      "thread_depth": 2,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-265bbba567a0",
+      "message_id": "<AANLkTin6APgoD88MHoQxw8bFewV1cmkCLd0uKSE10fJ8@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2010-10-31T13:08:24-04:00",
+      "subject": "[R-sig-DB] Data type error with RpgSQL on Windows XP SP3 32bit",
+      "subject_clean": "Data type error with RpgSQL on Windows XP SP3 32bit",
+      "in_reply_to": "<AANLkTi=v2QWoeRhb2kv2iaNv9-mEjQMOukEGqS8SEXnW@mail.gmail.com>",
+      "references": [
+        "<AANLkTik8nwN1qJFByPTspUtLj-bD9D-jqZ7xteuOTGHV@mail.gmail.com>",
+        "<AANLkTi=v2QWoeRhb2kv2iaNv9-mEjQMOukEGqS8SEXnW@mail.gmail.com>"
+      ],
+      "body_plain": "On Sun, Oct 31, 2010 at 1:01 PM, Gabor Grothendieck\n<ggrothendieck at gmail.com> wrote:\n> On Sun, Oct 31, 2010 at 5:39 AM, Xiaobo Gu <guxiaobo1982 at gmail.com> wrote:\n>> Hi,\n>> Can you help with this\n>>\n>>> driver<-pgSQL(classPath=\"D:\\\\rtemp\\\\postgresql-9.0-801.jdbc4.zip\")\n>>> con <- dbConnect(driver, user=\"postgres\", password=\"postgres\",\n>> dbname=\"demo\")\n>>> con\n>> An object of class \"pgSQLConnection\"\n>> Slot \"jc\":\n>> [1] \"Java-Object{org.postgresql.jdbc4.Jdbc4Connection at 1ce2dd 4}\"\n>>\n>> Slot \"identifier.quote\":\n>> [1] \"\\\"\"\n>>\n>>> data <- dbGetQuery(con, \"select * from optest.colana\")\n>> Error as.Date.default(.jcall(res at jr, \"S\", \"getString\", i)) :\n>> do not know how to convert '.jcall(res at jr, \"S\", \"getString\", i)' to class\n>> \"Date\"\n>>>\n>> the DDL is :\n>> CREATE TABLE optest.colana\n>> (\n>> a integer,\n>> b character varying(12),\n>> c date,\n>> d numeric\n>> )\n>>\n>\n> Could you write up a reproducible example? ?I created a reproducible\n> example below but it works for me. ?Here we create a table with a Date\n> field and then insert some data and then read it back. ?Note that the\n> new table that results from the dbGetQuery at the end has a Date field\n> as required.\n>\n\nSorry I pasted the wrong code in. Here is the correct reproducible\ncode.  (The prior one was correct except dbGetQuery was mistyped as\ndbGetUpdate.)\n\n> options(RpgSQL.password = \"postgres\", RpgSQL.dbname = \"mydb\")\n> library(RpgSQL)\n>\n> con <- dbConnect(pgSQL())\n>\n> ct <- 'CREATE TABLE DF (\"a\" INTEGER, \"b\" VARCHAR(255), \"c\" DATE,\"d\" DOUBLE PRECISION)'\n> dbSendUpdate(con, ct)\n>\n> DF <- data.frame(a = 1L, b = \"Hello\", c = Sys.Date(), d = 32)\n> dbSendUpdate(con, \"insert into DF values(1, 'Hello', to_date('2000-01-01', 'YYYY-MM-DD'), 32)\")\n>\n> res <- dbGetQuery(con, \"select * from DF\")\n> str(res)\n'data.frame':   1 obs. of  4 variables:\n $ a: num 1\n $ b: Factor w/ 1 level \"Hello\": 1\n $ c:Class 'Date'  num 10957\n $ d: num 32\n>\n> dbSendUpdate(con, \"drop table DF\")\n> dbDisconnect(con)\n[1] TRUE\n\n\n-- \nStatistics & Software Consulting\nGKX Group, GKX Associates Inc.\ntel: 1-877-GKX-GROUP\nemail: ggrothendieck at gmail.com",
+      "body_snippet": "On Sun, Oct 31, 2010 at 1:01 PM, Gabor Grothendieck\n<ggrothendieck at gmail.com> wrote:\n> On Sun, Oct 31, 2010 at 5:39 AM, Xiaobo Gu <guxiaobo1982 at gmail.com> wrote:\n>> Hi,\n>> Can you help with this",
+      "thread_id": "thread-309ca0e6b5c6",
+      "thread_depth": 2,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-5c8964414a99",
+      "message_id": "<19661.41720.845742.291601@max.nulle.part>",
+      "from_name": "Dirk Eddelbuettel",
+      "from_email_hash": "26604783910298c073ad132e77cb72b30037ddd7369ecad11e5fe08281600547",
+      "date": "2010-10-31T12:10:16-05:00",
+      "subject": "[R-sig-DB] Data type error with RpgSQL on Windows XP SP3 32bit",
+      "subject_clean": "Data type error with RpgSQL on Windows XP SP3 32bit",
+      "in_reply_to": "<AANLkTikvdrTknS4Gju7kwH__o-tK8fEWQBF+AWGm0PWS@mail.gmail.com>",
+      "references": [
+        "<AANLkTik8nwN1qJFByPTspUtLj-bD9D-jqZ7xteuOTGHV@mail.gmail.com>",
+        "<19661.28312.520318.108726@max.nulle.part>",
+        "<AANLkTikvdrTknS4Gju7kwH__o-tK8fEWQBF+AWGm0PWS@mail.gmail.com>"
+      ],
+      "body_plain": "On 31 October 2010 at 13:03, Gabor Grothendieck wrote:\n| On Sun, Oct 31, 2010 at 9:26 AM, Dirk Eddelbuettel <edd at debian.org> wrote:\n| > Try casting the (SQL) date to (SQL) character, you can probably load the\n| > character into R and parse again as an (R) Date.\n| >\n| \n| RpgSQL directly supports Date type.  It should not be necessary to\n| convert it to a character.\n\nThanks for the clarification.  I didn't mean to imply that RpgSQL didn't have\nthis feature and was just trying to help the OP with an alternate approach.\n\nDirk\n\n-- \nDirk Eddelbuettel | edd at debian.org | http://dirk.eddelbuettel.com",
+      "body_snippet": "On 31 October 2010 at 13:03, Gabor Grothendieck wrote:\n| On Sun, Oct 31, 2010 at 9:26 AM, Dirk Eddelbuettel <edd at debian.org> wrote:\n| > Try casting the (SQL) date to (SQL) character, you can probab",
+      "thread_id": "thread-309ca0e6b5c6",
+      "thread_depth": 3,
+      "month": "2010-10"
+    },
+    {
+      "id": "msg-64e589d86dc7",
+      "message_id": "<AANLkTim1iv3wqXKJPEDTYHTUHgq=fN1LWevWQhHOwtcd@mail.gmail.com>",
+      "from_name": "Gabor Grothendieck",
+      "from_email_hash": "2470cc61688c301322ff3a85f3fd51ddba9f1112f88f535ec93c41ab610332d1",
+      "date": "2010-10-31T22:33:59-04:00",
+      "subject": "[R-sig-DB] Data type error with RpgSQL on Windows XP SP3 32bit",
+      "subject_clean": "Data type error with RpgSQL on Windows XP SP3 32bit",
+      "in_reply_to": "<AANLkTin5Pa8uNHHfzhVgzGnaw-ymMXaR3=pe95P6+aGq@mail.gmail.com>",
+      "references": [
+        "<AANLkTik8nwN1qJFByPTspUtLj-bD9D-jqZ7xteuOTGHV@mail.gmail.com>",
+        "<19661.28312.520318.108726@max.nulle.part>",
+        "<AANLkTikvdrTknS4Gju7kwH__o-tK8fEWQBF+AWGm0PWS@mail.gmail.com>",
+        "<19661.41720.845742.291601@max.nulle.part>",
+        "<AANLkTin5Pa8uNHHfzhVgzGnaw-ymMXaR3=pe95P6+aGq@mail.gmail.com>"
+      ],
+      "body_plain": "On Sun, Oct 31, 2010 at 10:17 PM, Xiaobo Gu <guxiaobo1982 at gmail.com> wrote:\n> Hi,\n> What's the versions for all the related components, R, DBI, rJava,RJDBC,\n> RpgSQL, PostgreSQL JDBC?\n>\n\nI am using the most recent versions of all packages and R 2.11.1\nPatched on Windows Vista:\n\n> packageDescription(\"RJDBC\")$Version\n[1] \"0.1-5\"\n> packageDescription(\"DBI\")$Version\n[1] \"0.2-5\"\n> packageDescription(\"rJava\")$Version\n[1] \"0.8-7\"\n> packageDescription(\"RpgSQL\")$Version\n[1] \"0.1-3.2\"\n> R.version.string\n[1] \"R version 2.11.1 Patched (2010-05-31 r52167)\"\n> win.version()\n[1] \"Windows Vista (build 6002) Service Pack 2\"\n\nThe Windows binary of rJava seems currently not to be available on CRAN:\nhttp://cran.r-project.org/web/packages/rJava/index.html\nbut you can build it yourself or get it from R-Forge.\n\nDid you try running the reproducible example in my email?  Did it work for you?\n\n-- \nStatistics & Software Consulting\nGKX Group, GKX Associates Inc.\ntel: 1-877-GKX-GROUP\nemail: ggrothendieck at gmail.com",
+      "body_snippet": "On Sun, Oct 31, 2010 at 10:17 PM, Xiaobo Gu <guxiaobo1982 at gmail.com> wrote:\n> Hi,\n> What's the versions for all the related components, R, DBI, rJava,RJDBC,\n> RpgSQL, PostgreSQL JDBC?\n>\n\nI am using",
+      "thread_id": "thread-64e589d86dc7",
+      "thread_depth": 0,
+      "month": "2010-10"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-81ae8c191102",
+      "subject": "Problem installing Roracle in RHEL5",
+      "message_count": 2,
+      "participants": [
+        "MacQueen, Don",
+        "Marc Schwartz"
+      ],
+      "started": "2010-10-01T16:57:32-07:00",
+      "last_reply": "2010-10-02T08:18:08-05:00",
+      "root_message_id": "msg-81ae8c191102"
+    },
+    {
+      "id": "thread-95525741de8f",
+      "subject": "trouble with RODBC -- chopping off part of column names",
+      "message_count": 2,
+      "participants": [
+        "Marc Schwartz",
+        "Mike Williamson"
+      ],
+      "started": "2010-10-04T15:15:15-07:00",
+      "last_reply": "2010-10-05T08:25:14-05:00",
+      "root_message_id": "msg-95525741de8f"
+    },
+    {
+      "id": "thread-80bf708e5712",
+      "subject": "Null values from DBI connection",
+      "message_count": 1,
+      "participants": [
+        "Albert Vernon Smith"
+      ],
+      "started": "2010-10-04T23:09:13+00:00",
+      "last_reply": "2010-10-04T23:09:13+00:00",
+      "root_message_id": "msg-80bf708e5712"
+    },
+    {
+      "id": "thread-d5e3f2742afe",
+      "subject": "Question about assigning values in a matrix, conditional on column first row; how to do the loop.",
+      "message_count": 1,
+      "participants": [
+        "Paula Fergnani Salvia"
+      ],
+      "started": "2010-10-05T08:12:44-07:00",
+      "last_reply": "2010-10-05T08:12:44-07:00",
+      "root_message_id": "msg-d5e3f2742afe"
+    },
+    {
+      "id": "thread-ca41064349f4",
+      "subject": "append rows to Sybase datatable using RJDBC function dbWriteTable",
+      "message_count": 1,
+      "participants": [
+        "Li, Jing Yi"
+      ],
+      "started": "2010-10-08T18:19:47-04:00",
+      "last_reply": "2010-10-08T18:19:47-04:00",
+      "root_message_id": "msg-ca41064349f4"
+    },
+    {
+      "id": "thread-da9497cdb147",
+      "subject": "adding to a MySQL database from within R?",
+      "message_count": 9,
+      "participants": [
+        "Dirk Eddelbuettel",
+        "Jack Tanner",
+        "Sean Davis",
+        "Spencer Graves"
+      ],
+      "started": "2010-10-08T21:00:13-07:00",
+      "last_reply": "2010-10-12T07:32:42-07:00",
+      "root_message_id": "msg-da9497cdb147"
+    },
+    {
+      "id": "thread-78fb5c4d1306",
+      "subject": "issues compiling RMysql source",
+      "message_count": 1,
+      "participants": [
+        "spocht m@iii@g oii gmx@@t"
+      ],
+      "started": "2010-10-11T16:19:36+02:00",
+      "last_reply": "2010-10-11T16:19:36+02:00",
+      "root_message_id": "msg-78fb5c4d1306"
+    },
+    {
+      "id": "thread-2851e8079db3",
+      "subject": "Rmysql - dbWritetable",
+      "message_count": 3,
+      "participants": [
+        "Nilza BARROS",
+        "Spencer Graves"
+      ],
+      "started": "2010-10-15T23:39:40-03:00",
+      "last_reply": "2010-10-16T20:31:49-03:00",
+      "root_message_id": "msg-2851e8079db3"
+    },
+    {
+      "id": "thread-289e34ebc09b",
+      "subject": "RODBC: how to view multiple objects returned by a stored procedure?",
+      "message_count": 2,
+      "participants": [
+        "Maciej Ombach",
+        "Prof Brian Ripley"
+      ],
+      "started": "2010-10-17T21:35:27-04:00",
+      "last_reply": "2010-10-18T07:20:30+01:00",
+      "root_message_id": "msg-289e34ebc09b"
+    },
+    {
+      "id": "thread-8c39cfe98790",
+      "subject": "[RPostgreSQL] Unable to find",
+      "message_count": 8,
+      "participants": [
+        "Ajay Ohri",
+        "Dirk Eddelbuettel",
+        "Gabor Grothendieck",
+        "Neil Tiffin"
+      ],
+      "started": "2010-10-24T23:40:06+05:30",
+      "last_reply": "2010-10-25T10:56:59-04:00",
+      "root_message_id": "msg-8c39cfe98790"
+    },
+    {
+      "id": "thread-55a3c8e06fd5",
+      "subject": "R-sig-DB Digest, Vol 72, Issue 13",
+      "message_count": 1,
+      "participants": [
+        "Ajay Ohri"
+      ],
+      "started": "2010-10-26T16:41:49+05:30",
+      "last_reply": "2010-10-26T16:41:49+05:30",
+      "root_message_id": "msg-55a3c8e06fd5"
+    },
+    {
+      "id": "thread-d38084be14ff",
+      "subject": "Installing RMySQL under CentOS 5.5 version of Linux?",
+      "message_count": 3,
+      "participants": [
+        "Spencer Graves",
+        "Tomoaki NISHIYAMA"
+      ],
+      "started": "2010-10-26T18:44:30-07:00",
+      "last_reply": "2010-10-26T19:22:43-07:00",
+      "root_message_id": "msg-d38084be14ff"
+    },
+    {
+      "id": "thread-fb9c82deabe4",
+      "subject": "Argument to database",
+      "message_count": 6,
+      "participants": [
+        "Gabor Grothendieck",
+        "Nilza BARROS",
+        "Sean Davis"
+      ],
+      "started": "2010-10-26T19:23:51+00:00",
+      "last_reply": "2010-10-28T09:41:57-04:00",
+      "root_message_id": "msg-fb9c82deabe4"
+    },
+    {
+      "id": "thread-309ca0e6b5c6",
+      "subject": "Data type error with RpgSQL on Windows XP SP3 32bit",
+      "message_count": 6,
+      "participants": [
+        "Dirk Eddelbuettel",
+        "Gabor Grothendieck",
+        "Xiaobo Gu"
+      ],
+      "started": "2010-10-31T17:39:09+08:00",
+      "last_reply": "2010-10-31T12:10:16-05:00",
+      "root_message_id": "msg-309ca0e6b5c6"
+    },
+    {
+      "id": "thread-64e589d86dc7",
+      "subject": "Data type error with RpgSQL on Windows XP SP3 32bit",
+      "message_count": 1,
+      "participants": [
+        "Gabor Grothendieck"
+      ],
+      "started": "2010-10-31T22:33:59-04:00",
+      "last_reply": "2010-10-31T22:33:59-04:00",
+      "root_message_id": "msg-64e589d86dc7"
+    }
+  ]
+}

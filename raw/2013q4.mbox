@@ -1,0 +1,5761 @@
+From zu|ut|me@net @end|ng |rom gm@||@com  Tue Oct  1 14:45:54 2013
+From: zu|ut|me@net @end|ng |rom gm@||@com (Magnus Thor Torfason)
+Date: Tue, 1 Oct 2013 12:45:54 +0000
+Subject: [R-sig-DB] RMySQL "lost connection" during dbWriteTable()
+Message-ID: <524AC402.205@gmail.com>
+
+When doing dbWriteTable() to write my (admittedly large) data.frame to a 
+MySQL database I randomly get the following error:
+
+ >     dbWriteTable(conn, "tablename", data)
+Error in mysqlExecStatement(conn, statement, ...) :
+   RS-DBI driver: (could not run statement: Lost connection to MySQL 
+server during query)
+
+Googling on MySQL in general suggests that this can be the result of 
+sending too big of a chunk of data to MySQL at the same time.
+
+But the data.frame sits comfortably in memory and the table sits 
+comfortably in the database. So it is disappointing that what I thought 
+was the recommended way to achieve this task (dbWriteTable), should be a 
+bottleneck.
+
+I suppose I could write a loop around dbWriteTable(), writing only a few 
+rows of the data.frame at the same time, but that seems like something 
+that dbWriteTable() should be doing internally.
+
+Are there any good suggestions on what I should do?
+
+Best,
+Magnus
+
+
+
+From krzy@zto|@@@krejd@ @end|ng |rom gm@||@com  Tue Oct  1 16:31:27 2013
+From: krzy@zto|@@@krejd@ @end|ng |rom gm@||@com (Krzysztof Sakrejda)
+Date: Tue, 1 Oct 2013 10:31:27 -0400
+Subject: [R-sig-DB] RMySQL "lost connection" during dbWriteTable()
+In-Reply-To: <524AC402.205@gmail.com>
+References: <524AC402.205@gmail.com>
+Message-ID: <CAJCSVaAYEqnkBHfDoajBMxdZgJ1WHy5LGLH6Toy6dHm_v=O4OQ@mail.gmail.com>
+
+I've had this problem before, writing over a slow internet connection
+and I believe it would be nice to make the dbWriteTable command do
+this... but I haven't had the chance to do anything useful about it,
+other than write this quick and dirty function for myself.  This
+function carelessly re-uses dbConnect which can exhaust available
+connections, but it could be adapted to do a check, like the appended
+dbReconnect function.  Hope that helps...  Krzysztof
+
+dbRobustWriteTable <- function(conn, user, password, host, dbname,
+name, value, tries) {
+    numFullChunks <- nrow(value)%/%100
+    lengthLastChunk <- nrow(value)%%100
+    if (numFullChunks >= 1) {
+        writeSeqFullChunks <- data.frame(Start =
+seq(0,numFullChunks-1,1)*100+1, Stop = seq(1,numFullChunks,1)*100)
+    }
+    writeSeqLastChunk <- data.frame(Start = numFullChunks*100+1, Stop
+= numFullChunks*100+lengthLastChunk)
+    if (numFullChunks >= 1) {
+        writeSeqAllChunks <- rbind(writeSeqFullChunks,writeSeqLastChunk)
+    } else { writeSeqAllChunks <- writeSeqLastChunk }
+
+    for(i in 1:nrow(writeSeqAllChunks)) {
+            try <- 0
+            rowSeq <-
+seq(writeSeqAllChunks$Start[i],writeSeqAllChunks$Stop[i],1)
+            while (!dbWriteTable(conn = conn, name = name, value =
+value[rowSeq,], overwrite = FALSE, append = TRUE) & try < tries) {
+                conn  <-
+dbConnect(MySQL(),user=user,password=password,host=host,dbname=dbname)
+                try <- try + 1
+                if (try == tries) { stop("EPIC FAIL") }
+                print(paste("Fail number",try,"epical fail
+at",tries,"tries.",sep = " "))
+            }
+    }
+}
+
+
+dbReconnect <- function(
+  conn = NULL,
+  idFile = NULL,
+  drv = MySQL()
+) {
+    if (  is.null(idFile) ) {
+        stop('Can\'t reconnect, no id.')
+    }
+    if ( !is.null(conn) ) {
+      tryCatch(
+        expr = dbDisconnect( conn = conn ),
+        error = function(cond) {
+          print(cond)
+        }
+      )
+    }
+    ev = new.env()
+    load( file = idFile, envir = ev )
+    ev$drv <- drv
+    conn <- with(
+        data = ev,
+        expr = dbConnect(
+            drv = drv,
+            user = user,
+            password = pass,
+            dbname = dbname,
+            host = host
+        )
+    ); rm(ev)
+    return(conn)
+
+}
+
+
+
+On Tue, Oct 1, 2013 at 8:45 AM, Magnus Thor Torfason
+<zulutime.net at gmail.com> wrote:
+> When doing dbWriteTable() to write my (admittedly large) data.frame to a
+> MySQL database I randomly get the following error:
+>
+>>     dbWriteTable(conn, "tablename", data)
+> Error in mysqlExecStatement(conn, statement, ...) :
+>   RS-DBI driver: (could not run statement: Lost connection to MySQL server
+> during query)
+>
+> Googling on MySQL in general suggests that this can be the result of sending
+> too big of a chunk of data to MySQL at the same time.
+>
+> But the data.frame sits comfortably in memory and the table sits comfortably
+> in the database. So it is disappointing that what I thought was the
+> recommended way to achieve this task (dbWriteTable), should be a bottleneck.
+>
+> I suppose I could write a loop around dbWriteTable(), writing only a few
+> rows of the data.frame at the same time, but that seems like something that
+> dbWriteTable() should be doing internally.
+>
+> Are there any good suggestions on what I should do?
+>
+> Best,
+> Magnus
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+-- 
+
+Krzysztof Sakrejda
+
+Organismic and Evolutionary Biology
+University of Massachusetts, Amherst
+319 Morrill Science Center South
+611 N. Pleasant Street
+Amherst, MA 01003
+
+work #: 413-325-6555
+email: sakrejda at cns.umass.edu
+
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Wed Oct  2 20:07:10 2013
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Wed, 2 Oct 2013 14:07:10 -0400
+Subject: [R-sig-DB] RMySQL "lost connection" during dbWriteTable()
+In-Reply-To: <CAJCSVaAYEqnkBHfDoajBMxdZgJ1WHy5LGLH6Toy6dHm_v=O4OQ@mail.gmail.com>
+References: <524AC402.205@gmail.com>
+	<CAJCSVaAYEqnkBHfDoajBMxdZgJ1WHy5LGLH6Toy6dHm_v=O4OQ@mail.gmail.com>
+Message-ID: <524C60CE.7010808@gmail.com>
+
+It is possible, but not certain, that some server parameter settings can 
+affect this. You might consider adjusting max_allowed_packets and maybe 
+some memory/cache sizes. As I recall, if you run the server in debug 
+mode in a terminal you may get better error information. You could also 
+check if you get a similiar problem writing data with the mysql client 
+program, or with perl. I did have a similar problem even after server 
+adjustments with perl, and had to break large inserts into groups (of 
+100,000 records with about 6 fields). It seems unlikely to me that you 
+would need to break it as small as 100 records unless soething else is 
+going on.
+
+Paul
+
+On 13-10-01 10:31 AM, Krzysztof Sakrejda wrote:
+> I've had this problem before, writing over a slow internet connection
+> and I believe it would be nice to make the dbWriteTable command do
+> this... but I haven't had the chance to do anything useful about it,
+> other than write this quick and dirty function for myself.  This
+> function carelessly re-uses dbConnect which can exhaust available
+> connections, but it could be adapted to do a check, like the appended
+> dbReconnect function.  Hope that helps...  Krzysztof
+>
+> dbRobustWriteTable <- function(conn, user, password, host, dbname,
+> name, value, tries) {
+>      numFullChunks <- nrow(value)%/%100
+>      lengthLastChunk <- nrow(value)%%100
+>      if (numFullChunks >= 1) {
+>          writeSeqFullChunks <- data.frame(Start =
+> seq(0,numFullChunks-1,1)*100+1, Stop = seq(1,numFullChunks,1)*100)
+>      }
+>      writeSeqLastChunk <- data.frame(Start = numFullChunks*100+1, Stop
+> = numFullChunks*100+lengthLastChunk)
+>      if (numFullChunks >= 1) {
+>          writeSeqAllChunks <- rbind(writeSeqFullChunks,writeSeqLastChunk)
+>      } else { writeSeqAllChunks <- writeSeqLastChunk }
+>
+>      for(i in 1:nrow(writeSeqAllChunks)) {
+>              try <- 0
+>              rowSeq <-
+> seq(writeSeqAllChunks$Start[i],writeSeqAllChunks$Stop[i],1)
+>              while (!dbWriteTable(conn = conn, name = name, value =
+> value[rowSeq,], overwrite = FALSE, append = TRUE) & try < tries) {
+>                  conn  <-
+> dbConnect(MySQL(),user=user,password=password,host=host,dbname=dbname)
+>                  try <- try + 1
+>                  if (try == tries) { stop("EPIC FAIL") }
+>                  print(paste("Fail number",try,"epical fail
+> at",tries,"tries.",sep = " "))
+>              }
+>      }
+> }
+>
+>
+> dbReconnect <- function(
+>    conn = NULL,
+>    idFile = NULL,
+>    drv = MySQL()
+> ) {
+>      if (  is.null(idFile) ) {
+>          stop('Can\'t reconnect, no id.')
+>      }
+>      if ( !is.null(conn) ) {
+>        tryCatch(
+>          expr = dbDisconnect( conn = conn ),
+>          error = function(cond) {
+>            print(cond)
+>          }
+>        )
+>      }
+>      ev = new.env()
+>      load( file = idFile, envir = ev )
+>      ev$drv <- drv
+>      conn <- with(
+>          data = ev,
+>          expr = dbConnect(
+>              drv = drv,
+>              user = user,
+>              password = pass,
+>              dbname = dbname,
+>              host = host
+>          )
+>      ); rm(ev)
+>      return(conn)
+>
+> }
+>
+>
+>
+> On Tue, Oct 1, 2013 at 8:45 AM, Magnus Thor Torfason
+> <zulutime.net at gmail.com> wrote:
+>> When doing dbWriteTable() to write my (admittedly large) data.frame to a
+>> MySQL database I randomly get the following error:
+>>
+>>>      dbWriteTable(conn, "tablename", data)
+>> Error in mysqlExecStatement(conn, statement, ...) :
+>>    RS-DBI driver: (could not run statement: Lost connection to MySQL server
+>> during query)
+>>
+>> Googling on MySQL in general suggests that this can be the result of sending
+>> too big of a chunk of data to MySQL at the same time.
+>>
+>> But the data.frame sits comfortably in memory and the table sits comfortably
+>> in the database. So it is disappointing that what I thought was the
+>> recommended way to achieve this task (dbWriteTable), should be a bottleneck.
+>>
+>> I suppose I could write a loop around dbWriteTable(), writing only a few
+>> rows of the data.frame at the same time, but that seems like something that
+>> dbWriteTable() should be doing internally.
+>>
+>> Are there any good suggestions on what I should do?
+>>
+>> Best,
+>> Magnus
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at r-project.org
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+>
+>
+
+
+
+From krzy@zto|@@@krejd@ @end|ng |rom gm@||@com  Wed Oct  2 20:26:02 2013
+From: krzy@zto|@@@krejd@ @end|ng |rom gm@||@com (Krzysztof Sakrejda)
+Date: Wed, 2 Oct 2013 14:26:02 -0400
+Subject: [R-sig-DB] RMySQL "lost connection" during dbWriteTable()
+In-Reply-To: <524C60CE.7010808@gmail.com>
+References: <524AC402.205@gmail.com>
+	<CAJCSVaAYEqnkBHfDoajBMxdZgJ1WHy5LGLH6Toy6dHm_v=O4OQ@mail.gmail.com>
+	<524C60CE.7010808@gmail.com>
+Message-ID: <CAJCSVaDY1DucXFjwL6baLHb5wv_r+B9ipmqCb9JKwFWCgikW1w@mail.gmail.com>
+
+On Wed, Oct 2, 2013 at 2:07 PM, Paul Gilbert <pgilbert902 at gmail.com> wrote:
+It seems unlikely to me that you would need to break it as small as
+> 100 records unless soething else is going on.
+>
+
+Good point, my situation was pretty dramatic and I just needed to be
+able to drive away and have it work. That said, you don't always have
+access to the server and it might make sense to have a slow option
+which attempts to continue as much as possible.  Krzysztof
+
+> Paul
+>
+>
+> On 13-10-01 10:31 AM, Krzysztof Sakrejda wrote:
+>>
+>> I've had this problem before, writing over a slow internet connection
+>> and I believe it would be nice to make the dbWriteTable command do
+>> this... but I haven't had the chance to do anything useful about it,
+>> other than write this quick and dirty function for myself.  This
+>> function carelessly re-uses dbConnect which can exhaust available
+>> connections, but it could be adapted to do a check, like the appended
+>> dbReconnect function.  Hope that helps...  Krzysztof
+>>
+>> dbRobustWriteTable <- function(conn, user, password, host, dbname,
+>> name, value, tries) {
+>>      numFullChunks <- nrow(value)%/%100
+>>      lengthLastChunk <- nrow(value)%%100
+>>      if (numFullChunks >= 1) {
+>>          writeSeqFullChunks <- data.frame(Start =
+>> seq(0,numFullChunks-1,1)*100+1, Stop = seq(1,numFullChunks,1)*100)
+>>      }
+>>      writeSeqLastChunk <- data.frame(Start = numFullChunks*100+1, Stop
+>> = numFullChunks*100+lengthLastChunk)
+>>      if (numFullChunks >= 1) {
+>>          writeSeqAllChunks <- rbind(writeSeqFullChunks,writeSeqLastChunk)
+>>      } else { writeSeqAllChunks <- writeSeqLastChunk }
+>>
+>>      for(i in 1:nrow(writeSeqAllChunks)) {
+>>              try <- 0
+>>              rowSeq <-
+>> seq(writeSeqAllChunks$Start[i],writeSeqAllChunks$Stop[i],1)
+>>              while (!dbWriteTable(conn = conn, name = name, value =
+>> value[rowSeq,], overwrite = FALSE, append = TRUE) & try < tries) {
+>>                  conn  <-
+>> dbConnect(MySQL(),user=user,password=password,host=host,dbname=dbname)
+>>                  try <- try + 1
+>>                  if (try == tries) { stop("EPIC FAIL") }
+>>                  print(paste("Fail number",try,"epical fail
+>> at",tries,"tries.",sep = " "))
+>>              }
+>>      }
+>> }
+>>
+>>
+>> dbReconnect <- function(
+>>    conn = NULL,
+>>    idFile = NULL,
+>>    drv = MySQL()
+>> ) {
+>>      if (  is.null(idFile) ) {
+>>          stop('Can\'t reconnect, no id.')
+>>      }
+>>      if ( !is.null(conn) ) {
+>>        tryCatch(
+>>          expr = dbDisconnect( conn = conn ),
+>>          error = function(cond) {
+>>            print(cond)
+>>          }
+>>        )
+>>      }
+>>      ev = new.env()
+>>      load( file = idFile, envir = ev )
+>>      ev$drv <- drv
+>>      conn <- with(
+>>          data = ev,
+>>          expr = dbConnect(
+>>              drv = drv,
+>>              user = user,
+>>              password = pass,
+>>              dbname = dbname,
+>>              host = host
+>>          )
+>>      ); rm(ev)
+>>      return(conn)
+>>
+>> }
+>>
+>>
+>>
+>> On Tue, Oct 1, 2013 at 8:45 AM, Magnus Thor Torfason
+>> <zulutime.net at gmail.com> wrote:
+>>>
+>>> When doing dbWriteTable() to write my (admittedly large) data.frame to a
+>>> MySQL database I randomly get the following error:
+>>>
+>>>>      dbWriteTable(conn, "tablename", data)
+>>>
+>>> Error in mysqlExecStatement(conn, statement, ...) :
+>>>    RS-DBI driver: (could not run statement: Lost connection to MySQL
+>>> server
+>>> during query)
+>>>
+>>> Googling on MySQL in general suggests that this can be the result of
+>>> sending
+>>> too big of a chunk of data to MySQL at the same time.
+>>>
+>>> But the data.frame sits comfortably in memory and the table sits
+>>> comfortably
+>>> in the database. So it is disappointing that what I thought was the
+>>> recommended way to achieve this task (dbWriteTable), should be a
+>>> bottleneck.
+>>>
+>>> I suppose I could write a loop around dbWriteTable(), writing only a few
+>>> rows of the data.frame at the same time, but that seems like something
+>>> that
+>>> dbWriteTable() should be doing internally.
+>>>
+>>> Are there any good suggestions on what I should do?
+>>>
+>>> Best,
+>>> Magnus
+>>>
+>>> _______________________________________________
+>>> R-sig-DB mailing list -- R Special Interest Group
+>>> R-sig-DB at r-project.org
+>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+>>
+>>
+>>
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+-- 
+
+Krzysztof Sakrejda
+
+Organismic and Evolutionary Biology
+University of Massachusetts, Amherst
+319 Morrill Science Center South
+611 N. Pleasant Street
+Amherst, MA 01003
+
+work #: 413-325-6555
+email: sakrejda at cns.umass.edu
+
+
+
+From m|2ke|grum @end|ng |rom y@hoo@com  Sun Oct 13 18:41:29 2013
+From: m|2ke|grum @end|ng |rom y@hoo@com (Mikkel Grum)
+Date: Sun, 13 Oct 2013 09:41:29 -0700 (PDT)
+Subject: [R-sig-DB] RODBC not connecting from my Mac
+Message-ID: <1381682489.70706.YahooMailNeo@web126204.mail.ne1.yahoo.com>
+
+iODBC appears no longer to come standard with OSX, so I installed unixodbc and set it up following instructions here:?http://www.boriel.com/en/2013/01/16/postgresql-odbc-connection-from-mac-os-x/
+
+I connected to my remote database with isql -v mydsn. No problem. Then I tried from R:
+
+> library(RODBC)
+> pg <- odbcConnect("mydsn") ?# waited for a couple of minutes before pressing Ctrl-C
+^C
+There were 50 or more warnings (use warnings() to see the first 50)
+> warnings()[1:2]
+Warning messages:
+1: In odbcDriverConnect("DSN=mydsn") :
+? [RODBC] ERROR: state IM002, code 1606406032, message [iODBC][Driver Manager]Data source name not found and no default driver specified. Driver could not be loaded
+2: In odbcDriverConnect("DSN=mydsn") :
+? [RODBC] ERROR: state IM002, code 1606406032, message [iODBC][Driver Manager]Data source name not found and no default driver specified. Driver could not be loaded
+
+It looks like RODBC might only work with iODBC on the Mac. Is that the case? I haven't been able to configure iODBC correctly, and therefore haven't been able to test whether that would work with RODBC. Any chance that I can get RODBC to work with unixodbc? Any other information that would be useful in resolving it?
+
+> sessionInfo()
+R version 3.0.2 (2013-09-25)
+Platform: x86_64-apple-darwin10.8.0 (64-bit)
+
+locale:
+[1] C/UTF-8/C/C/C/C
+
+attached base packages:
+[1] stats ? ? graphics ?grDevices utils ? ? datasets ?methods ? base ? ??
+
+other attached packages:
+[1] RODBC_1.3-8
+
+Regards
+Mikkel
+	[[alternative HTML version deleted]]
+
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Wed Oct 16 22:21:33 2013
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Wed, 16 Oct 2013 16:21:33 -0400
+Subject: [R-sig-DB] DBI package
+In-Reply-To: <525EDC86.1050306@ncf.ca>
+References: <CABdHhvFX7Ys0fD8WqcEeHckCP5f2KV3MormXAmRUL5ZGzxxGdA@mail.gmail.com>
+	<525EDC86.1050306@ncf.ca>
+Message-ID: <525EF54D.8050205@gmail.com>
+
+Hadley
+
+Thanks for taking on maintenance of package DBI.
+
+I'm sure you have a list of things you would like to do. Just in case 
+you are not aware, let me mention one recent problem I am having with 
+DBI trying to use the new more strictly enforced modern approach to 
+Imports/Depends. The DBI function call dbDriver("MySQL") fails in my 
+package TSMySQL if I list RMySQL in Imports rather than Depends. It 
+cannot find the function MySQL in RMySQL.
+
+I'm using MySQL as an example, the problem also happens with PostgreSQL 
+and SQLLite.
+
+Best,
+Paul
+
+
+
+From R@|ner @end|ng |rom krug@@de  Thu Oct 17 09:40:27 2013
+From: R@|ner @end|ng |rom krug@@de (Rainer M Krug)
+Date: Thu, 17 Oct 2013 09:40:27 +0200
+Subject: [R-sig-DB] DBI package
+References: <CABdHhvFX7Ys0fD8WqcEeHckCP5f2KV3MormXAmRUL5ZGzxxGdA@mail.gmail.com>
+	<525EDC86.1050306@ncf.ca> <525EF54D.8050205@gmail.com>
+Message-ID: <m2fvs0ibv8.fsf@krugs.de>
+
+Paul Gilbert <pgilbert902 at gmail.com>
+writes:
+
+> Hadley
+>
+> Thanks for taking on maintenance of package DBI.
+>
+> I'm sure you have a list of things you would like to do. Just in case
+> you are not aware, let me mention one recent problem I am having with
+> DBI trying to use the new more strictly enforced modern approach to
+> Imports/Depends. The DBI function call dbDriver("MySQL") fails in my
+> package TSMySQL if I list RMySQL in Imports rather than Depends. It
+> cannot find the function MySQL in RMySQL.
+
+I agree - I solved it by adding RSQLite to the Depends section, but it
+is only a workaround.
+
+Thanks for tako=ing over the maintenance of DBI,
+
+Rainer
+
+
+>
+> I'm using MySQL as an example, the problem also happens with
+> PostgreSQL and SQLLite.
+>
+> Best,
+> Paul
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+<#secure method=pgpmime mode=sign>
+
+-- 
+Rainer M. Krug
+
+email: RMKrug<at>gmail<dot>com
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Thu Oct 17 16:44:55 2013
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Thu, 17 Oct 2013 07:44:55 -0700
+Subject: [R-sig-DB] DBI package
+In-Reply-To: <m2fvs0ibv8.fsf@krugs.de>
+References: <CABdHhvFX7Ys0fD8WqcEeHckCP5f2KV3MormXAmRUL5ZGzxxGdA@mail.gmail.com>
+	<525EDC86.1050306@ncf.ca> <525EF54D.8050205@gmail.com>
+	<m2fvs0ibv8.fsf@krugs.de>
+Message-ID: <CABdHhvHXH_X2aY-v4Ps-VwOtUqTNSoA2ZKBoSV7cwnnuCGfWxw@mail.gmail.com>
+
+>> I'm sure you have a list of things you would like to do. Just in case
+>> you are not aware, let me mention one recent problem I am having with
+>> DBI trying to use the new more strictly enforced modern approach to
+>> Imports/Depends. The DBI function call dbDriver("MySQL") fails in my
+>> package TSMySQL if I list RMySQL in Imports rather than Depends. It
+>> cannot find the function MySQL in RMySQL.
+>
+> I agree - I solved it by adding RSQLite to the Depends section, but it
+> is only a workaround.
+
+Good point - I added a couple of notes on the issue at
+https://github.com/r-dbi/DBI/issues/1
+
+Hadley
+
+-- 
+Chief Scientist, RStudio
+http://had.co.nz/
+
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Thu Oct 17 20:55:03 2013
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Thu, 17 Oct 2013 14:55:03 -0400
+Subject: [R-sig-DB] DBI package
+In-Reply-To: <CABdHhvHXH_X2aY-v4Ps-VwOtUqTNSoA2ZKBoSV7cwnnuCGfWxw@mail.gmail.com>
+References: <CABdHhvFX7Ys0fD8WqcEeHckCP5f2KV3MormXAmRUL5ZGzxxGdA@mail.gmail.com>	<525EDC86.1050306@ncf.ca>
+	<525EF54D.8050205@gmail.com>	<m2fvs0ibv8.fsf@krugs.de>
+	<CABdHhvHXH_X2aY-v4Ps-VwOtUqTNSoA2ZKBoSV7cwnnuCGfWxw@mail.gmail.com>
+Message-ID: <52603287.5050902@gmail.com>
+
+On the githib link below, Seth comments:
+
+ >I'm not all that clear of the value of dbDriver as a generic. The
+ >arguments needed to connect to a particular backend are at the crux of
+ >the "what is different". Each package already (I think) has a function
+ >like SQLite(). I wonder if we should move to have that be the way to
+ >get a driver.
+
+In several of my packages using DBI the user would do something like
+   con1 <- TSconnect("MySQL", dbname="test")
+   con2 <- TSconnect("SQLite", dbname="test")
+
+(The packages are:TSfame, TSjson, TSOracle, TSzip, TSgetSymbol,
+  TSMySQL, TSPostgreSQL, TSSQLite, TShistQuote, TSodbc, TSsdmx,
+  TSxls.  See http://tsdbi.r-forge.r-project.org/)
+
+The TSconnect call uses a generic:
+setGeneric("TSconnect", def= function(drv, dbname, ...) 
+standardGeneric("TSconnect"))
+
+and method:
+setMethod("TSconnect",   signature(drv="character", dbname="character"),
+    definition=function(drv, dbname, ...)
+              TSconnect(dbDriver(drv), dbname=dbname, ...))
+
+and there are methods when the drv has a class like "SQLiteDriver" as 
+returned by the dbDriver() call.
+
+I think Seth's proposal would mean that users would need to change the 
+TSconnect calls to something like
+   con1 <- TSconnect(MySQL(), dbname="test")
+   con2 <- TSconnect(SQLite(), dbname="test")
+
+I don't object to making changes if they fix a problem, but I don't 
+think this actually fixes the problem that I pointed out. The user 
+session still needs to find the function MySQL() or SQLite(), which 
+means my package need to indicate RMySQL or RSQLite as Depends rather 
+than Imports.
+
+It also makes handling several driver possiblities more difficult. 
+Currently this can be done with a vector of strings, but the change 
+would require using functions, some of which may not be attached.
+
+Paul
+
+On 13-10-17 10:44 AM, Hadley Wickham wrote:
+>>> I'm sure you have a list of things you would like to do. Just in case
+>>> you are not aware, let me mention one recent problem I am having with
+>>> DBI trying to use the new more strictly enforced modern approach to
+>>> Imports/Depends. The DBI function call dbDriver("MySQL") fails in my
+>>> package TSMySQL if I list RMySQL in Imports rather than Depends. It
+>>> cannot find the function MySQL in RMySQL.
+>>
+>> I agree - I solved it by adding RSQLite to the Depends section, but it
+>> is only a workaround.
+>
+> Good point - I added a couple of notes on the issue at
+> https://github.com/r-dbi/DBI/issues/1
+>
+> Hadley
+>
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Fri Oct 18 05:02:24 2013
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Thu, 17 Oct 2013 20:02:24 -0700
+Subject: [R-sig-DB] DBI package
+In-Reply-To: <52603287.5050902@gmail.com>
+References: <CABdHhvFX7Ys0fD8WqcEeHckCP5f2KV3MormXAmRUL5ZGzxxGdA@mail.gmail.com>
+	<525EDC86.1050306@ncf.ca> <525EF54D.8050205@gmail.com>
+	<m2fvs0ibv8.fsf@krugs.de>
+	<CABdHhvHXH_X2aY-v4Ps-VwOtUqTNSoA2ZKBoSV7cwnnuCGfWxw@mail.gmail.com>
+	<52603287.5050902@gmail.com>
+Message-ID: <CABdHhvG6s6=-3d8f78JWDO=YXAsej3hUaiLuHhGP-=2jkfL1Zw@mail.gmail.com>
+
+> I think Seth's proposal would mean that users would need to change the
+> TSconnect calls to something like
+>   con1 <- TSconnect(MySQL(), dbname="test")
+>   con2 <- TSconnect(SQLite(), dbname="test")
+>
+> I don't object to making changes if they fix a problem, but I don't think
+> this actually fixes the problem that I pointed out. The user session still
+> needs to find the function MySQL() or SQLite(), which means my package need
+> to indicate RMySQL or RSQLite as Depends rather than Imports.
+
+Well, the problem is that relying on strings to identify database
+drivers is not in general a good approach. For your code, you could do
+something like:
+
+find_driver <- function(name) {
+  getExportedValue(paste0("R", name), name)()
+}
+
+setMethod("TSconnect",   signature(drv="character", dbname="character"),
+   definition=function(drv, dbname, ...)
+             TSconnect(find_driver(drv), dbname=dbname, ...))
+
+It may be worthwhile to include find_driver in DBI.
+
+Hadley
+
+
+-- 
+Chief Scientist, RStudio
+http://had.co.nz/
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Fri Oct 18 05:08:00 2013
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Thu, 17 Oct 2013 20:08:00 -0700
+Subject: [R-sig-DB] New maintainer for DBI package
+Message-ID: <CABdHhvE4v_q7E45ANrbAZ7qMbVsnZKPS09EGmJGrutmacBF6EA@mail.gmail.com>
+
+Hi all,
+
+This is just a quick note to let you know that I've taken over the
+maintainership of the DBI package, and it has a new home at
+https://github.com/rstats-db/dbi
+
+I'll be using the mailing list as a venue to discuss some changes I'd
+like to make to DBI. The goal is to make the minimal set of changes in
+order to:
+
+* add new generics currently defined by individual packages (e.g.
+dbApply, dbBeginTransaction, dbSendPreparedQuery)
+
+* rationalise escaping, moving from the current blacklist based
+system, to one where every identifier is escaped automatically using
+the rules of the host database
+
+* start developing a common test suite that can be applied to any
+package the implements the DBI package.
+
+I'll start some discussions on these topics next week, but please also
+feel free to comment on any of the smaller issues listed at
+https://github.com/rstats-db/DBI/issues
+
+Hadley
+
+-- 
+Chief Scientist, RStudio
+http://had.co.nz/
+
+
+
+From tomo@k|n @end|ng |rom @t@||@k@n@z@w@-u@@c@jp  Fri Oct 18 07:23:30 2013
+From: tomo@k|n @end|ng |rom @t@||@k@n@z@w@-u@@c@jp (NISHIYAMA Tomoaki)
+Date: Fri, 18 Oct 2013 14:23:30 +0900
+Subject: [R-sig-DB] New maintainer for DBI package
+In-Reply-To: <CABdHhvE4v_q7E45ANrbAZ7qMbVsnZKPS09EGmJGrutmacBF6EA@mail.gmail.com>
+References: <CABdHhvE4v_q7E45ANrbAZ7qMbVsnZKPS09EGmJGrutmacBF6EA@mail.gmail.com>
+Message-ID: <31D003B4-DC05-4DFF-868F-6A9BE01D5ED7@staff.kanazawa-u.ac.jp>
+
+Dear Hadley,
+
+Nice to hear that you will take care of DBI.
+We all appreciate that.
+
+For standardization, schema would be an important topic. I have 
+sometimes been asked for.
+
+For identifier escaping, RPostgreSQL implements
+  postgresqlQuoteId,
+  postgresqlTableRef
+
+Another function to escape a string, not identifier is also provided
+  postgresqlEscapeStrings,
+
+Best regards,
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi, 
+Kanazawa, 920-0934, Japan
+
+
+On 2013/10/18, at 12:08, Hadley Wickham wrote:
+
+> Hi all,
+> 
+> This is just a quick note to let you know that I've taken over the
+> maintainership of the DBI package, and it has a new home at
+> https://github.com/rstats-db/dbi
+> 
+> I'll be using the mailing list as a venue to discuss some changes I'd
+> like to make to DBI. The goal is to make the minimal set of changes in
+> order to:
+> 
+> * add new generics currently defined by individual packages (e.g.
+> dbApply, dbBeginTransaction, dbSendPreparedQuery)
+> 
+> * rationalise escaping, moving from the current blacklist based
+> system, to one where every identifier is escaped automatically using
+> the rules of the host database
+> 
+> * start developing a common test suite that can be applied to any
+> package the implements the DBI package.
+> 
+> I'll start some discussions on these topics next week, but please also
+> feel free to comment on any of the smaller issues listed at
+> https://github.com/rstats-db/DBI/issues
+> 
+> Hadley
+> 
+> -- 
+> Chief Scientist, RStudio
+> http://had.co.nz/
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From @e@npor @end|ng |rom @cm@org  Fri Oct 18 08:28:39 2013
+From: @e@npor @end|ng |rom @cm@org (Sean O'Riordain)
+Date: Fri, 18 Oct 2013 07:28:39 +0100
+Subject: [R-sig-DB] New maintainer for DBI package
+In-Reply-To: <CABdHhvE4v_q7E45ANrbAZ7qMbVsnZKPS09EGmJGrutmacBF6EA@mail.gmail.com>
+References: <CABdHhvE4v_q7E45ANrbAZ7qMbVsnZKPS09EGmJGrutmacBF6EA@mail.gmail.com>
+Message-ID: <CA+MmmT+1JwpPtsOnCx6=ub0HRx195vt2W+F7XNx0WbfZzZ-vFw@mail.gmail.com>
+
+Hi Hadley,
+Great to hear.
+
+A nice to have would be placeholders like in Perl DBI, refer
+http://www.perlmonks.org/?node_id=7548
+
+So you can do things like
+
+# warning perl code!
+my $sth = $dbh->prepare_cached("insert into my_table (id, name) values (?, ?)");
+$sth->execute('15', 'Foo');
+# which in perl is cleaner,  easier and generally faster than pasting
+things together into an sql statement.
+
+Though I'm not doing any database work at the moment so I'm in no
+particular rush - but they're so nice and easy to use :-)
+
+Kind regards,
+Sean
+
+On 18 October 2013 04:08, Hadley Wickham <h.wickham at gmail.com> wrote:
+> Hi all,
+>
+> This is just a quick note to let you know that I've taken over the
+> maintainership of the DBI package, and it has a new home at
+> https://github.com/rstats-db/dbi
+>
+> I'll be using the mailing list as a venue to discuss some changes I'd
+> like to make to DBI. The goal is to make the minimal set of changes in
+> order to:
+>
+> * add new generics currently defined by individual packages (e.g.
+> dbApply, dbBeginTransaction, dbSendPreparedQuery)
+>
+> * rationalise escaping, moving from the current blacklist based
+> system, to one where every identifier is escaped automatically using
+> the rules of the host database
+>
+> * start developing a common test suite that can be applied to any
+> package the implements the DBI package.
+>
+> I'll start some discussions on these topics next week, but please also
+> feel free to comment on any of the smaller issues listed at
+> https://github.com/rstats-db/DBI/issues
+>
+> Hadley
+>
+> --
+> Chief Scientist, RStudio
+> http://had.co.nz/
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Fri Oct 18 16:36:20 2013
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Fri, 18 Oct 2013 07:36:20 -0700
+Subject: [R-sig-DB] New maintainer for DBI package
+In-Reply-To: <31D003B4-DC05-4DFF-868F-6A9BE01D5ED7@staff.kanazawa-u.ac.jp>
+References: <CABdHhvE4v_q7E45ANrbAZ7qMbVsnZKPS09EGmJGrutmacBF6EA@mail.gmail.com>
+	<31D003B4-DC05-4DFF-868F-6A9BE01D5ED7@staff.kanazawa-u.ac.jp>
+Message-ID: <CABdHhvERrVF5AH_AGa1pw-AtRp9jgZJTvvEVvvzrQuWarN9ogg@mail.gmail.com>
+
+Yes, I'll tackle escaping in a separate post - it's an important
+topic, and the approach DBI currently takes is suboptimal.
+
+Hadley
+
+On Thu, Oct 17, 2013 at 10:23 PM, NISHIYAMA Tomoaki
+<tomoakin at staff.kanazawa-u.ac.jp> wrote:
+> Dear Hadley,
+>
+> Nice to hear that you will take care of DBI.
+> We all appreciate that.
+>
+> For standardization, schema would be an important topic. I have
+> sometimes been asked for.
+>
+> For identifier escaping, RPostgreSQL implements
+>   postgresqlQuoteId,
+>   postgresqlTableRef
+>
+> Another function to escape a string, not identifier is also provided
+>   postgresqlEscapeStrings,
+>
+> Best regards,
+> --
+> Tomoaki NISHIYAMA
+>
+> Advanced Science Research Center,
+> Kanazawa University,
+> 13-1 Takara-machi,
+> Kanazawa, 920-0934, Japan
+>
+>
+> On 2013/10/18, at 12:08, Hadley Wickham wrote:
+>
+>> Hi all,
+>>
+>> This is just a quick note to let you know that I've taken over the
+>> maintainership of the DBI package, and it has a new home at
+>> https://github.com/rstats-db/dbi
+>>
+>> I'll be using the mailing list as a venue to discuss some changes I'd
+>> like to make to DBI. The goal is to make the minimal set of changes in
+>> order to:
+>>
+>> * add new generics currently defined by individual packages (e.g.
+>> dbApply, dbBeginTransaction, dbSendPreparedQuery)
+>>
+>> * rationalise escaping, moving from the current blacklist based
+>> system, to one where every identifier is escaped automatically using
+>> the rules of the host database
+>>
+>> * start developing a common test suite that can be applied to any
+>> package the implements the DBI package.
+>>
+>> I'll start some discussions on these topics next week, but please also
+>> feel free to comment on any of the smaller issues listed at
+>> https://github.com/rstats-db/DBI/issues
+>>
+>> Hadley
+>>
+>> --
+>> Chief Scientist, RStudio
+>> http://had.co.nz/
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at r-project.org
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+-- 
+Chief Scientist, RStudio
+http://had.co.nz/
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Fri Oct 18 18:44:23 2013
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Fri, 18 Oct 2013 09:44:23 -0700
+Subject: [R-sig-DB] SQL escaping/quoting proposal
+Message-ID: <CABdHhvE=8VLMPt9Xo+-JHUm9ea1igWs7mHMSgDnT4oHwaO1o=A@mail.gmail.com>
+
+Hi all,
+
+The approach that DBI takes to escaping is sub-optimal: it tries to
+figure out if an R variable name matches an SQL reserved word, and if
+so munge it so that there's no longer a conflict. This creates a
+situation where there are some identifiers that are valid in R, and
+some that are valid in SQL and we have a complicated and bug prone
+approach to converting between them.
+
+Instead, I recommend taking an approach where identifiers (i.e. table
+and field names) are always quoted using the appropriate database
+syntax. This not only avoids any problems with SQL reserved words, but
+it also ensures that every field name in R (even those containing
+spaces and other special characters) can be used in SQL.
+
+To achieve this change, I think we should to:
+
+* deprecate `make.db.names()`, `isSQLKeyword()`, and `SQLKeywords()`
+* add new generics `sqlQuoteString()` and `sqlQuoteIdentifier()`.
+
+The new generics would be defined on the driver object, and would come
+with default methods as follows:
+
+```
+setGeneric("sqlQuoteString", function(drv, x, ...) {
+  standardGeneric("sqlQuoteString")
+})
+setMethod("sqlQuoteString", "DBIDriver", function(drv, x, ...) {
+  x <- gsub('"', '""', x, fixed = TRUE)
+  paste('"', x, '"', sep = "")
+})
+
+setGeneric("sqlQuoteIdentifer", function(drv, x, ...) {
+  standardGeneric("sqlQuoteIdentifer")
+})
+setMethod("sqlQuoteString", "DBIDriver", function(drv, x, ...) {
+  x <- gsub("'", "''", x, fixed = TRUE)
+  paste("'", x, "'", sep = "")
+})
+```
+
+Individual implementations would be encouraged to provide methods that
+use the quoting functions provided by the client library, where
+available.
+
+Does anyone see any problems with this approach?
+
+Hadley
+
+
+-- 
+Chief Scientist, RStudio
+http://had.co.nz/
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Fri Oct 18 18:56:19 2013
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Fri, 18 Oct 2013 09:56:19 -0700
+Subject: [R-sig-DB] dbWriteTable and dbReadTable generics
+Message-ID: <CABdHhvG80tCqj75pGuDTFwEMuoMVdNkh8C_Q6UtH7s6qPVT7Pw@mail.gmail.com>
+
+Hi all,
+
+So far I have made a number of minor changes to DBI (as described in
+https://github.com/rstats-db/DBI/blob/master/NEWS), currently none of
+which should break DBI dependencies.
+
+I'd like to discuss one small change that will require changes in some
+dependencies: updating the arguments to dbWriteTable and dbReadTable.
+Currently the generics look like:
+
+setGeneric("dbWriteTable",
+  def = function(conn, name, value, ...) standardGeneric("dbWriteTable"),
+  valueClass = "logical"
+)
+
+setGeneric("dbReadTable",
+  def = function(conn, name, ...) standardGeneric("dbReadTable"),
+  valueClass = "data.frame"
+)
+
+but the documentation also describes a number of additional arguments
+that are implemented by the majority of packages: row.names, overwrite
+and append. I'd like to move these to the generics to get:
+
+setGeneric("dbWriteTable",
+  def = function(conn, name, value, row.names = FALSE,
+                       overwrite = FALSE, append = FALSE, ...) {
+     standardGeneric("dbWriteTable")
+  }, valueClass = "logical"
+)
+
+setGeneric("dbReadTable",
+  def = function(conn, name, row.names = FALSE, ...) {
+    standardGeneric("dbReadTable")
+  },
+  valueClass = "data.frame"
+)
+
+I'd also suggest a change to the semantics of row.names. It should be:
+
+* TRUE to use the row.names column
+* FALSE to not use row names
+* a character string to specify an alternative column to use for row names
+
+I think this is close to the currently convention, but it is not well
+documented.
+
+This will require a small amount of work for any maintainers who
+currently don't implement these options.
+
+I'll also be careful when handling any future cran releases of DBI -
+all downstream maintainers will get a heads up at least a month before
+submission before CRAN so you'll have time to make any changes without
+cran breathing down your neck.
+
+Hadley
+
+-- 
+Chief Scientist, RStudio
+http://had.co.nz/
+
+
+
+From Lee@H@ch@door|@n+L @end|ng |rom gm@||@com  Fri Oct 18 19:26:10 2013
+From: Lee@H@ch@door|@n+L @end|ng |rom gm@||@com (Lee Hachadoorian)
+Date: Fri, 18 Oct 2013 13:26:10 -0400
+Subject: [R-sig-DB] SQL escaping/quoting proposal
+In-Reply-To: <CABdHhvE=8VLMPt9Xo+-JHUm9ea1igWs7mHMSgDnT4oHwaO1o=A@mail.gmail.com>
+References: <CABdHhvE=8VLMPt9Xo+-JHUm9ea1igWs7mHMSgDnT4oHwaO1o=A@mail.gmail.com>
+Message-ID: <52616F32.2050909@gmail.com>
+
+On 10/18/2013 12:44 PM, Hadley Wickham wrote:
+> Hi all,
+>
+> The approach that DBI takes to escaping is sub-optimal: it tries to
+> figure out if an R variable name matches an SQL reserved word, and if
+> so munge it so that there's no longer a conflict. This creates a
+> situation where there are some identifiers that are valid in R, and
+> some that are valid in SQL and we have a complicated and bug prone
+> approach to converting between them.
+>
+> Instead, I recommend taking an approach where identifiers (i.e. table
+> and field names) are always quoted using the appropriate database
+> syntax. This not only avoids any problems with SQL reserved words, but
+> it also ensures that every field name in R (even those containing
+> spaces and other special characters) can be used in SQL.
+>
+> To achieve this change, I think we should to:
+>
+> * deprecate `make.db.names()`, `isSQLKeyword()`, and `SQLKeywords()`
+> * add new generics `sqlQuoteString()` and `sqlQuoteIdentifier()`.
+>
+> The new generics would be defined on the driver object, and would come
+> with default methods as follows:
+>
+> ```
+> setGeneric("sqlQuoteString", function(drv, x, ...) {
+>    standardGeneric("sqlQuoteString")
+> })
+> setMethod("sqlQuoteString", "DBIDriver", function(drv, x, ...) {
+>    x <- gsub('"', '""', x, fixed = TRUE)
+>    paste('"', x, '"', sep = "")
+> })
+>
+> setGeneric("sqlQuoteIdentifer", function(drv, x, ...) {
+>    standardGeneric("sqlQuoteIdentifer")
+> })
+> setMethod("sqlQuoteString", "DBIDriver", function(drv, x, ...) {
+>    x <- gsub("'", "''", x, fixed = TRUE)
+>    paste("'", x, "'", sep = "")
+> })
+> ```
+>
+> Individual implementations would be encouraged to provide methods that
+> use the quoting functions provided by the client library, where
+> available.
+>
+> Does anyone see any problems with this approach?
+>
+> Hadley
+>
+>
+
+Hadley,
+
+Admittedly, I rarely use R to *create* SQL table definitions. But I 
+would like to preserve the possibility of (a) creating db-safe 
+identifiers, (b) not using SQL quoting when I don't want to.
+
+Regarding (a), I would suggest *not* deprecating `make.db.names()`, etc.
+
+Regarding (b), my reasoning is that when working with Postgres, I would 
+want to allow Postgres to do its normal lower casing of unquoted 
+identifiers. That is, `thisField` is a valid identifier, but passed in 
+quoted case will be preserved, which means always having to quote the 
+identifier in the future. Passed in quoted, Postgres will force it to 
+`thisfield`, and if a client requests `thisField` unquoted, the correct 
+field will be returned.
+
+--Lee
+
+-- 
+Lee Hachadoorian
+Assistant Professor in Geography, Dartmouth College
+http://freecity.commons.gc.cuny.edu
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Fri Oct 18 21:04:50 2013
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Fri, 18 Oct 2013 12:04:50 -0700
+Subject: [R-sig-DB] SQL escaping/quoting proposal
+In-Reply-To: <52616F32.2050909@gmail.com>
+References: <CABdHhvE=8VLMPt9Xo+-JHUm9ea1igWs7mHMSgDnT4oHwaO1o=A@mail.gmail.com>
+	<52616F32.2050909@gmail.com>
+Message-ID: <CABdHhvEcqpNo4_OzY+pp2_K1mX2srQkAe5Ng18vr2fknUo9JmQ@mail.gmail.com>
+
+> Regarding (b), my reasoning is that when working with Postgres, I would want
+> to allow Postgres to do its normal lower casing of unquoted identifiers.
+> That is, `thisField` is a valid identifier, but passed in quoted case will
+> be preserved, which means always having to quote the identifier in the
+> future. Passed in quoted, Postgres will force it to `thisfield`, and if a
+> client requests `thisField` unquoted, the correct field will be returned.
+
+It might be reasonable to opt in to this behaviour, but it's dangerous
+by default because R is case-sensitive. What happens if you're using
+dbWriteTable with this data.frame?
+
+df <- data.frame(a = 1, A = 2)
+
+Hadley
+
+-- 
+Chief Scientist, RStudio
+http://had.co.nz/
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Sat Oct 19 01:10:23 2013
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Fri, 18 Oct 2013 16:10:23 -0700
+Subject: [R-sig-DB] New maintainer for DBI package
+In-Reply-To: <CA+MmmT+1JwpPtsOnCx6=ub0HRx195vt2W+F7XNx0WbfZzZ-vFw@mail.gmail.com>
+References: <CABdHhvE4v_q7E45ANrbAZ7qMbVsnZKPS09EGmJGrutmacBF6EA@mail.gmail.com>
+	<CA+MmmT+1JwpPtsOnCx6=ub0HRx195vt2W+F7XNx0WbfZzZ-vFw@mail.gmail.com>
+Message-ID: <CANqbw6XMgTegMp+YqkEWsvz45OqcovZzX+Gue+tq4-6jH6pJHg@mail.gmail.com>
+
+On Thu, Oct 17, 2013 at 11:28 PM, Sean O'Riordain <seanpor at acm.org> wrote:
+
+> A nice to have would be placeholders like in Perl DBI, refer
+> http://www.perlmonks.org/?node_id=7548
+>
+> So you can do things like
+>
+> # warning perl code!
+> my $sth = $dbh->prepare_cached("insert into my_table (id, name) values (?,
+> ?)");
+> $sth->execute('15', 'Foo');
+> # which in perl is cleaner,  easier and generally faster than pasting
+> things together into an sql statement.
+>
+
+Note that RSQLite has support for prepared queries. You can even do inserts
+or selects filling parameters from the rows of a data frame.
+
+-- 
+Seth Falcon | @sfalcon | http://userprimary.net/
+
+	[[alternative HTML version deleted]]
+
+
+
+From @eth @end|ng |rom u@erpr|m@ry@net  Sat Oct 19 01:12:11 2013
+From: @eth @end|ng |rom u@erpr|m@ry@net (Seth Falcon)
+Date: Fri, 18 Oct 2013 16:12:11 -0700
+Subject: [R-sig-DB] dbWriteTable and dbReadTable generics
+In-Reply-To: <CABdHhvG80tCqj75pGuDTFwEMuoMVdNkh8C_Q6UtH7s6qPVT7Pw@mail.gmail.com>
+References: <CABdHhvG80tCqj75pGuDTFwEMuoMVdNkh8C_Q6UtH7s6qPVT7Pw@mail.gmail.com>
+Message-ID: <CANqbw6X6Bo=yxy-nYGJvb4EuDA2fjtOdA8RnuaGpFs1jSmk4EA@mail.gmail.com>
+
+On Fri, Oct 18, 2013 at 9:56 AM, Hadley Wickham <h.wickham at gmail.com> wrote:
+
+> I'd like to discuss one small change that will require changes in some
+> dependencies: updating the arguments to dbWriteTable and dbReadTable.
+>
+
+snip
+
+I'd like to move these to the generics to get:
+>
+> setGeneric("dbWriteTable",
+>   def = function(conn, name, value, row.names = FALSE,
+>                        overwrite = FALSE, append = FALSE, ...) {
+>      standardGeneric("dbWriteTable")
+>   }, valueClass = "logical"
+> )
+>
+> setGeneric("dbReadTable",
+>   def = function(conn, name, row.names = FALSE, ...) {
+>     standardGeneric("dbReadTable")
+>   },
+>   valueClass = "data.frame"
+> )
+>
+> I'd also suggest a change to the semantics of row.names. It should be:
+>
+> * TRUE to use the row.names column
+> * FALSE to not use row names
+> * a character string to specify an alternative column to use for row names
+>
+> I think this is close to the currently convention, but it is not well
+> documented.
+>
+> This will require a small amount of work for any maintainers who
+> currently don't implement these options.
+>
+> I'll also be careful when handling any future cran releases of DBI -
+> all downstream maintainers will get a heads up at least a month before
+> submission before CRAN so you'll have time to make any changes without
+> cran breathing down your neck.
+>
+
+
++1 on these from me.
+
++ seth
+
+
+-- 
+Seth Falcon | @sfalcon | http://userprimary.net/
+
+	[[alternative HTML version deleted]]
+
+
+
+From tomo@k|n @end|ng |rom @t@||@k@n@z@w@-u@@c@jp  Sat Oct 19 06:00:19 2013
+From: tomo@k|n @end|ng |rom @t@||@k@n@z@w@-u@@c@jp (NISHIYAMA Tomoaki)
+Date: Sat, 19 Oct 2013 13:00:19 +0900
+Subject: [R-sig-DB] SQL escaping/quoting proposal
+In-Reply-To: <CABdHhvE=8VLMPt9Xo+-JHUm9ea1igWs7mHMSgDnT4oHwaO1o=A@mail.gmail.com>
+References: <CABdHhvE=8VLMPt9Xo+-JHUm9ea1igWs7mHMSgDnT4oHwaO1o=A@mail.gmail.com>
+Message-ID: <55BF7C69-E640-4B20-BABF-D4832B878CB0@staff.kanazawa-u.ac.jp>
+
+Hi Hadley,
+
+Thanks to bring up this issue and 
+I agree in the overall direction and have some minor concerns.
+
+Could you provide a bit more clarification on what the sqlQuoteIdentifier should do?
+How shall we deal when a vector of strings is passed?
+  Is it right to assume that sqlQuoteIdentifier(drv, c('a', 'b')) should 
+  return a vector consisting of quoted results of individual element of the vector?
+
+How do we construct a reference to table with schema, or column with table?
+eg schema.table or table.column?
+  More specifically, is it right to assume that sqlQuoteIdentifier is used for constructing
+  individual part of the composite identifier?
+
+You had a minor mistake in showing the default method (The name is both "sqlQuoteString",
+and I am not sure which is intended for sqlQuoteIdentifier).
+
+Another consideration is for the name of the function. Whether we should 
+use sql prefix or use db prefix.  I would like to know what others think for this point.
+
+> This not only avoids any problems with SQL reserved words, but
+> it also ensures that every field name in R (even those containing
+> spaces and other special characters) can be used in SQL.
+
+Here, I think we can avoid problem in most cases, but there are still a bit
+cases where the encoding does not allow proper conversion.
+That's the problem of the database capability, there is not much things that
+the driver can do, though.
+-- 
+Tomoaki NISHIYAMA
+
+Advanced Science Research Center,
+Kanazawa University,
+13-1 Takara-machi, 
+Kanazawa, 920-0934, Japan
+
+
+On 2013/10/19, at 1:44, Hadley Wickham wrote:
+
+> Hi all,
+> 
+> The approach that DBI takes to escaping is sub-optimal: it tries to
+> figure out if an R variable name matches an SQL reserved word, and if
+> so munge it so that there's no longer a conflict. This creates a
+> situation where there are some identifiers that are valid in R, and
+> some that are valid in SQL and we have a complicated and bug prone
+> approach to converting between them.
+> 
+> Instead, I recommend taking an approach where identifiers (i.e. table
+> and field names) are always quoted using the appropriate database
+> syntax. This not only avoids any problems with SQL reserved words, but
+> it also ensures that every field name in R (even those containing
+> spaces and other special characters) can be used in SQL.
+> 
+> To achieve this change, I think we should to:
+> 
+> * deprecate `make.db.names()`, `isSQLKeyword()`, and `SQLKeywords()`
+> * add new generics `sqlQuoteString()` and `sqlQuoteIdentifier()`.
+> 
+> The new generics would be defined on the driver object, and would come
+> with default methods as follows:
+> 
+> ```
+> setGeneric("sqlQuoteString", function(drv, x, ...) {
+>  standardGeneric("sqlQuoteString")
+> })
+> setMethod("sqlQuoteString", "DBIDriver", function(drv, x, ...) {
+>  x <- gsub('"', '""', x, fixed = TRUE)
+>  paste('"', x, '"', sep = "")
+> })
+> 
+> setGeneric("sqlQuoteIdentifer", function(drv, x, ...) {
+>  standardGeneric("sqlQuoteIdentifer")
+> })
+> setMethod("sqlQuoteString", "DBIDriver", function(drv, x, ...) {
+>  x <- gsub("'", "''", x, fixed = TRUE)
+>  paste("'", x, "'", sep = "")
+> })
+> ```
+> 
+> Individual implementations would be encouraged to provide methods that
+> use the quoting functions provided by the client library, where
+> available.
+> 
+> Does anyone see any problems with this approach?
+> 
+> Hadley
+> 
+> 
+> -- 
+> Chief Scientist, RStudio
+> http://had.co.nz/
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Sat Oct 19 17:12:52 2013
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Sat, 19 Oct 2013 11:12:52 -0400
+Subject: [R-sig-DB] SQL escaping/quoting proposal
+In-Reply-To: <CABdHhvE=8VLMPt9Xo+-JHUm9ea1igWs7mHMSgDnT4oHwaO1o=A@mail.gmail.com>
+References: <CABdHhvE=8VLMPt9Xo+-JHUm9ea1igWs7mHMSgDnT4oHwaO1o=A@mail.gmail.com>
+Message-ID: <5262A174.7040705@gmail.com>
+
+
+
+On 13-10-18 12:44 PM, Hadley Wickham wrote:
+> Hi all,
+>
+> The approach that DBI takes to escaping is sub-optimal: it tries to
+> figure out if an R variable name matches an SQL reserved word, and if
+> so munge it so that there's no longer a conflict. This creates a
+> situation where there are some identifiers that are valid in R, and
+> some that are valid in SQL and we have a complicated and bug prone
+> approach to converting between them.
+>
+> Instead, I recommend taking an approach where identifiers (i.e. table
+> and field names) are always quoted using the appropriate database
+> syntax.
+
+I think this addresses my longtime wish that DBI would present a 
+consistent interface on the R side wrt capitalization even though the db 
+engines do different things in this regard. This would make changing 
+among engines easier. If it does not achieve this, is it possible?
+
+Paul
+
+This not only avoids any problems with SQL reserved words, but
+> it also ensures that every field name in R (even those containing
+> spaces and other special characters) can be used in SQL.
+>
+> To achieve this change, I think we should to:
+>
+> * deprecate `make.db.names()`, `isSQLKeyword()`, and `SQLKeywords()`
+> * add new generics `sqlQuoteString()` and `sqlQuoteIdentifier()`.
+>
+> The new generics would be defined on the driver object, and would come
+> with default methods as follows:
+>
+> ```
+> setGeneric("sqlQuoteString", function(drv, x, ...) {
+>    standardGeneric("sqlQuoteString")
+> })
+> setMethod("sqlQuoteString", "DBIDriver", function(drv, x, ...) {
+>    x <- gsub('"', '""', x, fixed = TRUE)
+>    paste('"', x, '"', sep = "")
+> })
+>
+> setGeneric("sqlQuoteIdentifer", function(drv, x, ...) {
+>    standardGeneric("sqlQuoteIdentifer")
+> })
+> setMethod("sqlQuoteString", "DBIDriver", function(drv, x, ...) {
+>    x <- gsub("'", "''", x, fixed = TRUE)
+>    paste("'", x, "'", sep = "")
+> })
+> ```
+>
+> Individual implementations would be encouraged to provide methods that
+> use the quoting functions provided by the client library, where
+> available.
+>
+> Does anyone see any problems with this approach?
+>
+> Hadley
+>
+>
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Sat Oct 19 17:40:06 2013
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Sat, 19 Oct 2013 08:40:06 -0700
+Subject: [R-sig-DB] SQL escaping/quoting proposal
+In-Reply-To: <55BF7C69-E640-4B20-BABF-D4832B878CB0@staff.kanazawa-u.ac.jp>
+References: <CABdHhvE=8VLMPt9Xo+-JHUm9ea1igWs7mHMSgDnT4oHwaO1o=A@mail.gmail.com>
+	<55BF7C69-E640-4B20-BABF-D4832B878CB0@staff.kanazawa-u.ac.jp>
+Message-ID: <CABdHhvGTiBsqhvQjn6ob6_6RLkmmVFQYH+6=SDoYiCs1Vom0FQ@mail.gmail.com>
+
+I've cleaned up the examples and made them work and put the results in
+https://gist.github.com/hadley/7057387 - that should make discussion a
+bit more concrete.
+
+> Could you provide a bit more clarification on what the sqlQuoteIdentifier should do?
+> How shall we deal when a vector of strings is passed?
+>   Is it right to assume that sqlQuoteIdentifier(drv, c('a', 'b')) should
+>   return a vector consisting of quoted results of individual element of the vector?
+
+Yes, I think that makes the most sense.
+
+> How do we construct a reference to table with schema, or column with table?
+> eg schema.table or table.column?
+>   More specifically, is it right to assume that sqlQuoteIdentifier is used for constructing
+>   individual part of the composite identifier?
+
+I think that would be up to the individual function author: you could
+assume that if a vector was passed then you should quote then
+concatenate together with ".".  Or you could assume that for more
+complicated references the user had already flagged that the input
+should not be escaped with sql().
+
+> You had a minor mistake in showing the default method (The name is both "sqlQuoteString",
+> and I am not sure which is intended for sqlQuoteIdentifier).
+
+Fixed.
+
+> Another consideration is for the name of the function. Whether we should
+> use sql prefix or use db prefix.  I would like to know what others think for this point.
+
+I'm pretty sure it should be db to be consistent with the rest of the
+package. (And I've also added dbFetch as an alias since fetch is the
+_only_ function in DBI without the db prefix)
+
+> Here, I think we can avoid problem in most cases, but there are still a bit
+> cases where the encoding does not allow proper conversion.
+> That's the problem of the database capability, there is not much things that
+> the driver can do, though.
+
+Right, we can only support what the db can.
+
+The quoting function could also throw an error if it was not possible
+to quote the input in a safe way for the database.
+
+Hadley
+
+
+-- 
+Chief Scientist, RStudio
+http://had.co.nz/
+
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Sat Oct 19 17:46:46 2013
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Sat, 19 Oct 2013 11:46:46 -0400
+Subject: [R-sig-DB] DBI package
+In-Reply-To: <CABdHhvG6s6=-3d8f78JWDO=YXAsej3hUaiLuHhGP-=2jkfL1Zw@mail.gmail.com>
+References: <CABdHhvFX7Ys0fD8WqcEeHckCP5f2KV3MormXAmRUL5ZGzxxGdA@mail.gmail.com>
+	<525EDC86.1050306@ncf.ca> <525EF54D.8050205@gmail.com>
+	<m2fvs0ibv8.fsf@krugs.de>
+	<CABdHhvHXH_X2aY-v4Ps-VwOtUqTNSoA2ZKBoSV7cwnnuCGfWxw@mail.gmail.com>
+	<52603287.5050902@gmail.com>
+	<CABdHhvG6s6=-3d8f78JWDO=YXAsej3hUaiLuHhGP-=2jkfL1Zw@mail.gmail.com>
+Message-ID: <5262A966.8090009@gmail.com>
+
+
+
+On 13-10-17 11:02 PM, Hadley Wickham wrote:
+>> I think Seth's proposal would mean that users would need to change the
+>> TSconnect calls to something like
+>>    con1 <- TSconnect(MySQL(), dbname="test")
+>>    con2 <- TSconnect(SQLite(), dbname="test")
+>>
+>> I don't object to making changes if they fix a problem, but I don't think
+>> this actually fixes the problem that I pointed out. The user session still
+>> needs to find the function MySQL() or SQLite(), which means my package need
+>> to indicate RMySQL or RSQLite as Depends rather than Imports.
+>
+> Well, the problem is that relying on strings to identify database
+> drivers is not in general a good approach.
+
+Agreed, just pointing out that it does not fix the problem I mentioned, 
+which I think was the starting point for that thread.
+
+>For your code, you could do
+> something like:
+>
+> find_driver <- function(name) {
+>    getExportedValue(paste0("R", name), name)()
+> }
+>
+> setMethod("TSconnect",   signature(drv="character", dbname="character"),
+>     definition=function(drv, dbname, ...)
+>               TSconnect(find_driver(drv), dbname=dbname, ...))
+>
+> It may be worthwhile to include find_driver in DBI.
+
+Thanks for the suggestion, however, I remain a bit confused. The 
+function find_driver() seems like a direct replacement for dbConnect(), 
+using a string to identify the database driver. You would be supporting 
+what is a bad idea, and just changing the name of the function, which is 
+a make work project for everyone.
+
+If you do put it in DBI you probably want a try() wrapper so that it 
+fails gracefully when the appropriate package is not attached.
+
+Paul
+
+>
+> Hadley
+>
+>
+
+
+
+From d@j025 @end|ng |rom gm@||@com  Mon Oct 21 03:24:32 2013
+From: d@j025 @end|ng |rom gm@||@com (David James)
+Date: Sun, 20 Oct 2013 21:24:32 -0400
+Subject: [R-sig-DB] New maintainer for DBI package
+In-Reply-To: <CABdHhvE4v_q7E45ANrbAZ7qMbVsnZKPS09EGmJGrutmacBF6EA@mail.gmail.com>
+References: <CABdHhvE4v_q7E45ANrbAZ7qMbVsnZKPS09EGmJGrutmacBF6EA@mail.gmail.com>
+Message-ID: <CAFuGCEQi+T6fJ3gecHK+FZNfnSixUOrb6gKnFbv2k4+jdf9s-g@mail.gmail.com>
+
+Hi Hadley, all
+
+I also want to add my "thanks" to Hadley for taking over the DBI.  There
+are interesting and important features yet to be added to the DBI (as
+otheres have already pointed out), in addition to improvements to the
+existing code.  I'm looking forward for the discussions of possible
+enhancements, etc.
+
+Regards,
+
+David
+
+
+
+On Thu, Oct 17, 2013 at 11:08 PM, Hadley Wickham <h.wickham at gmail.com>wrote:
+
+> Hi all,
+>
+> This is just a quick note to let you know that I've taken over the
+> maintainership of the DBI package, and it has a new home at
+> https://github.com/rstats-db/dbi
+>
+> I'll be using the mailing list as a venue to discuss some changes I'd
+> like to make to DBI. The goal is to make the minimal set of changes in
+> order to:
+>
+> * add new generics currently defined by individual packages (e.g.
+> dbApply, dbBeginTransaction, dbSendPreparedQuery)
+>
+> * rationalise escaping, moving from the current blacklist based
+> system, to one where every identifier is escaped automatically using
+> the rules of the host database
+>
+> * start developing a common test suite that can be applied to any
+> package the implements the DBI package.
+>
+> I'll start some discussions on these topics next week, but please also
+> feel free to comment on any of the smaller issues listed at
+> https://github.com/rstats-db/DBI/issues
+>
+> Hadley
+>
+> --
+> Chief Scientist, RStudio
+> http://had.co.nz/
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From d@j025 @end|ng |rom gm@||@com  Mon Oct 21 17:25:56 2013
+From: d@j025 @end|ng |rom gm@||@com (David James)
+Date: Mon, 21 Oct 2013 11:25:56 -0400
+Subject: [R-sig-DB] dbWriteTable and dbReadTable generics
+In-Reply-To: <CANqbw6X6Bo=yxy-nYGJvb4EuDA2fjtOdA8RnuaGpFs1jSmk4EA@mail.gmail.com>
+References: <CABdHhvG80tCqj75pGuDTFwEMuoMVdNkh8C_Q6UtH7s6qPVT7Pw@mail.gmail.com>
+	<CANqbw6X6Bo=yxy-nYGJvb4EuDA2fjtOdA8RnuaGpFs1jSmk4EA@mail.gmail.com>
+Message-ID: <CAFuGCEQbSG6Yhzb0SX5dMm=Qve8mVU8uy8UNNwZUWu_M=40+8w@mail.gmail.com>
+
+Hi,
+
+I do agree that having row.names=, append=, and overwrite= makes sense,
+because these arguments are common and quite natural to most current DBI
+method implementations of these generic functions.  However, adding them
+explicitly to the generic definition implies that methods can be dispatched
+on the *class* of those same arguments, which I'm not clear whether it's
+helpful.
+
+Here, I seem to see two similar but not-quite equal objectives:
+
+(1) defining an interface more strictly (i.e., the DBI dictates that
+dbWriteTables, etc., must have a more complete signature including
+row.names=, etc.). Perfectly reasonable, yet setMethod for the various
+implementations may (?) need to be revised (if so, not a big a deal).
+
+(2) defining the signature on which methods are be dispatched.
+
+I don't think that (1) is wrong (after all, the current use of name= is
+precisely this case) or that (1) and (2) are mutually exclusive. However,
+the original intention was clearly (2): methods are to be dispatched only
+on the conn= and name= arguments, other arguments (...) may be passed from
+the generic to the method(s), but not used for dispatching.  I still feel
+that the current definition expresses this intention most clearly and
+unambigiously.  Adding row.names=, etc., for the sake of a more complete
+interface may imply behavior we (I)  haven't anticipated, e.g., what error
+do users get when they incorrectly supply "row.names = t" (t as the
+transpose as opposed to T for TRUE)?  Overall, not a particular big issue.
+
+My $0.02
+
+Regards,
+
+David
+
+
+
+
+On Fri, Oct 18, 2013 at 7:12 PM, Seth Falcon <seth at userprimary.net> wrote:
+
+> On Fri, Oct 18, 2013 at 9:56 AM, Hadley Wickham <h.wickham at gmail.com>
+> wrote:
+>
+> > I'd like to discuss one small change that will require changes in some
+> > dependencies: updating the arguments to dbWriteTable and dbReadTable.
+> >
+>
+> snip
+>
+> I'd like to move these to the generics to get:
+> >
+> > setGeneric("dbWriteTable",
+> >   def = function(conn, name, value, row.names = FALSE,
+> >                        overwrite = FALSE, append = FALSE, ...) {
+> >      standardGeneric("dbWriteTable")
+> >   }, valueClass = "logical"
+> > )
+> >
+> > setGeneric("dbReadTable",
+> >   def = function(conn, name, row.names = FALSE, ...) {
+> >     standardGeneric("dbReadTable")
+> >   },
+> >   valueClass = "data.frame"
+> > )
+> >
+> > I'd also suggest a change to the semantics of row.names. It should be:
+> >
+> > * TRUE to use the row.names column
+> > * FALSE to not use row names
+> > * a character string to specify an alternative column to use for row
+> names
+> >
+> > I think this is close to the currently convention, but it is not well
+> > documented.
+> >
+> > This will require a small amount of work for any maintainers who
+> > currently don't implement these options.
+> >
+> > I'll also be careful when handling any future cran releases of DBI -
+> > all downstream maintainers will get a heads up at least a month before
+> > submission before CRAN so you'll have time to make any changes without
+> > cran breathing down your neck.
+> >
+>
+>
+> +1 on these from me.
+>
+> + seth
+>
+>
+> --
+> Seth Falcon | @sfalcon | http://userprimary.net/
+>
+>         [[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Tue Oct 22 03:00:58 2013
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Mon, 21 Oct 2013 18:00:58 -0700
+Subject: [R-sig-DB] dbWriteTable and dbReadTable generics
+In-Reply-To: <CAFuGCEQbSG6Yhzb0SX5dMm=Qve8mVU8uy8UNNwZUWu_M=40+8w@mail.gmail.com>
+References: <CABdHhvG80tCqj75pGuDTFwEMuoMVdNkh8C_Q6UtH7s6qPVT7Pw@mail.gmail.com>
+	<CANqbw6X6Bo=yxy-nYGJvb4EuDA2fjtOdA8RnuaGpFs1jSmk4EA@mail.gmail.com>
+	<CAFuGCEQbSG6Yhzb0SX5dMm=Qve8mVU8uy8UNNwZUWu_M=40+8w@mail.gmail.com>
+Message-ID: <CABdHhvFp-_SNk7CPstZ3=bmF4RvtHmdPGR7BG45dVznup0FjdQ@mail.gmail.com>
+
+> I do agree that having row.names=, append=, and overwrite= makes sense,
+> because these arguments are common and quite natural to most current DBI
+> method implementations of these generic functions.  However, adding them
+> explicitly to the generic definition implies that methods can be dispatched
+> on the *class* of those same arguments, which I'm not clear whether it's
+> helpful.
+
+Not necessarily - you can use the signature argument to setGeneric to
+say which arguments can be part of the method signature. Simple
+example below:
+
+setGeneric("f", function(x, y, z) standardGeneric("f"))
+setMethod("f", signature(z = "numeric"), function(x, y, z) z * 2)
+
+f(,, 2)
+
+setGeneric("g", function(x, y, z) standardGeneric("g"),
+  signature = "x")
+setMethod("g", signature(z = "numeric"), function(x, y, z) z * 2)
+
+
+> Here, I seem to see two similar but not-quite equal objectives:
+>
+> (1) defining an interface more strictly (i.e., the DBI dictates that
+> dbWriteTables, etc., must have a more complete signature including
+> row.names=, etc.). Perfectly reasonable, yet setMethod for the various
+> implementations may (?) need to be revised (if so, not a big a deal).
+>
+> (2) defining the signature on which methods are be dispatched.
+>
+> I don't think that (1) is wrong (after all, the current use of name= is
+> precisely this case) or that (1) and (2) are mutually exclusive. However,
+> the original intention was clearly (2): methods are to be dispatched only on
+> the conn= and name= arguments, other arguments (...) may be passed from the
+> generic to the method(s), but not used for dispatching.  I still feel that
+> the current definition expresses this intention most clearly and
+> unambigiously.  Adding row.names=, etc., for the sake of a more complete
+> interface may imply behavior we (I)  haven't anticipated, e.g., what error
+> do users get when they incorrectly supply "row.names = t" (t as the
+> transpose as opposed to T for TRUE)?  Overall, not a particular big issue.
+
+So what do you think of the following? I think it does a better job of
+meeting those goals than the current code.
+
+setGeneric("dbWriteTable",
+  def = function(conn, name, value, row.names = FALSE,
+                       overwrite = FALSE, append = FALSE, ...) {
+     standardGeneric("dbWriteTable")
+  }, valueClass = "logical", signature = "conn"
+)
+
+setGeneric("dbReadTable",
+  def = function(conn, name, row.names = FALSE, ...) {
+    standardGeneric("dbReadTable")
+  },
+  valueClass = "data.frame", signature = "conn"
+)
+
+Hadley
+
+-- 
+Chief Scientist, RStudio
+http://had.co.nz/
+
+
+
+From d@j025 @end|ng |rom gm@||@com  Tue Oct 22 14:12:58 2013
+From: d@j025 @end|ng |rom gm@||@com (David James)
+Date: Tue, 22 Oct 2013 08:12:58 -0400
+Subject: [R-sig-DB] dbWriteTable and dbReadTable generics
+In-Reply-To: <CABdHhvFp-_SNk7CPstZ3=bmF4RvtHmdPGR7BG45dVznup0FjdQ@mail.gmail.com>
+References: <CABdHhvG80tCqj75pGuDTFwEMuoMVdNkh8C_Q6UtH7s6qPVT7Pw@mail.gmail.com>
+	<CANqbw6X6Bo=yxy-nYGJvb4EuDA2fjtOdA8RnuaGpFs1jSmk4EA@mail.gmail.com>
+	<CAFuGCEQbSG6Yhzb0SX5dMm=Qve8mVU8uy8UNNwZUWu_M=40+8w@mail.gmail.com>
+	<CABdHhvFp-_SNk7CPstZ3=bmF4RvtHmdPGR7BG45dVznup0FjdQ@mail.gmail.com>
+Message-ID: <CAFuGCEQoBCse6AU4e4ixVz5Q7KJHkonc+Pk_-xhDzQFpQvcdUQ@mail.gmail.com>
+
+Sure, that would do it nicely.
+
+Regards,
+
+David
+
+
+On Mon, Oct 21, 2013 at 9:00 PM, Hadley Wickham <h.wickham at gmail.com> wrote:
+
+> > I do agree that having row.names=, append=, and overwrite= makes sense,
+> > because these arguments are common and quite natural to most current DBI
+> > method implementations of these generic functions.  However, adding them
+> > explicitly to the generic definition implies that methods can be
+> dispatched
+> > on the *class* of those same arguments, which I'm not clear whether it's
+> > helpful.
+>
+> Not necessarily - you can use the signature argument to setGeneric to
+> say which arguments can be part of the method signature. Simple
+> example below:
+>
+> setGeneric("f", function(x, y, z) standardGeneric("f"))
+> setMethod("f", signature(z = "numeric"), function(x, y, z) z * 2)
+>
+> f(,, 2)
+>
+> setGeneric("g", function(x, y, z) standardGeneric("g"),
+>   signature = "x")
+> setMethod("g", signature(z = "numeric"), function(x, y, z) z * 2)
+>
+>
+> > Here, I seem to see two similar but not-quite equal objectives:
+> >
+> > (1) defining an interface more strictly (i.e., the DBI dictates that
+> > dbWriteTables, etc., must have a more complete signature including
+> > row.names=, etc.). Perfectly reasonable, yet setMethod for the various
+> > implementations may (?) need to be revised (if so, not a big a deal).
+> >
+> > (2) defining the signature on which methods are be dispatched.
+> >
+> > I don't think that (1) is wrong (after all, the current use of name= is
+> > precisely this case) or that (1) and (2) are mutually exclusive. However,
+> > the original intention was clearly (2): methods are to be dispatched
+> only on
+> > the conn= and name= arguments, other arguments (...) may be passed from
+> the
+> > generic to the method(s), but not used for dispatching.  I still feel
+> that
+> > the current definition expresses this intention most clearly and
+> > unambigiously.  Adding row.names=, etc., for the sake of a more complete
+> > interface may imply behavior we (I)  haven't anticipated, e.g., what
+> error
+> > do users get when they incorrectly supply "row.names = t" (t as the
+> > transpose as opposed to T for TRUE)?  Overall, not a particular big
+> issue.
+>
+> So what do you think of the following? I think it does a better job of
+> meeting those goals than the current code.
+>
+> setGeneric("dbWriteTable",
+>   def = function(conn, name, value, row.names = FALSE,
+>                        overwrite = FALSE, append = FALSE, ...) {
+>      standardGeneric("dbWriteTable")
+>   }, valueClass = "logical", signature = "conn"
+> )
+>
+> setGeneric("dbReadTable",
+>   def = function(conn, name, row.names = FALSE, ...) {
+>     standardGeneric("dbReadTable")
+>   },
+>   valueClass = "data.frame", signature = "conn"
+> )
+>
+> Hadley
+>
+> --
+> Chief Scientist, RStudio
+> http://had.co.nz/
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Tue Oct 22 14:56:51 2013
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Tue, 22 Oct 2013 05:56:51 -0700
+Subject: [R-sig-DB] SQL escaping/quoting proposal
+In-Reply-To: <CABdHhvGTiBsqhvQjn6ob6_6RLkmmVFQYH+6=SDoYiCs1Vom0FQ@mail.gmail.com>
+References: <CABdHhvE=8VLMPt9Xo+-JHUm9ea1igWs7mHMSgDnT4oHwaO1o=A@mail.gmail.com>
+	<55BF7C69-E640-4B20-BABF-D4832B878CB0@staff.kanazawa-u.ac.jp>
+	<CABdHhvGTiBsqhvQjn6ob6_6RLkmmVFQYH+6=SDoYiCs1Vom0FQ@mail.gmail.com>
+Message-ID: <CABdHhvHNE2LUHL0PpCZMj5Q80bASF2VNEaxtpUD5bi_bCsZtSA@mail.gmail.com>
+
+> I've cleaned up the examples and made them work and put the results in
+> https://gist.github.com/hadley/7057387 - that should make discussion a
+> bit more concrete.
+
+I made a few more changes to https://gist.github.com/hadley/7057387
+
+* the method is now based on the connection, not the driver, since for
+some drivers the escaping may vary between connections (e.g. ODBC)
+
+* I added a sample tableName function (which I don't think would be
+included in DBI), showing how you might accept multiple forms of table
+names, and do the right thing as much as possible.
+
+Hadley
+
+-- 
+Chief Scientist, RStudio
+http://had.co.nz/
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Tue Oct 22 15:15:16 2013
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Tue, 22 Oct 2013 06:15:16 -0700
+Subject: [R-sig-DB] dbDriver("name")
+Message-ID: <CABdHhvG6OXvaTPBQzzaDkD4jkL-9ofVmMJBPqay7C3yHAe3_WQ@mail.gmail.com>
+
+>> For your code, you could do
+>> something like:
+>>
+>> find_driver <- function(name) {
+>>    getExportedValue(paste0("R", name), name)()
+>> }
+>>
+>> setMethod("TSconnect",   signature(drv="character", dbname="character"),
+>>     definition=function(drv, dbname, ...)
+>>               TSconnect(find_driver(drv), dbname=dbname, ...))
+>>
+>> It may be worthwhile to include find_driver in DBI.
+>
+>
+> Thanks for the suggestion, however, I remain a bit confused. The function
+> find_driver() seems like a direct replacement for dbConnect(), using a
+> string to identify the database driver. You would be supporting what is a
+> bad idea, and just changing the name of the function, which is a make work
+> project for everyone.
+
+So unless we want to invent a completely new way of registering
+drivers, it seems like patching dbDriver to use this strategy will be
+effective. However, I think we should equally encourage people to use
+the driver object directly, instead of the string. That doesn't help
+you, but it does help people only concerned with connecting to one
+database.
+
+Hadley
+
+-- 
+Chief Scientist, RStudio
+http://had.co.nz/
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Tue Oct 22 15:30:36 2013
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Tue, 22 Oct 2013 06:30:36 -0700
+Subject: [R-sig-DB] dbDriver("name")
+In-Reply-To: <CABdHhvG6OXvaTPBQzzaDkD4jkL-9ofVmMJBPqay7C3yHAe3_WQ@mail.gmail.com>
+References: <CABdHhvG6OXvaTPBQzzaDkD4jkL-9ofVmMJBPqay7C3yHAe3_WQ@mail.gmail.com>
+Message-ID: <CABdHhvHCAF42vvkPVCtZT4x+kKskWz30CpCzqapzUNJrMk_qUA@mail.gmail.com>
+
+>> Thanks for the suggestion, however, I remain a bit confused. The function
+>> find_driver() seems like a direct replacement for dbConnect(), using a
+>> string to identify the database driver. You would be supporting what is a
+>> bad idea, and just changing the name of the function, which is a make work
+>> project for everyone.
+>
+> So unless we want to invent a completely new way of registering
+> drivers, it seems like patching dbDriver to use this strategy will be
+> effective. However, I think we should equally encourage people to use
+> the driver object directly, instead of the string. That doesn't help
+> you, but it does help people only concerned with connecting to one
+> database.
+
+Here's a first stab at it. I think it should work for the majority of
+existing packages, regardless of whether they're loaded or not:
+
+setMethod("dbDriver", "character",
+  definition = function(drvName, ...) {
+    findDriver(drvName)(...)
+  }
+)
+
+findDriver <- function(drvName) {
+  # If it exists in the global environment, use that
+  d <- get2(drvName, globalenv())
+  if (!is.null(d)) return(d)
+
+  # Otherwise, see if the appropriately named package is available
+  if (has_namespace(drvName)) {
+    d <- get2(drvName, asNamespace(drvName))
+    if (!is.null(d)) return(d)
+  }
+
+  pkgName <- paste0("R", drvName)
+  # First, see if package with name R + drvName is available
+  if (has_namespace(pkgName)) {
+    d <- get2(drvName, asNamespace(pkgName))
+    if (!is.null(d)) return(d)
+  }
+
+  # Can't find it:
+  stop("Couldn't find driver ", drvName, ". Looked in:\n",
+    "* global namespace\n",
+    "* in package called ", drvName, "\n",
+    "* in package called ", pkgName,
+    call. = FALSE)
+}
+
+get2 <- function(x, env) {
+  if (!exists(x, envir = env)) return(NULL)
+  get(x, envir = env)
+}
+
+has_namespace <- function(x) {
+  suppressMessages(requireNamespace(x, quietly = TRUE))
+}
+
+Hadley
+
+-- 
+Chief Scientist, RStudio
+http://had.co.nz/
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Tue Oct 22 19:59:30 2013
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Tue, 22 Oct 2013 10:59:30 -0700
+Subject: [R-sig-DB] SQL generics
+Message-ID: <CABdHhvGBhFLscyVmQNy2DCfpFOMn-43Bq40UrQTZiCKKjyVCOw@mail.gmail.com>
+
+Hi all,
+
+I wonder if it might be useful to start developing a new set of
+generics for SQL generation. A reasonable target would be the subset
+of SQL-92 grammar defined for minimal ODBC compliance:
+http://msdn.microsoft.com/en-us/library/ms711725(v=vs.85).aspx
+
+That would lead to the following functions which dispatch on the
+connection and and return a SQL vector as output (possibly of length >
+1). Default methods would be SQL-92 compatible, and provide a
+reference implementation for package authors to see how to best deal
+with escaping.
+
+* `sqlCreateTable(conn, table, fields, ...)`
+* `sqlDeleteFrom(conn, table, where, ...)`
+* `sqlDropTable(conn, table, ...)`
+* `sqlInsertInto(conn, table, values, ...)`
+* `sqlUpdate(conn, table, values, ...)`
+
+Note that I have deliberately not included `sqlSelect()` in this list,
+because the grammar of the select statement is so much more
+complicated in general, and varies considerably more between
+databases. I'd suggest not including it in a first pass.
+
+With `dbSendQuery()`, these could also be used to provide default
+implementations of `dbWriteTable()`, and `dbDropTable()`.
+Implementators would almost always override `dbWriteTable()` to
+provide a more efficient implementation for bulk data loading.
+
+What do you think?
+
+Hadley
+
+-- 
+Chief Scientist, RStudio
+http://had.co.nz/
+
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Tue Oct 22 20:09:15 2013
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Tue, 22 Oct 2013 14:09:15 -0400
+Subject: [R-sig-DB] dbDriver("name")
+In-Reply-To: <CABdHhvHCAF42vvkPVCtZT4x+kKskWz30CpCzqapzUNJrMk_qUA@mail.gmail.com>
+References: <CABdHhvG6OXvaTPBQzzaDkD4jkL-9ofVmMJBPqay7C3yHAe3_WQ@mail.gmail.com>
+	<CABdHhvHCAF42vvkPVCtZT4x+kKskWz30CpCzqapzUNJrMk_qUA@mail.gmail.com>
+Message-ID: <5266BF4B.5040606@gmail.com>
+
+
+
+On 13-10-22 09:30 AM, Hadley Wickham wrote:
+>>> Thanks for the suggestion, however, I remain a bit confused. The function
+>>> find_driver() seems like a direct replacement for dbConnect(), using a
+>>> string to identify the database driver. You would be supporting what is a
+>>> bad idea, and just changing the name of the function, which is a make work
+>>> project for everyone.
+>>
+>> So unless we want to invent a completely new way of registering
+>> drivers, it seems like patching dbDriver to use this strategy will be
+>> effective. However, I think we should equally encourage people to use
+>> the driver object directly, instead of the string. That doesn't help
+>> you, but it does help people only concerned with connecting to one
+>> database.
+>
+> Here's a first stab at it. I think it should work for the majority of
+> existing packages, regardless of whether they're loaded or not:
+
+I'm not sure if it is a good idea or not to find drivers that are not 
+loaded or attached. This may cause more problems than it adds 
+simplifications?  Would you load or attach the packages in which the 
+drivers are found? You and others probably understand the implications 
+better than I do.
+
+Possibly one of my comments initiated the findDriver() effort, so let me 
+give the context in which I have been doing something a bit similar. I 
+look through a list of loaded/attached packages for a particular 
+database, with a function  called like this:
+
+   con <- TSfinddb(dbname="ets",
+               driverOrder=c("MySQL", "SQLite", "PostgreSQL"))
+
+which attempts a dbConnect for each driver string, looking for the 
+database "ets". But I just look though attached or loaded packages and 
+the database may not exist even if the package is loaded, so I need to 
+wrap the dbConnect calls in try().
+
+(There is some risk that this is a distraction relative to more 
+important things that need to be done on DBI. Please don't spend a lot 
+of time on findDriver motivated only by my remarks.)
+
+Paul
+
+>
+> setMethod("dbDriver", "character",
+>    definition = function(drvName, ...) {
+>      findDriver(drvName)(...)
+>    }
+> )
+>
+> findDriver <- function(drvName) {
+>    # If it exists in the global environment, use that
+>    d <- get2(drvName, globalenv())
+>    if (!is.null(d)) return(d)
+>
+>    # Otherwise, see if the appropriately named package is available
+>    if (has_namespace(drvName)) {
+>      d <- get2(drvName, asNamespace(drvName))
+>      if (!is.null(d)) return(d)
+>    }
+>
+>    pkgName <- paste0("R", drvName)
+>    # First, see if package with name R + drvName is available
+>    if (has_namespace(pkgName)) {
+>      d <- get2(drvName, asNamespace(pkgName))
+>      if (!is.null(d)) return(d)
+>    }
+>
+>    # Can't find it:
+>    stop("Couldn't find driver ", drvName, ". Looked in:\n",
+>      "* global namespace\n",
+>      "* in package called ", drvName, "\n",
+>      "* in package called ", pkgName,
+>      call. = FALSE)
+> }
+>
+> get2 <- function(x, env) {
+>    if (!exists(x, envir = env)) return(NULL)
+>    get(x, envir = env)
+> }
+>
+> has_namespace <- function(x) {
+>    suppressMessages(requireNamespace(x, quietly = TRUE))
+> }
+>
+> Hadley
+>
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Tue Oct 22 20:40:12 2013
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Tue, 22 Oct 2013 11:40:12 -0700
+Subject: [R-sig-DB] dbDriver("name")
+In-Reply-To: <5266BF4B.5040606@gmail.com>
+References: <CABdHhvG6OXvaTPBQzzaDkD4jkL-9ofVmMJBPqay7C3yHAe3_WQ@mail.gmail.com>
+	<CABdHhvHCAF42vvkPVCtZT4x+kKskWz30CpCzqapzUNJrMk_qUA@mail.gmail.com>
+	<5266BF4B.5040606@gmail.com>
+Message-ID: <CABdHhvFXC6W-QkruvQHnB+KxeNWT59T3fhqq_0tyKDe00zSe9A@mail.gmail.com>
+
+>> Here's a first stab at it. I think it should work for the majority of
+>> existing packages, regardless of whether they're loaded or not:
+>
+> I'm not sure if it is a good idea or not to find drivers that are not loaded
+> or attached. This may cause more problems than it adds simplifications?
+> Would you load or attach the packages in which the drivers are found? You
+> and others probably understand the implications better than I do.
+
+Oh, probably not. I've changed it to use:
+
+is_attached <- function(x) {
+  x %in% loadedNamespaces()
+}
+
+> Possibly one of my comments initiated the findDriver() effort, so let me
+> give the context in which I have been doing something a bit similar. I look
+> through a list of loaded/attached packages for a particular database, with a
+> function  called like this:
+>
+>   con <- TSfinddb(dbname="ets",
+>               driverOrder=c("MySQL", "SQLite", "PostgreSQL"))
+>
+> which attempts a dbConnect for each driver string, looking for the database
+> "ets". But I just look though attached or loaded packages and the database
+> may not exist even if the package is loaded, so I need to wrap the dbConnect
+> calls in try().
+
+I do a similar thing in dplyr when looking for test databases - I
+think it's probably relatively common task for package authors, but
+less common for package users.
+
+Hadley
+
+
+-- 
+Chief Scientist, RStudio
+http://had.co.nz/
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Tue Oct 22 22:56:00 2013
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Tue, 22 Oct 2013 13:56:00 -0700
+Subject: [R-sig-DB] SQL generics
+In-Reply-To: <CABdHhvGBhFLscyVmQNy2DCfpFOMn-43Bq40UrQTZiCKKjyVCOw@mail.gmail.com>
+References: <CABdHhvGBhFLscyVmQNy2DCfpFOMn-43Bq40UrQTZiCKKjyVCOw@mail.gmail.com>
+Message-ID: <CABdHhvHY9_q0GMw-XSk7nmjUh=+_RnPvZfe+yQHdiv35Xwq8Zw@mail.gmail.com>
+
+To make more concrete, I've done a quick implementation at
+https://github.com/rstats-db/DBI/blob/master/R/sql.R
+
+This is just a rough first pass and feedback would be most appreciated!
+
+Hadley
+
+On Tue, Oct 22, 2013 at 10:59 AM, Hadley Wickham <h.wickham at gmail.com> wrote:
+> Hi all,
+>
+> I wonder if it might be useful to start developing a new set of
+> generics for SQL generation. A reasonable target would be the subset
+> of SQL-92 grammar defined for minimal ODBC compliance:
+> http://msdn.microsoft.com/en-us/library/ms711725(v=vs.85).aspx
+>
+> That would lead to the following functions which dispatch on the
+> connection and and return a SQL vector as output (possibly of length >
+> 1). Default methods would be SQL-92 compatible, and provide a
+> reference implementation for package authors to see how to best deal
+> with escaping.
+>
+> * `sqlCreateTable(conn, table, fields, ...)`
+> * `sqlDeleteFrom(conn, table, where, ...)`
+> * `sqlDropTable(conn, table, ...)`
+> * `sqlInsertInto(conn, table, values, ...)`
+> * `sqlUpdate(conn, table, values, ...)`
+>
+> Note that I have deliberately not included `sqlSelect()` in this list,
+> because the grammar of the select statement is so much more
+> complicated in general, and varies considerably more between
+> databases. I'd suggest not including it in a first pass.
+>
+> With `dbSendQuery()`, these could also be used to provide default
+> implementations of `dbWriteTable()`, and `dbDropTable()`.
+> Implementators would almost always override `dbWriteTable()` to
+> provide a more efficient implementation for bulk data loading.
+>
+> What do you think?
+>
+> Hadley
+>
+> --
+> Chief Scientist, RStudio
+> http://had.co.nz/
+
+
+
+-- 
+Chief Scientist, RStudio
+http://had.co.nz/
+
+
+
+From hp@ge@ @end|ng |rom |hcrc@org  Wed Oct 23 01:01:24 2013
+From: hp@ge@ @end|ng |rom |hcrc@org (=?ISO-8859-1?Q?Herv=E9_Pag=E8s?=)
+Date: Tue, 22 Oct 2013 16:01:24 -0700
+Subject: [R-sig-DB] SQL generics
+In-Reply-To: <CABdHhvHY9_q0GMw-XSk7nmjUh=+_RnPvZfe+yQHdiv35Xwq8Zw@mail.gmail.com>
+References: <CABdHhvGBhFLscyVmQNy2DCfpFOMn-43Bq40UrQTZiCKKjyVCOw@mail.gmail.com>
+	<CABdHhvHY9_q0GMw-XSk7nmjUh=+_RnPvZfe+yQHdiv35Xwq8Zw@mail.gmail.com>
+Message-ID: <526703C4.4060507@fhcrc.org>
+
+Hi Hadley,
+
+The sqlQuoteString() and sqlQuoteIdentifer() generics are useful.
+More generally speaking I like the idea of providing utilities that
+make it easier to generate SQL, and even better if those utilities
+help generate SQL that will automagically adapt to the current back-end.
+
+Because of the sql prefix my understanding is that the generics below
+(sqlCreateTable(), etc...) only generate strings containing valid SQL
+but that they actually don't talk to the db. I understand that you
+need the 'conn' argument for dispatch but it might be a little bit
+confusing.
+
+Are you also considering to provide dbCreateTable(), dbDropTable(),
+dbInsertInto(), dbUpdate(), and dbDeleteFrom() generics?
+
+Do we really need the 2 sets? If not, which one is most useful?
+Alternatively the 2nd set could have a 'return.SQL.only' arg (FALSE
+by default) so the user/developer has a way to know what SQL
+is sent to the db (can be useful for learning/debugging, or for
+"retouching" the query before sending).
+
+If it was possible to use only high-level back-end agnostic commands
+like this in our R code when talking to a db, then it would be easy
+to support multiple back ends. Sounds like a noble goal in theory but
+it might be hard to achieve. As you noticed the grammar of the SELECT
+statement is complicated and complex statements can require a lot of
+back-end specific tweaking in order to perform efficiently.
+
+Thanks,
+H.
+
+
+On 10/22/2013 01:56 PM, Hadley Wickham wrote:
+> To make more concrete, I've done a quick implementation at
+> https://github.com/rstats-db/DBI/blob/master/R/sql.R
+>
+> This is just a rough first pass and feedback would be most appreciated!
+>
+> Hadley
+>
+> On Tue, Oct 22, 2013 at 10:59 AM, Hadley Wickham <h.wickham at gmail.com> wrote:
+>> Hi all,
+>>
+>> I wonder if it might be useful to start developing a new set of
+>> generics for SQL generation. A reasonable target would be the subset
+>> of SQL-92 grammar defined for minimal ODBC compliance:
+>> http://msdn.microsoft.com/en-us/library/ms711725(v=vs.85).aspx
+>>
+>> That would lead to the following functions which dispatch on the
+>> connection and and return a SQL vector as output (possibly of length >
+>> 1). Default methods would be SQL-92 compatible, and provide a
+>> reference implementation for package authors to see how to best deal
+>> with escaping.
+>>
+>> * `sqlCreateTable(conn, table, fields, ...)`
+>> * `sqlDeleteFrom(conn, table, where, ...)`
+>> * `sqlDropTable(conn, table, ...)`
+>> * `sqlInsertInto(conn, table, values, ...)`
+>> * `sqlUpdate(conn, table, values, ...)`
+>>
+>> Note that I have deliberately not included `sqlSelect()` in this list,
+>> because the grammar of the select statement is so much more
+>> complicated in general, and varies considerably more between
+>> databases. I'd suggest not including it in a first pass.
+>>
+>> With `dbSendQuery()`, these could also be used to provide default
+>> implementations of `dbWriteTable()`, and `dbDropTable()`.
+>> Implementators would almost always override `dbWriteTable()` to
+>> provide a more efficient implementation for bulk data loading.
+>>
+>> What do you think?
+>>
+>> Hadley
+>>
+>> --
+>> Chief Scientist, RStudio
+>> http://had.co.nz/
+>
+>
+>
+
+-- 
+Herv? Pag?s
+
+Program in Computational Biology
+Division of Public Health Sciences
+Fred Hutchinson Cancer Research Center
+1100 Fairview Ave. N, M1-B514
+P.O. Box 19024
+Seattle, WA 98109-1024
+
+E-mail: hpages at fhcrc.org
+Phone:  (206) 667-5791
+Fax:    (206) 667-1319
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Wed Oct 23 01:13:53 2013
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Tue, 22 Oct 2013 18:13:53 -0500
+Subject: [R-sig-DB] SQL generics
+In-Reply-To: <526703C4.4060507@fhcrc.org>
+References: <CABdHhvGBhFLscyVmQNy2DCfpFOMn-43Bq40UrQTZiCKKjyVCOw@mail.gmail.com>
+	<CABdHhvHY9_q0GMw-XSk7nmjUh=+_RnPvZfe+yQHdiv35Xwq8Zw@mail.gmail.com>
+	<526703C4.4060507@fhcrc.org>
+Message-ID: <CABdHhvHjMLsmJKgDwG1JVMOM6jgO8ajQJ3wA91DXaD+QsQ5WnA@mail.gmail.com>
+
+> Because of the sql prefix my understanding is that the generics below
+> (sqlCreateTable(), etc...) only generate strings containing valid SQL
+> but that they actually don't talk to the db. I understand that you
+> need the 'conn' argument for dispatch but it might be a little bit
+> confusing.
+
+Right.  Dispatching on conn would be a bit confusing for users, but I
+think these would mostly be used by package authors.
+
+> Are you also considering to provide dbCreateTable(), dbDropTable(),
+> dbInsertInto(), dbUpdate(), and dbDeleteFrom() generics?
+
+No, I don't think so - the layer of commands built on top of the sql*
+functions would be more like dbWriteTable - i.e. they'd map to
+operations that make more sense from the R side of things, rather than
+being a straightforward translation to things that make sense to
+databases.
+
+> Do we really need the 2 sets? If not, which one is most useful?
+> Alternatively the 2nd set could have a 'return.SQL.only' arg (FALSE
+> by default) so the user/developer has a way to know what SQL
+> is sent to the db (can be useful for learning/debugging, or for
+> "retouching" the query before sending).
+
+I'm not a big fan of functions that return different types based on
+their input arguments because they're harder to program against.
+However, you could imagine these functions returning some sort of
+reference class from which you could either extract the sql, or you
+could run the query once. But that seems a bit too complicated for
+DBI.
+
+> If it was possible to use only high-level back-end agnostic commands
+> like this in our R code when talking to a db, then it would be easy
+> to support multiple back ends. Sounds like a noble goal in theory but
+> it might be hard to achieve. As you noticed the grammar of the SELECT
+> statement is complicated and complex statements can require a lot of
+> back-end specific tweaking in order to perform efficiently.
+
+Yes, I've spent quite a lot of time on this for the dplyr package,
+which provides a syntax that allows you to work with data frames, data
+tables and databases (sqlite, mysql, postgresql and google big query)
+without having to worry too much about the how the data is stored. But
+the only way to do this is to carefully constrain the problem domain,
+and I think there's too much variation in SQL grammars for SQL to
+serve as the abstraction layer (not without a huge amount of work
+anyway).
+
+Some of the methods might only actually be useful transiently while
+you're developing a new DBI package (i.e. once you've implemented
+sqlCreateTable and sqlInsertInto you get an inefficient dbWriteTable
+for free), or for testing. But I don't think that's necessarily a
+problem.
+
+Hadley
+
+-- 
+Chief Scientist, RStudio
+http://had.co.nz/
+
+
+
+From d@j025 @end|ng |rom gm@||@com  Wed Oct 23 14:31:21 2013
+From: d@j025 @end|ng |rom gm@||@com (David James)
+Date: Wed, 23 Oct 2013 08:31:21 -0400
+Subject: [R-sig-DB] SQL generics
+In-Reply-To: <CABdHhvGBhFLscyVmQNy2DCfpFOMn-43Bq40UrQTZiCKKjyVCOw@mail.gmail.com>
+References: <CABdHhvGBhFLscyVmQNy2DCfpFOMn-43Bq40UrQTZiCKKjyVCOw@mail.gmail.com>
+Message-ID: <CAFuGCETrFap9xfo5u5_6ZDEOuxB5n+7nBrCx52htsbhZrW_Dhw@mail.gmail.com>
+
+Hi,
+
+I can see an SQL generation tool as a handy thing to have, but probably best
+implemented in a separate package.
+
+Regards,
+
+David
+
+
+On Tue, Oct 22, 2013 at 1:59 PM, Hadley Wickham <h.wickham at gmail.com> wrote:
+
+> Hi all,
+>
+> I wonder if it might be useful to start developing a new set of
+> generics for SQL generation. A reasonable target would be the subset
+> of SQL-92 grammar defined for minimal ODBC compliance:
+> http://msdn.microsoft.com/en-us/library/ms711725(v=vs.85).aspx
+>
+> That would lead to the following functions which dispatch on the
+> connection and and return a SQL vector as output (possibly of length >
+> 1). Default methods would be SQL-92 compatible, and provide a
+> reference implementation for package authors to see how to best deal
+> with escaping.
+>
+> * `sqlCreateTable(conn, table, fields, ...)`
+> * `sqlDeleteFrom(conn, table, where, ...)`
+> * `sqlDropTable(conn, table, ...)`
+> * `sqlInsertInto(conn, table, values, ...)`
+> * `sqlUpdate(conn, table, values, ...)`
+>
+> Note that I have deliberately not included `sqlSelect()` in this list,
+> because the grammar of the select statement is so much more
+> complicated in general, and varies considerably more between
+> databases. I'd suggest not including it in a first pass.
+>
+> With `dbSendQuery()`, these could also be used to provide default
+> implementations of `dbWriteTable()`, and `dbDropTable()`.
+> Implementators would almost always override `dbWriteTable()` to
+> provide a more efficient implementation for bulk data loading.
+>
+> What do you think?
+>
+> Hadley
+>
+> --
+> Chief Scientist, RStudio
+> http://had.co.nz/
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Wed Oct 23 15:04:52 2013
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Wed, 23 Oct 2013 08:04:52 -0500
+Subject: [R-sig-DB] SQL generics
+In-Reply-To: <CAFuGCETrFap9xfo5u5_6ZDEOuxB5n+7nBrCx52htsbhZrW_Dhw@mail.gmail.com>
+References: <CABdHhvGBhFLscyVmQNy2DCfpFOMn-43Bq40UrQTZiCKKjyVCOw@mail.gmail.com>
+	<CAFuGCETrFap9xfo5u5_6ZDEOuxB5n+7nBrCx52htsbhZrW_Dhw@mail.gmail.com>
+Message-ID: <CABdHhvFwe+m3=EF_cHFqoLuVLLwQdCBroce5sJc-rLWkK7hJBg@mail.gmail.com>
+
+The main reason I think it would be useful is that currently every
+implementation has to implement something like sqlCreateTable and
+sqlInsertInto themselves. It's actually slightly difficult to get
+correct (because of escaping rules etc), so currently I think many of
+the implementations fail under different circumstances.
+
+Hadley
+
+On Wed, Oct 23, 2013 at 7:31 AM, David James <daj025 at gmail.com> wrote:
+> Hi,
+>
+> I can see an SQL generation tool as a handy thing to have, but probably best
+> implemented in a separate package.
+>
+> Regards,
+>
+> David
+>
+>
+> On Tue, Oct 22, 2013 at 1:59 PM, Hadley Wickham <h.wickham at gmail.com> wrote:
+>>
+>> Hi all,
+>>
+>> I wonder if it might be useful to start developing a new set of
+>> generics for SQL generation. A reasonable target would be the subset
+>> of SQL-92 grammar defined for minimal ODBC compliance:
+>> http://msdn.microsoft.com/en-us/library/ms711725(v=vs.85).aspx
+>>
+>> That would lead to the following functions which dispatch on the
+>> connection and and return a SQL vector as output (possibly of length >
+>> 1). Default methods would be SQL-92 compatible, and provide a
+>> reference implementation for package authors to see how to best deal
+>> with escaping.
+>>
+>> * `sqlCreateTable(conn, table, fields, ...)`
+>> * `sqlDeleteFrom(conn, table, where, ...)`
+>> * `sqlDropTable(conn, table, ...)`
+>> * `sqlInsertInto(conn, table, values, ...)`
+>> * `sqlUpdate(conn, table, values, ...)`
+>>
+>> Note that I have deliberately not included `sqlSelect()` in this list,
+>> because the grammar of the select statement is so much more
+>> complicated in general, and varies considerably more between
+>> databases. I'd suggest not including it in a first pass.
+>>
+>> With `dbSendQuery()`, these could also be used to provide default
+>> implementations of `dbWriteTable()`, and `dbDropTable()`.
+>> Implementators would almost always override `dbWriteTable()` to
+>> provide a more efficient implementation for bulk data loading.
+>>
+>> What do you think?
+>>
+>> Hadley
+>>
+>> --
+>> Chief Scientist, RStudio
+>> http://had.co.nz/
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at r-project.org
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+>
+
+
+
+-- 
+Chief Scientist, RStudio
+http://had.co.nz/
+
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Wed Oct 23 17:21:25 2013
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Wed, 23 Oct 2013 11:21:25 -0400
+Subject: [R-sig-DB] SQL generics
+In-Reply-To: <CAFuGCETrFap9xfo5u5_6ZDEOuxB5n+7nBrCx52htsbhZrW_Dhw@mail.gmail.com>
+References: <CABdHhvGBhFLscyVmQNy2DCfpFOMn-43Bq40UrQTZiCKKjyVCOw@mail.gmail.com>
+	<CAFuGCETrFap9xfo5u5_6ZDEOuxB5n+7nBrCx52htsbhZrW_Dhw@mail.gmail.com>
+Message-ID: <5267E975.1070206@gmail.com>
+
+I would like to echo David's point even more strongly. Only a few of the 
+packages I have that use DBI actually have an SQL backend. The others 
+really only use part of the class structure and methods:  DBIConnection, 
+DBIDriver, dbDisconnect. They use DBI so that I can present an API that 
+is consistent with the SQL based packages.
+
+I would be happy to see the upper part of the classes and methods moved 
+entirely into a separate package from all the SQL. (And it would make my 
+life easier if this part remained really stable once it is set.)
+
+Paul
+
+
+On 13-10-23 08:31 AM, David James wrote:
+> Hi,
+>
+> I can see an SQL generation tool as a handy thing to have, but probably best
+> implemented in a separate package.
+>
+> Regards,
+>
+> David
+>
+>
+> On Tue, Oct 22, 2013 at 1:59 PM, Hadley Wickham <h.wickham at gmail.com> wrote:
+>
+>> Hi all,
+>>
+>> I wonder if it might be useful to start developing a new set of
+>> generics for SQL generation. A reasonable target would be the subset
+>> of SQL-92 grammar defined for minimal ODBC compliance:
+>> http://msdn.microsoft.com/en-us/library/ms711725(v=vs.85).aspx
+>>
+>> That would lead to the following functions which dispatch on the
+>> connection and and return a SQL vector as output (possibly of length >
+>> 1). Default methods would be SQL-92 compatible, and provide a
+>> reference implementation for package authors to see how to best deal
+>> with escaping.
+>>
+>> * `sqlCreateTable(conn, table, fields, ...)`
+>> * `sqlDeleteFrom(conn, table, where, ...)`
+>> * `sqlDropTable(conn, table, ...)`
+>> * `sqlInsertInto(conn, table, values, ...)`
+>> * `sqlUpdate(conn, table, values, ...)`
+>>
+>> Note that I have deliberately not included `sqlSelect()` in this list,
+>> because the grammar of the select statement is so much more
+>> complicated in general, and varies considerably more between
+>> databases. I'd suggest not including it in a first pass.
+>>
+>> With `dbSendQuery()`, these could also be used to provide default
+>> implementations of `dbWriteTable()`, and `dbDropTable()`.
+>> Implementators would almost always override `dbWriteTable()` to
+>> provide a more efficient implementation for bulk data loading.
+>>
+>> What do you think?
+>>
+>> Hadley
+>>
+>> --
+>> Chief Scientist, RStudio
+>> http://had.co.nz/
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at r-project.org
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+>
+> 	[[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Wed Oct 23 17:31:53 2013
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Wed, 23 Oct 2013 10:31:53 -0500
+Subject: [R-sig-DB] SQL generics
+In-Reply-To: <5267E975.1070206@gmail.com>
+References: <CABdHhvGBhFLscyVmQNy2DCfpFOMn-43Bq40UrQTZiCKKjyVCOw@mail.gmail.com>
+	<CAFuGCETrFap9xfo5u5_6ZDEOuxB5n+7nBrCx52htsbhZrW_Dhw@mail.gmail.com>
+	<5267E975.1070206@gmail.com>
+Message-ID: <CABdHhvELu-z7jV47WsYL=2nsGwMjrjTebzNzojDYRoAUJeL+oA@mail.gmail.com>
+
+> I would like to echo David's point even more strongly. Only a few of the
+> packages I have that use DBI actually have an SQL backend. The others really
+> only use part of the class structure and methods:  DBIConnection, DBIDriver,
+> dbDisconnect. They use DBI so that I can present an API that is consistent
+> with the SQL based packages.
+
+Good point.  What packages are those?
+
+> I would be happy to see the upper part of the classes and methods moved
+> entirely into a separate package from all the SQL. (And it would make my
+> life easier if this part remained really stable once it is set.)
+
+I think the unfortunate reality of R package development is that
+currently splitting things up into many small packages actually
+creates more headaches that having packages that do slightly too much.
+
+Hadley
+
+-- 
+Chief Scientist, RStudio
+http://had.co.nz/
+
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Wed Oct 23 18:09:06 2013
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Wed, 23 Oct 2013 12:09:06 -0400
+Subject: [R-sig-DB] SQL generics
+In-Reply-To: <CABdHhvELu-z7jV47WsYL=2nsGwMjrjTebzNzojDYRoAUJeL+oA@mail.gmail.com>
+References: <CABdHhvGBhFLscyVmQNy2DCfpFOMn-43Bq40UrQTZiCKKjyVCOw@mail.gmail.com>
+	<CAFuGCETrFap9xfo5u5_6ZDEOuxB5n+7nBrCx52htsbhZrW_Dhw@mail.gmail.com>
+	<5267E975.1070206@gmail.com>
+	<CABdHhvELu-z7jV47WsYL=2nsGwMjrjTebzNzojDYRoAUJeL+oA@mail.gmail.com>
+Message-ID: <5267F4A2.3030504@gmail.com>
+
+
+
+On 13-10-23 11:31 AM, Hadley Wickham wrote:
+>> I would like to echo David's point even more strongly. Only a few of the
+>> packages I have that use DBI actually have an SQL backend. The others really
+>> only use part of the class structure and methods:  DBIConnection, DBIDriver,
+>> dbDisconnect. They use DBI so that I can present an API that is consistent
+>> with the SQL based packages.
+>
+> Good point.  What packages are those?
+
+TShistQuote, TSgetSymbol, TSxls, TSzip, TSjson and TSdbi. The last has 
+my own class and generics and was recently split into TSdbi and TSsql 
+partly because of the non-use of SQL in several dependent packages and 
+partly because they export to two different audiences (end users need 
+the generics so I need Depend on TSdbi while other packages can Import 
+TSsql). It is hard to export to two audiences in one package without 
+using the now outlawed :::.  Also, TScompare and TSdata only use SQL 
+indirectly, they call other packages that use it.
+
+TSMySQL, TSPostgresql, TSSQLLite, TSodbc, and TSOracle (on R-forge but 
+not CRAN) are the only ones that really use SQL. TSsql is a common 
+utility package for these. (Despite comments on a related thread, if you 
+use standard SQL and avoid vendor specific enhancements you can do a lot 
+that works on multiple engines, even select statements. But I do have 
+the advantage that end users never actually construct SQL statements.)
+
+Paul
+
+>
+>> I would be happy to see the upper part of the classes and methods moved
+>> entirely into a separate package from all the SQL. (And it would make my
+>> life easier if this part remained really stable once it is set.)
+>
+> I think the unfortunate reality of R package development is that
+> currently splitting things up into many small packages actually
+> creates more headaches that having packages that do slightly too much.
+>
+> Hadley
+>
+
+
+
+From |ur|d@o @end|ng |rom gm@||@com  Wed Oct 30 14:18:33 2013
+From: |ur|d@o @end|ng |rom gm@||@com (Luis Ridao)
+Date: Wed, 30 Oct 2013 13:18:33 +0000
+Subject: [R-sig-DB] ODBC driver in ubuntu
+Message-ID: <CAL09-EcG6qTJZerWSV5mJyon6sdym0GUY74F07jrz71TLS3Csw@mail.gmail.com>
+
+R-sig-DB help,
+
+
+I'm trying to connect to an oracle database through R.
+I have installed the oracle client and it seems that the driver is also
+installed.
+However the connection fails:
+
+> library(RODBC)
+# WITH DATABASE NAME
+>channel <- odbcConnect('192.168.20.10', uid='my_uid', pwd='my_pwd')
+Warning messages:
+1: In odbcDriverConnect("DSN=192.168.20.10;UID=luisr;PWD=juanayzakarias") :
+  [RODBC] ERROR: state IM002, code 0, message [unixODBC][Driver
+Manager]Data source name not found, and no default driver specified
+2: In odbcDriverConnect("DSN=192.168.20.10;UID=luisr;PWD=juanayzakarias") :
+  ODBC connection failed
+# WITH DATABASE IP
+>channel <- odbcConnect('BASTA', uid='my_uid', pwd='my_pwd')
+Warning messages:
+1: In odbcDriverConnect("DSN=basta;UID=luisr;PWD=juanayzakarias") :
+  [RODBC] ERROR: state IM002, code 0, message [unixODBC][Driver
+Manager]Data source name not found, and no default driver specified
+2: In odbcDriverConnect("DSN=basta;UID=luisr;PWD=juanayzakarias") :
+  ODBC connection failed
+
+My odbc.ini file looks like:
+
+$ sudo gedit odbc.ini
+[oracle_driver]
+driver        = OracleODBC-11g
+description        = Oracle_ODBC_driver
+server        = basta
+port        = 1521
+sid        = 192.168.20.10
+user        = my_uid
+password        = my_pwd
+logging        = No
+logfile        =
+enable_user_catalog        = yes
+enable_synonyms        = yes
+metadata_dont_change_case        = no
+metadata_dont_do_schema        = no
+metadata_id        = no
+limit_long        = 0
+
+$ sudo gedit odbcinst.ini
+[OracleODBC-11g]
+Description = Oracle ODBC driver for Oracle 11g
+Driver = /u01/app/oracle/product/11.1.0/client_2/lib/libsqora.so.11.1
+FileUsage = 1
+Driver Logging = 7
+
+
+can anyone help?
+
+best,
+Luis
+
+	[[alternative HTML version deleted]]
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Wed Oct 30 14:22:41 2013
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Wed, 30 Oct 2013 13:22:41 +0000
+Subject: [R-sig-DB] ODBC driver in ubuntu
+In-Reply-To: <CAL09-EcG6qTJZerWSV5mJyon6sdym0GUY74F07jrz71TLS3Csw@mail.gmail.com>
+References: <CAL09-EcG6qTJZerWSV5mJyon6sdym0GUY74F07jrz71TLS3Csw@mail.gmail.com>
+Message-ID: <52710821.2000503@stats.ox.ac.uk>
+
+On 30/10/2013 13:18, Luis Ridao wrote:
+> R-sig-DB help,
+>
+>
+> I'm trying to connect to an oracle database through R.
+> I have installed the oracle client and it seems that the driver is also
+> installed.
+> However the connection fails:
+
+You have not specified a DSN called BASTA nor basta.
+>
+>> library(RODBC)
+> # WITH DATABASE NAME
+>> channel <- odbcConnect('192.168.20.10', uid='my_uid', pwd='my_pwd')
+> Warning messages:
+> 1: In odbcDriverConnect("DSN=192.168.20.10;UID=luisr;PWD=juanayzakarias") :
+>    [RODBC] ERROR: state IM002, code 0, message [unixODBC][Driver
+> Manager]Data source name not found, and no default driver specified
+> 2: In odbcDriverConnect("DSN=192.168.20.10;UID=luisr;PWD=juanayzakarias") :
+>    ODBC connection failed
+> # WITH DATABASE IP
+>> channel <- odbcConnect('BASTA', uid='my_uid', pwd='my_pwd')
+> Warning messages:
+> 1: In odbcDriverConnect("DSN=basta;UID=luisr;PWD=juanayzakarias") :
+>    [RODBC] ERROR: state IM002, code 0, message [unixODBC][Driver
+> Manager]Data source name not found, and no default driver specified
+> 2: In odbcDriverConnect("DSN=basta;UID=luisr;PWD=juanayzakarias") :
+>    ODBC connection failed
+>
+> My odbc.ini file looks like:
+>
+> $ sudo gedit odbc.ini
+> [oracle_driver]
+> driver        = OracleODBC-11g
+> description        = Oracle_ODBC_driver
+> server        = basta
+> port        = 1521
+> sid        = 192.168.20.10
+> user        = my_uid
+> password        = my_pwd
+> logging        = No
+> logfile        =
+> enable_user_catalog        = yes
+> enable_synonyms        = yes
+> metadata_dont_change_case        = no
+> metadata_dont_do_schema        = no
+> metadata_id        = no
+> limit_long        = 0
+>
+> $ sudo gedit odbcinst.ini
+> [OracleODBC-11g]
+> Description = Oracle ODBC driver for Oracle 11g
+> Driver = /u01/app/oracle/product/11.1.0/client_2/lib/libsqora.so.11.1
+> FileUsage = 1
+> Driver Logging = 7
+>
+>
+> can anyone help?
+>
+> best,
+> Luis
+>
+> 	[[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From |ur|d@o @end|ng |rom gm@||@com  Wed Oct 30 14:30:52 2013
+From: |ur|d@o @end|ng |rom gm@||@com (Luis Ridao)
+Date: Wed, 30 Oct 2013 13:30:52 +0000
+Subject: [R-sig-DB] ODBC driver in ubuntu
+In-Reply-To: <52710821.2000503@stats.ox.ac.uk>
+References: <CAL09-EcG6qTJZerWSV5mJyon6sdym0GUY74F07jrz71TLS3Csw@mail.gmail.com>
+	<52710821.2000503@stats.ox.ac.uk>
+Message-ID: <CAL09-EeQfQiQ2mqDX2WJSC0N4EBrT3ja9XQ++Ae3wHL44TsWwA@mail.gmail.com>
+
+You mean:
+
+> channel <- odbcConnect(dsn='BASTA', uid='*****', pwd='********')
+
+Warning messages:
+1: In odbcDriverConnect("DSN=BASTA;UID=luisr;PWD=juanayzakarias") :
+  [RODBC] ERROR: state IM002, code 0, message [unixODBC][Driver
+Manager]Data source name not found, and no default driver specified
+2: In odbcDriverConnect("DSN=BASTA;UID=luisr;PWD=juanayzakarias") :
+  ODBC connection failed
+
+or in the odbc.ini file:
+/etc$ sudo gedit odbc.ini
+
+[oracle_driver]
+driver        = OracleODBC-11g
+description        = Oracle_ODBC_driver
+server        = BASTA
+port        = 1521
+sid        = 192.168.20.10
+user        = ********
+password        = *********
+logging        = No
+logfile        =
+enable_user_catalog        = yes
+enable_synonyms        = yes
+metadata_dont_change_case        = no
+metadata_dont_do_schema        = no
+metadata_id        = no
+limit_long        = 0
+
+It keeps on failing
+
+Best,
+Luis
+
+
+-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+Luis Ridao Cruz
+Faroe Marine Research Institute
+N?at?n 1, P.O. Box 3051
+FO-110 T?rshavn
+Faroe Islands
+Tel   : (+298) 353900
+Fax: : (+298) 353901
+e-mail: luisr at hav.fo
+           luridao at gmail.com
+-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+
+
+
+On Wed, Oct 30, 2013 at 1:22 PM, Prof Brian Ripley <ripley at stats.ox.ac.uk>wrote:
+
+> On 30/10/2013 13:18, Luis Ridao wrote:
+>
+>> R-sig-DB help,
+>>
+>>
+>> I'm trying to connect to an oracle database through R.
+>> I have installed the oracle client and it seems that the driver is also
+>> installed.
+>> However the connection fails:
+>>
+>
+> You have not specified a DSN called BASTA nor basta.
+>
+>>
+>>  library(RODBC)
+>>>
+>> # WITH DATABASE NAME
+>>
+>>> channel <- odbcConnect('192.168.20.10', uid='my_uid', pwd='my_pwd')
+>>>
+>> Warning messages:
+>> 1: In odbcDriverConnect("DSN=192.**168.20.10;UID=luisr;PWD=**juanayzakarias")
+>> :
+>>    [RODBC] ERROR: state IM002, code 0, message [unixODBC][Driver
+>> Manager]Data source name not found, and no default driver specified
+>> 2: In odbcDriverConnect("DSN=192.**168.20.10;UID=luisr;PWD=**juanayzakarias")
+>> :
+>>    ODBC connection failed
+>> # WITH DATABASE IP
+>>
+>>> channel <- odbcConnect('BASTA', uid='my_uid', pwd='my_pwd')
+>>>
+>> Warning messages:
+>> 1: In odbcDriverConnect("DSN=basta;**UID=luisr;PWD=juanayzakarias") :
+>>    [RODBC] ERROR: state IM002, code 0, message [unixODBC][Driver
+>> Manager]Data source name not found, and no default driver specified
+>> 2: In odbcDriverConnect("DSN=basta;**UID=luisr;PWD=juanayzakarias") :
+>>    ODBC connection failed
+>>
+>> My odbc.ini file looks like:
+>>
+>> $ sudo gedit odbc.ini
+>> [oracle_driver]
+>> driver        = OracleODBC-11g
+>> description        = Oracle_ODBC_driver
+>> server        = basta
+>> port        = 1521
+>> sid        = 192.168.20.10
+>> user        = my_uid
+>> password        = my_pwd
+>> logging        = No
+>> logfile        =
+>> enable_user_catalog        = yes
+>> enable_synonyms        = yes
+>> metadata_dont_change_case        = no
+>> metadata_dont_do_schema        = no
+>> metadata_id        = no
+>> limit_long        = 0
+>>
+>> $ sudo gedit odbcinst.ini
+>> [OracleODBC-11g]
+>> Description = Oracle ODBC driver for Oracle 11g
+>> Driver = /u01/app/oracle/product/11.1.**0/client_2/lib/libsqora.so.11.**1
+>> FileUsage = 1
+>> Driver Logging = 7
+>>
+>>
+>> can anyone help?
+>>
+>> best,
+>> Luis
+>>
+>>         [[alternative HTML version deleted]]
+>>
+>> ______________________________**_________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at r-project.org
+>> https://stat.ethz.ch/mailman/**listinfo/r-sig-db<https://stat.ethz.ch/mailman/listinfo/r-sig-db>
+>>
+>>
+>
+> --
+> Brian D. Ripley,                  ripley at stats.ox.ac.uk
+> Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~**ripley/<http://www.stats.ox.ac.uk/~ripley/>
+> University of Oxford,             Tel:  +44 1865 272861 (self)
+> 1 South Parks Road,                     +44 1865 272866 (PA)
+> Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+>
+> ______________________________**_________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/**listinfo/r-sig-db<https://stat.ethz.ch/mailman/listinfo/r-sig-db>
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From Lee@H@ch@door|@n+L @end|ng |rom gm@||@com  Wed Oct 30 16:32:47 2013
+From: Lee@H@ch@door|@n+L @end|ng |rom gm@||@com (Lee Hachadoorian)
+Date: Wed, 30 Oct 2013 11:32:47 -0400
+Subject: [R-sig-DB] ODBC driver in ubuntu
+In-Reply-To: <CAL09-EeQfQiQ2mqDX2WJSC0N4EBrT3ja9XQ++Ae3wHL44TsWwA@mail.gmail.com>
+References: <CAL09-EcG6qTJZerWSV5mJyon6sdym0GUY74F07jrz71TLS3Csw@mail.gmail.com>
+	<52710821.2000503@stats.ox.ac.uk>
+	<CAL09-EeQfQiQ2mqDX2WJSC0N4EBrT3ja9XQ++Ae3wHL44TsWwA@mail.gmail.com>
+Message-ID: <CANnCtnJeDNmT4ooShY5oKD=KCWuE-4n56V04vF4SGiwbTZpU9A@mail.gmail.com>
+
+On Wed, Oct 30, 2013 at 9:30 AM, Luis Ridao <luridao at gmail.com> wrote:
+
+> You mean:
+>
+> > channel <- odbcConnect(dsn='BASTA', uid='*****', pwd='********')
+>
+> Warning messages:
+> 1: In odbcDriverConnect("DSN=BASTA;UID=luisr;PWD=juanayzakarias") :
+>   [RODBC] ERROR: state IM002, code 0, message [unixODBC][Driver
+> Manager]Data source name not found, and no default driver specified
+> 2: In odbcDriverConnect("DSN=BASTA;UID=luisr;PWD=juanayzakarias") :
+>   ODBC connection failed
+>
+> or in the odbc.ini file:
+> /etc$ sudo gedit odbc.ini
+>
+> [oracle_driver]
+> driver        = OracleODBC-11g
+> description        = Oracle_ODBC_driver
+> server        = BASTA
+> port        = 1521
+> sid        = 192.168.20.10
+> user        = ********
+> password        = *********
+> logging        = No
+> logfile        =
+> enable_user_catalog        = yes
+> enable_synonyms        = yes
+> metadata_dont_change_case        = no
+> metadata_dont_do_schema        = no
+> metadata_id        = no
+> limit_long        = 0
+>
+> It keeps on failing
+>
+> Best,
+> Luis
+>
+>
+Luis,
+
+The name between the braces in odbc.ini is the DSN. You have named the DSN
+oracle_driver, not BASTA. So either rename it in odbc.ini, or refer to it
+as oracle_driver in the odbcConnect() call.
+
+Also, I'm not really familiar with Oracle, but I can't seem to find any
+information on the sid parameter you have set in the ini. The examples I
+see use server, servername, and/or database. See
+http://www.almahdi.cc/linux/setup-unixodbc-on-linux-for-oracle-and-sybase/.
+
+Best,
+--Lee
+
+	[[alternative HTML version deleted]]
+
+
+
+From |ur|d@o @end|ng |rom gm@||@com  Wed Oct 30 16:50:11 2013
+From: |ur|d@o @end|ng |rom gm@||@com (Luis Ridao)
+Date: Wed, 30 Oct 2013 15:50:11 +0000
+Subject: [R-sig-DB] ODBC driver in ubuntu
+In-Reply-To: <CANnCtnJeDNmT4ooShY5oKD=KCWuE-4n56V04vF4SGiwbTZpU9A@mail.gmail.com>
+References: <CAL09-EcG6qTJZerWSV5mJyon6sdym0GUY74F07jrz71TLS3Csw@mail.gmail.com>
+	<52710821.2000503@stats.ox.ac.uk>
+	<CAL09-EeQfQiQ2mqDX2WJSC0N4EBrT3ja9XQ++Ae3wHL44TsWwA@mail.gmail.com>
+	<CANnCtnJeDNmT4ooShY5oKD=KCWuE-4n56V04vF4SGiwbTZpU9A@mail.gmail.com>
+Message-ID: <CAL09-EcWg0LeiHX9ozvW9OHYaXhh0gsm04spfPciqCs_ytTakQ@mail.gmail.com>
+
+I followed Lee's recommendations but still the same:
+
+> library(RODBC)
+> channel <- odbcConnect(dsn='BASTA', uid='******', pwd='*******')
+Warning messages:
+1: In odbcDriverConnect("DSN=BASTA;UID=******;PWD=**********") :
+  [RODBC] ERROR: state HY000, code 12545, message
+[unixODBC][Oracle][ODBC][Ora]ORA-12545: Connect failed because target host
+or object does not exist
+2: In odbcDriverConnect("DSN=BASTA;UID=luisr;PWD=juanayzakarias") :
+  ODBC connection failed
+ --------------------------------------------------------------------------------------------------
+/etc$ sudo gedit odbcinst.ini
+[OracleODBC-11g]
+Setup           =
+FileUsage =
+CPTimeout =
+CPReuse         =
+Description = Oracle ODBC driver for Oracle 11g
+Driver = /u01/app/oracle/product/11.1.0/client_2/lib/libsqora.so.11.1
+FileUsage = -1
+--------------------------------------------------------------------------------------------------
+/etc$ sudo gedit odbc.ini
+[BASTA]
+driver        = OracleODBC-11g
+description        = Oracle_ODBC_driver
+server        = 192.168.20.10
+port        = 1521
+user        = ******
+password        = ******
+logging        = No
+logfile        =
+enable_user_catalog        = yes
+enable_synonyms        = yes
+metadata_dont_change_case        = no
+metadata_dont_do_schema        = no
+metadata_id        = no
+limit_long        = 0
+
+
+-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+Luis Ridao Cruz
+Faroe Marine Research Institute
+N?at?n 1, P.O. Box 3051
+FO-110 T?rshavn
+Faroe Islands
+Tel   : (+298) 353900
+Fax: : (+298) 353901
+e-mail: luisr at hav.fo
+           luridao at gmail.com
+-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+
+
+
+On Wed, Oct 30, 2013 at 3:32 PM, Lee Hachadoorian <
+Lee.Hachadoorian+L at gmail.com> wrote:
+
+>
+>
+>
+> On Wed, Oct 30, 2013 at 9:30 AM, Luis Ridao <luridao at gmail.com> wrote:
+>
+>> You mean:
+>>
+>> > channel <- odbcConnect(dsn='BASTA', uid='*****', pwd='********')
+>>
+>> Warning messages:
+>> 1: In odbcDriverConnect("DSN=BASTA;UID=luisr;PWD=juanayzakarias") :
+>>   [RODBC] ERROR: state IM002, code 0, message [unixODBC][Driver
+>> Manager]Data source name not found, and no default driver specified
+>> 2: In odbcDriverConnect("DSN=BASTA;UID=luisr;PWD=juanayzakarias") :
+>>   ODBC connection failed
+>>
+>> or in the odbc.ini file:
+>> /etc$ sudo gedit odbc.ini
+>>
+>> [oracle_driver]
+>> driver        = OracleODBC-11g
+>> description        = Oracle_ODBC_driver
+>> server        = BASTA
+>> port        = 1521
+>> sid        = 192.168.20.10
+>> user        = ********
+>> password        = *********
+>> logging        = No
+>> logfile        =
+>> enable_user_catalog        = yes
+>> enable_synonyms        = yes
+>> metadata_dont_change_case        = no
+>> metadata_dont_do_schema        = no
+>> metadata_id        = no
+>> limit_long        = 0
+>>
+>> It keeps on failing
+>>
+>> Best,
+>> Luis
+>>
+>>
+> Luis,
+>
+> The name between the braces in odbc.ini is the DSN. You have named the DSN
+> oracle_driver, not BASTA. So either rename it in odbc.ini, or refer to it
+> as oracle_driver in the odbcConnect() call.
+>
+> Also, I'm not really familiar with Oracle, but I can't seem to find any
+> information on the sid parameter you have set in the ini. The examples I
+> see use server, servername, and/or database. See
+> http://www.almahdi.cc/linux/setup-unixodbc-on-linux-for-oracle-and-sybase/
+> .
+>
+> Best,
+> --Lee
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From Lee@H@ch@door|@n+L @end|ng |rom gm@||@com  Wed Oct 30 17:05:04 2013
+From: Lee@H@ch@door|@n+L @end|ng |rom gm@||@com (Lee Hachadoorian)
+Date: Wed, 30 Oct 2013 12:05:04 -0400
+Subject: [R-sig-DB] ODBC driver in ubuntu
+In-Reply-To: <CAL09-EcWg0LeiHX9ozvW9OHYaXhh0gsm04spfPciqCs_ytTakQ@mail.gmail.com>
+References: <CAL09-EcG6qTJZerWSV5mJyon6sdym0GUY74F07jrz71TLS3Csw@mail.gmail.com>
+	<52710821.2000503@stats.ox.ac.uk>
+	<CAL09-EeQfQiQ2mqDX2WJSC0N4EBrT3ja9XQ++Ae3wHL44TsWwA@mail.gmail.com>
+	<CANnCtnJeDNmT4ooShY5oKD=KCWuE-4n56V04vF4SGiwbTZpU9A@mail.gmail.com>
+	<CAL09-EcWg0LeiHX9ozvW9OHYaXhh0gsm04spfPciqCs_ytTakQ@mail.gmail.com>
+Message-ID: <CANnCtn+w5pLJWNZ0NddFkScvLZ6YxLJ0atNW7dEW82fa90bMqA@mail.gmail.com>
+
+Luis,
+
+Respectfully, it is not the same. Previously the message was:
+
+ERROR: state IM002, code 0, message [unixODBC][Driver
+Manager]Data source name not found, and no default driver specified
+
+Now it:
+
+ERROR: state HY000, code 12545, message [unixODBC][Oracle][ODBC][Ora]ORA-12545:
+Connect failed because target host or object does not exist
+
+So it *is* finding the DSN in your odbc.ini, but not the "target host or
+object". Are you sure the server is running and responding to other
+requests? Again, I'm not familiar with Oracle, but perhaps you have to
+specify a database name as well as a host? (I know on Postgres you do...).
+
+Best,
+--Lee
+
+
+On Wed, Oct 30, 2013 at 11:50 AM, Luis Ridao <luridao at gmail.com> wrote:
+
+>
+> I followed Lee's recommendations but still the same:
+>
+> > library(RODBC)
+> > channel <- odbcConnect(dsn='BASTA', uid='******', pwd='*******')
+> Warning messages:
+> 1: In odbcDriverConnect("DSN=BASTA;UID=******;PWD=**********") :
+>   [RODBC] ERROR: state HY000, code 12545, message
+> [unixODBC][Oracle][ODBC][Ora]ORA-12545: Connect failed because target host
+> or object does not exist
+>
+> 2: In odbcDriverConnect("DSN=BASTA;UID=luisr;PWD=juanayzakarias") :
+>   ODBC connection failed
+>
+>  --------------------------------------------------------------------------------------------------
+> /etc$ sudo gedit odbcinst.ini
+> [OracleODBC-11g]
+> Setup           =
+> FileUsage =
+> CPTimeout =
+> CPReuse         =
+>
+> Description = Oracle ODBC driver for Oracle 11g
+> Driver = /u01/app/oracle/product/11.1.0/client_2/lib/libsqora.so.11.1
+> FileUsage = -1
+>
+> --------------------------------------------------------------------------------------------------
+> /etc$ sudo gedit odbc.ini
+> [BASTA]
+>
+> driver        = OracleODBC-11g
+> description        = Oracle_ODBC_driver
+> server        = 192.168.20.10
+> port        = 1521
+> user        = ******
+> password        = ******
+>
+> logging        = No
+> logfile        =
+> enable_user_catalog        = yes
+> enable_synonyms        = yes
+> metadata_dont_change_case        = no
+> metadata_dont_do_schema        = no
+> metadata_id        = no
+> limit_long        = 0
+>
+>
+> -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+> Luis Ridao Cruz
+> Faroe Marine Research Institute
+> N?at?n 1, P.O. Box 3051
+> FO-110 T?rshavn
+> Faroe Islands
+> Tel   : (+298) 353900
+> Fax: : (+298) 353901
+> e-mail: luisr at hav.fo
+>            luridao at gmail.com
+> -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+>
+>
+>
+> On Wed, Oct 30, 2013 at 3:32 PM, Lee Hachadoorian <
+> Lee.Hachadoorian+L at gmail.com> wrote:
+>
+>>
+>>
+>>
+>> On Wed, Oct 30, 2013 at 9:30 AM, Luis Ridao <luridao at gmail.com> wrote:
+>>
+>>> You mean:
+>>>
+>>> > channel <- odbcConnect(dsn='BASTA', uid='*****', pwd='********')
+>>>
+>>> Warning messages:
+>>> 1: In odbcDriverConnect("DSN=BASTA;UID=luisr;PWD=juanayzakarias") :
+>>>   [RODBC] ERROR: state IM002, code 0, message [unixODBC][Driver
+>>> Manager]Data source name not found, and no default driver specified
+>>> 2: In odbcDriverConnect("DSN=BASTA;UID=luisr;PWD=juanayzakarias") :
+>>>   ODBC connection failed
+>>>
+>>> or in the odbc.ini file:
+>>> /etc$ sudo gedit odbc.ini
+>>>
+>>> [oracle_driver]
+>>> driver        = OracleODBC-11g
+>>> description        = Oracle_ODBC_driver
+>>> server        = BASTA
+>>> port        = 1521
+>>> sid        = 192.168.20.10
+>>> user        = ********
+>>> password        = *********
+>>> logging        = No
+>>> logfile        =
+>>> enable_user_catalog        = yes
+>>> enable_synonyms        = yes
+>>> metadata_dont_change_case        = no
+>>> metadata_dont_do_schema        = no
+>>> metadata_id        = no
+>>> limit_long        = 0
+>>>
+>>> It keeps on failing
+>>>
+>>> Best,
+>>> Luis
+>>>
+>>>
+>> Luis,
+>>
+>> The name between the braces in odbc.ini is the DSN. You have named the
+>> DSN oracle_driver, not BASTA. So either rename it in odbc.ini, or refer to
+>> it as oracle_driver in the odbcConnect() call.
+>>
+>> Also, I'm not really familiar with Oracle, but I can't seem to find any
+>> information on the sid parameter you have set in the ini. The examples I
+>> see use server, servername, and/or database. See
+>> http://www.almahdi.cc/linux/setup-unixodbc-on-linux-for-oracle-and-sybase/
+>> .
+>>
+>> Best,
+>> --Lee
+>>
+>
+>
+
+
+-- 
+Lee Hachadoorian
+Asst Professor of Geography, Dartmouth College
+http://freecity.commons.gc.cuny.edu/
+
+	[[alternative HTML version deleted]]
+
+
+
+From m@rc_@chw@rtz @end|ng |rom me@com  Wed Oct 30 19:33:30 2013
+From: m@rc_@chw@rtz @end|ng |rom me@com (Marc Schwartz)
+Date: Wed, 30 Oct 2013 13:33:30 -0500
+Subject: [R-sig-DB] ODBC driver in ubuntu
+In-Reply-To: <CANnCtn+w5pLJWNZ0NddFkScvLZ6YxLJ0atNW7dEW82fa90bMqA@mail.gmail.com>
+References: <CAL09-EcG6qTJZerWSV5mJyon6sdym0GUY74F07jrz71TLS3Csw@mail.gmail.com>
+	<52710821.2000503@stats.ox.ac.uk>
+	<CAL09-EeQfQiQ2mqDX2WJSC0N4EBrT3ja9XQ++Ae3wHL44TsWwA@mail.gmail.com>
+	<CANnCtnJeDNmT4ooShY5oKD=KCWuE-4n56V04vF4SGiwbTZpU9A@mail.gmail.com>
+	<CAL09-EcWg0LeiHX9ozvW9OHYaXhh0gsm04spfPciqCs_ytTakQ@mail.gmail.com>
+	<CANnCtn+w5pLJWNZ0NddFkScvLZ6YxLJ0atNW7dEW82fa90bMqA@mail.gmail.com>
+Message-ID: <D4E4FF47-A652-4C0A-B261-855EB60E3E6E@me.com>
+
+Hi,
+
+Been a few years since I did this on Linux for Oracle and it was on Fedora rather than Debian/Ubuntu.
+
+That being said, there is a tnsnames.ora file that needs to be created to identify the Oracle server sid/ip and ports, there is an entry into /etc/ld.so.conf that needs to be made and ldconfig run to update the system, as well as shell environment variables that need to be created.
+
+I found a page here:
+
+  http://ggorjan.blogspot.com/2007/04/oracle-instantclient-odbc-on-debian.html
+
+by Gregor Gorjanc, who is also an R user, that you might find helpful. It is a few years old, so version numbering will likely be different but the core information, I believe, is still correct.
+
+Regards,
+
+Marc Schwartz
+
+
+On Oct 30, 2013, at 11:05 AM, Lee Hachadoorian <Lee.Hachadoorian+L at gmail.com> wrote:
+
+> Luis,
+> 
+> Respectfully, it is not the same. Previously the message was:
+> 
+> ERROR: state IM002, code 0, message [unixODBC][Driver
+> Manager]Data source name not found, and no default driver specified
+> 
+> Now it:
+> 
+> ERROR: state HY000, code 12545, message [unixODBC][Oracle][ODBC][Ora]ORA-12545:
+> Connect failed because target host or object does not exist
+> 
+> So it *is* finding the DSN in your odbc.ini, but not the "target host or
+> object". Are you sure the server is running and responding to other
+> requests? Again, I'm not familiar with Oracle, but perhaps you have to
+> specify a database name as well as a host? (I know on Postgres you do...).
+> 
+> Best,
+> --Lee
+> 
+> 
+> On Wed, Oct 30, 2013 at 11:50 AM, Luis Ridao <luridao at gmail.com> wrote:
+> 
+>> 
+>> I followed Lee's recommendations but still the same:
+>> 
+>>> library(RODBC)
+>>> channel <- odbcConnect(dsn='BASTA', uid='******', pwd='*******')
+>> Warning messages:
+>> 1: In odbcDriverConnect("DSN=BASTA;UID=******;PWD=**********") :
+>>  [RODBC] ERROR: state HY000, code 12545, message
+>> [unixODBC][Oracle][ODBC][Ora]ORA-12545: Connect failed because target host
+>> or object does not exist
+>> 
+>> 2: In odbcDriverConnect("DSN=BASTA;UID=luisr;PWD=juanayzakarias") :
+>>  ODBC connection failed
+>> 
+>> --------------------------------------------------------------------------------------------------
+>> /etc$ sudo gedit odbcinst.ini
+>> [OracleODBC-11g]
+>> Setup           =
+>> FileUsage =
+>> CPTimeout =
+>> CPReuse         =
+>> 
+>> Description = Oracle ODBC driver for Oracle 11g
+>> Driver = /u01/app/oracle/product/11.1.0/client_2/lib/libsqora.so.11.1
+>> FileUsage = -1
+>> 
+>> --------------------------------------------------------------------------------------------------
+>> /etc$ sudo gedit odbc.ini
+>> [BASTA]
+>> 
+>> driver        = OracleODBC-11g
+>> description        = Oracle_ODBC_driver
+>> server        = 192.168.20.10
+>> port        = 1521
+>> user        = ******
+>> password        = ******
+>> 
+>> logging        = No
+>> logfile        =
+>> enable_user_catalog        = yes
+>> enable_synonyms        = yes
+>> metadata_dont_change_case        = no
+>> metadata_dont_do_schema        = no
+>> metadata_id        = no
+>> limit_long        = 0
+>> 
+>> 
+>> -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+>> Luis Ridao Cruz
+>> Faroe Marine Research Institute
+>> N?at?n 1, P.O. Box 3051
+>> FO-110 T?rshavn
+>> Faroe Islands
+>> Tel   : (+298) 353900
+>> Fax: : (+298) 353901
+>> e-mail: luisr at hav.fo
+>>           luridao at gmail.com
+>> -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+>> 
+>> 
+>> 
+>> On Wed, Oct 30, 2013 at 3:32 PM, Lee Hachadoorian <
+>> Lee.Hachadoorian+L at gmail.com> wrote:
+>> 
+>>> 
+>>> 
+>>> 
+>>> On Wed, Oct 30, 2013 at 9:30 AM, Luis Ridao <luridao at gmail.com> wrote:
+>>> 
+>>>> You mean:
+>>>> 
+>>>>> channel <- odbcConnect(dsn='BASTA', uid='*****', pwd='********')
+>>>> 
+>>>> Warning messages:
+>>>> 1: In odbcDriverConnect("DSN=BASTA;UID=luisr;PWD=juanayzakarias") :
+>>>>  [RODBC] ERROR: state IM002, code 0, message [unixODBC][Driver
+>>>> Manager]Data source name not found, and no default driver specified
+>>>> 2: In odbcDriverConnect("DSN=BASTA;UID=luisr;PWD=juanayzakarias") :
+>>>>  ODBC connection failed
+>>>> 
+>>>> or in the odbc.ini file:
+>>>> /etc$ sudo gedit odbc.ini
+>>>> 
+>>>> [oracle_driver]
+>>>> driver        = OracleODBC-11g
+>>>> description        = Oracle_ODBC_driver
+>>>> server        = BASTA
+>>>> port        = 1521
+>>>> sid        = 192.168.20.10
+>>>> user        = ********
+>>>> password        = *********
+>>>> logging        = No
+>>>> logfile        =
+>>>> enable_user_catalog        = yes
+>>>> enable_synonyms        = yes
+>>>> metadata_dont_change_case        = no
+>>>> metadata_dont_do_schema        = no
+>>>> metadata_id        = no
+>>>> limit_long        = 0
+>>>> 
+>>>> It keeps on failing
+>>>> 
+>>>> Best,
+>>>> Luis
+>>>> 
+>>>> 
+>>> Luis,
+>>> 
+>>> The name between the braces in odbc.ini is the DSN. You have named the
+>>> DSN oracle_driver, not BASTA. So either rename it in odbc.ini, or refer to
+>>> it as oracle_driver in the odbcConnect() call.
+>>> 
+>>> Also, I'm not really familiar with Oracle, but I can't seem to find any
+>>> information on the sid parameter you have set in the ini. The examples I
+>>> see use server, servername, and/or database. See
+>>> http://www.almahdi.cc/linux/setup-unixodbc-on-linux-for-oracle-and-sybase/
+>>> .
+>>> 
+>>> Best,
+>>> --Lee
+>>> 
+>> 
+>> 
+> 
+> 
+> -- 
+> Lee Hachadoorian
+> Asst Professor of Geography, Dartmouth College
+> http://freecity.commons.gc.cuny.edu/
+> 
+> 	[[alternative HTML version deleted]]
+> 
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From |ur|d@o @end|ng |rom gm@||@com  Thu Oct 31 13:06:06 2013
+From: |ur|d@o @end|ng |rom gm@||@com (Luis Ridao)
+Date: Thu, 31 Oct 2013 12:06:06 +0000
+Subject: [R-sig-DB] ODBC driver in ubuntu
+In-Reply-To: <D4E4FF47-A652-4C0A-B261-855EB60E3E6E@me.com>
+References: <CAL09-EcG6qTJZerWSV5mJyon6sdym0GUY74F07jrz71TLS3Csw@mail.gmail.com>
+	<52710821.2000503@stats.ox.ac.uk>
+	<CAL09-EeQfQiQ2mqDX2WJSC0N4EBrT3ja9XQ++Ae3wHL44TsWwA@mail.gmail.com>
+	<CANnCtnJeDNmT4ooShY5oKD=KCWuE-4n56V04vF4SGiwbTZpU9A@mail.gmail.com>
+	<CAL09-EcWg0LeiHX9ozvW9OHYaXhh0gsm04spfPciqCs_ytTakQ@mail.gmail.com>
+	<CANnCtn+w5pLJWNZ0NddFkScvLZ6YxLJ0atNW7dEW82fa90bMqA@mail.gmail.com>
+	<D4E4FF47-A652-4C0A-B261-855EB60E3E6E@me.com>
+Message-ID: <CAL09-Ee8bVvYRy_T5a6EV88LhUP38s5GvxM5eM2SvkzTPD+oyw@mail.gmail.com>
+
+thanks to Marc, Lee for their help
+
+finally i have managed to install the odbc-driver and get it working in
+ubuntu-linux
+
+thanks also to Gregor Gorjanc's website which made it a lot easier
+
+thanks also to Prof. Brian Ripley for its fantastic RODBC package which
+makes life much easier
+for many of my colleagues
+
+best,
+Luis
+
+
+
+
+-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+Luis Ridao Cruz
+Faroe Marine Research Institute
+N?at?n 1, P.O. Box 3051
+FO-110 T?rshavn
+Faroe Islands
+Tel   : (+298) 353900
+Fax: : (+298) 353901
+e-mail: luisr at hav.fo
+           luridao at gmail.com
+-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+
+
+
+On Wed, Oct 30, 2013 at 6:33 PM, Marc Schwartz <marc_schwartz at me.com> wrote:
+
+> Hi,
+>
+> Been a few years since I did this on Linux for Oracle and it was on Fedora
+> rather than Debian/Ubuntu.
+>
+> That being said, there is a tnsnames.ora file that needs to be created to
+> identify the Oracle server sid/ip and ports, there is an entry into
+> /etc/ld.so.conf that needs to be made and ldconfig run to update the
+> system, as well as shell environment variables that need to be created.
+>
+> I found a page here:
+>
+>
+> http://ggorjan.blogspot.com/2007/04/oracle-instantclient-odbc-on-debian.html
+>
+> by Gregor Gorjanc, who is also an R user, that you might find helpful. It
+> is a few years old, so version numbering will likely be different but the
+> core information, I believe, is still correct.
+>
+> Regards,
+>
+> Marc Schwartz
+>
+>
+> On Oct 30, 2013, at 11:05 AM, Lee Hachadoorian <
+> Lee.Hachadoorian+L at gmail.com> wrote:
+>
+> > Luis,
+> >
+> > Respectfully, it is not the same. Previously the message was:
+> >
+> > ERROR: state IM002, code 0, message [unixODBC][Driver
+> > Manager]Data source name not found, and no default driver specified
+> >
+> > Now it:
+> >
+> > ERROR: state HY000, code 12545, message
+> [unixODBC][Oracle][ODBC][Ora]ORA-12545:
+> > Connect failed because target host or object does not exist
+> >
+> > So it *is* finding the DSN in your odbc.ini, but not the "target host or
+> > object". Are you sure the server is running and responding to other
+> > requests? Again, I'm not familiar with Oracle, but perhaps you have to
+> > specify a database name as well as a host? (I know on Postgres you
+> do...).
+> >
+> > Best,
+> > --Lee
+> >
+> >
+> > On Wed, Oct 30, 2013 at 11:50 AM, Luis Ridao <luridao at gmail.com> wrote:
+> >
+> >>
+> >> I followed Lee's recommendations but still the same:
+> >>
+> >>> library(RODBC)
+> >>> channel <- odbcConnect(dsn='BASTA', uid='******', pwd='*******')
+> >> Warning messages:
+> >> 1: In odbcDriverConnect("DSN=BASTA;UID=******;PWD=**********") :
+> >>  [RODBC] ERROR: state HY000, code 12545, message
+> >> [unixODBC][Oracle][ODBC][Ora]ORA-12545: Connect failed because target
+> host
+> >> or object does not exist
+> >>
+> >> 2: In odbcDriverConnect("DSN=BASTA;UID=luisr;PWD=juanayzakarias") :
+> >>  ODBC connection failed
+> >>
+> >>
+> --------------------------------------------------------------------------------------------------
+> >> /etc$ sudo gedit odbcinst.ini
+> >> [OracleODBC-11g]
+> >> Setup           =
+> >> FileUsage =
+> >> CPTimeout =
+> >> CPReuse         =
+> >>
+> >> Description = Oracle ODBC driver for Oracle 11g
+> >> Driver = /u01/app/oracle/product/11.1.0/client_2/lib/libsqora.so.11.1
+> >> FileUsage = -1
+> >>
+> >>
+> --------------------------------------------------------------------------------------------------
+> >> /etc$ sudo gedit odbc.ini
+> >> [BASTA]
+> >>
+> >> driver        = OracleODBC-11g
+> >> description        = Oracle_ODBC_driver
+> >> server        = 192.168.20.10
+> >> port        = 1521
+> >> user        = ******
+> >> password        = ******
+> >>
+> >> logging        = No
+> >> logfile        =
+> >> enable_user_catalog        = yes
+> >> enable_synonyms        = yes
+> >> metadata_dont_change_case        = no
+> >> metadata_dont_do_schema        = no
+> >> metadata_id        = no
+> >> limit_long        = 0
+> >>
+> >>
+> >> -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+> >> Luis Ridao Cruz
+> >> Faroe Marine Research Institute
+> >> N?at?n 1, P.O. Box 3051
+> >> FO-110 T?rshavn
+> >> Faroe Islands
+> >> Tel   : (+298) 353900
+> >> Fax: : (+298) 353901
+> >> e-mail: luisr at hav.fo
+> >>           luridao at gmail.com
+> >> -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+> >>
+> >>
+> >>
+> >> On Wed, Oct 30, 2013 at 3:32 PM, Lee Hachadoorian <
+> >> Lee.Hachadoorian+L at gmail.com> wrote:
+> >>
+> >>>
+> >>>
+> >>>
+> >>> On Wed, Oct 30, 2013 at 9:30 AM, Luis Ridao <luridao at gmail.com> wrote:
+> >>>
+> >>>> You mean:
+> >>>>
+> >>>>> channel <- odbcConnect(dsn='BASTA', uid='*****', pwd='********')
+> >>>>
+> >>>> Warning messages:
+> >>>> 1: In odbcDriverConnect("DSN=BASTA;UID=luisr;PWD=juanayzakarias") :
+> >>>>  [RODBC] ERROR: state IM002, code 0, message [unixODBC][Driver
+> >>>> Manager]Data source name not found, and no default driver specified
+> >>>> 2: In odbcDriverConnect("DSN=BASTA;UID=luisr;PWD=juanayzakarias") :
+> >>>>  ODBC connection failed
+> >>>>
+> >>>> or in the odbc.ini file:
+> >>>> /etc$ sudo gedit odbc.ini
+> >>>>
+> >>>> [oracle_driver]
+> >>>> driver        = OracleODBC-11g
+> >>>> description        = Oracle_ODBC_driver
+> >>>> server        = BASTA
+> >>>> port        = 1521
+> >>>> sid        = 192.168.20.10
+> >>>> user        = ********
+> >>>> password        = *********
+> >>>> logging        = No
+> >>>> logfile        =
+> >>>> enable_user_catalog        = yes
+> >>>> enable_synonyms        = yes
+> >>>> metadata_dont_change_case        = no
+> >>>> metadata_dont_do_schema        = no
+> >>>> metadata_id        = no
+> >>>> limit_long        = 0
+> >>>>
+> >>>> It keeps on failing
+> >>>>
+> >>>> Best,
+> >>>> Luis
+> >>>>
+> >>>>
+> >>> Luis,
+> >>>
+> >>> The name between the braces in odbc.ini is the DSN. You have named the
+> >>> DSN oracle_driver, not BASTA. So either rename it in odbc.ini, or
+> refer to
+> >>> it as oracle_driver in the odbcConnect() call.
+> >>>
+> >>> Also, I'm not really familiar with Oracle, but I can't seem to find any
+> >>> information on the sid parameter you have set in the ini. The examples
+> I
+> >>> see use server, servername, and/or database. See
+> >>>
+> http://www.almahdi.cc/linux/setup-unixodbc-on-linux-for-oracle-and-sybase/
+> >>> .
+> >>>
+> >>> Best,
+> >>> --Lee
+> >>>
+> >>
+> >>
+> >
+> >
+> > --
+> > Lee Hachadoorian
+> > Asst Professor of Geography, Dartmouth College
+> > http://freecity.commons.gc.cuny.edu/
+> >
+> >       [[alternative HTML version deleted]]
+> >
+> > _______________________________________________
+> > R-sig-DB mailing list -- R Special Interest Group
+> > R-sig-DB at r-project.org
+> > https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From r@yd @end|ng |rom ||ond@t@@y@tem@@com  Mon Nov 18 20:12:57 2013
+From: r@yd @end|ng |rom ||ond@t@@y@tem@@com (Ray DiGiacomo, Jr.)
+Date: Mon, 18 Nov 2013 11:12:57 -0800
+Subject: [R-sig-DB] R and MongoDB (OC-RUG Webinar)
+Message-ID: <CACT39NZ8Ta8U58P-ru_10raf7zNu02+tWNDNWiZ3gqjt7pgsqA@mail.gmail.com>
+
+Hello r-sig-db mailing list,
+
+Markus Schmidberger, the package maintainer for the "rmongodb" R package
+has agreed to discuss the package via webinar on January 30, 2014.  His
+package allows for the communication between R and MongoDB.
+
+For more information on the rmongodb R package, please visit this site:
+
+http://cran.r-project.org/web/packages/rmongodb/index.html
+
+This event is brought to you by The Orange County R User Group (OC-RUG).
+
+Please note that in addition to attending from your laptop or desktop
+computer, you can also attend from a Wi-Fi connected iPhone, iPad, Android
+phone or Android tablet by installing the GoToMeeting App.
+
+The webinar's registration page is below:
+
+https://www3.gotomeeting.com/register/287023934
+
+Best Regards,
+
+The Orange County R User Group
+
+	[[alternative HTML version deleted]]
+
+
+
+From c@ @end|ng |rom |ncent|ve-|nve@t|ng@com  Wed Nov 20 15:46:58 2013
+From: c@ @end|ng |rom |ncent|ve-|nve@t|ng@com (Chris)
+Date: Wed, 20 Nov 2013 15:46:58 +0100
+Subject: [R-sig-DB] RODBC sqlSave appends rows from data frame in reverse
+	order
+Message-ID: <001101cee5ff$5d88ca30$189a5e90$@incentive-investing.com>
+
+Hi,
+
+ 
+
+I append rows to a table in MySQL with sqlSave from RODBC package. The data
+frame that is saved is ordered by date ascending (first column) as is the
+table in the DB. When I send the whole data frame at once, the data frame is
+appended in reverse order. That means the row with the newest date in the
+data frame is the first row appended to the table, while the row with oldest
+date will be last row in the table. OK, I thought that "append" just orders
+by date descending and that is why the reverse ordering happens. But when I
+send each row of the data frame using a for-loop the result is the same: The
+first row send is the last row in the table, the second row send, is the
+second last row in the table.
+
+My solution is to run the for loop from last to first row of the data frame
+but I am looking for an explanation why append works like this and if it's
+possible to change this in some setting. 
+
+ 
+
+#Send data frame completely (6 rows, 12 cols)
+
+sqlSave(con, df, tablename = table, rownames=FALSE, addPK=TRUE, append=TRUE,
+verbose=TRUE)
+
+ 
+
+# Send data frame row by row
+
+for (a in 1:6) {
+
+      dfsend <- df[a,]
+
+      sqlSave(con, dfsend, tablename = table, rownames=FALSE, addPK=TRUE,
+append=TRUE, verbose=TRUE) 
+
+    }
+
+ 
+
+# "solution": Send data frame row by row, starting from last row of data
+frame
+
+for (a in 6:1) {
+
+      dfsend <- df[a,]
+
+      sqlSave(con, dfsend, tablename = table, rownames=FALSE, addPK=TRUE,
+append=TRUE, verbose=TRUE) 
+
+    }
+
+ 
+
+Thank you
+
+Chris
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From e@ @end|ng |rom enr|co@chum@nn@net  Wed Nov 20 17:34:36 2013
+From: e@ @end|ng |rom enr|co@chum@nn@net (Enrico Schumann)
+Date: Wed, 20 Nov 2013 17:34:36 +0100
+Subject: [R-sig-DB] RODBC sqlSave appends rows from data frame in
+	reverse order
+In-Reply-To: <001101cee5ff$5d88ca30$189a5e90$@incentive-investing.com>
+	(Chris's message of "Wed, 20 Nov 2013 15:46:58 +0100")
+References: <001101cee5ff$5d88ca30$189a5e90$@incentive-investing.com>
+Message-ID: <8761rnhw0z.fsf@enricoschumann.net>
+
+On Wed, 20 Nov 2013, "Chris" <cs at incentive-investing.com> writes:
+
+> Hi,
+>
+> I append rows to a table in MySQL with sqlSave from RODBC package. The data
+> frame that is saved is ordered by date ascending (first column) as is the
+> table in the DB. When I send the whole data frame at once, the data frame is
+> appended in reverse order. That means the row with the newest date in the
+> data frame is the first row appended to the table, while the row with oldest
+> date will be last row in the table. OK, I thought that "append" just orders
+> by date descending and that is why the reverse ordering happens. But when I
+> send each row of the data frame using a for-loop the result is the same: The
+> first row send is the last row in the table, the second row send, is the
+> second last row in the table.
+>
+> My solution is to run the for loop from last to first row of the data frame
+> but I am looking for an explanation why append works like this and if it's
+> possible to change this in some setting. 
+>
+
+In MySQL, you never have a guarantee in which order the rows will be
+retrieved unless you specify it (eg, "SELECT * FROM table ORDER BY
+column;").
+
+[...]
+
+>
+> Thank you
+>
+> Chris
+>
+
+-- 
+Enrico Schumann
+Lucerne, Switzerland
+http://enricoschumann.net
+
+
+
+From r|p|ey @end|ng |rom @t@t@@ox@@c@uk  Wed Nov 20 18:18:46 2013
+From: r|p|ey @end|ng |rom @t@t@@ox@@c@uk (Prof Brian Ripley)
+Date: Wed, 20 Nov 2013 17:18:46 +0000
+Subject: [R-sig-DB] RODBC sqlSave appends rows from data frame in
+ reverse order
+In-Reply-To: <8761rnhw0z.fsf@enricoschumann.net>
+References: <001101cee5ff$5d88ca30$189a5e90$@incentive-investing.com>
+	<8761rnhw0z.fsf@enricoschumann.net>
+Message-ID: <528CEEF6.9020004@stats.ox.ac.uk>
+
+On 20/11/2013 16:34, Enrico Schumann wrote:
+> On Wed, 20 Nov 2013, "Chris" <cs at incentive-investing.com> writes:
+>
+>> Hi,
+>>
+>> I append rows to a table in MySQL with sqlSave from RODBC package. The data
+>> frame that is saved is ordered by date ascending (first column) as is the
+>> table in the DB. When I send the whole data frame at once, the data frame is
+>> appended in reverse order. That means the row with the newest date in the
+>> data frame is the first row appended to the table, while the row with oldest
+>> date will be last row in the table. OK, I thought that "append" just orders
+>> by date descending and that is why the reverse ordering happens. But when I
+>> send each row of the data frame using a for-loop the result is the same: The
+>> first row send is the last row in the table, the second row send, is the
+>> second last row in the table.
+>>
+>> My solution is to run the for loop from last to first row of the data frame
+>> but I am looking for an explanation why append works like this and if it's
+>> possible to change this in some setting.
+>>
+>
+> In MySQL, you never have a guarantee in which order the rows will be
+> retrieved unless you specify it (eg, "SELECT * FROM table ORDER BY
+> column;").
+
+Nor any other RDBMS: as the RODBC manual does say (on p.6).
+
+>
+> [...]
+>
+>>
+>> Thank you
+>>
+>> Chris
+>>
+>
+
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From c@ @end|ng |rom |ncent|ve-|nve@t|ng@com  Wed Nov 20 18:28:06 2013
+From: c@ @end|ng |rom |ncent|ve-|nve@t|ng@com (Chris)
+Date: Wed, 20 Nov 2013 18:28:06 +0100
+Subject: [R-sig-DB] RODBC sqlSave appends rows from data frame in
+	reverse order
+In-Reply-To: <528CEEF6.9020004@stats.ox.ac.uk>
+References: <001101cee5ff$5d88ca30$189a5e90$@incentive-investing.com>
+	<8761rnhw0z.fsf@enricoschumann.net>
+	<528CEEF6.9020004@stats.ox.ac.uk>
+Message-ID: <000401cee615$e0521320$a0f63960$@incentive-investing.com>
+
+Great, thank you all.
+I will always add "order by" when fetching data into da data frame and
+assume the rows in MySQL might not always be in right order
+
+-----Urspr?ngliche Nachricht-----
+Von: Prof Brian Ripley [mailto:ripley at stats.ox.ac.uk] 
+Gesendet: Mittwoch, 20. November 2013 18:19
+An: Enrico Schumann; Chris
+Cc: r-sig-db at r-project.org
+Betreff: Re: [R-sig-DB] RODBC sqlSave appends rows from data frame in
+reverse order
+
+On 20/11/2013 16:34, Enrico Schumann wrote:
+> On Wed, 20 Nov 2013, "Chris" <cs at incentive-investing.com> writes:
+>
+>> Hi,
+>>
+>> I append rows to a table in MySQL with sqlSave from RODBC package. 
+>> The data frame that is saved is ordered by date ascending (first 
+>> column) as is the table in the DB. When I send the whole data frame 
+>> at once, the data frame is appended in reverse order. That means the 
+>> row with the newest date in the data frame is the first row appended 
+>> to the table, while the row with oldest date will be last row in the 
+>> table. OK, I thought that "append" just orders by date descending and 
+>> that is why the reverse ordering happens. But when I send each row of 
+>> the data frame using a for-loop the result is the same: The first row 
+>> send is the last row in the table, the second row send, is the second
+last row in the table.
+>>
+>> My solution is to run the for loop from last to first row of the data 
+>> frame but I am looking for an explanation why append works like this 
+>> and if it's possible to change this in some setting.
+>>
+>
+> In MySQL, you never have a guarantee in which order the rows will be 
+> retrieved unless you specify it (eg, "SELECT * FROM table ORDER BY 
+> column;").
+
+Nor any other RDBMS: as the RODBC manual does say (on p.6).
+
+>
+> [...]
+>
+>>
+>> Thank you
+>>
+>> Chris
+>>
+>
+
+
+-- 
+Brian D. Ripley,                  ripley at stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+
+From peter@me|@@ner @end|ng |rom un|-kon@t@nz@de  Tue Nov 26 18:02:07 2013
+From: peter@me|@@ner @end|ng |rom un|-kon@t@nz@de (=?ISO-8859-15?Q?Peter_Mei=DFner?=)
+Date: Tue, 26 Nov 2013 18:02:07 +0100
+Subject: [R-sig-DB] RODBC / MySQL magical limit of 32 Kbyte
+Message-ID: <5294D40F.4000404@uni-konstanz.de>
+
+Dear listeners,
+
+I try to use a MySQL database (with RODBC) for storing files. Above a 
+file size of 32 KB I seem to hit a wall and the code below that serves 
+me well otherwise fails to store and retrieve the whole file - only 
+parts come back (although it seems that the whole file was stored in the 
+database).
+
+Is this normal? Does somebody have an idea if this is database related 
+or due to R or RODBC or if my code just is nuts?
+
+Any suggestions for where to look for for a solution are more than welcome.
+
+Best, Peter
+
+
+System:
+R version         2.15.3 (2013-03-01) -- "Security Blanket"
+Platform:         x86_64-w64-mingw32/x64 (64-bit)
+DBMS Version:    "5.6.13"
+Driver_ODBC_Ver: "03.51"
+Driver Name:     "myodbc5w.dll"
+Driver Version:  "05.02.0005"
+
+SQL ot create the table:
+CREATE TABLE files (id INTEGER AUTO_INCREMENT, file longtext, PRIMARY 
+KEY (id));
+
+
+CODE:
+
+# define file for upload
+     fileIn  <- "Hallo1.docx"
+
+# define name of file to store data in
+     fileOut <- "Hallo1Copy.docx"
+
+# read in file
+     dataIn <- readBin(fileIn, what="raw", n=file.info(fileIn)$size)
+
+# collapse string
+     dataInString <- paste(dataIn,collapse="")
+
+# loading package
+     require(RODBC)
+
+# establishing connection
+     con <- odbcConnect("MyDatabase",rows_at_time = 1, believeNRows = FALSE)
+
+# uploading data to column file in table files
+     dataDBString <- dataInString
+     sql <- paste0("INSERT INTO files (file) VALUES ('",dataDBString,"') ;")
+     sqlQuery(con, sql)
+
+# downloading data again
+     res <- sqlQuery(con,
+         "SELECT file FROM files WHERE id = (SELECT max(id) FROM files) ;",
+         stringsAsFactors=F, rows_at_time=1,
+         as.is=T)
+     dataOutString <- res$file
+
+# closing connection
+odbcClose(con)
+
+# splitting data
+dataOut <- substring(   dataOutString,
+                         seq(1, nchar(dataOutString), 2),
+                         seq(2, nchar(dataOutString), 2))
+
+# checking how many bytes of dataIn and dataOut are identical
+# --> there seems to be a magical wall above 32813 bytes (665626 characters)
+print(table(dataIn==dataOut))
+
+# write to file and check if file works
+writeBin(as.raw(as.hexmode(dataOut)) , fileOut)
+browseURL(fileOut)
+
+
+
+From evberghe @end|ng |rom gm@||@com  Wed Nov 27 10:45:58 2013
+From: evberghe @end|ng |rom gm@||@com (Edward Vanden Berghe)
+Date: Wed, 27 Nov 2013 10:45:58 +0100
+Subject: [R-sig-DB] RODBC / MySQL magical limit of 32 Kbyte
+In-Reply-To: <5294D40F.4000404@uni-konstanz.de>
+References: <5294D40F.4000404@uni-konstanz.de>
+Message-ID: <001401ceeb55$7ad4b170$707e1450$@gmail.com>
+
+Hi Peter,
+
+I've had similar problems, with information that got truncated through an RODBC connection - on Windows 64 bits, with RODBC on a PostgreSQL database, with large PostGIS entries. Unfortunately I can't replicate the problem now as I moved on to Ubuntu now. For me the solution was to go to DBI/RPostgreSQL. 
+
+Did you try DBI? Even if you want to stick with RODBC in the future, it might assist in isolating the problem.
+
+Cheers,
+
+Edward
+
+-----Original Message-----
+From: r-sig-db-bounces at r-project.org [mailto:r-sig-db-bounces at r-project.org] On Behalf Of Peter Mei?ner
+Sent: 26 November 2013 18:02
+To: r-sig-db at r-project.org
+Subject: [R-sig-DB] RODBC / MySQL magical limit of 32 Kbyte
+
+Dear listeners,
+
+I try to use a MySQL database (with RODBC) for storing files. Above a file size of 32 KB I seem to hit a wall and the code below that serves me well otherwise fails to store and retrieve the whole file - only parts come back (although it seems that the whole file was stored in the database).
+
+Is this normal? Does somebody have an idea if this is database related or due to R or RODBC or if my code just is nuts?
+
+Any suggestions for where to look for for a solution are more than welcome.
+
+Best, Peter
+
+
+System:
+R version         2.15.3 (2013-03-01) -- "Security Blanket"
+Platform:         x86_64-w64-mingw32/x64 (64-bit)
+DBMS Version:    "5.6.13"
+Driver_ODBC_Ver: "03.51"
+Driver Name:     "myodbc5w.dll"
+Driver Version:  "05.02.0005"
+
+SQL ot create the table:
+CREATE TABLE files (id INTEGER AUTO_INCREMENT, file longtext, PRIMARY KEY (id));
+
+
+CODE:
+
+# define file for upload
+     fileIn  <- "Hallo1.docx"
+
+# define name of file to store data in
+     fileOut <- "Hallo1Copy.docx"
+
+# read in file
+     dataIn <- readBin(fileIn, what="raw", n=file.info(fileIn)$size)
+
+# collapse string
+     dataInString <- paste(dataIn,collapse="")
+
+# loading package
+     require(RODBC)
+
+# establishing connection
+     con <- odbcConnect("MyDatabase",rows_at_time = 1, believeNRows = FALSE)
+
+# uploading data to column file in table files
+     dataDBString <- dataInString
+     sql <- paste0("INSERT INTO files (file) VALUES ('",dataDBString,"') ;")
+     sqlQuery(con, sql)
+
+# downloading data again
+     res <- sqlQuery(con,
+         "SELECT file FROM files WHERE id = (SELECT max(id) FROM files) ;",
+         stringsAsFactors=F, rows_at_time=1,
+         as.is=T)
+     dataOutString <- res$file
+
+# closing connection
+odbcClose(con)
+
+# splitting data
+dataOut <- substring(   dataOutString,
+                         seq(1, nchar(dataOutString), 2),
+                         seq(2, nchar(dataOutString), 2))
+
+# checking how many bytes of dataIn and dataOut are identical
+# --> there seems to be a magical wall above 32813 bytes (665626 characters)
+print(table(dataIn==dataOut))
+
+# write to file and check if file works
+writeBin(as.raw(as.hexmode(dataOut)) , fileOut)
+browseURL(fileOut)
+
+_______________________________________________
+R-sig-DB mailing list -- R Special Interest Group
+R-sig-DB at r-project.org
+https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From peter@me|@@ner @end|ng |rom un|-kon@t@nz@de  Wed Nov 27 15:34:52 2013
+From: peter@me|@@ner @end|ng |rom un|-kon@t@nz@de (=?UTF-8?B?UGV0ZXIgTWVpw59uZXI=?=)
+Date: Wed, 27 Nov 2013 15:34:52 +0100
+Subject: [R-sig-DB] RODBC / MySQL magical limit of 32 Kbyte
+In-Reply-To: <001401ceeb55$7ad4b170$707e1450$@gmail.com>
+References: <5294D40F.4000404@uni-konstanz.de>
+	<001401ceeb55$7ad4b170$707e1450$@gmail.com>
+Message-ID: <5296030C.9050708@uni-konstanz.de>
+
+Thanks for the reply,
+
+I think I found the problem: There seems to be a "sanity check" when 
+downloading information:
+
+if (datalen > 65535) datalen = 65535
+
+If I understand this right, it just truncates each and every download of 
+information above 65535.
+
+So the problem was(is) package related and might be dealt with by 
+recompiling the source:
+
+download source;
+unzip it;
+RStudio->create project->from existing;
+open src/RODBC.c;
+change "if (datalen > 65535) datalen = 65535"
+to "/* if (datalen > 65535) datalen = 65535 */");
+build binary and than install this binary)
+
+so far it works without problems.
+
+Best, Peter
+
+
+PS.: Now that I have learnt to compile packages I might also try to get 
+RMySQL running.
+
+
+Am 27.11.2013 10:45, schrieb Edward Vanden Berghe:
+> Hi Peter,
+>
+> I've had similar problems, with information that got truncated through an RODBC connection - on Windows 64 bits, with RODBC on a PostgreSQL database, with large PostGIS entries. Unfortunately I can't replicate the problem now as I moved on to Ubuntu now. For me the solution was to go to DBI/RPostgreSQL.
+>
+> Did you try DBI? Even if you want to stick with RODBC in the future, it might assist in isolating the problem.
+>
+> Cheers,
+>
+> Edward
+>
+> -----Original Message-----
+> From: r-sig-db-bounces at r-project.org [mailto:r-sig-db-bounces at r-project.org] On Behalf Of Peter Mei?ner
+> Sent: 26 November 2013 18:02
+> To: r-sig-db at r-project.org
+> Subject: [R-sig-DB] RODBC / MySQL magical limit of 32 Kbyte
+>
+> Dear listeners,
+>
+> I try to use a MySQL database (with RODBC) for storing files. Above a file size of 32 KB I seem to hit a wall and the code below that serves me well otherwise fails to store and retrieve the whole file - only parts come back (although it seems that the whole file was stored in the database).
+>
+> Is this normal? Does somebody have an idea if this is database related or due to R or RODBC or if my code just is nuts?
+>
+> Any suggestions for where to look for for a solution are more than welcome.
+>
+> Best, Peter
+>
+>
+> System:
+> R version         2.15.3 (2013-03-01) -- "Security Blanket"
+> Platform:         x86_64-w64-mingw32/x64 (64-bit)
+> DBMS Version:    "5.6.13"
+> Driver_ODBC_Ver: "03.51"
+> Driver Name:     "myodbc5w.dll"
+> Driver Version:  "05.02.0005"
+>
+> SQL ot create the table:
+> CREATE TABLE files (id INTEGER AUTO_INCREMENT, file longtext, PRIMARY KEY (id));
+>
+>
+> CODE:
+>
+> # define file for upload
+>       fileIn  <- "Hallo1.docx"
+>
+> # define name of file to store data in
+>       fileOut <- "Hallo1Copy.docx"
+>
+> # read in file
+>       dataIn <- readBin(fileIn, what="raw", n=file.info(fileIn)$size)
+>
+> # collapse string
+>       dataInString <- paste(dataIn,collapse="")
+>
+> # loading package
+>       require(RODBC)
+>
+> # establishing connection
+>       con <- odbcConnect("MyDatabase",rows_at_time = 1, believeNRows = FALSE)
+>
+> # uploading data to column file in table files
+>       dataDBString <- dataInString
+>       sql <- paste0("INSERT INTO files (file) VALUES ('",dataDBString,"') ;")
+>       sqlQuery(con, sql)
+>
+> # downloading data again
+>       res <- sqlQuery(con,
+>           "SELECT file FROM files WHERE id = (SELECT max(id) FROM files) ;",
+>           stringsAsFactors=F, rows_at_time=1,
+>           as.is=T)
+>       dataOutString <- res$file
+>
+> # closing connection
+> odbcClose(con)
+>
+> # splitting data
+> dataOut <- substring(   dataOutString,
+>                           seq(1, nchar(dataOutString), 2),
+>                           seq(2, nchar(dataOutString), 2))
+>
+> # checking how many bytes of dataIn and dataOut are identical
+> # --> there seems to be a magical wall above 32813 bytes (665626 characters)
+> print(table(dataIn==dataOut))
+>
+> # write to file and check if file works
+> writeBin(as.raw(as.hexmode(dataOut)) , fileOut)
+> browseURL(fileOut)
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+-- 
+Peter Mei?ner
+Workgroup 'Comparative Parliamentary Politics'
+Department of Politics and Administration
+University of Konstanz
+Box 216
+78457 Konstanz
+Germany
+
++49 7531 88 5665
+http://www.polver.uni-konstanz.de/sieberer/home/
+
+
+
+From evberghe @end|ng |rom gm@||@com  Sun Dec  1 15:20:26 2013
+From: evberghe @end|ng |rom gm@||@com (Edward Vanden Berghe)
+Date: Sun, 1 Dec 2013 15:20:26 +0100
+Subject: [R-sig-DB] unexplained error in response to 'copy' command
+Message-ID: <000001ceeea0$7c4d93c0$74e8bb40$@gmail.com>
+
+Dear all,
+
+ 
+
+I wanted to write the contents of a PostgreSQL table to a csv file; this is the code I used:
+
+ 
+
+sql <- paste("set search_path to testschema; ",
+
+                                "copy testtable to '/home/evberghe/testdirectory/testfile.csv' ",
+
+                                "with (format csv, delimiter ',', header true, quote '\"');",
+
+                                sep="")
+
+dbSendQuery(con, s)
+
+ 
+
+In R I get the response:
+
+ 
+
+Error in postgresqlExecStatement(conn, statement, ...) : 
+
+  RS-DBI driver: (could not Retrieve the result : ERROR:  syntax error at or near "testtable"
+
+LINE 1: testtable
+
+        ^
+
+)
+
+ 
+
+The exact same sql statement runs fine if I run it from pgAdmin. Other SQL commands work fine, so no problem with the connection. I set the permissions to the directory for anyone to read and write from/to the destination directory. Any idea of what might cause the problem?
+
+ 
+
+I am using R version 3.0.2 though StatET (but a plain vanilla R terminal gives the same result). SessionInfo() is 
+
+ 
+
+R version 3.0.2 (2013-09-25)
+
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+ 
+
+locale:
+
+[1] LC_CTYPE=en_US.UTF-8          LC_NUMERIC=C                  LC_TIME=en_US.UTF-8          
+
+ [4] LC_COLLATE=en_US.UTF-8        LC_MONETARY=en_US.UTF-8       LC_MESSAGES=en_US.UTF-8      
+
+ [7] LC_PAPER=en_US.UTF-8          LC_NAME=en_US.UTF-8           LC_ADDRESS=en_US.UTF-8       
+
+[10] LC_TELEPHONE=en_US.UTF-8      LC_MEASUREMENT=en_US.UTF-8    LC_IDENTIFICATION=en_US.UTF-8
+
+ 
+
+attached base packages:
+
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+ 
+
+other attached packages:
+
+[1] RPostgreSQL_0.4 DBI_0.2-7       rj_1.1.3-1     
+
+ 
+
+loaded via a namespace (and not attached):
+
+[1] rj.gd_1.1.3-1 tools_3.0.2  
+
+ 
+
+PostgreSQL is version 9.1.10; Ubuntu is 12.04.3
+
+ 
+
+ 
+
+Edward
+
+
+	[[alternative HTML version deleted]]
+
+
+
+From j@me@@d@v|d@@m|th @end|ng |rom gm@||@com  Sun Dec  1 15:37:02 2013
+From: j@me@@d@v|d@@m|th @end|ng |rom gm@||@com (James David Smith)
+Date: Sun, 1 Dec 2013 14:37:02 +0000
+Subject: [R-sig-DB] unexplained error in response to 'copy' command
+In-Reply-To: <000001ceeea0$7c4d93c0$74e8bb40$@gmail.com>
+References: <000001ceeea0$7c4d93c0$74e8bb40$@gmail.com>
+Message-ID: <CAMu32AC2vYXcaiiNPt_TB3Vsa+vZuUHD-20n+0sztWovwUkueg@mail.gmail.com>
+
+Does this work?
+
+dbSendQuery(con, "copy testtable to
+'/home/evberghe/testdirectory/testfile.csv' format csv delimiter ','
+header=true  quote '\"')
+
+
+
+
+On 1 Dec 2013 14:20, "Edward Vanden Berghe" <evberghe at gmail.com> wrote:
+
+> Dear all,
+>
+>
+>
+> I wanted to write the contents of a PostgreSQL table to a csv file; this
+> is the code I used:
+>
+>
+>
+> sql <- paste("set search_path to testschema; ",
+>
+>                                 "copy testtable to
+> '/home/evberghe/testdirectory/testfile.csv' ",
+>
+>                                 "with (format csv, delimiter ',', header
+> true, quote '\"');",
+>
+>                                 sep="")
+>
+> dbSendQuery(con, s)
+>
+>
+>
+> In R I get the response:
+>
+>
+>
+> Error in postgresqlExecStatement(conn, statement, ...) :
+>
+>   RS-DBI driver: (could not Retrieve the result : ERROR:  syntax error at
+> or near "testtable"
+>
+> LINE 1: testtable
+>
+>         ^
+>
+> )
+>
+>
+>
+> The exact same sql statement runs fine if I run it from pgAdmin. Other SQL
+> commands work fine, so no problem with the connection. I set the
+> permissions to the directory for anyone to read and write from/to the
+> destination directory. Any idea of what might cause the problem?
+>
+>
+>
+> I am using R version 3.0.2 though StatET (but a plain vanilla R terminal
+> gives the same result). SessionInfo() is
+>
+>
+>
+> R version 3.0.2 (2013-09-25)
+>
+> Platform: x86_64-pc-linux-gnu (64-bit)
+>
+>
+>
+> locale:
+>
+> [1] LC_CTYPE=en_US.UTF-8          LC_NUMERIC=C
+>  LC_TIME=en_US.UTF-8
+>
+>  [4] LC_COLLATE=en_US.UTF-8        LC_MONETARY=en_US.UTF-8
+> LC_MESSAGES=en_US.UTF-8
+>
+>  [7] LC_PAPER=en_US.UTF-8          LC_NAME=en_US.UTF-8
+> LC_ADDRESS=en_US.UTF-8
+>
+> [10] LC_TELEPHONE=en_US.UTF-8      LC_MEASUREMENT=en_US.UTF-8
+>  LC_IDENTIFICATION=en_US.UTF-8
+>
+>
+>
+> attached base packages:
+>
+> [1] stats     graphics  grDevices utils     datasets  methods   base
+>
+>
+>
+> other attached packages:
+>
+> [1] RPostgreSQL_0.4 DBI_0.2-7       rj_1.1.3-1
+>
+>
+>
+> loaded via a namespace (and not attached):
+>
+> [1] rj.gd_1.1.3-1 tools_3.0.2
+>
+>
+>
+> PostgreSQL is version 9.1.10; Ubuntu is 12.04.3
+>
+>
+>
+>
+>
+> Edward
+>
+>
+>         [[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From evberghe @end|ng |rom gm@||@com  Sun Dec  1 16:18:17 2013
+From: evberghe @end|ng |rom gm@||@com (Edward Vanden Berghe)
+Date: Sun, 1 Dec 2013 16:18:17 +0100
+Subject: [R-sig-DB] unexplained error in response to 'copy' command
+In-Reply-To: <CAMu32AC2vYXcaiiNPt_TB3Vsa+vZuUHD-20n+0sztWovwUkueg@mail.gmail.com>
+References: <000001ceeea0$7c4d93c0$74e8bb40$@gmail.com>
+	<CAMu32AC2vYXcaiiNPt_TB3Vsa+vZuUHD-20n+0sztWovwUkueg@mail.gmail.com>
+Message-ID: <000d01ceeea8$91291c30$b37b5490$@gmail.com>
+
+Hi James,
+
+Thanks for your quick response.
+
+The format of the options of the copy command was changed some time ago; your suggestion does not work; the one in my original post does.
+
+In the mean time I found the source of the problem - nothing to do with DBI or PostgreSQL, but a mistake in my code.
+
+Cheers,
+
+Edward
+
+From: James David Smith [mailto:james.david.smith at gmail.com] 
+Sent: 01 December 2013 15:37
+To: Edward Vanden Berghe
+Cc: r-sig-db at r-project.org
+Subject: Re: [R-sig-DB] unexplained error in response to 'copy' command
+
+Does this work?
+dbSendQuery(con, "copy testtable to '/home/evberghe/testdirectory/testfile.csv' format csv delimiter ',' header=true  quote '\"')
+
+
+
+On 1 Dec 2013 14:20, "Edward Vanden Berghe" <evberghe at gmail.com> wrote:
+Dear all,
+
+
+
+I wanted to write the contents of a PostgreSQL table to a csv file; this is the code I used:
+
+
+
+sql <- paste("set search_path to testschema; ",
+
+                                "copy testtable to '/home/evberghe/testdirectory/testfile.csv' ",
+
+                                "with (format csv, delimiter ',', header true, quote '\"');",
+
+                                sep="")
+
+dbSendQuery(con, s)
+
+
+
+In R I get the response:
+
+
+
+Error in postgresqlExecStatement(conn, statement, ...) :
+
+  RS-DBI driver: (could not Retrieve the result : ERROR:  syntax error at or near "testtable"
+
+LINE 1: testtable
+
+        ^
+
+)
+
+
+
+The exact same sql statement runs fine if I run it from pgAdmin. Other SQL commands work fine, so no problem with the connection. I set the permissions to the directory for anyone to read and write from/to the destination directory. Any idea of what might cause the problem?
+
+
+
+I am using R version 3.0.2 though StatET (but a plain vanilla R terminal gives the same result). SessionInfo() is
+
+
+
+R version 3.0.2 (2013-09-25)
+
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+
+
+locale:
+
+[1] LC_CTYPE=en_US.UTF-8          LC_NUMERIC=C                  LC_TIME=en_US.UTF-8
+
+ [4] LC_COLLATE=en_US.UTF-8        LC_MONETARY=en_US.UTF-8       LC_MESSAGES=en_US.UTF-8
+
+ [7] LC_PAPER=en_US.UTF-8          LC_NAME=en_US.UTF-8           LC_ADDRESS=en_US.UTF-8
+
+[10] LC_TELEPHONE=en_US.UTF-8      LC_MEASUREMENT=en_US.UTF-8    LC_IDENTIFICATION=en_US.UTF-8
+
+
+
+attached base packages:
+
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+
+
+other attached packages:
+
+[1] RPostgreSQL_0.4 DBI_0.2-7       rj_1.1.3-1
+
+
+
+loaded via a namespace (and not attached):
+
+[1] rj.gd_1.1.3-1 tools_3.0.2
+
+
+
+PostgreSQL is version 9.1.10; Ubuntu is 12.04.3
+
+
+
+
+
+Edward
+
+
+        [[alternative HTML version deleted]]
+
+_______________________________________________
+R-sig-DB mailing list -- R Special Interest Group
+R-sig-DB at r-project.org
+https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From cu||nov|c@dom@goj @end|ng |rom gm@||@com  Fri Dec  6 10:08:44 2013
+From: cu||nov|c@dom@goj @end|ng |rom gm@||@com (Domagoj Culinovic)
+Date: Fri, 6 Dec 2013 10:08:44 +0100
+Subject: [R-sig-DB] R and MS SQL Spatial
+Message-ID: <CACgt3o=7WRCwj+7ojQcLgVg-DrCrFQm3whEemBsuOwCdUKORaQ@mail.gmail.com>
+
+I have a lot of spatial and statistical data stored in MS SQL Spatial. Now
+i am using web-gis server to produce thematic maps, but for better analyses
+i need R.
+Can someone help me to find solution for MS SQL Spatial. Some examples code
+will be welcome too, because i am new in R.
+
+	[[alternative HTML version deleted]]
+
+
+
+From m@d|@z| @end|ng |rom gm@||@com  Fri Dec  6 10:35:10 2013
+From: m@d|@z| @end|ng |rom gm@||@com (Andres Diaz)
+Date: Fri, 6 Dec 2013 10:35:10 +0100
+Subject: [R-sig-DB] [R-sig-Geo] R and MS SQL Spatial
+In-Reply-To: <CACgt3o=7WRCwj+7ojQcLgVg-DrCrFQm3whEemBsuOwCdUKORaQ@mail.gmail.com>
+References: <CACgt3o=7WRCwj+7ojQcLgVg-DrCrFQm3whEemBsuOwCdUKORaQ@mail.gmail.com>
+Message-ID: <CAMXOh=0QtH8BikHcA4BCRGzOhjmdboAuW2tov0-hgtwVLcsiXw@mail.gmail.com>
+
+I had used MySQL instead of MSSQL and its very similar. i recomend you to
+use this database programm because you can download and install a R package
+that allows you to connect your database and R program.
+
+The name of the R package is RMySQL, if you want I Can provide you with
+some hydrometeorological examples focused on rainfall and dicharge flow
+data series. (How to connect etc..)
+
+Once you can acquire your information from the database you can start to
+play with severals statistical/spatial packages builded in R.
+
+Best regards,
+
+
+
+M. Andr?s D?az L.
+Phd. Candidate
+Sediment Transport Research Group
+Barcelona Tech
+Tel.:+34 934054196
+www.gits.ws
+
+
+El viernes, 6 de diciembre de 2013, Domagoj Culinovic escribi?:
+
+> I have a lot of spatial and statistical data stored in MS SQL Spatial. Now
+> i am using web-gis server to produce thematic maps, but for better analyses
+> i need R.
+> Can someone help me to find solution for MS SQL Spatial. Some examples code
+> will be welcome too, because i am new in R.
+>
+>         [[alternative HTML version deleted]]
+>
+> _______________________________________________
+> R-sig-Geo mailing list
+> R-sig-Geo at r-project.org <javascript:;>
+> https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+>
+
+	[[alternative HTML version deleted]]
+
+
+
+From Roger@B|v@nd @end|ng |rom nhh@no  Fri Dec  6 10:37:49 2013
+From: Roger@B|v@nd @end|ng |rom nhh@no (Roger Bivand)
+Date: Fri, 6 Dec 2013 10:37:49 +0100
+Subject: [R-sig-DB] [R-sig-Geo] R and MS SQL Spatial
+In-Reply-To: <CACgt3o=7WRCwj+7ojQcLgVg-DrCrFQm3whEemBsuOwCdUKORaQ@mail.gmail.com>
+References: <CACgt3o=7WRCwj+7ojQcLgVg-DrCrFQm3whEemBsuOwCdUKORaQ@mail.gmail.com>
+Message-ID: <alpine.LRH.2.03.1312061025090.26376@reclus.nhh.no>
+
+On Fri, 6 Dec 2013, Domagoj Culinovic wrote:
+
+> I have a lot of spatial and statistical data stored in MS SQL Spatial. Now
+> i am using web-gis server to produce thematic maps, but for better analyses
+> i need R.
+> Can someone help me to find solution for MS SQL Spatial. Some examples code
+> will be welcome too, because i am new in R.
+>
+
+If you are using Windows, and have installed the rgdal CRAN Windows binary 
+package, then the correct driver should be available. The driver should 
+work as desrcibed in OGR:
+
+http://www.gdal.org/ogr/drv_mssqlspatial.html
+
+On loading rgdal, look for MSSQLSpatial in:
+
+library(rgdal)
+ogrDrivers()
+
+You may need to proceed by trial and error to find the incantation for 
+dsn= and layer= in ogrInfo() and readOGR() to access your data. Maybe try 
+ogrListLayers() with your supposed dsn= first to see which layers are 
+reported. I don't use this driver, so advice from others who do would be 
+very useful.
+
+Hope this helps,
+
+Roger
+
+> 	[[alternative HTML version deleted]]
+
+PS: only post plain text please! HTML mail is larger in size and can 
+contain bad payloads that consume energy to remove. This is a low-carbon 
+footprint list.
+
+>
+> _______________________________________________
+> R-sig-Geo mailing list
+> R-sig-Geo at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand at nhh.no
+
+
+
+From b@row||ng@on @end|ng |rom |@nc@@ter@@c@uk  Fri Dec  6 11:17:45 2013
+From: b@row||ng@on @end|ng |rom |@nc@@ter@@c@uk (Barry Rowlingson)
+Date: Fri, 6 Dec 2013 10:17:45 +0000
+Subject: [R-sig-DB] [R-sig-Geo] R and MS SQL Spatial
+In-Reply-To: <4f76d403e3b1466a8e16a1fc95cff49d@EX-1-HT0.lancs.local>
+References: <4f76d403e3b1466a8e16a1fc95cff49d@EX-1-HT0.lancs.local>
+Message-ID: <CANVKczPzDB6YVFrrJR_QedfDT8aK2aadVRXhvJDLCENZX4xS=g@mail.gmail.com>
+
+On Fri, Dec 6, 2013 at 9:08 AM, Domagoj Culinovic
+<culinovic.domagoj at gmail.com> wrote:
+> I have a lot of spatial and statistical data stored in MS SQL Spatial. Now
+> i am using web-gis server to produce thematic maps, but for better analyses
+> i need R.
+> Can someone help me to find solution for MS SQL Spatial. Some examples code
+> will be welcome too, because i am new in R.
+
+Access to spatial data in R is best done using the rgdal package,
+which uses the C library GDAL to access different types of spatial
+data store - shapefiles, Mapinfo files, GML etc.
+
+If you can install GDAL with support for MS SQL Spatial then you can
+read your data using `readOGR` from the `rgdal` package. Install the
+rgdal package, do require(rgdal);ogrDrivers() to get a list of drivers
+that your rgdal package has. If it includes MSSQLSpatial then you may
+be sorted. Mine does, and I'm not even running Windows, which
+surprised me and I fell off my chair:
+
+ > any(ogrDrivers()$name == "MSSQLSpatial")
+ [1] TRUE
+
+The next problem is simply working out the exact form of the
+connection string (the "dsn") to the database so that it can pass your
+server name, username, and password, and database name. The GDAL guide
+might help:
+
+http://www.gdal.org/ogr/drv_mssqlspatial.html
+
+but I don't have a server I can experiment with.
+
+[Someone has just suggested switching to MySQL, which is probably a
+bit pointless - you'd be better off switching to PostGIS]
+
+Barry
+
+
+
+From p@@j@i@ m@iii@g oii gm@ii@com  Fri Dec  6 10:54:05 2013
+From: p@@j@i@ m@iii@g oii gm@ii@com (p@@j@i@ m@iii@g oii gm@ii@com)
+Date: Fri, 6 Dec 2013 10:54:05 +0100
+Subject: [R-sig-DB] [R-sig-Geo] R and MS SQL Spatial
+In-Reply-To: <CAMXOh=0QtH8BikHcA4BCRGzOhjmdboAuW2tov0-hgtwVLcsiXw@mail.gmail.com>
+References: <CACgt3o=7WRCwj+7ojQcLgVg-DrCrFQm3whEemBsuOwCdUKORaQ@mail.gmail.com>
+	<CAMXOh=0QtH8BikHcA4BCRGzOhjmdboAuW2tov0-hgtwVLcsiXw@mail.gmail.com>
+Message-ID: <11693D5D-1F5E-420F-A833-5B208A29882D@gmail.com>
+
+If I have only dbf format of those data base can I use them in R with the same codes of hydrometeorological example? Plz provide some example I'm new in R.
+
+Sent from Brishti's iPhone
+
+> On 06.12.2013, at 10:35, Andres Diaz <madiazl at gmail.com> wrote:
+> 
+> I had used MySQL instead of MSSQL and its very similar. i recomend you to
+> use this database programm because you can download and install a R package
+> that allows you to connect your database and R program.
+> 
+> The name of the R package is RMySQL, if you want I Can provide you with
+> some hydrometeorological examples focused on rainfall and dicharge flow
+> data series. (How to connect etc..)
+> 
+> Once you can acquire your information from the database you can start to
+> play with severals statistical/spatial packages builded in R.
+> 
+> Best regards,
+> 
+> 
+> 
+> M. Andr??s D??az L.
+> Phd. Candidate
+> Sediment Transport Research Group
+> Barcelona Tech
+> Tel.:+34 934054196
+> www.gits.ws
+> 
+> 
+> El viernes, 6 de diciembre de 2013, Domagoj Culinovic escribi??:
+> 
+>> I have a lot of spatial and statistical data stored in MS SQL Spatial. Now
+>> i am using web-gis server to produce thematic maps, but for better analyses
+>> i need R.
+>> Can someone help me to find solution for MS SQL Spatial. Some examples code
+>> will be welcome too, because i am new in R.
+>> 
+>>        [[alternative HTML version deleted]]
+>> 
+>> _______________________________________________
+>> R-sig-Geo mailing list
+>> R-sig-Geo at r-project.org <javascript:;>
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+> 
+>    [[alternative HTML version deleted]]
+> 
+> _______________________________________________
+> R-sig-Geo mailing list
+> R-sig-Geo at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+
+	[[alternative HTML version deleted]]
+
+
+
+From t|m+r-project@org @end|ng |rom coote@org  Fri Dec 20 14:07:29 2013
+From: t|m+r-project@org @end|ng |rom coote@org (Tim Coote)
+Date: Fri, 20 Dec 2013 13:07:29 +0000
+Subject: [R-sig-DB] data type mapping for RMySQL
+Message-ID: <B6A0874B-A8F0-4D19-81C3-3B144855DF47@coote.org>
+
+Hullo
+
+I?m not sure whether this is a bug, but I would expect some sort of warning where mappings may lose precision.
+
+I?ve got a mysql table with large numbers in it:
+
+CREATE TABLE if not exists `tester` (
+      `id` bigint(20) NOT NULL AUTO_INCREMENT,
+      `address` bigint(20) NOT NULL,
+      PRIMARY KEY (`id`),
+      UNIQUE KEY `idx_address` (`address`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=78628 DEFAULT CHARSET=latin1 ;
+
+The key aspect of this is that the ?address? column needs to be used to distinguish between values. If I put one value into this table, and read it back with the mysql client:
+
+mysql> \. test.sql
+Query OK, 1 row affected, 1 warning (0.00 sec)
+
+Database changed
+Query OK, 0 rows affected (0.05 sec)
+
+Query OK, 1 row affected (0.01 sec)
+
++---------------------+
+| address             |
++---------------------+
+| 2029716610205351937 |
++---------------------+
+1 row in set (0.00 sec)
+
+But if I try to read the value using R:
+> library(RMySQL)
+Loading required package: DBI
+> options(digits=20)
+> 
+> hubdb <- dbConnect("MySQL", username="root", host="localhost", password="dummy", dbname="dummy" )
+> q = sprintf("select * from tester;")
+> 
+> 
+> testvals <- fetch(dbSendQuery(hubdb, q), n=-1)
+> 
+> print (testvals)
+              address
+1 2029716610205351936
+> 
+> 
+Note that the address value is different
+
+The issue is that the precision of the sql type (20 decimal characters) is larger than the precision of the R type that it?s been matched to.  I don?t know whether this is a bug or not - it would have help to have a warning about the possible precision mismatch, rather than to spot the emerging bug ;-) - that aside, is there a simple way to map the bigint type to something else, eg for this situation, character would do. I know that I can cast the type in the sql query, but I?d prefer to set the mapping at a more global scope if I could in the data definition.
+
+tia
+
+Tim
+
+
+From pg||bert902 @end|ng |rom gm@||@com  Fri Dec 20 16:28:12 2013
+From: pg||bert902 @end|ng |rom gm@||@com (Paul Gilbert)
+Date: Fri, 20 Dec 2013 10:28:12 -0500
+Subject: [R-sig-DB] data type mapping for RMySQL
+In-Reply-To: <B6A0874B-A8F0-4D19-81C3-3B144855DF47@coote.org>
+References: <B6A0874B-A8F0-4D19-81C3-3B144855DF47@coote.org>
+Message-ID: <52B4620C.3060003@gmail.com>
+
+Just for the record, this also happens in Postgresql, so the problem is 
+more general. (I tried testing in SQLite but my standalone client seems 
+to be encrypting the db and RSQLite cannot use it.) I'm not sure there 
+is a solution to this as I do not immediately see how to represent 
+bigint in R.
+
+Generic SQL example:
+
+ >mysql test
+ >psql  test
+ >sqlite test
+
+[ DROP TABLE tester; ]
+
+CREATE TABLE  tester (
+       id bigint NOT NULL,
+       address bigint NOT NULL
+     ) ;
+
+INSERT INTO tester VALUES (1, 2029716610205351937);
+
+SELECT * FROM tester ;
+
+gives
+   1 | 2029716610205351937
+in mysql, psql, and sqlite
+
+( exit; /q or .quit )
+(later DROP TABLE tester;)
+
+
+ >R
+
+require("RMySQL")
+hubdb <- dbConnect("MySQL", dbname="test" )
+print(fetch(dbSendQuery(hubdb, "select * from tester;"), n=-1), digits=20)
+
+RMySQL gives
+   id             address
+1  1 2029716610205351936
+
+
+require("RPostgreSQL")
+hubdb <- dbConnect("PostgreSQL", dbname="test" )
+print(fetch(dbSendQuery(hubdb, "select * from tester;"), n=-1), digits=20)
+RPostgreSQL gives
+   id             address
+1  1 2029716610205351936
+
+
+Paul
+
+
+On 13-12-20 08:07 AM, Tim Coote wrote:
+> Hullo
+>
+> I?m not sure whether this is a bug, but I would expect some sort of warning where mappings may lose precision.
+>
+> I?ve got a mysql table with large numbers in it:
+>
+> CREATE TABLE if not exists `tester` (
+>        `id` bigint(20) NOT NULL AUTO_INCREMENT,
+>        `address` bigint(20) NOT NULL,
+>        PRIMARY KEY (`id`),
+>        UNIQUE KEY `idx_address` (`address`)
+>      ) ENGINE=InnoDB AUTO_INCREMENT=78628 DEFAULT CHARSET=latin1 ;
+>
+> The key aspect of this is that the ?address? column needs to be used to distinguish between values. If I put one value into this table, and read it back with the mysql client:
+>
+> mysql> \. test.sql
+> Query OK, 1 row affected, 1 warning (0.00 sec)
+>
+> Database changed
+> Query OK, 0 rows affected (0.05 sec)
+>
+> Query OK, 1 row affected (0.01 sec)
+>
+> +---------------------+
+> | address             |
+> +---------------------+
+> | 2029716610205351937 |
+> +---------------------+
+> 1 row in set (0.00 sec)
+>
+> But if I try to read the value using R:
+>> library(RMySQL)
+> Loading required package: DBI
+>> options(digits=20)
+>>
+>> hubdb <- dbConnect("MySQL", username="root", host="localhost", password="dummy", dbname="dummy" )
+>> q = sprintf("select * from tester;")
+>>
+>>
+>> testvals <- fetch(dbSendQuery(hubdb, q), n=-1)
+>>
+>> print (testvals)
+>                address
+> 1 2029716610205351936
+>>
+>>
+> Note that the address value is different
+>
+> The issue is that the precision of the sql type (20 decimal characters) is larger than the precision of the R type that it?s been matched to.  I don?t know whether this is a bug or not - it would have help to have a warning about the possible precision mismatch, rather than to spot the emerging bug ;-) - that aside, is there a simple way to map the bigint type to something else, eg for this situation, character would do. I know that I can cast the type in the sql query, but I?d prefer to set the mapping at a more global scope if I could in the data definition.
+>
+> tia
+>
+> Tim
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+
+
+
+From jho|tm@n @end|ng |rom gm@||@com  Fri Dec 20 16:38:12 2013
+From: jho|tm@n @end|ng |rom gm@||@com (jim holtman)
+Date: Fri, 20 Dec 2013 10:38:12 -0500
+Subject: [R-sig-DB] data type mapping for RMySQL
+In-Reply-To: <52B4620C.3060003@gmail.com>
+References: <B6A0874B-A8F0-4D19-81C3-3B144855DF47@coote.org>
+	<52B4620C.3060003@gmail.com>
+Message-ID: <CAAxdm-6Z1jKDjSjgdgg=kw3RguYYRf9bx861ZQMkeBgH2oooXQ@mail.gmail.com>
+
+There is no direct mapping for a 'bigint' that has 20 digits.  The
+floating point in R (and in any other language used on your computer
+with IEEE floating point) is limited to about 15 digits.  In the cases
+where I have had to process this type of numeric data, I have had it
+read in as a character value.  This means that I cannot do arithmetic
+on it, but at least I can compare it to other values correctly.  This
+is a variation of FAQ 7.31.
+
+Jim Holtman
+Data Munger Guru
+
+What is the problem that you are trying to solve?
+Tell me what you want to do, not how you want to do it.
+
+
+On Fri, Dec 20, 2013 at 10:28 AM, Paul Gilbert <pgilbert902 at gmail.com> wrote:
+> Just for the record, this also happens in Postgresql, so the problem is more
+> general. (I tried testing in SQLite but my standalone client seems to be
+> encrypting the db and RSQLite cannot use it.) I'm not sure there is a
+> solution to this as I do not immediately see how to represent bigint in R.
+>
+> Generic SQL example:
+>
+>>mysql test
+>>psql  test
+>>sqlite test
+>
+> [ DROP TABLE tester; ]
+>
+> CREATE TABLE  tester (
+>       id bigint NOT NULL,
+>       address bigint NOT NULL
+>     ) ;
+>
+> INSERT INTO tester VALUES (1, 2029716610205351937);
+>
+> SELECT * FROM tester ;
+>
+> gives
+>   1 | 2029716610205351937
+> in mysql, psql, and sqlite
+>
+> ( exit; /q or .quit )
+> (later DROP TABLE tester;)
+>
+>
+>>R
+>
+> require("RMySQL")
+> hubdb <- dbConnect("MySQL", dbname="test" )
+> print(fetch(dbSendQuery(hubdb, "select * from tester;"), n=-1), digits=20)
+>
+> RMySQL gives
+>   id             address
+> 1  1 2029716610205351936
+>
+>
+> require("RPostgreSQL")
+> hubdb <- dbConnect("PostgreSQL", dbname="test" )
+> print(fetch(dbSendQuery(hubdb, "select * from tester;"), n=-1), digits=20)
+> RPostgreSQL gives
+>   id             address
+> 1  1 2029716610205351936
+>
+>
+> Paul
+>
+>
+>
+> On 13-12-20 08:07 AM, Tim Coote wrote:
+>>
+>> Hullo
+>>
+>> I?m not sure whether this is a bug, but I would expect some sort of
+>> warning where mappings may lose precision.
+>>
+>> I?ve got a mysql table with large numbers in it:
+>>
+>> CREATE TABLE if not exists `tester` (
+>>        `id` bigint(20) NOT NULL AUTO_INCREMENT,
+>>        `address` bigint(20) NOT NULL,
+>>        PRIMARY KEY (`id`),
+>>        UNIQUE KEY `idx_address` (`address`)
+>>      ) ENGINE=InnoDB AUTO_INCREMENT=78628 DEFAULT CHARSET=latin1 ;
+>>
+>> The key aspect of this is that the ?address? column needs to be used to
+>> distinguish between values. If I put one value into this table, and read it
+>> back with the mysql client:
+>>
+>> mysql> \. test.sql
+>> Query OK, 1 row affected, 1 warning (0.00 sec)
+>>
+>> Database changed
+>> Query OK, 0 rows affected (0.05 sec)
+>>
+>> Query OK, 1 row affected (0.01 sec)
+>>
+>> +---------------------+
+>> | address             |
+>> +---------------------+
+>> | 2029716610205351937 |
+>> +---------------------+
+>> 1 row in set (0.00 sec)
+>>
+>> But if I try to read the value using R:
+>>>
+>>> library(RMySQL)
+>>
+>> Loading required package: DBI
+>>>
+>>> options(digits=20)
+>>>
+>>> hubdb <- dbConnect("MySQL", username="root", host="localhost",
+>>> password="dummy", dbname="dummy" )
+>>> q = sprintf("select * from tester;")
+>>>
+>>>
+>>> testvals <- fetch(dbSendQuery(hubdb, q), n=-1)
+>>>
+>>> print (testvals)
+>>
+>>                address
+>> 1 2029716610205351936
+>>>
+>>>
+>>>
+>> Note that the address value is different
+>>
+>> The issue is that the precision of the sql type (20 decimal characters) is
+>> larger than the precision of the R type that it?s been matched to.  I don?t
+>> know whether this is a bug or not - it would have help to have a warning
+>> about the possible precision mismatch, rather than to spot the emerging bug
+>> ;-) - that aside, is there a simple way to map the bigint type to something
+>> else, eg for this situation, character would do. I know that I can cast the
+>> type in the sql query, but I?d prefer to set the mapping at a more global
+>> scope if I could in the data definition.
+>>
+>> tia
+>>
+>> Tim
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at r-project.org
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+From h@w|ckh@m @end|ng |rom gm@||@com  Fri Dec 20 19:04:21 2013
+From: h@w|ckh@m @end|ng |rom gm@||@com (Hadley Wickham)
+Date: Fri, 20 Dec 2013 10:04:21 -0800
+Subject: [R-sig-DB] data type mapping for RMySQL
+In-Reply-To: <CAAxdm-6Z1jKDjSjgdgg=kw3RguYYRf9bx861ZQMkeBgH2oooXQ@mail.gmail.com>
+References: <B6A0874B-A8F0-4D19-81C3-3B144855DF47@coote.org>
+	<52B4620C.3060003@gmail.com>
+	<CAAxdm-6Z1jKDjSjgdgg=kw3RguYYRf9bx861ZQMkeBgH2oooXQ@mail.gmail.com>
+Message-ID: <CABdHhvFy_3pEGj=Go9GDU6swJUGUAsyNmvtFrHOoE1+8qRnprA@mail.gmail.com>
+
+I don't think there's anyway to preserve precision here, but the R
+client should at least give a warning that this is happening.
+
+Hadley
+
+On Fri, Dec 20, 2013 at 7:38 AM, jim holtman <jholtman at gmail.com> wrote:
+> There is no direct mapping for a 'bigint' that has 20 digits.  The
+> floating point in R (and in any other language used on your computer
+> with IEEE floating point) is limited to about 15 digits.  In the cases
+> where I have had to process this type of numeric data, I have had it
+> read in as a character value.  This means that I cannot do arithmetic
+> on it, but at least I can compare it to other values correctly.  This
+> is a variation of FAQ 7.31.
+>
+> Jim Holtman
+> Data Munger Guru
+>
+> What is the problem that you are trying to solve?
+> Tell me what you want to do, not how you want to do it.
+>
+>
+> On Fri, Dec 20, 2013 at 10:28 AM, Paul Gilbert <pgilbert902 at gmail.com> wrote:
+>> Just for the record, this also happens in Postgresql, so the problem is more
+>> general. (I tried testing in SQLite but my standalone client seems to be
+>> encrypting the db and RSQLite cannot use it.) I'm not sure there is a
+>> solution to this as I do not immediately see how to represent bigint in R.
+>>
+>> Generic SQL example:
+>>
+>>>mysql test
+>>>psql  test
+>>>sqlite test
+>>
+>> [ DROP TABLE tester; ]
+>>
+>> CREATE TABLE  tester (
+>>       id bigint NOT NULL,
+>>       address bigint NOT NULL
+>>     ) ;
+>>
+>> INSERT INTO tester VALUES (1, 2029716610205351937);
+>>
+>> SELECT * FROM tester ;
+>>
+>> gives
+>>   1 | 2029716610205351937
+>> in mysql, psql, and sqlite
+>>
+>> ( exit; /q or .quit )
+>> (later DROP TABLE tester;)
+>>
+>>
+>>>R
+>>
+>> require("RMySQL")
+>> hubdb <- dbConnect("MySQL", dbname="test" )
+>> print(fetch(dbSendQuery(hubdb, "select * from tester;"), n=-1), digits=20)
+>>
+>> RMySQL gives
+>>   id             address
+>> 1  1 2029716610205351936
+>>
+>>
+>> require("RPostgreSQL")
+>> hubdb <- dbConnect("PostgreSQL", dbname="test" )
+>> print(fetch(dbSendQuery(hubdb, "select * from tester;"), n=-1), digits=20)
+>> RPostgreSQL gives
+>>   id             address
+>> 1  1 2029716610205351936
+>>
+>>
+>> Paul
+>>
+>>
+>>
+>> On 13-12-20 08:07 AM, Tim Coote wrote:
+>>>
+>>> Hullo
+>>>
+>>> I?m not sure whether this is a bug, but I would expect some sort of
+>>> warning where mappings may lose precision.
+>>>
+>>> I?ve got a mysql table with large numbers in it:
+>>>
+>>> CREATE TABLE if not exists `tester` (
+>>>        `id` bigint(20) NOT NULL AUTO_INCREMENT,
+>>>        `address` bigint(20) NOT NULL,
+>>>        PRIMARY KEY (`id`),
+>>>        UNIQUE KEY `idx_address` (`address`)
+>>>      ) ENGINE=InnoDB AUTO_INCREMENT=78628 DEFAULT CHARSET=latin1 ;
+>>>
+>>> The key aspect of this is that the ?address? column needs to be used to
+>>> distinguish between values. If I put one value into this table, and read it
+>>> back with the mysql client:
+>>>
+>>> mysql> \. test.sql
+>>> Query OK, 1 row affected, 1 warning (0.00 sec)
+>>>
+>>> Database changed
+>>> Query OK, 0 rows affected (0.05 sec)
+>>>
+>>> Query OK, 1 row affected (0.01 sec)
+>>>
+>>> +---------------------+
+>>> | address             |
+>>> +---------------------+
+>>> | 2029716610205351937 |
+>>> +---------------------+
+>>> 1 row in set (0.00 sec)
+>>>
+>>> But if I try to read the value using R:
+>>>>
+>>>> library(RMySQL)
+>>>
+>>> Loading required package: DBI
+>>>>
+>>>> options(digits=20)
+>>>>
+>>>> hubdb <- dbConnect("MySQL", username="root", host="localhost",
+>>>> password="dummy", dbname="dummy" )
+>>>> q = sprintf("select * from tester;")
+>>>>
+>>>>
+>>>> testvals <- fetch(dbSendQuery(hubdb, q), n=-1)
+>>>>
+>>>> print (testvals)
+>>>
+>>>                address
+>>> 1 2029716610205351936
+>>>>
+>>>>
+>>>>
+>>> Note that the address value is different
+>>>
+>>> The issue is that the precision of the sql type (20 decimal characters) is
+>>> larger than the precision of the R type that it?s been matched to.  I don?t
+>>> know whether this is a bug or not - it would have help to have a warning
+>>> about the possible precision mismatch, rather than to spot the emerging bug
+>>> ;-) - that aside, is there a simple way to map the bigint type to something
+>>> else, eg for this situation, character would do. I know that I can cast the
+>>> type in the sql query, but I?d prefer to set the mapping at a more global
+>>> scope if I could in the data definition.
+>>>
+>>> tia
+>>>
+>>> Tim
+>>> _______________________________________________
+>>> R-sig-DB mailing list -- R Special Interest Group
+>>> R-sig-DB at r-project.org
+>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>>>
+>>
+>> _______________________________________________
+>> R-sig-DB mailing list -- R Special Interest Group
+>> R-sig-DB at r-project.org
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+>
+> _______________________________________________
+> R-sig-DB mailing list -- R Special Interest Group
+> R-sig-DB at r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-db
+
+
+
+-- 
+http://had.co.nz/
+
+
+
