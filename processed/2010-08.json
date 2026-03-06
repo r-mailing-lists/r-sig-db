@@ -421,22 +421,6 @@
       "thread_id": "thread-77520c43ae6e",
       "thread_depth": 0,
       "month": "2010-08"
-    },
-    {
-      "id": "msg-77520c43ae6e",
-      "message_id": "<47804.16668.qm@web65407.mail.ac4.yahoo.com>",
-      "from_name": "Jennifer Welsh",
-      "from_email_hash": "491de3b4789825d62f970777677915c8524c0a9172dcc41accbe0af270879226",
-      "date": "2010-08-30T15:52:24-07:00",
-      "subject": "[R-sig-DB] MySQL stored procedure fails when called from R",
-      "subject_clean": "MySQL stored procedure fails when called from R",
-      "in_reply_to": null,
-      "references": [],
-      "body_plain": "Hi,\n\nI posted this question at Stack Overflow ( \nhttp://stackoverflow.com/questions/3603865/mysql-stored-procedure-fails-when-called-from-r/3604472#3604472\n ) and was directed to this mailing list. I hope you can help.\n\nThanks,\nJen\n\n\n\nThis procedure works from the MySQL commandline both  remotely and on localhost \nand it works when called from PHP. In all  cases the grants are adequate:\nCREATE PROCEDURE `myDB`.`lee_expout` (IN e int, IN g int)\nBEGIN\n\nselect lm.groupname, lee.location, starttime, dark,\n  \ninadist,smldist,lardist,emptydur,inadur,smldur,lardur,emptyct,entct,inact,smlct,larct\n\nfrom lee join leegroup_map lm using (location)\nwhere exp_id= e and std_interval!=0 and groupset_id= g\norder by starttime,groupname,location;\n\nEND\n\nI'm trying to call it from R:\nlibrary(DBI)\nlibrary(RMySQL)\n\ndb <- dbConnect(MySQL(), user=\"user\", password=\"pswd\",\n        dbname=\"myDB\", host=\"the.host.com\")\n\n#args to pass to the procedure\nexp_id<-16\ngroup_id<-2\n\n#the procedure call\np <- paste('CALL lee_expout(', exp_id, ',', group_id,')', sep= ' ') \n\n#the bare query\nq <- paste('select lm.groupname, lee.location, starttime, dark,\ninadist,smldist,lardist,emptydur,inadur,smldur,lardur,emptyct,entct,inact,smlct,larct\n\nfrom lee join leegroup_map lm using (location)\nwhere exp_id=', \nexp_id, \n' and std_interval!=0 and groupset_id=', \ngroup_id, \n'order by starttime,groupname,location', sep=' ') \n\nrs_p <- dbSendQuery(db, statement=p) #run procedure and fail\np_data<-fetch(rs_p,n=30)\n\nrs_q <- dbSendQuery(db, statement=q) #or comment out p, run query and succeed\nq_data<-fetch(rs_q,n=30)\n\nThe bare query runs fine. The procedure call fails with \nRApache Warning/Error!!!Error in   mysqlExecStatement(conn, statement,   ...) :    \nRS-DBI driver: (could not   run statement: PROCEDURE   myDB.lee_expout can't \nreturn a   result set in the given context)\nThe MySQL docs say \nFor statements that can be determined   only at runtime to return a result   \nset, a PROCEDURE %s can't return a   result set in the given context error   \noccurs.\nOne would think that if a procedure were going to throw that error,  it would be \nthrown under all circumstances instead of just from R.\nAny thoughts on how to fix this?\n\n\n\n\t[[alternative HTML version deleted]]",
-      "body_snippet": "Hi,\n\nI posted this question at Stack Overflow ( \nhttp://stackoverflow.com/questions/3603865/mysql-stored-procedure-fails-when-called-from-r/3604472#3604472\n ) and was directed to this mailing list. I ",
-      "thread_id": "thread-77520c43ae6e",
-      "thread_depth": 0,
-      "month": "2010-08"
     }
   ],
   "threads": [
@@ -591,17 +575,6 @@
       "started": "2010-08-29T22:24:02+00:00",
       "last_reply": "2010-08-30T07:40:07+01:00",
       "root_message_id": "msg-1014fb051db8"
-    },
-    {
-      "id": "thread-77520c43ae6e",
-      "subject": "MySQL stored procedure fails when called from R",
-      "message_count": 1,
-      "participants": [
-        "Jennifer Welsh"
-      ],
-      "started": "2010-08-30T15:52:24-07:00",
-      "last_reply": "2010-08-30T15:52:24-07:00",
-      "root_message_id": "msg-77520c43ae6e"
     },
     {
       "id": "thread-77520c43ae6e",
