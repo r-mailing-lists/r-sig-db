@@ -17,7 +17,8 @@
       "body_snippet": "Hi everyone,\n\nI am trying to get RMySQL to work with the MySQL version(s) that ship with\nxampp.\n\nWhat is strange is the fact that establishing a connection and writing\ncontent to tables work just fine",
       "thread_id": "thread-a9101bc6a0a3",
       "thread_depth": 0,
-      "month": "2009-12"
+      "month": "2009-12",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2009q4/000762.html"
     },
     {
       "id": "msg-e4ff43a42062",
@@ -29,11 +30,12 @@
       "subject_clean": "RMySQL and xampp: crash upon reading tables",
       "in_reply_to": null,
       "references": [],
-      "body_plain": "Hi again,\n\nI'm really sorry, but I was \"one off\" concerning the versions of xampp. The\none that includes MySQL 5.0.67 was version 1.6.8 and not 1.7.0.\n\nIt works fine now! \n\nOne last question, though: It says at\nhttp://biostat.mc.vanderbilt.edu/wiki/Main/RMySQL that RMySQL (0.7-4) should\nalso work with MySQL 5.1.33. I found that's not the case. Did I do something\nwrong?\n\nBest regards,\nJanko Thyson\n\n-----Urspr?ngliche Nachricht-----\nVon: Janko Thyson [mailto:janko.thyson at ku-eichstaett.de] \nGesendet: Dienstag, 1. Dezember 2009 12:05\nAn: 'r-sig-db at stat.math.ethz.ch'\nCc: 'janko.thyson at kuei.de'\nBetreff: RMySQL and xampp: crash upon reading tables\n\nHi everyone,\n\nI am trying to get RMySQL to work with the MySQL version(s) that ship with\nxampp.\n\nWhat is strange is the fact that establishing a connection and writing\ncontent to tables work just fine. However, R crashes when trying to read\ntables from a database. I used MySQL-Server (5.0.67) prior to xampp and\neverything worked fine.\n\nThe Xampp versions I tried: \n1.7.2 (MySQL 5.1.37), 1.7.1 (MySQL 5.1.33) and finally 1.7.0 (MySQL 5.0.67).\nThe last two xampp versions should definitely work, shouldn?t they? Yet I?ve\nexperienced the same behavior also with the newest version, just having\nRMySQL throw an error (which it should). Xampp is located at \"C:\\xampp\n\nHere?s some information that is probably relevant:\n\nCode Snippets\n#############\n\ninstall.packages(\"RMySQL\", repos=repos.cran,\n\tconfigure.args=\"--with-mysql-dir=C:/xampp/mysql/bin\")\n\nsessionInfo()\nR version 2.9.2 (2009-08-24) \ni386-pc-mingw32 \n\nlocale:\nLC_COLLATE=German_Germany.1252;LC_CTYPE=German_Germany.1252;LC_MONETARY=Germ\nan_Germany.1252;LC_NUMERIC=C;LC_TIME=German_Germany.1252\n\nattached base packages:\n[1] stats     graphics  grDevices utils     datasets  methods   base     \n\n.libPaths()\n\"C:/R/R-2.9.2/library\"\n\nSys.getenv('MYSQL_HOME')\nMYSQL_HOME \n        \"\" \nutils::readRegistry(\"SOFTWARE\\\\MySQL AB\", hive=\"HLM\", maxdepth=2)\n$`MySQL Server 5.0`\n$`MySQL Server 5.0`$DataLocation\n[1] \"C:\\\\xampp\\\\mysql\\\\data\\\\\"\n\n$`MySQL Server 5.0`$FoundExistingDataDir\n[1] \"1\"\n\n$`MySQL Server 5.0`$Location\n[1] \"C:\\\\xampp\\\\mysql\\\\\"\n\n$`MySQL Server 5.0`$Version\n[1] \"5.0.67\"\n\nAdditional comments\n####################\n\nI also tried this:\nset MYSQL_HOME=C:\\xampp\\mysql\n\nBut still Sys.getenv(?MySQL_HOME?) gave me ??. What did I do wrong?\n\nI think the registry entries were still there from the ?old? MySQL-Server\n5.0 installation and I simply adapted the values to the current xampp\nconfiguration. If that was wrong, what do I do to get a ?fresh and correct?\nregistry entry?\n\nBest regards,\nJanko Thyson",
+      "body_plain": "Hi again,\n\nI'm really sorry, but I was \"one off\" concerning the versions of xampp. The\none that includes MySQL 5.0.67 was version 1.6.8 and not 1.7.0.\n\nIt works fine now! \n\nOne last question, though: It says at\nhttp://biostat.mc.vanderbilt.edu/wiki/Main/RMySQL that RMySQL (0.7-4) should\nalso work with MySQL 5.1.33. I found that's not the case. Did I do something\nwrong?\n\nBest regards,\nJanko Thyson\n\n-----Ursprüngliche Nachricht-----\nVon: Janko Thyson [mailto:janko.thyson at ku-eichstaett.de] \nGesendet: Dienstag, 1. Dezember 2009 12:05\nAn: 'r-sig-db at stat.math.ethz.ch'\nCc: 'janko.thyson at kuei.de'\nBetreff: RMySQL and xampp: crash upon reading tables\n\nHi everyone,\n\nI am trying to get RMySQL to work with the MySQL version(s) that ship with\nxampp.\n\nWhat is strange is the fact that establishing a connection and writing\ncontent to tables work just fine. However, R crashes when trying to read\ntables from a database. I used MySQL-Server (5.0.67) prior to xampp and\neverything worked fine.\n\nThe Xampp versions I tried: \n1.7.2 (MySQL 5.1.37), 1.7.1 (MySQL 5.1.33) and finally 1.7.0 (MySQL 5.0.67).\nThe last two xampp versions should definitely work, shouldn’t they? Yet I’ve\nexperienced the same behavior also with the newest version, just having\nRMySQL throw an error (which it should). Xampp is located at \"C:\\xampp\n\nHere’s some information that is probably relevant:\n\nCode Snippets\n#############\n\ninstall.packages(\"RMySQL\", repos=repos.cran,\n\tconfigure.args=\"--with-mysql-dir=C:/xampp/mysql/bin\")\n\nsessionInfo()\nR version 2.9.2 (2009-08-24) \ni386-pc-mingw32 \n\nlocale:\nLC_COLLATE=German_Germany.1252;LC_CTYPE=German_Germany.1252;LC_MONETARY=Germ\nan_Germany.1252;LC_NUMERIC=C;LC_TIME=German_Germany.1252\n\nattached base packages:\n[1] stats     graphics  grDevices utils     datasets  methods   base     \n\n.libPaths()\n\"C:/R/R-2.9.2/library\"\n\nSys.getenv('MYSQL_HOME')\nMYSQL_HOME \n        \"\" \nutils::readRegistry(\"SOFTWARE\\\\MySQL AB\", hive=\"HLM\", maxdepth=2)\n$`MySQL Server 5.0`\n$`MySQL Server 5.0`$DataLocation\n[1] \"C:\\\\xampp\\\\mysql\\\\data\\\\\"\n\n$`MySQL Server 5.0`$FoundExistingDataDir\n[1] \"1\"\n\n$`MySQL Server 5.0`$Location\n[1] \"C:\\\\xampp\\\\mysql\\\\\"\n\n$`MySQL Server 5.0`$Version\n[1] \"5.0.67\"\n\nAdditional comments\n####################\n\nI also tried this:\nset MYSQL_HOME=C:\\xampp\\mysql\n\nBut still Sys.getenv(“MySQL_HOME”) gave me “”. What did I do wrong?\n\nI think the registry entries were still there from the “old” MySQL-Server\n5.0 installation and I simply adapted the values to the current xampp\nconfiguration. If that was wrong, what do I do to get a “fresh and correct”\nregistry entry?\n\nBest regards,\nJanko Thyson",
       "body_snippet": "Hi again,\n\nI'm really sorry, but I was \"one off\" concerning the versions of xampp. The\none that includes MySQL 5.0.67 was version 1.6.8 and not 1.7.0.\n\nIt works fine now! \n\nOne last question, though: ",
       "thread_id": "thread-e4ff43a42062",
       "thread_depth": 0,
-      "month": "2009-12"
+      "month": "2009-12",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2009q4/000763.html"
     },
     {
       "id": "msg-1a3d67075b6f",
@@ -49,7 +51,8 @@
       "body_snippet": "Hi, \n\nJust new to R and rmysql and trying to run the same query on a list of databases as per the following...\n\nlibrary(RMySQL)\ndrv = dbDriver(\"MySQL\")\ndbList = c(\"TSE\")\n\nfor (market in dbList){\n    c",
       "thread_id": "thread-1a3d67075b6f",
       "thread_depth": 0,
-      "month": "2009-12"
+      "month": "2009-12",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2009q4/000764.html"
     },
     {
       "id": "msg-d4ddeec31b1c",
@@ -67,7 +70,8 @@
       "body_snippet": "On Mon, Dec 7, 2009 at 10:01 PM, Nick Torenvliet\n<n_torenvliet at hotmail.com> wrote:\n>\n> Hi,\n>\n> Just new to R and rmysql and trying to run the same query on a list of databases as per the following.",
       "thread_id": "thread-1a3d67075b6f",
       "thread_depth": 1,
-      "month": "2009-12"
+      "month": "2009-12",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2009q4/000765.html"
     },
     {
       "id": "msg-4cfd6837bebb",
@@ -79,11 +83,12 @@
       "subject_clean": "RMySQL for windows",
       "in_reply_to": null,
       "references": [],
-      "body_plain": "Dear Peter,\n\n \n\nMy name is Alberto and I would like to connect to SQL data base running R on\nWindows and I have read that you got it by means of installing RMySQL. I\nhave downlodaded the binary version of MySQL for Windows (RMySQL\n<http://stat.bell-labs.com/RS-DBI/download/RMySQL/RMySQL_0.5-7.tar.gz>\n0.5-7) from http://stat.bell-labs.com/RS-DBI/download/ but I have no idea\nhow can I use it, because I have two main problems:\n\n \n\n*         Error: package 'DBI' 0.1-10 was found, but >= 0.2.2 is required by\n'RMySQL': Do you know where can I find the DBIv0.2.2 or latest for Windows?\nand,\n*         I need the function dbDriver and I do not where can I get it\nfrom?.\n \n               Sorry if you find the questions a little silly but I have\nbeen working with R only a few weeks.\n \n               Best regards,           \n\n \n\n \n\n\nAlberto Mart?n Garc?a \n\n\nMeteorology and Radiation\n\n\nR & D Department\n\n\n______________________________________________________________________ \n\n\n\n\nInstituto de Sistemas Fotovoltaicos de concentraci?n S.A ISFOC S.A. \n\n\nC/ Juan Bravo 22 - 13500 PUERTOLLANO      (Ciudad Real) SPAIN \n\n\nPhone: +34 926441673 - Fax: +34 926429142 \n\n\ne-mail:  <mailto:amartin at isfoc.com> amartin at isfoc.com \n\n\n____________________________________________________________________________\n____ \n\n\n\n\n\nAviso Legal.\n\n\nLa informaci?n contenida en este mensaje de correo electr?nico es\nconfidencial. Este mensaje y los documentos adjuntos a ?l van dirigidos\nexclusivamente a su destinatario y contiene informaci?n confidencial, cuya\ndivulgaci?n no est? permitida por la ley, por lo que el acceso a este\nmensaje por otras personas no est? autorizado. En caso de haber recibido\neste mensaje por error, le rogamos que lo notifique inmediatamente al\nremitente y se ponga en contacto con el INSTITUTO DE SISTEMAS FOTOVOLTAICOS\nDE CONCENTRACI?N, S.A.U, v?a e-mail remitido a nuestra atenci?n y proceda a\nsu eliminaci?n, sin revisarlo ni reenviarlo. as? como a la de cualquier\ndocumento adjunto al mismo. Igualmente, le informamos que la distribuci?n,\ncopia o utilizaci?n de este mensaje, o de cualquier documento adjunto al\nmismo, cualquiera que fuera su finalidad, est?n prohibidas por la ley. \n\n\nDe igual modo, si usted es el destinatario de este mensaje, le informamos\nque INSTITUTO DE SISTEMAS FOTOVOLTAICOS DE CONCENTRACI?N, S.A., no asume\nresponsabilidad alguna sobre la confidencialidad, integridad, veracidad o\ncorrecta recepci?n de este mensaje pues el correo electr?nico y las\ncomunicaciones a trav?s de Internet no permiten asegurar ni garantizar tales\nextremos. Por ello, si usted no consintiese el empleo de los medios de\ncomunicaci?n antes referidos, les rogamos que nos lo comunique de manera\nfehaciente e inmediata en la siguiente direcci?n: C/ Juan Bravo, 22 (13.500)\nde Puertollano (Ciudad Real).\n\n\n\n\n-------------- next part --------------\nAn HTML attachment was scrubbed...\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20091211/1dd4c257/attachment.html>\n\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: image001.jpg\nType: image/jpeg\nSize: 16911 bytes\nDesc: not available\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20091211/1dd4c257/attachment.jpg>\n\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: image002.jpg\nType: image/jpeg\nSize: 1791 bytes\nDesc: not available\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20091211/1dd4c257/attachment-0001.jpg>",
+      "body_plain": "Dear Peter,\n\n \n\nMy name is Alberto and I would like to connect to SQL data base running R on\nWindows and I have read that you got it by means of installing RMySQL. I\nhave downlodaded the binary version of MySQL for Windows (RMySQL\n<http://stat.bell-labs.com/RS-DBI/download/RMySQL/RMySQL_0.5-7.tar.gz>\n0.5-7) from http://stat.bell-labs.com/RS-DBI/download/ but I have no idea\nhow can I use it, because I have two main problems:\n\n \n\n*         Error: package 'DBI' 0.1-10 was found, but >= 0.2.2 is required by\n'RMySQL': Do you know where can I find the DBIv0.2.2 or latest for Windows?\nand,\n*         I need the function dbDriver and I do not where can I get it\nfrom?.\n \n               Sorry if you find the questions a little silly but I have\nbeen working with R only a few weeks.\n \n               Best regards,           \n\n \n\n \n\n\nAlberto Martín García \n\n\nMeteorology and Radiation\n\n\nR & D Department\n\n\n______________________________________________________________________ \n\n\n\n\nInstituto de Sistemas Fotovoltaicos de concentración S.A ISFOC S.A. \n\n\nC/ Juan Bravo 22 - 13500 PUERTOLLANO      (Ciudad Real) SPAIN \n\n\nPhone: +34 926441673 - Fax: +34 926429142 \n\n\ne-mail:  <mailto:amartin at isfoc.com> amartin at isfoc.com \n\n\n____________________________________________________________________________\n____ \n\n\n\n\n\nAviso Legal.\n\n\nLa información contenida en este mensaje de correo electrónico es\nconfidencial. Este mensaje y los documentos adjuntos a él van dirigidos\nexclusivamente a su destinatario y contiene información confidencial, cuya\ndivulgación no está permitida por la ley, por lo que el acceso a este\nmensaje por otras personas no está autorizado. En caso de haber recibido\neste mensaje por error, le rogamos que lo notifique inmediatamente al\nremitente y se ponga en contacto con el INSTITUTO DE SISTEMAS FOTOVOLTAICOS\nDE CONCENTRACIÓN, S.A.U, vía e-mail remitido a nuestra atención y proceda a\nsu eliminación, sin revisarlo ni reenviarlo. así como a la de cualquier\ndocumento adjunto al mismo. Igualmente, le informamos que la distribución,\ncopia o utilización de este mensaje, o de cualquier documento adjunto al\nmismo, cualquiera que fuera su finalidad, están prohibidas por la ley. \n\n\nDe igual modo, si usted es el destinatario de este mensaje, le informamos\nque INSTITUTO DE SISTEMAS FOTOVOLTAICOS DE CONCENTRACIÓN, S.A., no asume\nresponsabilidad alguna sobre la confidencialidad, integridad, veracidad o\ncorrecta recepción de este mensaje pues el correo electrónico y las\ncomunicaciones a través de Internet no permiten asegurar ni garantizar tales\nextremos. Por ello, si usted no consintiese el empleo de los medios de\ncomunicación antes referidos, les rogamos que nos lo comunique de manera\nfehaciente e inmediata en la siguiente dirección: C/ Juan Bravo, 22 (13.500)\nde Puertollano (Ciudad Real).\n\n\n\n\n-------------- next part --------------\nAn HTML attachment was scrubbed...\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20091211/1dd4c257/attachment.html>\n\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: image001.jpg\nType: image/jpeg\nSize: 16911 bytes\nDesc: not available\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20091211/1dd4c257/attachment.jpg>\n\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: image002.jpg\nType: image/jpeg\nSize: 1791 bytes\nDesc: not available\nURL: <https://stat.ethz.ch/pipermail/r-sig-db/attachments/20091211/1dd4c257/attachment-0001.jpg>",
       "body_snippet": "Dear Peter,\n\n \n\nMy name is Alberto and I would like to connect to SQL data base running R on\nWindows and I have read that you got it by means of installing RMySQL. I\nhave downlodaded the binary versio",
       "thread_id": "thread-4cfd6837bebb",
       "thread_depth": 0,
-      "month": "2009-12"
+      "month": "2009-12",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2009q4/000766.html"
     },
     {
       "id": "msg-32194ec7f615",
@@ -97,11 +102,12 @@
       "references": [
         "<mailman.4754.1260547332.4157.r-sig-db@stat.math.ethz.ch>"
       ],
-      "body_plain": "You will want to download R packages from CRAN:\n\nhttp://cran.r-project.org/\n\nas that site has the latest versions of all packages, including RMySQL and DBI.\n\nBest,\n\nJeff\n\n> My name is Alberto and I would like to connect to SQL data base running R on\n> Windows and I have read that you got it by means of installing RMySQL. I\n> have downlodaded the binary version of MySQL for Windows (RMySQL\n> <http://stat.bell-labs.com/RS-DBI/download/RMySQL/RMySQL_0.5-7.tar.gz>\n> 0.5-7) from http://stat.bell-labs.com/RS-DBI/download/ but I have no idea\n> how can I use it, because I have two main problems:\n>\n>\n>\n> * ? ? ? ? Error: package 'DBI' 0.1-10 was found, but >= 0.2.2 is required by\n> 'RMySQL': Do you know where can I find the DBIv0.2.2 or latest for Windows?\n> and,\n> * ? ? ? ? I need the function dbDriver and I do not where can I get it\n> from?.\n>\n> ? ? ? ? ? ? ? Sorry if you find the questions a little silly but I have\n> been working with R only a few weeks.\n>\n> ? ? ? ? ? ? ? Best regards,\n>\n>\n>\n>\n>\n>\n> Alberto Mart?n Garc?a\n>\n>\n> Meteorology and Radiation\n>\n>\n> R & D Department\n>\n>\n> ______________________________________________________________________\n>\n>\n>\n>\n> Instituto de Sistemas Fotovoltaicos de concentraci?n S.A ISFOC S.A.\n>\n>\n> C/ Juan Bravo 22 - 13500 PUERTOLLANO ? ? ?(Ciudad Real) SPAIN\n>\n>\n> Phone: +34 926441673 - Fax: +34 926429142\n>\n>\n> e-mail: ?<mailto:amartin at isfoc.com> amartin at isfoc.com\n\n-- \nhttp://biostat.mc.vanderbilt.edu/JeffreyHorner",
+      "body_plain": "You will want to download R packages from CRAN:\n\nhttp://cran.r-project.org/\n\nas that site has the latest versions of all packages, including RMySQL and DBI.\n\nBest,\n\nJeff\n\n> My name is Alberto and I would like to connect to SQL data base running R on\n> Windows and I have read that you got it by means of installing RMySQL. I\n> have downlodaded the binary version of MySQL for Windows (RMySQL\n> <http://stat.bell-labs.com/RS-DBI/download/RMySQL/RMySQL_0.5-7.tar.gz>\n> 0.5-7) from http://stat.bell-labs.com/RS-DBI/download/ but I have no idea\n> how can I use it, because I have two main problems:\n>\n>\n>\n> * ? ?     Error: package 'DBI' 0.1-10 was found, but >= 0.2.2 is required by\n> 'RMySQL': Do you know where can I find the DBIv0.2.2 or latest for Windows?\n> and,\n> * ? ? ?   I need the function dbDriver and I do not where can I get it\n> from?.\n>\n> ? ? ? ? ? ?   Sorry if you find the questions a little silly but I have\n> been working with R only a few weeks.\n>\n> ? ? ? ? ? ?   Best regards,\n>\n>\n>\n>\n>\n>\n> Alberto Mart?n Garc?a\n>\n>\n> Meteorology and Radiation\n>\n>\n> R & D Department\n>\n>\n> ______________________________________________________________________\n>\n>\n>\n>\n> Instituto de Sistemas Fotovoltaicos de concentraci?n S.A ISFOC S.A.\n>\n>\n> C/ Juan Bravo 22 - 13500 PUERTOLLANO      (Ciudad Real) SPAIN\n>\n>\n> Phone: +34 926441673 - Fax: +34 926429142\n>\n>\n> e-mail:  <mailto:amartin at isfoc.com> amartin at isfoc.com\n\n-- \nhttp://biostat.mc.vanderbilt.edu/JeffreyHorner",
       "body_snippet": "You will want to download R packages from CRAN:\n\nhttp://cran.r-project.org/\n\nas that site has the latest versions of all packages, including RMySQL and DBI.\n\nBest,\n\nJeff\n\n> My name is Alberto and I wo",
       "thread_id": "thread-32194ec7f615",
       "thread_depth": 0,
-      "month": "2009-12"
+      "month": "2009-12",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2009q4/000767.html"
     },
     {
       "id": "msg-1845c2a13d84",
@@ -117,7 +123,8 @@
       "body_snippet": "You need a newer version of the 'RMySQL' package for the version of R you\nare running. Try installing 'RMySQL_0.7-4.zip' from the\nCRAN website(http://cran.r-project.org/).\n\n\nStephen Weller\nQA and Tech",
       "thread_id": "thread-1845c2a13d84",
       "thread_depth": 0,
-      "month": "2009-12"
+      "month": "2009-12",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2009q4/000768.html"
     },
     {
       "id": "msg-6965054ba939",
@@ -133,7 +140,8 @@
       "body_snippet": "Hello all,\n\nI've made available release candidates for DBI and RSQLite (URLs are \nbelow) and would appreciate feedback from users able to test these new \nversions.  My plan is to push updates to CRAN ",
       "thread_id": "thread-6965054ba939",
       "thread_depth": 0,
-      "month": "2009-12"
+      "month": "2009-12",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2009q4/000769.html"
     },
     {
       "id": "msg-71fb8cebc3fc",
@@ -151,7 +159,8 @@
       "body_snippet": "Hi again,\n\nDBI 0.2-5 and RSQLite 0.8-0 are now on CRAN.\n\nSee the NEWS files for the final list of changes...\n\nhttp://cran.fhcrc.org/web/packages/RSQLite/NEWS\n\n+ seth",
       "thread_id": "thread-6965054ba939",
       "thread_depth": 1,
-      "month": "2009-12"
+      "month": "2009-12",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2009q4/000770.html"
     }
   ],
   "threads": [

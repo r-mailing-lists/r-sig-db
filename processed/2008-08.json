@@ -17,7 +17,8 @@
       "body_snippet": "Fellow Investor\n\nI have been covering the small cap stock market for the last ten years and during this time I have made many stock picks. I pride myself on the fact that the majority of my picks have",
       "thread_id": "thread-8015b6033648",
       "thread_depth": 0,
-      "month": "2008-08"
+      "month": "2008-08",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2008q3/000460.html"
     },
     {
       "id": "msg-21b411d3ca5c",
@@ -29,11 +30,12 @@
       "subject_clean": "Unwanted carriage returns storing dataframes with dbWriteTable",
       "in_reply_to": null,
       "references": [],
-      "body_plain": "Hi\n\nIf I save a dataframe with a character-typed last column to a relational \ndatabase with dbWriteTable, the  values in the last column of the \nresulting table in the database will have a '\\r' (carriage return) \nappended. If I read back the dataframe with dbReadTable the last column \nin the resulting dataframe has also '\\r' appended (see protocol below). \nSetting or unsetting sql-mode (in the SQL-Server Version 5.0) to or from \n'NO_BACKSLASH_ESCAPE' has no effect on this behavour. How can I avoid \nthese unwanted '\\r'-tail without a workaround-wrapper, which adds an extra\ndummy column before writing and removes it after reading back ? \n\nI use R.2.7.1 and package RMySQL\n\nHansruedi\n\n\n> version\n               _                           \nplatform       i386-pc-mingw32             \narch           i386                        \nos             mingw32                     \nsystem         i386, mingw32               \nstatus                                     \nmajor          2                           \nminor          7.1                         \nyear           2008                        \nmonth          06                          \nday            23                          \nsvn rev        45970                       \nlanguage       R                           \nversion.string R version 2.7.1 (2008-06-23)\n\n> library(\"RMySQL\")\n> con=dbConnect(\"MySQL\",dbname=\"rTables\",user=\"root\", password=\"xxxxx\",host=\"localhost\")\n> dbGetInfo(con)\n\n...\n$conType\n[1] \"localhost via TCP/IP\"\n\n$serverVersion\n[1] \"5.0.24-community-nt-log\"\n\n$protocolVersion\n[1] 10\n\n$threadId\n[1] 46\n\n$rsId\nlist()\n\n> dfin=data.frame(\n+   a=c(1,2,3,4),\n+   b=c(\"a\",\"b\",\"c\",\"d\"),\n+   c=c(\"x\",\"y\",\"z\",\"t\"),\n+   row.names=2)\n> dfin\n  a c\na 1 x\nb 2 y\nc 3 z\nd 4 t\n> dbGetQuery(con, \"DROP TABLE IF EXISTS df\")\nNULL\n> dbWriteTable(con,\"df\",dfin,row.names=FALSE)\n[1] TRUE\n> dfout=dbReadTable(con,\"df\")\n> dfout\n  a   c\n1 1 x\\r\n2 2 y\\r\n3 3 z\\r\n4 4 t\\r\n> dbDisconnect(con)\n[1] TRUE\n> \n\n-- \nHansruedi Baetschmann\ndipl.math.ETH et lic.oec.HSG\nFunctional Genomics Center Zurich\nWinterthurerstrasse 190 / Y32H66\nCH-8057 Z?rich",
+      "body_plain": "Hi\n\nIf I save a dataframe with a character-typed last column to a relational \ndatabase with dbWriteTable, the  values in the last column of the \nresulting table in the database will have a '\\r' (carriage return) \nappended. If I read back the dataframe with dbReadTable the last column \nin the resulting dataframe has also '\\r' appended (see protocol below). \nSetting or unsetting sql-mode (in the SQL-Server Version 5.0) to or from \n'NO_BACKSLASH_ESCAPE' has no effect on this behavour. How can I avoid \nthese unwanted '\\r'-tail without a workaround-wrapper, which adds an extra\ndummy column before writing and removes it after reading back ? \n\nI use R.2.7.1 and package RMySQL\n\nHansruedi\n\n\n> version\n               _                           \nplatform       i386-pc-mingw32             \narch           i386                        \nos             mingw32                     \nsystem         i386, mingw32               \nstatus                                     \nmajor          2                           \nminor          7.1                         \nyear           2008                        \nmonth          06                          \nday            23                          \nsvn rev        45970                       \nlanguage       R                           \nversion.string R version 2.7.1 (2008-06-23)\n\n> library(\"RMySQL\")\n> con=dbConnect(\"MySQL\",dbname=\"rTables\",user=\"root\", password=\"xxxxx\",host=\"localhost\")\n> dbGetInfo(con)\n\n...\n$conType\n[1] \"localhost via TCP/IP\"\n\n$serverVersion\n[1] \"5.0.24-community-nt-log\"\n\n$protocolVersion\n[1] 10\n\n$threadId\n[1] 46\n\n$rsId\nlist()\n\n> dfin=data.frame(\n+   a=c(1,2,3,4),\n+   b=c(\"a\",\"b\",\"c\",\"d\"),\n+   c=c(\"x\",\"y\",\"z\",\"t\"),\n+   row.names=2)\n> dfin\n  a c\na 1 x\nb 2 y\nc 3 z\nd 4 t\n> dbGetQuery(con, \"DROP TABLE IF EXISTS df\")\nNULL\n> dbWriteTable(con,\"df\",dfin,row.names=FALSE)\n[1] TRUE\n> dfout=dbReadTable(con,\"df\")\n> dfout\n  a   c\n1 1 x\\r\n2 2 y\\r\n3 3 z\\r\n4 4 t\\r\n> dbDisconnect(con)\n[1] TRUE\n> \n\n-- \nHansruedi Baetschmann\ndipl.math.ETH et lic.oec.HSG\nFunctional Genomics Center Zurich\nWinterthurerstrasse 190 / Y32H66\nCH-8057 Zürich",
       "body_snippet": "Hi\n\nIf I save a dataframe with a character-typed last column to a relational \ndatabase with dbWriteTable, the  values in the last column of the \nresulting table in the database will have a '\\r' (carri",
       "thread_id": "thread-21b411d3ca5c",
       "thread_depth": 0,
-      "month": "2008-08"
+      "month": "2008-08",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2008q3/000461.html"
     },
     {
       "id": "msg-f5d87d200083",
@@ -47,11 +49,12 @@
       "references": [
         "<48A18DB4.8080203@fgcz.ethz.ch>"
       ],
-      "body_plain": "I suspect this is related to the similar problem seen in RSQLite by the \nsame author, Cc:ed here :\n\nhttps://stat.ethz.ch/pipermail/r-help/2007-January/122998.html\nhttps://stat.ethz.ch/pipermail/r-sig-db/2007q1/000248.html\n\nThere is a function RMySQL:::mysqlWriteTable that has\n\n    sql4 <- paste(\"LOAD DATA LOCAL INFILE '\", fn, \"'\",\n                   \" INTO TABLE \", name,\n                   \" LINES TERMINATED BY '\\n' \", sep=\"\")\n\nI believe that \\n needs to be \\r\\n on Windows. See \nhttp://dev.mysql.com/doc/refman/5.0/en/load-data.html .  The alternative \nis to alter RMySQL:::safe.write to work with a binary file.\n\n\nOn Tue, 12 Aug 2008, Hansruedi Baetschmann wrote:\n\n> Hi\n>\n> If I save a dataframe with a character-typed last column to a relational \n> database with dbWriteTable, the  values in the last column of the resulting \n> table in the database will have a '\\r' (carriage return) appended. If I read \n> back the dataframe with dbReadTable the last column in the resulting \n> dataframe has also '\\r' appended (see protocol below). Setting or unsetting \n> sql-mode (in the SQL-Server Version 5.0) to or from 'NO_BACKSLASH_ESCAPE' has \n> no effect on this behavour. How can I avoid these unwanted '\\r'-tail without \n> a workaround-wrapper, which adds an extra\n> dummy column before writing and removes it after reading back ? \n> I use R.2.7.1 and package RMySQL\n>\n> Hansruedi\n>\n>\n>> version\n>              _                           platform       i386-pc-mingw32 \n> arch           i386                        os             mingw32 \n> system         i386, mingw32               status \n> major          2                           minor          7.1 \n> year           2008                        month          06 \n> day            23                          svn rev        45970 \n> language       R                           version.string R version 2.7.1 \n> (2008-06-23)\n>\n>> library(\"RMySQL\")\n>> con=dbConnect(\"MySQL\",dbname=\"rTables\",user=\"root\", \n>> password=\"xxxxx\",host=\"localhost\")\n>> dbGetInfo(con)\n>\n> ...\n> $conType\n> [1] \"localhost via TCP/IP\"\n>\n> $serverVersion\n> [1] \"5.0.24-community-nt-log\"\n>\n> $protocolVersion\n> [1] 10\n>\n> $threadId\n> [1] 46\n>\n> $rsId\n> list()\n>\n>> dfin=data.frame(\n> +   a=c(1,2,3,4),\n> +   b=c(\"a\",\"b\",\"c\",\"d\"),\n> +   c=c(\"x\",\"y\",\"z\",\"t\"),\n> +   row.names=2)\n>> dfin\n> a c\n> a 1 x\n> b 2 y\n> c 3 z\n> d 4 t\n>> dbGetQuery(con, \"DROP TABLE IF EXISTS df\")\n> NULL\n>> dbWriteTable(con,\"df\",dfin,row.names=FALSE)\n> [1] TRUE\n>> dfout=dbReadTable(con,\"df\")\n>> dfout\n> a   c\n> 1 1 x\\r\n> 2 2 y\\r\n> 3 3 z\\r\n> 4 4 t\\r\n>> dbDisconnect(con)\n> [1] TRUE\n>> \n>\n> -- \n> Hansruedi Baetschmann\n> dipl.math.ETH et lic.oec.HSG\n> Functional Genomics Center Zurich\n> Winterthurerstrasse 190 / Y32H66\n> CH-8057 Z?rich\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
+      "body_plain": "I suspect this is related to the similar problem seen in RSQLite by the \nsame author, Cc:ed here :\n\nhttps://stat.ethz.ch/pipermail/r-help/2007-January/122998.html\nhttps://stat.ethz.ch/pipermail/r-sig-db/2007q1/000248.html\n\nThere is a function RMySQL:::mysqlWriteTable that has\n\n    sql4 <- paste(\"LOAD DATA LOCAL INFILE '\", fn, \"'\",\n                   \" INTO TABLE \", name,\n                   \" LINES TERMINATED BY '\\n' \", sep=\"\")\n\nI believe that \\n needs to be \\r\\n on Windows. See \nhttp://dev.mysql.com/doc/refman/5.0/en/load-data.html .  The alternative \nis to alter RMySQL:::safe.write to work with a binary file.\n\n\nOn Tue, 12 Aug 2008, Hansruedi Baetschmann wrote:\n\n> Hi\n>\n> If I save a dataframe with a character-typed last column to a relational \n> database with dbWriteTable, the  values in the last column of the resulting \n> table in the database will have a '\\r' (carriage return) appended. If I read \n> back the dataframe with dbReadTable the last column in the resulting \n> dataframe has also '\\r' appended (see protocol below). Setting or unsetting \n> sql-mode (in the SQL-Server Version 5.0) to or from 'NO_BACKSLASH_ESCAPE' has \n> no effect on this behavour. How can I avoid these unwanted '\\r'-tail without \n> a workaround-wrapper, which adds an extra\n> dummy column before writing and removes it after reading back ? \n> I use R.2.7.1 and package RMySQL\n>\n> Hansruedi\n>\n>\n>> version\n>              _                           platform       i386-pc-mingw32 \n> arch           i386                        os             mingw32 \n> system         i386, mingw32               status \n> major          2                           minor          7.1 \n> year           2008                        month          06 \n> day            23                          svn rev        45970 \n> language       R                           version.string R version 2.7.1 \n> (2008-06-23)\n>\n>> library(\"RMySQL\")\n>> con=dbConnect(\"MySQL\",dbname=\"rTables\",user=\"root\", \n>> password=\"xxxxx\",host=\"localhost\")\n>> dbGetInfo(con)\n>\n> ...\n> $conType\n> [1] \"localhost via TCP/IP\"\n>\n> $serverVersion\n> [1] \"5.0.24-community-nt-log\"\n>\n> $protocolVersion\n> [1] 10\n>\n> $threadId\n> [1] 46\n>\n> $rsId\n> list()\n>\n>> dfin=data.frame(\n> +   a=c(1,2,3,4),\n> +   b=c(\"a\",\"b\",\"c\",\"d\"),\n> +   c=c(\"x\",\"y\",\"z\",\"t\"),\n> +   row.names=2)\n>> dfin\n> a c\n> a 1 x\n> b 2 y\n> c 3 z\n> d 4 t\n>> dbGetQuery(con, \"DROP TABLE IF EXISTS df\")\n> NULL\n>> dbWriteTable(con,\"df\",dfin,row.names=FALSE)\n> [1] TRUE\n>> dfout=dbReadTable(con,\"df\")\n>> dfout\n> a   c\n> 1 1 x\\r\n> 2 2 y\\r\n> 3 3 z\\r\n> 4 4 t\\r\n>> dbDisconnect(con)\n> [1] TRUE\n>> \n>\n> -- \n> Hansruedi Baetschmann\n> dipl.math.ETH et lic.oec.HSG\n> Functional Genomics Center Zurich\n> Winterthurerstrasse 190 / Y32H66\n> CH-8057 Zürich\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at stat.math.ethz.ch\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n-- \nBrian D. Ripley,                  ripley at stats.ox.ac.uk\nProfessor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/\nUniversity of Oxford,             Tel:  +44 1865 272861 (self)\n1 South Parks Road,                     +44 1865 272866 (PA)\nOxford OX1 3TG, UK                Fax:  +44 1865 272595",
       "body_snippet": "I suspect this is related to the similar problem seen in RSQLite by the \nsame author, Cc:ed here :\n\nhttps://stat.ethz.ch/pipermail/r-help/2007-January/122998.html\nhttps://stat.ethz.ch/pipermail/r-sig-",
       "thread_id": "thread-21b411d3ca5c",
       "thread_depth": 1,
-      "month": "2008-08"
+      "month": "2008-08",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2008q3/000462.html"
     },
     {
       "id": "msg-c758c895ca63",
@@ -67,7 +70,8 @@
       "body_snippet": "I'm using a prebuilt Postgres binary which puts things in ...\n\n/Library/PostgreSQL8/lib/libpq.5.0.dylib\n/Library/PostgreSQL8/lib/libpq.5.1.dylib\n/Library/PostgreSQL8/lib/libpq.5.dylib\n/Library/Postgre",
       "thread_id": "thread-c758c895ca63",
       "thread_depth": 0,
-      "month": "2008-08"
+      "month": "2008-08",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2008q3/000463.html"
     },
     {
       "id": "msg-ab25bf4076fa",
@@ -85,7 +89,8 @@
       "body_snippet": "This is really a PostgreSQL-on-MacOS question.  On a modern Unix-alike you \ntell ld.so about such paths via entries in /etc/ld.so.conf.d, but then on \nall my systems libpq has been installed in standa",
       "thread_id": "thread-c758c895ca63",
       "thread_depth": 1,
-      "month": "2008-08"
+      "month": "2008-08",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2008q3/000464.html"
     },
     {
       "id": "msg-4be2f6bc3299",
@@ -103,7 +108,8 @@
       "body_snippet": "Are you compiling the R package from source, and if yes, there might  \nbe an install option to tell where the Postgres library is. But I am  \nnot familiar with that database.\n\nKasper\n\nOn Aug 21, 2008,",
       "thread_id": "thread-c758c895ca63",
       "thread_depth": 1,
-      "month": "2008-08"
+      "month": "2008-08",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2008q3/000465.html"
     },
     {
       "id": "msg-8a149565737f",
@@ -122,7 +128,8 @@
       "body_snippet": "On Thu, 21 Aug 2008, Kasper Daniel Hansen wrote:\n\n> Are you compiling the R package from source, and if yes, there might be an \n> install option to tell where the Postgres library is. But I am not fam",
       "thread_id": "thread-c758c895ca63",
       "thread_depth": 2,
-      "month": "2008-08"
+      "month": "2008-08",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2008q3/000466.html"
     },
     {
       "id": "msg-02f669f83b43",
@@ -141,7 +148,8 @@
       "body_snippet": "> This is really a PostgreSQL-on-MacOS question.  On a modern Unix- \n> alike you tell ld.so about such paths via entries in /etc/ \n> ld.so.conf.d, but then on all my systems libpq has been installed i",
       "thread_id": "thread-c758c895ca63",
       "thread_depth": 2,
-      "month": "2008-08"
+      "month": "2008-08",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2008q3/000467.html"
     },
     {
       "id": "msg-4cfc771f37f9",
@@ -157,7 +165,8 @@
       "body_snippet": "Hello all,\n\nRSQLite 0.7-0 has been uploaded to CRAN.  The primary change in this\nversion is that the included SQLite has been upgraded to SQLite 3.6.0.\nThe new SQLite has a new feature, R-Trees, that ",
       "thread_id": "thread-4cfc771f37f9",
       "thread_depth": 0,
-      "month": "2008-08"
+      "month": "2008-08",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2008q3/000468.html"
     },
     {
       "id": "msg-d0f482763719",
@@ -173,7 +182,8 @@
       "body_snippet": "Greetings -- downloaded RMySQL 0.6.0, and on a table with timestamps  \nit gets them over as character.  Found an email in this group from  \n2006, about switching to RODBC, did that, got lovely floats.",
       "thread_id": "thread-d0f482763719",
       "thread_depth": 0,
-      "month": "2008-08"
+      "month": "2008-08",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2008q3/000469.html"
     },
     {
       "id": "msg-688cafad8281",
@@ -191,7 +201,8 @@
       "body_snippet": "On Sat, 30 Aug 2008, Alexy Khrabrov wrote:\n\n> Greetings -- downloaded RMySQL 0.6.0, and on a table with timestamps it gets \n> them over as character.  Found an email in this group from 2006, about \n> ",
       "thread_id": "thread-d0f482763719",
       "thread_depth": 1,
-      "month": "2008-08"
+      "month": "2008-08",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2008q3/000470.html"
     }
   ],
   "threads": [

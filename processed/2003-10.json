@@ -17,7 +17,8 @@
       "body_snippet": "Hi,\n\n \n\nI'd like to try the RMySQL or RmSQL packages, but they are not to be\nfound via the \"Install package(s) from CRAN\" menu.\n\nI found the sources for these packages on the CRAN web page;\nunfortunat",
       "thread_id": "thread-fc4a8b671581",
       "thread_depth": 0,
-      "month": "2003-10"
+      "month": "2003-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2003q4/000091.html"
     },
     {
       "id": "msg-b6a7f50a8283",
@@ -35,7 +36,8 @@
       "body_snippet": "Hi Adrian,\n\nYou may download a windows binary from\n    http://stat.bell-labs.com/RS-DBI/download\n\nHope this helps,\n\n--\nDavid\n\nAdrian Dusa wrote:\n> Hi,\n> \n>  \n> \n> I'd like to try the RMySQL or RmSQL p",
       "thread_id": "thread-fc4a8b671581",
       "thread_depth": 1,
-      "month": "2003-10"
+      "month": "2003-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2003q4/000092.html"
     },
     {
       "id": "msg-2a15aea0269e",
@@ -51,7 +53,8 @@
       "body_snippet": "It's very good that David is providing a binary, but please check\ncompatibility with your version of RMySQL and your version of R (I believe\nthere are problems with R 1.8.0).\n\nWe gave up providing bin",
       "thread_id": "thread-fc4a8b671581",
       "thread_depth": 2,
-      "month": "2003-10"
+      "month": "2003-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2003q4/000093.html"
     },
     {
       "id": "msg-228cb8263fd8",
@@ -69,7 +72,8 @@
       "body_snippet": "Prof Brian Ripley wrote:\n\n> It's very good that David is providing a binary, \n\nIndeed, thanks to David!\n\n> but please check\n> compatibility with your version of RMySQL and your version of R (I believe",
       "thread_id": "thread-fc4a8b671581",
       "thread_depth": 3,
-      "month": "2003-10"
+      "month": "2003-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2003q4/000094.html"
     },
     {
       "id": "msg-29e0fb36b7ba",
@@ -85,7 +89,8 @@
       "body_snippet": "Thank you all,\n\nI'll keep an eye open on CRAN for more news.\nAdrian\n\n-----Original Message-----\nFrom: Uwe Ligges [mailto:ligges at statistik.uni-dortmund.de] \nSent: Saturday, October 25, 2003 4:42 PM\n",
       "thread_id": "thread-fc4a8b671581",
       "thread_depth": 4,
-      "month": "2003-10"
+      "month": "2003-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2003q4/000095.html"
     },
     {
       "id": "msg-537fdc29d87e",
@@ -97,11 +102,12 @@
       "subject_clean": "ROracle fetch problems",
       "in_reply_to": null,
       "references": [],
-      "body_plain": "Hi,\n\nI am using the ROralce interface (version 0.5-0) for accessing my Oracle \ndatabase from R 1.7.1 (64 bit version, powerpc-ibm-aix5.1.0.0). The \nconnection works fine, however, I get some strange results using \n'fetch'. I found out that 'fetch' fetches only every second row of the \n'native' SQL-results and fills up the rest of the rows with zeros.\nHere a draft:\n\nThe native SQL-query:\n\n12:43:07 SQL>  SELECT OBS_DAY, OBS_YEAR, STAT_ID FROM WILD_PHENO_OBS \nWHERE PHASE_ID=7 AND OBS_YEAR BETWEEN 1951 AND 2000 order by stat_id, \nobs_year, obs_day;\nPLEASE HIT RETURN TO CONTINUE\n\n OBS_DAY   OBS_YEAR    STAT_ID\n---------- ---------- ----------\n     133       1954   11110000\n     140       1955   11110000\n     147       1956   11110000\n     133       1957   11110000\n     146       1958   11110000\n     118       1959   11110000\n     132       1960   11110000\n     120       1961   11110000\n     138       1962   11110000\n     144       1963   11110000\n\nHere what fetches R:\n\n >  DBres <- dbSendQuery(DBcon, \"SELECT OBS_DAY, OBS_YEAR, STAT_ID FROM \nWILD_PHENO_OBS WHERE PHASE_ID=7 AND OBS_YEAR BETWEEN 1951 AND 2000 order \nby stat_id, obs_year, obs_day\")\n >  fetch(DBres,n=10)\nOBS_DAY OBS_YEAR  STAT_ID\n0     140     1955 11110000\n1     133     1957 11110000\n2     118     1959 11110000\n3     120     1961 11110000\n4     144     1963 11110000\n5       0        0 11110000\n6       0        0 11110000\n7       0        0 11110000\n8       0        0 11110000\n9       0        0 11110000\n >\n > dbGetInfo(ora)\n$drvName\n[1] \"Oracle (ProC/C++)\"\n\n$connectionIds\n$connectionIds[[1]]\n<OraConnection:(3801338,0)>\n\n\n$\"fetch_default_rec\"\n[1] 500\n\n$managerId\n<OraDriver:(3801338)>\n\n$length\n[1] 10\n\n$\"num_con\"\n[1] 1\n\n$counter\n[1] 1\n\n$clientVersion\n[1] \"0.5-0\"\n\nAny idea what's the problem here?\n\nGreetings,\n\njoerg\n\n-- \n----------------------------------------------------------\nJ?rg Schaber\nInstituto Cavanilles de Biodiversidad y Biologia Evolutiva\nUniversidad de Valencia               Tel.: ++34 96 354 3666\nA.C. 22085                            Fax.: ++34 96 354 3670\n46071 Valencia, Espa?a                email : jos at uv.es",
+      "body_plain": "Hi,\n\nI am using the ROralce interface (version 0.5-0) for accessing my Oracle \ndatabase from R 1.7.1 (64 bit version, powerpc-ibm-aix5.1.0.0). The \nconnection works fine, however, I get some strange results using \n'fetch'. I found out that 'fetch' fetches only every second row of the \n'native' SQL-results and fills up the rest of the rows with zeros.\nHere a draft:\n\nThe native SQL-query:\n\n12:43:07 SQL>  SELECT OBS_DAY, OBS_YEAR, STAT_ID FROM WILD_PHENO_OBS \nWHERE PHASE_ID=7 AND OBS_YEAR BETWEEN 1951 AND 2000 order by stat_id, \nobs_year, obs_day;\nPLEASE HIT RETURN TO CONTINUE\n\n OBS_DAY   OBS_YEAR    STAT_ID\n---------- ---------- ----------\n     133       1954   11110000\n     140       1955   11110000\n     147       1956   11110000\n     133       1957   11110000\n     146       1958   11110000\n     118       1959   11110000\n     132       1960   11110000\n     120       1961   11110000\n     138       1962   11110000\n     144       1963   11110000\n\nHere what fetches R:\n\n >  DBres <- dbSendQuery(DBcon, \"SELECT OBS_DAY, OBS_YEAR, STAT_ID FROM \nWILD_PHENO_OBS WHERE PHASE_ID=7 AND OBS_YEAR BETWEEN 1951 AND 2000 order \nby stat_id, obs_year, obs_day\")\n >  fetch(DBres,n=10)\nOBS_DAY OBS_YEAR  STAT_ID\n0     140     1955 11110000\n1     133     1957 11110000\n2     118     1959 11110000\n3     120     1961 11110000\n4     144     1963 11110000\n5       0        0 11110000\n6       0        0 11110000\n7       0        0 11110000\n8       0        0 11110000\n9       0        0 11110000\n >\n > dbGetInfo(ora)\n$drvName\n[1] \"Oracle (ProC/C++)\"\n\n$connectionIds\n$connectionIds[[1]]\n<OraConnection:(3801338,0)>\n\n\n$\"fetch_default_rec\"\n[1] 500\n\n$managerId\n<OraDriver:(3801338)>\n\n$length\n[1] 10\n\n$\"num_con\"\n[1] 1\n\n$counter\n[1] 1\n\n$clientVersion\n[1] \"0.5-0\"\n\nAny idea what's the problem here?\n\nGreetings,\n\njoerg\n\n-- \n----------------------------------------------------------\nJörg Schaber\nInstituto Cavanilles de Biodiversidad y Biologia Evolutiva\nUniversidad de Valencia               Tel.: ++34 96 354 3666\nA.C. 22085                            Fax.: ++34 96 354 3670\n46071 Valencia, España                email : jos at uv.es",
       "body_snippet": "Hi,\n\nI am using the ROralce interface (version 0.5-0) for accessing my Oracle \ndatabase from R 1.7.1 (64 bit version, powerpc-ibm-aix5.1.0.0). The \nconnection works fine, however, I get some strange r",
       "thread_id": "thread-537fdc29d87e",
       "thread_depth": 0,
-      "month": "2003-10"
+      "month": "2003-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2003q4/000096.html"
     },
     {
       "id": "msg-2f871cab61ed",
@@ -117,7 +123,8 @@
       "body_snippet": "Hi.\n\nIt's my first approach with R so don't be mad with me for the simple\nquestion I'm going to make.\n\nHow do I connect to my Postgresql databases on my Debian Woody.\nThese are the r-* packages I've i",
       "thread_id": "thread-2f871cab61ed",
       "thread_depth": 0,
-      "month": "2003-10"
+      "month": "2003-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2003q4/000097.html"
     },
     {
       "id": "msg-7297eefa7996",
@@ -135,7 +142,8 @@
       "body_snippet": "On Thu, Oct 30, 2003 at 04:41:35PM +0100, Antonio wrote:\n> \n> Hi.\n> \n> It's my first approach with R so don't be mad with me for the simple\n> question I'm going to make.\n> \n> How do I connect to my Po",
       "thread_id": "thread-2f871cab61ed",
       "thread_depth": 1,
-      "month": "2003-10"
+      "month": "2003-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2003q4/000098.html"
     },
     {
       "id": "msg-865e8f6cf07c",
@@ -154,7 +162,8 @@
       "body_snippet": "-----BEGIN PGP SIGNED MESSAGE-----\nHash: SHA1\n\n* gioved? 30 ottobre 2003, alle 12:54, Dirk Eddelbuettel scrive:\n> \n> That looks like a very random mix of a 1.8.1 prerelease (from unstable), \n> and the",
       "thread_id": "thread-2f871cab61ed",
       "thread_depth": 2,
-      "month": "2003-10"
+      "month": "2003-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2003q4/000099.html"
     },
     {
       "id": "msg-afeac23ca6f1",
@@ -173,7 +182,8 @@
       "body_snippet": "-----BEGIN PGP SIGNED MESSAGE-----\nHash: SHA1\n\n* gioved? 30 ottobre 2003, alle 12:54, Dirk Eddelbuettel scrive:\n> \n> To return this to 'how do I connect to Pg under Debian 3.0':\n> \n> -- install odbc-p",
       "thread_id": "thread-2f871cab61ed",
       "thread_depth": 2,
-      "month": "2003-10"
+      "month": "2003-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2003q4/000100.html"
     },
     {
       "id": "msg-8ab7095646d0",
@@ -189,7 +199,8 @@
       "body_snippet": "-----BEGIN PGP SIGNED MESSAGE-----\nHash: SHA1\n\n\nHi,\n\nI've finally got a DSN working on my ODBC installation (via a\n~/.odbc.ini file) and I've tested it with the ODBC DataManager so I'm\nsure it's worki",
       "thread_id": "thread-8ab7095646d0",
       "thread_depth": 0,
-      "month": "2003-10"
+      "month": "2003-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2003q4/000101.html"
     },
     {
       "id": "msg-d9c9bf68c433",
@@ -205,7 +216,8 @@
       "body_snippet": "On Fri, 31 Oct 2003, Geotronix wrote:\n\n> -----BEGIN PGP SIGNED MESSAGE-----\n> Hash: SHA1\n> \n> \n> Hi,\n> \n> I've finally got a DSN working on my ODBC installation (via a\n> ~/.odbc.ini file) and I've tes",
       "thread_id": "thread-8ab7095646d0",
       "thread_depth": 1,
-      "month": "2003-10"
+      "month": "2003-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2003q4/000102.html"
     },
     {
       "id": "msg-fb44b550c7dd",
@@ -224,7 +236,8 @@
       "body_snippet": "-----BEGIN PGP SIGNED MESSAGE-----\nHash: SHA1\n\n* venerd? 31 ottobre 2003, alle 11:29, Prof Brian Ripley scrive:\n> \n> It is a unixODBC problem, as that's what gave the error message.\n> Check that you c",
       "thread_id": "thread-8ab7095646d0",
       "thread_depth": 2,
-      "month": "2003-10"
+      "month": "2003-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2003q4/000104.html"
     },
     {
       "id": "msg-d030fa884bcc",
@@ -242,7 +255,8 @@
       "body_snippet": "Geotronix wrote:\n> If unixODBC finds my DSN why isn't RODBC finding it? (This means it's\n> not a unixODBC problem, right?)\n> \n\nFWIW, I saw the other day that the new release of bioconductor includes \n",
       "thread_id": "thread-8ab7095646d0",
       "thread_depth": 1,
-      "month": "2003-10"
+      "month": "2003-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2003q4/000103.html"
     }
   ],
   "threads": [

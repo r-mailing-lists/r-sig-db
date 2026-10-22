@@ -17,7 +17,8 @@
       "body_snippet": "I?m having trouble installing Roracle_0.5-9 in R version 2.11.1 on a RHEL5 machine.\n\nHere is the error message (full transcript at the end of this email):\n\nproc CODE=ANSI_C MODE=ORACLE INCLUDE=/usr/li",
       "thread_id": "thread-81ae8c191102",
       "thread_depth": 0,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000903.html"
     },
     {
       "id": "msg-142969c37174",
@@ -31,11 +32,12 @@
       "references": [
         "<C8CBC37C.5CFD9%macqueen1@llnl.gov>"
       ],
-      "body_plain": "On Oct 1, 2010, at 6:57 PM, MacQueen, Don wrote:\n\n> I?m having trouble installing Roracle_0.5-9 in R version 2.11.1 on a RHEL5 machine.\n> \n> Here is the error message (full transcript at the end of this email):\n> \n> proc CODE=ANSI_C MODE=ORACLE INCLUDE=/usr/lib64/R/include \\\n>                PARSE=NONE LINES=false PREFETCH=1 RS-Oracle.pc\n> proc: error while loading shared libraries: libclntsh.so.11.1: cannot open shared object file: No such file or directory\n> \n> However, the file libclntsh.so.11.1 is present in $ORACLE_HOME/lib, and is not empty.\n> \n> [157]% ls -l $ORACLE_HOME/lib/libclntsh.*\n> lrwxrwxrwx 1 root   root           17 Aug 19 14:09 /u01/app/oracle/product/11.2.0/db_1/lib/libclntsh.so -> libclntsh.so.11.1*\n> lrwxrwxrwx 1 root   root           17 Aug 19 14:10 /u01/app/oracle/product/11.2.0/db_1/lib/libclntsh.so.10.1 -> libclntsh.so.11.1*\n> -rwxr-xr-x 1 oracle oinstall 48724689 Sep 15  2009 /u01/app/oracle/product/11.2.0/db_1/lib/libclntsh.so.11.1*\n> \n> I had previously succeeded in installing Roracle on this machine; in fact, it?s still there, but:\n>> require(ROracle)\n> Loading required package: ROracle\n> Error: package 'ROracle' was built before R 2.10.0: please re-install it\n> \n> And I recall running $ORACLE_HOME/bin/genclntsh, which is why the required lib file has non-zero size.\n> \n> Given the error message, perhaps the ROracle installer is not looking in the right place, but if so I haven?t succeeded in ensuring it does. I have set LD_LIBRARY_PATH to include $ORACLE_HOME/lib.\n> \n> Suggestions would be much appreciated. I feel like I?m forgetting something that I?ve done before to install ROracle, but can?t think what it was.\n> \n> -Don\n\n\nDon,\n\nI have never used ROracle so may not be able to offer detailed assistance. From what I can tell, the package has not been updated since late 2007, so presumably the package itself is fairly stable and any installation issues are external to the package itself. That being said, there are Warnings present on CRAN for the package, largely related to the help files, which is not a surprise given the increased depth of checking now present. The change in static to dynamic help files is the primary reason for the error you are getting above related to the package being built prior to R 2.10.0.\n\nIf you have not yet, you may wish to review:\n\n  http://cran.r-project.org/web/packages/ROracle/INSTALL\n\nto see if there are any hints there.  \n\nOne other thing comes to mind, which is the setting of LD_LIBRARY_PATH. Be sure to set that in /etc/ld.so.conf and then run (as root) ldconfig to update the configuration. If you just set LD_LIBRARY_PATH in the shell environment (eg. in the bash profile), it may not get picked up by R. I found that to be an issue using RODBC with Oracle when I was on Fedora.\n\nOtherwise, you may wish to contact David James directly to solicit assistance.\n\nHTH,\n\nMarc Schwartz",
-      "body_snippet": "On Oct 1, 2010, at 6:57 PM, MacQueen, Don wrote:\n\n> I?m having trouble installing Roracle_0.5-9 in R version 2.11.1 on a RHEL5 machine.\n> \n> Here is the error message (full transcript at the end of th",
+      "body_plain": "On Oct 1, 2010, at 6:57 PM, MacQueen, Don wrote:\n\n> I‚m having trouble installing Roracle_0.5-9 in R version 2.11.1 on a RHEL5 machine.\n> \n> Here is the error message (full transcript at the end of this email):\n> \n> proc CODE=ANSI_C MODE=ORACLE INCLUDE=/usr/lib64/R/include \\\n>                PARSE=NONE LINES=false PREFETCH=1 RS-Oracle.pc\n> proc: error while loading shared libraries: libclntsh.so.11.1: cannot open shared object file: No such file or directory\n> \n> However, the file libclntsh.so.11.1 is present in $ORACLE_HOME/lib, and is not empty.\n> \n> [157]% ls -l $ORACLE_HOME/lib/libclntsh.*\n> lrwxrwxrwx 1 root   root           17 Aug 19 14:09 /u01/app/oracle/product/11.2.0/db_1/lib/libclntsh.so -> libclntsh.so.11.1*\n> lrwxrwxrwx 1 root   root           17 Aug 19 14:10 /u01/app/oracle/product/11.2.0/db_1/lib/libclntsh.so.10.1 -> libclntsh.so.11.1*\n> -rwxr-xr-x 1 oracle oinstall 48724689 Sep 15  2009 /u01/app/oracle/product/11.2.0/db_1/lib/libclntsh.so.11.1*\n> \n> I had previously succeeded in installing Roracle on this machine; in fact, it‚s still there, but:\n>> require(ROracle)\n> Loading required package: ROracle\n> Error: package 'ROracle' was built before R 2.10.0: please re-install it\n> \n> And I recall running $ORACLE_HOME/bin/genclntsh, which is why the required lib file has non-zero size.\n> \n> Given the error message, perhaps the ROracle installer is not looking in the right place, but if so I haven‚t succeeded in ensuring it does. I have set LD_LIBRARY_PATH to include $ORACLE_HOME/lib.\n> \n> Suggestions would be much appreciated. I feel like I‚m forgetting something that I‚ve done before to install ROracle, but can‚t think what it was.\n> \n> -Don\n\n\nDon,\n\nI have never used ROracle so may not be able to offer detailed assistance. From what I can tell, the package has not been updated since late 2007, so presumably the package itself is fairly stable and any installation issues are external to the package itself. That being said, there are Warnings present on CRAN for the package, largely related to the help files, which is not a surprise given the increased depth of checking now present. The change in static to dynamic help files is the primary reason for the error you are getting above related to the package being built prior to R 2.10.0.\n\nIf you have not yet, you may wish to review:\n\n  http://cran.r-project.org/web/packages/ROracle/INSTALL\n\nto see if there are any hints there.  \n\nOne other thing comes to mind, which is the setting of LD_LIBRARY_PATH. Be sure to set that in /etc/ld.so.conf and then run (as root) ldconfig to update the configuration. If you just set LD_LIBRARY_PATH in the shell environment (eg. in the bash profile), it may not get picked up by R. I found that to be an issue using RODBC with Oracle when I was on Fedora.\n\nOtherwise, you may wish to contact David James directly to solicit assistance.\n\nHTH,\n\nMarc Schwartz",
+      "body_snippet": "On Oct 1, 2010, at 6:57 PM, MacQueen, Don wrote:\n\n> I‚m having trouble installing Roracle_0.5-9 in R version 2.11.1 on a RHEL5 machine.\n> \n> Here is the error message (full transcript at the end of th",
       "thread_id": "thread-81ae8c191102",
       "thread_depth": 1,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000904.html"
     },
     {
       "id": "msg-95525741de8f",
@@ -54,7 +56,8 @@
       "body_snippet": "Marc, et. al,\n\n    Below are all of the pertinent version info.  However, I think versions,\netc., are somewhat irrelevant.  Instead, somewhere there must be an\nenvironment variable or something that '",
       "thread_id": "thread-95525741de8f",
       "thread_depth": 0,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000906.html"
     },
     {
       "id": "msg-80bf708e5712",
@@ -70,7 +73,8 @@
       "body_snippet": "I am connecting to an Oracle database with RJDBC, and creating a data frame with dbGetQuery.  When I get values return, values which are NULL in the database are being returned as 0 from my query.  Ho",
       "thread_id": "thread-80bf708e5712",
       "thread_depth": 0,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000905.html"
     },
     {
       "id": "msg-fd1cce499a2b",
@@ -90,7 +94,8 @@
       "body_snippet": "On Oct 4, 2010, at 5:15 PM, Mike Williamson wrote:\n\n> Marc, et. al,\n> \n>    Below are all of the pertinent version info.  However, I think versions,\n> etc., are somewhat irrelevant.  Instead, somewher",
       "thread_id": "thread-95525741de8f",
       "thread_depth": 1,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000907.html"
     },
     {
       "id": "msg-d5e3f2742afe",
@@ -102,11 +107,12 @@
       "subject_clean": "Question about assigning values in a matrix, conditional on column first row; how to do the loop.",
       "in_reply_to": null,
       "references": [],
-      "body_plain": "Hello, I?m new at programming and I will greatly appreciate if you can help me with this. \n\n\nI have a very large matrix (hundreds of rows and columns), with the first raw filled with different numbers (between 0 and 1). The rest of the matrix is filled with values 0, 1, 2. What I need is to replace the values in the matrix (except the first row will has to remain intact). More specifically:  in each column I have to replace value 2 for the value of the first row. Also, I want to replace the values 0 and 1 by -999. I was able to write the loop for a vector but I do not know how to expand the loop to the matrix. \n\nPlease see these examples\n\nFor a vector I did this and it works\n\n> V = c(0.1,1,0,2)\n> V\n[1] 0.1 1.0 0.0 2.0\n\n> for (i in 2:length(V)){if(V[i]==2)V[i]=V[1]\n+                                 else (V[i]=-999)}\n\n> V\n[1]    0.1 -999.0 -999.0    0.1\n\nFor a matrix I could not perform the task. Here it is an example of a small matrix and the expected result, but the original has more rows and columns.\n\n> matr <- matrix(c(0.1,1,0,2,0.5,1,2,2), nrow=4, ncol=2)\n> matr\n     [,1] [,2]\n[1,]  0.1  0.5\n[2,]  1.0  1.0\n[3,]  0.0  2.0\n[4,]  2.0  2.0\n\n> matr.expectedresult= matrix(c(0.1,-999,-999,0.1,0.5,-999,0.5,0.5), nrow=4, ncol=2)\n> matr.expectedresult\n       [,1]   [,2]\n[1,]    0.1    0.5\n[2,] -999.0 -999.0\n[3,] -999.0    0.5\n[4,]    0.1    0.5\n\nThank you very much!\n\nPaula",
-      "body_snippet": "Hello, I?m new at programming and I will greatly appreciate if you can help me with this. \n\n\nI have a very large matrix (hundreds of rows and columns), with the first raw filled with different numbers",
+      "body_plain": "Hello, I’m new at programming and I will greatly appreciate if you can help me with this. \n\n\nI have a very large matrix (hundreds of rows and columns), with the first raw filled with different numbers (between 0 and 1). The rest of the matrix is filled with values 0, 1, 2. What I need is to replace the values in the matrix (except the first row will has to remain intact). More specifically:  in each column I have to replace value 2 for the value of the first row. Also, I want to replace the values 0 and 1 by -999. I was able to write the loop for a vector but I do not know how to expand the loop to the matrix. \n\nPlease see these examples\n\nFor a vector I did this and it works\n\n> V = c(0.1,1,0,2)\n> V\n[1] 0.1 1.0 0.0 2.0\n\n> for (i in 2:length(V)){if(V[i]==2)V[i]=V[1]\n+                                 else (V[i]=-999)}\n\n> V\n[1]    0.1 -999.0 -999.0    0.1\n\nFor a matrix I could not perform the task. Here it is an example of a small matrix and the expected result, but the original has more rows and columns.\n\n> matr <- matrix(c(0.1,1,0,2,0.5,1,2,2), nrow=4, ncol=2)\n> matr\n     [,1] [,2]\n[1,]  0.1  0.5\n[2,]  1.0  1.0\n[3,]  0.0  2.0\n[4,]  2.0  2.0\n\n> matr.expectedresult= matrix(c(0.1,-999,-999,0.1,0.5,-999,0.5,0.5), nrow=4, ncol=2)\n> matr.expectedresult\n       [,1]   [,2]\n[1,]    0.1    0.5\n[2,] -999.0 -999.0\n[3,] -999.0    0.5\n[4,]    0.1    0.5\n\nThank you very much!\n\nPaula",
+      "body_snippet": "Hello, I’m new at programming and I will greatly appreciate if you can help me with this. \n\n\nI have a very large matrix (hundreds of rows and columns), with the first raw filled with different numbers",
       "thread_id": "thread-d5e3f2742afe",
       "thread_depth": 0,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000908.html"
     },
     {
       "id": "msg-ca41064349f4",
@@ -124,7 +130,8 @@
       "body_snippet": "> Hi,\n> \n> Does anyone have experience using RJDBC library to write to Sybase\n> datatable? The jdbc driver I am using is jConnect 6.0. I can\n> successfully write into a new datatable, but have problem",
       "thread_id": "thread-ca41064349f4",
       "thread_depth": 0,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000909.html"
     },
     {
       "id": "msg-da9497cdb147",
@@ -140,7 +147,8 @@
       "body_snippet": "Hello, All:\n\n\n       How can I add rows to a MySQL database?\n\n\n       I can do it manually within MySQL server 5.1.50-community.  I can \nconnect to it using the RMySQL package.  When I tried \"dbReadTa",
       "thread_id": "thread-da9497cdb147",
       "thread_depth": 0,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000910.html"
     },
     {
       "id": "msg-640400a963ff",
@@ -158,7 +166,8 @@
       "body_snippet": "I think you're looking for an INSERT query, no?\n\nOn 10/9/2010 12:00 AM, Spencer Graves wrote:\n> Hello, All:\n>\n>\n> How can I add rows to a MySQL database?\n>\n>\n> I can do it manually within MySQL server",
       "thread_id": "thread-da9497cdb147",
       "thread_depth": 1,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000911.html"
     },
     {
       "id": "msg-a1eb7ef63967",
@@ -176,7 +185,8 @@
       "body_snippet": "On Sat, Oct 9, 2010 at 12:00 AM, Spencer Graves <\nspencer.graves at structuremonitoring.com> wrote:\n\n>  Hello, All:\n>\n>\n>       How can I add rows to a MySQL database?\n>\n>\n>       I can do it manually",
       "thread_id": "thread-da9497cdb147",
       "thread_depth": 1,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000912.html"
     },
     {
       "id": "msg-bc22d203535b",
@@ -195,7 +205,8 @@
       "body_snippet": "Hi, Sean and Jack Tanner:\n\n\n\n       It's hard to RTFM when I don't know which FMTR.  Thanks to you \nboth for helping me overcome this problem.\n\n\n             1.  Before I submitted this question, I re",
       "thread_id": "thread-da9497cdb147",
       "thread_depth": 2,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000913.html"
     },
     {
       "id": "msg-78fb5c4d1306",
@@ -211,7 +222,8 @@
       "body_snippet": "Hello,\n\npreviously I was using Mysql 5.0 and the pre-compiled RMysql library. After updating MySQL to 5.1 I had to compile RMysql from source since I could not find any compiled RMysql libraries.\n\nI f",
       "thread_id": "thread-78fb5c4d1306",
       "thread_depth": 0,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000914.html"
     },
     {
       "id": "msg-c8e87497c25f",
@@ -230,7 +242,8 @@
       "body_snippet": "Hello:\n\n\n\t  How can I connect to a MySQL database with RODBC under Vista?  I \ntried the following, inspired by Ripley's RODBC vignette:\n\n\n > MySQLcon <- odbcConnect('fillmoredb', uid='sbg', pwd='*****",
       "thread_id": "thread-da9497cdb147",
       "thread_depth": 2,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000915.html"
     },
     {
       "id": "msg-bb5d1997b221",
@@ -250,7 +263,8 @@
       "body_snippet": "On 11 October 2010 at 20:00, Spencer Graves wrote:\n| \n| \t  How can I connect to a MySQL database with RODBC under Vista?  I \n| tried the following, inspired by Ripley's RODBC vignette:\n| \n| \n|  > MySQ",
       "thread_id": "thread-da9497cdb147",
       "thread_depth": 3,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000916.html"
     },
     {
       "id": "msg-1f8abc59c4b7",
@@ -271,7 +285,8 @@
       "body_snippet": "Hi, Dirk, et al.:\n\n\n       Thanks for the quick reply.\n\n\n       What are the strengths and weaknesses of using RODBC vs. RMySQL?\n\n\n       I don't have either doing what I want yet, but I think I'm clo",
       "thread_id": "thread-da9497cdb147",
       "thread_depth": 4,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000917.html"
     },
     {
       "id": "msg-14a4c48d5cf4",
@@ -293,7 +308,8 @@
       "body_snippet": "On 11 October 2010 at 20:34, Spencer Graves wrote:\n|   Hi, Dirk, et al.:\n| \n| \n|        Thanks for the quick reply.\n| \n| \n|        What are the strengths and weaknesses of using RODBC vs. RMySQL?\n\nTha",
       "thread_id": "thread-da9497cdb147",
       "thread_depth": 5,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000918.html"
     },
     {
       "id": "msg-3645545fcab7",
@@ -316,7 +332,8 @@
       "body_snippet": "Hi, Dirk:\n\n\n       Thanks for the reply.  That gives me search terms for how to look \nfor more information and encourages me to try first with the MySQL / DBI \nsolution that I think I almost have work",
       "thread_id": "thread-da9497cdb147",
       "thread_depth": 6,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000919.html"
     },
     {
       "id": "msg-2851e8079db3",
@@ -334,7 +351,8 @@
       "body_snippet": "Dear Rusers,\n\nI am trying to feed my database with data from a file.\n\nBut since my file (2010101000.txt) there`s no headers I am facing problem\nbecause the\nresult data.frame is not separated my column",
       "thread_id": "thread-2851e8079db3",
       "thread_depth": 0,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000920.html"
     },
     {
       "id": "msg-88b0ae43c79e",
@@ -353,7 +371,8 @@
       "body_snippet": "Hi, Nilza:\n\n\n       Did you receive my reply to your earlier post to R-Help, which \nlooks to me identical to this \n(https://stat.ethz.ch/pipermail/r-help/2010-October/256012.html)?  I'd \nlike to know ",
       "thread_id": "thread-2851e8079db3",
       "thread_depth": 1,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000921.html"
     },
     {
       "id": "msg-492808c4ed6b",
@@ -373,7 +392,8 @@
       "body_snippet": "Dear Spencer,\n\nThank you for your help. I read your email  and that`s the reason why I sent\nan email to r-sig-db as you suggested.\n But I have just realized that you suggested the command below too. I",
       "thread_id": "thread-2851e8079db3",
       "thread_depth": 2,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000922.html"
     },
     {
       "id": "msg-289e34ebc09b",
@@ -389,7 +409,8 @@
       "body_snippet": "I am trying to use a stored procedure (MS SQL Server 2005) that requires an xml input (R 2.11.0, RODBC 1.3-2).  This stored procedure returns a header/metadata and a data table (which I verified in DB",
       "thread_id": "thread-289e34ebc09b",
       "thread_depth": 0,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000923.html"
     },
     {
       "id": "msg-7d18e00b8fa1",
@@ -407,7 +428,8 @@
       "body_snippet": "Sorry, this is a question about ODBC, not R.\n\n\nOn Sun, 17 Oct 2010, Maciej Ombach wrote:\n\n>\n>\n> I am trying to use a stored procedure (MS SQL Server 2005) that requires an xml input (R 2.11.0, RODBC 1",
       "thread_id": "thread-289e34ebc09b",
       "thread_depth": 1,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000924.html"
     },
     {
       "id": "msg-8c39cfe98790",
@@ -423,7 +445,8 @@
       "body_snippet": "Hi\n\nI am unable to find R PostgreSQL ( I am on WIndows, R 2.12.0 ) via CRAN.\n\nIs the package still  available and working?\n\nAlso what are the differences between RODBC ,RPostgreSQL and RpgSQL- and\nwhi",
       "thread_id": "thread-8c39cfe98790",
       "thread_depth": 0,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000925.html"
     },
     {
       "id": "msg-917a2e4f986e",
@@ -441,7 +464,8 @@
       "body_snippet": "http://cran.r-project.org/web/packages/RPostgreSQL/index.html\n\nIt is source only and a new version was released 17 Oct 2010.  You will need to compile from the source.\n\nNeil\n\nOn Oct 24, 2010, at 1:10 ",
       "thread_id": "thread-8c39cfe98790",
       "thread_depth": 1,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000926.html"
     },
     {
       "id": "msg-65a9b7da0051",
@@ -460,7 +484,8 @@
       "body_snippet": "how do I do that in windows please.\n\najay\n\nWebsites-\nhttp://decisionstats.com\nhttp://dudeofdata.com\n\n\nLinkedin- www.linkedin.com/in/ajayohri\n\n\n\n\nOn Sun, Oct 24, 2010 at 11:50 PM, Neil Tiffin <neilt at",
       "thread_id": "thread-8c39cfe98790",
       "thread_depth": 2,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000927.html"
     },
     {
       "id": "msg-de59b072fe8f",
@@ -479,7 +504,8 @@
       "body_snippet": "On 24 October 2010 at 13:20, Neil Tiffin wrote:\n| It is source only and a new version was released 17 Oct 2010.  You will need to compile from the source.\n\nCorrect. The windows build systems for CRAN ",
       "thread_id": "thread-8c39cfe98790",
       "thread_depth": 2,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000928.html"
     },
     {
       "id": "msg-9c87dc35a4aa",
@@ -499,7 +525,8 @@
       "body_snippet": "On 25 October 2010 at 00:10, Ajay Ohri wrote:\n| how do I do that in windows please.\n\nIf everything else fails, you could consider reading the R manuals\n'Installation and Administration' and 'Writing R",
       "thread_id": "thread-8c39cfe98790",
       "thread_depth": 3,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000929.html"
     },
     {
       "id": "msg-6f2872e9ecd4",
@@ -520,7 +547,8 @@
       "body_snippet": "If you have only a source package that is known to work with current R and\njust want a binary (32- or 64-bit) Windows build of it, you could make use\nof the building service offered athttp://win-build",
       "thread_id": "thread-8c39cfe98790",
       "thread_depth": 4,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000930.html"
     },
     {
       "id": "msg-1d121d05c411",
@@ -542,7 +570,8 @@
       "body_snippet": "On 25 October 2010 at 00:44, Ajay Ohri wrote:\n| If you have only a source package that is known to work with current R and\n| just want a binary (32- or 64-bit) Windows build of it, you could make use\n",
       "thread_id": "thread-8c39cfe98790",
       "thread_depth": 5,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000931.html"
     },
     {
       "id": "msg-70897cde5935",
@@ -560,7 +589,8 @@
       "body_snippet": "On Sun, Oct 24, 2010 at 2:10 PM, Ajay Ohri <ohri2007 at gmail.com> wrote:\n> Hi\n>\n> I am unable to find R PostgreSQL ( I am on WIndows, R 2.12.0 ) via CRAN.\n>\n> Is the package still ?available and work",
       "thread_id": "thread-8c39cfe98790",
       "thread_depth": 1,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000932.html"
     },
     {
       "id": "msg-55a3c8e06fd5",
@@ -578,7 +608,8 @@
       "body_snippet": "Thank you  Gabor\n\nRpgSQL did the job nicely\n\nRegards\n\nAjay\n\nWebsites-\nhttp://decisionstats.com\nhttp://dudeofdata.com\n\n\nLinkedin- www.linkedin.com/in/ajayohri\n\n\n\n\nOn Tue, Oct 26, 2010 at 3:30 PM, <r-si",
       "thread_id": "thread-55a3c8e06fd5",
       "thread_depth": 0,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000933.html"
     },
     {
       "id": "msg-fb9c82deabe4",
@@ -594,7 +625,8 @@
       "body_snippet": "Dear Rusers,\n\nI am using Rscript and I'd like to use arguments as an input.\nI need it because I will use these arguments to consult Mysql  Databse using\n(SELECT) .\nI need different select to each Mode",
       "thread_id": "thread-fb9c82deabe4",
       "thread_depth": 0,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000934.html"
     },
     {
       "id": "msg-21350abe407c",
@@ -612,7 +644,8 @@
       "body_snippet": "On Tue, Oct 26, 2010 at 3:23 PM, Nilza BARROS <nilzabarros at gmail.com> wrote:\n\n> Dear Rusers,\n>\n> I am using Rscript and I'd like to use arguments as an input.\n> I need it because I will use these a",
       "thread_id": "thread-fb9c82deabe4",
       "thread_depth": 1,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000935.html"
     },
     {
       "id": "msg-d38084be14ff",
@@ -628,7 +661,8 @@
       "body_snippet": "Hello:\n\n\n       I'm not very unixed, and I'm trying to install RMySQL under \nCentOS 5.5 version of Linux.  I'm having trouble parsing the \ninstallation instructions, e.g., at \n\"http://cran.fhcrc.org/w",
       "thread_id": "thread-d38084be14ff",
       "thread_depth": 0,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000936.html"
     },
     {
       "id": "msg-e379741e9646",
@@ -646,7 +680,8 @@
       "body_snippet": "Hi,\n\nDid you install mysql-devel package?\nOn CentOS\n# yum install mysql-devel\nas root. That should install the library and headers required for\nMySQL client development.\n\nProvided R is well installed ",
       "thread_id": "thread-d38084be14ff",
       "thread_depth": 1,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000937.html"
     },
     {
       "id": "msg-c1375d5e17cc",
@@ -665,7 +700,8 @@
       "body_snippet": "Hi, Tomjoaki:  It worked.  Thanks very much.  Best Wishes, Spencer\n\n\nOn 10/26/2010 7:13 PM, Tomoaki NISHIYAMA wrote:\n> Hi,\n>\n> Did you install mysql-devel package?\n> On CentOS\n> # yum install mysql-de",
       "thread_id": "thread-d38084be14ff",
       "thread_depth": 2,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000938.html"
     },
     {
       "id": "msg-3fa263d45dcc",
@@ -684,7 +720,8 @@
       "body_snippet": "Dear R users,\n\nThanks Sean for your idea. But since  I am getting used to using R in my\nall  tasks I 'd like to know if the Rusers can show me a better way to use\narguments in Rscript or if the way I ",
       "thread_id": "thread-fb9c82deabe4",
       "thread_depth": 2,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000939.html"
     },
     {
       "id": "msg-ce8d2765c205",
@@ -704,7 +741,8 @@
       "body_snippet": "On Thu, Oct 28, 2010 at 9:06 AM, Nilza BARROS <nilzabarros at gmail.com> wrote:\n\n> Dear R users,\n>\n> Thanks Sean for your idea. But since  I am getting used to using R in my\n> all  tasks I 'd like to ",
       "thread_id": "thread-fb9c82deabe4",
       "thread_depth": 3,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000940.html"
     },
     {
       "id": "msg-0393d4d33e89",
@@ -725,7 +763,8 @@
       "body_snippet": "OK, Thank you! You're  rigth. It is better to sent my question to r-help.\nBut I will check optparse and getopt.\n\nBye and Best Regards,\nNilza\n\nOn Thu, Oct 28, 2010 at 1:13 PM, Sean Davis <sdavis2 at ma",
       "thread_id": "thread-fb9c82deabe4",
       "thread_depth": 4,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000941.html"
     },
     {
       "id": "msg-d0a4d8b657ed",
@@ -743,7 +782,8 @@
       "body_snippet": "On Tue, Oct 26, 2010 at 3:23 PM, Nilza BARROS <nilzabarros at gmail.com> wrote:\n> Dear Rusers,\n>\n> I am using Rscript and I'd like to use arguments as an input.\n> I need it because I will use these ar",
       "thread_id": "thread-fb9c82deabe4",
       "thread_depth": 1,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000942.html"
     },
     {
       "id": "msg-309ca0e6b5c6",
@@ -759,7 +799,8 @@
       "body_snippet": "Hi,\nCan you help with this\n\n> driver<-pgSQL(classPath=\"D:\\\\rtemp\\\\postgresql-9.0-801.jdbc4.zip\")\n> con <- dbConnect(driver, user=\"postgres\", password=\"postgres\",\ndbname=\"demo\")\n> con\nAn object of clas",
       "thread_id": "thread-309ca0e6b5c6",
       "thread_depth": 0,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000943.html"
     },
     {
       "id": "msg-a9ff9891c03e",
@@ -777,7 +818,8 @@
       "body_snippet": "On 31 October 2010 at 17:39, Xiaobo Gu wrote:\n| Hi,\n| Can you help with this\n| \n| > driver<-pgSQL(classPath=\"D:\\\\rtemp\\\\postgresql-9.0-801.jdbc4.zip\")\n| > con <- dbConnect(driver, user=\"postgres\", pas",
       "thread_id": "thread-309ca0e6b5c6",
       "thread_depth": 1,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000944.html"
     },
     {
       "id": "msg-3f71f428e1ae",
@@ -795,7 +837,8 @@
       "body_snippet": "On Sun, Oct 31, 2010 at 5:39 AM, Xiaobo Gu <guxiaobo1982 at gmail.com> wrote:\n> Hi,\n> Can you help with this\n>\n>> driver<-pgSQL(classPath=\"D:\\\\rtemp\\\\postgresql-9.0-801.jdbc4.zip\")\n>> con <- dbConnect",
       "thread_id": "thread-309ca0e6b5c6",
       "thread_depth": 1,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000945.html"
     },
     {
       "id": "msg-0bf15f42300d",
@@ -814,7 +857,8 @@
       "body_snippet": "On Sun, Oct 31, 2010 at 9:26 AM, Dirk Eddelbuettel <edd at debian.org> wrote:\n>\n> On 31 October 2010 at 17:39, Xiaobo Gu wrote:\n> | Hi,\n> | Can you help with this\n> |\n> | > driver<-pgSQL(classPath=\"D:",
       "thread_id": "thread-309ca0e6b5c6",
       "thread_depth": 2,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000946.html"
     },
     {
       "id": "msg-265bbba567a0",
@@ -833,7 +877,8 @@
       "body_snippet": "On Sun, Oct 31, 2010 at 1:01 PM, Gabor Grothendieck\n<ggrothendieck at gmail.com> wrote:\n> On Sun, Oct 31, 2010 at 5:39 AM, Xiaobo Gu <guxiaobo1982 at gmail.com> wrote:\n>> Hi,\n>> Can you help with this",
       "thread_id": "thread-309ca0e6b5c6",
       "thread_depth": 2,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000947.html"
     },
     {
       "id": "msg-5c8964414a99",
@@ -853,7 +898,8 @@
       "body_snippet": "On 31 October 2010 at 13:03, Gabor Grothendieck wrote:\n| On Sun, Oct 31, 2010 at 9:26 AM, Dirk Eddelbuettel <edd at debian.org> wrote:\n| > Try casting the (SQL) date to (SQL) character, you can probab",
       "thread_id": "thread-309ca0e6b5c6",
       "thread_depth": 3,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000948.html"
     },
     {
       "id": "msg-64e589d86dc7",
@@ -875,7 +921,8 @@
       "body_snippet": "On Sun, Oct 31, 2010 at 10:17 PM, Xiaobo Gu <guxiaobo1982 at gmail.com> wrote:\n> Hi,\n> What's the versions for all the related components, R, DBI, rJava,RJDBC,\n> RpgSQL, PostgreSQL JDBC?\n>\n\nI am using",
       "thread_id": "thread-64e589d86dc7",
       "thread_depth": 0,
-      "month": "2010-10"
+      "month": "2010-10",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2010q4/000950.html"
     }
   ],
   "threads": [

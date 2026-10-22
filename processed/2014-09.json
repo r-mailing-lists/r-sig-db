@@ -17,7 +17,8 @@
       "body_snippet": "Just a note that rpg has been updated on CRAN in case anyone wants to try\nit out.\n\nMain features:\n1) designed for convenience\n2) most common use cases require least input\n3) parameterized queries\n4) a",
       "thread_id": "thread-141b1c6e6db0",
       "thread_depth": 0,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001442.html"
     },
     {
       "id": "msg-505e0bd478bb",
@@ -33,7 +34,8 @@
       "body_snippet": "Hadley,\n\nSince you mentioned DBI 0.3 in a recent email, could I make a request to add a dbSendUpdate() function to DBI, like the one in RJDBC?\n\nrequire(RJDBC)\n\n> find('dbSendQuery')\n[1] \"package:RJDBC",
       "thread_id": "thread-505e0bd478bb",
       "thread_depth": 0,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001443.html"
     },
     {
       "id": "msg-090604c218e9",
@@ -51,7 +53,8 @@
       "body_snippet": "That seems reasonable to me.  If no one objects strongly, can you\nplease file an issue at https://github.com/rstats-db/DBI/issues ?\n\nThanks,\n\nHadley\n\nOn Wed, Sep 3, 2014 at 3:59 PM, MacQueen, Don <mac",
       "thread_id": "thread-505e0bd478bb",
       "thread_depth": 1,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001444.html"
     },
     {
       "id": "msg-d35d9709aa74",
@@ -69,7 +72,8 @@
       "body_snippet": "A thought: should dbSendUpdate() return a boolean indicating success,\nor always return TRUE, otherwise throwing an error?\n\nHadley\n\nOn Wed, Sep 3, 2014 at 3:59 PM, MacQueen, Don <macqueen1 at llnl.gov>",
       "thread_id": "thread-505e0bd478bb",
       "thread_depth": 1,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001445.html"
     },
     {
       "id": "msg-1a4964233a1f",
@@ -88,7 +92,8 @@
       "body_snippet": "In ROracle we standardized on the second approach, namely always return TRUE, otherwise throw an error.\n\nAlso since UPDATE is not the only operation that does not return any results (although it might",
       "thread_id": "thread-505e0bd478bb",
       "thread_depth": 2,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001446.html"
     },
     {
       "id": "msg-d55915884772",
@@ -104,11 +109,12 @@
         "<CABdHhvEb+yajokahXy+Sc6kfJBNZ9NkckCNacog=bTvmK_PHdA@mail.gmail.com>",
         "<acce0757-fcd1-4a33-8f19-2fbab0ff3558@default>"
       ],
-      "body_plain": "IMHO\n\nthe general approach should be:\n\n- as long as R does deliver the the queries to the DB and the DB does \ngive response there should never ever be an R error - the function did \nwhat it should do: making sure things were delivered to DB\n\n- the return than should depend on what the DB said:\n   * 0/TRUE                    - no error, nothing else to say\n   * 1/FALSE                   - DB does complain somehow\n   * text/whatever appropriate - something was returned, ...\n\n- if however connection was lost during the execution of the function so \nit cannot be sure delivery went as expected an error should be issued\n\nBest, Peter\n\n\n\nAm 04.09.2014 16:28, schrieb Denis Mukhin:\n> In ROracle we standardized on the second approach, namely always return TRUE, otherwise throw an error.\n>\n> Also since UPDATE is not the only operation that does not return any results (although it might with a RETURNING clause) would a more generic name be more appropriate here? Besides DMLs there are also DDLs. Something like dbExecute(), dbSubmit(), dbSend() ...\n>\n> Denis\n>\n> -----Original Message-----\n> From: Hadley Wickham [mailto:hadley at rstudio.com]\n> Sent: Thursday, September 04, 2014 9:13 AM\n> To: MacQueen, Don\n> Cc: Simon Urbanek; R-sig-DB at r-project.org\n> Subject: Re: [R-sig-DB] Add a \"dbSendUpdate\" function to DBI?\n>\n> A thought: should dbSendUpdate() return a boolean indicating success, or always return TRUE, otherwise throwing an error?\n>\n> Hadley\n>\n> On Wed, Sep 3, 2014 at 3:59 PM, MacQueen, Don <macqueen1 at llnl.gov> wrote:\n>> Hadley,\n>>\n>> Since you mentioned DBI 0.3 in a recent email, could I make a request\n>> to add a dbSendUpdate() function to DBI, like the one in RJDBC?\n>>\n>> require(RJDBC)\n>>\n>>> find('dbSendQuery')\n>> [1] \"package:RJDBC\" \"package:DBI\"\n>>\n>>> find('dbSendUpdate')\n>> [1] \"package:RJDBC\"\n>>\n>> And from ?dbSendUpdate\n>>\n>>    'dbSendQuery' and 'dbSendUpdate' submit a SQL query to the\n>>    database. The difference between the two is only that\n>>    'dbSendUpdate' is used with DBML queries and thus doesn't return\n>>    any result set.\n>>\n>> I would find this helpful, because I could then use scripts unmodified\n>> with either ROracle or RJDBC.\n>> (I suppose adding it to DBI would mean that the one in RJDBC would\n>> have to be modified.)\n>>\n>>\n>> I have:\n>>\n>> Package Version\n>>    \"DBI\" \"0.3.0\"\n>>\n>> Package Version\n>> \"RJDBC\" \"0.2-4\"\n>>\n>>\n>> Thanks\n>> -Don\n>>\n>> --\n>> Don MacQueen\n>> Lawrence Livermore National Laboratory\n>> 7000 East Ave., L-627\n>> Livermore, CA 94550\n>> 925-423-1062\n>>\n>\n>\n>\n> --\n> http://had.co.nz/\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n-- \nPeter Mei?ner\nWorkgroup 'Comparative Parliamentary Politics'\nDepartment of Politics and Administration\nUniversity of Konstanz\nBox 216\n78457 Konstanz\nGermany\n\n+49 7531 88 5665\nhttp://www.polver.uni-konstanz.de/sieberer/home/",
+      "body_plain": "IMHO\n\nthe general approach should be:\n\n- as long as R does deliver the the queries to the DB and the DB does \ngive response there should never ever be an R error - the function did \nwhat it should do: making sure things were delivered to DB\n\n- the return than should depend on what the DB said:\n   * 0/TRUE                    - no error, nothing else to say\n   * 1/FALSE                   - DB does complain somehow\n   * text/whatever appropriate - something was returned, ...\n\n- if however connection was lost during the execution of the function so \nit cannot be sure delivery went as expected an error should be issued\n\nBest, Peter\n\n\n\nAm 04.09.2014 16:28, schrieb Denis Mukhin:\n> In ROracle we standardized on the second approach, namely always return TRUE, otherwise throw an error.\n>\n> Also since UPDATE is not the only operation that does not return any results (although it might with a RETURNING clause) would a more generic name be more appropriate here? Besides DMLs there are also DDLs. Something like dbExecute(), dbSubmit(), dbSend() ...\n>\n> Denis\n>\n> -----Original Message-----\n> From: Hadley Wickham [mailto:hadley at rstudio.com]\n> Sent: Thursday, September 04, 2014 9:13 AM\n> To: MacQueen, Don\n> Cc: Simon Urbanek; R-sig-DB at r-project.org\n> Subject: Re: [R-sig-DB] Add a \"dbSendUpdate\" function to DBI?\n>\n> A thought: should dbSendUpdate() return a boolean indicating success, or always return TRUE, otherwise throwing an error?\n>\n> Hadley\n>\n> On Wed, Sep 3, 2014 at 3:59 PM, MacQueen, Don <macqueen1 at llnl.gov> wrote:\n>> Hadley,\n>>\n>> Since you mentioned DBI 0.3 in a recent email, could I make a request\n>> to add a dbSendUpdate() function to DBI, like the one in RJDBC?\n>>\n>> require(RJDBC)\n>>\n>>> find('dbSendQuery')\n>> [1] \"package:RJDBC\" \"package:DBI\"\n>>\n>>> find('dbSendUpdate')\n>> [1] \"package:RJDBC\"\n>>\n>> And from ?dbSendUpdate\n>>\n>>    'dbSendQuery' and 'dbSendUpdate' submit a SQL query to the\n>>    database. The difference between the two is only that\n>>    'dbSendUpdate' is used with DBML queries and thus doesn't return\n>>    any result set.\n>>\n>> I would find this helpful, because I could then use scripts unmodified\n>> with either ROracle or RJDBC.\n>> (I suppose adding it to DBI would mean that the one in RJDBC would\n>> have to be modified.)\n>>\n>>\n>> I have:\n>>\n>> Package Version\n>>    \"DBI\" \"0.3.0\"\n>>\n>> Package Version\n>> \"RJDBC\" \"0.2-4\"\n>>\n>>\n>> Thanks\n>> -Don\n>>\n>> --\n>> Don MacQueen\n>> Lawrence Livermore National Laboratory\n>> 7000 East Ave., L-627\n>> Livermore, CA 94550\n>> 925-423-1062\n>>\n>\n>\n>\n> --\n> http://had.co.nz/\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n\n-- \nPeter Meißner\nWorkgroup 'Comparative Parliamentary Politics'\nDepartment of Politics and Administration\nUniversity of Konstanz\nBox 216\n78457 Konstanz\nGermany\n\n+49 7531 88 5665\nhttp://www.polver.uni-konstanz.de/sieberer/home/",
       "body_snippet": "IMHO\n\nthe general approach should be:\n\n- as long as R does deliver the the queries to the DB and the DB does \ngive response there should never ever be an R error - the function did \nwhat it should do:",
       "thread_id": "thread-505e0bd478bb",
       "thread_depth": 3,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001447.html"
     },
     {
       "id": "msg-fac8ff2d04b0",
@@ -125,11 +131,12 @@
         "<acce0757-fcd1-4a33-8f19-2fbab0ff3558@default>",
         "<54087B0A.6060901@uni-konstanz.de>"
       ],
-      "body_plain": "The problem with that approach is that you end up with a lot of code like:\n\nif (!dbBegin(con))  stop(dbGetException())\n...\nif (!dbExecute(con, sql)) stop(dbGetException())\n...\nif (!dbCommit(con))  stop(dbGetException())\n\nwhere the developer is responsible for always checking that the\noperation succeeded. If you throw an error, then the code is simpler:\n\ndbBegin(con)\n...\ndbExecute(con, sql)\n...\ndbCommit(con)\n\nGiven that we're using a language with exceptions, it seems better to\nuse them, rather than adopting the standard C error handling\nmechanism.\n\nHadley\n\nOn Thu, Sep 4, 2014 at 9:45 AM, Peter Mei?ner\n<peter.meissner at uni-konstanz.de> wrote:\n> IMHO\n>\n> the general approach should be:\n>\n> - as long as R does deliver the the queries to the DB and the DB does give\n> response there should never ever be an R error - the function did what it\n> should do: making sure things were delivered to DB\n>\n> - the return than should depend on what the DB said:\n>   * 0/TRUE                    - no error, nothing else to say\n>   * 1/FALSE                   - DB does complain somehow\n>   * text/whatever appropriate - something was returned, ...\n>\n> - if however connection was lost during the execution of the function so it\n> cannot be sure delivery went as expected an error should be issued\n>\n> Best, Peter\n>\n>\n>\n> Am 04.09.2014 16:28, schrieb Denis Mukhin:\n>\n>> In ROracle we standardized on the second approach, namely always return\n>> TRUE, otherwise throw an error.\n>>\n>> Also since UPDATE is not the only operation that does not return any\n>> results (although it might with a RETURNING clause) would a more generic\n>> name be more appropriate here? Besides DMLs there are also DDLs. Something\n>> like dbExecute(), dbSubmit(), dbSend() ...\n>>\n>> Denis\n>>\n>> -----Original Message-----\n>> From: Hadley Wickham [mailto:hadley at rstudio.com]\n>> Sent: Thursday, September 04, 2014 9:13 AM\n>> To: MacQueen, Don\n>> Cc: Simon Urbanek; R-sig-DB at r-project.org\n>> Subject: Re: [R-sig-DB] Add a \"dbSendUpdate\" function to DBI?\n>>\n>> A thought: should dbSendUpdate() return a boolean indicating success, or\n>> always return TRUE, otherwise throwing an error?\n>>\n>> Hadley\n>>\n>> On Wed, Sep 3, 2014 at 3:59 PM, MacQueen, Don <macqueen1 at llnl.gov> wrote:\n>>>\n>>> Hadley,\n>>>\n>>> Since you mentioned DBI 0.3 in a recent email, could I make a request\n>>> to add a dbSendUpdate() function to DBI, like the one in RJDBC?\n>>>\n>>> require(RJDBC)\n>>>\n>>>> find('dbSendQuery')\n>>>\n>>> [1] \"package:RJDBC\" \"package:DBI\"\n>>>\n>>>> find('dbSendUpdate')\n>>>\n>>> [1] \"package:RJDBC\"\n>>>\n>>> And from ?dbSendUpdate\n>>>\n>>>    'dbSendQuery' and 'dbSendUpdate' submit a SQL query to the\n>>>    database. The difference between the two is only that\n>>>    'dbSendUpdate' is used with DBML queries and thus doesn't return\n>>>    any result set.\n>>>\n>>> I would find this helpful, because I could then use scripts unmodified\n>>> with either ROracle or RJDBC.\n>>> (I suppose adding it to DBI would mean that the one in RJDBC would\n>>> have to be modified.)\n>>>\n>>>\n>>> I have:\n>>>\n>>> Package Version\n>>>    \"DBI\" \"0.3.0\"\n>>>\n>>> Package Version\n>>> \"RJDBC\" \"0.2-4\"\n>>>\n>>>\n>>> Thanks\n>>> -Don\n>>>\n>>> --\n>>> Don MacQueen\n>>> Lawrence Livermore National Laboratory\n>>> 7000 East Ave., L-627\n>>> Livermore, CA 94550\n>>> 925-423-1062\n>>>\n>>\n>>\n>>\n>> --\n>> http://had.co.nz/\n>>\n>> _______________________________________________\n>> R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>>\n>> _______________________________________________\n>> R-sig-DB mailing list -- R Special Interest Group\n>> R-sig-DB at r-project.org\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>>\n>\n> --\n> Peter Mei?ner\n> Workgroup 'Comparative Parliamentary Politics'\n> Department of Politics and Administration\n> University of Konstanz\n> Box 216\n> 78457 Konstanz\n> Germany\n>\n> +49 7531 88 5665\n> http://www.polver.uni-konstanz.de/sieberer/home/\n>\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n\n\n-- \nhttp://had.co.nz/",
+      "body_plain": "The problem with that approach is that you end up with a lot of code like:\n\nif (!dbBegin(con))  stop(dbGetException())\n...\nif (!dbExecute(con, sql)) stop(dbGetException())\n...\nif (!dbCommit(con))  stop(dbGetException())\n\nwhere the developer is responsible for always checking that the\noperation succeeded. If you throw an error, then the code is simpler:\n\ndbBegin(con)\n...\ndbExecute(con, sql)\n...\ndbCommit(con)\n\nGiven that we're using a language with exceptions, it seems better to\nuse them, rather than adopting the standard C error handling\nmechanism.\n\nHadley\n\nOn Thu, Sep 4, 2014 at 9:45 AM, Peter Meißner\n<peter.meissner at uni-konstanz.de> wrote:\n> IMHO\n>\n> the general approach should be:\n>\n> - as long as R does deliver the the queries to the DB and the DB does give\n> response there should never ever be an R error - the function did what it\n> should do: making sure things were delivered to DB\n>\n> - the return than should depend on what the DB said:\n>   * 0/TRUE                    - no error, nothing else to say\n>   * 1/FALSE                   - DB does complain somehow\n>   * text/whatever appropriate - something was returned, ...\n>\n> - if however connection was lost during the execution of the function so it\n> cannot be sure delivery went as expected an error should be issued\n>\n> Best, Peter\n>\n>\n>\n> Am 04.09.2014 16:28, schrieb Denis Mukhin:\n>\n>> In ROracle we standardized on the second approach, namely always return\n>> TRUE, otherwise throw an error.\n>>\n>> Also since UPDATE is not the only operation that does not return any\n>> results (although it might with a RETURNING clause) would a more generic\n>> name be more appropriate here? Besides DMLs there are also DDLs. Something\n>> like dbExecute(), dbSubmit(), dbSend() ...\n>>\n>> Denis\n>>\n>> -----Original Message-----\n>> From: Hadley Wickham [mailto:hadley at rstudio.com]\n>> Sent: Thursday, September 04, 2014 9:13 AM\n>> To: MacQueen, Don\n>> Cc: Simon Urbanek; R-sig-DB at r-project.org\n>> Subject: Re: [R-sig-DB] Add a \"dbSendUpdate\" function to DBI?\n>>\n>> A thought: should dbSendUpdate() return a boolean indicating success, or\n>> always return TRUE, otherwise throwing an error?\n>>\n>> Hadley\n>>\n>> On Wed, Sep 3, 2014 at 3:59 PM, MacQueen, Don <macqueen1 at llnl.gov> wrote:\n>>>\n>>> Hadley,\n>>>\n>>> Since you mentioned DBI 0.3 in a recent email, could I make a request\n>>> to add a dbSendUpdate() function to DBI, like the one in RJDBC?\n>>>\n>>> require(RJDBC)\n>>>\n>>>> find('dbSendQuery')\n>>>\n>>> [1] \"package:RJDBC\" \"package:DBI\"\n>>>\n>>>> find('dbSendUpdate')\n>>>\n>>> [1] \"package:RJDBC\"\n>>>\n>>> And from ?dbSendUpdate\n>>>\n>>>    'dbSendQuery' and 'dbSendUpdate' submit a SQL query to the\n>>>    database. The difference between the two is only that\n>>>    'dbSendUpdate' is used with DBML queries and thus doesn't return\n>>>    any result set.\n>>>\n>>> I would find this helpful, because I could then use scripts unmodified\n>>> with either ROracle or RJDBC.\n>>> (I suppose adding it to DBI would mean that the one in RJDBC would\n>>> have to be modified.)\n>>>\n>>>\n>>> I have:\n>>>\n>>> Package Version\n>>>    \"DBI\" \"0.3.0\"\n>>>\n>>> Package Version\n>>> \"RJDBC\" \"0.2-4\"\n>>>\n>>>\n>>> Thanks\n>>> -Don\n>>>\n>>> --\n>>> Don MacQueen\n>>> Lawrence Livermore National Laboratory\n>>> 7000 East Ave., L-627\n>>> Livermore, CA 94550\n>>> 925-423-1062\n>>>\n>>\n>>\n>>\n>> --\n>> http://had.co.nz/\n>>\n>> _______________________________________________\n>> R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>>\n>> _______________________________________________\n>> R-sig-DB mailing list -- R Special Interest Group\n>> R-sig-DB at r-project.org\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>>\n>\n> --\n> Peter Meißner\n> Workgroup 'Comparative Parliamentary Politics'\n> Department of Politics and Administration\n> University of Konstanz\n> Box 216\n> 78457 Konstanz\n> Germany\n>\n> +49 7531 88 5665\n> http://www.polver.uni-konstanz.de/sieberer/home/\n>\n>\n> _______________________________________________\n> R-sig-DB mailing list -- R Special Interest Group\n> R-sig-DB at r-project.org\n> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n\n\n-- \nhttp://had.co.nz/",
       "body_snippet": "The problem with that approach is that you end up with a lot of code like:\n\nif (!dbBegin(con))  stop(dbGetException())\n...\nif (!dbExecute(con, sql)) stop(dbGetException())\n...\nif (!dbCommit(con))  sto",
       "thread_id": "thread-505e0bd478bb",
       "thread_depth": 4,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001448.html"
     },
     {
       "id": "msg-61aa132d6044",
@@ -149,7 +156,8 @@
       "body_snippet": "On Thu, Sep 4, 2014 at 9:28 AM, Denis Mukhin <denis.x.mukhin at oracle.com> wrote:\n> In ROracle we standardized on the second approach, namely always return TRUE, otherwise throw an error.\n>\n> Also si",
       "thread_id": "thread-505e0bd478bb",
       "thread_depth": 3,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001449.html"
     },
     {
       "id": "msg-dd7f30f1b1d7",
@@ -170,7 +178,8 @@
       "body_snippet": "I like it. dbExecuteQuery() matches well with already existing dbGetQuery() and dbSendQuery(). All three are essentially doing the same operation (submitting a Query) but have different return types.\n",
       "thread_id": "thread-505e0bd478bb",
       "thread_depth": 4,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001450.html"
     },
     {
       "id": "msg-09a3d7b1b4d8",
@@ -189,7 +198,8 @@
       "body_snippet": "I will defer to others on this question.\n\nIn general I want to be able to detect failures and handle them\ngracefully, and this is perhaps easier if it returns a boolean, but\nwrapping it in try() is al",
       "thread_id": "thread-505e0bd478bb",
       "thread_depth": 2,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001451.html"
     },
     {
       "id": "msg-59956273bc5f",
@@ -207,11 +217,12 @@
         "<54087B0A.6060901@uni-konstanz.de>",
         "<CABdHhvEknhrF960wL-XSV=i-3VDXJ5qYt-LNa8nQTkKQZ4r4ww@mail.gmail.com>"
       ],
-      "body_plain": "On 09/04/2014 10:53 AM, Hadley Wickham wrote:\n> The problem with that approach is that you end up with a lot of code like:\n>\n> if (!dbBegin(con))  stop(dbGetException())\n> ...\n> if (!dbExecute(con, sql)) stop(dbGetException())\n> ...\n> if (!dbCommit(con))  stop(dbGetException())\n>\n> where the developer is responsible for always checking that the\n> operation succeeded. If you throw an error, then the code is simpler:\n>\n> dbBegin(con)\n> ...\n> dbExecute(con, sql)\n> ...\n> dbCommit(con)\n>\n\nI think this depends on the code. There are frequently situations where \nit is nice to have a function that is certain to return a logical value, \nso not have to catch exceptions and parse for all possibilities. (BTW, \nif error message text is to be returned then that can be set as an \nattribute to the logical value.) My feeling is it would be nice to have \nboth, one function certain to return a logical, and one that will throw \nan error. If one is a simple wrapper to the other then only one method \nneeds to be implemented and the DBI default can look after the other.\n\nPaul\n\n> Given that we're using a language with exceptions, it seems better to\n> use them, rather than adopting the standard C error handling\n> mechanism.\n>\n> Hadley\n>\n> On Thu, Sep 4, 2014 at 9:45 AM, Peter Mei?ner\n> <peter.meissner at uni-konstanz.de> wrote:\n>> IMHO\n>>\n>> the general approach should be:\n>>\n>> - as long as R does deliver the the queries to the DB and the DB does give\n>> response there should never ever be an R error - the function did what it\n>> should do: making sure things were delivered to DB\n>>\n>> - the return than should depend on what the DB said:\n>>    * 0/TRUE                    - no error, nothing else to say\n>>    * 1/FALSE                   - DB does complain somehow\n>>    * text/whatever appropriate - something was returned, ...\n>>\n>> - if however connection was lost during the execution of the function so it\n>> cannot be sure delivery went as expected an error should be issued\n>>\n>> Best, Peter\n>>\n>>\n>>\n>> Am 04.09.2014 16:28, schrieb Denis Mukhin:\n>>\n>>> In ROracle we standardized on the second approach, namely always return\n>>> TRUE, otherwise throw an error.\n>>>\n>>> Also since UPDATE is not the only operation that does not return any\n>>> results (although it might with a RETURNING clause) would a more generic\n>>> name be more appropriate here? Besides DMLs there are also DDLs. Something\n>>> like dbExecute(), dbSubmit(), dbSend() ...\n>>>\n>>> Denis\n>>>\n>>> -----Original Message-----\n>>> From: Hadley Wickham [mailto:hadley at rstudio.com]\n>>> Sent: Thursday, September 04, 2014 9:13 AM\n>>> To: MacQueen, Don\n>>> Cc: Simon Urbanek; R-sig-DB at r-project.org\n>>> Subject: Re: [R-sig-DB] Add a \"dbSendUpdate\" function to DBI?\n>>>\n>>> A thought: should dbSendUpdate() return a boolean indicating success, or\n>>> always return TRUE, otherwise throwing an error?\n>>>\n>>> Hadley\n>>>\n>>> On Wed, Sep 3, 2014 at 3:59 PM, MacQueen, Don <macqueen1 at llnl.gov> wrote:\n>>>>\n>>>> Hadley,\n>>>>\n>>>> Since you mentioned DBI 0.3 in a recent email, could I make a request\n>>>> to add a dbSendUpdate() function to DBI, like the one in RJDBC?\n>>>>\n>>>> require(RJDBC)\n>>>>\n>>>>> find('dbSendQuery')\n>>>>\n>>>> [1] \"package:RJDBC\" \"package:DBI\"\n>>>>\n>>>>> find('dbSendUpdate')\n>>>>\n>>>> [1] \"package:RJDBC\"\n>>>>\n>>>> And from ?dbSendUpdate\n>>>>\n>>>>     'dbSendQuery' and 'dbSendUpdate' submit a SQL query to the\n>>>>     database. The difference between the two is only that\n>>>>     'dbSendUpdate' is used with DBML queries and thus doesn't return\n>>>>     any result set.\n>>>>\n>>>> I would find this helpful, because I could then use scripts unmodified\n>>>> with either ROracle or RJDBC.\n>>>> (I suppose adding it to DBI would mean that the one in RJDBC would\n>>>> have to be modified.)\n>>>>\n>>>>\n>>>> I have:\n>>>>\n>>>> Package Version\n>>>>     \"DBI\" \"0.3.0\"\n>>>>\n>>>> Package Version\n>>>> \"RJDBC\" \"0.2-4\"\n>>>>\n>>>>\n>>>> Thanks\n>>>> -Don\n>>>>\n>>>> --\n>>>> Don MacQueen\n>>>> Lawrence Livermore National Laboratory\n>>>> 7000 East Ave., L-627\n>>>> Livermore, CA 94550\n>>>> 925-423-1062\n>>>>\n>>>\n>>>\n>>>\n>>> --\n>>> http://had.co.nz/\n>>>\n>>> _______________________________________________\n>>> R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org\n>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>>>\n>>> _______________________________________________\n>>> R-sig-DB mailing list -- R Special Interest Group\n>>> R-sig-DB at r-project.org\n>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>>>\n>>\n>> --\n>> Peter Mei?ner\n>> Workgroup 'Comparative Parliamentary Politics'\n>> Department of Politics and Administration\n>> University of Konstanz\n>> Box 216\n>> 78457 Konstanz\n>> Germany\n>>\n>> +49 7531 88 5665\n>> http://www.polver.uni-konstanz.de/sieberer/home/\n>>\n>>\n>> _______________________________________________\n>> R-sig-DB mailing list -- R Special Interest Group\n>> R-sig-DB at r-project.org\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n>\n>",
+      "body_plain": "On 09/04/2014 10:53 AM, Hadley Wickham wrote:\n> The problem with that approach is that you end up with a lot of code like:\n>\n> if (!dbBegin(con))  stop(dbGetException())\n> ...\n> if (!dbExecute(con, sql)) stop(dbGetException())\n> ...\n> if (!dbCommit(con))  stop(dbGetException())\n>\n> where the developer is responsible for always checking that the\n> operation succeeded. If you throw an error, then the code is simpler:\n>\n> dbBegin(con)\n> ...\n> dbExecute(con, sql)\n> ...\n> dbCommit(con)\n>\n\nI think this depends on the code. There are frequently situations where \nit is nice to have a function that is certain to return a logical value, \nso not have to catch exceptions and parse for all possibilities. (BTW, \nif error message text is to be returned then that can be set as an \nattribute to the logical value.) My feeling is it would be nice to have \nboth, one function certain to return a logical, and one that will throw \nan error. If one is a simple wrapper to the other then only one method \nneeds to be implemented and the DBI default can look after the other.\n\nPaul\n\n> Given that we're using a language with exceptions, it seems better to\n> use them, rather than adopting the standard C error handling\n> mechanism.\n>\n> Hadley\n>\n> On Thu, Sep 4, 2014 at 9:45 AM, Peter Meißner\n> <peter.meissner at uni-konstanz.de> wrote:\n>> IMHO\n>>\n>> the general approach should be:\n>>\n>> - as long as R does deliver the the queries to the DB and the DB does give\n>> response there should never ever be an R error - the function did what it\n>> should do: making sure things were delivered to DB\n>>\n>> - the return than should depend on what the DB said:\n>>    * 0/TRUE                    - no error, nothing else to say\n>>    * 1/FALSE                   - DB does complain somehow\n>>    * text/whatever appropriate - something was returned, ...\n>>\n>> - if however connection was lost during the execution of the function so it\n>> cannot be sure delivery went as expected an error should be issued\n>>\n>> Best, Peter\n>>\n>>\n>>\n>> Am 04.09.2014 16:28, schrieb Denis Mukhin:\n>>\n>>> In ROracle we standardized on the second approach, namely always return\n>>> TRUE, otherwise throw an error.\n>>>\n>>> Also since UPDATE is not the only operation that does not return any\n>>> results (although it might with a RETURNING clause) would a more generic\n>>> name be more appropriate here? Besides DMLs there are also DDLs. Something\n>>> like dbExecute(), dbSubmit(), dbSend() ...\n>>>\n>>> Denis\n>>>\n>>> -----Original Message-----\n>>> From: Hadley Wickham [mailto:hadley at rstudio.com]\n>>> Sent: Thursday, September 04, 2014 9:13 AM\n>>> To: MacQueen, Don\n>>> Cc: Simon Urbanek; R-sig-DB at r-project.org\n>>> Subject: Re: [R-sig-DB] Add a \"dbSendUpdate\" function to DBI?\n>>>\n>>> A thought: should dbSendUpdate() return a boolean indicating success, or\n>>> always return TRUE, otherwise throwing an error?\n>>>\n>>> Hadley\n>>>\n>>> On Wed, Sep 3, 2014 at 3:59 PM, MacQueen, Don <macqueen1 at llnl.gov> wrote:\n>>>>\n>>>> Hadley,\n>>>>\n>>>> Since you mentioned DBI 0.3 in a recent email, could I make a request\n>>>> to add a dbSendUpdate() function to DBI, like the one in RJDBC?\n>>>>\n>>>> require(RJDBC)\n>>>>\n>>>>> find('dbSendQuery')\n>>>>\n>>>> [1] \"package:RJDBC\" \"package:DBI\"\n>>>>\n>>>>> find('dbSendUpdate')\n>>>>\n>>>> [1] \"package:RJDBC\"\n>>>>\n>>>> And from ?dbSendUpdate\n>>>>\n>>>>     'dbSendQuery' and 'dbSendUpdate' submit a SQL query to the\n>>>>     database. The difference between the two is only that\n>>>>     'dbSendUpdate' is used with DBML queries and thus doesn't return\n>>>>     any result set.\n>>>>\n>>>> I would find this helpful, because I could then use scripts unmodified\n>>>> with either ROracle or RJDBC.\n>>>> (I suppose adding it to DBI would mean that the one in RJDBC would\n>>>> have to be modified.)\n>>>>\n>>>>\n>>>> I have:\n>>>>\n>>>> Package Version\n>>>>     \"DBI\" \"0.3.0\"\n>>>>\n>>>> Package Version\n>>>> \"RJDBC\" \"0.2-4\"\n>>>>\n>>>>\n>>>> Thanks\n>>>> -Don\n>>>>\n>>>> --\n>>>> Don MacQueen\n>>>> Lawrence Livermore National Laboratory\n>>>> 7000 East Ave., L-627\n>>>> Livermore, CA 94550\n>>>> 925-423-1062\n>>>>\n>>>\n>>>\n>>>\n>>> --\n>>> http://had.co.nz/\n>>>\n>>> _______________________________________________\n>>> R-sig-DB mailing list -- R Special Interest Group R-sig-DB at r-project.org\n>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>>>\n>>> _______________________________________________\n>>> R-sig-DB mailing list -- R Special Interest Group\n>>> R-sig-DB at r-project.org\n>>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>>>\n>>\n>> --\n>> Peter Meißner\n>> Workgroup 'Comparative Parliamentary Politics'\n>> Department of Politics and Administration\n>> University of Konstanz\n>> Box 216\n>> 78457 Konstanz\n>> Germany\n>>\n>> +49 7531 88 5665\n>> http://www.polver.uni-konstanz.de/sieberer/home/\n>>\n>>\n>> _______________________________________________\n>> R-sig-DB mailing list -- R Special Interest Group\n>> R-sig-DB at r-project.org\n>> https://stat.ethz.ch/mailman/listinfo/r-sig-db\n>\n>\n>",
       "body_snippet": "On 09/04/2014 10:53 AM, Hadley Wickham wrote:\n> The problem with that approach is that you end up with a lot of code like:\n>\n> if (!dbBegin(con))  stop(dbGetException())\n> ...\n> if (!dbExecute(con, sq",
       "thread_id": "thread-505e0bd478bb",
       "thread_depth": 5,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001452.html"
     },
     {
       "id": "msg-3ff2e0032f9a",
@@ -234,7 +245,8 @@
       "body_snippet": "> I think this depends on the code. There are frequently situations where it\n> is nice to have a function that is certain to return a logical value, so not\n> have to catch exceptions and parse for all",
       "thread_id": "thread-505e0bd478bb",
       "thread_depth": 6,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001453.html"
     },
     {
       "id": "msg-1dd7ef5545a9",
@@ -250,7 +262,8 @@
       "body_snippet": "While we're on the subject of new generics, I think we also need a\ngeneric for prepared queries. SQLite has\n\nsetGeneric(\"dbSendPreparedQuery\", function(conn, statement, bind.data, ...) {\n    standardG",
       "thread_id": "thread-1dd7ef5545a9",
       "thread_depth": 0,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001454.html"
     },
     {
       "id": "msg-527825f7cd40",
@@ -268,11 +281,12 @@
         "<CABdHhvHps9Da60SvS8F3s5idoD3mjowxXzZ3eUx-LFFEMNkF2A@mail.gmail.com>",
         "<61e7a19a-d238-4028-ac40-5ba789f3caba@default>"
       ],
-      "body_plain": "As the OP, I don?t have a name preference, and dbExecuteQuery() seems fine.\n\nWhat I do hope for, of course, is that maintainers of packages based on\nDBI will in due course implement the new function, so that my scripts are\nportable between packages. I had mentioned ROracle and RJDBC (from which\nmy request arose), but I also use RMySQL, and I use all three of these\nquite a bit. And of course there are several others.\n\nAt the bottom of this email I?m including a reproducible example\nillustrating my situation, in case anyone is interested. I also use\ndbSendUpdate() or dbSendQuery() to send 'alter table' and 'grant' commands\nto the database. Also including sessionInfo() this time.\n\nThanks\n-Don\n\n-- \nDon MacQueen\n\nLawrence Livermore National Laboratory\n7000 East Ave., L-627\nLivermore, CA 94550\n925-423-1062\n\n\n\n\n\nOn 9/4/14, 8:06 AM, \"Denis Mukhin\" <denis.x.mukhin at oracle.com> wrote:\n\n>I like it. dbExecuteQuery() matches well with already existing\n>dbGetQuery() and dbSendQuery(). All three are essentially doing the same\n>operation (submitting a Query) but have different return types.\n>\n>Denis\n>\n>-----Original Message-----\n>From: Hadley Wickham [mailto:hadley at rstudio.com]\n>Sent: Thursday, September 04, 2014 10:54 AM\n>To: Denis Mukhin\n>Cc: MacQueen, Don; Simon Urbanek; r-sig-db at r-project.org\n>Subject: Re: [R-sig-DB] Add a \"dbSendUpdate\" function to DBI?\n>\n>On Thu, Sep 4, 2014 at 9:28 AM, Denis Mukhin <denis.x.mukhin at oracle.com>\n>wrote:\n>> In ROracle we standardized on the second approach, namely always return\n>>TRUE, otherwise throw an error.\n>>\n>> Also since UPDATE is not the only operation that does not return any\n>>results (although it might with a RETURNING clause) would a more generic\n>>name be more appropriate here? Besides DMLs there are also DDLs.\n>>Something like dbExecute(), dbSubmit(), dbSend() ...\n>\n>How about dbExecuteQuery() ?\n>\n>(dbSendQuery() is already taken.)\n>\n>Hadley\n>\n>-- \n>http://had.co.nz/\n>\n>_______________________________________________\n>R-sig-DB mailing list -- R Special Interest Group\n>R-sig-DB at r-project.org\n>https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n\n################\n###     reproducible example\n### (my email software stupidly insists on inserting line breaks after\n###  79 or 80 characters when configured to send plain text email,\n### so take that into account when viewing the lines below. Sorry!\n################\n\nrequire(RJDBC)\n\njdbm <- JDBC('oracle.jdbc.OracleDriver', 'username')\njcon <- dbConnect(dbm, dbuser$jdbc.con, 'username', 'password')\n\nif (dbExistsTable(jcon,'JUNK')) dbRemoveTable(jcon,'JUNK')\nif (dbExistsTable(jcon,'JUNK2')) dbRemoveTable(jcon,'JUNK2')\n\ndbExistsTable(jcon,'JUNK2')\n\ntsttbl <- data.frame(x=1:7, a=c('AA','BB',letters[1:5]))\ndbWriteTable(jcon,'JUNK',tsttbl,row.names=FALSE)\ndbGetQuery(jcon,'select * from JUNK')\n\ndbSendUpdate(jcon,\"create table JUNK2 as select * from JUNK where a='BB'\")\ndbExistsTable(jcon,'JUNK2')\ndbGetQuery(jcon,'select * from JUNK2')\n\nif (dbExistsTable(jcon,'JUNK2')) dbRemoveTable(jcon,'JUNK2')\ndbExistsTable(jcon,'JUNK2')\n\ndbSendQuery(jcon,\"create table JUNK2 as select * from JUNK where a='BB'\")\n\n\n####################################################\n######### here is what I get when running the above\n\n> if (dbExistsTable(jcon,'JUNK')) dbRemoveTable(jcon,'JUNK')\nlogical(0)\n> if (dbExistsTable(jcon,'JUNK2')) dbRemoveTable(jcon,'JUNK2')\nlogical(0)\n> \n> dbExistsTable(jcon,'JUNK2')\n[1] FALSE\n> \n> tsttbl <- data.frame(x=1:7, a=c('AA','BB',letters[1:5]))\n> dbWriteTable(jcon,'JUNK',tsttbl,row.names=FALSE)\n[1] TRUE\n> dbGetQuery(jcon,'select * from JUNK')\n  X  A\n1 1 AA\n2 2 BB\n3 3  a\n4 4  b\n5 5  c\n6 6  d\n7 7  e\n> \n> dbSendUpdate(jcon,\"create table JUNK2 as select * from JUNK where\n>a='BB'\")\n> dbExistsTable(jcon,'JUNK2')\n[1] TRUE\n> dbGetQuery(jcon,'select * from JUNK2')\n  X  A\n1 2 BB\n> \n> if (dbExistsTable(jcon,'JUNK2')) dbRemoveTable(jcon,'JUNK2')\nlogical(0)\n> dbExistsTable(jcon,'JUNK2')\n[1] FALSE\n> \n> dbSendQuery(jcon,\"create table JUNK2 as select * from JUNK where a='BB'\")\nError in .verify.JDBC.result(md, \"Unable to retrieve JDBC result set meta\ndata for \",  : \n  Unable to retrieve JDBC result set meta data for create table JUNK2 as\nselect * from JUNK where a='BB' in dbSendQuery (ORA-01003: no statement\nparsed\n)\n> \n\n##################\n> sessionInfo()\nR version 3.1.1 (2014-07-10)\nPlatform: x86_64-apple-darwin13.1.0 (64-bit)\n\nlocale:\n[1] C\n\nattached base packages:\n[1] stats     graphics  grDevices utils     datasets  methods   base\n\nother attached packages:\n[1] RJDBC_0.2-4 rJava_0.9-6 DBI_0.3.0",
-      "body_snippet": "As the OP, I don?t have a name preference, and dbExecuteQuery() seems fine.\n\nWhat I do hope for, of course, is that maintainers of packages based on\nDBI will in due course implement the new function, ",
+      "body_plain": "As the OP, I don¹t have a name preference, and dbExecuteQuery() seems fine.\n\nWhat I do hope for, of course, is that maintainers of packages based on\nDBI will in due course implement the new function, so that my scripts are\nportable between packages. I had mentioned ROracle and RJDBC (from which\nmy request arose), but I also use RMySQL, and I use all three of these\nquite a bit. And of course there are several others.\n\nAt the bottom of this email I¹m including a reproducible example\nillustrating my situation, in case anyone is interested. I also use\ndbSendUpdate() or dbSendQuery() to send 'alter table' and 'grant' commands\nto the database. Also including sessionInfo() this time.\n\nThanks\n-Don\n\n-- \nDon MacQueen\n\nLawrence Livermore National Laboratory\n7000 East Ave., L-627\nLivermore, CA 94550\n925-423-1062\n\n\n\n\n\nOn 9/4/14, 8:06 AM, \"Denis Mukhin\" <denis.x.mukhin at oracle.com> wrote:\n\n>I like it. dbExecuteQuery() matches well with already existing\n>dbGetQuery() and dbSendQuery(). All three are essentially doing the same\n>operation (submitting a Query) but have different return types.\n>\n>Denis\n>\n>-----Original Message-----\n>From: Hadley Wickham [mailto:hadley at rstudio.com]\n>Sent: Thursday, September 04, 2014 10:54 AM\n>To: Denis Mukhin\n>Cc: MacQueen, Don; Simon Urbanek; r-sig-db at r-project.org\n>Subject: Re: [R-sig-DB] Add a \"dbSendUpdate\" function to DBI?\n>\n>On Thu, Sep 4, 2014 at 9:28 AM, Denis Mukhin <denis.x.mukhin at oracle.com>\n>wrote:\n>> In ROracle we standardized on the second approach, namely always return\n>>TRUE, otherwise throw an error.\n>>\n>> Also since UPDATE is not the only operation that does not return any\n>>results (although it might with a RETURNING clause) would a more generic\n>>name be more appropriate here? Besides DMLs there are also DDLs.\n>>Something like dbExecute(), dbSubmit(), dbSend() ...\n>\n>How about dbExecuteQuery() ?\n>\n>(dbSendQuery() is already taken.)\n>\n>Hadley\n>\n>-- \n>http://had.co.nz/\n>\n>_______________________________________________\n>R-sig-DB mailing list -- R Special Interest Group\n>R-sig-DB at r-project.org\n>https://stat.ethz.ch/mailman/listinfo/r-sig-db\n\n\n################\n###     reproducible example\n### (my email software stupidly insists on inserting line breaks after\n###  79 or 80 characters when configured to send plain text email,\n### so take that into account when viewing the lines below. Sorry!\n################\n\nrequire(RJDBC)\n\njdbm <- JDBC('oracle.jdbc.OracleDriver', 'username')\njcon <- dbConnect(dbm, dbuser$jdbc.con, 'username', 'password')\n\nif (dbExistsTable(jcon,'JUNK')) dbRemoveTable(jcon,'JUNK')\nif (dbExistsTable(jcon,'JUNK2')) dbRemoveTable(jcon,'JUNK2')\n\ndbExistsTable(jcon,'JUNK2')\n\ntsttbl <- data.frame(x=1:7, a=c('AA','BB',letters[1:5]))\ndbWriteTable(jcon,'JUNK',tsttbl,row.names=FALSE)\ndbGetQuery(jcon,'select * from JUNK')\n\ndbSendUpdate(jcon,\"create table JUNK2 as select * from JUNK where a='BB'\")\ndbExistsTable(jcon,'JUNK2')\ndbGetQuery(jcon,'select * from JUNK2')\n\nif (dbExistsTable(jcon,'JUNK2')) dbRemoveTable(jcon,'JUNK2')\ndbExistsTable(jcon,'JUNK2')\n\ndbSendQuery(jcon,\"create table JUNK2 as select * from JUNK where a='BB'\")\n\n\n####################################################\n######### here is what I get when running the above\n\n> if (dbExistsTable(jcon,'JUNK')) dbRemoveTable(jcon,'JUNK')\nlogical(0)\n> if (dbExistsTable(jcon,'JUNK2')) dbRemoveTable(jcon,'JUNK2')\nlogical(0)\n> \n> dbExistsTable(jcon,'JUNK2')\n[1] FALSE\n> \n> tsttbl <- data.frame(x=1:7, a=c('AA','BB',letters[1:5]))\n> dbWriteTable(jcon,'JUNK',tsttbl,row.names=FALSE)\n[1] TRUE\n> dbGetQuery(jcon,'select * from JUNK')\n  X  A\n1 1 AA\n2 2 BB\n3 3  a\n4 4  b\n5 5  c\n6 6  d\n7 7  e\n> \n> dbSendUpdate(jcon,\"create table JUNK2 as select * from JUNK where\n>a='BB'\")\n> dbExistsTable(jcon,'JUNK2')\n[1] TRUE\n> dbGetQuery(jcon,'select * from JUNK2')\n  X  A\n1 2 BB\n> \n> if (dbExistsTable(jcon,'JUNK2')) dbRemoveTable(jcon,'JUNK2')\nlogical(0)\n> dbExistsTable(jcon,'JUNK2')\n[1] FALSE\n> \n> dbSendQuery(jcon,\"create table JUNK2 as select * from JUNK where a='BB'\")\nError in .verify.JDBC.result(md, \"Unable to retrieve JDBC result set meta\ndata for \",  : \n  Unable to retrieve JDBC result set meta data for create table JUNK2 as\nselect * from JUNK where a='BB' in dbSendQuery (ORA-01003: no statement\nparsed\n)\n> \n\n##################\n> sessionInfo()\nR version 3.1.1 (2014-07-10)\nPlatform: x86_64-apple-darwin13.1.0 (64-bit)\n\nlocale:\n[1] C\n\nattached base packages:\n[1] stats     graphics  grDevices utils     datasets  methods   base\n\nother attached packages:\n[1] RJDBC_0.2-4 rJava_0.9-6 DBI_0.3.0",
+      "body_snippet": "As the OP, I don¹t have a name preference, and dbExecuteQuery() seems fine.\n\nWhat I do hope for, of course, is that maintainers of packages based on\nDBI will in due course implement the new function, ",
       "thread_id": "thread-505e0bd478bb",
       "thread_depth": 5,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001455.html"
     },
     {
       "id": "msg-ffc895a0ab88",
@@ -295,7 +309,8 @@
       "body_snippet": "> What I do hope for, of course, is that maintainers of packages based on\n> DBI will in due course implement the new function, so that my scripts are\n> portable between packages. I had mentioned ROrac",
       "thread_id": "thread-505e0bd478bb",
       "thread_depth": 6,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001456.html"
     },
     {
       "id": "msg-a4117b3c55ed",
@@ -319,7 +334,8 @@
       "body_snippet": "On 09/04/2014 12:26 PM, Hadley Wickham wrote:\n>> I think this depends on the code. There are frequently situations where it\n>> is nice to have a function that is certain to return a logical value, so ",
       "thread_id": "thread-505e0bd478bb",
       "thread_depth": 7,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001457.html"
     },
     {
       "id": "msg-22104b9ee128",
@@ -344,7 +360,8 @@
       "body_snippet": "> It is the \"If the API\" part that I worry about. For example\n>\n>> success(warning(\"warn\"))\n> Warning message:\n> In doTryCatch(return(expr), name, parentenv, handler) : warn\n>> is.logical(success(warn",
       "thread_id": "thread-505e0bd478bb",
       "thread_depth": 8,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001458.html"
     },
     {
       "id": "msg-c63455d9d713",
@@ -370,7 +387,8 @@
       "body_snippet": "On 09/04/2014 03:15 PM, Hadley Wickham wrote:\n>> It is the \"If the API\" part that I worry about. For example\n>>\n>>> success(warning(\"warn\"))\n>> Warning message:\n>> In doTryCatch(return(expr), name, pa",
       "thread_id": "thread-505e0bd478bb",
       "thread_depth": 9,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001459.html"
     },
     {
       "id": "msg-7db1283943b4",
@@ -391,7 +409,8 @@
       "body_snippet": "On Sep 4, 2014, at 10:54 AM, Hadley Wickham <hadley at rstudio.com> wrote:\n\n> On Thu, Sep 4, 2014 at 9:28 AM, Denis Mukhin <denis.x.mukhin at oracle.com> wrote:\n>> In ROracle we standardized on the se",
       "thread_id": "thread-505e0bd478bb",
       "thread_depth": 4,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001460.html"
     },
     {
       "id": "msg-fd87a2d1d05a",
@@ -418,7 +437,8 @@
       "body_snippet": "On 04/09/2014 22:22, Paul Gilbert wrote:\n>\n>\n> On 09/04/2014 03:15 PM, Hadley Wickham wrote:\n>>> It is the \"If the API\" part that I worry about. For example\n>>>\n>>>> success(warning(\"warn\"))\n>>> Warni",
       "thread_id": "thread-505e0bd478bb",
       "thread_depth": 10,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001461.html"
     },
     {
       "id": "msg-49b87c2488ab",
@@ -440,7 +460,8 @@
       "body_snippet": "On Thu, Sep 4, 2014 at 8:05 PM, Simon Urbanek\n<simon.urbanek at r-project.org> wrote:\n> On Sep 4, 2014, at 10:54 AM, Hadley Wickham <hadley at rstudio.com> wrote:\n>\n>> On Thu, Sep 4, 2014 at 9:28 AM, ",
       "thread_id": "thread-505e0bd478bb",
       "thread_depth": 5,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001462.html"
     },
     {
       "id": "msg-5e90265391f4",
@@ -462,11 +483,12 @@
         "<5408AE39.7020400@gmail.com>",
         "<CABdHhvHz61j2k2eESBpJYhcA=fjAZKPg6M+gRdS+Ap6AKQs57g@mail.gmail.com>"
       ],
-      "body_plain": "Speaking as an end-user, not a package developer, I think that for\nconsistency with current behavior of the functions I frequently use (see\none of Denis Mukhin?s emails early in this thread), I?d prefer that this\nnew function throw an error when the DB throws an error. Admittedly, I\ndon?t have a deep understanding of the issues involved.\n\nIf within a script I send an SQL statement to the DB in which, for\nexample, I refer to a nonexistent table, the DB reports that as an error.\nIt makes sense to me that the R function would do the same, which\nimmediately stops my script. It?s telling me I?ve got an error that *must*\nbe fixed. I would prefer being stopped, rather than having to test\n(perhaps that?s being lazy on my part, but the ?error? behavior is more\nprotective).\n\n-Don\n\n-- \nDon MacQueen\n\nLawrence Livermore National Laboratory\n7000 East Ave., L-627\nLivermore, CA 94550\n925-423-1062\n\n\n\n\n\nOn 9/4/14, 12:15 PM, \"Hadley Wickham\" <h.wickham at gmail.com> wrote:\n\n>> It is the \"If the API\" part that I worry about. For example\n>>\n>>> success(warning(\"warn\"))\n>> Warning message:\n>> In doTryCatch(return(expr), name, parentenv, handler) : warn\n>>> is.logical(success(warning(\"warn\")))\n>> [1] FALSE\n>> Warning message:\n>> In doTryCatch(return(expr), name, parentenv, handler) : warn\n>>>\n>>\n>> So then every package writer trying to build on DBI has to write a\n>>wrapper\n>> that anticipates the exceptions that may be thrown. This becomes even\n>>more\n>> difficult when different db drivers, different OSes, and different\n>>servers\n>> are involved.\n>\n>I'm not sure I follow, because we hadn't talked about warnings. I\n>would not expect that DBI backends to through warnings instead of\n>errors.\n>\n>> Given the philosophical constraint I think I would generally prefer the\n>> function that is guaranteed to return a logical. The other wrapper is\n>>easy\n>> to write too.\n>\n>But it's fundamentally more dangerous. If all modification functions\n>return TRUE or FALSE and you don't explicit check the return value, it\n>is extremely easy to create invalid code. The same is not true for\n>errors.\n>\n>Hadley\n>\n>\n>-- \n>http://had.co.nz/\n>\n>_______________________________________________\n>R-sig-DB mailing list -- R Special Interest Group\n>R-sig-DB at r-project.org\n>https://stat.ethz.ch/mailman/listinfo/r-sig-db",
-      "body_snippet": "Speaking as an end-user, not a package developer, I think that for\nconsistency with current behavior of the functions I frequently use (see\none of Denis Mukhin?s emails early in this thread), I?d pref",
+      "body_plain": "Speaking as an end-user, not a package developer, I think that for\nconsistency with current behavior of the functions I frequently use (see\none of Denis Mukhin¹s emails early in this thread), I¹d prefer that this\nnew function throw an error when the DB throws an error. Admittedly, I\ndon¹t have a deep understanding of the issues involved.\n\nIf within a script I send an SQL statement to the DB in which, for\nexample, I refer to a nonexistent table, the DB reports that as an error.\nIt makes sense to me that the R function would do the same, which\nimmediately stops my script. It¹s telling me I¹ve got an error that *must*\nbe fixed. I would prefer being stopped, rather than having to test\n(perhaps that¹s being lazy on my part, but the Œerror¹ behavior is more\nprotective).\n\n-Don\n\n-- \nDon MacQueen\n\nLawrence Livermore National Laboratory\n7000 East Ave., L-627\nLivermore, CA 94550\n925-423-1062\n\n\n\n\n\nOn 9/4/14, 12:15 PM, \"Hadley Wickham\" <h.wickham at gmail.com> wrote:\n\n>> It is the \"If the API\" part that I worry about. For example\n>>\n>>> success(warning(\"warn\"))\n>> Warning message:\n>> In doTryCatch(return(expr), name, parentenv, handler) : warn\n>>> is.logical(success(warning(\"warn\")))\n>> [1] FALSE\n>> Warning message:\n>> In doTryCatch(return(expr), name, parentenv, handler) : warn\n>>>\n>>\n>> So then every package writer trying to build on DBI has to write a\n>>wrapper\n>> that anticipates the exceptions that may be thrown. This becomes even\n>>more\n>> difficult when different db drivers, different OSes, and different\n>>servers\n>> are involved.\n>\n>I'm not sure I follow, because we hadn't talked about warnings. I\n>would not expect that DBI backends to through warnings instead of\n>errors.\n>\n>> Given the philosophical constraint I think I would generally prefer the\n>> function that is guaranteed to return a logical. The other wrapper is\n>>easy\n>> to write too.\n>\n>But it's fundamentally more dangerous. If all modification functions\n>return TRUE or FALSE and you don't explicit check the return value, it\n>is extremely easy to create invalid code. The same is not true for\n>errors.\n>\n>Hadley\n>\n>\n>-- \n>http://had.co.nz/\n>\n>_______________________________________________\n>R-sig-DB mailing list -- R Special Interest Group\n>R-sig-DB at r-project.org\n>https://stat.ethz.ch/mailman/listinfo/r-sig-db",
+      "body_snippet": "Speaking as an end-user, not a package developer, I think that for\nconsistency with current behavior of the functions I frequently use (see\none of Denis Mukhin¹s emails early in this thread), I¹d pref",
       "thread_id": "thread-505e0bd478bb",
       "thread_depth": 9,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001463.html"
     },
     {
       "id": "msg-9e78fb4bde5e",
@@ -494,7 +516,8 @@
       "body_snippet": "On 09/05/2014 02:40 AM, Prof Brian Ripley wrote:\n> On 04/09/2014 22:22, Paul Gilbert wrote:\n>>\n>>\n>> On 09/04/2014 03:15 PM, Hadley Wickham wrote:\n>>>> It is the \"If the API\" part that I worry about. ",
       "thread_id": "thread-505e0bd478bb",
       "thread_depth": 11,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001464.html"
     },
     {
       "id": "msg-8a71126ad63e",
@@ -517,11 +540,12 @@
         "<CABdHhvHz61j2k2eESBpJYhcA=fjAZKPg6M+gRdS+Ap6AKQs57g@mail.gmail.com>",
         "<D02F1D62.10A641%macqueen1@llnl.gov>"
       ],
-      "body_plain": "On 09/05/2014 11:39 AM, MacQueen, Don wrote:\n> Speaking as an end-user, not a package developer, I think that for\n> consistency with current behavior of the functions I frequently use (see\n> one of Denis Mukhin?s emails early in this thread), I?d prefer that this\n> new function throw an error when the DB throws an error. Admittedly, I\n> don?t have a deep understanding of the issues involved.\n\nI think it would generally be the case that an end user would like \ntheir queries to throw errors as reported by the database. But for a \nprogramming API one might like a bit finer control. For example, in the \ncase of an error in the SQL statement it can be useful if the database \nerror is reported (from dbGetException()), and also some details about \nobjects used by the function to construct the query are reported. In the \ncase of an expired con a stop() from the DBI function can be passed \ndirectly to the user and the extra information, which would just hide \nthe real error message, can be skipped. Admittedly, it is difficult to \nknow where the distinction should be between FALSE and stop(). But the \ndifference between an end users' needs and the needs of a programming \nAPI is really the reason I think there is a need for two sets of programs.\n\nI personally think of DBI as defining the programming API, and packages \nlike RMySQl, RSQLite, etc, implementing the programming API but, in \nfact, these are being used by end users directly to submit queries and \nwrite batch scripts, so there are two sets of needs. But as I've said \nbefore, in the end I can work with it either way.\n\nPaul\n>\n> If within a script I send an SQL statement to the DB in which, for\n> example, I refer to a nonexistent table, the DB reports that as an error.\n> It makes sense to me that the R function would do the same, which\n> immediately stops my script. It?s telling me I?ve got an error that *must*\n> be fixed. I would prefer being stopped, rather than having to test\n> (perhaps that?s being lazy on my part, but the ?error? behavior is more\n> protective).\n>\n> -Don\n>",
+      "body_plain": "On 09/05/2014 11:39 AM, MacQueen, Don wrote:\n> Speaking as an end-user, not a package developer, I think that for\n> consistency with current behavior of the functions I frequently use (see\n> one of Denis Mukhin¹s emails early in this thread), I¹d prefer that this\n> new function throw an error when the DB throws an error. Admittedly, I\n> don¹t have a deep understanding of the issues involved.\n\nI think it would generally be the case that an end user would like \ntheir queries to throw errors as reported by the database. But for a \nprogramming API one might like a bit finer control. For example, in the \ncase of an error in the SQL statement it can be useful if the database \nerror is reported (from dbGetException()), and also some details about \nobjects used by the function to construct the query are reported. In the \ncase of an expired con a stop() from the DBI function can be passed \ndirectly to the user and the extra information, which would just hide \nthe real error message, can be skipped. Admittedly, it is difficult to \nknow where the distinction should be between FALSE and stop(). But the \ndifference between an end users' needs and the needs of a programming \nAPI is really the reason I think there is a need for two sets of programs.\n\nI personally think of DBI as defining the programming API, and packages \nlike RMySQl, RSQLite, etc, implementing the programming API but, in \nfact, these are being used by end users directly to submit queries and \nwrite batch scripts, so there are two sets of needs. But as I've said \nbefore, in the end I can work with it either way.\n\nPaul\n>\n> If within a script I send an SQL statement to the DB in which, for\n> example, I refer to a nonexistent table, the DB reports that as an error.\n> It makes sense to me that the R function would do the same, which\n> immediately stops my script. It¹s telling me I¹ve got an error that *must*\n> be fixed. I would prefer being stopped, rather than having to test\n> (perhaps that¹s being lazy on my part, but the Œerror¹ behavior is more\n> protective).\n>\n> -Don\n>",
       "body_snippet": "On 09/05/2014 11:39 AM, MacQueen, Don wrote:\n> Speaking as an end-user, not a package developer, I think that for\n> consistency with current behavior of the functions I frequently use (see\n> one of De",
       "thread_id": "thread-505e0bd478bb",
       "thread_depth": 10,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001465.html"
     },
     {
       "id": "msg-6e0ebebce6f5",
@@ -537,7 +561,8 @@
       "body_snippet": "Hi,\nThere are some txt datasets at http://ecoclimate.org/downloads/ that I\nwould like to use in MaxEnt. I dont have a code to convert them to *.asc.  \nPlease, anyone can help? \nPaulo Cordeiro\n\t[[alter",
       "thread_id": "thread-6e0ebebce6f5",
       "thread_depth": 0,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001466.html"
     },
     {
       "id": "msg-8a93f2118525",
@@ -553,7 +578,8 @@
       "body_snippet": "I know from the documentation that RODBC applies type.convert to columns\n(excepting some date and date time classes). In particular, the section\nfrom sqlGetResults:\n\n        for (i in seq_len(cols)) {",
       "thread_id": "thread-8a93f2118525",
       "thread_depth": 0,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001467.html"
     },
     {
       "id": "msg-07b40d059eeb",
@@ -569,7 +595,8 @@
       "body_snippet": "Hi everyone,\n\nI'm preparing to release a new version of RSQLite, 1.0.0.  (I've taken\nover maintenance from Seth Falcon). This release is basically a big\ntidy up - I've refactored a lot of the C code t",
       "thread_id": "thread-07b40d059eeb",
       "thread_depth": 0,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001468.html"
     },
     {
       "id": "msg-334e3ef44441",
@@ -587,7 +614,8 @@
       "body_snippet": "I haven't had a chance to look over the changes; they sound like\nreasonable enhancements. Hadley, thanks for putting some love into\nRSQLite!\n\nBest,\n\n+ seth\n\n\n\nOn Tue, Sep 23, 2014 at 3:10 PM, Hadley W",
       "thread_id": "thread-07b40d059eeb",
       "thread_depth": 1,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001469.html"
     },
     {
       "id": "msg-bf72de9db023",
@@ -605,7 +633,8 @@
       "body_snippet": "I get this error when building RSQLite from source under Windows 8.1\nusing github_install:\n\nextension-functions.c:124:24: fatal error: sqlite3ext.h: No such file\nor directory\n\n\n\n\nOn Tue, Sep 23, 2014 ",
       "thread_id": "thread-07b40d059eeb",
       "thread_depth": 1,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001470.html"
     },
     {
       "id": "msg-cb03f6d4c5cb",
@@ -624,7 +653,8 @@
       "body_snippet": "I've just pushed a potential fix. Can you please check?\nHadley\n\nOn Tue, Sep 23, 2014 at 6:54 PM, Gabor Grothendieck\n<ggrothendieck at gmail.com> wrote:\n> I get this error when building RSQLite from so",
       "thread_id": "thread-07b40d059eeb",
       "thread_depth": 2,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001471.html"
     },
     {
       "id": "msg-1558e80a6157",
@@ -644,7 +674,8 @@
       "body_snippet": "I observed the same problem as Gabor. It compiles/installs now\nsuccessfully on my Ubuntu 14.04 system.\n\n-Rainer\n\nOn Wed, Sep 24, 2014 at 1:36 PM, Hadley Wickham <h.wickham at gmail.com> wrote:\n> I've ",
       "thread_id": "thread-07b40d059eeb",
       "thread_depth": 3,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001472.html"
     },
     {
       "id": "msg-c665b0e554ad",
@@ -664,7 +695,8 @@
       "body_snippet": "On Wed, Sep 24, 2014 at 7:36 AM, Hadley Wickham <h.wickham at gmail.com> wrote:\n> I've just pushed a potential fix. Can you please check?\n> Hadley\n>\n\nit now installs but RSQLite.extfuns breaks (which ",
       "thread_id": "thread-07b40d059eeb",
       "thread_depth": 3,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001473.html"
     },
     {
       "id": "msg-0fb22c65d3db",
@@ -685,7 +717,8 @@
       "body_snippet": "On Wed, Sep 24, 2014 at 9:20 AM, Gabor Grothendieck\n<ggrothendieck at gmail.com> wrote:\n> On Wed, Sep 24, 2014 at 7:36 AM, Hadley Wickham <h.wickham at gmail.com> wrote:\n>> I've just pushed a potentia",
       "thread_id": "thread-07b40d059eeb",
       "thread_depth": 4,
-      "month": "2014-09"
+      "month": "2014-09",
+      "source_url": "https://stat.ethz.ch/pipermail/r-sig-db/2014q3/001474.html"
     }
   ],
   "threads": [
